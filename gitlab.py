@@ -52,7 +52,7 @@ class Gitlab(object):
             cls = objClass
             if objClass.returnClass:
                 cls = objClass.returnClass
-            return [cls(item) for item in r.json]
+            return [cls(self, item) for item in r.json]
         else:
             raise GitlabGetError('%d: %s'%(r.status_code, r.text))
 
@@ -72,7 +72,7 @@ class Gitlab(object):
             if objClass.returnClass:
                 cls = objClass.returnClass
 
-            return cls(r.json)
+            return cls(self, r.json)
         else:
             raise GitlabGetError('%d: %s'%(r.status_code, r.text))
 
@@ -108,7 +108,7 @@ class Gitlab(object):
             if objClass.returnClass:
                 cls = objClass.returnClass
 
-            return cls(r.json)
+            return cls(self, r.json)
         else:
             raise GitlabCreateError('%d: %s'%(r.status_code, r.text))
 
@@ -128,7 +128,7 @@ class Gitlab(object):
             if objClass.returnClass:
                 cls = objClass.returnClass
 
-            return cls(r.json)
+            return cls(self, r.json)
         else:
             raise GitlabUpdateError('%d: %s'%(r.status_code, r.text))
 
@@ -195,11 +195,12 @@ class GitlabObject(object):
 
     def getObject(self, k, v):
         if self.constructorTypes and k in self.constructorTypes:
-            return globals()[self.constructorTypes[k]](v)
+            return globals()[self.constructorTypes[k]](self.gitlab, v)
         else:
             return v
 
-    def __init__(self, data):
+    def __init__(self, gl, data):
+        self.gitlab = gl
         for k, v in data.items():
             if isinstance (v, list):
                 self.__dict__[k] = []
