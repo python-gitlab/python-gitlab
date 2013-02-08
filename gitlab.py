@@ -289,9 +289,21 @@ class ProjectIssue(GitlabObject):
     returnClass = Issue
     canDelete = False
 
+class ProjectIssueNote(GitlabObject):
+    url = '/projects/%(project_id)d/issues/%(issue_id)d/notes'
+    constructorTypes = {'author': 'User'}
+    canUpdate = False
+    canDelete = False
+
 class ProjectMember(GitlabObject):
     url = '/projects/%(project_id)d/members'
     returnClass = User
+
+class ProjectNote(GitlabObject):
+    url = '/projects/%(project_id)d/notes'
+    constructorTypes = {'author': 'User'}
+    canUpdate = False
+    canDelete = False
 
 class ProjectTag(GitlabObject):
     url = '/projects/%(project_id)d/repository/tags'
@@ -305,6 +317,14 @@ class ProjectMergeRequest(GitlabObject):
     constructorTypes = {'author': 'User', 'assignee': 'User'}
     canDelete = False
 
+class ProjectMergeRequestNote(GitlabObject):
+    url = '/projects/%(project_id)d/merge_requests/%(merge_request_id)d/notes'
+    constructorTypes = {'author': 'User'}
+    canGet = False
+    canCreate = False
+    canUpdate = False
+    canDelete = False
+
 class ProjectMilestone(GitlabObject):
     url = '/projects/%(project_id)s/milestones'
     canDelete = False
@@ -312,6 +332,12 @@ class ProjectMilestone(GitlabObject):
 class ProjectSnippet(GitlabObject):
     url = '/projects/%(project_id)d/snippets'
     constructorTypes = {'author': 'User'}
+
+class ProjectSnippetNote(GitlabObject):
+    url = '/projects/%(project_id)d/snippets/%(snippet_id)d/notes'
+    constructorTypes = {'author': 'User'}
+    canUpdate = False
+    canDelete = False
 
 class Project(GitlabObject):
     url = '/projects'
