@@ -193,12 +193,21 @@ class GitlabObject(object):
 
         return gl.delete(cls, id, **kwargs)
 
+    def getObject(self, k, v):
+        if self.constructorTypes and k in self.constructorTypes:
+            return globals()[self.constructorTypes[k]](v)
+        else:
+            return v
+
     def __init__(self, data):
         for k, v in data.items():
-            if self.constructorTypes and k in self.constructorTypes:
-                self.__dict__[k] = self.constructorTypes[k](v)
+            if isinstance (v, list):
+                self.__dict__[k] = []
+                for i in v:
+                    self.__dict__[k].append(self.getObject(k,i))
+
             else:
-                self.__dict__[k] = v
+                self.__dict__[k] = self.getObject(k,v)
 
     def __str__(self):
         return '%s => %s'%(type(self), str(self.__dict__))
@@ -207,9 +216,13 @@ class GitlabObject(object):
 class User(GitlabObject):
     url = '/users'
 
+class Group(GitlabObject):
+    url = '/groups'
+    constructorTypes = {'projects': 'Project'}
+
 class Project(GitlabObject):
     url = '/projects'
-    constructorTypes = {'owner': User}
+    constructorTypes = {'owner': 'User', 'namespace': 'Group'}
     canUpdate = False
     canDelete = False
 
@@ -246,10 +259,13 @@ class ProjectMilestone(GitlabObject):
 
 class ProjectMergeRequest(GitlabObject):
     url = '/projects/%(project_id)d/merge_request'
+    constructorTypes = {'author': 'User', 'assignee': 'User'}
     canDelete = False
 
 class Issue(GitlabObject):
     url = '/issues'
+    constructorTypes = {'author': 'User', 'assignee': 'User',
+                        'milestone': 'ProjectMilestone'}
     canGet = False
     canDelete = False
     canUpdate = False
@@ -260,15 +276,13 @@ class ProjectIssue(GitlabObject):
     returnClass = Issue
     canDelete = False
 
-class Group(GitlabObject):
-    url = '/groups'
-
 class Session(object):
     def __init__(self):
         raise NotImplementedError
 
-class Snippet(GitlabObject):
+class ProjectSnippet(GitlabObject):
     url = '/projects/%(project_id)d/snippets'
+    constructorTypes = {'author': 'User'}
 
 class User(GitlabObject):
     url = '/users'
