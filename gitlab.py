@@ -217,32 +217,38 @@ class GitlabObject(object):
 class User(GitlabObject):
     url = '/users'
 
+class CurrentUser(GitlabObject):
+    url = '/user'
+    canGetList = False
+    canCreate = False
+    canUpdate = False
+    canDelete = False
+
+class CurrentUserKey(GitlabObject):
+    url = '/user/keys'
+    canUpdate = False
+
+    url = '/users'
+
 class Group(GitlabObject):
     url = '/groups'
     constructorTypes = {'projects': 'Project'}
 
-class Project(GitlabObject):
-    url = '/projects'
-    constructorTypes = {'owner': 'User', 'namespace': 'Group'}
-    canUpdate = False
-    canDelete = False
-
-class ProjectMember(GitlabObject):
-    url = '/projects/%(project_id)d/members'
-    returnClass = User
-
-class ProjectHook(GitlabObject):
-    url = '/projects/%(project_id)d/hooks'
-
-class ProjectBranch(GitlabObject):
-    url = '/projects/%(project_id)d/repository/branches'
+class Issue(GitlabObject):
+    url = '/issues'
+    constructorTypes = {'author': 'User', 'assignee': 'User',
+                        'milestone': 'ProjectMilestone'}
+    canGet = False
     canDelete = False
     canUpdate = False
     canCreate = False
 
-class ProjectTag(GitlabObject):
-    url = '/projects/%(project_id)d/repository/tags'
-    canGet = False
+class Session(object):
+    def __init__(self):
+        raise NotImplementedError
+
+class ProjectBranch(GitlabObject):
+    url = '/projects/%(project_id)d/repository/branches'
     canDelete = False
     canUpdate = False
     canCreate = False
@@ -254,50 +260,76 @@ class ProjectCommit(GitlabObject):
     canUpdate = False
     canCreate = False
 
-class ProjectMilestone(GitlabObject):
-    url = '/projects/%(project_id)s/milestones'
-    canDelete = False
-
-class ProjectMergeRequest(GitlabObject):
-    url = '/projects/%(project_id)d/merge_request'
-    constructorTypes = {'author': 'User', 'assignee': 'User'}
-    canDelete = False
-
-class Issue(GitlabObject):
-    url = '/issues'
-    constructorTypes = {'author': 'User', 'assignee': 'User',
-                        'milestone': 'ProjectMilestone'}
-    canGet = False
-    canDelete = False
-    canUpdate = False
-    canCreate = False
+class ProjectHook(GitlabObject):
+    url = '/projects/%(project_id)d/hooks'
 
 class ProjectIssue(GitlabObject):
     url = '/projects/%(project_id)s/issues/'
     returnClass = Issue
     canDelete = False
 
-class Session(object):
-    def __init__(self):
-        raise NotImplementedError
+class ProjectMember(GitlabObject):
+    url = '/projects/%(project_id)d/members'
+    returnClass = User
+
+class ProjectTag(GitlabObject):
+    url = '/projects/%(project_id)d/repository/tags'
+    canGet = False
+    canDelete = False
+    canUpdate = False
+    canCreate = False
+
+class ProjectMergeRequest(GitlabObject):
+    url = '/projects/%(project_id)d/merge_request'
+    constructorTypes = {'author': 'User', 'assignee': 'User'}
+    canDelete = False
+
+class ProjectMilestone(GitlabObject):
+    url = '/projects/%(project_id)s/milestones'
+    canDelete = False
 
 class ProjectSnippet(GitlabObject):
     url = '/projects/%(project_id)d/snippets'
     constructorTypes = {'author': 'User'}
 
-class User(GitlabObject):
-    url = '/users'
-
-class CurrentUser(GitlabObject):
-    url = '/user'
-    canGetList = False
-    canCreate = False
+class Project(GitlabObject):
+    url = '/projects'
+    constructorTypes = {'owner': 'User', 'namespace': 'Group'}
     canUpdate = False
     canDelete = False
 
-class CurrentUserKey(GitlabObject):
-    url = '/user/keys'
-    canUpdate = False
+    def objGetter(self, cls, id):
+        if id == None:
+            return cls.list(self.gitlab, project_id=self.id)
+        else:
+            return cls.get(self.gitlab, id, project_id=self.id)
+
+    def Branch(self, id=None):
+        return self.objGetter(ProjectBranch, id)
+
+    def Commit(self, id=None):
+        return self.objGetter(ProjectCommit, id)
+
+    def Hook(self, id=None):
+        return self.objGetter(ProjectHook, id)
+
+    def Issue(self, id=None):
+        return self.objGetter(ProjectIssue, id)
+
+    def Member(self, id=None):
+        return self.objGetter(ProjectMember, id)
+
+    def MergeRequest(self, id=None):
+        return self.objGetter(ProjectMergeRequest, id)
+
+    def Milestone(self, id=None):
+        return self.objGetter(ProjectMilestone, id)
+
+    def Snippet(self, id=None):
+        return self.objGetter(ProjectSnippet, id)
+
+    def Tag(self, id=None):
+        return self.objGetter(ProjectTag, id)
 
 if __name__ == '__main__':
     # quick "doc"
