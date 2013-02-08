@@ -70,7 +70,12 @@ class Gitlab(object):
             cls = objClass
             if objClass.returnClass:
                 cls = objClass.returnClass
-            return [cls(self, item) for item in r.json]
+            l = [cls(self, item) for item in r.json]
+            if kwargs:
+                for k,v in kwargs.items():
+                    for obj in l:
+                        obj.__dict__[k] = v
+            return l
         else:
             raise GitlabGetError('%d: %s'%(r.status_code, r.text))
 
@@ -90,7 +95,11 @@ class Gitlab(object):
             if objClass.returnClass:
                 cls = objClass.returnClass
 
-            return cls(self, r.json)
+            obj = cls(self, r.json)
+            if kwargs:
+                for k,v in kwargs.items():
+                    obj.__dict__[k] = v
+            return obj
         else:
             raise GitlabGetError('%d: %s'%(r.status_code, r.text))
 
@@ -211,6 +220,12 @@ class GitlabObject(object):
 
         return gl.delete(cls, id, **kwargs)
 
+    def getListOrObject(self, cls, id, **kwargs):
+        if id == None:
+            return cls.list(self.gitlab, **kwargs)
+        else:
+            return cls.get(self.gitlab, id, **kwargs)
+
     def getObject(self, k, v):
         if self.constructorTypes and k in self.constructorTypes:
             return globals()[self.constructorTypes[k]](self.gitlab, v)
@@ -224,7 +239,6 @@ class GitlabObject(object):
                 self.__dict__[k] = []
                 for i in v:
                     self.__dict__[k].append(self.getObject(k,i))
-
             else:
                 self.__dict__[k] = self.getObject(k,v)
 
@@ -284,16 +298,20 @@ class ProjectCommit(GitlabObject):
 class ProjectHook(GitlabObject):
     url = '/projects/%(project_id)d/hooks'
 
-class ProjectIssue(GitlabObject):
-    url = '/projects/%(project_id)s/issues/'
-    returnClass = Issue
-    canDelete = False
-
 class ProjectIssueNote(GitlabObject):
     url = '/projects/%(project_id)d/issues/%(issue_id)d/notes'
     constructorTypes = {'author': 'User'}
     canUpdate = False
     canDelete = False
+
+class ProjectIssue(GitlabObject):
+    url = '/projects/%(project_id)s/issues/'
+    constructorTypes = {'author': 'User', 'assignee': 'User',
+                        'milestone': 'ProjectMilestone'}
+    canDelete = False
+
+    def Note(self, id=None):
+        return self.getListOrObject(ProjectIssueNote, id, project_id=self.id, issue_id=self.id)
 
 class ProjectMember(GitlabObject):
     url = '/projects/%(project_id)d/members'
@@ -312,11 +330,6 @@ class ProjectTag(GitlabObject):
     canUpdate = False
     canCreate = False
 
-class ProjectMergeRequest(GitlabObject):
-    url = '/projects/%(project_id)d/merge_request'
-    constructorTypes = {'author': 'User', 'assignee': 'User'}
-    canDelete = False
-
 class ProjectMergeRequestNote(GitlabObject):
     url = '/projects/%(project_id)d/merge_requests/%(merge_request_id)d/notes'
     constructorTypes = {'author': 'User'}
@@ -325,13 +338,18 @@ class ProjectMergeRequestNote(GitlabObject):
     canUpdate = False
     canDelete = False
 
+class ProjectMergeRequest(GitlabObject):
+    url = '/projects/%(project_id)d/merge_request'
+    constructorTypes = {'author': 'User', 'assignee': 'User'}
+    canDelete = False
+
+    def Note(self, id=None):
+        return self.getListOrObject(ProjectMergeRequestNote, id,
+                                    project_id=self.id, merge_request_id=self.id)
+
 class ProjectMilestone(GitlabObject):
     url = '/projects/%(project_id)s/milestones'
     canDelete = False
-
-class ProjectSnippet(GitlabObject):
-    url = '/projects/%(project_id)d/snippets'
-    constructorTypes = {'author': 'User'}
 
 class ProjectSnippetNote(GitlabObject):
     url = '/projects/%(project_id)d/snippets/%(snippet_id)d/notes'
@@ -339,44 +357,49 @@ class ProjectSnippetNote(GitlabObject):
     canUpdate = False
     canDelete = False
 
+class ProjectSnippet(GitlabObject):
+    url = '/projects/%(project_id)d/snippets'
+    constructorTypes = {'author': 'User'}
+
+    def Note(self, id=None):
+        return self.getListOrObject(ProjectSnippetNote, id,
+                                    project_id=self.id, snippet_id=self.id)
+
 class Project(GitlabObject):
     url = '/projects'
     constructorTypes = {'owner': 'User', 'namespace': 'Group'}
     canUpdate = False
     canDelete = False
 
-    def objGetter(self, cls, id):
-        if id == None:
-            return cls.list(self.gitlab, project_id=self.id)
-        else:
-            return cls.get(self.gitlab, id, project_id=self.id)
-
     def Branch(self, id=None):
-        return self.objGetter(ProjectBranch, id)
+        return self.getListOrObject(ProjectBranch, id, project_id=self.id)
 
     def Commit(self, id=None):
-        return self.objGetter(ProjectCommit, id)
+        return self.getListOrObject(ProjectCommit, id, project_id=self.id)
 
     def Hook(self, id=None):
-        return self.objGetter(ProjectHook, id)
+        return self.getListOrObject(ProjectHook, id, project_id=self.id)
 
     def Issue(self, id=None):
-        return self.objGetter(ProjectIssue, id)
+        return self.getListOrObject(ProjectIssue, id, project_id=self.id)
 
     def Member(self, id=None):
-        return self.objGetter(ProjectMember, id)
+        return self.getListOrObject(ProjectMember, id, project_id=self.id)
 
     def MergeRequest(self, id=None):
-        return self.objGetter(ProjectMergeRequest, id)
+        return self.getListOrObject(ProjectMergeRequest, id, project_id=self.id)
 
     def Milestone(self, id=None):
-        return self.objGetter(ProjectMilestone, id)
+        return self.getListOrObject(ProjectMilestone, id, project_id=self.id)
+
+    def Note(self, id=None):
+        return self.getListOrObject(ProjectNote, id, project_id=self.id)
 
     def Snippet(self, id=None):
-        return self.objGetter(ProjectSnippet, id)
+        return self.getListOrObject(ProjectSnippet, id, project_id=self.id)
 
     def Tag(self, id=None):
-        return self.objGetter(ProjectTag, id)
+        return self.getListOrObject(ProjectTag, id, project_id=self.id)
 
 if __name__ == '__main__':
     # quick "doc"
