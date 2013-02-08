@@ -30,10 +30,28 @@ class GitlabCreateError(Exception):
 class GitlabUpdateError(Exception):
     pass
 
+class GitlabSessionError(Exception):
+    pass
+
 class Gitlab(object):
     def __init__(self, url, private_token):
         self.url = '%s/api/v3'%url
         self.private_token = private_token
+
+    def setUrl(self, url):
+        self.url = '%s/api/v3'%url
+
+    def setToken(self, token):
+        self.private_token = token
+
+    def rawPost(self, path, data):
+        url = '%s%s'%(self.url, path)
+        try:
+            r = requests.post(url, data)
+        except:
+            GitlabConnectionError('Can\'t connect to GitLab server (%s)'%self.url)
+
+        return r
 
     def list(self, objClass, **kwargs):
         url = objClass.url
@@ -243,9 +261,12 @@ class Issue(GitlabObject):
     canUpdate = False
     canCreate = False
 
-class Session(object):
-    def __init__(self):
-        raise NotImplementedError
+def Session(gl, email, password):
+    r = gl.rawPost('/session', {'email': email, 'password': password})
+    if r.status_code == 201:
+        return User(gl, r.json)
+    else:
+        raise GitlabSessionError()
 
 class ProjectBranch(GitlabObject):
     url = '/projects/%(project_id)d/repository/branches'
