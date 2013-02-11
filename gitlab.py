@@ -30,6 +30,9 @@ class GitlabCreateError(Exception):
 class GitlabUpdateError(Exception):
     pass
 
+class GitlabDeleteError(Exception):
+    pass
+
 class GitlabAuthenticationError(Exception):
     pass
 
@@ -113,26 +116,15 @@ class Gitlab(object):
             raise GitlabConnectionError('Can\'t connect to GitLab server (%s)'%self.url)
 
         if r.status_code == 200:
-            cls = objClass
-            if objClass.returnClass:
-                cls = objClass.returnClass
-
-            obj = cls(self, r.json)
-            if kwargs:
-                for k,v in kwargs.items():
-                    obj.__dict__[k] = v
-            return obj
+            return r.json
         elif r.status_code == 401:
             raise GitlabAuthenticationError(r.json['message'])
         else:
             raise GitlabGetError('%d: %s'%(r.status_code, r.text))
 
-    def delete(self, objClass, id, **kwargs):
-        # FIXME: not working for project members, gitlab bug or not?
-        url = objClass.url
-        if kwargs:
-            url = objClass.url % kwargs
-        url = '%s%s/%d?private_token=%s'%(self.url, url, id, self.private_token)
+    def delete(self, obj):
+        url = obj.url % obj.__dict__
+        url = '%s%s/%d?private_token=%s'%(self.url, url, obj.id, self.private_token)
 
         try:
             r = requests.delete(url)
@@ -145,55 +137,50 @@ class Gitlab(object):
             raise GitlabAuthenticationError(r.json['message'])
         return False
 
-    def create(self, objClass, objData, **kwargs):
-        url = objClass.url
-        if kwargs:
-            url = objClass.url % kwargs
+    def create(self, obj):
+        url = obj.url % obj.__dict__
         url = '%s%s?private_token=%s'%(self.url, url, self.private_token)
 
         try:
-            r = requests.post(url, objData)
+            # TODO: avoid too much work on the server side by filtering the __dict__ keys
+            r = requests.post(url, obj.__dict__)
         except:
             raise GitlabConnectionError('Can\'t connect to GitLab server (%s)'%self.url)
 
         if r.status_code == 201:
-            cls = objClass
-            if objClass.returnClass:
-                cls = objClass.returnClass
-
-            return cls(self, r.json)
+            return r.json
         elif r.status_code == 401:
             raise GitlabAuthenticationError(r.json['message'])
         else:
             raise GitlabCreateError('%d: %s'%(r.status_code, r.text))
 
-    def update(self, objClass, id, objData, **kwargs):
-        url = objClass.url
-        if kwargs:
-            url = objClass.url % kwargs
-        url = '%s%s/%d?private_token=%s'%(self.url, url, id, self.private_token)
+    def update(self, obj):
+        url = obj.url % obj.__dict__
+        url = '%s%s/%d?private_token=%s'%(self.url, url, obj.id, self.private_token)
+
+        # build a dict of data that can really be sent to server
+        d = {}
+        for k,v in obj.__dict__.items():
+            if type(v) in (int, str, unicode, bool):
+                d[k] = v
 
         try:
-            r = requests.put(url, objData)
+            r = requests.put(url, d)
         except:
             raise GitlabConnectionError('Can\'t connect to GitLab server (%s)'%self.url)
 
         if r.status_code == 200:
-            cls = objClass
-            if objClass.returnClass:
-                cls = objClass.returnClass
-
-            return cls(self, r.json)
+            return r.json
         elif r.status_code == 401:
             raise GitlabAuthenticationError(r.json['message'])
         else:
-            raise GitlabUpdateError('%d: %s'%(r.status_code, r.text))
+            raise GitlabUpdateError('%d: %s' % (r.status_code, r.text))
 
     def getListOrObject(self, cls, id, **kwargs):
         if id == None:
             return cls.list(self, **kwargs)
         else:
-            return cls.get(self, id, **kwargs)
+            return cls(self, id, **kwargs)
 
     def Project(self, id=None):
         return self.getListOrObject(Project, id)
@@ -219,26 +206,6 @@ class GitlabObject(object):
     canDelete = True
 
     @classmethod
-    def update(cls, gl, id, data, **kwargs):
-        if not cls.canUpdate:
-            raise NotImplementedError
-
-        if not cls.url:
-            raise NotImplementedError
-
-        return gl.update(cls, id, data, **kwargs)
-
-    @classmethod
-    def create(cls, gl, data, **kwargs):
-        if not cls.canCreate:
-            raise NotImplementedError
-
-        if not cls.url:
-            raise NotImplementedError
-
-        return gl.create(cls, data, **kwargs)
-
-    @classmethod
     def list(cls, gl, **kwargs):
         if not cls.canGetList:
             raise NotImplementedError
@@ -248,31 +215,17 @@ class GitlabObject(object):
 
         return gl.list(cls, **kwargs)
 
-    @classmethod
-    def get(cls, gl, id, **kwargs):
-        if not cls.canGet:
-            raise NotImplementedError
-
-        if not cls.url:
-            raise NotImplementedError
-
-        return gl.get(cls, id, **kwargs)
-
-    @classmethod
-    def delete(cls, gl, id, **kwargs):
-        if not cls.canDelete:
-            raise NotImplementedError
-
-        if not cls.url:
-            raise NotImplementedError
-
-        return gl.delete(cls, id, **kwargs)
-
     def getListOrObject(self, cls, id, **kwargs):
         if id == None:
+            if not cls.canGetList:
+                raise GitlabGetError
+
             return cls.list(self.gitlab, **kwargs)
         else:
-            return cls.get(self.gitlab, id, **kwargs)
+            if not cls.canGet:
+                raise GitlabGetError
+
+            return cls(self.gitlab, id, **kwargs)
 
     def getObject(self, k, v):
         if self.constructorTypes and k in self.constructorTypes:
@@ -280,9 +233,7 @@ class GitlabObject(object):
         else:
             return v
 
-    def __init__(self, gl, data):
-        self.gitlab = gl
-
+    def setFromDict(self, data):
         for k, v in data.items():
             if isinstance (v, list):
                 self.__dict__[k] = []
@@ -292,6 +243,47 @@ class GitlabObject(object):
                 self.__dict__[k] = self.getObject(k,v)
             else: # None object
                 self.__dict__[k] = None
+
+    def _create(self):
+        if not self.canCreate:
+            raise NotImplementedError
+
+        json = self.gitlab.create(self)
+        self.setFromDict(json)
+
+    def _update(self):
+        if not self.canUpdate:
+            raise NotImplementedError
+
+        json = self.gitlab.update(self)
+        self.setFromDict(json)
+
+    def save(self):
+        if hasattr(self, 'id'):
+            self._update()
+        else:
+            self._create()
+
+    def delete(self):
+        if not self.canDelete:
+            raise NotImplementedError
+
+        if not hasattr(self, 'id'):
+            raise GitlabDeleteError
+
+        return self.gitlab.delete(self)
+
+    def __init__(self, gl, data, **kwargs):
+        self.gitlab = gl
+
+        if isinstance(data, int):
+            data = self.gitlab.get(self.__class__, data, **kwargs)
+
+        self.setFromDict(data)
+
+        if kwargs:
+            for k,v in kwargs.items():
+                self.__dict__[k] = v
 
     def __str__(self):
         return '%s => %s'%(type(self), str(self.__dict__))
@@ -315,7 +307,7 @@ class CurrentUser(GitlabObject):
         if id == None:
             return CurrentUserKey.list(self.gitlab)
         else:
-            return CurrentUserKey.get(self.gitlab, id)
+            return CurrentUserKey(self.gitlab, id)
 
 class Group(GitlabObject):
     url = '/groups'
@@ -460,12 +452,14 @@ if __name__ == '__main__':
     gl = Gitlab('http://192.168.123.107:8080', 'JVNSESs8EwWRx5yDxM5q')
 
     # get a list of projects
-    for p in Project.list(gl):
+    for p in gl.Project():
         print p.name
         # get associated issues
-        issues = ProjectIssue.list(gl, project_id=p.id)
+        issues = p.Issue()
         for issue in issues:
-            print "  %d => %s (closed: %d)"%(issue.id, issue.title, issue.closed)
+            closed = 0 if not issue.closed else 1
+            print "  %d => %s (closed: %d)"%(issue.id, issue.title, closed)
             # and close them all
-            ProjectIssue.update(gl, issue.id, {'closed': 1}, project_id=p.id)
+            issue.closed = 1
+            issue.save()
 
