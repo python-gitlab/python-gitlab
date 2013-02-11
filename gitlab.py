@@ -96,6 +96,8 @@ class Gitlab(object):
                     for obj in l:
                         obj.__dict__[k] = v
             return l
+        elif r.status_code == 401:
+            raise GitlabAuthenticationError(r.json['message'])
         else:
             raise GitlabGetError('%d: %s'%(r.status_code, r.text))
 
@@ -120,6 +122,8 @@ class Gitlab(object):
                 for k,v in kwargs.items():
                     obj.__dict__[k] = v
             return obj
+        elif r.status_code == 401:
+            raise GitlabAuthenticationError(r.json['message'])
         else:
             raise GitlabGetError('%d: %s'%(r.status_code, r.text))
 
@@ -137,6 +141,8 @@ class Gitlab(object):
 
         if r.status_code == 200:
             return True
+        elif r.status_code == 401:
+            raise GitlabAuthenticationError(r.json['message'])
         return False
 
     def create(self, objClass, objData, **kwargs):
@@ -156,6 +162,8 @@ class Gitlab(object):
                 cls = objClass.returnClass
 
             return cls(self, r.json)
+        elif r.status_code == 401:
+            raise GitlabAuthenticationError(r.json['message'])
         else:
             raise GitlabCreateError('%d: %s'%(r.status_code, r.text))
 
@@ -176,6 +184,8 @@ class Gitlab(object):
                 cls = objClass.returnClass
 
             return cls(self, r.json)
+        elif r.status_code == 401:
+            raise GitlabAuthenticationError(r.json['message'])
         else:
             raise GitlabUpdateError('%d: %s'%(r.status_code, r.text))
 
