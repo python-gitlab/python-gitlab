@@ -30,13 +30,33 @@ class GitlabCreateError(Exception):
 class GitlabUpdateError(Exception):
     pass
 
-class GitlabSessionError(Exception):
+class GitlabAuthenticationError(Exception):
     pass
 
 class Gitlab(object):
-    def __init__(self, url, private_token):
+    def __init__(self, url, private_token=None, email=None, password=None):
         self.url = '%s/api/v3'%url
         self.private_token = private_token
+        self.email = email
+        self.password = password
+
+        if not self.private_token:
+            self.authenticate
+
+    def authenticate(self, email=None, password=None):
+        self.email = self.email or email
+        self.password = self.password or password
+
+        if not self.email or not self.password:
+            raise GitlabAuthenticationError("Missing email/password")
+
+        r = self.rawPost('/session', {'email': email, 'password': password})
+        if r.status_code == 201:
+            self.user = User(self, r.json)
+        else:
+            raise GitlabAuthenticationError()
+
+        self.private_token = self.user.private_token
 
     def setUrl(self, url):
         self.url = '%s/api/v3'%url
@@ -234,13 +254,16 @@ class GitlabObject(object):
 
     def __init__(self, gl, data):
         self.gitlab = gl
+
         for k, v in data.items():
             if isinstance (v, list):
                 self.__dict__[k] = []
                 for i in v:
                     self.__dict__[k].append(self.getObject(k,i))
-            else:
+            elif v:
                 self.__dict__[k] = self.getObject(k,v)
+            else: # None object
+                self.__dict__[k] = None
 
     def __str__(self):
         return '%s => %s'%(type(self), str(self.__dict__))
@@ -274,13 +297,6 @@ class Issue(GitlabObject):
     canDelete = False
     canUpdate = False
     canCreate = False
-
-def Session(gl, email, password):
-    r = gl.rawPost('/session', {'email': email, 'password': password})
-    if r.status_code == 201:
-        return User(gl, r.json)
-    else:
-        raise GitlabSessionError()
 
 class ProjectBranch(GitlabObject):
     url = '/projects/%(project_id)d/repository/branches'
