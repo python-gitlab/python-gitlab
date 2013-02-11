@@ -52,9 +52,9 @@ class Gitlab(object):
 
         r = self.rawPost('/session', {'email': email, 'password': password})
         if r.status_code == 201:
-            self.user = User(self, r.json)
+            self.user = CurrentUser(self, r.json)
         else:
-            raise GitlabAuthenticationError()
+            raise GitlabAuthenticationError(r.json['message'])
 
         self.private_token = self.user.private_token
 
@@ -189,6 +189,24 @@ class Gitlab(object):
         else:
             raise GitlabUpdateError('%d: %s'%(r.status_code, r.text))
 
+    def getListOrObject(self, cls, id, **kwargs):
+        if id == None:
+            return cls.list(self, **kwargs)
+        else:
+            return cls.get(self, id, **kwargs)
+
+    def Project(self, id=None):
+        return self.getListOrObject(Project, id)
+
+    def Group(self, id=None):
+        return self.getListOrObject(Group, id)
+
+    def Issue(self, id=None):
+        return self.getListOrObject(Issue, id)
+
+    def User(self, id=None):
+        return self.getListOrObject(User, id)
+
 
 class GitlabObject(object):
     url = None
@@ -282,6 +300,10 @@ class GitlabObject(object):
 class User(GitlabObject):
     url = '/users'
 
+class CurrentUserKey(GitlabObject):
+    url = '/user/keys'
+    canUpdate = False
+
 class CurrentUser(GitlabObject):
     url = '/user'
     canGetList = False
@@ -289,11 +311,11 @@ class CurrentUser(GitlabObject):
     canUpdate = False
     canDelete = False
 
-class CurrentUserKey(GitlabObject):
-    url = '/user/keys'
-    canUpdate = False
-
-    url = '/users'
+    def Key(self, id=None):
+        if id == None:
+            return CurrentUserKey.list(self.gitlab)
+        else:
+            return CurrentUserKey.get(self.gitlab, id)
 
 class Group(GitlabObject):
     url = '/groups'
