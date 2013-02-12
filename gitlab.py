@@ -43,17 +43,19 @@ class Gitlab(object):
         self.email = email
         self.password = password
 
-        if not self.private_token:
-            self.authenticate
+    def auth(self):
+        r = False
+        if self.private_token:
+            r = self.token_auth()
 
-    def authenticate(self, email=None, password=None):
-        self.email = self.email or email
-        self.password = self.password or password
+        if not r:
+            self.credentials_auth()
 
+    def credentials_auth(self):
         if not self.email or not self.password:
             raise GitlabAuthenticationError("Missing email/password")
 
-        r = self.rawPost('/session', {'email': email, 'password': password})
+        r = self.rawPost('/session', {'email': self.email, 'password': self.password})
         if r.status_code == 201:
             self.user = CurrentUser(self, r.json)
         else:
@@ -61,11 +63,22 @@ class Gitlab(object):
 
         self.private_token = self.user.private_token
 
+    def token_auth(self):
+        try:
+            self.user = self.get(CurrentUser)
+            return True
+        except:
+            return False
+
     def setUrl(self, url):
         self.url = '%s/api/v3'%url
 
     def setToken(self, token):
         self.private_token = token
+
+    def setCredentials(self, email, password):
+        self.email = email
+        self.password = password
 
     def rawPost(self, path, data):
         url = '%s%s'%(self.url, path)
@@ -104,11 +117,14 @@ class Gitlab(object):
         else:
             raise GitlabGetError('%d: %s'%(r.status_code, r.text))
 
-    def get(self, objClass, id, **kwargs):
+    def get(self, objClass, id=None, **kwargs):
         url = objClass.url
         if kwargs:
             url = objClass.url % kwargs
-        url = '%s%s/%d?private_token=%s'%(self.url, url, id, self.private_token)
+        if id != None:
+            url = '%s%s/%d?private_token=%s'%(self.url, url, id, self.private_token)
+        else:
+            url = '%s%s?private_token=%s'%(self.url, url, self.private_token)
 
         try:
             r = requests.get(url)
@@ -273,10 +289,10 @@ class GitlabObject(object):
 
         return self.gitlab.delete(self)
 
-    def __init__(self, gl, data, **kwargs):
+    def __init__(self, gl, data=None, **kwargs):
         self.gitlab = gl
 
-        if isinstance(data, int):
+        if data is None or isinstance(data, int):
             data = self.gitlab.get(self.__class__, data, **kwargs)
 
         self.setFromDict(data)
@@ -442,14 +458,16 @@ class Project(GitlabObject):
         return self.getListOrObject(ProjectTag, id, project_id=self.id)
 
 if __name__ == '__main__':
-    # quick "doc"
+    # Quick "doc"
     #
     # See https://github.com/gitlabhq/gitlabhq/tree/master/doc/api for the
     # source
 
-    # register a connection to a gitlab instance, using its URL and a user
+    # Register a connection to a gitlab instance, using its URL and a user
     # private token
     gl = Gitlab('http://192.168.123.107:8080', 'JVNSESs8EwWRx5yDxM5q')
+    # Connect to get the current user (as gl.user)
+    gl.auth()
 
     # get a list of projects
     for p in gl.Project():
