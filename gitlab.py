@@ -92,7 +92,7 @@ class Gitlab(object):
         try:
             r = requests.post(url, data)
         except:
-            GitlabConnectionError('Can\'t connect to GitLab server (%s)'%self.url)
+            raise GitlabConnectionError('Can\'t connect to GitLab server (%s)'%self.url)
 
         return r
 
