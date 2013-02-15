@@ -25,27 +25,34 @@ __email__ = 'gauvain@pocentek.net'
 __license__ = 'LGPL3'
 __copyright__ = 'Copyright 2013 Gauvain Pocentek'
 
+
 class GitlabConnectionError(Exception):
     pass
+
 
 class GitlabGetError(Exception):
     pass
 
+
 class GitlabCreateError(Exception):
     pass
+
 
 class GitlabUpdateError(Exception):
     pass
 
+
 class GitlabDeleteError(Exception):
     pass
+
 
 class GitlabAuthenticationError(Exception):
     pass
 
+
 class Gitlab(object):
     def __init__(self, url, private_token=None, email=None, password=None):
-        self.url = '%s/api/v3'%url
+        self.url = '%s/api/v3' % url
         self.private_token = private_token
         self.email = email
         self.password = password
@@ -62,7 +69,8 @@ class Gitlab(object):
         if not self.email or not self.password:
             raise GitlabAuthenticationError("Missing email/password")
 
-        r = self.rawPost('/session', {'email': self.email, 'password': self.password})
+        r = self.rawPost('/session',
+                         {'email': self.email, 'password': self.password})
         if r.status_code == 201:
             self.user = CurrentUser(self, r.json)
         else:
@@ -78,7 +86,7 @@ class Gitlab(object):
             return False
 
     def setUrl(self, url):
-        self.url = '%s/api/v3'%url
+        self.url = '%s/api/v3' % url
 
     def setToken(self, token):
         self.private_token = token
@@ -88,71 +96,79 @@ class Gitlab(object):
         self.password = password
 
     def rawPost(self, path, data):
-        url = '%s%s'%(self.url, path)
+        url = '%s%s' % (self.url, path)
         try:
             r = requests.post(url, data)
         except:
-            raise GitlabConnectionError('Can\'t connect to GitLab server (%s)'%self.url)
+            raise GitlabConnectionError(
+                "Can't connect to GitLab server (%s)" % self.url)
 
         return r
 
-    def list(self, objClass, **kwargs):
-        url = objClass.url
+    def list(self, obj_class, **kwargs):
+        url = obj_class.url
         if kwargs:
-            url = objClass.url % kwargs
-        url = '%s%s?private_token=%s'%(self.url, url, self.private_token)
+            url = obj_class.url % kwargs
+        url = '%s%s?private_token=%s' % (self.url, url, self.private_token)
         if kwargs:
-            url += "&%s"%("&".join(["%s=%s"%(k,v) for k,v in kwargs.items()]))
+            url += "&%s" % ("&".join(
+                        ["%s=%s" % (k, v) for k, v in kwargs.items()]))
 
         try:
             r = requests.get(url)
         except:
-            raise GitlabConnectionError('Can\'t connect to GitLab server (%s)'%self.url)
+            raise GitlabConnectionError(
+                "Can't connect to GitLab server (%s)" % self.url)
 
         if r.status_code == 200:
-            cls = objClass
-            if objClass.returnClass:
-                cls = objClass.returnClass
+            cls = obj_class
+            if obj_class.returnClass:
+                cls = obj_class.returnClass
             l = [cls(self, item) for item in r.json]
             if kwargs:
-                for k,v in kwargs.items():
+                for k, v in kwargs.items():
                     for obj in l:
                         obj.__dict__[k] = v
             return l
         elif r.status_code == 401:
             raise GitlabAuthenticationError(r.json['message'])
         else:
-            raise GitlabGetError('%d: %s'%(r.status_code, r.text))
+            raise GitlabGetError('%d: %s' % (r.status_code, r.text))
 
-    def get(self, objClass, id=None, **kwargs):
-        url = objClass.url
+    def get(self, obj_class, id=None, **kwargs):
+        url = obj_class.url
         if kwargs:
-            url = objClass.url % kwargs
-        if id != None:
-            url = '%s%s/%d?private_token=%s'%(self.url, url, id, self.private_token)
+            url = obj_class.url % kwargs
+        if id is not None:
+            url = '%s%s/%d?private_token=%s' % \
+                    (self.url, url, id, self.private_token)
         else:
-            url = '%s%s?private_token=%s'%(self.url, url, self.private_token)
+            url = '%s%s?private_token=%s' % \
+                    (self.url, url, self.private_token)
 
         try:
             r = requests.get(url)
         except:
-            raise GitlabConnectionError('Can\'t connect to GitLab server (%s)'%self.url)
+            raise GitlabConnectionError(
+                "Can't connect to GitLab server (%s)" % self.url)
 
         if r.status_code == 200:
             return r.json
         elif r.status_code == 401:
             raise GitlabAuthenticationError(r.json['message'])
         else:
-            raise GitlabGetError('%d: %s'%(r.status_code, r.text))
+            raise GitlabGetError('%d: %s' % (r.status_code, r.text))
 
     def delete(self, obj):
         url = obj.url % obj.__dict__
-        url = '%s%s/%d?private_token=%s'%(self.url, url, obj.id, self.private_token)
+        url = '%s%s/%d?private_token=%s' % \
+                (self.url, url, obj.id, self.private_token)
 
         try:
             r = requests.delete(url)
         except:
-            raise GitlabConnectionError('Can\'t connect to GitLab server (%s)'%self.url)
+            raise GitlabConnectionError(
+                "Can't connect to GitLab server (%s)" % self.url)
 
         if r.status_code == 200:
             return True
@@ -162,35 +178,39 @@ class Gitlab(object):
 
     def create(self, obj):
         url = obj.url % obj.__dict__
-        url = '%s%s?private_token=%s'%(self.url, url, self.private_token)
+        url = '%s%s?private_token=%s' % (self.url, url, self.private_token)
 
         try:
-            # TODO: avoid too much work on the server side by filtering the __dict__ keys
+            # TODO: avoid too much work on the server side by filtering the
+            # __dict__ keys
             r = requests.post(url, obj.__dict__)
         except:
-            raise GitlabConnectionError('Can\'t connect to GitLab server (%s)'%self.url)
+            raise GitlabConnectionError(
+                "Can't connect to GitLab server (%s)" % self.url)
 
         if r.status_code == 201:
             return r.json
         elif r.status_code == 401:
             raise GitlabAuthenticationError(r.json['message'])
         else:
-            raise GitlabCreateError('%d: %s'%(r.status_code, r.text))
+            raise GitlabCreateError('%d: %s' % (r.status_code, r.text))
 
     def update(self, obj):
         url = obj.url % obj.__dict__
-        url = '%s%s/%d?private_token=%s'%(self.url, url, obj.id, self.private_token)
+        url = '%s%s/%d?private_token=%s' % \
+                (self.url, url, obj.id, self.private_token)
 
         # build a dict of data that can really be sent to server
         d = {}
-        for k,v in obj.__dict__.items():
+        for k, v in obj.__dict__.items():
             if type(v) in (int, str, unicode, bool):
                 d[k] = v
 
         try:
             r = requests.put(url, d)
         except:
-            raise GitlabConnectionError('Can\'t connect to GitLab server (%s)'%self.url)
+            raise GitlabConnectionError(
+                "Can't connect to GitLab server (%s)" % self.url)
 
         if r.status_code == 200:
             return r.json
@@ -200,7 +220,7 @@ class Gitlab(object):
             raise GitlabUpdateError('%d: %s' % (r.status_code, r.text))
 
     def getListOrObject(self, cls, id, **kwargs):
-        if id == None:
+        if id is None:
             return cls.list(self, **kwargs)
         else:
             return cls(self, id, **kwargs)
@@ -239,7 +259,7 @@ class GitlabObject(object):
         return gl.list(cls, **kwargs)
 
     def getListOrObject(self, cls, id, **kwargs):
-        if id == None:
+        if id is None:
             if not cls.canGetList:
                 raise GitlabGetError
 
@@ -258,13 +278,13 @@ class GitlabObject(object):
 
     def setFromDict(self, data):
         for k, v in data.items():
-            if isinstance (v, list):
+            if isinstance(v, list):
                 self.__dict__[k] = []
                 for i in v:
-                    self.__dict__[k].append(self.getObject(k,i))
+                    self.__dict__[k].append(self.getObject(k, i))
             elif v:
-                self.__dict__[k] = self.getObject(k,v)
-            else: # None object
+                self.__dict__[k] = self.getObject(k, v)
+            else:  # None object
                 self.__dict__[k] = None
 
     def _create(self):
@@ -305,19 +325,21 @@ class GitlabObject(object):
         self.setFromDict(data)
 
         if kwargs:
-            for k,v in kwargs.items():
+            for k, v in kwargs.items():
                 self.__dict__[k] = v
 
     def __str__(self):
-        return '%s => %s'%(type(self), str(self.__dict__))
+        return '%s => %s' % (type(self), str(self.__dict__))
 
 
 class User(GitlabObject):
     url = '/users'
 
+
 class CurrentUserKey(GitlabObject):
     url = '/user/keys'
     canUpdate = False
+
 
 class CurrentUser(GitlabObject):
     url = '/user'
@@ -327,14 +349,16 @@ class CurrentUser(GitlabObject):
     canDelete = False
 
     def Key(self, id=None):
-        if id == None:
+        if id is None:
             return CurrentUserKey.list(self.gitlab)
         else:
             return CurrentUserKey(self.gitlab, id)
 
+
 class Group(GitlabObject):
     url = '/groups'
     constructorTypes = {'projects': 'Project'}
+
 
 class Issue(GitlabObject):
     url = '/issues'
@@ -345,11 +369,13 @@ class Issue(GitlabObject):
     canUpdate = False
     canCreate = False
 
+
 class ProjectBranch(GitlabObject):
     url = '/projects/%(project_id)d/repository/branches'
     canDelete = False
     canUpdate = False
     canCreate = False
+
 
 class ProjectCommit(GitlabObject):
     url = '/projects/%(project_id)d/repository/commits'
@@ -358,14 +384,17 @@ class ProjectCommit(GitlabObject):
     canUpdate = False
     canCreate = False
 
+
 class ProjectHook(GitlabObject):
     url = '/projects/%(project_id)d/hooks'
+
 
 class ProjectIssueNote(GitlabObject):
     url = '/projects/%(project_id)d/issues/%(issue_id)d/notes'
     constructorTypes = {'author': 'User'}
     canUpdate = False
     canDelete = False
+
 
 class ProjectIssue(GitlabObject):
     url = '/projects/%(project_id)s/issues/'
@@ -374,11 +403,15 @@ class ProjectIssue(GitlabObject):
     canDelete = False
 
     def Note(self, id=None):
-        return self.getListOrObject(ProjectIssueNote, id, project_id=self.id, issue_id=self.id)
+        return self.getListOrObject(ProjectIssueNote, id,
+                                    project_id=self.project_id,
+                                    issue_id=self.id)
+
 
 class ProjectMember(GitlabObject):
     url = '/projects/%(project_id)d/members'
     returnClass = User
+
 
 class ProjectNote(GitlabObject):
     url = '/projects/%(project_id)d/notes'
@@ -386,12 +419,14 @@ class ProjectNote(GitlabObject):
     canUpdate = False
     canDelete = False
 
+
 class ProjectTag(GitlabObject):
     url = '/projects/%(project_id)d/repository/tags'
     canGet = False
     canDelete = False
     canUpdate = False
     canCreate = False
+
 
 class ProjectMergeRequestNote(GitlabObject):
     url = '/projects/%(project_id)d/merge_requests/%(merge_request_id)d/notes'
@@ -401,6 +436,7 @@ class ProjectMergeRequestNote(GitlabObject):
     canUpdate = False
     canDelete = False
 
+
 class ProjectMergeRequest(GitlabObject):
     url = '/projects/%(project_id)d/merge_request'
     constructorTypes = {'author': 'User', 'assignee': 'User'}
@@ -408,11 +444,14 @@ class ProjectMergeRequest(GitlabObject):
 
     def Note(self, id=None):
         return self.getListOrObject(ProjectMergeRequestNote, id,
-                                    project_id=self.id, merge_request_id=self.id)
+                                    project_id=self.id,
+                                    merge_request_id=self.id)
+
 
 class ProjectMilestone(GitlabObject):
     url = '/projects/%(project_id)s/milestones'
     canDelete = False
+
 
 class ProjectSnippetNote(GitlabObject):
     url = '/projects/%(project_id)d/snippets/%(snippet_id)d/notes'
@@ -420,13 +459,16 @@ class ProjectSnippetNote(GitlabObject):
     canUpdate = False
     canDelete = False
 
+
 class ProjectSnippet(GitlabObject):
     url = '/projects/%(project_id)d/snippets'
     constructorTypes = {'author': 'User'}
 
     def Note(self, id=None):
         return self.getListOrObject(ProjectSnippetNote, id,
-                                    project_id=self.id, snippet_id=self.id)
+                                    project_id=self.project_id,
+                                    snippet_id=self.id)
+
 
 class Project(GitlabObject):
     url = '/projects'
@@ -435,34 +477,45 @@ class Project(GitlabObject):
     canDelete = False
 
     def Branch(self, id=None):
-        return self.getListOrObject(ProjectBranch, id, project_id=self.id)
+        return self.getListOrObject(ProjectBranch, id,
+                                    project_id=self.id)
 
     def Commit(self, id=None):
-        return self.getListOrObject(ProjectCommit, id, project_id=self.id)
+        return self.getListOrObject(ProjectCommit, id,
+                                    project_id=self.id)
 
     def Hook(self, id=None):
-        return self.getListOrObject(ProjectHook, id, project_id=self.id)
+        return self.getListOrObject(ProjectHook, id,
+                                    project_id=self.id)
 
     def Issue(self, id=None):
-        return self.getListOrObject(ProjectIssue, id, project_id=self.id)
+        return self.getListOrObject(ProjectIssue, id,
+                                    project_id=self.id)
 
     def Member(self, id=None):
-        return self.getListOrObject(ProjectMember, id, project_id=self.id)
+        return self.getListOrObject(ProjectMember, id,
+                                    project_id=self.id)
 
     def MergeRequest(self, id=None):
-        return self.getListOrObject(ProjectMergeRequest, id, project_id=self.id)
+        return self.getListOrObject(ProjectMergeRequest, id,
+                                    project_id=self.id)
 
     def Milestone(self, id=None):
-        return self.getListOrObject(ProjectMilestone, id, project_id=self.id)
+        return self.getListOrObject(ProjectMilestone, id,
+                                    project_id=self.id)
 
     def Note(self, id=None):
-        return self.getListOrObject(ProjectNote, id, project_id=self.id)
+        return self.getListOrObject(ProjectNote, id,
+                                    project_id=self.id)
 
     def Snippet(self, id=None):
-        return self.getListOrObject(ProjectSnippet, id, project_id=self.id)
+        return self.getListOrObject(ProjectSnippet, id,
+                                    project_id=self.id)
 
     def Tag(self, id=None):
-        return self.getListOrObject(ProjectTag, id, project_id=self.id)
+        return self.getListOrObject(ProjectTag, id,
+                                    project_id=self.id)
+
 
 if __name__ == '__main__':
     # Quick "doc"
@@ -483,8 +536,7 @@ if __name__ == '__main__':
         issues = p.Issue()
         for issue in issues:
             closed = 0 if not issue.closed else 1
-            print "  %d => %s (closed: %d)"%(issue.id, issue.title, closed)
+            print "  %d => %s (closed: %d)" % (issue.id, issue.title, closed)
             # and close them all
             issue.closed = 1
             issue.save()
-
