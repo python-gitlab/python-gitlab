@@ -51,13 +51,26 @@ class GitlabAuthenticationError(Exception):
 
 
 class Gitlab(object):
+    """Represents a GitLab server connection"""
     def __init__(self, url, private_token=None, email=None, password=None):
+        """Stores informations about the server
+
+        url: the URL of the Gitlab server
+        private_token: the user private token
+        email: the user email/login
+        password: the user password (associated with email)
+        """
         self.url = '%s/api/v3' % url
         self.private_token = private_token
         self.email = email
         self.password = password
 
     def auth(self):
+        """Perform an authentication using either the private token, or the
+        email/password pair.
+
+        The user attribute will hold a CurrentUser object on success.
+        """
         r = False
         if self.private_token:
             r = self.token_auth()
@@ -86,12 +99,15 @@ class Gitlab(object):
             return False
 
     def setUrl(self, url):
+        """Updates the gitlab URL"""
         self.url = '%s/api/v3' % url
 
     def setToken(self, token):
+        """Set the private token for authentication"""
         self.private_token = token
 
     def setCredentials(self, email, password):
+        """Set the email/login and password for authentication"""
         self.email = email
         self.password = password
 
@@ -226,15 +242,49 @@ class Gitlab(object):
             return cls(self, id, **kwargs)
 
     def Project(self, id=None):
+        """Creates/gets/lists project(s) known by the GitLab server.
+
+        If id is None, returns a list of projects.
+
+        If id is an integer, returns the matching project (or raise a
+        GitlabGetError if not found)
+
+        If id is a dict, create a new object using attributes provided. The
+        object is NOT saved on the server. Use the save() method on the object
+        to write it on the server.
+        """
         return self.getListOrObject(Project, id)
 
     def Group(self, id=None):
+        """Creates/gets/lists groups(s) known by the GitLab server.
+
+        If id is None, returns a list of projects.
+
+        If id is an integer, returns the matching project (or raise a
+        GitlabGetError if not found)
+
+        If id is a dict, create a new object using attributes provided. The
+        object is NOT saved on the server. Use the save() method on the object
+        to write it on the server.
+        """
         return self.getListOrObject(Group, id)
 
-    def Issue(self, id=None):
-        return self.getListOrObject(Issue, id)
+    def Issue(self):
+        """Lists issues(s) known by the GitLab server."""
+        return self.getListOrObject(Issue, None)
 
     def User(self, id=None):
+        """Creates/gets/lists users(s) known by the GitLab server.
+
+        If id is None, returns a list of projects.
+
+        If id is an integer, returns the matching project (or raise a
+        GitlabGetError if not found)
+
+        If id is a dict, create a new object using attributes provided. The
+        object is NOT saved on the server. Use the save() method on the object
+        to write it on the server.
+        """
         return self.getListOrObject(User, id)
 
 
