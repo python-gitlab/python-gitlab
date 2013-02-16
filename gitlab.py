@@ -156,8 +156,12 @@ class Gitlab(object):
         if kwargs:
             url = obj_class._url % kwargs
         if id is not None:
-            url = '%s%s/%d?private_token=%s' % \
-                    (self._url, url, id, self.private_token)
+            try:
+                url = '%s%s/%d?private_token=%s' % \
+                        (self._url, url, id, self.private_token)
+            except TypeError:  # id might be a str (ProjectBranch)
+                url = '%s%s/%s?private_token=%s' % \
+                        (self._url, url, id, self.private_token)
         else:
             url = '%s%s?private_token=%s' % \
                     (self._url, url, self.private_token)
@@ -369,7 +373,7 @@ class GitlabObject(object):
     def __init__(self, gl, data=None, **kwargs):
         self.gitlab = gl
 
-        if data is None or isinstance(data, int):
+        if data is None or isinstance(data, int) or isinstance(data, str):
             data = self.gitlab.get(self.__class__, data, **kwargs)
 
         self._setFromDict(data)
