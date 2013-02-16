@@ -292,9 +292,9 @@ class Gitlab(object):
         """
         return self._getListOrObject(Group, id, **kwargs)
 
-    def Issue(self):
+    def Issue(self, id=None, **kwargs):
         """Lists issues(s) known by the GitLab server."""
-        return self._getListOrObject(Issue, None, **kwargs)
+        return self._getListOrObject(Issue, id, **kwargs)
 
     def User(self, id=None, **kwargs):
         """Creates/gets/lists users(s) known by the GitLab server.
