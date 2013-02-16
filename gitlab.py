@@ -241,7 +241,7 @@ class Gitlab(object):
         else:
             return cls(self, id, **kwargs)
 
-    def Project(self, id=None):
+    def Project(self, id=None, **kwargs):
         """Creates/gets/lists project(s) known by the GitLab server.
 
         If id is None, returns a list of projects.
@@ -253,9 +253,9 @@ class Gitlab(object):
         object is NOT saved on the server. Use the save() method on the object
         to write it on the server.
         """
-        return self._getListOrObject(Project, id)
+        return self._getListOrObject(Project, id, **kwargs)
 
-    def Group(self, id=None):
+    def Group(self, id=None, **kwargs):
         """Creates/gets/lists groups(s) known by the GitLab server.
 
         If id is None, returns a list of projects.
@@ -267,13 +267,13 @@ class Gitlab(object):
         object is NOT saved on the server. Use the save() method on the object
         to write it on the server.
         """
-        return self._getListOrObject(Group, id)
+        return self._getListOrObject(Group, id, **kwargs)
 
     def Issue(self):
         """Lists issues(s) known by the GitLab server."""
-        return self._getListOrObject(Issue, None)
+        return self._getListOrObject(Issue, None, **kwargs)
 
-    def User(self, id=None):
+    def User(self, id=None, **kwargs):
         """Creates/gets/lists users(s) known by the GitLab server.
 
         If id is None, returns a list of projects.
@@ -285,7 +285,7 @@ class Gitlab(object):
         object is NOT saved on the server. Use the save() method on the object
         to write it on the server.
         """
-        return self._getListOrObject(User, id)
+        return self._getListOrObject(User, id, **kwargs)
 
 
 class GitlabObject(object):
@@ -398,9 +398,9 @@ class CurrentUser(GitlabObject):
     canUpdate = False
     canDelete = False
 
-    def Key(self, id=None):
+    def Key(self, id=None, **kwargs):
         if id is None:
-            return CurrentUserKey.list(self.gitlab)
+            return CurrentUserKey.list(self.gitlab, **kwargs)
         else:
             return CurrentUserKey(self.gitlab, id)
 
@@ -452,10 +452,11 @@ class ProjectIssue(GitlabObject):
                          'milestone': 'ProjectMilestone'}
     canDelete = False
 
-    def Note(self, id=None):
+    def Note(self, id=None, **kwargs):
         return self._getListOrObject(ProjectIssueNote, id,
                                      project_id=self.project_id,
-                                     issue_id=self.id)
+                                     issue_id=self.id,
+                                     **kwargs)
 
 
 class ProjectMember(GitlabObject):
@@ -492,10 +493,11 @@ class ProjectMergeRequest(GitlabObject):
     _constructorTypes = {'author': 'User', 'assignee': 'User'}
     canDelete = False
 
-    def Note(self, id=None):
+    def Note(self, id=None, **kwargs):
         return self._getListOrObject(ProjectMergeRequestNote, id,
                                      project_id=self.id,
-                                     merge_request_id=self.id)
+                                     merge_request_id=self.id,
+                                     **kwargs)
 
 
 class ProjectMilestone(GitlabObject):
@@ -514,10 +516,11 @@ class ProjectSnippet(GitlabObject):
     _url = '/projects/%(project_id)d/snippets'
     _constructorTypes = {'author': 'User'}
 
-    def Note(self, id=None):
+    def Note(self, id=None, **kwargs):
         return self._getListOrObject(ProjectSnippetNote, id,
                                      project_id=self.project_id,
-                                     snippet_id=self.id)
+                                     snippet_id=self.id,
+                                     **kwargs)
 
 
 class Project(GitlabObject):
@@ -526,45 +529,55 @@ class Project(GitlabObject):
     canUpdate = False
     canDelete = False
 
-    def Branch(self, id=None):
+    def Branch(self, id=None, **kwargs):
         return self._getListOrObject(ProjectBranch, id,
-                                     project_id=self.id)
+                                     project_id=self.id,
+                                     **kwargs)
 
-    def Commit(self, id=None):
+    def Commit(self, id=None, **kwargs):
         return self._getListOrObject(ProjectCommit, id,
-                                     project_id=self.id)
+                                     project_id=self.id,
+                                     **kwargs)
 
-    def Hook(self, id=None):
+    def Hook(self, id=None, **kwargs):
         return self._getListOrObject(ProjectHook, id,
-                                     project_id=self.id)
+                                     project_id=self.id,
+                                     **kwargs)
 
-    def Issue(self, id=None):
+    def Issue(self, id=None, **kwargs):
         return self._getListOrObject(ProjectIssue, id,
-                                     project_id=self.id)
+                                     project_id=self.id,
+                                     **kwargs)
 
-    def Member(self, id=None):
+    def Member(self, id=None, **kwargs):
         return self._getListOrObject(ProjectMember, id,
-                                     project_id=self.id)
+                                     project_id=self.id,
+                                     **kwargs)
 
-    def MergeRequest(self, id=None):
+    def MergeRequest(self, id=None, **kwargs):
         return self._getListOrObject(ProjectMergeRequest, id,
-                                     project_id=self.id)
+                                     project_id=self.id,
+                                     **kwargs)
 
-    def Milestone(self, id=None):
+    def Milestone(self, id=None, **kwargs):
         return self._getListOrObject(ProjectMilestone, id,
-                                     project_id=self.id)
+                                     project_id=self.id,
+                                     **kwargs)
 
-    def Note(self, id=None):
+    def Note(self, id=None, **kwargs):
         return self._getListOrObject(ProjectNote, id,
-                                     project_id=self.id)
+                                     project_id=self.id,
+                                     **kwargs)
 
-    def Snippet(self, id=None):
+    def Snippet(self, id=None, **kwargs):
         return self._getListOrObject(ProjectSnippet, id,
-                                     project_id=self.id)
+                                     project_id=self.id,
+                                     **kwargs)
 
-    def Tag(self, id=None):
+    def Tag(self, id=None, **kwargs):
         return self._getListOrObject(ProjectTag, id,
-                                     project_id=self.id)
+                                     project_id=self.id,
+                                     **kwargs)
 
 
 if __name__ == '__main__':
