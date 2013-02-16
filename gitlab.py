@@ -603,3 +603,7 @@ if __name__ == '__main__':
             # and close them all
             issue.closed = 1
             issue.save()
+
+    # get the first 10 groups (pagination)
+    for g in gl.Group(page=1, per_page=10):
+        print g
