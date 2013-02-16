@@ -619,32 +619,3 @@ class Project(GitlabObject):
         return self._getListOrObject(ProjectTag, id,
                                      project_id=self.id,
                                      **kwargs)
-
-
-if __name__ == '__main__':
-    # Quick "doc"
-    #
-    # See https://github.com/gitlabhq/gitlabhq/tree/master/doc/api for the
-    # source
-
-    # Register a connection to a gitlab instance, using its URL and a user
-    # private token
-    gl = Gitlab('http://192.168.123.107:8080', 'JVNSESs8EwWRx5yDxM5q')
-    # Connect to get the current user (as gl.user)
-    gl.auth()
-
-    # get a list of projects
-    for p in gl.Project():
-        print p.name
-        # get associated issues
-        issues = p.Issue()
-        for issue in issues:
-            closed = 0 if not issue.closed else 1
-            print "  %d => %s (closed: %d)" % (issue.id, issue.title, closed)
-            # and close them all
-            issue.closed = 1
-            issue.save()
-
-    # get the first 10 groups (pagination)
-    for g in gl.Group(page=1, per_page=10):
-        print g
