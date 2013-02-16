@@ -143,6 +143,8 @@ class Gitlab(object):
             l = [cls(self, item) for item in r.json]
             if kwargs:
                 for k, v in kwargs.items():
+                    if k in ('page', 'per_page'):
+                        continue
                     for obj in l:
                         obj.__dict__[k] = v
             return l
