@@ -413,7 +413,7 @@ class Group(GitlabObject):
 class Issue(GitlabObject):
     _url = '/issues'
     _constructorTypes = {'author': 'User', 'assignee': 'User',
-                        'milestone': 'ProjectMilestone'}
+                         'milestone': 'ProjectMilestone'}
     canGet = False
     canDelete = False
     canUpdate = False
@@ -449,13 +449,13 @@ class ProjectIssueNote(GitlabObject):
 class ProjectIssue(GitlabObject):
     _url = '/projects/%(project_id)s/issues/'
     _constructorTypes = {'author': 'User', 'assignee': 'User',
-                        'milestone': 'ProjectMilestone'}
+                         'milestone': 'ProjectMilestone'}
     canDelete = False
 
     def Note(self, id=None):
         return self._getListOrObject(ProjectIssueNote, id,
-                                    project_id=self.project_id,
-                                    issue_id=self.id)
+                                     project_id=self.project_id,
+                                     issue_id=self.id)
 
 
 class ProjectMember(GitlabObject):
@@ -494,8 +494,8 @@ class ProjectMergeRequest(GitlabObject):
 
     def Note(self, id=None):
         return self._getListOrObject(ProjectMergeRequestNote, id,
-                                    project_id=self.id,
-                                    merge_request_id=self.id)
+                                     project_id=self.id,
+                                     merge_request_id=self.id)
 
 
 class ProjectMilestone(GitlabObject):
@@ -516,8 +516,8 @@ class ProjectSnippet(GitlabObject):
 
     def Note(self, id=None):
         return self._getListOrObject(ProjectSnippetNote, id,
-                                    project_id=self.project_id,
-                                    snippet_id=self.id)
+                                     project_id=self.project_id,
+                                     snippet_id=self.id)
 
 
 class Project(GitlabObject):
@@ -528,43 +528,43 @@ class Project(GitlabObject):
 
     def Branch(self, id=None):
         return self._getListOrObject(ProjectBranch, id,
-                                    project_id=self.id)
+                                     project_id=self.id)
 
     def Commit(self, id=None):
         return self._getListOrObject(ProjectCommit, id,
-                                    project_id=self.id)
+                                     project_id=self.id)
 
     def Hook(self, id=None):
         return self._getListOrObject(ProjectHook, id,
-                                    project_id=self.id)
+                                     project_id=self.id)
 
     def Issue(self, id=None):
         return self._getListOrObject(ProjectIssue, id,
-                                    project_id=self.id)
+                                     project_id=self.id)
 
     def Member(self, id=None):
         return self._getListOrObject(ProjectMember, id,
-                                    project_id=self.id)
+                                     project_id=self.id)
 
     def MergeRequest(self, id=None):
         return self._getListOrObject(ProjectMergeRequest, id,
-                                    project_id=self.id)
+                                     project_id=self.id)
 
     def Milestone(self, id=None):
         return self._getListOrObject(ProjectMilestone, id,
-                                    project_id=self.id)
+                                     project_id=self.id)
 
     def Note(self, id=None):
         return self._getListOrObject(ProjectNote, id,
-                                    project_id=self.id)
+                                     project_id=self.id)
 
     def Snippet(self, id=None):
         return self._getListOrObject(ProjectSnippet, id,
-                                    project_id=self.id)
+                                     project_id=self.id)
 
     def Tag(self, id=None):
         return self._getListOrObject(ProjectTag, id,
-                                    project_id=self.id)
+                                     project_id=self.id)
 
 
 if __name__ == '__main__':
