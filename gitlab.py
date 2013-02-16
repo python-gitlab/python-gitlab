@@ -46,6 +46,10 @@ class GitlabDeleteError(Exception):
     pass
 
 
+class GitlabProtectError(Exception):
+    pass
+
+
 class GitlabAuthenticationError(Exception):
     pass
 
@@ -115,6 +119,19 @@ class Gitlab(object):
         url = '%s%s' % (self._url, path)
         try:
             r = requests.post(url, data)
+        except:
+            raise GitlabConnectionError(
+                "Can't connect to GitLab server (%s)" % self._url)
+
+        return r
+
+    def rawPut(self, path, with_token=False):
+        url = '%s%s' % (self._url, path)
+        if with_token:
+            url += "?private_token=%s" % self.private_token
+
+        try:
+            r = requests.put(url)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -432,6 +449,24 @@ class ProjectBranch(GitlabObject):
     canUpdate = False
     canCreate = False
 
+    def protect(self, protect=True):
+        url = self._url % {'project_id': self.project_id}
+        if protect:
+            url = "%s/%s/protect" % (url, self.name)
+        else:
+            url = "%s/%s/unprotect" % (url, self.name)
+        r = self.gitlab.rawPut(url, True)
+
+        if r.status_code == 200:
+            if protect:
+                self.protected = protect
+            else:
+                del self.protected
+        else:
+            raise GitlabProtectError
+
+    def unprotect(self):
+        self.protect(False)
 
 class ProjectCommit(GitlabObject):
     _url = '/projects/%(project_id)d/repository/commits'
