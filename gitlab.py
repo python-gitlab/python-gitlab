@@ -93,7 +93,7 @@ class Gitlab(object):
 
     def token_auth(self):
         try:
-            self.user = self.get(CurrentUser)
+            self.user = CurrentUser(self)
             return True
         except:
             return False
