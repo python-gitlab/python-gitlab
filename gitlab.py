@@ -60,7 +60,7 @@ class Gitlab(object):
         email: the user email/login
         password: the user password (associated with email)
         """
-        self.url = '%s/api/v3' % url
+        self._url = '%s/api/v3' % url
         self.private_token = private_token
         self.email = email
         self.password = password
@@ -100,7 +100,7 @@ class Gitlab(object):
 
     def setUrl(self, url):
         """Updates the gitlab URL"""
-        self.url = '%s/api/v3' % url
+        self._url = '%s/api/v3' % url
 
     def setToken(self, token):
         """Set the private token for authentication"""
@@ -112,20 +112,20 @@ class Gitlab(object):
         self.password = password
 
     def rawPost(self, path, data):
-        url = '%s%s' % (self.url, path)
+        url = '%s%s' % (self._url, path)
         try:
             r = requests.post(url, data)
         except:
             raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % self.url)
+                "Can't connect to GitLab server (%s)" % self._url)
 
         return r
 
     def list(self, obj_class, **kwargs):
-        url = obj_class.url
+        url = obj_class._url
         if kwargs:
-            url = obj_class.url % kwargs
-        url = '%s%s?private_token=%s' % (self.url, url, self.private_token)
+            url = obj_class._url % kwargs
+        url = '%s%s?private_token=%s' % (self._url, url, self.private_token)
         if kwargs:
             url += "&%s" % ("&".join(
                         ["%s=%s" % (k, v) for k, v in kwargs.items()]))
@@ -134,12 +134,12 @@ class Gitlab(object):
             r = requests.get(url)
         except:
             raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % self.url)
+                "Can't connect to GitLab server (%s)" % self._url)
 
         if r.status_code == 200:
             cls = obj_class
-            if obj_class.returnClass:
-                cls = obj_class.returnClass
+            if obj_class._returnClass:
+                cls = obj_class._returnClass
             l = [cls(self, item) for item in r.json]
             if kwargs:
                 for k, v in kwargs.items():
@@ -152,21 +152,21 @@ class Gitlab(object):
             raise GitlabGetError('%d: %s' % (r.status_code, r.text))
 
     def get(self, obj_class, id=None, **kwargs):
-        url = obj_class.url
+        url = obj_class._url
         if kwargs:
-            url = obj_class.url % kwargs
+            url = obj_class._url % kwargs
         if id is not None:
             url = '%s%s/%d?private_token=%s' % \
-                    (self.url, url, id, self.private_token)
+                    (self._url, url, id, self.private_token)
         else:
             url = '%s%s?private_token=%s' % \
-                    (self.url, url, self.private_token)
+                    (self._url, url, self.private_token)
 
         try:
             r = requests.get(url)
         except:
             raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % self.url)
+                "Can't connect to GitLab server (%s)" % self._url)
 
         if r.status_code == 200:
             return r.json
@@ -176,15 +176,15 @@ class Gitlab(object):
             raise GitlabGetError('%d: %s' % (r.status_code, r.text))
 
     def delete(self, obj):
-        url = obj.url % obj.__dict__
+        url = obj._url % obj.__dict__
         url = '%s%s/%d?private_token=%s' % \
-                (self.url, url, obj.id, self.private_token)
+                (self._url, url, obj.id, self.private_token)
 
         try:
             r = requests.delete(url)
         except:
             raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % self.url)
+                "Can't connect to GitLab server (%s)" % self._url)
 
         if r.status_code == 200:
             return True
@@ -193,8 +193,8 @@ class Gitlab(object):
         return False
 
     def create(self, obj):
-        url = obj.url % obj.__dict__
-        url = '%s%s?private_token=%s' % (self.url, url, self.private_token)
+        url = obj._url % obj.__dict__
+        url = '%s%s?private_token=%s' % (self._url, url, self.private_token)
 
         try:
             # TODO: avoid too much work on the server side by filtering the
@@ -202,7 +202,7 @@ class Gitlab(object):
             r = requests.post(url, obj.__dict__)
         except:
             raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % self.url)
+                "Can't connect to GitLab server (%s)" % self._url)
 
         if r.status_code == 201:
             return r.json
@@ -212,9 +212,9 @@ class Gitlab(object):
             raise GitlabCreateError('%d: %s' % (r.status_code, r.text))
 
     def update(self, obj):
-        url = obj.url % obj.__dict__
+        url = obj._url % obj.__dict__
         url = '%s%s/%d?private_token=%s' % \
-                (self.url, url, obj.id, self.private_token)
+                (self._url, url, obj.id, self.private_token)
 
         # build a dict of data that can really be sent to server
         d = {}
@@ -226,7 +226,7 @@ class Gitlab(object):
             r = requests.put(url, d)
         except:
             raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % self.url)
+                "Can't connect to GitLab server (%s)" % self._url)
 
         if r.status_code == 200:
             return r.json
@@ -235,7 +235,7 @@ class Gitlab(object):
         else:
             raise GitlabUpdateError('%d: %s' % (r.status_code, r.text))
 
-    def getListOrObject(self, cls, id, **kwargs):
+    def _getListOrObject(self, cls, id, **kwargs):
         if id is None:
             return cls.list(self, **kwargs)
         else:
@@ -253,7 +253,7 @@ class Gitlab(object):
         object is NOT saved on the server. Use the save() method on the object
         to write it on the server.
         """
-        return self.getListOrObject(Project, id)
+        return self._getListOrObject(Project, id)
 
     def Group(self, id=None):
         """Creates/gets/lists groups(s) known by the GitLab server.
@@ -267,11 +267,11 @@ class Gitlab(object):
         object is NOT saved on the server. Use the save() method on the object
         to write it on the server.
         """
-        return self.getListOrObject(Group, id)
+        return self._getListOrObject(Group, id)
 
     def Issue(self):
         """Lists issues(s) known by the GitLab server."""
-        return self.getListOrObject(Issue, None)
+        return self._getListOrObject(Issue, None)
 
     def User(self, id=None):
         """Creates/gets/lists users(s) known by the GitLab server.
@@ -285,13 +285,13 @@ class Gitlab(object):
         object is NOT saved on the server. Use the save() method on the object
         to write it on the server.
         """
-        return self.getListOrObject(User, id)
+        return self._getListOrObject(User, id)
 
 
 class GitlabObject(object):
-    url = None
-    returnClass = None
-    constructorTypes = None
+    _url = None
+    _returnClass = None
+    _constructorTypes = None
     canGet = True
     canGetList = True
     canCreate = True
@@ -303,12 +303,12 @@ class GitlabObject(object):
         if not cls.canGetList:
             raise NotImplementedError
 
-        if not cls.url:
+        if not cls._url:
             raise NotImplementedError
 
         return gl.list(cls, **kwargs)
 
-    def getListOrObject(self, cls, id, **kwargs):
+    def _getListOrObject(self, cls, id, **kwargs):
         if id is None:
             if not cls.canGetList:
                 raise GitlabGetError
@@ -320,20 +320,20 @@ class GitlabObject(object):
 
             return cls(self.gitlab, id, **kwargs)
 
-    def getObject(self, k, v):
-        if self.constructorTypes and k in self.constructorTypes:
-            return globals()[self.constructorTypes[k]](self.gitlab, v)
+    def _getObject(self, k, v):
+        if self._constructorTypes and k in self._constructorTypes:
+            return globals()[self._constructorTypes[k]](self.gitlab, v)
         else:
             return v
 
-    def setFromDict(self, data):
+    def _setFromDict(self, data):
         for k, v in data.items():
             if isinstance(v, list):
                 self.__dict__[k] = []
                 for i in v:
-                    self.__dict__[k].append(self.getObject(k, i))
+                    self.__dict__[k].append(self._getObject(k, i))
             elif v:
-                self.__dict__[k] = self.getObject(k, v)
+                self.__dict__[k] = self._getObject(k, v)
             else:  # None object
                 self.__dict__[k] = None
 
@@ -342,14 +342,14 @@ class GitlabObject(object):
             raise NotImplementedError
 
         json = self.gitlab.create(self)
-        self.setFromDict(json)
+        self._setFromDict(json)
 
     def _update(self):
         if not self.canUpdate:
             raise NotImplementedError
 
         json = self.gitlab.update(self)
-        self.setFromDict(json)
+        self._setFromDict(json)
 
     def save(self):
         if hasattr(self, 'id'):
@@ -372,7 +372,7 @@ class GitlabObject(object):
         if data is None or isinstance(data, int):
             data = self.gitlab.get(self.__class__, data, **kwargs)
 
-        self.setFromDict(data)
+        self._setFromDict(data)
 
         if kwargs:
             for k, v in kwargs.items():
@@ -383,16 +383,16 @@ class GitlabObject(object):
 
 
 class User(GitlabObject):
-    url = '/users'
+    _url = '/users'
 
 
 class CurrentUserKey(GitlabObject):
-    url = '/user/keys'
+    _url = '/user/keys'
     canUpdate = False
 
 
 class CurrentUser(GitlabObject):
-    url = '/user'
+    _url = '/user'
     canGetList = False
     canCreate = False
     canUpdate = False
@@ -406,13 +406,13 @@ class CurrentUser(GitlabObject):
 
 
 class Group(GitlabObject):
-    url = '/groups'
-    constructorTypes = {'projects': 'Project'}
+    _url = '/groups'
+    _constructorTypes = {'projects': 'Project'}
 
 
 class Issue(GitlabObject):
-    url = '/issues'
-    constructorTypes = {'author': 'User', 'assignee': 'User',
+    _url = '/issues'
+    _constructorTypes = {'author': 'User', 'assignee': 'User',
                         'milestone': 'ProjectMilestone'}
     canGet = False
     canDelete = False
@@ -421,14 +421,14 @@ class Issue(GitlabObject):
 
 
 class ProjectBranch(GitlabObject):
-    url = '/projects/%(project_id)d/repository/branches'
+    _url = '/projects/%(project_id)d/repository/branches'
     canDelete = False
     canUpdate = False
     canCreate = False
 
 
 class ProjectCommit(GitlabObject):
-    url = '/projects/%(project_id)d/repository/commits'
+    _url = '/projects/%(project_id)d/repository/commits'
     canGet = False
     canDelete = False
     canUpdate = False
@@ -436,42 +436,42 @@ class ProjectCommit(GitlabObject):
 
 
 class ProjectHook(GitlabObject):
-    url = '/projects/%(project_id)d/hooks'
+    _url = '/projects/%(project_id)d/hooks'
 
 
 class ProjectIssueNote(GitlabObject):
-    url = '/projects/%(project_id)d/issues/%(issue_id)d/notes'
-    constructorTypes = {'author': 'User'}
+    _url = '/projects/%(project_id)d/issues/%(issue_id)d/notes'
+    _constructorTypes = {'author': 'User'}
     canUpdate = False
     canDelete = False
 
 
 class ProjectIssue(GitlabObject):
-    url = '/projects/%(project_id)s/issues/'
-    constructorTypes = {'author': 'User', 'assignee': 'User',
+    _url = '/projects/%(project_id)s/issues/'
+    _constructorTypes = {'author': 'User', 'assignee': 'User',
                         'milestone': 'ProjectMilestone'}
     canDelete = False
 
     def Note(self, id=None):
-        return self.getListOrObject(ProjectIssueNote, id,
+        return self._getListOrObject(ProjectIssueNote, id,
                                     project_id=self.project_id,
                                     issue_id=self.id)
 
 
 class ProjectMember(GitlabObject):
-    url = '/projects/%(project_id)d/members'
-    returnClass = User
+    _url = '/projects/%(project_id)d/members'
+    _returnClass = User
 
 
 class ProjectNote(GitlabObject):
-    url = '/projects/%(project_id)d/notes'
-    constructorTypes = {'author': 'User'}
+    _url = '/projects/%(project_id)d/notes'
+    _constructorTypes = {'author': 'User'}
     canUpdate = False
     canDelete = False
 
 
 class ProjectTag(GitlabObject):
-    url = '/projects/%(project_id)d/repository/tags'
+    _url = '/projects/%(project_id)d/repository/tags'
     canGet = False
     canDelete = False
     canUpdate = False
@@ -479,8 +479,8 @@ class ProjectTag(GitlabObject):
 
 
 class ProjectMergeRequestNote(GitlabObject):
-    url = '/projects/%(project_id)d/merge_requests/%(merge_request_id)d/notes'
-    constructorTypes = {'author': 'User'}
+    _url = '/projects/%(project_id)d/merge_requests/%(merge_request_id)d/notes'
+    _constructorTypes = {'author': 'User'}
     canGet = False
     canCreate = False
     canUpdate = False
@@ -488,82 +488,82 @@ class ProjectMergeRequestNote(GitlabObject):
 
 
 class ProjectMergeRequest(GitlabObject):
-    url = '/projects/%(project_id)d/merge_request'
-    constructorTypes = {'author': 'User', 'assignee': 'User'}
+    _url = '/projects/%(project_id)d/merge_request'
+    _constructorTypes = {'author': 'User', 'assignee': 'User'}
     canDelete = False
 
     def Note(self, id=None):
-        return self.getListOrObject(ProjectMergeRequestNote, id,
+        return self._getListOrObject(ProjectMergeRequestNote, id,
                                     project_id=self.id,
                                     merge_request_id=self.id)
 
 
 class ProjectMilestone(GitlabObject):
-    url = '/projects/%(project_id)s/milestones'
+    _url = '/projects/%(project_id)s/milestones'
     canDelete = False
 
 
 class ProjectSnippetNote(GitlabObject):
-    url = '/projects/%(project_id)d/snippets/%(snippet_id)d/notes'
-    constructorTypes = {'author': 'User'}
+    _url = '/projects/%(project_id)d/snippets/%(snippet_id)d/notes'
+    _constructorTypes = {'author': 'User'}
     canUpdate = False
     canDelete = False
 
 
 class ProjectSnippet(GitlabObject):
-    url = '/projects/%(project_id)d/snippets'
-    constructorTypes = {'author': 'User'}
+    _url = '/projects/%(project_id)d/snippets'
+    _constructorTypes = {'author': 'User'}
 
     def Note(self, id=None):
-        return self.getListOrObject(ProjectSnippetNote, id,
+        return self._getListOrObject(ProjectSnippetNote, id,
                                     project_id=self.project_id,
                                     snippet_id=self.id)
 
 
 class Project(GitlabObject):
-    url = '/projects'
-    constructorTypes = {'owner': 'User', 'namespace': 'Group'}
+    _url = '/projects'
+    _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
     canUpdate = False
     canDelete = False
 
     def Branch(self, id=None):
-        return self.getListOrObject(ProjectBranch, id,
+        return self._getListOrObject(ProjectBranch, id,
                                     project_id=self.id)
 
     def Commit(self, id=None):
-        return self.getListOrObject(ProjectCommit, id,
+        return self._getListOrObject(ProjectCommit, id,
                                     project_id=self.id)
 
     def Hook(self, id=None):
-        return self.getListOrObject(ProjectHook, id,
+        return self._getListOrObject(ProjectHook, id,
                                     project_id=self.id)
 
     def Issue(self, id=None):
-        return self.getListOrObject(ProjectIssue, id,
+        return self._getListOrObject(ProjectIssue, id,
                                     project_id=self.id)
 
     def Member(self, id=None):
-        return self.getListOrObject(ProjectMember, id,
+        return self._getListOrObject(ProjectMember, id,
                                     project_id=self.id)
 
     def MergeRequest(self, id=None):
-        return self.getListOrObject(ProjectMergeRequest, id,
+        return self._getListOrObject(ProjectMergeRequest, id,
                                     project_id=self.id)
 
     def Milestone(self, id=None):
-        return self.getListOrObject(ProjectMilestone, id,
+        return self._getListOrObject(ProjectMilestone, id,
                                     project_id=self.id)
 
     def Note(self, id=None):
-        return self.getListOrObject(ProjectNote, id,
+        return self._getListOrObject(ProjectNote, id,
                                     project_id=self.id)
 
     def Snippet(self, id=None):
-        return self.getListOrObject(ProjectSnippet, id,
+        return self._getListOrObject(ProjectSnippet, id,
                                     project_id=self.id)
 
     def Tag(self, id=None):
-        return self.getListOrObject(ProjectTag, id,
+        return self._getListOrObject(ProjectTag, id,
                                     project_id=self.id)
 
 
