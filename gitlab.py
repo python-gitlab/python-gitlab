@@ -66,7 +66,7 @@ class Gitlab(object):
         self.password = password
 
     def auth(self):
-        """Perform an authentication using either the private token, or the
+        """Performs an authentication using either the private token, or the
         email/password pair.
 
         The user attribute will hold a CurrentUser object on success.
@@ -103,11 +103,11 @@ class Gitlab(object):
         self._url = '%s/api/v3' % url
 
     def setToken(self, token):
-        """Set the private token for authentication"""
+        """Sets the private token for authentication"""
         self.private_token = token
 
     def setCredentials(self, email, password):
-        """Set the email/login and password for authentication"""
+        """Sets the email/login and password for authentication"""
         self.email = email
         self.password = password
 
