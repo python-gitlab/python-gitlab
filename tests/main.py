@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
 import sys
 sys.path.append("../")
 import unittest
@@ -109,6 +110,29 @@ class GitlabTest(unittest.TestCase):
     def test_gitlab_issues(self):
         i_list = self.gl.Issue()
         self.assertEqual(len(i_list), 0)
+
+class UserTest(unittest.TestCase):
+    def setUp(self):
+        self.gl = Gitlab(url, email=email, password=password)
+        self.gl.auth()
+
+    def test_key(self):
+        k_list = self.gl.user.Key()
+        self.assertEqual(len(k_list), 0)
+
+        key = open(os.path.expanduser("~/.ssh/id_rsa.pub")).read().strip()
+        k = self.gl.user.Key({'title': 'key1', 'key': key})
+        k.save()
+
+        k_list = self.gl.user.Key()
+        self.assertEqual(len(k_list), 1)
+
+        k = k_list[0]
+        self.assertEqual(k.key, key.strip())
+
+        k.delete()
+        k_list = self.gl.user.Key()
+        self.assertEqual(len(k_list), 0)
 
 
 if __name__ == '__main__':
