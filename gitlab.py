@@ -89,9 +89,9 @@ class Gitlab(object):
         r = self.rawPost('/session',
                          {'email': self.email, 'password': self.password})
         if r.status_code == 201:
-            self.user = CurrentUser(self, r.json)
+            self.user = CurrentUser(self, r.json())
         else:
-            raise GitlabAuthenticationError(r.json['message'])
+            raise GitlabAuthenticationError(r.json()['message'])
 
         self.private_token = self.user.private_token
 
@@ -157,7 +157,7 @@ class Gitlab(object):
             cls = obj_class
             if obj_class._returnClass:
                 cls = obj_class._returnClass
-            l = [cls(self, item) for item in r.json]
+            l = [cls(self, item) for item in r.json()]
             if kwargs:
                 for k, v in kwargs.items():
                     if k in ('page', 'per_page'):
@@ -166,7 +166,7 @@ class Gitlab(object):
                         obj.__dict__[k] = v
             return l
         elif r.status_code == 401:
-            raise GitlabAuthenticationError(r.json['message'])
+            raise GitlabAuthenticationError(r.json()['message'])
         else:
             raise GitlabGetError('%d: %s' % (r.status_code, r.text))
 
@@ -192,9 +192,9 @@ class Gitlab(object):
                 "Can't connect to GitLab server (%s)" % self._url)
 
         if r.status_code == 200:
-            return r.json
+            return r.json()
         elif r.status_code == 401:
-            raise GitlabAuthenticationError(r.json['message'])
+            raise GitlabAuthenticationError(r.json()['message'])
         else:
             raise GitlabGetError('%d: %s' % (r.status_code, r.text))
 
@@ -212,7 +212,7 @@ class Gitlab(object):
         if r.status_code == 200:
             return True
         elif r.status_code == 401:
-            raise GitlabAuthenticationError(r.json['message'])
+            raise GitlabAuthenticationError(r.json()['message'])
         return False
 
     def create(self, obj):
@@ -228,9 +228,9 @@ class Gitlab(object):
                 "Can't connect to GitLab server (%s)" % self._url)
 
         if r.status_code == 201:
-            return r.json
+            return r.json()
         elif r.status_code == 401:
-            raise GitlabAuthenticationError(r.json['message'])
+            raise GitlabAuthenticationError(r.json()['message'])
         else:
             raise GitlabCreateError('%d: %s' % (r.status_code, r.text))
 
@@ -252,9 +252,9 @@ class Gitlab(object):
                 "Can't connect to GitLab server (%s)" % self._url)
 
         if r.status_code == 200:
-            return r.json
+            return r.json()
         elif r.status_code == 401:
-            raise GitlabAuthenticationError(r.json['message'])
+            raise GitlabAuthenticationError(r.json()['message'])
         else:
             raise GitlabUpdateError('%d: %s' % (r.status_code, r.text))
 
