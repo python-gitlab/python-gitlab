@@ -50,6 +50,10 @@ class GitlabProtectError(Exception):
     pass
 
 
+class GitlabTransferProjectError(Exception):
+    pass
+
+
 class GitlabAuthenticationError(Exception):
     pass
 
@@ -444,6 +448,13 @@ class CurrentUser(GitlabObject):
 class Group(GitlabObject):
     _url = '/groups'
     _constructorTypes = {'projects': 'Project'}
+
+    def transfer_project(self, id):
+        url = '/groups/%d/projects/%d?private_token=%s' % \
+                (self.id, id, self.gitlab.private_token)
+        r = self.gitlab.rawPost(url, None)
+        if r.status_code != 201:
+            raise GitlabTransferProjectError()
 
 
 class Hook(GitlabObject):
