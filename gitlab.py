@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import json
 import requests
 
 __title__ = 'python-gitlab'
@@ -25,6 +26,14 @@ __email__ = 'gauvain@pocentek.net'
 __license__ = 'LGPL3'
 __copyright__ = 'Copyright 2013 Gauvain Pocentek'
 
+
+class jsonEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, GitlabObject):
+            return obj.__dict__
+        elif isinstance(obj, Gitlab):
+            return {'url': obj._url}
+        return json.JSONEncoder.default(self, obj)
 
 class GitlabConnectionError(Exception):
     pass
@@ -420,6 +429,9 @@ class GitlabObject(object):
 
     def __str__(self):
         return '%s => %s' % (type(self), str(self.__dict__))
+
+    def json(self):
+        return json.dumps(self.__dict__, cls=jsonEncoder)
 
 
 class User(GitlabObject):
