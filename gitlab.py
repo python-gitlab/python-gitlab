@@ -264,6 +264,19 @@ class Gitlab(object):
         else:
             return cls(self, id, **kwargs)
 
+    def Hook(self, id=None, **kwargs):
+        """Creates/tests/lists system hook(s) known by the GitLab server.
+
+        If id is None, returns a list of hooks.
+
+        If id is an integer, test the matching hook.
+
+        If id is a dict, create a new object using attributes provided. The
+        object is NOT saved on the server. Use the save() method on the object
+        to write it on the server.
+        """
+        return self._getListOrObject(Hook, id, **kwargs)
+
     def Project(self, id=None, **kwargs):
         """Creates/gets/lists project(s) known by the GitLab server.
 
@@ -431,6 +444,10 @@ class CurrentUser(GitlabObject):
 class Group(GitlabObject):
     _url = '/groups'
     _constructorTypes = {'projects': 'Project'}
+
+
+class Hook(GitlabObject):
+    _url = '/hooks'
 
 
 class Issue(GitlabObject):
