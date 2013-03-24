@@ -485,12 +485,18 @@ class ProjectBranch(GitlabObject):
     def unprotect(self):
         self.protect(False)
 
+
 class ProjectCommit(GitlabObject):
     _url = '/projects/%(project_id)d/repository/commits'
     canGet = False
     canDelete = False
     canUpdate = False
     canCreate = False
+
+
+class ProjectKey(GitlabObject):
+    _url = '/projects/%(project_id)d/keys'
+    canUpdate = False
 
 
 class ProjectHook(GitlabObject):
@@ -599,6 +605,11 @@ class Project(GitlabObject):
 
     def Hook(self, id=None, **kwargs):
         return self._getListOrObject(ProjectHook, id,
+                                     project_id=self.id,
+                                     **kwargs)
+
+    def Key(self, id=None, **kwargs):
+        return self._getListOrObject(ProjectKey, id,
                                      project_id=self.id,
                                      **kwargs)
 
