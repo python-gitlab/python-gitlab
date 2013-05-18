@@ -386,7 +386,7 @@ class GitlabObject(object):
     _returnClass = None
     _constructorTypes = None
     canGet = True
-    canGetList = True
+    canList = True
     canCreate = True
     canUpdate = True
     canDelete = True
@@ -397,7 +397,7 @@ class GitlabObject(object):
 
     @classmethod
     def list(cls, gl, **kwargs):
-        if not cls.canGetList:
+        if not cls.canList:
             raise NotImplementedError
 
         if not cls._url:
@@ -407,7 +407,7 @@ class GitlabObject(object):
 
     def _getListOrObject(self, cls, id, **kwargs):
         if id is None:
-            if not cls.canGetList:
+            if not cls.canList:
                 raise GitlabGetError
 
             return cls.list(self.gitlab, **kwargs)
@@ -518,7 +518,7 @@ class CurrentUserKey(GitlabObject):
 
 class CurrentUser(GitlabObject):
     _url = '/user'
-    canGetList = False
+    canList = False
     canCreate = False
     canUpdate = False
     canDelete = False
