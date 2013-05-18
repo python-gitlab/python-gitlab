@@ -177,7 +177,7 @@ class Gitlab(object):
                     if k in ('page', 'per_page'):
                         continue
                     for obj in l:
-                        obj.__dict__[k] = v
+                        obj.__dict__[k] = str(v)
             return l
         elif r.status_code == 401:
             raise GitlabAuthenticationError(r.json()['message'])
@@ -267,7 +267,7 @@ class Gitlab(object):
         d = {}
         for k, v in obj.__dict__.items():
             if type(v) in (int, str, unicode, bool):
-                d[k] = v
+                d[k] = str(v)
 
         try:
             r = requests.put(url, d)
@@ -507,7 +507,7 @@ class Issue(GitlabObject):
 
 
 class ProjectBranch(GitlabObject):
-    _url = '/projects/%(project_id)d/repository/branches'
+    _url = '/projects/%(project_id)s/repository/branches'
     canDelete = False
     canUpdate = False
     canCreate = False
@@ -533,7 +533,7 @@ class ProjectBranch(GitlabObject):
 
 
 class ProjectCommit(GitlabObject):
-    _url = '/projects/%(project_id)d/repository/commits'
+    _url = '/projects/%(project_id)s/repository/commits'
     canGet = False
     canDelete = False
     canUpdate = False
@@ -541,18 +541,18 @@ class ProjectCommit(GitlabObject):
 
 
 class ProjectKey(GitlabObject):
-    _url = '/projects/%(project_id)d/keys'
+    _url = '/projects/%(project_id)s/keys'
     canUpdate = False
     requiredCreateAttrs = ['project_id', 'title', 'key']
 
 
 class ProjectHook(GitlabObject):
-    _url = '/projects/%(project_id)d/hooks'
+    _url = '/projects/%(project_id)s/hooks'
     requiredCreateAttrs = ['project_id', 'url']
 
 
 class ProjectIssueNote(GitlabObject):
-    _url = '/projects/%(project_id)d/issues/%(issue_id)d/notes'
+    _url = '/projects/%(project_id)s/issues/%(issue_id)s/notes'
     _constructorTypes = {'author': 'User'}
     canUpdate = False
     canDelete = False
@@ -576,13 +576,13 @@ class ProjectIssue(GitlabObject):
 
 
 class ProjectMember(GitlabObject):
-    _url = '/projects/%(project_id)d/members'
+    _url = '/projects/%(project_id)s/members'
     _returnClass = User
     requiredCreateAttrs = ['project_id', 'user_id', 'access_level']
 
 
 class ProjectNote(GitlabObject):
-    _url = '/projects/%(project_id)d/notes'
+    _url = '/projects/%(project_id)s/notes'
     _constructorTypes = {'author': 'User'}
     canUpdate = False
     canDelete = False
@@ -590,7 +590,7 @@ class ProjectNote(GitlabObject):
 
 
 class ProjectTag(GitlabObject):
-    _url = '/projects/%(project_id)d/repository/tags'
+    _url = '/projects/%(project_id)s/repository/tags'
     canGet = False
     canDelete = False
     canUpdate = False
@@ -598,7 +598,7 @@ class ProjectTag(GitlabObject):
 
 
 class ProjectMergeRequestNote(GitlabObject):
-    _url = '/projects/%(project_id)d/merge_requests/%(merge_request_id)d/notes'
+    _url = '/projects/%(project_id)s/merge_requests/%(merge_request_id)s/notes'
     _constructorTypes = {'author': 'User'}
     canGet = False
     canCreate = False
@@ -607,7 +607,7 @@ class ProjectMergeRequestNote(GitlabObject):
 
 
 class ProjectMergeRequest(GitlabObject):
-    _url = '/projects/%(project_id)d/merge_request'
+    _url = '/projects/%(project_id)s/merge_request'
     _constructorTypes = {'author': 'User', 'assignee': 'User'}
     canDelete = False
     requiredCreateAttrs = ['project_id', 'source_branch', 'target_branch', 'title']
@@ -628,7 +628,7 @@ class ProjectMilestone(GitlabObject):
 
 
 class ProjectSnippetNote(GitlabObject):
-    _url = '/projects/%(project_id)d/snippets/%(snippet_id)d/notes'
+    _url = '/projects/%(project_id)s/snippets/%(snippet_id)s/notes'
     _constructorTypes = {'author': 'User'}
     canUpdate = False
     canDelete = False
@@ -636,7 +636,7 @@ class ProjectSnippetNote(GitlabObject):
 
 
 class ProjectSnippet(GitlabObject):
-    _url = '/projects/%(project_id)d/snippets'
+    _url = '/projects/%(project_id)s/snippets'
     _constructorTypes = {'author': 'User'}
     requiredCreateAttrs = ['project_id', 'title', 'file_name', 'code']
     optionalCreateAttrs = ['lifetime']
