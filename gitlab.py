@@ -129,6 +129,19 @@ class Gitlab(object):
         self.email = email
         self.password = password
 
+    def rawGet(self, path, with_token=False):
+        url = '%s%s' % (self._url, path)
+        if with_token:
+            url += "?private_token=%s" % self.private_token
+
+        try:
+            r = requests.get(url)
+        except:
+            raise GitlabConnectionError(
+                "Can't connect to GitLab server (%s)" % self._url)
+
+        return r
+
     def rawPost(self, path, data):
         url = '%s%s' % (self._url, path)
         try:
@@ -657,6 +670,16 @@ class ProjectSnippet(GitlabObject):
     _constructorTypes = {'author': 'User'}
     requiredCreateAttrs = ['project_id', 'title', 'file_name', 'code']
     optionalCreateAttrs = ['lifetime']
+
+    def Content(self):
+        url = "/projects/%(project_id)s/snippets/%(snippet_id)s/raw" % \
+            {'project_id': self.project_id, 'snippet_id': self.id}
+        r = self.gitlab.rawGet(url, True)
+
+        if r.status_code == 200:
+            return r.content
+        else:
+            raise GitlabGetError
 
     def Note(self, id=None, **kwargs):
         return self._getListOrObject(ProjectSnippetNote, id,
