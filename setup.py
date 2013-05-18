@@ -21,4 +21,5 @@ setup(name='python-gitlab',
       license='LGPLv3',
       url='https://github.com/gpocentek/python-gitlab',
       py_modules=['gitlab'],
+      scripts=['gitlab']
       )
