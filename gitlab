@@ -1,0 +1,203 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2013 Gauvain Pocentek <gauvain@pocentek.net>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import os
+import sys
+
+from ConfigParser import ConfigParser
+from optparse import OptionParser
+
+from inspect import getmro
+
+import gitlab
+
+def die(msg):
+    sys.stderr.write(msg + "\n")
+    sys.exit(1)
+
+# cmd line options
+parser = OptionParser()
+parser.add_option("-g", "--gitlab", dest="gitlab_id",
+                  help="select the gitlab connection from the configuration file",
+                  metavar="GITLAB")
+(options, args) = parser.parse_args()
+
+# read the config
+config = ConfigParser()
+config.read(['/etc/python-gitlab.cfg',
+             os.path.expanduser('~/.python-gitlab.cfg')])
+
+gitlab_id = options.gitlab_id
+if gitlab_id is None:
+    try:
+        gitlab_id = config.get('global', 'default')
+    except:
+        die("Impossible to get the gitlab id (not specified in config file)")
+
+try:
+    gitlab_url = config.get(gitlab_id, 'url')
+    gitlab_token = config.get(gitlab_id, 'private_token')
+except:
+    die("Impossible to get gitlab informations from configuration (%s)" % gitlab_id)
+
+try:
+    gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_token)
+    gl.auth()
+except:
+    die("Could not connect to GitLab (%s)" % gitlab_url)
+
+try:
+    what = args.pop(0)
+    action = args.pop(0)
+except:
+    die("Missing arguments")
+
+if action not in ['get', 'list', 'update', 'create', 'delete']:
+    die("Unknown action: %s" % action)
+
+try:
+    cls = gitlab.__dict__[what]
+except:
+    die("Unknown object: %s" % what)
+
+if gitlab.GitlabObject not in getmro(cls):
+    die("Unknown object: %s" % what)
+
+if action == "create":
+    d = {}
+    try:
+        for arg in args:
+            k, v = arg.split("=", 2)
+            k = k.strip()
+            v = v.strip()
+            d[k] = v
+    except:
+        die("Impossible to parse data: %s" % arg)
+
+    try:
+        o = cls(gl, d)
+        o.save()
+    except Exception as e:
+        die("Impossible to create object (%s)" % str(e))
+
+    sys.exit(0)
+
+elif action == "list":
+    d = {}
+    try:
+        for arg in args:
+            k, v = arg.split("=", 2)
+            k = k.strip()
+            v = v.strip()
+            d[k] = v
+    except:
+        die("Impossible to parse data: %s" % arg)
+
+    try:
+        l = cls.list(gl, **d)
+    except Exception as e:
+        die("Impossible to list objects (%s)" % str(e))
+
+    for o in l:
+        o.pretty_print()
+        print
+
+    sys.exit(0)
+
+elif action == "get":
+    try:
+        id = args.pop(0)
+    except:
+        die("First arg must be the object id")
+
+    d = {}
+    try:
+        for arg in args:
+            k, v = arg.split("=", 2)
+            k = k.strip()
+            v = v.strip()
+            d[k] = v
+    except:
+        die("Impossible to parse data: %s" % arg)
+
+    try:
+        o = cls(gl, id, **d)
+    except Exception as e:
+        die("Impossible to get object (%s)" % str(e))
+
+    o.pretty_print()
+
+    sys.exit(0)
+
+elif action == "delete":
+    try:
+        id = args.pop(0)
+    except:
+        die("First arg must be the object id")
+
+    d = {}
+    try:
+        for arg in args:
+            k, v = arg.split("=", 2)
+            k = k.strip()
+            v = v.strip()
+            d[k] = v
+    except:
+        die("Impossible to parse data: %s" % arg)
+
+    try:
+        o = cls(gl, id, **d)
+    except Exception as e:
+        die("Impossible to get object (%s)" % id, str(e))
+
+    try:
+        o.delete()
+    except Exception as e:
+        die("Impossible to destroy object (%s)" % str(e))
+
+    sys.exit(0)
+
+elif action == "update":
+    try:
+        id = args.pop(0)
+    except:
+        die("First arg must be the object id")
+
+    d = {}
+    try:
+        for arg in args:
+            k, v = arg.split("=", 2)
+            k = k.strip()
+            v = v.strip()
+            d[k] = v
+    except:
+        die("Impossible to parse data: %s" % arg)
+
+    try:
+        o = cls(gl, id, **d)
+    except Exception as e:
+        die("Impossible to get object (%s)" % str(e))
+
+    try:
+        for k, v in d.items():
+            o.__dict__[k] = v
+        o.save()
+    except Exception as e:
+        die("Impossible to update object (%s)" % str(e))
+
+    sys.exit(0)
