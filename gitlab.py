@@ -227,6 +227,8 @@ class Gitlab(object):
             return True
         elif r.status_code == 401:
             raise GitlabAuthenticationError(r.json()['message'])
+        else:
+            raise GitlabDeleteError(r.json()['message'])
         return False
 
     def create(self, obj):
