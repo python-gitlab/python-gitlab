@@ -40,6 +40,10 @@ class GitlabConnectionError(Exception):
     pass
 
 
+class GitlabListError(Exception):
+    pass
+
+
 class GitlabGetError(Exception):
     pass
 
@@ -166,6 +170,14 @@ class Gitlab(object):
         return r
 
     def list(self, obj_class, **kwargs):
+        missing = []
+        for k in obj_class.requiredListAttrs:
+            if k not in kwargs:
+                missing.append (k)
+        if missing:
+            raise GitlabListError('Missing attribute(s): %s' % \
+                    ", ".join(missing))
+
         url = obj_class._url
         if kwargs:
             url = obj_class._url % kwargs
@@ -198,6 +210,14 @@ class Gitlab(object):
             raise GitlabGetError('%d: %s' % (r.status_code, r.text))
 
     def get(self, obj_class, id=None, **kwargs):
+        missing = []
+        for k in obj_class.requiredGetAttrs:
+            if k not in kwargs:
+                missing.append (k)
+        if missing:
+            raise GitlabListError('Missing attribute(s): %s' % \
+                    ", ".join(missing))
+
         url = obj_class._url
         if kwargs:
             url = obj_class._url % kwargs
@@ -370,6 +390,8 @@ class GitlabObject(object):
     canCreate = True
     canUpdate = True
     canDelete = True
+    requiredListAttrs = []
+    requiredGetAttrs = []
     requiredCreateAttrs = []
     optionalCreateAttrs = []
 
@@ -541,6 +563,8 @@ class ProjectBranch(GitlabObject):
     canDelete = False
     canUpdate = False
     canCreate = False
+    requiredGetAttrs = ['project_id']
+    requiredListAttrs = ['project_id']
 
     def protect(self, protect=True):
         url = self._url % {'project_id': self.project_id}
@@ -568,16 +592,21 @@ class ProjectCommit(GitlabObject):
     canDelete = False
     canUpdate = False
     canCreate = False
+    requiredListAttrs = ['project_id']
 
 
 class ProjectKey(GitlabObject):
     _url = '/projects/%(project_id)s/keys'
     canUpdate = False
+    requiredListAttrs = ['project_id']
+    requiredGetAttrs = ['project_id']
     requiredCreateAttrs = ['project_id', 'title', 'key']
 
 
 class ProjectHook(GitlabObject):
     _url = '/projects/%(project_id)s/hooks'
+    requiredListAttrs = ['project_id']
+    requiredGetAttrs = ['project_id']
     requiredCreateAttrs = ['project_id', 'url']
 
 
@@ -586,6 +615,8 @@ class ProjectIssueNote(GitlabObject):
     _constructorTypes = {'author': 'User'}
     canUpdate = False
     canDelete = False
+    requiredListAttrs = ['project_id', 'issue_id']
+    requiredGetAttrs = ['project_id', 'issue_id']
     requiredCreateAttrs = ['project_id', 'body']
 
 
@@ -594,6 +625,8 @@ class ProjectIssue(GitlabObject):
     _constructorTypes = {'author': 'User', 'assignee': 'User',
                          'milestone': 'ProjectMilestone'}
     canDelete = False
+    requiredListAttrs = ['project_id']
+    requiredGetAttrs = ['project_id']
     requiredCreateAttrs = ['project_id', 'title']
     optionalCreateAttrs = ['description', 'assignee_id', 'milestone_id',
                            'labels']
@@ -608,6 +641,8 @@ class ProjectIssue(GitlabObject):
 class ProjectMember(GitlabObject):
     _url = '/projects/%(project_id)s/members'
     _returnClass = User
+    requiredListAttrs = ['project_id']
+    requiredGetAttrs = ['project_id']
     requiredCreateAttrs = ['project_id', 'user_id', 'access_level']
 
 
@@ -616,6 +651,8 @@ class ProjectNote(GitlabObject):
     _constructorTypes = {'author': 'User'}
     canUpdate = False
     canDelete = False
+    requiredListAttrs = ['project_id']
+    requiredGetAttrs = ['project_id']
     requiredCreateAttrs = ['project_id', 'body']
 
 
@@ -625,6 +662,7 @@ class ProjectTag(GitlabObject):
     canDelete = False
     canUpdate = False
     canCreate = False
+    requiredListAttrs = ['project_id']
 
 
 class ProjectMergeRequestNote(GitlabObject):
@@ -634,12 +672,15 @@ class ProjectMergeRequestNote(GitlabObject):
     canCreate = False
     canUpdate = False
     canDelete = False
+    requiredListAttrs = ['project_id', 'merge_request_id']
 
 
 class ProjectMergeRequest(GitlabObject):
     _url = '/projects/%(project_id)s/merge_request'
     _constructorTypes = {'author': 'User', 'assignee': 'User'}
     canDelete = False
+    requiredListAttrs = ['project_id']
+    requiredGetAttrs = ['project_id']
     requiredCreateAttrs = ['project_id', 'source_branch', 'target_branch', 'title']
     optionalCreateAttrs = ['assignee_id']
 
@@ -653,6 +694,8 @@ class ProjectMergeRequest(GitlabObject):
 class ProjectMilestone(GitlabObject):
     _url = '/projects/%(project_id)s/milestones'
     canDelete = False
+    requiredListAttrs = ['project_id']
+    requiredGetAttrs = ['project_id']
     requiredCreateAttrs = ['project_id', 'title']
     optionalCreateAttrs = ['description', 'due_date']
 
@@ -662,12 +705,16 @@ class ProjectSnippetNote(GitlabObject):
     _constructorTypes = {'author': 'User'}
     canUpdate = False
     canDelete = False
+    requiredListAttrs = ['project_id', 'snippet_id']
+    requiredGetAttrs = ['project_id', 'snippet_id']
     requiredCreateAttrs = ['project_id', 'snippet_id', 'body']
 
 
 class ProjectSnippet(GitlabObject):
     _url = '/projects/%(project_id)s/snippets'
     _constructorTypes = {'author': 'User'}
+    requiredListAttrs = ['project_id']
+    requiredGetAttrs = ['project_id']
     requiredCreateAttrs = ['project_id', 'title', 'file_name', 'code']
     optionalCreateAttrs = ['lifetime']
 
