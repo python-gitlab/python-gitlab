@@ -20,7 +20,6 @@ import os
 import sys
 
 from ConfigParser import ConfigParser
-from optparse import OptionParser
 
 from inspect import getmro
 
@@ -30,19 +29,28 @@ def die(msg):
     sys.stderr.write(msg + "\n")
     sys.exit(1)
 
-# cmd line options
-parser = OptionParser()
-parser.add_option("-g", "--gitlab", dest="gitlab_id",
-                  help="select the gitlab connection from the configuration file",
-                  metavar="GITLAB")
-(options, args) = parser.parse_args()
+gitlab_id = None
+
+args = []
+d = {}
+for arg in sys.argv[1:]:
+    if arg.startswith('--'):
+        k, v = arg.split('=', 2)
+        k = k[2:].strip()
+        v = v.strip()
+
+        if k == 'gitlab':
+            gitlab_id = v
+        else:
+            d[k] = v
+    else:
+        args.append(arg)
 
 # read the config
 config = ConfigParser()
 config.read(['/etc/python-gitlab.cfg',
              os.path.expanduser('~/.python-gitlab.cfg')])
 
-gitlab_id = options.gitlab_id
 if gitlab_id is None:
     try:
         gitlab_id = config.get('global', 'default')
@@ -79,16 +87,6 @@ if gitlab.GitlabObject not in getmro(cls):
     die("Unknown object: %s" % what)
 
 if action == "create":
-    d = {}
-    try:
-        for arg in args:
-            k, v = arg.split("=", 2)
-            k = k.strip()
-            v = v.strip()
-            d[k] = v
-    except:
-        die("Impossible to parse data: %s" % arg)
-
     try:
         o = cls(gl, d)
         o.save()
@@ -98,16 +96,6 @@ if action == "create":
     sys.exit(0)
 
 elif action == "list":
-    d = {}
-    try:
-        for arg in args:
-            k, v = arg.split("=", 2)
-            k = k.strip()
-            v = v.strip()
-            d[k] = v
-    except:
-        die("Impossible to parse data: %s" % arg)
-
     try:
         l = cls.list(gl, **d)
     except Exception as e:
@@ -121,19 +109,9 @@ elif action == "list":
 
 elif action == "get":
     try:
-        id = args.pop(0)
+        id = d.pop('id')
     except:
-        die("First arg must be the object id")
-
-    d = {}
-    try:
-        for arg in args:
-            k, v = arg.split("=", 2)
-            k = k.strip()
-            v = v.strip()
-            d[k] = v
-    except:
-        die("Impossible to parse data: %s" % arg)
+        die("Missing --id argument")
 
     try:
         o = cls(gl, id, **d)
@@ -146,19 +124,9 @@ elif action == "get":
 
 elif action == "delete":
     try:
-        id = args.pop(0)
+        id = d.pop('id')
     except:
-        die("First arg must be the object id")
-
-    d = {}
-    try:
-        for arg in args:
-            k, v = arg.split("=", 2)
-            k = k.strip()
-            v = v.strip()
-            d[k] = v
-    except:
-        die("Impossible to parse data: %s" % arg)
+        die("Missing --id argument")
 
     try:
         o = cls(gl, id, **d)
@@ -174,19 +142,9 @@ elif action == "delete":
 
 elif action == "update":
     try:
-        id = args.pop(0)
+        id = d.pop('id')
     except:
-        die("First arg must be the object id")
-
-    d = {}
-    try:
-        for arg in args:
-            k, v = arg.split("=", 2)
-            k = k.strip()
-            v = v.strip()
-            d[k] = v
-    except:
-        die("Impossible to parse data: %s" % arg)
+        die("Missing --id argument")
 
     try:
         o = cls(gl, id, **d)

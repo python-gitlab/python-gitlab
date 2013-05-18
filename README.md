@@ -109,22 +109,21 @@ Some examples:
 gitlab Project list
 
 # get a specific project (id 2):
-gitlab Project get 2
+gitlab Project get --id=2
 
 # get a list of snippets for this project:
-gitlab ProjectIssue list project_id=2
-# (you're right, this syntax sucks)
+gitlab ProjectIssue list --project_id=2
 
 # delete a Snippet (id 3):
-gitlab ProjectSnippet delete 3 project_id=2
+gitlab ProjectSnippet delete --id=3 --project_id=2
 
 # update a Snippet:
-gitlab ProjectSnippet update 4 project_id=2 code="My New Code"
+gitlab ProjectSnippet update --id=4 --project_id=2 --code="My New Code"
 
 # create a Snippet:
-gitlab ProjectSnippet create project_id=2
+gitlab ProjectSnippet create --project_id=2
 Impossible to create object (Missing attribute(s): title, file_name, code)
 
 # oops, let's add the attributes:
-gitlab ProjectSnippet create project_id=2 title="the title" file_name="the name" code="the code"
+gitlab ProjectSnippet create --project_id=2 --title="the title" --file_name="the name" --code="the code"
 `````
