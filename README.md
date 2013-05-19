@@ -8,9 +8,9 @@ A CLI tool is also provided (called **gitlab**).
 
 ## Requirements
 
-Only Python 2 is supported for the moment.
+python-gitlab depends on:
 
-python-gitlab depends on [python-requests](http://docs.python-requests.org/en/latest/).
+* [python-requests](http://docs.python-requests.org/en/latest/).
 
 ## State
 
@@ -20,7 +20,6 @@ python-gitlab is a work in progress, although already usable. Changes in the API
 
 * Improve documentation
 * Write unit tests
-* Improve the command line tool
 
 ## Code snippet
 

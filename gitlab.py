@@ -486,21 +486,21 @@ class GitlabObject(object):
         return '%s => %s' % (type(self), str(self.__dict__))
 
     def pretty_print(self, depth=0):
-        print "%sid: %s" % (" " * depth * 2, self.id)
+        print("%sid: %s" % (" " * depth * 2, self.id))
         for k in sorted(self.__dict__.keys()):
             if k == "id":
                 continue
             v = self.__dict__[k]
             if isinstance(v, GitlabObject):
                 if depth == 0:
-                    print "%s:" % k
+                    print("%s:" % k)
                     v.pretty_print(1)
                 else:
-                    print "%s: %s" % (k, v.id)
+                    print("%s: %s" % (k, v.id))
             else:
                 if isinstance(v, Gitlab):
                     continue
-                print "%s%s: %s" % (" " * depth * 2, k, v)
+                print("%s%s: %s" % (" " * depth * 2, k, v))
 
     def json(self):
         return json.dumps(self.__dict__, cls=jsonEncoder)
