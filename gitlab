@@ -96,6 +96,8 @@ if action == "create":
     except Exception as e:
         die("Impossible to create object (%s)" % str(e))
 
+    o.pretty_print()
+
     sys.exit(0)
 
 elif action == "list":
