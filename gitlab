@@ -81,8 +81,11 @@ except:
 if action not in ['get', 'list', 'update', 'create', 'delete']:
     die("Unknown action: %s" % action)
 
+def whatToCls(what):
+    return "".join([s.capitalize() for s in what.split("-")])
+
 try:
-    cls = gitlab.__dict__[what]
+    cls = gitlab.__dict__[whatToCls(what)]
 except:
     die("Unknown object: %s" % what)
 
