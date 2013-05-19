@@ -87,6 +87,9 @@ if gitlab.GitlabObject not in getmro(cls):
     die("Unknown object: %s" % what)
 
 if action == "create":
+    if not cls.canCreate:
+        die("%s objects can't be created" % what)
+
     try:
         o = cls(gl, d)
         o.save()
@@ -96,6 +99,9 @@ if action == "create":
     sys.exit(0)
 
 elif action == "list":
+    if not cls.canList:
+        die("%s objects can't be listed" % what)
+
     try:
         l = cls.list(gl, **d)
     except Exception as e:
@@ -108,6 +114,9 @@ elif action == "list":
     sys.exit(0)
 
 elif action == "get":
+    if not cls.canGet:
+        die("%s objects can't be retrieved" % what)
+
     try:
         id = d.pop('id')
     except:
@@ -123,6 +132,9 @@ elif action == "get":
     sys.exit(0)
 
 elif action == "delete":
+    if not cls.canDelete:
+        die("%s objects can't be deleted" % what)
+
     try:
         id = d.pop('id')
     except:
@@ -141,6 +153,9 @@ elif action == "delete":
     sys.exit(0)
 
 elif action == "update":
+    if not cls.canDelete:
+        die("%s objects can't be updated" % what)
+
     try:
         id = d.pop('id')
     except:
