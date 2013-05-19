@@ -242,6 +242,8 @@ class Gitlab(object):
             return r.json()
         elif r.status_code == 401:
             raise GitlabAuthenticationError(r.json()['message'])
+        elif r.status_code == 404:
+            raise GitlabGetError("Object doesn't exist")
         else:
             raise GitlabGetError('%d: %s' % (r.status_code, r.text))
 
