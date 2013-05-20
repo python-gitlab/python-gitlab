@@ -18,19 +18,90 @@
 
 import os
 import sys
+import re
 
 try:
     from ConfigParser import ConfigParser
 except:
     from configparser import ConfigParser
 
-from inspect import getmro
+from inspect import getmro, getmembers, isclass
 
 import gitlab
+
+camel_re = re.compile('(.)([A-Z])')
 
 def die(msg):
     sys.stderr.write(msg + "\n")
     sys.exit(1)
+
+def whatToCls(what):
+    return "".join([s.capitalize() for s in what.split("-")])
+
+def clsToWhat(cls):
+   return camel_re.sub(r'\1-\2', cls.__name__).lower()
+
+def actionHelpList(cls):
+    l = []
+    for action in 'list', 'get', 'create', 'update', 'delete':
+        attr = 'can' + action.capitalize()
+        try:
+            y = cls.__dict__[attr]
+        except:
+            y = gitlab.GitlabObject.__dict__[attr]
+        if not y:
+            continue
+
+        detail = ''
+        if action == 'list':
+            detail = " ".join(["--%s=ARG" % x for x in cls.requiredListAttrs])
+        elif action in ['get', 'delete']:
+            detail = "--id=ARG "
+            detail += " ".join(["--%s=ARG" % x for x in cls.requiredGetAttrs])
+        elif action == 'create':
+            detail = " ".join(["--%s=ARG" % x for x in cls.requiredCreateAttrs])
+            if detail:
+                detail += " "
+            detail += " ".join(["[--%s=ARG]" % x for x in cls.optionalCreateAttrs])
+        elif action == 'update':
+            detail = " ".join(["[--%s=ARG]" % x for x in cls.requiredCreateAttrs])
+            if detail:
+                detail += " "
+            detail += " ".join(["[--%s=ARG]" % x for x in cls.optionalCreateAttrs])
+        l.append("%s %s" % (action, detail))
+
+    return (l)
+
+def usage():
+    print("usage: gitlab [--help] [--gitlab=GITLAB] what action [options]")
+    print("")
+    print("--gitlab=GITLAB: Specifies which python-gitlab.cfg configuration section should be used.")
+    print("                 If not defined, the default selection will be used.")
+    print("")
+    print("--help         : Displays this message.")
+    print("")
+    print("Available `options` depend on which what/action couple is used.")
+    print("If `action` is \"help\", available actions and options will be listed for `what`.")
+    print("")
+    print("Available `what` values are:")
+
+    classes = []
+    for name, o in getmembers(gitlab):
+        if not isclass(o):
+            continue
+        if gitlab.GitlabObject in getmro(o) and o != gitlab.GitlabObject:
+            classes.append(o)
+
+    def s(a, b):
+        if a.__name__ < b.__name__:
+            return -1
+        elif a.__name__ > b.__name__:
+            return 1
+
+    classes.sort(cmp=s)
+    for cls in classes:
+        print(" %s" % clsToWhat(cls))
+
 
 gitlab_id = None
 
@@ -38,8 +109,14 @@ args = []
 d = {}
 for arg in sys.argv[1:]:
     if arg.startswith('--'):
+        arg = arg[2:]
+
+        if arg == 'help':
+            usage()
+            sys.exit(0)
+
         k, v = arg.split('=', 2)
-        k = k[2:].strip()
+        k = k.strip()
         v = v.strip()
 
         if k == 'gitlab':
@@ -67,27 +144,34 @@ except:
     die("Impossible to get gitlab informations from configuration (%s)" % gitlab_id)
 
 try:
-    gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_token)
-    gl.auth()
-except:
-    die("Could not connect to GitLab (%s)" % gitlab_url)
-
-try:
     what = args.pop(0)
     action = args.pop(0)
 except:
     die("Missing arguments")
 
-if action not in ['get', 'list', 'update', 'create', 'delete']:
-    die("Unknown action: %s" % action)
+if action not in ['get', 'list', 'update', 'create', 'delete', 'help']:
+    die("Unknown action: %s. Use \"gitlab %s help\" to get details." % (action, what))
 
 try:
-    cls = gitlab.__dict__[what]
+    cls = gitlab.__dict__[whatToCls(what)]
 except:
     die("Unknown object: %s" % what)
 
 if gitlab.GitlabObject not in getmro(cls):
     die("Unknown object: %s" % what)
+
+if action == "help":
+    print("%s options:" % what)
+    for item in actionHelpList(cls):
+        print(" %s %s" % (what, item))
+
+    sys.exit(0)
+
+try:
+    gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_token)
+    gl.auth()
+except:
+    die("Could not connect to GitLab (%s)" % gitlab_url)
 
 if action == "create":
     if not cls.canCreate:
@@ -114,7 +198,7 @@ elif action == "list":
 
     for o in l:
         o.pretty_print()
-        print
+        print("")
 
     sys.exit(0)
 

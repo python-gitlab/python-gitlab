@@ -95,34 +95,41 @@ The first argument is the object type on which we will act, the second one is
 the action:
 
 `````
-gitlab Project list
+gitlab project list
 `````
 
-The usable objects are those which inherits GitlabObject (yes, the source is
-the doc ATM), and the actions are list, get, create, update, delete.
+Get help with:
+
+`````
+# global help
+gitlab --help
+
+# object help
+gitlab project help
+`````
 
 Some examples:
 
 `````bash
 # list all the projects:
-gitlab Project list
+gitlab project list
 
 # get a specific project (id 2):
-gitlab Project get --id=2
+gitlab project get --id=2
 
 # get a list of snippets for this project:
-gitlab ProjectIssue list --project_id=2
+gitlab project-issue list --project_id=2
 
 # delete a Snippet (id 3):
-gitlab ProjectSnippet delete --id=3 --project_id=2
+gitlab project-snippet delete --id=3 --project_id=2
 
 # update a Snippet:
-gitlab ProjectSnippet update --id=4 --project_id=2 --code="My New Code"
+gitlab project-snippet update --id=4 --project_id=2 --code="My New Code"
 
 # create a Snippet:
-gitlab ProjectSnippet create --project_id=2
+gitlab project-snippet create --project_id=2
 Impossible to create object (Missing attribute(s): title, file_name, code)
 
 # oops, let's add the attributes:
-gitlab ProjectSnippet create --project_id=2 --title="the title" --file_name="the name" --code="the code"
+gitlab project-snippet create --project_id=2 --title="the title" --file_name="the name" --code="the code"
 `````
