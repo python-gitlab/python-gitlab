@@ -98,11 +98,15 @@ the action:
 gitlab project list
 `````
 
-The usable objects are those which inherits GitlabObject (yes, the source is
-the doc ATM), with a bit of string transformation (Project => project,
-ProjectIssue => project-issue, ...).
+Get help with:
 
-The actions are list, get, create, update, delete.
+`````
+# global help
+gitlab --help
+
+# object help
+gitlab project help
+`````
 
 Some examples:
 
