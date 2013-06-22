@@ -278,6 +278,9 @@ class Gitlab(object):
         url = obj._url % obj.__dict__
         url = '%s%s?private_token=%s' % (self._url, url, self.private_token)
 
+        print url
+        print obj.__dict__
+
         try:
             # TODO: avoid too much work on the server side by filtering the
             # __dict__ keys
@@ -529,6 +532,8 @@ class User(GitlabObject):
 class CurrentUserKey(GitlabObject):
     _url = '/user/keys'
     canUpdate = False
+    shortPrintAttr = 'title'
+    requiredCreateAttrs = ['title', 'key']
 
 
 class CurrentUser(GitlabObject):
@@ -537,6 +542,7 @@ class CurrentUser(GitlabObject):
     canCreate = False
     canUpdate = False
     canDelete = False
+    shortPrintAttr = 'username'
 
     def Key(self, id=None, **kwargs):
         if id is None:
