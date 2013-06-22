@@ -114,6 +114,9 @@ Some examples:
 # list all the projects:
 gitlab project list
 
+# limit to 5 items per request, display the 1st page only
+gitlab project list --page=1 --per-page=5
+
 # get a specific project (id 2):
 gitlab project get --id=2
 
