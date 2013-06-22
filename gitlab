@@ -55,6 +55,9 @@ def actionHelpList(cls):
         detail = ''
         if action == 'list':
             detail = " ".join(["--%s=ARG" % x.replace('_', '-') for x in cls.requiredListAttrs])
+            if detail:
+                detail += " "
+            detail += "--page=ARG --per-page=ARG"
         elif action in ['get', 'delete']:
             detail = "--id=ARG "
             detail += " ".join(["--%s=ARG" % x.replace('_', '-') for x in cls.requiredGetAttrs])
