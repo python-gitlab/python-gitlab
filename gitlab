@@ -54,20 +54,20 @@ def actionHelpList(cls):
 
         detail = ''
         if action == 'list':
-            detail = " ".join(["--%s=ARG" % x for x in cls.requiredListAttrs])
+            detail = " ".join(["--%s=ARG" % x.replace('_', '-') for x in cls.requiredListAttrs])
         elif action in ['get', 'delete']:
             detail = "--id=ARG "
-            detail += " ".join(["--%s=ARG" % x for x in cls.requiredGetAttrs])
+            detail += " ".join(["--%s=ARG" % x.replace('_', '-') for x in cls.requiredGetAttrs])
         elif action == 'create':
-            detail = " ".join(["--%s=ARG" % x for x in cls.requiredCreateAttrs])
+            detail = " ".join(["--%s=ARG" % x.replace('_', '-') for x in cls.requiredCreateAttrs])
             if detail:
                 detail += " "
-            detail += " ".join(["[--%s=ARG]" % x for x in cls.optionalCreateAttrs])
+            detail += " ".join(["[--%s=ARG]" % x.replace('_', '-') for x in cls.optionalCreateAttrs])
         elif action == 'update':
-            detail = " ".join(["[--%s=ARG]" % x for x in cls.requiredCreateAttrs])
+            detail = " ".join(["[--%s=ARG]" % x.replace('_', '-') for x in cls.requiredCreateAttrs])
             if detail:
                 detail += " "
-            detail += " ".join(["[--%s=ARG]" % x for x in cls.optionalCreateAttrs])
+            detail += " ".join(["[--%s=ARG]" % x.replace('_', '-') for x in cls.optionalCreateAttrs])
         l.append("%s %s" % (action, detail))
 
     return (l)
@@ -109,7 +109,7 @@ args = []
 d = {}
 for arg in sys.argv[1:]:
     if arg.startswith('--'):
-        arg = arg[2:]
+        arg = arg[2:].replace('-', '_')
 
         if arg == 'help':
             usage()
