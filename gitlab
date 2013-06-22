@@ -73,11 +73,11 @@ def actionHelpList(cls):
     return (l)
 
 def usage():
-    print("usage: gitlab [--help] [--gitlab=GITLAB] what action [options]")
+    print("usage: gitlab [--help] [--gitlab=GITLAB] [--fancy] what action [options]")
     print("")
     print("--gitlab=GITLAB: Specifies which python-gitlab.cfg configuration section should be used.")
     print("                 If not defined, the default selection will be used.")
-    print("")
+    print("--fancy        : More verbose output.")
     print("--help         : Displays this message.")
     print("")
     print("Available `options` depend on which what/action couple is used.")
@@ -104,6 +104,7 @@ def usage():
 
 
 gitlab_id = None
+verbose = False
 
 args = []
 d = {}
@@ -114,6 +115,9 @@ for arg in sys.argv[1:]:
         if arg == 'help':
             usage()
             sys.exit(0)
+        elif arg == 'fancy':
+            verbose = True
+            continue
 
         k, v = arg.split('=', 2)
         k = k.strip()
@@ -183,7 +187,10 @@ if action == "create":
     except Exception as e:
         die("Impossible to create object (%s)" % str(e))
 
-    o.pretty_print()
+    if verbose:
+        o.pretty_print()
+    else:
+        o.short_print()
 
     sys.exit(0)
 
@@ -197,7 +204,10 @@ elif action == "list":
         die("Impossible to list objects (%s)" % str(e))
 
     for o in l:
-        o.pretty_print()
+        if verbose:
+            o.pretty_print()
+        else:
+            o.short_print()
         print("")
 
     sys.exit(0)
@@ -216,7 +226,10 @@ elif action == "get":
     except Exception as e:
         die("Impossible to get object (%s)" % str(e))
 
-    o.pretty_print()
+    if verbose:
+        o.pretty_print()
+    else:
+        o.short_print()
 
     sys.exit(0)
 

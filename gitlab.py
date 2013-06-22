@@ -397,6 +397,7 @@ class GitlabObject(object):
     requiredCreateAttrs = []
     optionalCreateAttrs = []
     idAttr = 'id'
+    shortPrintAttr = None
 
     @classmethod
     def list(cls, gl, **kwargs):
@@ -486,6 +487,14 @@ class GitlabObject(object):
     def __str__(self):
         return '%s => %s' % (type(self), str(self.__dict__))
 
+    def short_print(self, depth=0):
+        id = self.__dict__[self.idAttr]
+        print("%s%s: %s" % (" " * depth * 2, self.idAttr, id))
+        if self.shortPrintAttr:
+            print ("%s%s: %s" % (" " * depth * 2,
+                                 self.shortPrintAttr.replace('_', '-'),
+                                 self.__dict__[self.shortPrintAttr]))
+
     def pretty_print(self, depth=0):
         id = self.__dict__[self.idAttr]
         print("%s%s: %s" % (" " * depth * 2, self.idAttr, id))
@@ -511,6 +520,7 @@ class GitlabObject(object):
 
 class User(GitlabObject):
     _url = '/users'
+    shortPrintAttr = 'username'
     requiredCreateAttrs = ['email', 'password', 'username', 'name']
     optionalCreateAttrs = ['skype', 'linkedin', 'twitter', 'projects_limit',
                            'extern_uid', 'provider', 'bio']
@@ -539,6 +549,7 @@ class Group(GitlabObject):
     _url = '/groups'
     _constructorTypes = {'projects': 'Project'}
     requiredCreateAttrs = ['name', 'path']
+    shortPrintAttr = 'name'
 
     def transfer_project(self, id):
         url = '/groups/%d/projects/%d?private_token=%s' % \
@@ -551,6 +562,7 @@ class Group(GitlabObject):
 class Hook(GitlabObject):
     _url = '/hooks'
     requiredCreateAttrs = ['url']
+    shortPrintAttr = 'url'
 
 
 class Issue(GitlabObject):
@@ -561,6 +573,7 @@ class Issue(GitlabObject):
     canDelete = False
     canUpdate = False
     canCreate = False
+    shortPrintAttr = 'title'
 
 
 class ProjectBranch(GitlabObject):
@@ -599,6 +612,7 @@ class ProjectCommit(GitlabObject):
     canUpdate = False
     canCreate = False
     requiredListAttrs = ['project_id']
+    shortPrintAttr = 'title'
 
 
 class ProjectKey(GitlabObject):
@@ -614,6 +628,7 @@ class ProjectHook(GitlabObject):
     requiredListAttrs = ['project_id']
     requiredGetAttrs = ['project_id']
     requiredCreateAttrs = ['project_id', 'url']
+    shortPrintAttr = 'url'
 
 
 class ProjectIssueNote(GitlabObject):
@@ -636,6 +651,7 @@ class ProjectIssue(GitlabObject):
     requiredCreateAttrs = ['project_id', 'title']
     optionalCreateAttrs = ['description', 'assignee_id', 'milestone_id',
                            'labels']
+    shortPrintAttr = 'title'
 
     def Note(self, id=None, **kwargs):
         return self._getListOrObject(ProjectIssueNote, id,
@@ -650,6 +666,7 @@ class ProjectMember(GitlabObject):
     requiredListAttrs = ['project_id']
     requiredGetAttrs = ['project_id']
     requiredCreateAttrs = ['project_id', 'user_id', 'access_level']
+    shortPrintAttr = 'username'
 
 
 class ProjectNote(GitlabObject):
@@ -664,11 +681,13 @@ class ProjectNote(GitlabObject):
 
 class ProjectTag(GitlabObject):
     _url = '/projects/%(project_id)s/repository/tags'
+    idAttr = 'name'
     canGet = False
     canDelete = False
     canUpdate = False
     canCreate = False
     requiredListAttrs = ['project_id']
+    shortPrintAttr = 'name'
 
 
 class ProjectMergeRequestNote(GitlabObject):
@@ -704,6 +723,7 @@ class ProjectMilestone(GitlabObject):
     requiredGetAttrs = ['project_id']
     requiredCreateAttrs = ['project_id', 'title']
     optionalCreateAttrs = ['description', 'due_date']
+    shortPrintAttr = 'title'
 
 
 class ProjectSnippetNote(GitlabObject):
@@ -723,6 +743,7 @@ class ProjectSnippet(GitlabObject):
     requiredGetAttrs = ['project_id']
     requiredCreateAttrs = ['project_id', 'title', 'file_name', 'code']
     optionalCreateAttrs = ['lifetime']
+    shortPrintAttr = 'title'
 
     def Content(self):
         url = "/projects/%(project_id)s/snippets/%(snippet_id)s/raw" % \
@@ -750,6 +771,7 @@ class Project(GitlabObject):
     optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
                            'merge_requests_enabled', 'wiki_enabled',
                            'namespace_id']
+    shortPrintAttr = 'path'
 
     def Branch(self, id=None, **kwargs):
         return self._getListOrObject(ProjectBranch, id,
