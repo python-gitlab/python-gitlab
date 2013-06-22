@@ -118,18 +118,18 @@ gitlab project list
 gitlab project get --id=2
 
 # get a list of snippets for this project:
-gitlab project-issue list --project_id=2
+gitlab project-issue list --project-id=2
 
 # delete a Snippet (id 3):
-gitlab project-snippet delete --id=3 --project_id=2
+gitlab project-snippet delete --id=3 --project-id=2
 
 # update a Snippet:
-gitlab project-snippet update --id=4 --project_id=2 --code="My New Code"
+gitlab project-snippet update --id=4 --project-id=2 --code="My New Code"
 
 # create a Snippet:
-gitlab project-snippet create --project_id=2
-Impossible to create object (Missing attribute(s): title, file_name, code)
+gitlab project-snippet create --project-id=2
+Impossible to create object (Missing attribute(s): title, file-name, code)
 
 # oops, let's add the attributes:
-gitlab project-snippet create --project_id=2 --title="the title" --file_name="the name" --code="the code"
+gitlab project-snippet create --project-id=2 --title="the title" --file-name="the name" --code="the code"
 `````
