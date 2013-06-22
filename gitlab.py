@@ -396,6 +396,7 @@ class GitlabObject(object):
     requiredGetAttrs = []
     requiredCreateAttrs = []
     optionalCreateAttrs = []
+    idAttr = 'id'
 
     @classmethod
     def list(cls, gl, **kwargs):
@@ -486,7 +487,8 @@ class GitlabObject(object):
         return '%s => %s' % (type(self), str(self.__dict__))
 
     def pretty_print(self, depth=0):
-        print("%sid: %s" % (" " * depth * 2, self.id))
+        id = self.__dict__[self.idAttr]
+        print("%sid: %s" % (" " * depth * 2, id))
         for k in sorted(self.__dict__.keys()):
             if k == "id":
                 continue
@@ -562,6 +564,7 @@ class Issue(GitlabObject):
 
 class ProjectBranch(GitlabObject):
     _url = '/projects/%(project_id)s/repository/branches'
+    idAttr = 'name'
     canDelete = False
     canUpdate = False
     canCreate = False
