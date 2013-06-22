@@ -584,6 +584,7 @@ class ProjectBranch(GitlabObject):
     canCreate = False
     requiredGetAttrs = ['project_id']
     requiredListAttrs = ['project_id']
+    _constructorTypes = {'commit': 'ProjectCommit'}
 
     def protect(self, protect=True):
         url = self._url % {'project_id': self.project_id}
