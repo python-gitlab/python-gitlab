@@ -119,7 +119,7 @@ for arg in sys.argv[1:]:
         if arg == 'help':
             usage()
             sys.exit(0)
-        elif arg == 'fancy':
+        elif arg in ['verbose', 'fancy']:
             verbose = True
             continue
 
