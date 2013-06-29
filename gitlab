@@ -111,6 +111,85 @@ def usage():
     for cls in classes:
         print(" %s" % clsToWhat(cls))
 
+def do_auth():
+    try:
+        gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_token)
+        gl.auth()
+    except:
+        die("Could not connect to GitLab (%s)" % gitlab_url)
+
+    return gl
+
+def get_id():
+    try:
+        id = d.pop('id')
+    except:
+        die("Missing --id argument")
+
+    return id
+
+def do_create(cls, d):
+    if not cls.canCreate:
+        die("%s objects can't be created" % what)
+
+    try:
+        o = cls(gl, d)
+        o.save()
+    except Exception as e:
+        die("Impossible to create object (%s)" % str(e))
+
+    return o
+
+def do_list(cls, d):
+    if not cls.canList:
+        die("%s objects can't be listed" % what)
+
+    try:
+        l = cls.list(gl, **d)
+    except Exception as e:
+        die("Impossible to list objects (%s)" % str(e))
+
+    return l
+
+def do_get(cls, d):
+    if not cls.canGet:
+        die("%s objects can't be retrieved" % what)
+
+    id = None
+    if cls not in [gitlab.CurrentUser]:
+        id = get_id()
+
+    try:
+        o = cls(gl, id, **d)
+    except Exception as e:
+        die("Impossible to get object (%s)" % str(e))
+
+    return o
+
+def do_delete(cls, d):
+    if not cls.canDelete:
+        die("%s objects can't be deleted" % what)
+
+    o = do_get(cls, d)
+    try:
+        o.delete()
+    except Exception as e:
+        die("Impossible to destroy object (%s)" % str(e))
+
+def do_update(cls, d):
+    if not cls.canUpdate:
+        die("%s objects can't be updated" % what)
+
+    o = do_get(cls, d)
+    try:
+        for k, v in d.items():
+            o.__dict__[k] = v
+        o.save()
+    except Exception as e:
+        die("Impossible to update object (%s)" % str(e))
+
+    return o
+
 
 gitlab_id = None
 verbose = False
@@ -186,9 +265,6 @@ try:
 except:
     die("Missing arguments. Use `gitlab -h` for help.")
 
-if action not in ['get', 'list', 'update', 'create', 'delete', 'help']:
-    die("Unknown action: %s. Use \"gitlab %s help\" to get details." % (action, what))
-
 try:
     cls = gitlab.__dict__[whatToCls(what)]
 except:
@@ -204,110 +280,28 @@ if action == "help":
 
     sys.exit(0)
 
-try:
-    gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_token)
-    gl.auth()
-except:
-    die("Could not connect to GitLab (%s)" % gitlab_url)
+gl = do_auth()
 
 if action == "create":
-    if not cls.canCreate:
-        die("%s objects can't be created" % what)
-
-    try:
-        o = cls(gl, d)
-        o.save()
-    except Exception as e:
-        die("Impossible to create object (%s)" % str(e))
-
-    if verbose:
-        o.pretty_print()
-    else:
-        o.short_print()
-
-    sys.exit(0)
+    o = do_create(cls, d)
+    o.display(verbose)
 
 elif action == "list":
-    if not cls.canList:
-        die("%s objects can't be listed" % what)
-
-    try:
-        l = cls.list(gl, **d)
-    except Exception as e:
-        die("Impossible to list objects (%s)" % str(e))
-
-    for o in l:
-        if verbose:
-            o.pretty_print()
-        else:
-            o.short_print()
+    for o in do_list(cls, d):
+        o.display(verbose)
         print("")
 
-    sys.exit(0)
-
 elif action == "get":
-    if not cls.canGet:
-        die("%s objects can't be retrieved" % what)
-
-    id = None
-    if cls not in [gitlab.CurrentUser]:
-        try:
-            id = d.pop('id')
-        except:
-            die("Missing --id argument")
-
-    try:
-        o = cls(gl, id, **d)
-    except Exception as e:
-        die("Impossible to get object (%s)" % str(e))
-
-    if verbose:
-        o.pretty_print()
-    else:
-        o.short_print()
-
-    sys.exit(0)
+    o = do_get(cls, d)
+    o.display(verbose)
 
 elif action == "delete":
-    if not cls.canDelete:
-        die("%s objects can't be deleted" % what)
-
-    try:
-        id = d.pop('id')
-    except:
-        die("Missing --id argument")
-
-    try:
-        o = cls(gl, id, **d)
-    except Exception as e:
-        die("Impossible to get object (%s)" % id, str(e))
-
-    try:
-        o.delete()
-    except Exception as e:
-        die("Impossible to destroy object (%s)" % str(e))
-
-    sys.exit(0)
+    o = do_delete(cls, d)
 
 elif action == "update":
-    if not cls.canDelete:
-        die("%s objects can't be updated" % what)
+    o = do_update(cls, d)
 
-    try:
-        id = d.pop('id')
-    except:
-        die("Missing --id argument")
+else:
+    die("Unknown action: %s. Use \"gitlab %s help\" to get details." % (action, what))
 
-    try:
-        o = cls(gl, id, **d)
-    except Exception as e:
-        die("Impossible to get object (%s)" % str(e))
-
-    try:
-        for k, v in d.items():
-            o.__dict__[k] = v
-        o.save()
-    except Exception as e:
-        die("Impossible to update object (%s)" % str(e))
-
-    sys.exit(0)
+sys.exit(0)

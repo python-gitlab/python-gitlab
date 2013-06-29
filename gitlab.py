@@ -490,6 +490,12 @@ class GitlabObject(object):
     def __str__(self):
         return '%s => %s' % (type(self), str(self.__dict__))
 
+    def display(self, pretty):
+        if pretty:
+            self.pretty_print()
+        else:
+            self.short_print()
+
     def short_print(self, depth=0):
         id = self.__dict__[self.idAttr]
         print("%s%s: %s" % (" " * depth * 2, self.idAttr, id))
