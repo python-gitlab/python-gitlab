@@ -77,17 +77,22 @@ def actionHelpList(cls):
     return (l)
 
 def usage():
-    print("usage: gitlab [--help] [--gitlab=GITLAB] [--fancy] what action [options]")
+    print("usage: gitlab [--help|-h] [--fancy|--verbose|-v] [--gitlab=GITLAB] WHAT ACTION [options]")
     print("")
-    print("--gitlab=GITLAB: Specifies which python-gitlab.cfg configuration section should be used.")
-    print("                 If not defined, the default selection will be used.")
-    print("--fancy        : More verbose output.")
-    print("--help         : Displays this message.")
+    print("--gitlab=GITLAB")
+    print("    Specifies which python-gitlab.cfg configuration section should be used.")
+    print("    If not defined, the default selection will be used.")
     print("")
-    print("Available `options` depend on which what/action couple is used.")
-    print("If `action` is \"help\", available actions and options will be listed for `what`.")
+    print("--fancy, --verbose, -v")
+    print("    More verbose output.")
     print("")
-    print("Available `what` values are:")
+    print("--help, -h")
+    print("    Displays this message.")
+    print("")
+    print("Available `options` depend on which WHAT/ACTION couple is used.")
+    print("If `ACTION` is \"help\", available actions and options will be listed for `ACTION`.")
+    print("")
+    print("Available `WHAT` values are:")
 
     classes = []
     for name, o in getmembers(gitlab):
@@ -112,7 +117,12 @@ verbose = False
 
 args = []
 d = {}
-for arg in sys.argv[1:]:
+keep_looping = False
+for idx, arg in enumerate(sys.argv[1:], 1):
+    if keep_looping:
+        keep_looping = False
+        continue
+
     if arg.startswith('--'):
         arg = arg[2:]
 
@@ -123,14 +133,33 @@ for arg in sys.argv[1:]:
             verbose = True
             continue
 
-        k, v = arg.split('=', 1)
+        try:
+            k, v = arg.split('=', 1)
+            v.strip()
+        except:
+            k = arg
+            try:
+                v = sys.argv[idx + 1]
+            except:
+                die("--%s argument requires a value" % arg)
+            keep_looping = True
+
         k = k.strip().replace('-', '_')
-        v = v.strip()
 
         if k == 'gitlab':
             gitlab_id = v
         else:
             d[k] = v
+    elif arg.startswith('-'):
+        arg = arg[1:]
+
+        if arg == 'h':
+            usage()
+            sys.exit(0)
+        elif arg == 'v':
+            verbose = True
+        else:
+            die("Unknown argument: -%s" % arg)
     else:
         args.append(arg)
 
@@ -155,7 +184,7 @@ try:
     what = args.pop(0)
     action = args.pop(0)
 except:
-    die("Missing arguments")
+    die("Missing arguments. Use `gitlab -h` for help.")
 
 if action not in ['get', 'list', 'update', 'create', 'delete', 'help']:
     die("Unknown action: %s. Use \"gitlab %s help\" to get details." % (action, what))
