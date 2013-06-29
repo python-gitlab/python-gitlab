@@ -124,7 +124,7 @@ for arg in sys.argv[1:]:
             continue
 
         k, v = arg.split('=', 1)
-        k = k.strip().replace('_', '-')
+        k = k.strip().replace('-', '_')
         v = v.strip()
 
         if k == 'gitlab':
