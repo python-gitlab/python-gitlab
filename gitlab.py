@@ -504,6 +504,17 @@ class GitlabObject(object):
                                  self.shortPrintAttr.replace('_', '-'),
                                  self.__dict__[self.shortPrintAttr]))
 
+    @staticmethod
+    def _obj_to_str(obj):
+        if isinstance(obj, dict):
+            s = ", ".join(["%s: %s" % (x, GitlabObject._obj_to_str(y)) for (x, y) in obj.items()])
+            return "{ %s }" % s
+        elif isinstance(obj, list):
+            s = ", ".join([GitlabObject._obj_to_str(x) for x in obj])
+            return "[ %s ]" %s
+        else:
+            return str(obj)
+
     def pretty_print(self, depth=0):
         id = self.__dict__[self.idAttr]
         print("%s%s: %s" % (" " * depth * 2, self.idAttr, id))
@@ -521,6 +532,7 @@ class GitlabObject(object):
             else:
                 if isinstance(v, Gitlab):
                     continue
+                v = GitlabObject._obj_to_str(v)
                 print("%s%s: %s" % (" " * depth * 2, pretty_k, v))
 
     def json(self):
