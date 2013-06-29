@@ -31,6 +31,13 @@ import gitlab
 
 camel_re = re.compile('(.)([A-Z])')
 
+extra_actions = {
+    gitlab.ProjectBranch: {
+        'protect': { 'requiredAttrs': ['id', 'project-id'] },
+         'unprotect': { 'requiredAttrs': ['id', 'project-id'] }
+     },
+}
+
 def die(msg):
     sys.stderr.write(msg + "\n")
     sys.exit(1)
@@ -73,6 +80,12 @@ def actionHelpList(cls):
                 detail += " "
             detail += " ".join(["[--%s=ARG]" % x.replace('_', '-') for x in cls.optionalCreateAttrs])
         l.append("%s %s" % (action, detail))
+
+    if extra_actions.has_key(cls):
+        for action in sorted(extra_actions[cls]):
+            d = extra_actions[cls][action]
+            detail = " ".join(["--%s=ARG" % arg for arg in d['requiredAttrs']])
+            l.append("%s %s" % (action, detail))
 
     return (l)
 
@@ -300,6 +313,20 @@ elif action == "delete":
 
 elif action == "update":
     o = do_update(cls, d)
+
+elif action == "protect":
+    if cls != gitlab.ProjectBranch:
+        die("%s objects can't be protected" % what)
+
+    o = do_get(cls, d)
+    o.protect()
+
+elif action == "unprotect":
+    if cls != gitlab.ProjectBranch:
+        die("%s objects can't be protected" % what)
+
+    o = do_get(cls, d)
+    o.unprotect()
 
 else:
     die("Unknown action: %s. Use \"gitlab %s help\" to get details." % (action, what))
