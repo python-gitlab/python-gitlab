@@ -385,6 +385,20 @@ class Gitlab(object):
         """
         return self._getListOrObject(User, id, **kwargs)
 
+    def Team(self, id=None, **kwargs):
+        """Creates/gets/lists team(s) known by the GitLab server.
+
+        If id is None, returns a list of teams.
+
+        If id is an integer, returns the matching project (or raise a
+        GitlabGetError if not found)
+
+        If id is a dict, create a new object using attributes provided. The
+        object is NOT saved on the server. Use the save() method on the object
+        to write it on the server.
+        """
+        return self._getListOrObject(Team, id, **kwargs)
+
 
 class GitlabObject(object):
     _url = None
@@ -866,7 +880,7 @@ class TeamMember(GitlabObject):
 
 class TeamProject(GitlabObject):
     _url = '/user_teams/%(team_id)s/projects'
-    _constructorTypes = {'owner': 'User'}
+    _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
     canUpdate = False
     requiredCreateAttrs = ['team_id', 'project_id', 'greatest_access_level']
     requiredDeleteAttrs = ['team_id', 'project_id']
@@ -881,13 +895,12 @@ class Team(GitlabObject):
     requiredCreateAttrs = ['name', 'path']
     canUpdate = False
 
-    def Members(self, id=None, **kwargs):
+    def Member(self, id=None, **kwargs):
         return self._getListOrObject(TeamMember, id,
                                      team_id=self.id,
                                      **kwargs)
 
-    def Projects(self, id=None, **kwargs):
+    def Project(self, id=None, **kwargs):
         return self._getListOrObject(TeamProject, id,
                                      team_id=self.id,
                                      **kwargs)
-
