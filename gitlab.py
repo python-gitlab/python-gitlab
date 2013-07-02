@@ -852,3 +852,42 @@ class Project(GitlabObject):
         return self._getListOrObject(ProjectTag, id,
                                      project_id=self.id,
                                      **kwargs)
+
+
+class TeamMember(GitlabObject):
+    _url = '/user_teams/%(team_id)s/members'
+    canUpdate = False
+    requiredCreateAttrs = ['team_id', 'user_id', 'access_level']
+    requiredDeleteAttrs = ['team_id']
+    requiredGetAttrs = ['team_id']
+    requiredListAttrs = ['team_id']
+    shortPrintAttr = 'username'
+
+
+class TeamProject(GitlabObject):
+    _url = '/user_teams/%(team_id)s/projects'
+    _constructorTypes = {'owner': 'User'}
+    canUpdate = False
+    requiredCreateAttrs = ['team_id', 'project_id', 'greatest_access_level']
+    requiredDeleteAttrs = ['team_id', 'project_id']
+    requiredGetAttrs = ['team_id']
+    requiredListAttrs = ['team_id']
+    shortPrintAttr = 'name'
+
+
+class Team(GitlabObject):
+    _url = '/user_teams'
+    shortPrintAttr = 'name'
+    requiredCreateAttrs = ['name', 'path']
+    canUpdate = False
+
+    def Members(self, id=None, **kwargs):
+        return self._getListOrObject(TeamMember, id,
+                                     team_id=self.id,
+                                     **kwargs)
+
+    def Projects(self, id=None, **kwargs):
+        return self._getListOrObject(TeamProject, id,
+                                     team_id=self.id,
+                                     **kwargs)
+
