@@ -278,9 +278,6 @@ class Gitlab(object):
         url = obj._url % obj.__dict__
         url = '%s%s?private_token=%s' % (self._url, url, self.private_token)
 
-        print url
-        print obj.__dict__
-
         try:
             # TODO: avoid too much work on the server side by filtering the
             # __dict__ keys
