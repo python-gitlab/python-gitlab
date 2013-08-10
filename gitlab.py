@@ -135,11 +135,11 @@ class Gitlab(object):
 
     def rawGet(self, path, with_token=False):
         url = '%s%s' % (self._url, path)
-        if with_token:
-            url += "?private_token=%s" % self.private_token
-
         try:
-            r = requests.get(url)
+            if with_token:
+                r = requests.get(url, headers={"PRIVATE-TOKEN": self.private_token})
+            else:
+                r = requests.get(url)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -158,11 +158,12 @@ class Gitlab(object):
 
     def rawPut(self, path, with_token=False):
         url = '%s%s' % (self._url, path)
-        if with_token:
-            url += "?private_token=%s" % self.private_token
 
         try:
-            r = requests.put(url)
+            if with_token:
+                r = requests.put(url, headers={"PRIVATE-TOKEN": self.private_token})
+            else:
+                r = requests.put(url)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -181,13 +182,13 @@ class Gitlab(object):
         url = obj_class._url
         if kwargs:
             url = obj_class._url % kwargs
-        url = '%s%s?private_token=%s' % (self._url, url, self.private_token)
+        url = '%s%s' % (self._url, url)
         if kwargs:
             url += "&%s" % ("&".join(
                         ["%s=%s" % (k, v) for k, v in kwargs.items()]))
 
         try:
-            r = requests.get(url)
+            r = requests.get(url, headers={"PRIVATE-TOKEN": self.private_token})
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -223,17 +224,17 @@ class Gitlab(object):
             url = obj_class._url % kwargs
         if id is not None:
             try:
-                url = '%s%s/%d?private_token=%s' % \
-                        (self._url, url, id, self.private_token)
+                url = '%s%s/%d' % \
+                        (self._url, url, id)
             except TypeError:  # id might be a str (ProjectBranch)
-                url = '%s%s/%s?private_token=%s' % \
-                        (self._url, url, id, self.private_token)
+                url = '%s%s/%s' % \
+                        (self._url, url, id)
         else:
-            url = '%s%s?private_token=%s' % \
-                    (self._url, url, self.private_token)
+            url = '%s%s' % \
+                    (self._url, url)
 
         try:
-            r = requests.get(url)
+            r = requests.get(url, headers={"PRIVATE-TOKEN": self.private_token})
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -249,11 +250,11 @@ class Gitlab(object):
 
     def delete(self, obj):
         url = obj._url % obj.__dict__
-        url = '%s%s/%d?private_token=%s' % \
-                (self._url, url, obj.id, self.private_token)
+        url = '%s%s/%d' % \
+                (self._url, url, obj.id)
 
         try:
-            r = requests.delete(url)
+            r = requests.delete(url, headers={"PRIVATE-TOKEN": self.private_token})
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -276,12 +277,12 @@ class Gitlab(object):
                     ", ".join(missing))
 
         url = obj._url % obj.__dict__
-        url = '%s%s?private_token=%s' % (self._url, url, self.private_token)
+        url = '%s%s' % (self._url, url)
 
         try:
             # TODO: avoid too much work on the server side by filtering the
             # __dict__ keys
-            r = requests.post(url, obj.__dict__)
+            r = requests.post(url, obj.__dict__, headers={"PRIVATE-TOKEN": self.private_token})
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -295,8 +296,8 @@ class Gitlab(object):
 
     def update(self, obj):
         url = obj._url % obj.__dict__
-        url = '%s%s/%d?private_token=%s' % \
-                (self._url, url, obj.id, self.private_token)
+        url = '%s%s/%d' % \
+                (self._url, url, obj.id)
 
         # build a dict of data that can really be sent to server
         d = {}
@@ -305,7 +306,7 @@ class Gitlab(object):
                 d[k] = str(v)
 
         try:
-            r = requests.put(url, d)
+            r = requests.put(url, d, headers={"PRIVATE-TOKEN": self.private_token})
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -587,9 +588,9 @@ class Group(GitlabObject):
     shortPrintAttr = 'name'
 
     def transfer_project(self, id):
-        url = '/groups/%d/projects/%d?private_token=%s' % \
-                (self.id, id, self.gitlab.private_token)
-        r = self.gitlab.rawPost(url, None)
+        url = '/groups/%d/projects/%d' % \
+                (self.id, id)
+        r = self.gitlab.rawPost(url, None, headers={"PRIVATE-TOKEN": self.gitlab.private_token})
         if r.status_code != 201:
             raise GitlabTransferProjectError()
 
