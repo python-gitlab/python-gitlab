@@ -737,7 +737,7 @@ class ProjectMergeRequestNote(GitlabObject):
 
 
 class ProjectMergeRequest(GitlabObject):
-    _url = '/projects/%(project_id)s/merge_request'
+    _url = '/projects/%(project_id)s/merge_requests'
     _constructorTypes = {'author': 'User', 'assignee': 'User'}
     canDelete = False
     requiredListAttrs = ['project_id']
