@@ -1,0 +1,15 @@
+Version 0.3
+
+ * provide a AUTHORS file
+ * cli: support ssl_verify config option
+ * Add ssl_verify option to Gitlab object. Defauls to True
+ * Correct url for merge requests API.
+
+Version 0.2
+
+ * provide a pip requirements.txt
+ * drop some debug statements
+
+Version 0.1
+
+ * Initial release
