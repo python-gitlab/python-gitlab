@@ -126,7 +126,7 @@ def usage():
 
 def do_auth():
     try:
-        gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_token)
+        gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_token, ssl_verify=ssl_verify)
         gl.auth()
     except:
         die("Could not connect to GitLab (%s)" % gitlab_url)
@@ -204,6 +204,7 @@ def do_update(cls, d):
     return o
 
 
+ssl_verify = True
 gitlab_id = None
 verbose = False
 
@@ -271,6 +272,15 @@ try:
     gitlab_token = config.get(gitlab_id, 'private_token')
 except:
     die("Impossible to get gitlab informations from configuration (%s)" % gitlab_id)
+
+try:
+    ssl_verify = config.getboolean('global', 'ssl_verify')
+except:
+    pass
+try:
+    ssl_verify = config.getboolean(gitlab_id, 'ssl_verify')
+except:
+    pass
 
 try:
     what = args.pop(0)

@@ -69,6 +69,7 @@ Here's an example of the syntax:
 `````
 [global]
 default = local
+ssl_verify = true
 
 [local]
 url = http://10.0.3.2:8080
@@ -77,11 +78,15 @@ private_token = vTbFeqJYCY3sibBP7BZM
 [distant]
 url = https://some.whe.re
 private_token = thisisaprivatetoken
+ssl_verify = false
 `````
 
 The [global] section define which server is accesed by default.
 Each other section defines how to access a server. Only private token
 authentication is supported (not user/password).
+
+The `ssl_verify` option defines if the server SSL certificate should be
+validated (use false for self signed certificates, only useful with https).
 
 Choosing a different server than the default one can be done at run time:
 
