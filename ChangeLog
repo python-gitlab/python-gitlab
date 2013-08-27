@@ -1,5 +1,6 @@
 Version 0.3
 
+ * Use PRIVATE-TOKEN header for passing the auth token
  * provide a AUTHORS file
  * cli: support ssl_verify config option
  * Add ssl_verify option to Gitlab object. Defauls to True
