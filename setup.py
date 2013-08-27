@@ -21,5 +21,14 @@ setup(name='python-gitlab',
       license='LGPLv3',
       url='https://github.com/gpocentek/python-gitlab',
       py_modules=['gitlab'],
-      scripts=['gitlab']
+      scripts=['gitlab'],
+      classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
+        'Intended Audience :: System Administrators',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Natural Language :: English',
+        'Operating System :: POSIX',
+        'Operating System :: Microsoft :: Windows'
+        ]
       )

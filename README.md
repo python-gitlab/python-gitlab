@@ -14,7 +14,12 @@ python-gitlab depends on:
 
 ## State
 
-python-gitlab is a work in progress, although already usable. Changes in the API might happen.
+python-gitlab >= 0.3 is considered stable.
+
+## Bugs reports
+
+Please report bugs and feature requests at
+https://github.com/gpocentek/python-gitlab/issues
 
 ## ToDo
 
