@@ -18,6 +18,7 @@
 
 import json
 import requests
+import sys
 
 __title__ = 'python-gitlab'
 __version__ = '0.3'
@@ -298,8 +299,10 @@ class Gitlab(object):
         # build a dict of data that can really be sent to server
         d = {}
         for k, v in obj.__dict__.items():
-            if type(v) in (int, str, unicode, bool):
+            if type(v) in (int, str, bool):
                 d[k] = str(v)
+            elif type(v) == unicode:
+                d[k] = str(v.encode(sys.stdout.encoding, "replace"))
 
         try:
             r = requests.put(url, d, headers=self.headers, verify=self.ssl_verify)
@@ -520,6 +523,8 @@ class GitlabObject(object):
         elif isinstance(obj, list):
             s = ", ".join([GitlabObject._obj_to_str(x) for x in obj])
             return "[ %s ]" %s
+        elif isinstance(obj, unicode):
+            return obj.encode(sys.stdout.encoding, "replace")
         else:
             return str(obj)
 
@@ -530,7 +535,7 @@ class GitlabObject(object):
             if k == self.idAttr:
                 continue
             v = self.__dict__[k]
-            pretty_k = k.replace('_', '-')
+            pretty_k = k.replace('_', '-').encode(sys.stdout.encoding, "replace")
             if isinstance(v, GitlabObject):
                 if depth == 0:
                     print("%s:" % pretty_k)
