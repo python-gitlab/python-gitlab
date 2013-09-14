@@ -748,7 +748,7 @@ class ProjectMergeRequest(GitlabObject):
 
     def Note(self, id=None, **kwargs):
         return self._getListOrObject(ProjectMergeRequestNote, id,
-                                     project_id=self.id,
+                                     project_id=self.project_id,
                                      merge_request_id=self.id,
                                      **kwargs)
 
