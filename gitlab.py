@@ -645,7 +645,6 @@ class ProjectBranch(GitlabObject):
 
 class ProjectCommit(GitlabObject):
     _url = '/projects/%(project_id)s/repository/commits'
-    canGet = False
     canDelete = False
     canUpdate = False
     canCreate = False
