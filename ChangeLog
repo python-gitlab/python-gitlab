@@ -3,6 +3,7 @@ Version 0.4
  * Fix strings encoding (Closes #6)
  * Allow to get a project commit (GitLab 6.1)
  * ProjectMergeRequest: fix Note() method
+ * Gitlab 6.1 methods: diff, blob (commit), tree, blob (project)
 
 Version 0.3
 

@@ -651,6 +651,25 @@ class ProjectCommit(GitlabObject):
     requiredListAttrs = ['project_id']
     shortPrintAttr = 'title'
 
+    def diff(self):
+        url = '/projects/%(project_id)s/repository/commits/%(commit_id)s/diff' % \
+                {'project_id': self.project_id, 'commit_id': self.id}
+        r = self.gitlab.rawGet(url)
+        if r.status_code == 200:
+            return r.json()
+
+        raise GitlabGetError()
+
+    def blob(self, filepath):
+        url = '/projects/%(project_id)s/repository/blobs/%(commit_id)s' % \
+                {'project_id': self.project_id, 'commit_id': self.id}
+        url += '?filepath=%s' % filepath
+        r = self.gitlab.rawGet(url)
+        if r.status_code == 200:
+            return r.content
+
+        raise GitlabGetError()
+
 
 class ProjectKey(GitlabObject):
     _url = '/projects/%(project_id)s/keys'
@@ -864,6 +883,24 @@ class Project(GitlabObject):
         return self._getListOrObject(ProjectTag, id,
                                      project_id=self.id,
                                      **kwargs)
+
+    def tree(self, path='', ref_name=''):
+        url = "%s/%s/repository/tree" % (self._url, self.id)
+        url += '?path=%s&ref_name=%s' % (path, ref_name)
+        r = self.gitlab.rawGet(url)
+        if r.status_code == 200:
+            return r.json()
+
+        raise GitlabGetError()
+
+    def blob(self, sha, filepath):
+        url = "%s/%s/repository/blobs/%s" % (self._url, self.id, sha)
+        url += '?filepath=%s' % (filepath)
+        r = self.gitlab.rawGet(url)
+        if r.status_code == 200:
+            return r.content
+
+        raise GitlabGetError()
 
 
 class TeamMember(GitlabObject):
