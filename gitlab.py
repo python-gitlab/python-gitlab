@@ -75,7 +75,8 @@ class GitlabAuthenticationError(Exception):
 
 class Gitlab(object):
     """Represents a GitLab server connection"""
-    def __init__(self, url, private_token=None, email=None, password=None, ssl_verify=True):
+    def __init__(self, url, private_token=None,
+                 email=None, password=None, ssl_verify=True):
         """Stores informations about the server
 
         url: the URL of the Gitlab server
@@ -122,12 +123,8 @@ class Gitlab(object):
 
     def setToken(self, token):
         """Sets the private token for authentication"""
-        if token:
-            self.private_token = token
-            self.headers = {"PRIVATE-TOKEN": token}
-        else:
-            self.private_token = None
-            self.headers = {}
+        self.private_token = token if token else None
+        self.headers = {"PRIVATE-TOKEN": token} if token else None
 
     def setCredentials(self, email, password):
         """Sets the email/login and password for authentication"""
@@ -137,52 +134,48 @@ class Gitlab(object):
     def rawGet(self, path):
         url = '%s%s' % (self._url, path)
         try:
-            r = requests.get(url, headers=self.headers, verify=self.ssl_verify)
+            return requests.get(url,
+                                headers=self.headers,
+                                verify=self.ssl_verify)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
-
-        return r
 
     def rawPost(self, path, data):
         url = '%s%s' % (self._url, path)
         try:
-            r = requests.post(url, data,
-                              headers=self.headers,
-                              verify=self.ssl_verify)
+            return requests.post(url, data,
+                                 headers=self.headers,
+                                 verify=self.ssl_verify)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
-
-        return r
 
     def rawPut(self, path):
         url = '%s%s' % (self._url, path)
 
         try:
-            r = requests.put(url, headers=self.headers, verify=self.ssl_verify)
+            return requests.put(url,
+                                headers=self.headers,
+                                verify=self.ssl_verify)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
-
-        return r
 
     def list(self, obj_class, **kwargs):
         missing = []
         for k in obj_class.requiredListAttrs:
             if k not in kwargs:
-                missing.append (k)
+                missing.append(k)
         if missing:
-            raise GitlabListError('Missing attribute(s): %s' % \
-                    ", ".join(missing))
+            raise GitlabListError('Missing attribute(s): %s' %
+                                  ", ".join(missing))
 
-        url = obj_class._url
-        if kwargs:
-            url = obj_class._url % kwargs
+        url = obj_class._url % kwargs
         url = '%s%s' % (self._url, url)
         if kwargs:
             url += "?%s" % ("&".join(
-                        ["%s=%s" % (k, v) for k, v in kwargs.items()]))
+                   ["%s=%s" % (k, v) for k, v in kwargs.items()]))
 
         try:
             r = requests.get(url, headers=self.headers, verify=self.ssl_verify)
@@ -211,24 +204,16 @@ class Gitlab(object):
         missing = []
         for k in obj_class.requiredGetAttrs:
             if k not in kwargs:
-                missing.append (k)
+                missing.append(k)
         if missing:
-            raise GitlabListError('Missing attribute(s): %s' % \
-                    ", ".join(missing))
+            raise GitlabListError('Missing attribute(s): %s' %
+                                  ", ".join(missing))
 
-        url = obj_class._url
-        if kwargs:
-            url = obj_class._url % kwargs
+        url = obj_class._url % kwargs
         if id is not None:
-            try:
-                url = '%s%s/%d' % \
-                        (self._url, url, id)
-            except TypeError:  # id might be a str (ProjectBranch)
-                url = '%s%s/%s' % \
-                        (self._url, url, id)
+            url = '%s%s/%s' % (self._url, url, str(id))
         else:
-            url = '%s%s' % \
-                    (self._url, url)
+            url = '%s%s' % (self._url, url)
 
         try:
             r = requests.get(url, headers=self.headers, verify=self.ssl_verify)
@@ -247,11 +232,12 @@ class Gitlab(object):
 
     def delete(self, obj):
         url = obj._url % obj.__dict__
-        url = '%s%s/%d' % \
-                (self._url, url, obj.id)
+        url = '%s%s/%s' % (self._url, url, str(obj.id))
 
         try:
-            r = requests.delete(url, headers=self.headers, verify=self.ssl_verify)
+            r = requests.delete(url,
+                                headers=self.headers,
+                                verify=self.ssl_verify)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -268,18 +254,18 @@ class Gitlab(object):
         missing = []
         for k in obj.requiredCreateAttrs:
             if k not in obj.__dict__:
-                missing.append (k)
+                missing.append(k)
         if missing:
-            raise GitlabCreateError('Missing attribute(s): %s' % \
-                    ", ".join(missing))
+            raise GitlabCreateError('Missing attribute(s): %s' %
+                                    ", ".join(missing))
 
         url = obj._url % obj.__dict__
         url = '%s%s' % (self._url, url)
 
         try:
-            # TODO: avoid too much work on the server side by filtering the
-            # __dict__ keys
-            r = requests.post(url, obj.__dict__, headers=self.headers, verify=self.ssl_verify)
+            r = requests.post(url, obj.__dict__,
+                              headers=self.headers,
+                              verify=self.ssl_verify)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -293,8 +279,7 @@ class Gitlab(object):
 
     def update(self, obj):
         url = obj._url % obj.__dict__
-        url = '%s%s/%d' % \
-                (self._url, url, obj.id)
+        url = '%s%s/%s' % (self._url, url, str(obj.id))
 
         # build a dict of data that can really be sent to server
         d = {}
@@ -305,7 +290,9 @@ class Gitlab(object):
                 d[k] = str(v.encode(sys.stdout.encoding, "replace"))
 
         try:
-            r = requests.put(url, d, headers=self.headers, verify=self.ssl_verify)
+            r = requests.put(url, d,
+                             headers=self.headers,
+                             verify=self.ssl_verify)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -427,17 +414,16 @@ class GitlabObject(object):
         if id is None:
             if not cls.canList:
                 raise GitlabGetError
-
             return cls.list(self.gitlab, **kwargs)
+
         elif isinstance(id, dict):
             if not cls.canCreate:
                 raise GitlabCreateError
-
             return cls(self.gitlab, id, **kwargs)
+
         else:
             if not cls.canGet:
                 raise GitlabGetError
-
             return cls(self.gitlab, id, **kwargs)
 
     def _getObject(self, k, v):
@@ -511,18 +497,20 @@ class GitlabObject(object):
         id = self.__dict__[self.idAttr]
         print("%s%s: %s" % (" " * depth * 2, self.idAttr, id))
         if self.shortPrintAttr:
-            print ("%s%s: %s" % (" " * depth * 2,
-                                 self.shortPrintAttr.replace('_', '-'),
-                                 self.__dict__[self.shortPrintAttr]))
+            print("%s%s: %s" % (" " * depth * 2,
+                                self.shortPrintAttr.replace('_', '-'),
+                                self.__dict__[self.shortPrintAttr]))
 
     @staticmethod
     def _obj_to_str(obj):
         if isinstance(obj, dict):
-            s = ", ".join(["%s: %s" % (x, GitlabObject._obj_to_str(y)) for (x, y) in obj.items()])
+            s = ", ".join(["%s: %s" %
+                          (x, GitlabObject._obj_to_str(y))
+                          for (x, y) in obj.items()])
             return "{ %s }" % s
         elif isinstance(obj, list):
             s = ", ".join([GitlabObject._obj_to_str(x) for x in obj])
-            return "[ %s ]" %s
+            return "[ %s ]" % s
         elif isinstance(obj, unicode):
             return obj.encode(sys.stdout.encoding, "replace")
         else:
@@ -535,7 +523,8 @@ class GitlabObject(object):
             if k == self.idAttr:
                 continue
             v = self.__dict__[k]
-            pretty_k = k.replace('_', '-').encode(sys.stdout.encoding, "replace")
+            pretty_k = k.replace('_', '-').encode(sys.stdout.encoding,
+                                                  "replace")
             if isinstance(v, GitlabObject):
                 if depth == 0:
                     print("%s:" % pretty_k)
@@ -589,8 +578,7 @@ class Group(GitlabObject):
     shortPrintAttr = 'name'
 
     def transfer_project(self, id):
-        url = '/groups/%d/projects/%d' % \
-                (self.id, id)
+        url = '/groups/%d/projects/%d' % (self.id, id)
         r = self.gitlab.rawPost(url, None)
         if r.status_code != 201:
             raise GitlabTransferProjectError()
@@ -625,10 +613,8 @@ class ProjectBranch(GitlabObject):
 
     def protect(self, protect=True):
         url = self._url % {'project_id': self.project_id}
-        if protect:
-            url = "%s/%s/protect" % (url, self.name)
-        else:
-            url = "%s/%s/unprotect" % (url, self.name)
+        action = 'protect' if protect else 'unprotect'
+        url = "%s/%s/%s" % (url, self.name, action)
         r = self.gitlab.rawPut(url)
 
         if r.status_code == 200:
@@ -653,22 +639,22 @@ class ProjectCommit(GitlabObject):
 
     def diff(self):
         url = '/projects/%(project_id)s/repository/commits/%(commit_id)s/diff' % \
-                {'project_id': self.project_id, 'commit_id': self.id}
+              {'project_id': self.project_id, 'commit_id': self.id}
         r = self.gitlab.rawGet(url)
         if r.status_code == 200:
             return r.json()
 
-        raise GitlabGetError()
+        raise GitlabGetError
 
     def blob(self, filepath):
         url = '/projects/%(project_id)s/repository/blobs/%(commit_id)s' % \
-                {'project_id': self.project_id, 'commit_id': self.id}
+              {'project_id': self.project_id, 'commit_id': self.id}
         url += '?filepath=%s' % filepath
         r = self.gitlab.rawGet(url)
         if r.status_code == 200:
             return r.content
 
-        raise GitlabGetError()
+        raise GitlabGetError
 
 
 class ProjectKey(GitlabObject):
@@ -762,7 +748,8 @@ class ProjectMergeRequest(GitlabObject):
     canDelete = False
     requiredListAttrs = ['project_id']
     requiredGetAttrs = ['project_id']
-    requiredCreateAttrs = ['project_id', 'source_branch', 'target_branch', 'title']
+    requiredCreateAttrs = ['project_id', 'source_branch',
+                           'target_branch', 'title']
     optionalCreateAttrs = ['assignee_id']
 
     def Note(self, id=None, **kwargs):
@@ -891,7 +878,7 @@ class Project(GitlabObject):
         if r.status_code == 200:
             return r.json()
 
-        raise GitlabGetError()
+        raise GitlabGetError
 
     def blob(self, sha, filepath):
         url = "%s/%s/repository/blobs/%s" % (self._url, self.id, sha)
@@ -900,7 +887,7 @@ class Project(GitlabObject):
         if r.status_code == 200:
             return r.content
 
-        raise GitlabGetError()
+        raise GitlabGetError
 
 
 class TeamMember(GitlabObject):
