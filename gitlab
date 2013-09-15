@@ -169,7 +169,7 @@ def do_get(cls, d):
         die("%s objects can't be retrieved" % what)
 
     id = None
-    if cls not in [gitlab.CurrentUser, gitlab.ProjectCommitDiff]:
+    if cls not in [gitlab.CurrentUser]:
         id = get_id()
 
     try:
