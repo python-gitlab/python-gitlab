@@ -4,6 +4,7 @@ Version 0.4
  * Allow to get a project commit (GitLab 6.1)
  * ProjectMergeRequest: fix Note() method
  * Gitlab 6.1 methods: diff, blob (commit), tree, blob (project)
+ * Add support for Gitlab 6.1 group members
 
 Version 0.3
 

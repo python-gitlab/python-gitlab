@@ -187,7 +187,7 @@ class Gitlab(object):
             cls = obj_class
             if obj_class._returnClass:
                 cls = obj_class._returnClass
-            l = [cls(self, item) for item in r.json()]
+            l = [cls(self, item) for item in r.json() if item is not None]
             if kwargs:
                 for k, v in kwargs.items():
                     if k in ('page', 'per_page'):
@@ -571,11 +571,25 @@ class CurrentUser(GitlabObject):
             return CurrentUserKey(self.gitlab, id)
 
 
+class GroupMember(GitlabObject):
+    _url = '/groups/%(group_id)s/members'
+    canGet = False
+    canUpdate = False
+    requiredCreateAttrs = ['group_id', 'user_id', 'access_level']
+    requiredDeleteAttrs = ['group_id', 'user_id']
+    shortPrintAttr = 'username'
+
+
 class Group(GitlabObject):
     _url = '/groups'
     _constructorTypes = {'projects': 'Project'}
     requiredCreateAttrs = ['name', 'path']
     shortPrintAttr = 'name'
+
+    def Member(self, id=None, **kwargs):
+        return self._getListOrObject(GroupMember, id,
+                                     group_id=self.id,
+                                     **kwargs)
 
     def transfer_project(self, id):
         url = '/groups/%d/projects/%d' % (self.id, id)
