@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from distutils.core import setup
+from setuptools import setup
 
 def get_version():
     f = open('gitlab.py')
@@ -22,6 +22,7 @@ setup(name='python-gitlab',
       url='https://github.com/gpocentek/python-gitlab',
       py_modules=['gitlab'],
       scripts=['gitlab'],
+      install_requires=['requests'],
       classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
