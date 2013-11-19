@@ -683,6 +683,16 @@ class ProjectKey(GitlabObject):
     requiredCreateAttrs = ['project_id', 'title', 'key']
 
 
+class ProjectEvent(GitlabObject):
+    _url = '/projects/%(project_id)s/events'
+    canGet = False
+    canDelete = False
+    canUpdate = False
+    canCreate = False
+    requiredListAttrs = ['project_id']
+    shortPrintAttr = 'target_title'
+
+
 class ProjectHook(GitlabObject):
     _url = '/projects/%(project_id)s/hooks'
     requiredListAttrs = ['project_id']
@@ -841,6 +851,11 @@ class Project(GitlabObject):
 
     def Commit(self, id=None, **kwargs):
         return self._getListOrObject(ProjectCommit, id,
+                                     project_id=self.id,
+                                     **kwargs)
+
+    def Event(self, id=None, **kwargs):
+        return self._getListOrObject(ProjectEvent, id,
                                      project_id=self.id,
                                      **kwargs)
 
