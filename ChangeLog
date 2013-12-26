@@ -1,6 +1,8 @@
 Version 0.5
 
  * Add SSH key for user
+ * Fix comments
+ * Add support for project events
 
 Version 0.4
 
