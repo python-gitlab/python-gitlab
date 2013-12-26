@@ -1,3 +1,7 @@
+Version 0.5
+
+ * Add SSH key for user
+
 Version 0.4
 
  * Fix strings encoding (Closes #6)

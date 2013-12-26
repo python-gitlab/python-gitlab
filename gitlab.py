@@ -541,14 +541,6 @@ class GitlabObject(object):
         return json.dumps(self.__dict__, cls=jsonEncoder)
 
 
-class User(GitlabObject):
-    _url = '/users'
-    shortPrintAttr = 'username'
-    requiredCreateAttrs = ['email', 'password', 'username', 'name']
-    optionalCreateAttrs = ['skype', 'linkedin', 'twitter', 'projects_limit',
-                           'extern_uid', 'provider', 'bio']
-
-
 class UserKey(GitlabObject):
     _url = '/users/%(user_id)s/keys'
     canGet = False
@@ -556,6 +548,19 @@ class UserKey(GitlabObject):
     canUpdate = False
     canDelete = False
     requiredCreateAttrs = ['user_id', 'title', 'key']
+
+
+class User(GitlabObject):
+    _url = '/users'
+    shortPrintAttr = 'username'
+    requiredCreateAttrs = ['email', 'password', 'username', 'name']
+    optionalCreateAttrs = ['skype', 'linkedin', 'twitter', 'projects_limit',
+                           'extern_uid', 'provider', 'bio']
+
+    def Key(self, id=None, **kwargs):
+        return self._getListOrObject(UserKey, id,
+                                     user_id=self.id,
+                                     **kwargs)
 
 
 class CurrentUserKey(GitlabObject):
