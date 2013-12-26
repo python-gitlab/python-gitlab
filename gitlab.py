@@ -348,6 +348,13 @@ class Gitlab(object):
         """
         return self._getListOrObject(Project, id, **kwargs)
 
+    def UserProject(self, id=None, **kwargs):
+        """Creates a project for a user.
+
+        id must be a dict.
+        """
+        return self._getListOrObject(UserProject, id, **kwargs)
+
     def _list_projects(self, url):
         r = self.rawGet(url)
         if r.status_code != 200:
@@ -892,6 +899,20 @@ class ProjectSnippet(GitlabObject):
                                      **kwargs)
 
 
+class UserProject(GitlabObject):
+    _url = '/projects/user/%(user_id)s'
+    _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
+    canUpdate = False
+    canDelete = False
+    canList = False
+    canGet = False
+    requiredCreateAttrs = ['name', 'user_id']
+    optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
+                           'merge_requests_enabled', 'wiki_enabled',
+                           'snippets_enabled', 'public', 'visibility_level',
+                           'description']
+
+
 class Project(GitlabObject):
     _url = '/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
@@ -900,7 +921,8 @@ class Project(GitlabObject):
     requiredCreateAttrs = ['name']
     optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
                            'merge_requests_enabled', 'wiki_enabled',
-                           'namespace_id']
+                           'snippets_enabled', 'public', 'visibility_level',
+                           'namespace_id', 'description']
     shortPrintAttr = 'path'
 
     def Branch(self, id=None, **kwargs):
