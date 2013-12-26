@@ -315,9 +315,9 @@ class Gitlab(object):
 
         If id is None, returns a list of hooks.
 
-        If id is an integer, test the matching hook.
+        If id is an integer, tests the matching hook.
 
-        If id is a dict, create a new object using attributes provided. The
+        If id is a dict, creates a new object using attributes provided. The
         object is NOT saved on the server. Use the save() method on the object
         to write it on the server.
         """
@@ -328,42 +328,46 @@ class Gitlab(object):
 
         If id is None, returns a list of projects.
 
-        If id is an integer, returns the matching project (or raise a
+        If id is an integer, returns the matching project (or raises a
         GitlabGetError if not found)
 
-        If id is a dict, create a new object using attributes provided. The
+        If id is a dict, creates a new object using attributes provided. The
         object is NOT saved on the server. Use the save() method on the object
         to write it on the server.
         """
         return self._getListOrObject(Project, id, **kwargs)
 
     def Group(self, id=None, **kwargs):
-        """Creates/gets/lists groups(s) known by the GitLab server.
+        """Creates/gets/lists group(s) known by the GitLab server.
 
-        If id is None, returns a list of projects.
+        If id is None, returns a list of groups.
 
-        If id is an integer, returns the matching project (or raise a
+        If id is an integer, returns the matching group (or raises a
         GitlabGetError if not found)
 
-        If id is a dict, create a new object using attributes provided. The
+        If id is a dict, creates a new object using attributes provided. The
         object is NOT saved on the server. Use the save() method on the object
         to write it on the server.
         """
         return self._getListOrObject(Group, id, **kwargs)
 
     def Issue(self, id=None, **kwargs):
-        """Lists issues(s) known by the GitLab server."""
+        """Lists issues(s) known by the GitLab server.
+
+        Does not support creation or getting a single issue unlike other
+        methods in this class yet.
+        """
         return self._getListOrObject(Issue, id, **kwargs)
 
     def User(self, id=None, **kwargs):
         """Creates/gets/lists users(s) known by the GitLab server.
 
-        If id is None, returns a list of projects.
+        If id is None, returns a list of users.
 
-        If id is an integer, returns the matching project (or raise a
+        If id is an integer, returns the matching user (or raises a
         GitlabGetError if not found)
 
-        If id is a dict, create a new object using attributes provided. The
+        If id is a dict, creates a new object using attributes provided. The
         object is NOT saved on the server. Use the save() method on the object
         to write it on the server.
         """
@@ -374,7 +378,7 @@ class Gitlab(object):
 
         If id is None, returns a list of teams.
 
-        If id is an integer, returns the matching project (or raise a
+        If id is an integer, returns the matching team (or raises a
         GitlabGetError if not found)
 
         If id is a dict, create a new object using attributes provided. The
@@ -693,6 +697,16 @@ class ProjectKey(GitlabObject):
     requiredCreateAttrs = ['project_id', 'title', 'key']
 
 
+class ProjectEvent(GitlabObject):
+    _url = '/projects/%(project_id)s/events'
+    canGet = False
+    canDelete = False
+    canUpdate = False
+    canCreate = False
+    requiredListAttrs = ['project_id']
+    shortPrintAttr = 'target_title'
+
+
 class ProjectHook(GitlabObject):
     _url = '/projects/%(project_id)s/hooks'
     requiredListAttrs = ['project_id']
@@ -851,6 +865,11 @@ class Project(GitlabObject):
 
     def Commit(self, id=None, **kwargs):
         return self._getListOrObject(ProjectCommit, id,
+                                     project_id=self.id,
+                                     **kwargs)
+
+    def Event(self, id=None, **kwargs):
+        return self._getListOrObject(ProjectEvent, id,
                                      project_id=self.id,
                                      **kwargs)
 
