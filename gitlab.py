@@ -141,7 +141,7 @@ class Gitlab(object):
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
 
-    def rawPost(self, path, data):
+    def rawPost(self, path, data=None):
         url = '%s%s' % (self._url, path)
         try:
             return requests.post(url, data,
@@ -158,6 +158,17 @@ class Gitlab(object):
             return requests.put(url,
                                 headers=self.headers,
                                 verify=self.ssl_verify)
+        except:
+            raise GitlabConnectionError(
+                "Can't connect to GitLab server (%s)" % self._url)
+
+    def rawDelete(self, path):
+        url = '%s%s' % (self._url, path)
+
+        try:
+            return requests.delete(url,
+                                   headers=self.headers,
+                                   verify=self.ssl_verify)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -880,6 +891,11 @@ class Project(GitlabObject):
                                      project_id=self.id,
                                      **kwargs)
 
+    def File(self, id=None, **kwargs):
+        return self._getListOrObject(ProjectFile, id,
+                                     project_id=self.id,
+                                     **kwargs)
+
     def Hook(self, id=None, **kwargs):
         return self._getListOrObject(ProjectHook, id,
                                      project_id=self.id,
@@ -952,6 +968,30 @@ class Project(GitlabObject):
             return r.content
 
         raise GitlabGetError
+
+    def create_file(self, path, branch, content, message):
+        url = "/projects/%s/repository/files" % self.id
+        url += "?file_path=%s&branch_name=%s&content=%s&commit_message=%s" % \
+            (path, branch, content, message)
+        r = self.gitlab.rawPost(url)
+        if r.status_code != 201:
+            raise GitlabCreateError
+
+    def update_file(self, path, branch, content, message):
+        url = "/projects/%s/repository/files" % self.id
+        url += "?file_path=%s&branch_name=%s&content=%s&commit_message=%s" % \
+            (path, branch, content, message)
+        r = self.gitlab.rawPut(url)
+        if r.status_code != 200:
+            raise GitlabUpdateError
+
+    def delete_file(self, path, branch, message):
+        url = "/projects/%s/repository/files" % self.id
+        url += "?file_path=%s&branch_name=%s&commit_message=%s" % \
+            (path, branch, message)
+        r = self.gitlab.rawDelete(url)
+        if r.status_code != 200:
+            raise GitlabDeleteError
 
 
 class TeamMember(GitlabObject):
