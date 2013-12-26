@@ -559,7 +559,8 @@ class User(GitlabObject):
     shortPrintAttr = 'username'
     requiredCreateAttrs = ['email', 'password', 'username', 'name']
     optionalCreateAttrs = ['skype', 'linkedin', 'twitter', 'projects_limit',
-                           'extern_uid', 'provider', 'bio']
+                           'extern_uid', 'provider', 'bio', 'admin',
+                           'can_create_group']
 
     def Key(self, id=None, **kwargs):
         return self._getListOrObject(UserKey, id,
