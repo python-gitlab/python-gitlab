@@ -3,6 +3,13 @@ Version 0.5
  * Add SSH key for user
  * Fix comments
  * Add support for project events
+ * Support creation of projects for users
+ * Project: add methods for create/update/delete files
+ * Support projects listing: search, all, owned
+ * System hooks can't be updated
+ * Project.archive(): download tarball of the project
+ * Define new optional attributes for user creation
+ * Provide constants for access permissions in groups
 
 Version 0.4
 
