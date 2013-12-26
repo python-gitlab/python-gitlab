@@ -33,8 +33,13 @@ camel_re = re.compile('(.)([A-Z])')
 
 extra_actions = {
     gitlab.ProjectBranch: {
-        'protect': { 'requiredAttrs': ['id', 'project-id'] },
-         'unprotect': { 'requiredAttrs': ['id', 'project-id'] }
+        'protect': {'requiredAttrs': ['id', 'project-id']},
+         'unprotect': {'requiredAttrs': ['id', 'project-id']}
+     },
+    gitlab.Project: {
+        'search': {'requiredAttrs': ['query']},
+        'owned': {'requiredAttrs': []},
+        'all': {'requiredAttrs': []}
      },
 }
 
@@ -203,6 +208,24 @@ def do_update(cls, d):
 
     return o
 
+def do_project_search(d):
+    try:
+        return gl.search_projects(d['query'])
+    except:
+        die("Impossible to search projects (%s)" % str(e))
+
+def do_project_all():
+    try:
+        return gl.all_projects()
+    except Exception as e:
+        die("Impossible to list all projects (%s)" % str(e))
+
+def do_project_owned():
+    try:
+        return gl.owned_projects()
+    except:
+        die("Impossible to list owned projects (%s)" % str(e))
+
 
 ssl_verify = True
 gitlab_id = None
@@ -337,6 +360,27 @@ elif action == "unprotect":
 
     o = do_get(cls, d)
     o.unprotect()
+
+elif action == "search":
+    if cls != gitlab.Project:
+        die("%s objects don't support this request" % what)
+
+    for o in do_project_search(d):
+        o.display(verbose)
+
+elif action == "owned":
+    if cls != gitlab.Project:
+        die("%s objects don't support this request" % what)
+
+    for o in do_project_owned():
+        o.display(verbose)
+
+elif action == "all":
+    if cls != gitlab.Project:
+        die("%s objects don't support this request" % what)
+
+    for o in do_project_all():
+        o.display(verbose)
 
 else:
     die("Unknown action: %s. Use \"gitlab %s help\" to get details." % (action, what))

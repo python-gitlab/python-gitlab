@@ -337,6 +337,32 @@ class Gitlab(object):
         """
         return self._getListOrObject(Project, id, **kwargs)
 
+    def _list_projects(self, url):
+        r = self.rawGet(url)
+        if r.status_code != 200:
+            raise GitlabListError
+
+        l = []
+        for o in r.json():
+            l.append(Project(self, o))
+
+        return l
+
+    def search_projects(self, query):
+        """Searches projects by  name.
+
+        Returns a list of matching projects.
+        """
+        return self._list_projects("/projects/search/" + query)
+
+    def all_projects(self):
+        """Lists all the projects (need admin rights)."""
+        return self._list_projects("/projects/all")
+
+    def owned_projects(self):
+        """Lists owned projects."""
+        return self._list_projects("/projects/owned")
+
     def Group(self, id=None, **kwargs):
         """Creates/gets/lists group(s) known by the GitLab server.
 
