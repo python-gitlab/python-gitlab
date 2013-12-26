@@ -549,6 +549,15 @@ class User(GitlabObject):
                            'extern_uid', 'provider', 'bio']
 
 
+class UserKey(GitlabObject):
+    _url = '/users/%(user_id)s/keys'
+    canGet = False
+    canList = False
+    canUpdate = False
+    canDelete = False
+    requiredCreateAttrs = ['user_id', 'title', 'key']
+
+
 class CurrentUserKey(GitlabObject):
     _url = '/user/keys'
     canUpdate = False
