@@ -625,6 +625,7 @@ class Group(GitlabObject):
 
 class Hook(GitlabObject):
     _url = '/hooks'
+    canUpdate = False
     requiredCreateAttrs = ['url']
     shortPrintAttr = 'url'
 
