@@ -943,6 +943,16 @@ class Project(GitlabObject):
 
         raise GitlabGetError
 
+    def archive(self, sha=None):
+        url = '/projects/%s/repository/archive' % self.id
+        if sha:
+            url += '?sha=%s' % sha
+        r = self.gitlab.rawGet(url)
+        if r.status_code == 200:
+            return r.content
+
+        raise GitlabGetError
+
 
 class TeamMember(GitlabObject):
     _url = '/user_teams/%(team_id)s/members'
