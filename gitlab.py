@@ -604,6 +604,12 @@ class Group(GitlabObject):
     requiredCreateAttrs = ['name', 'path']
     shortPrintAttr = 'name'
 
+    GUEST_ACCESS = 10
+    REPORTER_ACCESS = 20
+    DEVELOPER_ACCESS = 30
+    MASTER_ACCESS = 40
+    OWNER_ACCESS = 50
+
     def Member(self, id=None, **kwargs):
         return self._getListOrObject(GroupMember, id,
                                      group_id=self.id,
