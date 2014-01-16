@@ -523,7 +523,7 @@ class GitlabObject(object):
     def __init__(self, gl, data=None, **kwargs):
         self.gitlab = gl
 
-        if data is None or isinstance(data, int) or isinstance(data, str):
+        if data is None or type(data) in [int, str, unicode]:
             data = self.gitlab.get(self.__class__, data, **kwargs)
 
         self._setFromDict(data)
