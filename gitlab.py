@@ -798,7 +798,6 @@ class ProjectIssue(GitlabObject):
 
 class ProjectMember(GitlabObject):
     _url = '/projects/%(project_id)s/members'
-    _returnClass = User
     requiredListAttrs = ['project_id']
     requiredGetAttrs = ['project_id']
     requiredCreateAttrs = ['project_id', 'user_id', 'access_level']
