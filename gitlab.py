@@ -377,13 +377,23 @@ class Gitlab(object):
         """
         return self._list_projects("/projects/search/" + query)
 
-    def all_projects(self, **kwargs):
+    def all_projects(self, page=None, per_page=None):
         """Lists all the projects (need admin rights)."""
-        return self._list_projects("/projects/all", **kwargs)
+        d = {}
+        if page is not None:
+            d['page'] = page
+        if per_page is not None:
+            d['per_page'] = per_page
+        return self._list_projects("/projects/all", **d)
 
-    def owned_projects(self, **kwargs):
+    def owned_projects(self, page=None, per_page=None):
         """Lists owned projects."""
-        return self._list_projects("/projects/owned", **kwargs)
+        d = {}
+        if page is not None:
+            d['page'] = page
+        if per_page is not None:
+            d['per_page'] = per_page
+        return self._list_projects("/projects/owned", **d)
 
     def Group(self, id=None, **kwargs):
         """Creates/gets/lists group(s) known by the GitLab server.
