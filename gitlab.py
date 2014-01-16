@@ -131,8 +131,12 @@ class Gitlab(object):
         self.email = email
         self.password = password
 
-    def rawGet(self, path):
+    def rawGet(self, path, **kwargs):
         url = '%s%s' % (self._url, path)
+        if kwargs:
+            url += "?%s" % ("&".join(
+                   ["%s=%s" % (k, v) for k, v in kwargs.items()]))
+
         try:
             return requests.get(url,
                                 headers=self.headers,
@@ -355,8 +359,8 @@ class Gitlab(object):
         """
         return self._getListOrObject(UserProject, id, **kwargs)
 
-    def _list_projects(self, url):
-        r = self.rawGet(url)
+    def _list_projects(self, url, **kwargs):
+        r = self.rawGet(url, **kwargs)
         if r.status_code != 200:
             raise GitlabListError
 
@@ -373,13 +377,13 @@ class Gitlab(object):
         """
         return self._list_projects("/projects/search/" + query)
 
-    def all_projects(self):
+    def all_projects(self, **kwargs):
         """Lists all the projects (need admin rights)."""
-        return self._list_projects("/projects/all")
+        return self._list_projects("/projects/all", **kwargs)
 
-    def owned_projects(self):
+    def owned_projects(self, **kwargs):
         """Lists owned projects."""
-        return self._list_projects("/projects/owned")
+        return self._list_projects("/projects/owned", **kwargs)
 
     def Group(self, id=None, **kwargs):
         """Creates/gets/lists group(s) known by the GitLab server.
