@@ -1,3 +1,10 @@
+Version 0.6
+
+ * IDs can be unicode (#15)
+ * ProjectMember: constructor should not create a User object
+ * Add support for extra parameters when listing all projects (#12)
+ * Projects listing: explicitly define arguments for pagination
+
 Version 0.5
 
  * Add SSH key for user
