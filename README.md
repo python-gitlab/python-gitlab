@@ -74,7 +74,9 @@ Here's an example of the syntax:
 `````
 [global]
 default = local
-ssl_verify = true
+ssl_verify = /path/to/trusted_ca_certs.crt
+client_cert = /path/to/client.crt
+priv_key = /path/to/client.key
 
 [local]
 url = http://10.0.3.2:8080
@@ -91,7 +93,15 @@ Each other section defines how to access a server. Only private token
 authentication is supported (not user/password).
 
 The `ssl_verify` option defines if the server SSL certificate should be
-validated (use false for self signed certificates, only useful with https).
+validated (use `false` for self signed certificates, only useful with https).
+By default, the python default (see documentation for your distribution for its locaiton)
+certificate authority list will be used. Set this to a full path to a file 
+to use a custom CA cert list (PEM-encoded).
+
+The `client_cert` and `priv_key` options must be specified together and point to 
+the full path of a PEM-encoded client (human or non-person entity) client X509 certificate
+and unencrypted private key. This is useful in environments where HTTPS is the only
+supported protocol, and the webserver is configured to validate client certificates.
 
 Choosing a different server than the default one can be done at run time:
 
