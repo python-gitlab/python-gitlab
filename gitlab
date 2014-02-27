@@ -307,9 +307,9 @@ try:
 except:
     pass
 
-if ssl_verify == 'True':
+if ssl_verify in [ 'true', 'True' ]:
     ssl_verify = True
-else if ssl_verify == 'False':
+elif ssl_verify in [ 'false', 'False' ]:
     ssl_verify = False
 
 try:
