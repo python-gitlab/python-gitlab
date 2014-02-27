@@ -76,7 +76,8 @@ class GitlabAuthenticationError(Exception):
 class Gitlab(object):
     """Represents a GitLab server connection"""
     def __init__(self, url, private_token=None,
-                 email=None, password=None, ssl_verify=True):
+                 email=None, password=None, ssl_verify=True, 
+                 client_cert="", priv_key=""):
         """Stores informations about the server
 
         url: the URL of the Gitlab server
@@ -89,6 +90,13 @@ class Gitlab(object):
         self.email = email
         self.password = password
         self.ssl_verify = ssl_verify
+
+        # Set up an attribute with the client cert details only if they are both present.
+        # This attribute should be the LAST argument (passed in the **kwargs style)
+	# to any "requests" method call that makes an HTTP request including get, post, put, delete, etc.
+	# That effectively makes these details "optional" as a whole
+        if client_cert and priv_key:
+            self.ssl_cert = { 'cert' : (client_cert, priv_key) }
 
     def auth(self):
         """Performs an authentication using either the private token, or the
@@ -140,7 +148,8 @@ class Gitlab(object):
         try:
             return requests.get(url,
                                 headers=self.headers,
-                                verify=self.ssl_verify)
+                                verify=self.ssl_verify,
+                                **self.ssl_cert)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -150,7 +159,8 @@ class Gitlab(object):
         try:
             return requests.post(url, data,
                                  headers=self.headers,
-                                 verify=self.ssl_verify)
+                                 verify=self.ssl_verify,
+                                 **self.ssl_cert)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -161,7 +171,8 @@ class Gitlab(object):
         try:
             return requests.put(url,
                                 headers=self.headers,
-                                verify=self.ssl_verify)
+                                verify=self.ssl_verify,
+                                **self.ssl_cert)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -172,7 +183,8 @@ class Gitlab(object):
         try:
             return requests.delete(url,
                                    headers=self.headers,
-                                   verify=self.ssl_verify)
+                                   verify=self.ssl_verify,
+                                   **self.ssl_cert)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -193,7 +205,10 @@ class Gitlab(object):
                    ["%s=%s" % (k, v) for k, v in kwargs.items()]))
 
         try:
-            r = requests.get(url, headers=self.headers, verify=self.ssl_verify)
+            r = requests.get(url, 
+                             headers=self.headers,
+                             verify=self.ssl_verify,
+                             **self.ssl_cert)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -231,7 +246,10 @@ class Gitlab(object):
             url = '%s%s' % (self._url, url)
 
         try:
-            r = requests.get(url, headers=self.headers, verify=self.ssl_verify)
+            r = requests.get(url, 
+                             headers=self.headers,
+                             verify=self.ssl_verify,
+                             **self.ssl_cert)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -252,7 +270,8 @@ class Gitlab(object):
         try:
             r = requests.delete(url,
                                 headers=self.headers,
-                                verify=self.ssl_verify)
+                                verify=self.ssl_verify,
+                                **self.ssl_cert)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -280,7 +299,8 @@ class Gitlab(object):
         try:
             r = requests.post(url, obj.__dict__,
                               headers=self.headers,
-                              verify=self.ssl_verify)
+                              verify=self.ssl_verify,
+                              **self.ssl_cert)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -307,7 +327,8 @@ class Gitlab(object):
         try:
             r = requests.put(url, d,
                              headers=self.headers,
-                             verify=self.ssl_verify)
+                             verify=self.ssl_verify,
+                             **self.ssl_cert)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)

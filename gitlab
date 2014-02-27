@@ -131,7 +131,7 @@ def usage():
 
 def do_auth():
     try:
-        gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_token, ssl_verify=ssl_verify)
+        gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_token, ssl_verify=ssl_verify, client_cert, priv_key)
         gl.auth()
     except:
         die("Could not connect to GitLab (%s)" % gitlab_url)
@@ -227,6 +227,8 @@ def do_project_owned():
         die("Impossible to list owned projects (%s)" % str(e))
 
 
+client_cert = ""
+priv_key = ""
 ssl_verify = True
 gitlab_id = None
 verbose = False
@@ -297,11 +299,34 @@ except:
     die("Impossible to get gitlab informations from configuration (%s)" % gitlab_id)
 
 try:
-    ssl_verify = config.getboolean('global', 'ssl_verify')
+    ssl_verify = config.get('global', 'ssl_verify')
 except:
     pass
 try:
-    ssl_verify = config.getboolean(gitlab_id, 'ssl_verify')
+    ssl_verify = config.get(gitlab_id, 'ssl_verify')
+except:
+    pass
+
+if ssl_verify in [ 'true', 'True' ]:
+    ssl_verify = True
+elif ssl_verify in [ 'false', 'False' ]:
+    ssl_verify = False
+
+try:
+    client_cert = config.get('global', 'client_cert')
+excep:
+    pass
+try:
+    client_cert = config.get(gitlab_id, 'client_cert')
+except:
+    pass
+
+try:
+    priv_key = config.get('global', 'priv_key')
+except:
+    pass
+try:
+    priv_key = config.get(gitlab_id, 'priv_key')
 except:
     pass
 
