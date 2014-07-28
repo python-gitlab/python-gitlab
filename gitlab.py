@@ -445,6 +445,8 @@ class Gitlab(object):
         """
         return self._getListOrObject(Team, id, **kwargs)
 
+def _get_display_encoding():
+    return sys.stdout.encoding or sys.getdefaultencoding()
 
 class GitlabObject(object):
     _url = None
@@ -574,7 +576,7 @@ class GitlabObject(object):
             s = ", ".join([GitlabObject._obj_to_str(x) for x in obj])
             return "[ %s ]" % s
         elif isinstance(obj, unicode):
-            return obj.encode(sys.stdout.encoding, "replace")
+            return obj.encode(_get_display_encoding(), "replace")
         else:
             return str(obj)
 
@@ -585,8 +587,8 @@ class GitlabObject(object):
             if k == self.idAttr:
                 continue
             v = self.__dict__[k]
-            pretty_k = k.replace('_', '-').encode(sys.stdout.encoding,
-                                                  "replace")
+            pretty_k = k.replace('_', '-')
+            pretty_k = pretty_k.encode(_get_display_encoding(), "replace")
             if isinstance(v, GitlabObject):
                 if depth == 0:
                     print("%s:" % pretty_k)
