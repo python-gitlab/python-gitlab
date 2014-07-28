@@ -89,6 +89,8 @@ class Gitlab(object):
         self.email = email
         self.password = password
         self.ssl_verify = ssl_verify
+        # Gitlab should handle UTF-8
+        self.gitlab_encoding = 'UTF-8'
 
     def auth(self):
         """Performs an authentication using either the private token, or the
@@ -302,7 +304,7 @@ class Gitlab(object):
             if type(v) in (int, str, bool):
                 d[k] = str(v)
             elif type(v) == unicode:
-                d[k] = str(v.encode(sys.stdout.encoding, "replace"))
+                d[k] = str(v.encode(self.gitlab_encoding, "replace"))
 
         try:
             r = requests.put(url, d,
