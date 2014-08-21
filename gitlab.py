@@ -281,6 +281,10 @@ class Gitlab(object):
         url = obj._url % args
         url = '%s%s' % (self._url, url)
 
+        for k, v in obj.__dict__.items():
+            if type(v) == bool:
+                obj.__dict__[k] = 1 if v else 0
+
         try:
             r = requests.post(url, obj.__dict__,
                               headers=self.headers,
@@ -304,8 +308,10 @@ class Gitlab(object):
         # build a dict of data that can really be sent to server
         d = {}
         for k, v in obj.__dict__.items():
-            if type(v) in (int, str, bool):
+            if type(v) in (int, str):
                 d[k] = str(v)
+            elif type(v) == bool:
+                d[k] = 1 if v else 0
             elif type(v) == unicode:
                 d[k] = str(v.encode(self.gitlab_encoding, "replace"))
 
