@@ -871,7 +871,7 @@ class ProjectMilestone(GitlabObject):
     requiredListAttrs = ['project_id']
     requiredGetAttrs = ['project_id']
     requiredCreateAttrs = ['project_id', 'title']
-    optionalCreateAttrs = ['description', 'due_date']
+    optionalCreateAttrs = ['description', 'due_date', 'state_event']
     shortPrintAttr = 'title'
 
 
