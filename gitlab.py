@@ -20,7 +20,7 @@ import requests
 import sys
 
 __title__ = 'python-gitlab'
-__version__ = '0.6'
+__version__ = '0.7'
 __author__ = 'Gauvain Pocentek'
 __email__ = 'gauvain@pocentek.net'
 __license__ = 'LGPL3'
