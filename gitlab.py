@@ -187,11 +187,12 @@ class Gitlab(object):
             raise GitlabListError('Missing attribute(s): %s' %
                                   ", ".join(missing))
 
-        url = obj_class._url % kwargs
+        args = _sanitize_dict(kwargs)
+        url = obj_class._url % args
         url = '%s%s' % (self._url, url)
-        if kwargs:
+        if args:
             url += "?%s" % ("&".join(
-                   ["%s=%s" % (k, v) for k, v in kwargs.items()]))
+                   ["%s=%s" % (k, v) for k, v in args.items()]))
 
         try:
             r = requests.get(url, headers=self.headers, verify=self.ssl_verify)
@@ -225,7 +226,7 @@ class Gitlab(object):
             raise GitlabListError('Missing attribute(s): %s' %
                                   ", ".join(missing))
 
-        url = obj_class._url % kwargs
+        url = obj_class._url % _sanitize_dict(kwargs)
         if id is not None:
             url = '%s%s/%s' % (self._url, url, str(id))
         else:
@@ -247,8 +248,9 @@ class Gitlab(object):
             raise GitlabGetError('%d: %s' % (r.status_code, r.text))
 
     def delete(self, obj):
-        url = obj._url % obj.__dict__
-        url = '%s%s/%s' % (self._url, url, str(obj.id))
+        args = _sanitize_dict(obj.__dict__)
+        url = obj._url % args
+        url = '%s%s/%s' % (self._url, url, args['id'])
 
         try:
             r = requests.delete(url,
@@ -275,7 +277,8 @@ class Gitlab(object):
             raise GitlabCreateError('Missing attribute(s): %s' %
                                     ", ".join(missing))
 
-        url = obj._url % obj.__dict__
+        args = _sanitize_dict(obj.__dict__)
+        url = obj._url % args
         url = '%s%s' % (self._url, url)
 
         try:
@@ -294,7 +297,8 @@ class Gitlab(object):
             raise GitlabCreateError('%d: %s' % (r.status_code, r.text))
 
     def update(self, obj):
-        url = obj._url % obj.__dict__
+        args = _sanitize_dict(obj.__dict__)
+        url = obj._url % args
         url = '%s%s/%s' % (self._url, url, str(obj.id))
 
         # build a dict of data that can really be sent to server
@@ -446,8 +450,20 @@ class Gitlab(object):
         """
         return self._getListOrObject(Team, id, **kwargs)
 
+
 def _get_display_encoding():
     return sys.stdout.encoding or sys.getdefaultencoding()
+
+
+def _sanitize(value):
+    if type(value) in (str, unicode):
+        return value.replace('/', '%2F')
+    return value
+
+
+def _sanitize_dict(src):
+    return {k:_sanitize(v) for k, v in src.items()}
+
 
 class GitlabObject(object):
     _url = None
