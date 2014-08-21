@@ -605,9 +605,9 @@ class GitlabObject(object):
 class UserKey(GitlabObject):
     _url = '/users/%(user_id)s/keys'
     canGet = False
-    canList = False
+    canList = True
     canUpdate = False
-    canDelete = False
+    canDelete = True
     requiredCreateAttrs = ['user_id', 'title', 'key']
 
 
