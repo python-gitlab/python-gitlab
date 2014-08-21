@@ -1,3 +1,14 @@
+Version 0.7
+
+ * Fix license classifier in setup.py
+ * Fix encoding error when printing to redirected output
+ * Fix encoding error when updating with redirected output
+ * Add support for UserKey listing and deletion
+ * Add support for branches creation and deletion
+ * Support state_event in ProjectMilestone (#30)
+ * Support namespace/name for project id (#28)
+ * Fix handling of boolean values (#22)
+
 Version 0.6
 
  * IDs can be unicode (#15)
