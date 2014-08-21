@@ -573,7 +573,11 @@ class GitlabObject(object):
             s = ", ".join([GitlabObject._obj_to_str(x) for x in obj])
             return "[ %s ]" % s
         elif isinstance(obj, unicode):
-            return obj.encode(sys.stdout.encoding, "replace")
+            if sys.stdout.encoding is None:
+                return obj.encode(sys.getdefaultencoding(), "replace")
+            else:
+                return obj.encode(sys.stdout.encoding, "replace")
+
         else:
             return str(obj)
 
@@ -584,8 +588,14 @@ class GitlabObject(object):
             if k == self.idAttr:
                 continue
             v = self.__dict__[k]
-            pretty_k = k.replace('_', '-').encode(sys.stdout.encoding,
-                                                  "replace")
+           
+            if sys.stdout.encoding is None:
+                pretty_k = k.replace('_','-').encode(sys.getdefaultencoding(),
+                                                     "replace")
+            else:
+                pretty_k = k.replace('_', '-').encode(sys.stdout.encoding,
+                                                      "replace")
+
             if isinstance(v, GitlabObject):
                 if depth == 0:
                     print("%s:" % pretty_k)
