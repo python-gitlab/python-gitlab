@@ -701,11 +701,11 @@ class Issue(GitlabObject):
 class ProjectBranch(GitlabObject):
     _url = '/projects/%(project_id)s/repository/branches'
     idAttr = 'name'
-    canDelete = False
     canUpdate = False
-    canCreate = False
     requiredGetAttrs = ['project_id']
     requiredListAttrs = ['project_id']
+    requiredCreateAttrs = ['project_id', 'branch_name', 'ref']
+    requiredDeleteAttrs = ['project_id']
     _constructorTypes = {'commit': 'ProjectCommit'}
 
     def protect(self, protect=True):
