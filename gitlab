@@ -32,26 +32,28 @@ import gitlab
 camel_re = re.compile('(.)([A-Z])')
 
 extra_actions = {
-    gitlab.ProjectBranch: {
-        'protect': {'requiredAttrs': ['id', 'project-id']},
-         'unprotect': {'requiredAttrs': ['id', 'project-id']}
-     },
-    gitlab.Project: {
-        'search': {'requiredAttrs': ['query']},
-        'owned': {'requiredAttrs': []},
-        'all': {'requiredAttrs': []}
-     },
+    gitlab.ProjectBranch: {'protect': {'requiredAttrs': ['id', 'project-id']},
+                           'unprotect': {'requiredAttrs': ['id', 'project-id']}
+                           },
+    gitlab.Project: {'search': {'requiredAttrs': ['query']},
+                     'owned': {'requiredAttrs': []},
+                     'all': {'requiredAttrs': []}
+                     },
 }
+
 
 def die(msg):
     sys.stderr.write(msg + "\n")
     sys.exit(1)
 
+
 def whatToCls(what):
     return "".join([s.capitalize() for s in what.split("-")])
 
+
 def clsToWhat(cls):
-   return camel_re.sub(r'\1-\2', cls.__name__).lower()
+    return camel_re.sub(r'\1-\2', cls.__name__).lower()
+
 
 def actionHelpList(cls):
     l = []
@@ -66,27 +68,33 @@ def actionHelpList(cls):
 
         detail = ''
         if action == 'list':
-            detail = " ".join(["--%s=ARG" % x.replace('_', '-') for x in cls.requiredListAttrs])
+            detail = " ".join(["--%s=ARG" % x.replace('_', '-')
+                               for x in cls.requiredListAttrs])
             if detail:
                 detail += " "
             detail += "--page=ARG --per-page=ARG"
         elif action in ['get', 'delete']:
             if cls not in [gitlab.CurrentUser]:
                 detail = "--id=ARG "
-                detail += " ".join(["--%s=ARG" % x.replace('_', '-') for x in cls.requiredGetAttrs])
+                detail += " ".join(["--%s=ARG" % x.replace('_', '-')
+                                    for x in cls.requiredGetAttrs])
         elif action == 'create':
-            detail = " ".join(["--%s=ARG" % x.replace('_', '-') for x in cls.requiredCreateAttrs])
+            detail = " ".join(["--%s=ARG" % x.replace('_', '-')
+                               for x in cls.requiredCreateAttrs])
             if detail:
                 detail += " "
-            detail += " ".join(["[--%s=ARG]" % x.replace('_', '-') for x in cls.optionalCreateAttrs])
+            detail += " ".join(["[--%s=ARG]" % x.replace('_', '-')
+                                for x in cls.optionalCreateAttrs])
         elif action == 'update':
-            detail = " ".join(["[--%s=ARG]" % x.replace('_', '-') for x in cls.requiredCreateAttrs])
+            detail = " ".join(["[--%s=ARG]" % x.replace('_', '-')
+                               for x in cls.requiredCreateAttrs])
             if detail:
                 detail += " "
-            detail += " ".join(["[--%s=ARG]" % x.replace('_', '-') for x in cls.optionalCreateAttrs])
+            detail += " ".join(["[--%s=ARG]" % x.replace('_', '-')
+                                for x in cls.optionalCreateAttrs])
         l.append("%s %s" % (action, detail))
 
-    if extra_actions.has_key(cls):
+    if cls in extra_actions:
         for action in sorted(extra_actions[cls]):
             d = extra_actions[cls][action]
             detail = " ".join(["--%s=ARG" % arg for arg in d['requiredAttrs']])
@@ -94,11 +102,14 @@ def actionHelpList(cls):
 
     return (l)
 
+
 def usage():
-    print("usage: gitlab [--help|-h] [--fancy|--verbose|-v] [--gitlab=GITLAB] WHAT ACTION [options]")
+    print("usage: gitlab [--help|-h] [--fancy|--verbose|-v] [--gitlab=GITLAB] "
+          "WHAT ACTION [options]")
     print("")
     print("--gitlab=GITLAB")
-    print("    Specifies which python-gitlab.cfg configuration section should be used.")
+    print("    Specifies which python-gitlab.cfg configuration section should "
+          "be used.")
     print("    If not defined, the default selection will be used.")
     print("")
     print("--fancy, --verbose, -v")
@@ -108,7 +119,8 @@ def usage():
     print("    Displays this message.")
     print("")
     print("Available `options` depend on which WHAT/ACTION couple is used.")
-    print("If `ACTION` is \"help\", available actions and options will be listed for `ACTION`.")
+    print("If `ACTION` is \"help\", available actions and options will be "
+          "listed for `ACTION`.")
     print("")
     print("Available `WHAT` values are:")
 
@@ -129,14 +141,17 @@ def usage():
     for cls in classes:
         print(" %s" % clsToWhat(cls))
 
+
 def do_auth():
     try:
-        gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_token, ssl_verify=ssl_verify)
+        gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_token,
+                           ssl_verify=ssl_verify)
         gl.auth()
     except:
         die("Could not connect to GitLab (%s)" % gitlab_url)
 
     return gl
+
 
 def get_id():
     try:
@@ -145,6 +160,7 @@ def get_id():
         die("Missing --id argument")
 
     return id
+
 
 def do_create(cls, d):
     if not cls.canCreate:
@@ -158,6 +174,7 @@ def do_create(cls, d):
 
     return o
 
+
 def do_list(cls, d):
     if not cls.canList:
         die("%s objects can't be listed" % what)
@@ -168,6 +185,7 @@ def do_list(cls, d):
         die("Impossible to list objects (%s)" % str(e))
 
     return l
+
 
 def do_get(cls, d):
     if not cls.canGet:
@@ -184,6 +202,7 @@ def do_get(cls, d):
 
     return o
 
+
 def do_delete(cls, d):
     if not cls.canDelete:
         die("%s objects can't be deleted" % what)
@@ -193,6 +212,7 @@ def do_delete(cls, d):
         o.delete()
     except Exception as e:
         die("Impossible to destroy object (%s)" % str(e))
+
 
 def do_update(cls, d):
     if not cls.canUpdate:
@@ -208,11 +228,13 @@ def do_update(cls, d):
 
     return o
 
+
 def do_project_search(d):
     try:
         return gl.search_projects(d['query'])
-    except:
+    except Exception as e:
         die("Impossible to search projects (%s)" % str(e))
+
 
 def do_project_all():
     try:
@@ -220,10 +242,11 @@ def do_project_all():
     except Exception as e:
         die("Impossible to list all projects (%s)" % str(e))
 
+
 def do_project_owned():
     try:
         return gl.owned_projects()
-    except:
+    except Exception as e:
         die("Impossible to list owned projects (%s)" % str(e))
 
 
@@ -294,7 +317,8 @@ try:
     gitlab_url = config.get(gitlab_id, 'url')
     gitlab_token = config.get(gitlab_id, 'private_token')
 except:
-    die("Impossible to get gitlab informations from configuration (%s)" % gitlab_id)
+    die("Impossible to get gitlab informations from configuration (%s)" %
+        gitlab_id)
 
 try:
     ssl_verify = config.getboolean('global', 'ssl_verify')
@@ -383,6 +407,7 @@ elif action == "all":
         o.display(verbose)
 
 else:
-    die("Unknown action: %s. Use \"gitlab %s help\" to get details." % (action, what))
+    die("Unknown action: %s. Use \"gitlab %s help\" to get details." %
+        (action, what))
 
 sys.exit(0)

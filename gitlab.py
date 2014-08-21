@@ -468,7 +468,7 @@ def _sanitize(value):
 
 
 def _sanitize_dict(src):
-    return {k:_sanitize(v) for k, v in src.items()}
+    return {k: _sanitize(v) for k, v in src.items()}
 
 
 class GitlabObject(object):
@@ -761,8 +761,8 @@ class ProjectCommit(GitlabObject):
     shortPrintAttr = 'title'
 
     def diff(self):
-        url = '/projects/%(project_id)s/repository/commits/%(commit_id)s/diff' % \
-              {'project_id': self.project_id, 'commit_id': self.id}
+        url = ('/projects/%(project_id)s/repository/commits/%(commit_id)s/diff'
+               % {'project_id': self.project_id, 'commit_id': self.id})
         r = self.gitlab.rawGet(url)
         if r.status_code == 200:
             return r.json()
@@ -975,11 +975,6 @@ class Project(GitlabObject):
 
     def Event(self, id=None, **kwargs):
         return self._getListOrObject(ProjectEvent, id,
-                                     project_id=self.id,
-                                     **kwargs)
-
-    def File(self, id=None, **kwargs):
-        return self._getListOrObject(ProjectFile, id,
                                      project_id=self.id,
                                      **kwargs)
 
