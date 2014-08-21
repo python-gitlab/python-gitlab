@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2013 Gauvain Pocentek <gauvain@pocentek.net>
