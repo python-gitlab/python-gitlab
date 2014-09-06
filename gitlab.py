@@ -468,7 +468,7 @@ def _sanitize(value):
 
 
 def _sanitize_dict(src):
-    return {k: _sanitize(v) for k, v in src.items()}
+    return dict((k, _sanitize(v)) for k, v in src.items())
 
 
 class GitlabObject(object):
