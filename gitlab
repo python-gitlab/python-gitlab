@@ -131,13 +131,7 @@ def usage():
         if gitlab.GitlabObject in getmro(o) and o != gitlab.GitlabObject:
             classes.append(o)
 
-    def s(a, b):
-        if a.__name__ < b.__name__:
-            return -1
-        elif a.__name__ > b.__name__:
-            return 1
-
-    classes.sort(cmp=s)
+    classes.sort(key=lambda x: x.__name__)
     for cls in classes:
         print(" %s" % clsToWhat(cls))
 
