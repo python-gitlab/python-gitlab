@@ -23,6 +23,8 @@ setup(name='python-gitlab',
       py_modules=['gitlab'],
       scripts=['gitlab'],
       install_requires=['requests'],
+      tests_require=['httmock', 'nose'],
+      test_suite="nose.collector",
       classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
