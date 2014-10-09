@@ -126,6 +126,15 @@ class Gitlab(object):
         """Updates the gitlab URL"""
         self._url = '%s/api/v3' % url
 
+    def constructUrl(self, id_, obj, parameters):
+        args = _sanitize_dict(parameters)
+        url = obj._url % args
+        if id_ is not None:
+            url = '%s%s/%s' % (self._url, url, str(id_))
+        else:
+            url = '%s%s' % (self._url, url)
+        return url
+
     def setToken(self, token):
         """Sets the private token for authentication"""
         self.private_token = token if token else None
@@ -195,9 +204,8 @@ class Gitlab(object):
             raise GitlabListError('Missing attribute(s): %s' %
                                   ", ".join(missing))
 
+        url = self.constructUrl(id_=None, obj=obj_class, parameters=kwargs)
         args = _sanitize_dict(kwargs)
-        url = obj_class._url % args
-        url = '%s%s' % (self._url, url)
         if args:
             url += "?%s" % ("&".join(
                    ["%s=%s" % (k, v) for k, v in args.items()]))
@@ -235,11 +243,7 @@ class Gitlab(object):
             raise GitlabListError('Missing attribute(s): %s' %
                                   ", ".join(missing))
 
-        url = obj_class._url % _sanitize_dict(kwargs)
-        if id is not None:
-            url = '%s%s/%s' % (self._url, url, str(id))
-        else:
-            url = '%s%s' % (self._url, url)
+        url = self.constructUrl(id_=id, obj=obj_class, parameters=kwargs)
 
         try:
             r = requests.get(url, headers=self.headers, verify=self.ssl_verify,
@@ -258,9 +262,7 @@ class Gitlab(object):
             raise GitlabGetError('%d: %s' % (r.status_code, r.text))
 
     def delete(self, obj):
-        args = _sanitize_dict(obj.__dict__)
-        url = obj._url % args
-        url = '%s%s/%s' % (self._url, url, args['id'])
+        url = self.constructUrl(id_=obj.id, obj=obj, parameters=obj.__dict__)
 
         try:
             r = requests.delete(url,
@@ -288,9 +290,7 @@ class Gitlab(object):
             raise GitlabCreateError('Missing attribute(s): %s' %
                                     ", ".join(missing))
 
-        args = _sanitize_dict(obj.__dict__)
-        url = obj._url % args
-        url = '%s%s' % (self._url, url)
+        url = self.constructUrl(id_=None, obj=obj, parameters=obj.__dict__)
 
         for k, v in obj.__dict__.items():
             if type(v) == bool:
@@ -313,9 +313,7 @@ class Gitlab(object):
             raise GitlabCreateError('%d: %s' % (r.status_code, r.text))
 
     def update(self, obj):
-        args = _sanitize_dict(obj.__dict__)
-        url = obj._url % args
-        url = '%s%s/%s' % (self._url, url, str(obj.id))
+        url = self.constructUrl(id_=obj.id, obj=obj, parameters=obj.__dict__)
 
         # build a dict of data that can really be sent to server
         d = {}
