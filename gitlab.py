@@ -15,9 +15,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, division, absolute_import
+
+from itertools import chain
+
 import json
 import requests
 import sys
+
+if sys.version_info[0] < 3:
+    PY2=True
+    str_types = (str, unicode,)
+else:
+    PY2=False
+    str_types = (str,)
 
 __title__ = 'python-gitlab'
 __version__ = '0.7'
@@ -312,7 +323,7 @@ class Gitlab(object):
                 d[k] = str(v)
             elif type(v) == bool:
                 d[k] = 1 if v else 0
-            elif type(v) == unicode:
+            elif PY2 and type(v) == unicode:
                 d[k] = str(v.encode(self.gitlab_encoding, "replace"))
 
         try:
@@ -462,7 +473,7 @@ def _get_display_encoding():
 
 
 def _sanitize(value):
-    if type(value) in (str, unicode):
+    if type(value) in str_types:
         return value.replace('/', '%2F')
     return value
 
@@ -562,7 +573,7 @@ class GitlabObject(object):
     def __init__(self, gl, data=None, **kwargs):
         self.gitlab = gl
 
-        if data is None or type(data) in [int, str, unicode]:
+        if data is None or type(data) in chain((int,), str_types):
             data = self.gitlab.get(self.__class__, data, **kwargs)
 
         self._setFromDict(data)
@@ -598,7 +609,7 @@ class GitlabObject(object):
         elif isinstance(obj, list):
             s = ", ".join([GitlabObject._obj_to_str(x) for x in obj])
             return "[ %s ]" % s
-        elif isinstance(obj, unicode):
+        elif PY2 and isinstance(obj, unicode):
             return obj.encode(_get_display_encoding(), "replace")
         else:
             return str(obj)
@@ -611,7 +622,8 @@ class GitlabObject(object):
                 continue
             v = self.__dict__[k]
             pretty_k = k.replace('_', '-')
-            pretty_k = pretty_k.encode(_get_display_encoding(), "replace")
+            if PY2:
+                pretty_k = pretty_k.encode(_get_display_encoding(), "replace")
             if isinstance(v, GitlabObject):
                 if depth == 0:
                     print("%s:" % pretty_k)
