@@ -525,10 +525,10 @@ class GitlabObject(object):
                 self.__dict__[k] = []
                 for i in v:
                     self.__dict__[k].append(self._getObject(k, i))
-            elif v:
-                self.__dict__[k] = self._getObject(k, v)
-            else:  # None object
+            elif v is None:
                 self.__dict__[k] = None
+            else:
+                self.__dict__[k] = self._getObject(k, v)
 
     def _create(self):
         if not self.canCreate:
