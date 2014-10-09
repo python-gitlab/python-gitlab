@@ -204,14 +204,14 @@ class Gitlab(object):
             cls = obj_class
             if obj_class._returnClass:
                 cls = obj_class._returnClass
-            l = [cls(self, item) for item in r.json() if item is not None]
-            if kwargs:
-                for k, v in kwargs.items():
-                    if k in ('page', 'per_page'):
-                        continue
-                    for obj in l:
-                        obj.__dict__[k] = str(v)
-            return l
+            
+            # Remove parameters from kwargs before passing it to constructor
+            cls_kwargs = kwargs.copy()
+            for key in ['page', 'per_page']:
+                if key in cls_kwargs:
+                    del cls_kwargs[key]
+            
+            return [cls(self, item, **cls_kwargs) for item in r.json() if item is not None]
         elif r.status_code == 401:
             raise GitlabAuthenticationError(r.json()['message'])
         else:
