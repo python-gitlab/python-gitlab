@@ -667,11 +667,7 @@ class CurrentUser(GitlabObject):
     shortPrintAttr = 'username'
 
     def Key(self, id=None, **kwargs):
-        if id is None:
-            return CurrentUserKey.list(self.gitlab, **kwargs)
-        else:
-            return CurrentUserKey(self.gitlab, id)
-
+        return self._getListOrObject(CurrentUserKey, id, **kwargs)
 
 class GroupMember(GitlabObject):
     _url = '/groups/%(group_id)s/members'
