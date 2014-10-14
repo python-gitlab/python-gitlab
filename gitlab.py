@@ -232,8 +232,8 @@ class Gitlab(object):
             if k not in kwargs:
                 missing.append(k)
         if missing:
-            raise GitlabListError('Missing attribute(s): %s' %
-                                  ", ".join(missing))
+            raise GitlabGetError('Missing attribute(s): %s' %
+                                 ", ".join(missing))
 
         url = obj_class._url % _sanitize_dict(kwargs)
         if id is not None:
