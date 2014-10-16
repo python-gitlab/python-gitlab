@@ -222,12 +222,13 @@ class Gitlab(object):
             if obj_class._returnClass:
                 cls = obj_class._returnClass
 
+            cls_kwargs = kwargs.copy()
+
             # Add _created manually, because we are not creating objects
             # through normal path
             cls_kwargs['_created'] = True
 
             # Remove parameters from kwargs before passing it to constructor
-            cls_kwargs = kwargs.copy()
             for key in ['page', 'per_page']:
                 if key in cls_kwargs:
                     del cls_kwargs[key]
