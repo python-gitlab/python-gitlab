@@ -22,7 +22,7 @@ setup(name='python-gitlab',
       url='https://github.com/gpocentek/python-gitlab',
       py_modules=['gitlab'],
       scripts=['gitlab'],
-      install_requires=['requests'],
+      install_requires=['requests', 'six'],
       classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',

@@ -15,6 +15,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, division, absolute_import
+
+import six
+
 import json
 import requests
 import sys
@@ -292,7 +296,7 @@ class Gitlab(object):
 
         url = self.constructUrl(id_=None, obj=obj, parameters=obj.__dict__)
 
-        for k, v in obj.__dict__.items():
+        for k, v in list(obj.__dict__.items()):
             if type(v) == bool:
                 obj.__dict__[k] = 1 if v else 0
 
@@ -317,12 +321,12 @@ class Gitlab(object):
 
         # build a dict of data that can really be sent to server
         d = {}
-        for k, v in obj.__dict__.items():
+        for k, v in list(obj.__dict__.items()):
             if type(v) in (int, str):
                 d[k] = str(v)
             elif type(v) == bool:
                 d[k] = 1 if v else 0
-            elif type(v) == unicode:
+            elif six.PY2 and type(v) == six.text_type:
                 d[k] = str(v.encode(self.gitlab_encoding, "replace"))
 
         try:
@@ -473,7 +477,7 @@ def _get_display_encoding():
 
 
 def _sanitize(value):
-    if type(value) in (str, unicode):
+    if isinstance(value, six.string_types):
         return value.replace('/', '%2F')
     return value
 
@@ -573,7 +577,8 @@ class GitlabObject(object):
     def __init__(self, gl, data=None, **kwargs):
         self.gitlab = gl
 
-        if data is None or type(data) in [int, str, unicode]:
+        if data is None or isinstance(data, six.integer_types) or\
+                isinstance(data, six.string_types):
             data = self.gitlab.get(self.__class__, data, **kwargs)
 
         self._setFromDict(data)
@@ -609,7 +614,7 @@ class GitlabObject(object):
         elif isinstance(obj, list):
             s = ", ".join([GitlabObject._obj_to_str(x) for x in obj])
             return "[ %s ]" % s
-        elif isinstance(obj, unicode):
+        elif six.PY2 and isinstance(obj, six.text_type):
             return obj.encode(_get_display_encoding(), "replace")
         else:
             return str(obj)
@@ -622,7 +627,8 @@ class GitlabObject(object):
                 continue
             v = self.__dict__[k]
             pretty_k = k.replace('_', '-')
-            pretty_k = pretty_k.encode(_get_display_encoding(), "replace")
+            if six.PY2:
+                pretty_k = pretty_k.encode(_get_display_encoding(), "replace")
             if isinstance(v, GitlabObject):
                 if depth == 0:
                     print("%s:" % pretty_k)
