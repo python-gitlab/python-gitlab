@@ -23,6 +23,8 @@ import json
 import requests
 import sys
 
+from itertools import chain
+
 __title__ = 'python-gitlab'
 __version__ = '0.7'
 __author__ = 'Gauvain Pocentek'
@@ -201,7 +203,8 @@ class Gitlab(object):
 
     def list(self, obj_class, **kwargs):
         missing = []
-        for k in obj_class.requiredListAttrs:
+        for k in chain(obj_class.requiredUrlAttrs,
+                       obj_class.requiredListAttrs):
             if k not in kwargs:
                 missing.append(k)
         if missing:
@@ -209,13 +212,16 @@ class Gitlab(object):
                                   ", ".join(missing))
 
         url = self.constructUrl(id_=None, obj=obj_class, parameters=kwargs)
-        args = _sanitize_dict(kwargs)
-        if args:
-            url += "?%s" % ("&".join(
-                   ["%s=%s" % (k, v) for k, v in args.items()]))
+
+        # Remove attributes that are used in url so that there is only
+        # url-parameters left
+        params = kwargs.copy()
+        for attribute in obj_class.requiredUrlAttrs:
+            del params[attribute]
 
         try:
-            r = requests.get(url, headers=self.headers, verify=self.ssl_verify,
+            r = requests.get(url, params=kwargs, headers=self.headers,
+                             verify=self.ssl_verify,
                              timeout=self.timeout)
         except:
             raise GitlabConnectionError(
@@ -231,7 +237,7 @@ class Gitlab(object):
             for key in ['page', 'per_page']:
                 if key in cls_kwargs:
                     del cls_kwargs[key]
-            
+
             return [cls(self, item, **cls_kwargs) for item in r.json() if item is not None]
         elif r.status_code == 401:
             raise GitlabAuthenticationError(r.json()['message'])
@@ -240,7 +246,8 @@ class Gitlab(object):
 
     def get(self, obj_class, id=None, **kwargs):
         missing = []
-        for k in obj_class.requiredGetAttrs:
+        for k in chain(obj_class.requiredUrlAttrs,
+                       obj_class.requiredGetAttrs):
             if k not in kwargs:
                 missing.append(k)
         if missing:
@@ -249,9 +256,15 @@ class Gitlab(object):
 
         url = self.constructUrl(id_=id, obj=obj_class, parameters=kwargs)
 
+        # Remove attributes that are used in url so that there is only
+        # url-parameters left
+        params = kwargs.copy()
+        for attribute in obj_class.requiredUrlAttrs:
+            del params[attribute]
+
         try:
-            r = requests.get(url, headers=self.headers, verify=self.ssl_verify,
-                             timeout=self.timeout)
+            r = requests.get(url, params=params, headers=self.headers,
+                             verify=self.ssl_verify, timeout=self.timeout)
         except:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
@@ -266,10 +279,25 @@ class Gitlab(object):
             raise GitlabGetError('%d: %s' % (r.status_code, r.text))
 
     def delete(self, obj):
-        url = self.constructUrl(id_=obj.id, obj=obj, parameters=obj.__dict__)
+        params = obj.__dict__.copy()
+        missing = []
+        for k in chain(obj.requiredUrlAttrs, obj.requiredDeleteAttrs):
+            if k not in params:
+                missing.append(k)
+        if missing:
+            raise GitlabDeleteError('Missing attribute(s): %s' %
+                                    ", ".join(missing))
+
+        url = self.constructUrl(id_=obj.id, obj=obj, parameters=params)
+
+        # Remove attributes that are used in url so that there is only
+        # url-parameters left
+        for attribute in obj.requiredUrlAttrs:
+            del params[attribute]
 
         try:
             r = requests.delete(url,
+                                params=params,
                                 headers=self.headers,
                                 verify=self.ssl_verify,
                                 timeout=self.timeout)
@@ -287,7 +315,7 @@ class Gitlab(object):
 
     def create(self, obj):
         missing = []
-        for k in obj.requiredCreateAttrs:
+        for k in chain(obj.requiredUrlAttrs, obj.requiredCreateAttrs):
             if k not in obj.__dict__:
                 missing.append(k)
         if missing:
@@ -317,8 +345,14 @@ class Gitlab(object):
             raise GitlabCreateError('%d: %s' % (r.status_code, r.text))
 
     def update(self, obj):
+        missing = []
+        for k in chain(obj.requiredUrlAttrs, obj.requiredCreateAttrs):
+            if k not in obj.__dict__:
+                missing.append(k)
+        if missing:
+            raise GitlabUpdateError('Missing attribute(s): %s' %
+                                    ", ".join(missing))
         url = self.constructUrl(id_=obj.id, obj=obj, parameters=obj.__dict__)
-
         # build a dict of data that can really be sent to server
         d = {}
         for k, v in list(obj.__dict__.items()):
@@ -495,8 +529,10 @@ class GitlabObject(object):
     canCreate = True
     canUpdate = True
     canDelete = True
+    requiredUrlAttrs = []
     requiredListAttrs = []
     requiredGetAttrs = []
+    requiredDeleteAttrs = []
     requiredCreateAttrs = []
     optionalCreateAttrs = []
     idAttr = 'id'
@@ -648,19 +684,20 @@ class GitlabObject(object):
 class UserKey(GitlabObject):
     _url = '/users/%(user_id)s/keys'
     canGet = False
-    canList = True
     canUpdate = False
-    canDelete = True
-    requiredCreateAttrs = ['user_id', 'title', 'key']
+    requiredUrlAttrs = ['user_id']
+    requiredCreateAttrs = ['title', 'key']
 
 
 class User(GitlabObject):
     _url = '/users'
     shortPrintAttr = 'username'
-    requiredCreateAttrs = ['email', 'password', 'username', 'name']
-    optionalCreateAttrs = ['skype', 'linkedin', 'twitter', 'projects_limit',
-                           'extern_uid', 'provider', 'bio', 'admin',
-                           'can_create_group']
+    # FIXME: password is required for create but not for update
+    requiredCreateAttrs = ['email', 'username', 'name']
+    optionalCreateAttrs = ['password', 'skype', 'linkedin', 'twitter',
+                           'projects_limit', 'extern_uid', 'provider',
+                           'bio', 'admin', 'can_create_group', 'website_url']
+
 
     def Key(self, id=None, **kwargs):
         return self._getListOrObject(UserKey, id,
@@ -690,13 +727,14 @@ class GroupMember(GitlabObject):
     _url = '/groups/%(group_id)s/members'
     canGet = False
     canUpdate = False
-    requiredCreateAttrs = ['group_id', 'user_id', 'access_level']
-    requiredDeleteAttrs = ['group_id', 'user_id']
+    requiredUrlAttrs = ['group_id']
+    requiredCreateAttrs = ['access_level', 'user_id']
     shortPrintAttr = 'username'
 
 
 class Group(GitlabObject):
     _url = '/groups'
+    canUpdate = False
     _constructorTypes = {'projects': 'Project'}
     requiredCreateAttrs = ['name', 'path']
     shortPrintAttr = 'name'
@@ -739,12 +777,12 @@ class Issue(GitlabObject):
 
 class ProjectBranch(GitlabObject):
     _url = '/projects/%(project_id)s/repository/branches'
+    _constructorTypes = {'author': 'User', "committer": "User"}
+
     idAttr = 'name'
     canUpdate = False
-    requiredGetAttrs = ['project_id']
-    requiredListAttrs = ['project_id']
-    requiredCreateAttrs = ['project_id', 'branch_name', 'ref']
-    requiredDeleteAttrs = ['project_id']
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['branch_name', 'ref']
     _constructorTypes = {'commit': 'ProjectCommit'}
 
     def protect(self, protect=True):
@@ -770,7 +808,7 @@ class ProjectCommit(GitlabObject):
     canDelete = False
     canUpdate = False
     canCreate = False
-    requiredListAttrs = ['project_id']
+    requiredUrlAttrs = ['project_id']
     shortPrintAttr = 'title'
 
     def diff(self):
@@ -796,9 +834,8 @@ class ProjectCommit(GitlabObject):
 class ProjectKey(GitlabObject):
     _url = '/projects/%(project_id)s/keys'
     canUpdate = False
-    requiredListAttrs = ['project_id']
-    requiredGetAttrs = ['project_id']
-    requiredCreateAttrs = ['project_id', 'title', 'key']
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['title', 'key']
 
 
 class ProjectEvent(GitlabObject):
@@ -807,15 +844,16 @@ class ProjectEvent(GitlabObject):
     canDelete = False
     canUpdate = False
     canCreate = False
-    requiredListAttrs = ['project_id']
+    requiredUrlAttrs = ['project_id']
     shortPrintAttr = 'target_title'
 
 
 class ProjectHook(GitlabObject):
     _url = '/projects/%(project_id)s/hooks'
-    requiredListAttrs = ['project_id']
-    requiredGetAttrs = ['project_id']
-    requiredCreateAttrs = ['project_id', 'url']
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['url']
+    optionalCreateAttrs = ['push_events', 'issues_events',
+                           'merge_requests_events', 'tag_push_events']
     shortPrintAttr = 'url'
 
 
@@ -824,9 +862,8 @@ class ProjectIssueNote(GitlabObject):
     _constructorTypes = {'author': 'User'}
     canUpdate = False
     canDelete = False
-    requiredListAttrs = ['project_id', 'issue_id']
-    requiredGetAttrs = ['project_id', 'issue_id']
-    requiredCreateAttrs = ['project_id', 'body']
+    requiredUrlAttrs = ['project_id', 'issue_id']
+    requiredCreateAttrs = ['body']
 
 
 class ProjectIssue(GitlabObject):
@@ -834,11 +871,11 @@ class ProjectIssue(GitlabObject):
     _constructorTypes = {'author': 'User', 'assignee': 'User',
                          'milestone': 'ProjectMilestone'}
     canDelete = False
-    requiredListAttrs = ['project_id']
-    requiredGetAttrs = ['project_id']
-    requiredCreateAttrs = ['project_id', 'title']
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['title']
     optionalCreateAttrs = ['description', 'assignee_id', 'milestone_id',
                            'labels']
+
     shortPrintAttr = 'title'
 
     def Note(self, id=None, **kwargs):
@@ -850,9 +887,8 @@ class ProjectIssue(GitlabObject):
 
 class ProjectMember(GitlabObject):
     _url = '/projects/%(project_id)s/members'
-    requiredListAttrs = ['project_id']
-    requiredGetAttrs = ['project_id']
-    requiredCreateAttrs = ['project_id', 'user_id', 'access_level']
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['access_level', 'user_id']
     shortPrintAttr = 'username'
 
 
@@ -861,9 +897,8 @@ class ProjectNote(GitlabObject):
     _constructorTypes = {'author': 'User'}
     canUpdate = False
     canDelete = False
-    requiredListAttrs = ['project_id']
-    requiredGetAttrs = ['project_id']
-    requiredCreateAttrs = ['project_id', 'body']
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['body']
 
 
 class ProjectTag(GitlabObject):
@@ -872,29 +907,27 @@ class ProjectTag(GitlabObject):
     canGet = False
     canDelete = False
     canUpdate = False
-    canCreate = False
-    requiredListAttrs = ['project_id']
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['tag_name', 'ref']
+    optionalCreateattrs = ['message']
     shortPrintAttr = 'name'
 
 
 class ProjectMergeRequestNote(GitlabObject):
     _url = '/projects/%(project_id)s/merge_requests/%(merge_request_id)s/notes'
     _constructorTypes = {'author': 'User'}
-    canGet = False
-    canCreate = False
     canUpdate = False
     canDelete = False
-    requiredListAttrs = ['project_id', 'merge_request_id']
+    requiredUrlAttrs = ['project_id', 'merge_request_id']
+    requiredCreateAttrs = ['body']
 
 
 class ProjectMergeRequest(GitlabObject):
     _url = '/projects/%(project_id)s/merge_requests'
     _constructorTypes = {'author': 'User', 'assignee': 'User'}
     canDelete = False
-    requiredListAttrs = ['project_id']
-    requiredGetAttrs = ['project_id']
-    requiredCreateAttrs = ['project_id', 'source_branch',
-                           'target_branch', 'title']
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['source_branch', 'target_branch', 'title']
     optionalCreateAttrs = ['assignee_id']
 
     def Note(self, id=None, **kwargs):
@@ -907,9 +940,8 @@ class ProjectMergeRequest(GitlabObject):
 class ProjectMilestone(GitlabObject):
     _url = '/projects/%(project_id)s/milestones'
     canDelete = False
-    requiredListAttrs = ['project_id']
-    requiredGetAttrs = ['project_id']
-    requiredCreateAttrs = ['project_id', 'title']
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['title']
     optionalCreateAttrs = ['description', 'due_date', 'state_event']
     shortPrintAttr = 'title'
 
@@ -919,17 +951,15 @@ class ProjectSnippetNote(GitlabObject):
     _constructorTypes = {'author': 'User'}
     canUpdate = False
     canDelete = False
-    requiredListAttrs = ['project_id', 'snippet_id']
-    requiredGetAttrs = ['project_id', 'snippet_id']
-    requiredCreateAttrs = ['project_id', 'snippet_id', 'body']
+    requiredUrlAttrs = ['project_id', 'snippet_id']
+    requiredCreateAttrs = ['body']
 
 
 class ProjectSnippet(GitlabObject):
     _url = '/projects/%(project_id)s/snippets'
     _constructorTypes = {'author': 'User'}
-    requiredListAttrs = ['project_id']
-    requiredGetAttrs = ['project_id']
-    requiredCreateAttrs = ['project_id', 'title', 'file_name', 'code']
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['title', 'file_name', 'code']
     optionalCreateAttrs = ['lifetime']
     shortPrintAttr = 'title'
 
@@ -957,7 +987,8 @@ class UserProject(GitlabObject):
     canDelete = False
     canList = False
     canGet = False
-    requiredCreateAttrs = ['name', 'user_id']
+    requiredUrlAttrs = ['user_id']
+    requiredCreateAttrs = ['name']
     optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
                            'merge_requests_enabled', 'wiki_enabled',
                            'snippets_enabled', 'public', 'visibility_level',
@@ -968,12 +999,12 @@ class Project(GitlabObject):
     _url = '/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
     canUpdate = False
-    canDelete = False
     requiredCreateAttrs = ['name']
     optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
                            'merge_requests_enabled', 'wiki_enabled',
                            'snippets_enabled', 'public', 'visibility_level',
-                           'namespace_id', 'description']
+                           'namespace_id', 'description', 'path', 'import_url']
+
     shortPrintAttr = 'path'
 
     def Branch(self, id=None, **kwargs):
@@ -1092,10 +1123,8 @@ class Project(GitlabObject):
 class TeamMember(GitlabObject):
     _url = '/user_teams/%(team_id)s/members'
     canUpdate = False
-    requiredCreateAttrs = ['team_id', 'user_id', 'access_level']
-    requiredDeleteAttrs = ['team_id']
-    requiredGetAttrs = ['team_id']
-    requiredListAttrs = ['team_id']
+    requiredUrlAttrs = ['teamd_id']
+    requiredCreateAttrs = ['access_level']
     shortPrintAttr = 'username'
 
 
@@ -1103,10 +1132,8 @@ class TeamProject(GitlabObject):
     _url = '/user_teams/%(team_id)s/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
     canUpdate = False
-    requiredCreateAttrs = ['team_id', 'project_id', 'greatest_access_level']
-    requiredDeleteAttrs = ['team_id', 'project_id']
-    requiredGetAttrs = ['team_id']
-    requiredListAttrs = ['team_id']
+    requiredCreateAttrs = ['greatest_access_level']
+    requiredUrlAttrs = ['team_id']
     shortPrintAttr = 'name'
 
 
