@@ -231,9 +231,14 @@ class Gitlab(object):
             cls = obj_class
             if obj_class._returnClass:
                 cls = obj_class._returnClass
-            
-            # Remove parameters from kwargs before passing it to constructor
+
             cls_kwargs = kwargs.copy()
+
+            # Add _created manually, because we are not creating objects
+            # through normal path
+            cls_kwargs['_created'] = True
+
+            # Remove parameters from kwargs before passing it to constructor
             for key in ['page', 'per_page']:
                 if key in cls_kwargs:
                     del cls_kwargs[key]
@@ -524,6 +529,8 @@ class GitlabObject(object):
     _url = None
     _returnClass = None
     _constructorTypes = None
+    # Tells if _getListOrObject should return list or object when id is None
+    getListWhenNoId = True
     canGet = True
     canList = True
     canCreate = True
@@ -549,16 +556,18 @@ class GitlabObject(object):
         return gl.list(cls, **kwargs)
 
     def _getListOrObject(self, cls, id, **kwargs):
-        if id is None:
+        if id is None and cls.getListWhenNoId:
             if not cls.canList:
-                raise GitlabGetError
+                raise GitlabListError
             return cls.list(self.gitlab, **kwargs)
-
+        elif id is None and not cls.getListWhenNoId:
+            if not cls.canGet:
+                raise GitlabGetError
+            return cls(self.gitlab, id, **kwargs)
         elif isinstance(id, dict):
             if not cls.canCreate:
                 raise GitlabCreateError
             return cls(self.gitlab, id, **kwargs)
-
         else:
             if not cls.canGet:
                 raise GitlabGetError
@@ -587,6 +596,7 @@ class GitlabObject(object):
 
         json = self.gitlab.create(self)
         self._setFromDict(json)
+        self._created = True
 
     def _update(self):
         if not self.canUpdate:
@@ -596,7 +606,7 @@ class GitlabObject(object):
         self._setFromDict(json)
 
     def save(self):
-        if hasattr(self, 'id'):
+        if self._created:
             self._update()
         else:
             self._create()
@@ -605,23 +615,32 @@ class GitlabObject(object):
         if not self.canDelete:
             raise NotImplementedError
 
-        if not hasattr(self, 'id'):
+        if not self._created:
             raise GitlabDeleteError
 
         return self.gitlab.delete(self)
 
     def __init__(self, gl, data=None, **kwargs):
+        self._created = False
         self.gitlab = gl
 
         if data is None or isinstance(data, six.integer_types) or\
                 isinstance(data, six.string_types):
             data = self.gitlab.get(self.__class__, data, **kwargs)
+            # Object is created because we got it from api
+            self._created = True
 
         self._setFromDict(data)
 
         if kwargs:
             for k, v in kwargs.items():
                 self.__dict__[k] = v
+
+        # Special handling for api-objects that don't have id-number in api
+        # responses. Currently only Labels and Files
+        if not hasattr(self, "id"):
+            self.id = None
+
 
     def __str__(self):
         return '%s => %s' % (type(self), str(self.__dict__))
