@@ -1,3 +1,13 @@
+Version 0.8
+
+ * Better python 2.6 and python 3 support
+ * Timeout support in HTTP requests
+ * Gitlab.get() raised GitlabListError instead of GitlabGetError
+ * Support api-objects which don't have id in api response
+ * Add ProjectLabel and ProjectFile classes
+ * Moved url attributes to separate list
+ * Added list for delete attributes
+
 Version 0.7
 
  * Fix license classifier in setup.py
