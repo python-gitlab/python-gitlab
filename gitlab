@@ -141,7 +141,7 @@ def usage():
 def do_auth():
     try:
         gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_token,
-                           ssl_verify=ssl_verify)
+                           ssl_verify=ssl_verify, timeout=timeout)
         gl.auth()
     except:
         die("Could not connect to GitLab (%s)" % gitlab_url)
@@ -247,6 +247,7 @@ def do_project_owned():
 
 
 ssl_verify = True
+timeout = 60
 gitlab_id = None
 verbose = False
 
@@ -322,6 +323,15 @@ except:
     pass
 try:
     ssl_verify = config.getboolean(gitlab_id, 'ssl_verify')
+except:
+    pass
+
+try:
+    timeout = config.getboolean('global', 'timeout')
+except:
+    pass
+try:
+    timeout = config.getboolean(gitlab_id, 'timeout')
 except:
     pass
 
