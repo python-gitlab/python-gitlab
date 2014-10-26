@@ -678,7 +678,7 @@ class GitlabObject(object):
         id = self.__dict__[self.idAttr]
         print("%s%s: %s" % (" " * depth * 2, self.idAttr, id))
         for k in sorted(self.__dict__.keys()):
-            if k == self.idAttr:
+            if k == self.idAttr or k == 'id':
                 continue
             if k[0] == '_':
                 continue
