@@ -680,6 +680,8 @@ class GitlabObject(object):
         for k in sorted(self.__dict__.keys()):
             if k == self.idAttr:
                 continue
+            if k[0] == '_':
+                continue
             v = self.__dict__[k]
             pretty_k = k.replace('_', '-')
             if six.PY2:
