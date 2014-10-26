@@ -75,6 +75,7 @@ Here's an example of the syntax:
 [global]
 default = local
 ssl_verify = true
+timeout = 5
 
 [local]
 url = http://10.0.3.2:8080
@@ -92,6 +93,9 @@ authentication is supported (not user/password).
 
 The `ssl_verify` option defines if the server SSL certificate should be
 validated (use false for self signed certificates, only useful with https).
+
+The `timeout` option defines after how many seconds a request to the Gitlab
+server should be abandonned.
 
 Choosing a different server than the default one can be done at run time:
 
