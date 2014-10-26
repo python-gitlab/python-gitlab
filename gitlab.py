@@ -970,11 +970,11 @@ class ProjectMilestone(GitlabObject):
 class ProjectLabel(GitlabObject):
     _url = '/projects/%(project_id)s/labels'
     requiredUrlAttrs = ['project_id']
+    idAttr = 'name'
     requiredDeleteAttrs = ['name']
     requiredCreateAttrs = ['name', 'color']
     # FIXME: new_name is only valid with update
     optionalCreateAttrs = ['new_name']
-    shortPrintAttr = 'name'
 
 
 class ProjectFile(GitlabObject):
