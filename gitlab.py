@@ -177,11 +177,11 @@ class Gitlab(object):
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
 
-    def rawPut(self, path):
+    def rawPut(self, path, data=None):
         url = '%s%s' % (self._url, path)
 
         try:
-            return requests.put(url,
+            return requests.put(url, data=data,
                                 headers=self.headers,
                                 verify=self.ssl_verify,
                                 timeout=self.timeout)
