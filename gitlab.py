@@ -42,39 +42,62 @@ class jsonEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-class GitlabConnectionError(Exception):
+class GitlabError(Exception):
+    def __init__(self, error_message="", response_code=None,
+                 response_body=None):
+
+        Exception.__init__(self, error_message)
+        # Http status code
+        self.response_code = response_code
+        # Full http response
+        self.response_body = response_body
+        # Parsed error message from gitlab
+        self.error_message = error_message
+
+    def __str__(self):
+        if self.response_code is not None:
+            return "{0}: {1}".format(self.response_code, self.error_message)
+        else:
+            return "{0}".format(self.error_message)
+
+
+class GitlabAuthenticationError(GitlabError):
     pass
 
 
-class GitlabListError(Exception):
+class GitlabConnectionError(GitlabError):
     pass
 
 
-class GitlabGetError(Exception):
+class GitlabOperationError(GitlabError):
     pass
 
 
-class GitlabCreateError(Exception):
+class GitlabListError(GitlabOperationError):
     pass
 
 
-class GitlabUpdateError(Exception):
+class GitlabGetError(GitlabOperationError):
     pass
 
 
-class GitlabDeleteError(Exception):
+class GitlabCreateError(GitlabOperationError):
     pass
 
 
-class GitlabProtectError(Exception):
+class GitlabUpdateError(GitlabOperationError):
     pass
 
 
-class GitlabTransferProjectError(Exception):
+class GitlabDeleteError(GitlabOperationError):
     pass
 
 
-class GitlabAuthenticationError(Exception):
+class GitlabProtectError(GitlabOperationError):
+    pass
+
+
+class GitlabTransferProjectError(GitlabOperationError):
     pass
 
 
