@@ -552,20 +552,8 @@ class GitlabObject(object):
     @classmethod
     def _getListOrObject(cls, gl, id, **kwargs):
         if id is None and cls.getListWhenNoId:
-            if not cls.canList:
-                raise GitlabListError
             return cls.list(gl, **kwargs)
-        elif id is None and not cls.getListWhenNoId:
-            if not cls.canGet:
-                raise GitlabGetError
-            return cls(gl, id, **kwargs)
-        elif isinstance(id, dict):
-            if not cls.canCreate:
-                raise GitlabCreateError
-            return cls(gl, id, **kwargs)
         else:
-            if not cls.canGet:
-                raise GitlabGetError
             return cls(gl, id, **kwargs)
 
     def _getObject(self, k, v):
@@ -621,6 +609,8 @@ class GitlabObject(object):
 
         if data is None or isinstance(data, six.integer_types) or\
                 isinstance(data, six.string_types):
+            if not self.canGet:
+                raise NotImplementedError
             data = self.gitlab.get(self.__class__, data, **kwargs)
             # Object is created because we got it from api
             self._created = True
