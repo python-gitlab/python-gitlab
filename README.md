@@ -55,9 +55,9 @@ for p in gl.Project():
 for g in gl.Group(page=1, per_page=10):
     print (g)
 
-# Create a new project
+# Create a new project (as another_user)
 p = gl.Project({'name': 'myCoolProject', 'wiki_enabled': False})
-p.save()
+p.save(sudo="another_user")
 print p
 `````
 
