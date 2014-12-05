@@ -939,6 +939,15 @@ class ProjectIssue(GitlabObject):
 
     shortPrintAttr = 'title'
 
+    def _dataForGitlab(self, extra_parameters={}):
+        # Gitlab-api returns labels in a json list and takes them in a
+        # comma separated list.
+        if hasattr(self, "labels") and self.labels is not None:
+            labels = ", ".join(self.labels)
+            extra_parameters.update(labels)
+
+        return super(ProjectIssue, self)._dataForGitlab(extra_parameters)
+
     def Note(self, id=None, **kwargs):
         return ProjectIssueNote._getListOrObject(self.gitlab, id,
                                                  project_id=self.project_id,
