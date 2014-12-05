@@ -1,0 +1,7 @@
+#!/usr/bin/make -f
+# See debhelper(7) (uncomment to enable)
+
+#DH_VERBOSE = 1
+
+%:
+	dh $@ --with python2

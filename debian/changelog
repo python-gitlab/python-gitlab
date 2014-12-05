@@ -1,0 +1,5 @@
+python-gitlab (0.8) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Nicolas Chipaux <aegiap@gandi.net>  Fri, 05 Dec 2014 18:34:15 +0100

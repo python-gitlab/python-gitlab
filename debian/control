@@ -1,0 +1,16 @@
+Source: python-gitlab
+Section: python
+Priority: optional
+Maintainer: Nicolas Chipaux <aegiap@gandi.net>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.5
+Homepage: https://github.com/gpocentek/python-gitlab
+Vcs-Git: https://github.com/gpocentek/python-gitlab.git
+Vcs-Browser: https://github.com/gpocentek/python-gitlab
+
+Package: python-gitlab
+Architecture: any
+Depends: ${python:Depends}, ${misc:Depends}
+Provides: ${python:Provides}
+Description: python module providing access to the GitLab server API
+ command line interface to access a gitlab instances
