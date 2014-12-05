@@ -48,7 +48,7 @@ for p in gl.Project():
         closed = 0 if not issue.closed else 1
         print ("  %d => %s (closed: %d)" % (issue.id, issue.title, closed))
         # and close them all
-        issue.closed = 1
+        issue.state_event = "close"
         issue.save()
 
 # Get the first 10 groups (pagination)
