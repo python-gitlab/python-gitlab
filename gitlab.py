@@ -913,8 +913,9 @@ class ProjectIssue(GitlabObject):
     canDelete = False
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['title']
+    # FIXME: state_event is only valid with update
     optionalCreateAttrs = ['description', 'assignee_id', 'milestone_id',
-                           'labels']
+                           'labels', 'state_event']
 
     shortPrintAttr = 'title'
 
@@ -949,7 +950,7 @@ class ProjectTag(GitlabObject):
     canUpdate = False
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['tag_name', 'ref']
-    optionalCreateattrs = ['message']
+    optionalCreateAttrs = ['message']
     shortPrintAttr = 'name'
 
 
