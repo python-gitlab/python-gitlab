@@ -420,7 +420,7 @@ class Gitlab(object):
         headers = self._createHeaders(content_type="application/json")
 
         # build data that can really be sent to server
-        data = obj._dataForGitlab()
+        data = obj._dataForGitlab(extra_parameters=kwargs)
 
         try:
             r = requests.put(url, data=data,
@@ -942,9 +942,10 @@ class ProjectIssue(GitlabObject):
     def _dataForGitlab(self, extra_parameters={}):
         # Gitlab-api returns labels in a json list and takes them in a
         # comma separated list.
-        if hasattr(self, "labels") and self.labels is not None:
-            labels = ", ".join(self.labels)
-            extra_parameters.update(labels)
+        if hasattr(self, "labels"):
+            if self.labels is not None and not isinstance(self.labels, six.string_types):
+                labels = ", ".join(self.labels)
+                extra_parameters['labels'] = labels
 
         return super(ProjectIssue, self)._dataForGitlab(extra_parameters)
 
