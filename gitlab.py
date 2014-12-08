@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+""" Module for interfacing with GitLab-api """
 from __future__ import print_function, division, absolute_import
 
 import six
@@ -124,28 +124,33 @@ def _raiseErrorFromResponse(response, error):
 
 
 class Gitlab(object):
-    """Represents a GitLab server connection"""
+    """ Represents a GitLab server connection
+    
+    Args:
+        url (str): the URL of the Gitlab server
+        private_token (str): the user private token
+        email (str): the user email/login
+        password (str): the user password (associated with email)
+        ssl_verify (bool): (Passed to requests-library)
+        timeout (float or tuple(float,float)): (Passed to
+            requests-library). Timeout to use for requests to gitlab server
+    """
+
     def __init__(self, url, private_token=None,
                  email=None, password=None, ssl_verify=True, timeout=None):
-        """Stores informations about the server
 
-        url: the URL of the Gitlab server
-        private_token: the user private token
-        email: the user email/login
-        password: the user password (associated with email)
-        ssl_verify: (Passed to requests-library)
-        timeout: (Passed to requests-library). Timeout to use for requests to
-          gitlab server. Float or tuple(Float,Float).
-        """
         self._url = '%s/api/v3' % url
+        #: Timeout to use for requests to gitlab server
         self.timeout = timeout
+        #: Headers that will be used in request to GitLab
         self.headers = {}
         self.setToken(private_token)
+        #: the user email
         self.email = email
+        #: the user password (associated with email)
         self.password = password
+        #: (Passed to requests-library)
         self.ssl_verify = ssl_verify
-        # Gitlab should handle UTF-8
-        self.gitlab_encoding = 'UTF-8'
 
     def auth(self):
         """Performs an authentication using either the private token, or the
@@ -497,16 +502,17 @@ class Gitlab(object):
         return self._list_projects("/projects/owned", **kwargs)
 
     def Group(self, id=None, **kwargs):
-        """Creates/gets/lists group(s) known by the GitLab server.
+        """Creates/gets/lists group(s) known by the GitLab server
 
-        If id is None, returns a list of groups.
-
-        If id is an integer, returns the matching group (or raises a
-        GitlabGetError if not found)
-
-        If id is a dict, creates a new object using attributes provided. The
-        object is NOT saved on the server. Use the save() method on the object
-        to write it on the server.
+        Args:
+            id: If id is None, returns a list of groups.
+            id: If id is an integer,
+                returns the matching group (or raises a GitlabGetError if not
+                found).
+            id: If id is a dict, creates a new object using attributes
+                provided. The object is NOT saved on the server. Use the 
+                save() method on the object to write it on the server.
+            kwargs: Arbitrary keyword arguments
         """
         return Group._getListOrObject(self, id, **kwargs)
 
@@ -562,21 +568,43 @@ def _sanitize_dict(src):
 
 
 class GitlabObject(object):
+    """ Baseclass for all classes that interface with GitLab
+
+    Args:
+        gl (gitlab.Gitlab): GitLab server connection
+        data: If data is integer or string type, get object from GitLab
+        data: If data is dictionary, create new object locally. To save object
+           in GitLab, call save-method
+        kwargs: Arbitrary keyword arguments
+    """
+    #: Url to use in GitLab for this object
     _url = None
     _returnClass = None
     _constructorTypes = None
-    # Tells if _getListOrObject should return list or object when id is None
+    #: Tells if _getListOrObject should return list or object when id is None
     getListWhenNoId = True
+
+    #: Tells if GitLab-api allows retrieving single objects
     canGet = True
+    #: Tells if GitLab-api allows listing of objects
     canList = True
+    #: Tells if GitLab-api allows creation of new objects
     canCreate = True
+    #: Tells if GitLab-api allows updating object
     canUpdate = True
+    #: Tells if GitLab-api allows deleting object
     canDelete = True
+    #: Attributes that are required for constructing url
     requiredUrlAttrs = []
+    #: Attributes that are required when retrieving list of objects
     requiredListAttrs = []
+    #: Attributes that are required when retrieving single object
     requiredGetAttrs = []
+    #: Attributes that are required when deleting object
     requiredDeleteAttrs = []
+    #: Attributes that are required when creating a new object
     requiredCreateAttrs = []
+    #: Attributes that are optional when creating a new object
     optionalCreateAttrs = []
     idAttr = 'id'
     shortPrintAttr = None
@@ -1199,6 +1227,19 @@ class Project(GitlabObject):
             _raiseErrorFromResponse(r, GitlabGetError)
 
     def create_file(self, path, branch, content, message, **kwargs):
+        """ Creates file in project repository
+        
+        Args:
+            path (str): Full path to new file
+            branch (str): The name of branch
+            content (str): Content of the file
+            message (str): Commit message
+            kwargs: Arbitrary keyword arguments
+
+        Raises:
+            GitlabCreateError: Operation failed
+            GitlabConnectionError: Connection to GitLab-server failed
+        """
         url = "/projects/%s/repository/files" % self.id
         url += "?file_path=%s&branch_name=%s&content=%s&commit_message=%s" % \
             (path, branch, content, message)
