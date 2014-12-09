@@ -13,6 +13,8 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+from __future__ import unicode_literals
+
 import sys
 import os
 import sphinx
@@ -23,8 +25,6 @@ if sphinx.version_info < (1,3,):
     napoleon_version = "sphinxcontrib.napoleon"
 else:
     napoleon_version = "sphinx.ext.napoleon"
-
-print(napoleon_version)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
