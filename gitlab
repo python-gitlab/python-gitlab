@@ -327,11 +327,11 @@ except:
     pass
 
 try:
-    timeout = config.getboolean('global', 'timeout')
+    timeout = config.getint('global', 'timeout')
 except:
     pass
 try:
-    timeout = config.getboolean(gitlab_id, 'timeout')
+    timeout = config.getint(gitlab_id, 'timeout')
 except:
     pass
 
