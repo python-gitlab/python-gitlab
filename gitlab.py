@@ -501,6 +501,24 @@ class Gitlab(object):
         """Lists owned projects."""
         return self._list_projects("/projects/owned", **kwargs)
 
+    def _list_groups(self, url, **kwargs):
+        r = self.rawGet(url, **kwargs)
+        if r.status_code != 200:
+            _raiseErrorFromResponse(r, GitlabListError)
+
+        l = []
+        for o in r.json():
+            l.append(Group(self, o))
+
+        return l
+
+    def search_groups(self, query, **kwargs):
+        """Get all groups that match your query string in their name or path.
+
+        Returns a list of matching groups.
+        """
+        return self._list_groups("/groups?search=" + query, **kwargs)
+
     def Group(self, id=None, **kwargs):
         """Creates/gets/lists group(s) known by the GitLab server
 
