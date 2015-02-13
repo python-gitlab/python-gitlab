@@ -513,7 +513,7 @@ class Gitlab(object):
         return l
 
     def search_groups(self, query, **kwargs):
-        """Searches groups by name.
+        """Get all groups that match your query string in their name or path.
 
         Returns a list of matching groups.
         """
