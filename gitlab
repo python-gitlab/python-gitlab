@@ -229,7 +229,6 @@ if __name__ == "__main__":
                              "If not defined, the default selection will be used.", required=False)
     subparsers = parser.add_subparsers(
         dest='what',
-        title="what",
         title="positional argument",
         description='GitLab object',
         help='GitLab object'
