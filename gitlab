@@ -18,6 +18,7 @@
 
 from __future__ import print_function, division, absolute_import
 import argparse
+import inspect
 
 import os
 import sys
@@ -249,6 +250,8 @@ if __name__ == "__main__":
     config.read(['/etc/python-gitlab.cfg',
                  os.path.expanduser('~/.python-gitlab.cfg')])
     gitlab_id = arg.gitlab
+    #conflicts with "gitlab" attribute with GitlabObject class
+    d.pop("gitlab")
     verbose = arg.verbosity
     action = arg.action
     what = arg.what
