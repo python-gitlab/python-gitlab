@@ -44,7 +44,7 @@ UNPROTECT = 'unprotect'
 SEARCH = 'search'
 OWNED = 'owned'
 ALL = 'all'
-ACTION = [LIST, GET, CREATE, UPDATE, DELETE]
+ACTIONS = [LIST, GET, CREATE, UPDATE, DELETE]
 EXTRA_ACTION = [PROTECT, UNPROTECT, SEARCH, OWNED, ALL]
 
 extra_actions = {
@@ -78,7 +78,7 @@ def populate_sub_parser_by_class(cls, sub_parser):
         description='action with %s' % cls.__name__,
         help='action to do'
     )
-    for action_name in ACTION:
+    for action_name in ACTIONS:
         attr = 'can' + action_name.capitalize()
         try:
             y = cls.__dict__[attr]
@@ -87,6 +87,7 @@ def populate_sub_parser_by_class(cls, sub_parser):
         if not y:
             continue
         sub_parser_action = sub_parser_class.add_parser(action_name)
+        [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=True) for x in cls.requiredUrlAttrs]
         if action_name == LIST:
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=True) for x in cls.requiredListAttrs]
             sub_parser_action.add_argument("--page", required=False)
@@ -94,7 +95,7 @@ def populate_sub_parser_by_class(cls, sub_parser):
         elif action_name in [GET, DELETE]:
             if cls not in [gitlab.CurrentUser]:
                 sub_parser_action.add_argument("--id", required=True)
-                [sub_parser_action.add_argument("--%s" % x.replace('_', '-')) for x in cls.requiredGetAttrs]
+                [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=True) for x in cls.requiredGetAttrs]
         elif action_name == CREATE:
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=True) for x in
              cls.requiredCreateAttrs]
@@ -304,29 +305,15 @@ if __name__ == "__main__":
             o.display(verbose)
             print("")
 
-    elif action == GET:
-        o = do_get(cls, d)
-        o.display(verbose)
+    elif action == DELETE or action == UPDATE:
+        o = globals()['do_%s' % action.lower()](cls, d)
 
-    elif action == DELETE:
-        o = do_delete(cls, d)
-
-    elif action == UPDATE:
-        o = do_update(cls, d)
-
-    elif action == PROTECT:
+    elif action == PROTECT or action == UNPROTECT:
         if cls != gitlab.ProjectBranch:
             die("%s objects can't be protected" % what)
 
         o = do_get(cls, d)
-        o.protect()
-
-    elif action == UNPROTECT:
-        if cls != gitlab.ProjectBranch:
-            die("%s objects can't be protected" % what)
-
-        o = do_get(cls, d)
-        o.unprotect()
+        getattr(o, action)()
 
     elif action == SEARCH:
         if cls != gitlab.Project:
