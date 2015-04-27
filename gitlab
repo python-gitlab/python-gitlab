@@ -73,8 +73,8 @@ def clsToWhat(cls):
 def populate_sub_parser_by_class(cls, sub_parser):
     sub_parser_class = sub_parser.add_subparsers(
         dest='action',
-        title="action",
-        description='action to do',
+        title="positional argument",
+        description='action with %s' % cls.__name__,
         help='action to do'
     )
     for action_name in ACTION:
@@ -87,7 +87,7 @@ def populate_sub_parser_by_class(cls, sub_parser):
             continue
         sub_parser_action = sub_parser_class.add_parser(action_name)
         if action_name == LIST:
-            [sub_parser_action.add_argument("--%s" % x.replace('_', '-')) for x in cls.requiredListAttrs]
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=True) for x in cls.requiredListAttrs]
             sub_parser_action.add_argument("--page", required=False)
             sub_parser_action.add_argument("--per-page", required=False)
         elif action_name in [GET, DELETE]:
@@ -95,11 +95,13 @@ def populate_sub_parser_by_class(cls, sub_parser):
                 sub_parser_action.add_argument("--id", required=True)
                 [sub_parser_action.add_argument("--%s" % x.replace('_', '-')) for x in cls.requiredGetAttrs]
         elif action_name == CREATE:
-            [sub_parser_action.add_argument("--%s" % x.replace('_', '-')) for x in cls.requiredCreateAttrs]
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=True) for x in
+             cls.requiredCreateAttrs]
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=False) for x in
              cls.optionalCreateAttrs]
         elif action_name == UPDATE:
-            [sub_parser_action.add_argument("--%s" % x.replace('_', '-')) for x in cls.requiredCreateAttrs]
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=True) for x in
+             cls.requiredCreateAttrs]
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=False) for x in
              cls.optionalCreateAttrs]
 
@@ -107,7 +109,7 @@ def populate_sub_parser_by_class(cls, sub_parser):
         for action_name in sorted(extra_actions[cls]):
             sub_parser_action = sub_parser_class.add_parser(action_name)
             d = extra_actions[cls][action_name]
-            [sub_parser_action.add_argument("--%s" % arg) for arg in d['requiredAttrs']]
+            [sub_parser_action.add_argument("--%s" % arg, required=True) for arg in d['requiredAttrs']]
 
 
 def do_auth():
@@ -228,14 +230,18 @@ if __name__ == "__main__":
     subparsers = parser.add_subparsers(
         dest='what',
         title="what",
+        title="positional argument",
         description='GitLab object',
         help='GitLab object'
     )
     #populate argparse for all Gitlab Object
     for cls in gitlab.__dict__.values():
-        if gitlab.GitlabObject in getmro(cls):
-            sub_parser = subparsers.add_parser(clsToWhat(cls))
-            populate_sub_parser_by_class(cls, sub_parser)
+        try:
+            if gitlab.GitlabObject in getmro(cls):
+                sub_parser = subparsers.add_parser(clsToWhat(cls))
+                populate_sub_parser_by_class(cls, sub_parser)
+        except:
+            pass
 
     arg = parser.parse_args()
     d = arg.__dict__
