@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, division, absolute_import
+import argparse
 
 import os
 import sys
@@ -32,15 +33,27 @@ from inspect import getmro, getmembers, isclass
 import gitlab
 
 camel_re = re.compile('(.)([A-Z])')
+LIST = 'list'
+GET = 'get'
+CREATE = 'create'
+UPDATE = 'update'
+DELETE = 'delete'
+PROTECT = 'protect'
+UNPROTECT = 'unprotect'
+SEARCH = 'search'
+OWNED = 'owned'
+ALL = 'all'
+ACTION = [LIST, GET, CREATE, UPDATE, DELETE]
+EXTRA_ACTION = [PROTECT, UNPROTECT, SEARCH, OWNED, ALL]
 
 extra_actions = {
-    gitlab.ProjectBranch: {'protect': {'requiredAttrs': ['id', 'project-id']},
-                           'unprotect': {'requiredAttrs': ['id', 'project-id']}
-                           },
-    gitlab.Project: {'search': {'requiredAttrs': ['query']},
-                     'owned': {'requiredAttrs': []},
-                     'all': {'requiredAttrs': []}
-                     },
+    gitlab.ProjectBranch: {PROTECT: {'requiredAttrs': ['id', 'project-id']},
+                           UNPROTECT: {'requiredAttrs': ['id', 'project-id']}
+    },
+    gitlab.Project: {SEARCH: {'requiredAttrs': ['query']},
+                     OWNED: {'requiredAttrs': []},
+                     ALL: {'requiredAttrs': []}
+    },
 }
 
 
@@ -57,85 +70,44 @@ def clsToWhat(cls):
     return camel_re.sub(r'\1-\2', cls.__name__).lower()
 
 
-def actionHelpList(cls):
-    l = []
-    for action in 'list', 'get', 'create', 'update', 'delete':
-        attr = 'can' + action.capitalize()
+def populate_sub_parser_by_class(cls, sub_parser):
+    sub_parser_class = sub_parser.add_subparsers(
+        dest='action',
+        title="action",
+        description='action to do',
+        help='action to do'
+    )
+    for action_name in ACTION:
+        attr = 'can' + action_name.capitalize()
         try:
             y = cls.__dict__[attr]
         except:
             y = gitlab.GitlabObject.__dict__[attr]
         if not y:
             continue
-
-        detail = ''
-        if action == 'list':
-            detail = " ".join(["--%s=ARG" % x.replace('_', '-')
-                               for x in cls.requiredListAttrs])
-            if detail:
-                detail += " "
-            detail += "--page=ARG --per-page=ARG"
-        elif action in ['get', 'delete']:
+        sub_parser_action = sub_parser_class.add_parser(action_name)
+        if action_name == LIST:
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-')) for x in cls.requiredListAttrs]
+            sub_parser_action.add_argument("--page", required=False)
+            sub_parser_action.add_argument("--per-page", required=False)
+        elif action_name in [GET, DELETE]:
             if cls not in [gitlab.CurrentUser]:
-                detail = "--id=ARG "
-                detail += " ".join(["--%s=ARG" % x.replace('_', '-')
-                                    for x in cls.requiredGetAttrs])
-        elif action == 'create':
-            detail = " ".join(["--%s=ARG" % x.replace('_', '-')
-                               for x in cls.requiredCreateAttrs])
-            if detail:
-                detail += " "
-            detail += " ".join(["[--%s=ARG]" % x.replace('_', '-')
-                                for x in cls.optionalCreateAttrs])
-        elif action == 'update':
-            detail = " ".join(["[--%s=ARG]" % x.replace('_', '-')
-                               for x in cls.requiredCreateAttrs])
-            if detail:
-                detail += " "
-            detail += " ".join(["[--%s=ARG]" % x.replace('_', '-')
-                                for x in cls.optionalCreateAttrs])
-        l.append("%s %s" % (action, detail))
+                sub_parser_action.add_argument("--id", required=True)
+                [sub_parser_action.add_argument("--%s" % x.replace('_', '-')) for x in cls.requiredGetAttrs]
+        elif action_name == CREATE:
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-')) for x in cls.requiredCreateAttrs]
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=False) for x in
+             cls.optionalCreateAttrs]
+        elif action_name == UPDATE:
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-')) for x in cls.requiredCreateAttrs]
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=False) for x in
+             cls.optionalCreateAttrs]
 
     if cls in extra_actions:
-        for action in sorted(extra_actions[cls]):
-            d = extra_actions[cls][action]
-            detail = " ".join(["--%s=ARG" % arg for arg in d['requiredAttrs']])
-            l.append("%s %s" % (action, detail))
-
-    return (l)
-
-
-def usage():
-    print("usage: gitlab [--help|-h] [--fancy|--verbose|-v] [--gitlab=GITLAB] "
-          "WHAT ACTION [options]")
-    print("")
-    print("--gitlab=GITLAB")
-    print("    Specifies which python-gitlab.cfg configuration section should "
-          "be used.")
-    print("    If not defined, the default selection will be used.")
-    print("")
-    print("--fancy, --verbose, -v")
-    print("    More verbose output.")
-    print("")
-    print("--help, -h")
-    print("    Displays this message.")
-    print("")
-    print("Available `options` depend on which WHAT/ACTION couple is used.")
-    print("If `ACTION` is \"help\", available actions and options will be "
-          "listed for `ACTION`.")
-    print("")
-    print("Available `WHAT` values are:")
-
-    classes = []
-    for name, o in getmembers(gitlab):
-        if not isclass(o):
-            continue
-        if gitlab.GitlabObject in getmro(o) and o != gitlab.GitlabObject:
-            classes.append(o)
-
-    classes.sort(key=lambda x: x.__name__)
-    for cls in classes:
-        print(" %s" % clsToWhat(cls))
+        for action_name in sorted(extra_actions[cls]):
+            sub_parser_action = sub_parser_class.add_parser(action_name)
+            d = extra_actions[cls][action_name]
+            [sub_parser_action.add_argument("--%s" % arg) for arg in d['requiredAttrs']]
 
 
 def do_auth():
@@ -143,10 +115,9 @@ def do_auth():
         gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_token,
                            ssl_verify=ssl_verify, timeout=timeout)
         gl.auth()
+        return gl
     except:
         die("Could not connect to GitLab (%s)" % gitlab_url)
-
-    return gl
 
 
 def get_id():
@@ -246,174 +217,132 @@ def do_project_owned():
         die("Impossible to list owned projects (%s)" % str(e))
 
 
-ssl_verify = True
-timeout = 60
-gitlab_id = None
-verbose = False
+if __name__ == "__main__":
+    ssl_verify = True
+    timeout = 60
+    parser = argparse.ArgumentParser(description='Useful GitLab Command Line Interface')
+    parser.add_argument("-v", "--verbosity", "--fancy", help="increase output verbosity", action="store_true")
+    parser.add_argument("--gitlab", metavar='gitlab',
+                        help="Specifies which python-gitlab.cfg configuration section should be used. "
+                             "If not defined, the default selection will be used.", required=False)
+    subparsers = parser.add_subparsers(
+        dest='what',
+        title="what",
+        description='GitLab object',
+        help='GitLab object'
+    )
+    #populate argparse for all Gitlab Object
+    for cls in gitlab.__dict__.values():
+        if gitlab.GitlabObject in getmro(cls):
+            sub_parser = subparsers.add_parser(clsToWhat(cls))
+            populate_sub_parser_by_class(cls, sub_parser)
 
-args = []
-d = {}
-keep_looping = False
-for idx, arg in enumerate(sys.argv[1:], 1):
-    if keep_looping:
-        keep_looping = False
-        continue
+    arg = parser.parse_args()
+    d = arg.__dict__
+    # read the config
+    config = ConfigParser()
+    config.read(['/etc/python-gitlab.cfg',
+                 os.path.expanduser('~/.python-gitlab.cfg')])
+    gitlab_id = arg.gitlab
+    verbose = arg.verbosity
+    action = arg.action
+    what = arg.what
 
-    if arg.startswith('--'):
-        arg = arg[2:]
-
-        if arg == 'help':
-            usage()
-            sys.exit(0)
-        elif arg in ['verbose', 'fancy']:
-            verbose = True
-            continue
-
+    if gitlab_id is None:
         try:
-            k, v = arg.split('=', 1)
-            v.strip()
+            gitlab_id = config.get('global', 'default')
         except:
-            k = arg
-            try:
-                v = sys.argv[idx + 1]
-            except:
-                die("--%s argument requires a value" % arg)
-            keep_looping = True
+            die("Impossible to get the gitlab id (not specified in config file)")
 
-        k = k.strip().replace('-', '_')
-
-        if k == 'gitlab':
-            gitlab_id = v
-        else:
-            d[k] = v
-    elif arg.startswith('-'):
-        arg = arg[1:]
-
-        if arg == 'h':
-            usage()
-            sys.exit(0)
-        elif arg == 'v':
-            verbose = True
-        else:
-            die("Unknown argument: -%s" % arg)
-    else:
-        args.append(arg)
-
-# read the config
-config = ConfigParser()
-config.read(['/etc/python-gitlab.cfg',
-             os.path.expanduser('~/.python-gitlab.cfg')])
-
-if gitlab_id is None:
     try:
-        gitlab_id = config.get('global', 'default')
+        gitlab_url = config.get(gitlab_id, 'url')
+        gitlab_token = config.get(gitlab_id, 'private_token')
     except:
-        die("Impossible to get the gitlab id (not specified in config file)")
+        die("Impossible to get gitlab informations from configuration (%s)" %
+            gitlab_id)
 
-try:
-    gitlab_url = config.get(gitlab_id, 'url')
-    gitlab_token = config.get(gitlab_id, 'private_token')
-except:
-    die("Impossible to get gitlab informations from configuration (%s)" %
-        gitlab_id)
+    try:
+        ssl_verify = config.getboolean('global', 'ssl_verify')
+    except:
+        pass
+    try:
+        ssl_verify = config.getboolean(gitlab_id, 'ssl_verify')
+    except:
+        pass
 
-try:
-    ssl_verify = config.getboolean('global', 'ssl_verify')
-except:
-    pass
-try:
-    ssl_verify = config.getboolean(gitlab_id, 'ssl_verify')
-except:
-    pass
+    try:
+        timeout = config.getint('global', 'timeout')
+    except:
+        pass
+    try:
+        timeout = config.getint(gitlab_id, 'timeout')
+    except:
+        pass
 
-try:
-    timeout = config.getint('global', 'timeout')
-except:
-    pass
-try:
-    timeout = config.getint(gitlab_id, 'timeout')
-except:
-    pass
+    cls = None
+    try:
+        cls = gitlab.__dict__[whatToCls(what)]
+    except:
+        die("Unknown object: %s" % what)
 
-try:
-    what = args.pop(0)
-    action = args.pop(0)
-except:
-    die("Missing arguments. Use `gitlab -h` for help.")
+    gl = do_auth()
 
-try:
-    cls = gitlab.__dict__[whatToCls(what)]
-except:
-    die("Unknown object: %s" % what)
+    if action == CREATE or action == GET:
+        o = globals()['do_%s' % action.lower()](cls, d)
+        o.display(verbose)
 
-if gitlab.GitlabObject not in getmro(cls):
-    die("Unknown object: %s" % what)
+    elif action == LIST:
+        for o in do_list(cls, d):
+            o.display(verbose)
+            print("")
 
-if action == "help":
-    print("%s options:" % what)
-    for item in actionHelpList(cls):
-        print(" %s %s" % (what, item))
+    elif action == GET:
+        o = do_get(cls, d)
+        o.display(verbose)
+
+    elif action == DELETE:
+        o = do_delete(cls, d)
+
+    elif action == UPDATE:
+        o = do_update(cls, d)
+
+    elif action == PROTECT:
+        if cls != gitlab.ProjectBranch:
+            die("%s objects can't be protected" % what)
+
+        o = do_get(cls, d)
+        o.protect()
+
+    elif action == UNPROTECT:
+        if cls != gitlab.ProjectBranch:
+            die("%s objects can't be protected" % what)
+
+        o = do_get(cls, d)
+        o.unprotect()
+
+    elif action == SEARCH:
+        if cls != gitlab.Project:
+            die("%s objects don't support this request" % what)
+
+        for o in do_project_search(d):
+            o.display(verbose)
+
+    elif action == OWNED:
+        if cls != gitlab.Project:
+            die("%s objects don't support this request" % what)
+
+        for o in do_project_owned():
+            o.display(verbose)
+
+    elif action == ALL:
+        if cls != gitlab.Project:
+            die("%s objects don't support this request" % what)
+
+        for o in do_project_all():
+            o.display(verbose)
+
+    else:
+        die("Unknown action: %s. Use \"gitlab -h %s\" to get details." %
+            (action, what))
 
     sys.exit(0)
-
-gl = do_auth()
-
-if action == "create":
-    o = do_create(cls, d)
-    o.display(verbose)
-
-elif action == "list":
-    for o in do_list(cls, d):
-        o.display(verbose)
-        print("")
-
-elif action == "get":
-    o = do_get(cls, d)
-    o.display(verbose)
-
-elif action == "delete":
-    o = do_delete(cls, d)
-
-elif action == "update":
-    o = do_update(cls, d)
-
-elif action == "protect":
-    if cls != gitlab.ProjectBranch:
-        die("%s objects can't be protected" % what)
-
-    o = do_get(cls, d)
-    o.protect()
-
-elif action == "unprotect":
-    if cls != gitlab.ProjectBranch:
-        die("%s objects can't be protected" % what)
-
-    o = do_get(cls, d)
-    o.unprotect()
-
-elif action == "search":
-    if cls != gitlab.Project:
-        die("%s objects don't support this request" % what)
-
-    for o in do_project_search(d):
-        o.display(verbose)
-
-elif action == "owned":
-    if cls != gitlab.Project:
-        die("%s objects don't support this request" % what)
-
-    for o in do_project_owned():
-        o.display(verbose)
-
-elif action == "all":
-    if cls != gitlab.Project:
-        die("%s objects don't support this request" % what)
-
-    for o in do_project_all():
-        o.display(verbose)
-
-else:
-    die("Unknown action: %s. Use \"gitlab %s help\" to get details." %
-        (action, what))
-
-sys.exit(0)
