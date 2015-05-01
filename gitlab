@@ -18,20 +18,15 @@
 
 from __future__ import print_function, division, absolute_import
 import argparse
-import inspect
-
 import os
 import sys
 import re
-
+import gitlab
+from inspect import getmro
 try:
     from ConfigParser import ConfigParser
 except:
     from configparser import ConfigParser
-
-from inspect import getmro, getmembers, isclass
-
-import gitlab
 
 camel_re = re.compile('(.)([A-Z])')
 LIST = 'list'
