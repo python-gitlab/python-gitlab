@@ -26,7 +26,7 @@ import sys
 from itertools import chain
 
 __title__ = 'python-gitlab'
-__version__ = '0.8'
+__version__ = '0.8.1'
 __author__ = 'Gauvain Pocentek'
 __email__ = 'gauvain@pocentek.net'
 __license__ = 'LGPL3'

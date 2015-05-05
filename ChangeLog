@@ -1,3 +1,8 @@
+Version 0.8.1
+
+ * Implemented argparse libray for parsing argument on CLI
+ * add custom action for InfoCert
+
 Version 0.8
 
  * Better python 2.6 and python 3 support
