@@ -21,6 +21,7 @@ from __future__ import absolute_import
 from itertools import chain
 import json
 import sys
+import warnings
 
 import requests
 import six
@@ -31,6 +32,8 @@ __author__ = 'Gauvain Pocentek'
 __email__ = 'gauvain@pocentek.net'
 __license__ = 'LGPL3'
 __copyright__ = 'Copyright 2013-2014 Gauvain Pocentek'
+
+warnings.simplefilter('always', DeprecationWarning)
 
 
 class jsonEncoder(json.JSONEncoder):
@@ -144,7 +147,7 @@ class Gitlab(object):
         self.timeout = timeout
         #: Headers that will be used in request to GitLab
         self.headers = {}
-        self.setToken(private_token)
+        self.set_token(private_token)
         #: the user email
         self.email = email
         #: the user password (associated with email)
@@ -169,7 +172,7 @@ class Gitlab(object):
             raise GitlabAuthenticationError("Missing email/password")
 
         data = json.dumps({'email': self.email, 'password': self.password})
-        r = self.rawPost('/session', data, content_type='application/json')
+        r = self._raw_post('/session', data, content_type='application/json')
 
         if r.status_code == 201:
             self.user = CurrentUser(self, r.json())
@@ -202,6 +205,12 @@ class Gitlab(object):
         return request_headers
 
     def setToken(self, token):
+        """(DEPRECATED) Sets the private token for authentication"""
+        warnings.warn("setToken is deprecated, use set_token instead",
+                      DeprecationWarning)
+        self.set_token(token)
+
+    def set_token(self, token):
         """Sets the private token for authentication"""
         self.private_token = token if token else None
         if token:
@@ -210,11 +219,21 @@ class Gitlab(object):
             del self.headers["PRIVATE-TOKEN"]
 
     def setCredentials(self, email, password):
+        """(DEPRECATED) Sets the email/login and password for authentication"""
+        warnings.warn("setToken is deprecated, use set_credentials instead",
+                      DeprecationWarning)
+        self.set_credentials(email, password)
+
+    def set_credentials(self, email, password):
         """Sets the email/login and password for authentication"""
         self.email = email
         self.password = password
 
     def rawGet(self, path, content_type=None, **kwargs):
+        warnings.warn("rawGet is deprecated", DeprecationWarning)
+        return self._raw_get(path, content_type, **kwargs)
+
+    def _raw_get(self, path, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
         headers = self._createHeaders(content_type)
 
@@ -229,6 +248,10 @@ class Gitlab(object):
                 "Can't connect to GitLab server (%s)" % self._url)
 
     def rawPost(self, path, data=None, content_type=None, **kwargs):
+        warnings.warn("rawPost is deprecated", DeprecationWarning)
+        return self._raw_post(path, data, content_type, **kwargs)
+
+    def _raw_post(self, path, data=None, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
         headers = self._createHeaders(content_type)
         try:
@@ -241,6 +264,10 @@ class Gitlab(object):
                 "Can't connect to GitLab server (%s)" % self._url)
 
     def rawPut(self, path, data=None, content_type=None, **kwargs):
+        warnings.warn("rawPut is deprecated", DeprecationWarning)
+        return self._raw_put(path, data, content_type, **kwargs)
+
+    def _raw_put(self, path, data=None, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
         headers = self._createHeaders(content_type)
 
@@ -254,6 +281,10 @@ class Gitlab(object):
                 "Can't connect to GitLab server (%s)" % self._url)
 
     def rawDelete(self, path, content_type=None, **kwargs):
+        warnings.warn("rawDelete is deprecated", DeprecationWarning)
+        return self._raw_delete(path, content_type, **kwargs)
+
+    def _raw_delete(self, path, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
         headers = self._createHeaders(content_type)
 
@@ -476,7 +507,7 @@ class Gitlab(object):
         return UserProject._getListOrObject(self, id, **kwargs)
 
     def _list_projects(self, url, **kwargs):
-        r = self.rawGet(url, **kwargs)
+        r = self._raw_get(url, **kwargs)
         if r.status_code != 200:
             _raiseErrorFromResponse(r, GitlabListError)
 
@@ -838,7 +869,7 @@ class Group(GitlabObject):
 
     def transfer_project(self, id, **kwargs):
         url = '/groups/%d/projects/%d' % (self.id, id)
-        r = self.gitlab.rawPost(url, None, **kwargs)
+        r = self.gitlab._raw_post(url, None, **kwargs)
         if r.status_code != 201:
             _raiseErrorFromResponse(r, GitlabTransferProjectError)
 
@@ -875,7 +906,7 @@ class ProjectBranch(GitlabObject):
         url = self._url % {'project_id': self.project_id}
         action = 'protect' if protect else 'unprotect'
         url = "%s/%s/%s" % (url, self.name, action)
-        r = self.gitlab.rawPut(url, data=None, content_type=None, **kwargs)
+        r = self.gitlab._raw_put(url, data=None, content_type=None, **kwargs)
 
         if r.status_code == 200:
             if protect:
@@ -900,7 +931,7 @@ class ProjectCommit(GitlabObject):
     def diff(self, **kwargs):
         url = ('/projects/%(project_id)s/repository/commits/%(commit_id)s/diff'
                % {'project_id': self.project_id, 'commit_id': self.id})
-        r = self.gitlab.rawGet(url, **kwargs)
+        r = self.gitlab._raw_get(url, **kwargs)
         if r.status_code == 200:
             return r.json()
         else:
@@ -910,7 +941,7 @@ class ProjectCommit(GitlabObject):
         url = '/projects/%(project_id)s/repository/blobs/%(commit_id)s' % \
               {'project_id': self.project_id, 'commit_id': self.id}
         url += '?filepath=%s' % filepath
-        r = self.gitlab.rawGet(url, **kwargs)
+        r = self.gitlab._raw_get(url, **kwargs)
         if r.status_code == 200:
             return r.content
         else:
@@ -1086,7 +1117,7 @@ class ProjectSnippet(GitlabObject):
     def Content(self, **kwargs):
         url = "/projects/%(project_id)s/snippets/%(snippet_id)s/raw" % \
             {'project_id': self.project_id, 'snippet_id': self.id}
-        r = self.gitlab.rawGet(url, **kwargs)
+        r = self.gitlab._raw_get(url, **kwargs)
 
         if r.status_code == 200:
             return r.content
@@ -1200,7 +1231,7 @@ class Project(GitlabObject):
     def tree(self, path='', ref_name='', **kwargs):
         url = "%s/%s/repository/tree" % (self._url, self.id)
         url += '?path=%s&ref_name=%s' % (path, ref_name)
-        r = self.gitlab.rawGet(url, **kwargs)
+        r = self.gitlab._raw_get(url, **kwargs)
         if r.status_code == 200:
             return r.json()
         else:
@@ -1209,7 +1240,7 @@ class Project(GitlabObject):
     def blob(self, sha, filepath, **kwargs):
         url = "%s/%s/repository/blobs/%s" % (self._url, self.id, sha)
         url += '?filepath=%s' % (filepath)
-        r = self.gitlab.rawGet(url, **kwargs)
+        r = self.gitlab._raw_get(url, **kwargs)
         if r.status_code == 200:
             return r.content
         else:
@@ -1219,7 +1250,7 @@ class Project(GitlabObject):
         url = '/projects/%s/repository/archive' % self.id
         if sha:
             url += '?sha=%s' % sha
-        r = self.gitlab.rawGet(url, **kwargs)
+        r = self.gitlab._raw_get(url, **kwargs)
         if r.status_code == 200:
             return r.content
         else:
@@ -1242,7 +1273,7 @@ class Project(GitlabObject):
         url = "/projects/%s/repository/files" % self.id
         url += "?file_path=%s&branch_name=%s&content=%s&commit_message=%s" % \
             (path, branch, content, message)
-        r = self.gitlab.rawPost(url, data=None, content_type=None, **kwargs)
+        r = self.gitlab._raw_post(url, data=None, content_type=None, **kwargs)
         if r.status_code != 201:
             _raiseErrorFromResponse(r, GitlabCreateError)
 
@@ -1250,7 +1281,7 @@ class Project(GitlabObject):
         url = "/projects/%s/repository/files" % self.id
         url += "?file_path=%s&branch_name=%s&content=%s&commit_message=%s" % \
             (path, branch, content, message)
-        r = self.gitlab.rawPut(url, data=None, content_type=None, **kwargs)
+        r = self.gitlab._raw_put(url, data=None, content_type=None, **kwargs)
         if r.status_code != 200:
             _raiseErrorFromResponse(r, GitlabUpdateError)
 
@@ -1258,7 +1289,7 @@ class Project(GitlabObject):
         url = "/projects/%s/repository/files" % self.id
         url += "?file_path=%s&branch_name=%s&commit_message=%s" % \
             (path, branch, message)
-        r = self.gitlab.rawDelete(url, **kwargs)
+        r = self.gitlab._raw_delete(url, **kwargs)
         if r.status_code != 200:
             _raiseErrorFromResponse(r, GitlabDeleteError)
 
