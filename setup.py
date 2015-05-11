@@ -3,14 +3,13 @@
 
 from setuptools import setup
 
+import gitlab
+
+
 def get_version():
-    f = open('gitlab.py')
-    try:
-        for line in f:
-            if line.startswith('__version__'):
-                return eval(line.split('=')[-1])
-    finally:
-        f.close()
+
+    return gitlab.__version__
+
 
 setup(name='python-gitlab',
       version=get_version(),
@@ -20,8 +19,8 @@ setup(name='python-gitlab',
       author_email='gauvain@pocentek.net',
       license='LGPLv3',
       url='https://github.com/gpocentek/python-gitlab',
-      py_modules=['gitlab'],
-      scripts=['gitlab'],
+      packages=['gitlab'],
+      scripts=['bin/gitlab'],
       install_requires=['requests', 'six'],
       classifiers=[
         'Development Status :: 5 - Production/Stable',
