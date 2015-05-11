@@ -15,15 +15,15 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ Module for interfacing with GitLab-api """
-from __future__ import print_function, division, absolute_import
-
-import six
-
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from itertools import chain
 import json
-import requests
 import sys
 
-from itertools import chain
+import requests
+import six
 
 __title__ = 'python-gitlab'
 __version__ = '0.8.1'
@@ -102,10 +102,10 @@ class GitlabTransferProjectError(GitlabOperationError):
 
 
 def _raiseErrorFromResponse(response, error):
-    """ Tries to parse gitlab error message from response and raises error.
+    """Tries to parse gitlab error message from response and raises error.
 
     If response status code is 401, raises instead GitlabAuthenticationError.
-    
+
     response: requests response object
     error: Error-class to raise. Should be inherited from GitLabError
     """
@@ -124,8 +124,8 @@ def _raiseErrorFromResponse(response, error):
 
 
 class Gitlab(object):
-    """ Represents a GitLab server connection
-    
+    """Represents a GitLab server connection
+
     Args:
         url (str): the URL of the Gitlab server
         private_token (str): the user private token
@@ -153,8 +153,9 @@ class Gitlab(object):
         self.ssl_verify = ssl_verify
 
     def auth(self):
-        """Performs an authentication using either the private token, or the
-        email/password pair.
+        """Performs an authentication.
+
+        Uses either the private token, or the email/password pair.
 
         The user attribute will hold a CurrentUser object on success.
         """
@@ -193,7 +194,7 @@ class Gitlab(object):
             url = '%s%s' % (self._url, url)
         return url
 
-    def _createHeaders(self, content_type=None, headers={} ):
+    def _createHeaders(self, content_type=None, headers={}):
         request_headers = self.headers.copy()
         request_headers.update(headers)
         if content_type is not None:
@@ -223,7 +224,7 @@ class Gitlab(object):
                                 headers=headers,
                                 verify=self.ssl_verify,
                                 timeout=self.timeout)
-        except:
+        except Exception:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
 
@@ -235,7 +236,7 @@ class Gitlab(object):
                                  headers=headers,
                                  verify=self.ssl_verify,
                                  timeout=self.timeout)
-        except:
+        except Exception:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
 
@@ -248,7 +249,7 @@ class Gitlab(object):
                                 headers=headers,
                                 verify=self.ssl_verify,
                                 timeout=self.timeout)
-        except:
+        except Exception:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
 
@@ -262,7 +263,7 @@ class Gitlab(object):
                                    headers=headers,
                                    verify=self.ssl_verify,
                                    timeout=self.timeout)
-        except:
+        except Exception:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
 
@@ -289,7 +290,7 @@ class Gitlab(object):
             r = requests.get(url, params=params, headers=headers,
                              verify=self.ssl_verify,
                              timeout=self.timeout)
-        except:
+        except Exception:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
 
@@ -309,10 +310,10 @@ class Gitlab(object):
                 if key in cls_kwargs:
                     del cls_kwargs[key]
 
-            return [cls(self, item, **cls_kwargs) for item in r.json() if item is not None]
+            return [cls(self, item, **cls_kwargs) for item in r.json()
+                    if item is not None]
         else:
             _raiseErrorFromResponse(r, GitlabListError)
-
 
     def get(self, obj_class, id=None, **kwargs):
         missing = []
@@ -336,7 +337,7 @@ class Gitlab(object):
         try:
             r = requests.get(url, params=params, headers=headers,
                              verify=self.ssl_verify, timeout=self.timeout)
-        except:
+        except Exception:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
 
@@ -344,7 +345,6 @@ class Gitlab(object):
             return r.json()
         else:
             _raiseErrorFromResponse(r, GitlabGetError)
-
 
     def delete(self, obj, **kwargs):
         params = obj.__dict__.copy()
@@ -371,7 +371,7 @@ class Gitlab(object):
                                 headers=headers,
                                 verify=self.ssl_verify,
                                 timeout=self.timeout)
-        except:
+        except Exception:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
 
@@ -402,7 +402,7 @@ class Gitlab(object):
                               headers=headers,
                               verify=self.ssl_verify,
                               timeout=self.timeout)
-        except:
+        except Exception:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
 
@@ -432,7 +432,7 @@ class Gitlab(object):
                              headers=headers,
                              verify=self.ssl_verify,
                              timeout=self.timeout)
-        except:
+        except Exception:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
 
@@ -510,7 +510,7 @@ class Gitlab(object):
                 returns the matching group (or raises a GitlabGetError if not
                 found).
             id: If id is a dict, creates a new object using attributes
-                provided. The object is NOT saved on the server. Use the 
+                provided. The object is NOT saved on the server. Use the
                 save() method on the object to write it on the server.
             kwargs: Arbitrary keyword arguments
         """
@@ -568,7 +568,7 @@ def _sanitize_dict(src):
 
 
 class GitlabObject(object):
-    """ Baseclass for all classes that interface with GitLab
+    """Base class for all classes that interface with GitLab
 
     Args:
         gl (gitlab.Gitlab): GitLab server connection
@@ -614,12 +614,11 @@ class GitlabObject(object):
         for attribute in chain(self.requiredCreateAttrs,
                                self.optionalCreateAttrs):
             if hasattr(self, attribute):
-                data[attribute] = getattr(self,attribute)
+                data[attribute] = getattr(self, attribute)
 
         data.update(extra_parameters)
 
         return json.dumps(data)
-
 
     @classmethod
     def list(cls, gl, **kwargs):
@@ -708,7 +707,6 @@ class GitlabObject(object):
         if not hasattr(self, "id"):
             self.id = None
 
-
     def __str__(self):
         return '%s => %s' % (type(self), str(self.__dict__))
 
@@ -786,7 +784,6 @@ class User(GitlabObject):
                            'projects_limit', 'extern_uid', 'provider',
                            'bio', 'admin', 'can_create_group', 'website_url']
 
-
     def Key(self, id=None, **kwargs):
         return UserKey._getListOrObject(self.gitlab, id,
                                         user_id=self.id,
@@ -810,6 +807,7 @@ class CurrentUser(GitlabObject):
 
     def Key(self, id=None, **kwargs):
         return CurrentUserKey._getListOrObject(self.gitlab, id, **kwargs)
+
 
 class GroupMember(GitlabObject):
     _url = '/groups/%(group_id)s/members'
@@ -843,6 +841,7 @@ class Group(GitlabObject):
         r = self.gitlab.rawPost(url, None, **kwargs)
         if r.status_code != 201:
             _raiseErrorFromResponse(r, GitlabTransferProjectError)
+
 
 class Hook(GitlabObject):
     _url = '/hooks'
@@ -907,7 +906,6 @@ class ProjectCommit(GitlabObject):
         else:
             _raiseErrorFromResponse(r, GitlabGetError)
 
-
     def blob(self, filepath, **kwargs):
         url = '/projects/%(project_id)s/repository/blobs/%(commit_id)s' % \
               {'project_id': self.project_id, 'commit_id': self.id}
@@ -971,7 +969,8 @@ class ProjectIssue(GitlabObject):
         # Gitlab-api returns labels in a json list and takes them in a
         # comma separated list.
         if hasattr(self, "labels"):
-            if self.labels is not None and not isinstance(self.labels, six.string_types):
+            if (self.labels is not None and
+               not isinstance(self.labels, six.string_types)):
                 labels = ", ".join(self.labels)
                 extra_parameters['labels'] = labels
 
@@ -1227,8 +1226,8 @@ class Project(GitlabObject):
             _raiseErrorFromResponse(r, GitlabGetError)
 
     def create_file(self, path, branch, content, message, **kwargs):
-        """ Creates file in project repository
-        
+        """Creates file in project repository
+
         Args:
             path (str): Full path to new file
             branch (str): The name of branch

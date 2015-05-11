@@ -16,17 +16,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, division, absolute_import
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
 import argparse
-import os
-import sys
-import re
-import gitlab
 from inspect import getmro
+import os
+import re
+import sys
 try:
     from ConfigParser import ConfigParser
-except:
+except ImportError:
     from configparser import ConfigParser
+
+import gitlab
 
 camel_re = re.compile('(.)([A-Z])')
 LIST = 'list'
@@ -44,12 +47,10 @@ EXTRA_ACTION = [PROTECT, UNPROTECT, SEARCH, OWNED, ALL]
 
 extra_actions = {
     gitlab.ProjectBranch: {PROTECT: {'requiredAttrs': ['id', 'project-id']},
-                           UNPROTECT: {'requiredAttrs': ['id', 'project-id']}
-    },
+                           UNPROTECT: {'requiredAttrs': ['id', 'project-id']}},
     gitlab.Project: {SEARCH: {'requiredAttrs': ['query']},
                      OWNED: {'requiredAttrs': []},
-                     ALL: {'requiredAttrs': []}
-    },
+                     ALL: {'requiredAttrs': []}},
 }
 
 
@@ -77,36 +78,51 @@ def populate_sub_parser_by_class(cls, sub_parser):
         attr = 'can' + action_name.capitalize()
         try:
             y = cls.__dict__[attr]
-        except:
+        except AttributeError:
             y = gitlab.GitlabObject.__dict__[attr]
         if not y:
             continue
         sub_parser_action = sub_parser_class.add_parser(action_name)
-        [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=True) for x in cls.requiredUrlAttrs]
+        [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                        required=True)
+         for x in cls.requiredUrlAttrs]
+
         if action_name == LIST:
-            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=True) for x in cls.requiredListAttrs]
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                            required=True)
+             for x in cls.requiredListAttrs]
             sub_parser_action.add_argument("--page", required=False)
             sub_parser_action.add_argument("--per-page", required=False)
+
         elif action_name in [GET, DELETE]:
             if cls not in [gitlab.CurrentUser]:
                 sub_parser_action.add_argument("--id", required=True)
-                [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=True) for x in cls.requiredGetAttrs]
+                [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                                required=True)
+                 for x in cls.requiredGetAttrs]
+
         elif action_name == CREATE:
-            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=True) for x in
-             cls.requiredCreateAttrs]
-            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=False) for x in
-             cls.optionalCreateAttrs]
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                            required=True)
+             for x in cls.requiredCreateAttrs]
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                            required=False)
+             for x in cls.optionalCreateAttrs]
+
         elif action_name == UPDATE:
-            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=True) for x in
-             cls.requiredCreateAttrs]
-            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'), required=False) for x in
-             cls.optionalCreateAttrs]
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                            required=True)
+             for x in cls.requiredCreateAttrs]
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                            required=False)
+             for x in cls.optionalCreateAttrs]
 
     if cls in extra_actions:
         for action_name in sorted(extra_actions[cls]):
             sub_parser_action = sub_parser_class.add_parser(action_name)
             d = extra_actions[cls][action_name]
-            [sub_parser_action.add_argument("--%s" % arg, required=True) for arg in d['requiredAttrs']]
+            [sub_parser_action.add_argument("--%s" % arg, required=True)
+             for arg in d['requiredAttrs']]
 
 
 def do_auth():
@@ -115,14 +131,14 @@ def do_auth():
                            ssl_verify=ssl_verify, timeout=timeout)
         gl.auth()
         return gl
-    except:
-        die("Could not connect to GitLab (%s)" % gitlab_url)
+    except Exception as e:
+        die("Could not connect to GitLab %s (%s)" % (gitlab_url, str(e)))
 
 
 def get_id():
     try:
         id = d.pop('id')
-    except:
+    except Exception:
         die("Missing --id argument")
 
     return id
@@ -219,34 +235,42 @@ def do_project_owned():
 if __name__ == "__main__":
     ssl_verify = True
     timeout = 60
-    parser = argparse.ArgumentParser(description='Useful GitLab Command Line Interface')
-    parser.add_argument("-v", "--verbosity", "--fancy", help="increase output verbosity", action="store_true")
+    parser = argparse.ArgumentParser(
+        description='GitLab API Command Line Interface')
+    parser.add_argument("-v", "--verbosity", "--fancy",
+                        help="increase output verbosity",
+                        action="store_true")
     parser.add_argument("--gitlab", metavar='gitlab',
-                        help="Specifies which python-gitlab.cfg configuration section should be used. "
-                             "If not defined, the default selection will be used.", required=False)
+                        help=("Specifies which python-gitlab.cfg "
+                              "configuration section should be used. "
+                              "If not defined, the default selection "
+                              "will be used."),
+                        required=False)
     subparsers = parser.add_subparsers(
         dest='what',
         title="positional argument",
         description='GitLab object',
         help='GitLab object'
     )
-    #populate argparse for all Gitlab Object
+
+    # populate argparse for all Gitlab Object
     for cls in gitlab.__dict__.values():
         try:
             if gitlab.GitlabObject in getmro(cls):
                 sub_parser = subparsers.add_parser(clsToWhat(cls))
                 populate_sub_parser_by_class(cls, sub_parser)
-        except:
+        except Exception:
             pass
 
     arg = parser.parse_args()
     d = arg.__dict__
+
     # read the config
     config = ConfigParser()
     config.read(['/etc/python-gitlab.cfg',
                  os.path.expanduser('~/.python-gitlab.cfg')])
     gitlab_id = arg.gitlab
-    #conflicts with "gitlab" attribute with GitlabObject class
+    # conflicts with "gitlab" attribute from GitlabObject class
     d.pop("gitlab")
     verbose = arg.verbosity
     action = arg.action
@@ -255,38 +279,39 @@ if __name__ == "__main__":
     if gitlab_id is None:
         try:
             gitlab_id = config.get('global', 'default')
-        except:
-            die("Impossible to get the gitlab id (not specified in config file)")
+        except Exception:
+            die("Impossible to get the gitlab id "
+                "(not specified in config file)")
 
     try:
         gitlab_url = config.get(gitlab_id, 'url')
         gitlab_token = config.get(gitlab_id, 'private_token')
-    except:
-        die("Impossible to get gitlab informations from configuration (%s)" %
-            gitlab_id)
+    except Exception:
+        die("Impossible to get gitlab informations from configuration "
+            "(%s)" % gitlab_id)
 
     try:
         ssl_verify = config.getboolean('global', 'ssl_verify')
-    except:
+    except Exception:
         pass
     try:
         ssl_verify = config.getboolean(gitlab_id, 'ssl_verify')
-    except:
+    except Exception:
         pass
 
     try:
         timeout = config.getint('global', 'timeout')
-    except:
+    except Exception:
         pass
     try:
         timeout = config.getint(gitlab_id, 'timeout')
-    except:
+    except Exception:
         pass
 
     cls = None
     try:
         cls = gitlab.__dict__[whatToCls(what)]
-    except:
+    except Exception:
         die("Unknown object: %s" % what)
 
     gl = do_auth()
