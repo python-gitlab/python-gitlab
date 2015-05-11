@@ -1,2 +1,5 @@
+discover
+testrepository
 hacking>=0.9.2,<0.10
+httmock
 sphinx>=1.1.2,!=1.2.0,<1.3

@@ -6,3 +6,4 @@ MANIFEST
 *.egg-info
 .idea/
 docs/_build
+.testrepository/
