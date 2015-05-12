@@ -18,7 +18,7 @@
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
-from itertools import chain
+import itertools
 import json
 import sys
 import warnings
@@ -179,13 +179,13 @@ class Gitlab(object):
         else:
             _raiseErrorFromResponse(r, GitlabAuthenticationError)
 
-        self.setToken(self.user.private_token)
+        self.set_token(self.user.private_token)
 
     def token_auth(self):
         self.user = CurrentUser(self)
 
     def setUrl(self, url):
-        """Updates the gitlab URL"""
+        """Updates the gitlab URL."""
         self._url = '%s/api/v3' % url
 
     def constructUrl(self, id_, obj, parameters):
@@ -205,13 +205,13 @@ class Gitlab(object):
         return request_headers
 
     def setToken(self, token):
-        """(DEPRECATED) Sets the private token for authentication"""
+        """(DEPRECATED) Sets the private token for authentication."""
         warnings.warn("setToken is deprecated, use set_token instead",
                       DeprecationWarning)
         self.set_token(token)
 
     def set_token(self, token):
-        """Sets the private token for authentication"""
+        """Sets the private token for authentication."""
         self.private_token = token if token else None
         if token:
             self.headers["PRIVATE-TOKEN"] = token
@@ -219,13 +219,14 @@ class Gitlab(object):
             del self.headers["PRIVATE-TOKEN"]
 
     def setCredentials(self, email, password):
-        """(DEPRECATED) Sets the email/login and password for authentication"""
-        warnings.warn("setToken is deprecated, use set_credentials instead",
+        """(DEPRECATED) Sets the login and password for authentication."""
+        warnings.warn("setCredential is deprecated, use set_credentials "
+                      "instead",
                       DeprecationWarning)
         self.set_credentials(email, password)
 
     def set_credentials(self, email, password):
-        """Sets the email/login and password for authentication"""
+        """Sets the email/login and password for authentication."""
         self.email = email
         self.password = password
 
@@ -300,8 +301,8 @@ class Gitlab(object):
 
     def list(self, obj_class, **kwargs):
         missing = []
-        for k in chain(obj_class.requiredUrlAttrs,
-                       obj_class.requiredListAttrs):
+        for k in itertools.chain(obj_class.requiredUrlAttrs,
+                                 obj_class.requiredListAttrs):
             if k not in kwargs:
                 missing.append(k)
         if missing:
@@ -348,8 +349,8 @@ class Gitlab(object):
 
     def get(self, obj_class, id=None, **kwargs):
         missing = []
-        for k in chain(obj_class.requiredUrlAttrs,
-                       obj_class.requiredGetAttrs):
+        for k in itertools.chain(obj_class.requiredUrlAttrs,
+                                 obj_class.requiredGetAttrs):
             if k not in kwargs:
                 missing.append(k)
         if missing:
@@ -381,7 +382,8 @@ class Gitlab(object):
         params = obj.__dict__.copy()
         params.update(kwargs)
         missing = []
-        for k in chain(obj.requiredUrlAttrs, obj.requiredDeleteAttrs):
+        for k in itertools.chain(obj.requiredUrlAttrs,
+                                 obj.requiredDeleteAttrs):
             if k not in params:
                 missing.append(k)
         if missing:
@@ -415,7 +417,8 @@ class Gitlab(object):
         params = obj.__dict__.copy()
         params.update(kwargs)
         missing = []
-        for k in chain(obj.requiredUrlAttrs, obj.requiredCreateAttrs):
+        for k in itertools.chain(obj.requiredUrlAttrs,
+                                 obj.requiredCreateAttrs):
             if k not in params:
                 missing.append(k)
         if missing:
@@ -446,7 +449,8 @@ class Gitlab(object):
         params = obj.__dict__.copy()
         params.update(kwargs)
         missing = []
-        for k in chain(obj.requiredUrlAttrs, obj.requiredCreateAttrs):
+        for k in itertools.chain(obj.requiredUrlAttrs,
+                                 obj.requiredCreateAttrs):
             if k not in params:
                 missing.append(k)
         if missing:
@@ -642,8 +646,8 @@ class GitlabObject(object):
 
     def _dataForGitlab(self, extra_parameters={}):
         data = {}
-        for attribute in chain(self.requiredCreateAttrs,
-                               self.optionalCreateAttrs):
+        for attribute in itertools.chain(self.requiredCreateAttrs,
+                                         self.optionalCreateAttrs):
             if hasattr(self, attribute):
                 data[attribute] = getattr(self, attribute)
 
@@ -719,8 +723,8 @@ class GitlabObject(object):
         self._created = False
         self.gitlab = gl
 
-        if data is None or isinstance(data, six.integer_types) or\
-                isinstance(data, six.string_types):
+        if (data is None or isinstance(data, six.integer_types) or
+           isinstance(data, six.string_types)):
             if not self.canGet:
                 raise NotImplementedError
             data = self.gitlab.get(self.__class__, data, **kwargs)
@@ -938,8 +942,8 @@ class ProjectCommit(GitlabObject):
             _raiseErrorFromResponse(r, GitlabGetError)
 
     def blob(self, filepath, **kwargs):
-        url = '/projects/%(project_id)s/repository/blobs/%(commit_id)s' % \
-              {'project_id': self.project_id, 'commit_id': self.id}
+        url = ('/projects/%(project_id)s/repository/blobs/%(commit_id)s' %
+               {'project_id': self.project_id, 'commit_id': self.id})
         url += '?filepath=%s' % filepath
         r = self.gitlab._raw_get(url, **kwargs)
         if r.status_code == 200:
@@ -1115,8 +1119,8 @@ class ProjectSnippet(GitlabObject):
     shortPrintAttr = 'title'
 
     def Content(self, **kwargs):
-        url = "/projects/%(project_id)s/snippets/%(snippet_id)s/raw" % \
-            {'project_id': self.project_id, 'snippet_id': self.id}
+        url = ("/projects/%(project_id)s/snippets/%(snippet_id)s/raw" %
+               {'project_id': self.project_id, 'snippet_id': self.id})
         r = self.gitlab._raw_get(url, **kwargs)
 
         if r.status_code == 200:
@@ -1271,24 +1275,24 @@ class Project(GitlabObject):
             GitlabConnectionError: Connection to GitLab-server failed
         """
         url = "/projects/%s/repository/files" % self.id
-        url += "?file_path=%s&branch_name=%s&content=%s&commit_message=%s" % \
-            (path, branch, content, message)
+        url += ("?file_path=%s&branch_name=%s&content=%s&commit_message=%s" %
+                (path, branch, content, message))
         r = self.gitlab._raw_post(url, data=None, content_type=None, **kwargs)
         if r.status_code != 201:
             _raiseErrorFromResponse(r, GitlabCreateError)
 
     def update_file(self, path, branch, content, message, **kwargs):
         url = "/projects/%s/repository/files" % self.id
-        url += "?file_path=%s&branch_name=%s&content=%s&commit_message=%s" % \
-            (path, branch, content, message)
+        url += ("?file_path=%s&branch_name=%s&content=%s&commit_message=%s" %
+                (path, branch, content, message))
         r = self.gitlab._raw_put(url, data=None, content_type=None, **kwargs)
         if r.status_code != 200:
             _raiseErrorFromResponse(r, GitlabUpdateError)
 
     def delete_file(self, path, branch, message, **kwargs):
         url = "/projects/%s/repository/files" % self.id
-        url += "?file_path=%s&branch_name=%s&commit_message=%s" % \
-            (path, branch, message)
+        url += ("?file_path=%s&branch_name=%s&commit_message=%s" %
+                (path, branch, message))
         r = self.gitlab._raw_delete(url, **kwargs)
         if r.status_code != 200:
             _raiseErrorFromResponse(r, GitlabDeleteError)

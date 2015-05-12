@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2014 Mika Mäenpää <mika.j.maenpaa@tut.fi>, Tampere University of Technology
+# Copyright (C) 2014 Mika Mäenpää <mika.j.maenpaa@tut.fi>,
+#                    Tampere University of Technology
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -18,18 +19,18 @@
 from __future__ import print_function
 
 try:
-    from unittest import TestCase, main
+    import unittest
 except ImportError:
-    from unittest2 import TestCase, main
+    import unittest2 as unittest
 
-from gitlab import Gitlab, GitlabConnectionError, GitlabAuthenticationError,\
-    GitlabListError, GitlabGetError, GitlabCreateError, GitlabDeleteError,\
-    GitlabUpdateError, Project, ProjectBranch, Group, User, CurrentUser,\
-    Hook, UserProject, Issue, Team, GroupMember, ProjectSnippet
+from httmock import HTTMock  # noqa
+from httmock import response  # noqa
+from httmock import urlmatch  # noqa
 
-from httmock import response, HTTMock, urlmatch
+from gitlab import *  # noqa
 
-class TestGitLabRawMethods(TestCase):
+
+class TestGitLabRawMethods(unittest.TestCase):
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
                          email="testuser@test.com", password="testpassword",
@@ -42,23 +43,33 @@ class TestGitLabRawMethods(TestCase):
         content = 'response'.encode("utf-8")
         return response(200, content, headers, None, 5, request)
 
-    def test_rawGet_unknown_path(self):
-        self.assertRaises(GitlabConnectionError, self.gl.rawGet,
-                          "/unknown_path")
+    def test_raw_get_unknown_path(self):
 
-    def test_rawGet_without_kwargs(self):
+        @urlmatch(scheme="http", netloc="localhost",
+                  path="/api/v3/unknown_path",
+                  method="get")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '{"message": "message"}'.encode("utf-8")
+            return response(404, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            resp = self.gl._raw_get("/unknown_path")
+            self.assertEqual(resp.status_code, 404)
+
+    def test_raw_get_without_kwargs(self):
         with HTTMock(self.resp_get):
-            resp = self.gl.rawGet("/known_path")
+            resp = self.gl._raw_get("/known_path")
         self.assertEqual(resp.content, b'response')
         self.assertEqual(resp.status_code, 200)
 
-    def test_rawGet_with_kwargs(self):
+    def test_raw_get_with_kwargs(self):
         with HTTMock(self.resp_get):
-            resp = self.gl.rawGet("/known_path", sudo="testing")
+            resp = self.gl._raw_get("/known_path", sudo="testing")
         self.assertEqual(resp.content, b'response')
         self.assertEqual(resp.status_code, 200)
 
-    def test_rawPost(self):
+    def test_raw_post(self):
 
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/known_path",
                   method="post")
@@ -68,15 +79,25 @@ class TestGitLabRawMethods(TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_post):
-            resp = self.gl.rawPost("/known_path")
+            resp = self.gl._raw_post("/known_path")
         self.assertEqual(resp.content, b'response')
         self.assertEqual(resp.status_code, 200)
 
-    def test_rawPost_unknown_path(self):
-        self.assertRaises(GitlabConnectionError, self.gl.rawPost,
-                          "/unknown_path")
+    def test_raw_post_unknown_path(self):
 
-    def test_rawPut(self):
+        @urlmatch(scheme="http", netloc="localhost",
+                  path="/api/v3/unknown_path",
+                  method="post")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '{"message": "message"}'.encode("utf-8")
+            return response(404, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            resp = self.gl._raw_post("/unknown_path")
+            self.assertEqual(resp.status_code, 404)
+
+    def test_raw_put(self):
 
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/known_path",
                   method="put")
@@ -86,15 +107,25 @@ class TestGitLabRawMethods(TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_put):
-            resp = self.gl.rawPut("/known_path")
+            resp = self.gl._raw_put("/known_path")
         self.assertEqual(resp.content, b'response')
         self.assertEqual(resp.status_code, 200)
 
-    def test_rawPut_unknown_path(self):
-        self.assertRaises(GitlabConnectionError, self.gl.rawPut,
-                          "/unknown_path")
+    def test_raw_put_unknown_path(self):
 
-    def test_rawDelete(self):
+        @urlmatch(scheme="http", netloc="localhost",
+                  path="/api/v3/unknown_path",
+                  method="put")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '{"message": "message"}'.encode("utf-8")
+            return response(404, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            resp = self.gl._raw_put("/unknown_path")
+            self.assertEqual(resp.status_code, 404)
+
+    def test_raw_delete(self):
 
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/known_path",
                   method="delete")
@@ -104,27 +135,38 @@ class TestGitLabRawMethods(TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_delete):
-            resp = self.gl.rawDelete("/known_path")
+            resp = self.gl._raw_delete("/known_path")
         self.assertEqual(resp.content, b'response')
         self.assertEqual(resp.status_code, 200)
 
-    def test_rawDelete_unknown_path(self):
-        self.assertRaises(GitlabConnectionError, self.gl.rawDelete,
-                          "/unknown_path")
+    def test_raw_delete_unknown_path(self):
 
-class TestGitLabMethods(TestCase):
+        @urlmatch(scheme="http", netloc="localhost",
+                  path="/api/v3/unknown_path",
+                  method="delete")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '{"message": "message"}'.encode("utf-8")
+            return response(404, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            resp = self.gl._raw_delete("/unknown_path")
+            self.assertEqual(resp.status_code, 404)
+
+
+class TestGitLabMethods(unittest.TestCase):
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
                          email="testuser@test.com", password="testpassword",
                          ssl_verify=True)
-
 
     def test_list(self):
         @urlmatch(scheme="http", netloc="localhost",
                   path="/api/v3/projects/1/repository/branches", method="get")
         def resp_cont(url, request):
             headers = {'content-type': 'application/json'}
-            content = '[{"branch_name": "testbranch", "project_id": 1, "ref": "a"}]'.encode("utf-8")
+            content = ('[{"branch_name": "testbranch", '
+                       '"project_id": 1, "ref": "a"}]').encode("utf-8")
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
@@ -157,7 +199,7 @@ class TestGitLabMethods(TestCase):
             return response(405, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
-            self.assertRaises(GitlabGetError, self.gl.list,
+            self.assertRaises(GitlabListError, self.gl.list,
                               ProjectBranch, project_id=1)
 
     def test_list_kw_missing(self):
@@ -181,7 +223,15 @@ class TestGitLabMethods(TestCase):
             self.assertEqual(expected, data)
 
     def test_get_unknown_path(self):
-        self.assertRaises(GitlabConnectionError, self.gl.get, Project, 1)
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v3/groups/1",
+                  method="get")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '{"message": "message"}'.encode("utf-8")
+            return response(404, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            self.assertRaises(GitlabGetError, self.gl.get, Group, 1)
 
     def test_get_missing_kw(self):
         self.assertRaises(GitlabGetError, self.gl.get, ProjectBranch)
@@ -218,7 +268,6 @@ class TestGitLabMethods(TestCase):
             content = '{"message": "message"}'.encode("utf-8")
             return response(405, content, headers, None, 5, request)
 
-
         with HTTMock(resp_cont):
             self.assertRaises(GitlabGetError, self.gl.get,
                               Project, 1)
@@ -238,10 +287,21 @@ class TestGitLabMethods(TestCase):
 
     def test_delete_unknown_path(self):
         obj = Project(self.gl, data={"name": "testname", "id": 1})
-        self.assertRaises(GitlabConnectionError, self.gl.delete, obj)
+        obj._created = True
+
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects/1",
+                  method="delete")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '{"message": "message"}'.encode("utf-8")
+            return response(404, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            self.assertRaises(GitlabDeleteError, self.gl.delete, obj)
 
     def test_delete_401(self):
         obj = Project(self.gl, data={"name": "testname", "id": 1})
+
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects/1",
                   method="delete")
         def resp_cont(url, request):
@@ -254,6 +314,7 @@ class TestGitLabMethods(TestCase):
 
     def test_delete_unknown_error(self):
         obj = Project(self.gl, data={"name": "testname", "id": 1})
+
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects/1",
                   method="delete")
         def resp_cont(url, request):
@@ -291,6 +352,7 @@ class TestGitLabMethods(TestCase):
 
     def test_create_401(self):
         obj = Group(self.gl, data={"name": "testgroup", "path": "testpath"})
+
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/groups",
                   method="post")
         def resp_cont(url, request):
@@ -303,6 +365,7 @@ class TestGitLabMethods(TestCase):
 
     def test_create_unknown_error(self):
         obj = Group(self.gl, data={"name": "testgroup", "path": "testpath"})
+
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/groups",
                   method="post")
         def resp_cont(url, request):
@@ -327,7 +390,6 @@ class TestGitLabMethods(TestCase):
             headers = {'content-type': 'application/json'}
             content = '{"first": "return1"}'.encode("utf-8")
             return response(200, content, headers, None, 5, request)
-
 
         with HTTMock(resp_cont):
             data = self.gl.update(obj)
@@ -369,10 +431,19 @@ class TestGitLabMethods(TestCase):
     def test_update_unknown_path(self):
         obj = Group(self.gl, data={"name": "testgroup", "path": "testpath",
                                    "id": 1})
-        self.assertRaises(GitlabConnectionError, self.gl.update, obj)
+
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v3/groups/1",
+                  method="put")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '{"message": "message"}'.encode("utf-8")
+            return response(404, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            self.assertRaises(GitlabUpdateError, self.gl.update, obj)
 
 
-class TestGitLab(TestCase):
+class TestGitLab(unittest.TestCase):
 
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
@@ -383,22 +454,22 @@ class TestGitLab(TestCase):
         self.gl.setUrl("http://new_url")
         self.assertEqual(self.gl._url, "http://new_url/api/v3")
 
-    def test_setToken(self):
+    def test_set_token(self):
         token = "newtoken"
         expected = {"PRIVATE-TOKEN": token}
-        self.gl.setToken(token)
+        self.gl.set_token(token)
         self.assertEqual(self.gl.private_token, token)
         self.assertDictContainsSubset(expected, self.gl.headers)
 
-    def test_setCredentials(self):
+    def test_set_credentials(self):
         email = "credentialuser@test.com"
         password = "credentialpassword"
-        self.gl.setCredentials(email=email, password=password)
+        self.gl.set_credentials(email=email, password=password)
         self.assertEqual(self.gl.email, email)
         self.assertEqual(self.gl.password, password)
 
     def test_credentials_auth_nopassword(self):
-        self.gl.setCredentials(email=None, password=None)
+        self.gl.set_credentials(email=None, password=None)
         self.assertRaises(GitlabAuthenticationError, self.gl.credentials_auth)
 
     def test_credentials_auth_notok(self):
@@ -414,7 +485,7 @@ class TestGitLab(TestCase):
                               self.gl.credentials_auth)
 
     def test_auth_with_credentials(self):
-        self.gl.setToken(None)
+        self.gl.set_token(None)
         self.test_credentials_auth(callback=self.gl.auth)
 
     def test_auth_with_token(self):
@@ -425,7 +496,8 @@ class TestGitLab(TestCase):
             callback = self.gl.credentials_auth
         token = "credauthtoken"
         id_ = 1
-        expected = {"PRIVATE-TOKEN": token }
+        expected = {"PRIVATE-TOKEN": token}
+
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/session",
                   method="post")
         def resp_cont(url, request):
@@ -433,7 +505,6 @@ class TestGitLab(TestCase):
             content = '{{"id": {0:d}, "private_token": "{1:s}"}}'.format(
                 id_, token).encode("utf-8")
             return response(201, content, headers, None, 5, request)
-
 
         with HTTMock(resp_cont):
             callback()
@@ -446,12 +517,13 @@ class TestGitLab(TestCase):
             callback = self.gl.token_auth
         name = "username"
         id_ = 1
+
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/user",
                   method="get")
         def resp_cont(url, request):
             headers = {'content-type': 'application/json'}
             content = '{{"id": {0:d}, "username": "{1:s}"}}'.format(
-                id_,name).encode("utf-8")
+                id_, name).encode("utf-8")
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
@@ -469,7 +541,7 @@ class TestGitLab(TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
-            projs = self.gl._getListOrObject(Project, None)
+            projs = Project._getListOrObject(self.gl, None)
             self.assertEqual(len(projs), 1)
             proj = projs[0]
             self.assertEqual(proj.id, 1)
@@ -484,7 +556,7 @@ class TestGitLab(TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
-            proj = self.gl._getListOrObject(Project, 1)
+            proj = Project._getListOrObject(self.gl, 1)
             self.assertEqual(proj.id, 1)
             self.assertEqual(proj.name, "testproject")
 
@@ -525,7 +597,7 @@ class TestGitLab(TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_get_userproject):
-            self.assertRaises(GitlabGetError, self.gl.UserProject, id=1,
+            self.assertRaises(NotImplementedError, self.gl.UserProject, id=1,
                               user_id=2)
 
     def test_Group(self):
@@ -533,7 +605,8 @@ class TestGitLab(TestCase):
                   method="get")
         def resp_get_group(url, request):
             headers = {'content-type': 'application/json'}
-            content = '{"name": "name", "id": 1, "path": "path"}'.encode("utf-8")
+            content = '{"name": "name", "id": 1, "path": "path"}'
+            content = content.encode('utf-8')
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_get_group):
@@ -552,14 +625,16 @@ class TestGitLab(TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_get_issue):
-            self.assertRaises(GitlabGetError, self.gl.Issue, id=1)
+            self.assertRaises(NotImplementedError, self.gl.Issue, id=1)
 
     def test_User(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/users/1",
                   method="get")
         def resp_get_user(url, request):
             headers = {'content-type': 'application/json'}
-            content = '{"name": "name", "id": 1, "password": "password", "username": "username", "email": "email"}'.encode("utf-8")
+            content = ('{"name": "name", "id": 1, "password": "password", '
+                       '"username": "username", "email": "email"}')
+            content = content.encode("utf-8")
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_get_user):

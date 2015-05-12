@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2014 Mika Mäenpää <mika.j.maenpaa@tut.fi>, Tampere University of Technology
+# Copyright (C) 2014 Mika Mäenpää <mika.j.maenpaa@tut.fi>
+#                    Tampere University of Technology
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -16,21 +17,21 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function, division, absolute_import
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
 
 try:
-    from unittest import TestCase, main
+    import unittest
 except ImportError:
-    from unittest2 import TestCase, main
+    import unittest2 as unittest
 
-from gitlab import Gitlab, GitlabConnectionError, GitlabAuthenticationError,\
-    GitlabListError, GitlabGetError, GitlabCreateError, GitlabDeleteError,\
-    GitlabUpdateError, Project, ProjectBranch, Group, User, CurrentUser,\
-    Hook, UserProject, Issue, Team, GroupMember, ProjectSnippet,\
-    GitlabTransferProjectError, GitlabProtectError, ProjectCommit,\
-    ProjectSnippet
+from httmock import HTTMock  # noqa
+from httmock import response  # noqa
+from httmock import urlmatch  # noqa
 
-from httmock import response, HTTMock, urlmatch
+from gitlab import *  # noqa
+
 
 @urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects/1",
           method="get")
@@ -39,12 +40,14 @@ def resp_get_project(url, request):
     content = '{"name": "name", "id": 1}'.encode("utf-8")
     return response(200, content, headers, None, 5, request)
 
+
 @urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects",
           method="get")
 def resp_list_project(url, request):
     headers = {'content-type': 'application/json'}
     content = '[{"name": "name", "id": 1}]'.encode("utf-8")
     return response(200, content, headers, None, 5, request)
+
 
 @urlmatch(scheme="http", netloc="localhost", path="/api/v3/issues/1",
           method="get")
@@ -53,12 +56,15 @@ def resp_get_issue(url, request):
     content = '{"name": "name", "id": 1}'.encode("utf-8")
     return response(200, content, headers, None, 5, request)
 
+
 @urlmatch(scheme="http", netloc="localhost", path="/api/v3/users/1",
           method="put")
 def resp_update_user(url, request):
     headers = {'content-type': 'application/json'}
-    content = '{"name": "newname", "id": 1, "password": "password", "username": "username", "email": "email"}'.encode("utf-8")
+    content = ('{"name": "newname", "id": 1, "password": "password", '
+               '"username": "username", "email": "email"}').encode("utf-8")
     return response(200, content, headers, None, 5, request)
+
 
 @urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects",
           method="post")
@@ -67,12 +73,14 @@ def resp_create_project(url, request):
     content = '{"name": "testname", "id": 1}'.encode("utf-8")
     return response(201, content, headers, None, 5, request)
 
+
 @urlmatch(scheme="http", netloc="localhost", path="/api/v3/groups/2/members",
           method="post")
 def resp_create_groupmember(url, request):
     headers = {'content-type': 'application/json'}
     content = '{"access_level": 50, "id": 3}'.encode("utf-8")
     return response(201, content, headers, None, 5, request)
+
 
 @urlmatch(scheme="http", netloc="localhost",
           path="/api/v3/projects/2/snippets/3", method="get")
@@ -81,6 +89,7 @@ def resp_get_projectsnippet(url, request):
     content = '{"title": "test", "id": 3}'.encode("utf-8")
     return response(200, content, headers, None, 5, request)
 
+
 @urlmatch(scheme="http", netloc="localhost", path="/api/v3/groups/1",
           method="delete")
 def resp_delete_group(url, request):
@@ -88,19 +97,24 @@ def resp_delete_group(url, request):
     content = ''.encode("utf-8")
     return response(200, content, headers, None, 5, request)
 
-@urlmatch(scheme="http", netloc="localhost", path="/api/v3/groups/2/projects/3",
+
+@urlmatch(scheme="http", netloc="localhost",
+          path="/api/v3/groups/2/projects/3",
           method="post")
 def resp_transfer_project(url, request):
     headers = {'content-type': 'application/json'}
     content = ''.encode("utf-8")
     return response(201, content, headers, None, 5, request)
 
-@urlmatch(scheme="http", netloc="localhost", path="/api/v3/groups/2/projects/3",
+
+@urlmatch(scheme="http", netloc="localhost",
+          path="/api/v3/groups/2/projects/3",
           method="post")
 def resp_transfer_project_fail(url, request):
     headers = {'content-type': 'application/json'}
     content = '{"message": "messagecontent"}'.encode("utf-8")
     return response(400, content, headers, None, 5, request)
+
 
 @urlmatch(scheme="http", netloc="localhost",
           path="/api/v3/projects/2/repository/branches/branchname/protect",
@@ -110,6 +124,7 @@ def resp_protect_branch(url, request):
     content = ''.encode("utf-8")
     return response(200, content, headers, None, 5, request)
 
+
 @urlmatch(scheme="http", netloc="localhost",
           path="/api/v3/projects/2/repository/branches/branchname/unprotect",
           method="put")
@@ -117,6 +132,7 @@ def resp_unprotect_branch(url, request):
     headers = {'content-type': 'application/json'}
     content = ''.encode("utf-8")
     return response(200, content, headers, None, 5, request)
+
 
 @urlmatch(scheme="http", netloc="localhost",
           path="/api/v3/projects/2/repository/branches/branchname/protect",
@@ -127,7 +143,7 @@ def resp_protect_branch_fail(url, request):
     return response(400, content, headers, None, 5, request)
 
 
-class TestGitLabObject(TestCase):
+class TestGitLabObject(unittest.TestCase):
 
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
@@ -149,7 +165,7 @@ class TestGitLabObject(TestCase):
     def test_getListOrObject_with_list(self):
         with HTTMock(resp_list_project):
             gl_object = Project(self.gl, data={"name": "name"})
-            data = gl_object._getListOrObject(Project, id=None)
+            data = gl_object._getListOrObject(self.gl, id=None)
             self.assertEqual(type(data), list)
             self.assertEqual(len(data), 1)
             self.assertEqual(type(data[0]), Project)
@@ -159,26 +175,21 @@ class TestGitLabObject(TestCase):
     def test_getListOrObject_with_get(self):
         with HTTMock(resp_get_project):
             gl_object = Project(self.gl, data={"name": "name"})
-            data = gl_object._getListOrObject(Project, id=1)
+            data = gl_object._getListOrObject(self.gl, id=1)
             self.assertEqual(type(data), Project)
             self.assertEqual(data.name, "name")
             self.assertEqual(data.id, 1)
 
     def test_getListOrObject_cant_get(self):
         with HTTMock(resp_get_issue):
-            gl_object = Project(self.gl, data={"name": "name"})
+            gl_object = Issue(self.gl, data={"name": "name"})
             self.assertRaises(NotImplementedError, gl_object._getListOrObject,
-                              Issue, id=1)
+                              self.gl, id=1)
 
     def test_getListOrObject_cantlist(self):
-        gl_object = Project(self.gl, data={"name": "name"})
+        gl_object = CurrentUser(self.gl, data={"name": "name"})
         self.assertRaises(NotImplementedError, gl_object._getListOrObject,
-                          CurrentUser, id=None)
-
-    def test_getListOrObject_cantcreate(self):
-        gl_object = Project(self.gl, data={"name": "name"})
-        self.assertRaises(NotImplementedError, gl_object._getListOrObject,
-                          CurrentUser, id={})
+                          self.gl, id=None)
 
     def test_getListOrObject_create(self):
         data = {"name": "name"}
@@ -233,7 +244,7 @@ class TestGitLabObject(TestCase):
                                   "password": "password", "id": 1,
                                   "username": "username"})
         self.assertEqual(obj.name, "testname")
-        obj.created = True
+        obj._created = True
         obj.name = "newname"
         with HTTMock(resp_update_user):
             obj.save()
@@ -246,8 +257,8 @@ class TestGitLabObject(TestCase):
             self.assertEqual(obj.id, 1)
 
     def test_delete(self):
-        obj = Group(self.gl, data={"name": "testname", "id": 1,
-                                   "created": True})
+        obj = Group(self.gl, data={"name": "testname", "id": 1})
+        obj._created = True
         with HTTMock(resp_delete_group):
             data = obj.delete()
             self.assertIs(data, True)
@@ -278,7 +289,8 @@ class TestGitLabObject(TestCase):
         obj._setFromDict(data)
         self.assertIsNone(obj.issues_enabled)
 
-class TestGroup(TestCase):
+
+class TestGroup(unittest.TestCase):
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
                          email="testuser@test.com", password="testpassword",
@@ -298,7 +310,7 @@ class TestGroup(TestCase):
                               obj.transfer_project, 3)
 
 
-class TestProjectBranch(TestCase):
+class TestProjectBranch(unittest.TestCase):
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
                          email="testuser@test.com", password="testpassword",
@@ -321,9 +333,13 @@ class TestProjectBranch(TestCase):
 
     def test_protect_unprotect_again(self):
         self.assertRaises(AttributeError, getattr, self.obj, 'protected')
+        with HTTMock(resp_protect_branch):
+            self.obj.protect(True)
+            self.assertIs(self.obj.protected, True)
+        self.assertEqual(True, self.obj.protected)
         with HTTMock(resp_unprotect_branch):
             self.obj.protect(False)
-            self.assertRaises(AttributeError, getattr, sef.obj, 'protected')
+            self.assertRaises(AttributeError, getattr, self.obj, 'protected')
 
     def test_protect_protect_fail(self):
         with HTTMock(resp_protect_branch_fail):
@@ -335,7 +351,8 @@ class TestProjectBranch(TestCase):
             self.obj.unprotect()
             self.assertRaises(AttributeError, getattr, self.obj, 'protected')
 
-class TestProjectCommit(TestCase):
+
+class TestProjectCommit(unittest.TestCase):
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
                          email="testuser@test.com", password="testpassword",
@@ -386,7 +403,6 @@ class TestProjectCommit(TestCase):
 
     def test_blob(self):
         with HTTMock(self.resp_blob):
-            data = {"json": 2}
             blob = self.obj.blob("testing")
             self.assertEqual(blob, b'blob')
 
@@ -394,7 +410,8 @@ class TestProjectCommit(TestCase):
         with HTTMock(self.resp_blob_fail):
             self.assertRaises(GitlabGetError, self.obj.blob, "testing")
 
-class TestProjectSnippet(TestCase):
+
+class TestProjectSnippet(unittest.TestCase):
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
                          email="testuser@test.com", password="testpassword",
