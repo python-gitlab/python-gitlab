@@ -450,8 +450,8 @@ class TestGitLab(unittest.TestCase):
                          email="testuser@test.com", password="testpassword",
                          ssl_verify=True)
 
-    def test_setUrl(self):
-        self.gl.setUrl("http://new_url")
+    def test_set_url(self):
+        self.gl.set_url("http://new_url")
         self.assertEqual(self.gl._url, "http://new_url/api/v3")
 
     def test_set_token(self):
@@ -532,7 +532,7 @@ class TestGitLab(unittest.TestCase):
         self.assertEqual(self.gl.user.id, id_)
         self.assertEqual(type(self.gl.user), CurrentUser)
 
-    def test_getListOrObject_without_id(self):
+    def test_get_list_or_object_without_id(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects",
                   method="get")
         def resp_cont(url, request):
@@ -541,13 +541,13 @@ class TestGitLab(unittest.TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
-            projs = Project._getListOrObject(self.gl, None)
+            projs = Project._get_list_or_object(self.gl, None)
             self.assertEqual(len(projs), 1)
             proj = projs[0]
             self.assertEqual(proj.id, 1)
             self.assertEqual(proj.name, "testproject")
 
-    def test_getListOrObject_with_id(self):
+    def test_get_list_or_object_with_id(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects/1",
                   method="get")
         def resp_cont(url, request):
@@ -556,7 +556,7 @@ class TestGitLab(unittest.TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
-            proj = Project._getListOrObject(self.gl, 1)
+            proj = Project._get_list_or_object(self.gl, 1)
             self.assertEqual(proj.id, 1)
             self.assertEqual(proj.name, "testproject")
 

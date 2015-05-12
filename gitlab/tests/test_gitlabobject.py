@@ -162,39 +162,40 @@ class TestGitLabObject(unittest.TestCase):
             self.assertEqual(data[0].name, "name")
             self.assertEqual(data[0].id, 1)
 
-    def test_getListOrObject_with_list(self):
+    def test_get_list_or_object_with_list(self):
         with HTTMock(resp_list_project):
             gl_object = Project(self.gl, data={"name": "name"})
-            data = gl_object._getListOrObject(self.gl, id=None)
+            data = gl_object._get_list_or_object(self.gl, id=None)
             self.assertEqual(type(data), list)
             self.assertEqual(len(data), 1)
             self.assertEqual(type(data[0]), Project)
             self.assertEqual(data[0].name, "name")
             self.assertEqual(data[0].id, 1)
 
-    def test_getListOrObject_with_get(self):
+    def test_get_list_or_object_with_get(self):
         with HTTMock(resp_get_project):
             gl_object = Project(self.gl, data={"name": "name"})
-            data = gl_object._getListOrObject(self.gl, id=1)
+            data = gl_object._get_list_or_object(self.gl, id=1)
             self.assertEqual(type(data), Project)
             self.assertEqual(data.name, "name")
             self.assertEqual(data.id, 1)
 
-    def test_getListOrObject_cant_get(self):
+    def test_get_list_or_object_cant_get(self):
         with HTTMock(resp_get_issue):
             gl_object = Issue(self.gl, data={"name": "name"})
-            self.assertRaises(NotImplementedError, gl_object._getListOrObject,
+            self.assertRaises(NotImplementedError,
+                              gl_object._get_list_or_object,
                               self.gl, id=1)
 
-    def test_getListOrObject_cantlist(self):
+    def test_get_list_or_object_cantlist(self):
         gl_object = CurrentUser(self.gl, data={"name": "name"})
-        self.assertRaises(NotImplementedError, gl_object._getListOrObject,
+        self.assertRaises(NotImplementedError, gl_object._get_list_or_object,
                           self.gl, id=None)
 
-    def test_getListOrObject_create(self):
+    def test_get_list_or_object_create(self):
         data = {"name": "name"}
         gl_object = Project(self.gl, data=data)
-        data = gl_object._getListOrObject(Project, id=data)
+        data = gl_object._get_list_or_object(Project, id=data)
         self.assertEqual(type(data), Project)
         self.assertEqual(data.name, "name")
 
@@ -271,22 +272,22 @@ class TestGitLabObject(unittest.TestCase):
         obj = CurrentUser(self.gl, data={"name": "testname", "id": 1})
         self.assertRaises(NotImplementedError, obj.delete)
 
-    def test_setFromDict_BooleanTrue(self):
+    def test_set_from_dict_BooleanTrue(self):
         obj = Project(self.gl, data={"name": "testname"})
         data = {"issues_enabled": True}
-        obj._setFromDict(data)
+        obj._set_from_dict(data)
         self.assertIs(obj.issues_enabled, True)
 
-    def test_setFromDict_BooleanFalse(self):
+    def test_set_from_dict_BooleanFalse(self):
         obj = Project(self.gl, data={"name": "testname"})
         data = {"issues_enabled": False}
-        obj._setFromDict(data)
+        obj._set_from_dict(data)
         self.assertIs(obj.issues_enabled, False)
 
-    def test_setFromDict_None(self):
+    def test_set_from_dict_None(self):
         obj = Project(self.gl, data={"name": "testname"})
         data = {"issues_enabled": None}
-        obj._setFromDict(data)
+        obj._set_from_dict(data)
         self.assertIsNone(obj.issues_enabled)
 
 
