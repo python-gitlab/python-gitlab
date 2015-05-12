@@ -68,21 +68,12 @@ def clsToWhat(cls):
 
 
 def populate_sub_parser_by_class(cls, sub_parser):
-    sub_parser_class = sub_parser.add_subparsers(
-        dest='action',
-        title="positional argument",
-        description='action with %s' % cls.__name__,
-        help='action to do'
-    )
     for action_name in ACTIONS:
         attr = 'can' + action_name.capitalize()
-        try:
-            y = cls.__dict__[attr]
-        except AttributeError:
-            y = gitlab.GitlabObject.__dict__[attr]
+        y = getattr(cls, attr) or getattr(gitlab.GitlabObject, attr)
         if not y:
             continue
-        sub_parser_action = sub_parser_class.add_parser(action_name)
+        sub_parser_action = sub_parser.add_parser(action_name)
         [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                         required=True)
          for x in cls.requiredUrlAttrs]
@@ -119,7 +110,7 @@ def populate_sub_parser_by_class(cls, sub_parser):
 
     if cls in extra_actions:
         for action_name in sorted(extra_actions[cls]):
-            sub_parser_action = sub_parser_class.add_parser(action_name)
+            sub_parser_action = sub_parser.add_parser(action_name)
             d = extra_actions[cls][action_name]
             [sub_parser_action.add_argument("--%s" % arg, required=True)
              for arg in d['requiredAttrs']]
@@ -235,32 +226,37 @@ def do_project_owned():
 if __name__ == "__main__":
     ssl_verify = True
     timeout = 60
+
     parser = argparse.ArgumentParser(
-        description='GitLab API Command Line Interface')
-    parser.add_argument("-v", "--verbosity", "--fancy",
+        description="GitLab API Command Line Interface")
+    parser.add_argument("-v", "--verbose", "--fancy",
                         help="increase output verbosity",
                         action="store_true")
-    parser.add_argument("--gitlab", metavar='gitlab',
+    parser.add_argument("--gitlab",
                         help=("Specifies which python-gitlab.cfg "
                               "configuration section should be used. "
                               "If not defined, the default selection "
                               "will be used."),
                         required=False)
-    subparsers = parser.add_subparsers(
-        dest='what',
-        title="positional argument",
-        description='GitLab object',
-        help='GitLab object'
-    )
+
+    subparsers = parser.add_subparsers(dest='what')
 
     # populate argparse for all Gitlab Object
+    classes = []
     for cls in gitlab.__dict__.values():
         try:
             if gitlab.GitlabObject in getmro(cls):
-                sub_parser = subparsers.add_parser(clsToWhat(cls))
-                populate_sub_parser_by_class(cls, sub_parser)
-        except Exception:
+                classes.append(cls)
+        except AttributeError:
             pass
+    classes.sort()
+
+    for cls in classes:
+        arg_name = clsToWhat(cls)
+        object_group = subparsers.add_parser(arg_name)
+
+        object_subparsers = object_group.add_subparsers(dest='action')
+        populate_sub_parser_by_class(cls, object_subparsers)
 
     arg = parser.parse_args()
     d = arg.__dict__
@@ -272,7 +268,7 @@ if __name__ == "__main__":
     gitlab_id = arg.gitlab
     # conflicts with "gitlab" attribute from GitlabObject class
     d.pop("gitlab")
-    verbose = arg.verbosity
+    verbose = arg.verbose
     action = arg.action
     what = arg.what
 
