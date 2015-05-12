@@ -87,7 +87,9 @@ def populate_sub_parser_by_class(cls, sub_parser):
 
         elif action_name in [GET, DELETE]:
             if cls not in [gitlab.CurrentUser]:
-                sub_parser_action.add_argument("--id", required=True)
+                id_attr = cls.idAttr.replace('_', '-')
+                sub_parser_action.add_argument("--%s" % id_attr,
+                                               required=True)
                 [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                                 required=True)
                  for x in cls.requiredGetAttrs]
@@ -126,11 +128,11 @@ def do_auth():
         die("Could not connect to GitLab %s (%s)" % (gitlab_url, str(e)))
 
 
-def get_id():
+def get_id(cls):
     try:
-        id = d.pop('id')
+        id = d.pop(cls.idAttr)
     except Exception:
-        die("Missing --id argument")
+        die("Missing --%s argument" % cls.idAttr.replace('_', '-'))
 
     return id
 
@@ -166,7 +168,7 @@ def do_get(cls, d):
 
     id = None
     if cls not in [gitlab.CurrentUser]:
-        id = get_id()
+        id = get_id(cls)
 
     try:
         o = cls(gl, id, **d)
