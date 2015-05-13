@@ -206,6 +206,7 @@ class TestGitLabMethods(unittest.TestCase):
         self.assertRaises(GitlabListError, self.gl.list, ProjectBranch)
 
     def test_list_no_connection(self):
+        self.gl.set_url('http://localhost:66000')
         self.assertRaises(GitlabConnectionError, self.gl.list, ProjectBranch,
                           project_id=1)
 
@@ -348,7 +349,17 @@ class TestGitLabMethods(unittest.TestCase):
         obj = User(self.gl, data={"email": "email", "password": "password",
                                   "username": "username", "name": "name",
                                   "can_create_group": True})
-        self.assertRaises(GitlabConnectionError, self.gl.create, obj)
+        obj._created = True
+
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects/1",
+                  method="delete")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '{"message": "message"}'.encode("utf-8")
+            return response(404, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            self.assertRaises(GitlabCreateError, self.gl.create, obj)
 
     def test_create_401(self):
         obj = Group(self.gl, data={"name": "testgroup", "path": "testpath"})
