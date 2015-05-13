@@ -20,8 +20,12 @@ setup(name='python-gitlab',
       license='LGPLv3',
       url='https://github.com/gpocentek/python-gitlab',
       packages=['gitlab'],
-      scripts=['bin/gitlab'],
       install_requires=['requests', 'six'],
+      entry_points={
+          'console_scripts': [
+              'gitlab = gitlab.cli:main'
+          ]
+      },
       classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
