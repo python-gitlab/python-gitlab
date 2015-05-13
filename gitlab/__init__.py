@@ -517,7 +517,9 @@ class Gitlab(object):
 
         l = []
         for o in r.json():
-            l.append(Project(self, o))
+            p = Project(self, o)
+            p._created = True
+            l.append(p)
 
         return l
 
@@ -1154,7 +1156,6 @@ class UserProject(GitlabObject):
 class Project(GitlabObject):
     _url = '/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
-    canUpdate = False
     requiredCreateAttrs = ['name']
     optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
                            'merge_requests_enabled', 'wiki_enabled',
