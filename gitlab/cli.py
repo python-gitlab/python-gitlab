@@ -232,12 +232,14 @@ def main():
     parser = argparse.ArgumentParser(
         description="GitLab API Command Line Interface")
     parser.add_argument("-v", "--verbose", "--fancy",
-                        help="increase output verbosity",
+                        help="Verbose mode",
                         action="store_true")
+    parser.add_argument("-c", "--config-file", action='append',
+                        help=("Configuration file to use. Can be used "
+                              "multiple times."))
     parser.add_argument("--gitlab",
-                        help=("Specifies which python-gitlab.cfg "
-                              "configuration section should be used. "
-                              "If not defined, the default selection "
+                        help=("Which configuration section should "
+                              "be used. If not defined, the default selection "
                               "will be used."),
                         required=False)
 
@@ -263,10 +265,17 @@ def main():
     arg = parser.parse_args()
     args = arg.__dict__
 
+    files = arg.config_file or ['/etc/python-gitlab.cfg',
+                                os.path.expanduser('~/.python-gitlab.cfg')]
     # read the config
     config = configparser.ConfigParser()
-    config.read(['/etc/python-gitlab.cfg',
-                 os.path.expanduser('~/.python-gitlab.cfg')])
+    try:
+        config.read(files)
+    except Exception as e:
+        print("Impossible to parse the configuration file(s): %s" %
+              str(e))
+        sys.exit(1)
+
     gitlab_id = arg.gitlab
     # conflicts with "gitlab" attribute from GitlabObject class
     args.pop("gitlab")
