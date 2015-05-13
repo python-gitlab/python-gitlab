@@ -197,7 +197,7 @@ class Gitlab(object):
             url = '%s%s' % (self._url, url)
         return url
 
-    def _createHeaders(self, content_type=None, headers={}):
+    def _create_headers(self, content_type=None, headers={}):
         request_headers = self.headers.copy()
         request_headers.update(headers)
         if content_type is not None:
@@ -236,7 +236,7 @@ class Gitlab(object):
 
     def _raw_get(self, path, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
-        headers = self._createHeaders(content_type)
+        headers = self._create_headers(content_type)
 
         try:
             return requests.get(url,
@@ -254,7 +254,7 @@ class Gitlab(object):
 
     def _raw_post(self, path, data=None, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
-        headers = self._createHeaders(content_type)
+        headers = self._create_headers(content_type)
         try:
             return requests.post(url, params=kwargs, data=data,
                                  headers=headers,
@@ -270,7 +270,7 @@ class Gitlab(object):
 
     def _raw_put(self, path, data=None, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
-        headers = self._createHeaders(content_type)
+        headers = self._create_headers(content_type)
 
         try:
             return requests.put(url, data=data, params=kwargs,
@@ -287,7 +287,7 @@ class Gitlab(object):
 
     def _raw_delete(self, path, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
-        headers = self._createHeaders(content_type)
+        headers = self._create_headers(content_type)
 
         try:
             return requests.delete(url,
@@ -310,7 +310,7 @@ class Gitlab(object):
                                   ", ".join(missing))
 
         url = self._construct_url(id_=None, obj=obj_class, parameters=kwargs)
-        headers = self._createHeaders()
+        headers = self._create_headers()
 
         # Remove attributes that are used in url so that there is only
         # url-parameters left
@@ -358,7 +358,7 @@ class Gitlab(object):
                                  ", ".join(missing))
 
         url = self._construct_url(id_=id, obj=obj_class, parameters=kwargs)
-        headers = self._createHeaders()
+        headers = self._create_headers()
 
         # Remove attributes that are used in url so that there is only
         # url-parameters left
@@ -391,7 +391,7 @@ class Gitlab(object):
                                     ", ".join(missing))
 
         url = self._construct_url(id_=obj.id, obj=obj, parameters=params)
-        headers = self._createHeaders()
+        headers = self._create_headers()
 
         # Remove attributes that are used in url so that there is only
         # url-parameters left
@@ -426,10 +426,10 @@ class Gitlab(object):
                                     ", ".join(missing))
 
         url = self._construct_url(id_=None, obj=obj, parameters=params)
-        headers = self._createHeaders(content_type="application/json")
+        headers = self._create_headers(content_type="application/json")
 
         # build data that can really be sent to server
-        data = obj._dataForGitlab(extra_parameters=kwargs)
+        data = obj._data_for_gitlab(extra_parameters=kwargs)
 
         try:
             r = requests.post(url, data=data,
@@ -457,10 +457,10 @@ class Gitlab(object):
             raise GitlabUpdateError('Missing attribute(s): %s' %
                                     ", ".join(missing))
         url = self._construct_url(id_=obj.id, obj=obj, parameters=params)
-        headers = self._createHeaders(content_type="application/json")
+        headers = self._create_headers(content_type="application/json")
 
         # build data that can really be sent to server
-        data = obj._dataForGitlab(extra_parameters=kwargs)
+        data = obj._data_for_gitlab(extra_parameters=kwargs)
 
         try:
             r = requests.put(url, data=data,
@@ -646,7 +646,7 @@ class GitlabObject(object):
     idAttr = 'id'
     shortPrintAttr = None
 
-    def _dataForGitlab(self, extra_parameters={}):
+    def _data_for_gitlab(self, extra_parameters={}):
         data = {}
         for attribute in itertools.chain(self.requiredCreateAttrs,
                                          self.optionalCreateAttrs):
@@ -1002,7 +1002,7 @@ class ProjectIssue(GitlabObject):
 
     shortPrintAttr = 'title'
 
-    def _dataForGitlab(self, extra_parameters={}):
+    def _data_for_gitlab(self, extra_parameters={}):
         # Gitlab-api returns labels in a json list and takes them in a
         # comma separated list.
         if hasattr(self, "labels"):
@@ -1011,7 +1011,7 @@ class ProjectIssue(GitlabObject):
                 labels = ", ".join(self.labels)
                 extra_parameters['labels'] = labels
 
-        return super(ProjectIssue, self)._dataForGitlab(extra_parameters)
+        return super(ProjectIssue, self)._data_for_gitlab(extra_parameters)
 
     def Note(self, id=None, **kwargs):
         return ProjectIssueNote._get_list_or_object(self.gitlab, id,
