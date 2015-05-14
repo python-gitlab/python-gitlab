@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-2014 Gauvain Pocentek <gauvain@pocentek.net>
+# Copyright (C) 2013-2015 Gauvain Pocentek <gauvain@pocentek.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by

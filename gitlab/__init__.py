@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-2014 Gauvain Pocentek <gauvain@pocentek.net>
+# Copyright (C) 2013-2015 Gauvain Pocentek <gauvain@pocentek.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -31,7 +31,7 @@ __version__ = '0.8.1'
 __author__ = 'Gauvain Pocentek'
 __email__ = 'gauvain@pocentek.net'
 __license__ = 'LGPL3'
-__copyright__ = 'Copyright 2013-2014 Gauvain Pocentek'
+__copyright__ = 'Copyright 2013-2015 Gauvain Pocentek'
 
 warnings.simplefilter('always', DeprecationWarning)
 
