@@ -277,11 +277,15 @@ def main():
         sys.exit(1)
 
     gitlab_id = arg.gitlab
-    # conflicts with "gitlab" attribute from GitlabObject class
-    args.pop("gitlab")
     verbose = arg.verbose
     action = arg.action
     what = arg.what
+
+    # Remove CLI behavior-related args
+    args.pop("gitlab")
+    args.pop("config_file")
+    args.pop("verbose")
+    args.pop("what")
 
     if gitlab_id is None:
         try:
