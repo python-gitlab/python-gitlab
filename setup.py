@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup
+from setuptools import find_packages
 
 import gitlab
 
@@ -19,7 +20,7 @@ setup(name='python-gitlab',
       author_email='gauvain@pocentek.net',
       license='LGPLv3',
       url='https://github.com/gpocentek/python-gitlab',
-      packages=['gitlab'],
+      packages=find_packages(),
       install_requires=['requests', 'six'],
       entry_points={
           'console_scripts': [
