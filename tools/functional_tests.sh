@@ -18,6 +18,8 @@ cleanup() {
     rm -f /tmp/python-gitlab.cfg
     docker kill gitlab-test >/dev/null 2>&1
     docker rm gitlab-test >/dev/null 2>&1
+    deactivate || true
+    rm -rf $VENV
 }
 trap cleanup EXIT
 
@@ -27,6 +29,12 @@ LOGIN='root'
 PASSWORD='5iveL!fe'
 CONFIG=/tmp/python-gitlab.cfg
 GITLAB="gitlab --config-file $CONFIG"
+VENV=$(pwd)/.venv
+
+virtualenv $VENV
+. $VENV/bin/activate
+pip install -rrequirements.txt
+pip install -e .
 
 GREEN='\033[0;32m'
 NC='\033[0m'
@@ -77,11 +85,11 @@ USER_ID=$($GITLAB user create --email fake@email.com --username user1 --name "Us
 $OK
 
 echo -n "Testing verbose output... "
-$GITLAB user list | grep -q avatar-url
+$GITLAB -v user list | grep -q avatar-url
 $OK
 
 echo -n "Testing CLI args not in output... "
-$GITLAB user list | grep -v config-file
+$GITLAB -v user list | grep -qv config-file
 $OK
 
 echo -n "Testing adding member to a project... "
