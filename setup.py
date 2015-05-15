@@ -4,12 +4,12 @@
 from setuptools import setup
 from setuptools import find_packages
 
-import gitlab
-
 
 def get_version():
-
-    return gitlab.__version__
+    with open('gitlab/__init__.py') as f:
+        for line in f:
+            if line.startswith('__version__'):
+                return eval(line.split('=')[-1])
 
 
 setup(name='python-gitlab',

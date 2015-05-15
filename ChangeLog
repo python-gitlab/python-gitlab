@@ -1,3 +1,7 @@
+Version 0.9.1
+
+ * Fix the setup.py script
+
 Version 0.9
 
  * Implement argparse libray for parsing argument on CLI
