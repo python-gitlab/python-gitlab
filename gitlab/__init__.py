@@ -27,7 +27,7 @@ import requests
 import six
 
 __title__ = 'python-gitlab'
-__version__ = '0.9'
+__version__ = '0.9.1'
 __author__ = 'Gauvain Pocentek'
 __email__ = 'gauvain@pocentek.net'
 __license__ = 'LGPL3'
