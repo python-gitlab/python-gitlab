@@ -119,7 +119,7 @@ Get help with:
 gitlab --help
 
 # object help
-gitlab project help
+gitlab project --help
 `````
 
 Some examples:

@@ -1,7 +1,19 @@
-Version 0.8.1
+Version 0.9
 
- * Implemented argparse libray for parsing argument on CLI
- * add custom action for InfoCert
+ * Implement argparse libray for parsing argument on CLI
+ * Provide unit tests and (a few) functional tests
+ * Provide PEP8 tests
+ * Use tox to run the tests
+ * CLI: provide a --config-file option
+ * Turn the gitlab module into a proper package
+ * Allow projects to be updated
+ * Use more pythonic names for some methods
+ * Deprecate some Gitlab object methods:
+   - raw* methods should never have been exposed; replace them with _raw_*
+     methods
+   - setCredentials and setToken are replaced with set_credentials and
+     set_token
+ * Sphinx: don't hardcode the version in conf.py
 
 Version 0.8
 
