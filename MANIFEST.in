@@ -1,1 +1,1 @@
-include README.md COPYING AUTHORS ChangeLog requirements.txt
+include README.md COPYING AUTHORS ChangeLog requirements.txt test-requirements.txt
