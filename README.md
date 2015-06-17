@@ -6,25 +6,35 @@ It supports the v3 api of GitLab.
 
 A CLI tool is also provided (called **gitlab**).
 
-## Requirements
+## Installation
+
+### Requirements
 
 python-gitlab depends on:
 
-* [python-requests](http://docs.python-requests.org/en/latest/).
+* [python-requests](http://docs.python-requests.org/en/latest/)
+* [six](https://pythonhosted.org/six/)
+
+### Install with pip
+
+`````
+pip install python-gitlab
+`````
 
 ## State
 
-python-gitlab >= 0.3 is considered stable.
+python-gitlab is considered stable.
 
 ## Bugs reports
 
 Please report bugs and feature requests at
 https://github.com/gpocentek/python-gitlab/issues
 
-## ToDo
+## Documentation
 
-* Improve documentation
-* Write unit tests
+Work In Progress: http://python-gitlab.readthedocs.org/en/latest/
+
+Patches are welcome!
 
 ## Code snippet
 
