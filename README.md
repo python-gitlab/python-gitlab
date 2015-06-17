@@ -73,21 +73,25 @@ Here's an example of the syntax:
 
 `````
 [global]
+# required setting
 default = local
+
+# optional settings
 ssl_verify = true
 timeout = 5
 
 [local]
 url = http://10.0.3.2:8080
+# get the private token from the gitlab web interface
 private_token = vTbFeqJYCY3sibBP7BZM
 
-[distant]
+[remote]
 url = https://some.whe.re
 private_token = thisisaprivatetoken
 ssl_verify = false
 `````
 
-The [global] section define which server is accesed by default.
+The [global] section defines which server is accessed by default.
 Each other section defines how to access a server. Only private token
 authentication is supported (not user/password).
 
@@ -100,7 +104,7 @@ server should be abandonned.
 Choosing a different server than the default one can be done at run time:
 
 `````
-gitlab --gitlab=distant [command]
+gitlab --gitlab=remote [command]
 `````
 
 gitlab always requires 2 mandatory arguments.
