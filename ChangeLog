@@ -1,3 +1,7 @@
+Version 0.9.2
+
+ * CLI: fix the update and delete subcommands (#62)
+
 Version 0.9.1
 
  * Fix the setup.py script
