@@ -182,7 +182,7 @@ def do_delete(cls, gl, what, args):
     if not cls.canDelete:
         die("%s objects can't be deleted" % what)
 
-    o = do_get(cls, args)
+    o = do_get(cls, args, what, args)
     try:
         o.delete()
     except Exception as e:
@@ -193,7 +193,7 @@ def do_update(cls, gl, what, args):
     if not cls.canUpdate:
         die("%s objects can't be updated" % what)
 
-    o = do_get(cls, args)
+    o = do_get(cls, args, what, args)
     try:
         for k, v in args.items():
             o.__dict__[k] = v
