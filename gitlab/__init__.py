@@ -643,6 +643,11 @@ class GitlabObject(object):
     requiredCreateAttrs = []
     #: Attributes that are optional when creating a new object
     optionalCreateAttrs = []
+    #: Attributes that are required when updating an object
+    requiredUpdateAttrs = None
+    #: Attributes that are optional when updating an object
+    optionalUpdateAttrs = None
+
     idAttr = 'id'
     shortPrintAttr = None
 
@@ -1086,6 +1091,7 @@ class ProjectLabel(GitlabObject):
     idAttr = 'name'
     requiredDeleteAttrs = ['name']
     requiredCreateAttrs = ['name', 'color']
+    requiredUpdateAttrs = []
     # FIXME: new_name is only valid with update
     optionalCreateAttrs = ['new_name']
 
@@ -1157,6 +1163,7 @@ class Project(GitlabObject):
     _url = '/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
     requiredCreateAttrs = ['name']
+    requiredUpdateAttrs = []
     optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
                            'merge_requests_enabled', 'wiki_enabled',
                            'snippets_enabled', 'public', 'visibility_level',

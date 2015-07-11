@@ -23,7 +23,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-docker run --name gitlab-test --detach --publish 8080:80 --publish 2222:22 sytse/gitlab-ce:7.10.1 >/dev/null 2>&1
+docker run --name gitlab-test --detach --publish 8080:80 --publish 2222:22 genezys/gitlab:latest >/dev/null 2>&1
 
 LOGIN='root'
 PASSWORD='5iveL!fe'
@@ -78,6 +78,14 @@ set -e
 echo -n "Testing project creation... "
 PROJECT_ID=$($GITLAB project create --name test-project1 | grep ^id: | cut -d' ' -f2)
 $GITLAB project list | grep -q test-project1
+$OK
+
+echo -n "Testing project update... "
+$GITLAB project update --id $PROJECT_ID --description "My New Description"
+$OK
+
+echo -n "Testing project deletion... "
+$GITLAB project delete --id $PROJECT_ID
 $OK
 
 echo -n "Testing user creation... "

@@ -103,12 +103,23 @@ def populate_sub_parser_by_class(cls, sub_parser):
              for x in cls.optionalCreateAttrs]
 
         elif action_name == UPDATE:
+            id_attr = cls.idAttr.replace('_', '-')
+            sub_parser_action.add_argument("--%s" % id_attr,
+                                           required=True)
+
+            attrs = (cls.requiredUpdateAttrs
+                     if cls.requiredUpdateAttrs is not None
+                     else cls.requiredCreateAttrs)
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                             required=True)
-             for x in cls.requiredCreateAttrs]
+             for x in attrs]
+
+            attrs = (cls.optionalUpdateAttrs
+                     if cls.optionalUpdateAttrs is not None
+                     else cls.optionalCreateAttrs)
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                             required=False)
-             for x in cls.optionalCreateAttrs]
+             for x in attrs]
 
     if cls in extra_actions:
         for action_name in sorted(extra_actions[cls]):
@@ -182,7 +193,7 @@ def do_delete(cls, gl, what, args):
     if not cls.canDelete:
         die("%s objects can't be deleted" % what)
 
-    o = do_get(cls, args, what, args)
+    o = do_get(cls, gl, what, args)
     try:
         o.delete()
     except Exception as e:
@@ -193,7 +204,7 @@ def do_update(cls, gl, what, args):
     if not cls.canUpdate:
         die("%s objects can't be updated" % what)
 
-    o = do_get(cls, args, what, args)
+    o = do_get(cls, gl, what, args)
     try:
         for k, v in args.items():
             o.__dict__[k] = v
