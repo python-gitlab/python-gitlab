@@ -26,6 +26,9 @@ import warnings
 import requests
 import six
 
+import logging
+logger = logging.getLogger(__name__)
+
 __title__ = 'python-gitlab'
 __version__ = '0.9.1'
 __author__ = 'Gauvain Pocentek'
@@ -189,6 +192,8 @@ class Gitlab(object):
         self._url = '%s/api/v3' % url
 
     def _construct_url(self, id_, obj, parameters):
+        if 'next_url' in parameters:
+            return parameters['next_url']
         args = _sanitize_dict(parameters)
         url = obj._url % args
         if id_ is not None:
@@ -342,8 +347,14 @@ class Gitlab(object):
                 if key in cls_kwargs:
                     del cls_kwargs[key]
 
-            return [cls(self, item, **cls_kwargs) for item in r.json()
-                    if item is not None]
+            results = [cls(self, item, **cls_kwargs) for item in r.json()
+                       if item is not None]
+            if 'next' in r.links and 'url' in r.links['next']:
+                args = kwargs.copy()
+                args['next_url'] = r.links['next']['url']
+                logger.debug("Iterating results 'next' link: %s", args['next_url'])
+                results.extend(self.list(obj_class, **args))
+            return results
         else:
             _raise_error_from_response(r, GitlabListError)
 
