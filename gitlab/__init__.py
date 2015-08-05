@@ -26,9 +26,6 @@ import warnings
 import requests
 import six
 
-import logging
-logger = logging.getLogger(__name__)
-
 __title__ = 'python-gitlab'
 __version__ = '0.9.1'
 __author__ = 'Gauvain Pocentek'
@@ -352,7 +349,6 @@ class Gitlab(object):
             if 'next' in r.links and 'url' in r.links['next']:
                 args = kwargs.copy()
                 args['next_url'] = r.links['next']['url']
-                logger.debug("Iterating results 'next' link: %s", args['next_url'])
                 results.extend(self.list(obj_class, **args))
             return results
         else:
