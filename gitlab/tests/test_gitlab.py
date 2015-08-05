@@ -22,6 +22,7 @@ try:
     import unittest
 except ImportError:
     import unittest2 as unittest
+import json
 
 from httmock import HTTMock  # noqa
 from httmock import response  # noqa
@@ -177,6 +178,56 @@ class TestGitLabMethods(unittest.TestCase):
             self.assertEqual(data.branch_name, "testbranch")
             self.assertEqual(data.project_id, 1)
             self.assertEqual(data.ref, "a")
+
+    def test_list_next_link(self):
+        @urlmatch(scheme="http", netloc="localhost",
+                  path='/api/v3/projects/1/repository/branches', method="get",
+                  query=r'per_page=1')
+        def resp_one(url, request):
+            """
+            First request:
+            http://localhost/api/v3/projects/1/repository/branches?per_page=1
+            """
+            headers = {
+                'content-type': 'application/json',
+                'link': '<http://localhost/api/v3/projects/1/repository/branc' \
+                'hes?page=2&per_page=0>; rel="next", <http://localhost/api/v3' \
+                '/projects/1/repository/branches?page=2&per_page=0>; rel="las' \
+                't", <http://localhost/api/v3/projects/1/repository/branches?' \
+                'page=1&per_page=0>; rel="first"'
+            }
+            content = ('[{"branch_name": "otherbranch", '
+                       '"project_id": 1, "ref": "b"}]').encode("utf-8")
+            resp = response(200, content, headers, None, 5, request)
+            return resp
+
+        @urlmatch(scheme="http", netloc="localhost",
+                  path='/api/v3/projects/1/repository/branches', method="get",
+                  query=r'.*page=2.*')
+        def resp_two(url, request):
+            headers = {
+                'content-type': 'application/json',
+                'link': '<http://localhost/api/v3/projects/1/repository/branc' \
+                'hes?page=1&per_page=0>; rel="prev", <http://localhost/api/v3' \
+                '/projects/1/repository/branches?page=2&per_page=0>; rel="las' \
+                't", <http://localhost/api/v3/projects/1/repository/branches?' \
+                'page=1&per_page=0>; rel="first"'
+            }
+            content = ('[{"branch_name": "testbranch", '
+                       '"project_id": 1, "ref": "a"}]').encode("utf-8")
+            resp = response(200, content, headers, None, 5, request)
+            return resp
+
+        with HTTMock(resp_one, resp_two):
+            data = self.gl.list(ProjectBranch, project_id=1,
+                                per_page=1)
+            self.assertEqual(data[1].branch_name, "testbranch")
+            self.assertEqual(data[1].project_id, 1)
+            self.assertEqual(data[1].ref, "a")
+            self.assertEqual(data[0].branch_name, "otherbranch")
+            self.assertEqual(data[0].project_id, 1)
+            self.assertEqual(data[0].ref, "b")
+            self.assertEqual(len(data), 2)
 
     def test_list_401(self):
         @urlmatch(scheme="http", netloc="localhost",
