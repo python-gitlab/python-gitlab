@@ -190,7 +190,11 @@ class Gitlab(object):
 
     def _construct_url(self, id_, obj, parameters):
         args = _sanitize_dict(parameters)
-        url = obj._url % args
+        if id_ is None and obj._urlPlural is not None:
+            url = obj._urlPlural % args
+        else:
+            url = obj._url % args
+
         if id_ is not None:
             url = '%s%s/%s' % (self._url, url, str(id_))
         else:
@@ -616,6 +620,8 @@ class GitlabObject(object):
     """
     #: Url to use in GitLab for this object
     _url = None
+    #some objects (e.g. merge requests) have different urls for singular and plural
+    _urlPlural = None
     _returnClass = None
     _constructorTypes = None
     #: Whether _get_list_or_object should return list or object when id is None
@@ -1056,14 +1062,14 @@ class ProjectTag(GitlabObject):
 class ProjectMergeRequestNote(GitlabObject):
     _url = '/projects/%(project_id)s/merge_requests/%(merge_request_id)s/notes'
     _constructorTypes = {'author': 'User'}
-    canUpdate = False
     canDelete = False
     requiredUrlAttrs = ['project_id', 'merge_request_id']
     requiredCreateAttrs = ['body']
 
 
 class ProjectMergeRequest(GitlabObject):
-    _url = '/projects/%(project_id)s/merge_requests'
+    _url = '/projects/%(project_id)s/merge_request'
+    _urlPlural = '/projects/%(project_id)s/merge_requests'
     _constructorTypes = {'author': 'User', 'assignee': 'User'}
     canDelete = False
     requiredUrlAttrs = ['project_id']
