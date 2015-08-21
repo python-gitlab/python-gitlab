@@ -84,10 +84,6 @@ echo -n "Testing project update... "
 $GITLAB project update --id $PROJECT_ID --description "My New Description"
 $OK
 
-echo -n "Testing project deletion... "
-$GITLAB project delete --id $PROJECT_ID
-$OK
-
 echo -n "Testing user creation... "
 USER_ID=$($GITLAB user create --email fake@email.com --username user1 --name "User One" --password fakepassword | grep ^id: | cut -d' ' -f2)
 $OK
@@ -102,4 +98,8 @@ $OK
 
 echo -n "Testing adding member to a project... "
 $GITLAB project-member create --project-id $PROJECT_ID --user-id $USER_ID --access-level 40 >/dev/null 2>&1
+$OK
+
+echo -n "Testing project deletion... "
+$GITLAB project delete --id $PROJECT_ID
 $OK

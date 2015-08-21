@@ -26,6 +26,9 @@ import warnings
 import requests
 import six
 
+import gitlab.config
+
+
 __title__ = 'python-gitlab'
 __version__ = '0.9.1'
 __author__ = 'Gauvain Pocentek'
@@ -154,6 +157,13 @@ class Gitlab(object):
         self.password = password
         #: (Passed to requests-library)
         self.ssl_verify = ssl_verify
+
+    @staticmethod
+    def from_config(gitlab_id=None, config_files=None):
+        config = gitlab.config.GitlabConfigParser(gitlab_id=gitlab_id,
+                                                  config_files=config_files)
+        return Gitlab(config.url, private_token=config.token,
+                      ssl_verify=config.ssl_verify, timeout=config.timeout)
 
     def auth(self):
         """Performs an authentication.

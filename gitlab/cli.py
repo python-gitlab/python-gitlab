@@ -21,13 +21,8 @@ from __future__ import division
 from __future__ import absolute_import
 import argparse
 import inspect
-import os
 import re
 import sys
-try:
-    import ConfigParser as configparser
-except ImportError:
-    import configparser
 
 import gitlab
 
@@ -129,14 +124,13 @@ def populate_sub_parser_by_class(cls, sub_parser):
              for arg in d['requiredAttrs']]
 
 
-def do_auth(gitlab_url, gitlab_token, ssl_verify, timeout):
+def do_auth(gitlab_id, config_files):
     try:
-        gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_token,
-                           ssl_verify=ssl_verify, timeout=timeout)
+        gl = gitlab.Gitlab.from_config(gitlab_id, config_files)
         gl.auth()
         return gl
     except Exception as e:
-        die("Could not connect to GitLab %s (%s)" % (gitlab_url, str(e)))
+        die(str(e))
 
 
 def get_id(cls, args):
@@ -237,9 +231,6 @@ def do_project_owned(gl, what, args):
 
 
 def main():
-    ssl_verify = True
-    timeout = 60
-
     parser = argparse.ArgumentParser(
         description="GitLab API Command Line Interface")
     parser.add_argument("-v", "--verbose", "--fancy",
@@ -276,17 +267,7 @@ def main():
     arg = parser.parse_args()
     args = arg.__dict__
 
-    files = arg.config_file or ['/etc/python-gitlab.cfg',
-                                os.path.expanduser('~/.python-gitlab.cfg')]
-    # read the config
-    config = configparser.ConfigParser()
-    try:
-        config.read(files)
-    except Exception as e:
-        print("Impossible to parse the configuration file(s): %s" %
-              str(e))
-        sys.exit(1)
-
+    config_files = arg.config_file
     gitlab_id = arg.gitlab
     verbose = arg.verbose
     action = arg.action
@@ -298,45 +279,13 @@ def main():
     args.pop("verbose")
     args.pop("what")
 
-    if gitlab_id is None:
-        try:
-            gitlab_id = config.get('global', 'default')
-        except Exception:
-            die("Impossible to get the gitlab id "
-                "(not specified in config file)")
-
-    try:
-        gitlab_url = config.get(gitlab_id, 'url')
-        gitlab_token = config.get(gitlab_id, 'private_token')
-    except Exception:
-        die("Impossible to get gitlab informations from configuration "
-            "(%s)" % gitlab_id)
-
-    try:
-        ssl_verify = config.getboolean('global', 'ssl_verify')
-    except Exception:
-        pass
-    try:
-        ssl_verify = config.getboolean(gitlab_id, 'ssl_verify')
-    except Exception:
-        pass
-
-    try:
-        timeout = config.getint('global', 'timeout')
-    except Exception:
-        pass
-    try:
-        timeout = config.getint(gitlab_id, 'timeout')
-    except Exception:
-        pass
-
     cls = None
     try:
         cls = gitlab.__dict__[whatToCls(what)]
     except Exception:
         die("Unknown object: %s" % what)
 
-    gl = do_auth(gitlab_url, gitlab_token, ssl_verify, timeout)
+    gl = do_auth(gitlab_id, config_files)
 
     if action == CREATE or action == GET:
         o = globals()['do_%s' % action.lower()](cls, gl, what, args)
