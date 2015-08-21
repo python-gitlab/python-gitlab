@@ -343,14 +343,17 @@ class Gitlab(object):
             # through normal path
             cls_kwargs['_created'] = True
 
+            get_all_results = params.get('all', False)
+
             # Remove parameters from kwargs before passing it to constructor
-            for key in ['page', 'per_page', 'sudo']:
+            for key in ['all', 'page', 'per_page', 'sudo']:
                 if key in cls_kwargs:
                     del cls_kwargs[key]
 
             results = [cls(self, item, **cls_kwargs) for item in r.json()
                        if item is not None]
-            if 'next' in r.links and 'url' in r.links['next']:
+            if ('next' in r.links and 'url' in r.links['next']
+               and get_all_results is True):
                 args = kwargs.copy()
                 args['next_url'] = r.links['next']['url']
                 results.extend(self.list(obj_class, **args))

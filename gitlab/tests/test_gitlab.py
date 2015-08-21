@@ -180,8 +180,7 @@ class TestGitLabMethods(unittest.TestCase):
 
     def test_list_next_link(self):
         @urlmatch(scheme="http", netloc="localhost",
-                  path='/api/v3/projects/1/repository/branches', method="get",
-                  query=r'per_page=1')
+                  path='/api/v3/projects/1/repository/branches', method="get")
         def resp_one(url, request):
             """First request:
 
@@ -217,9 +216,9 @@ class TestGitLabMethods(unittest.TestCase):
             resp = response(200, content, headers, None, 5, request)
             return resp
 
-        with HTTMock(resp_one, resp_two):
-            data = self.gl.list(ProjectBranch, project_id=1,
-                                per_page=1)
+        with HTTMock(resp_two, resp_one):
+            data = self.gl.list(ProjectBranch, project_id=1, per_page=1,
+                                all=True)
             self.assertEqual(data[1].branch_name, "testbranch")
             self.assertEqual(data[1].project_id, 1)
             self.assertEqual(data[1].ref, "a")
