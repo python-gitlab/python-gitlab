@@ -189,6 +189,8 @@ class Gitlab(object):
         self._url = '%s/api/v3' % url
 
     def _construct_url(self, id_, obj, parameters):
+        if 'next_url' in parameters:
+            return parameters['next_url']
         args = _sanitize_dict(parameters)
         if id_ is None and obj._urlPlural is not None:
             url = obj._urlPlural % args
@@ -346,8 +348,13 @@ class Gitlab(object):
                 if key in cls_kwargs:
                     del cls_kwargs[key]
 
-            return [cls(self, item, **cls_kwargs) for item in r.json()
-                    if item is not None]
+            results = [cls(self, item, **cls_kwargs) for item in r.json()
+                       if item is not None]
+            if 'next' in r.links and 'url' in r.links['next']:
+                args = kwargs.copy()
+                args['next_url'] = r.links['next']['url']
+                results.extend(self.list(obj_class, **args))
+            return results
         else:
             _raise_error_from_response(r, GitlabListError)
 
