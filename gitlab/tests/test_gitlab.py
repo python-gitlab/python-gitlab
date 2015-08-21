@@ -22,7 +22,6 @@ try:
     import unittest
 except ImportError:
     import unittest2 as unittest
-import json
 
 from httmock import HTTMock  # noqa
 from httmock import response  # noqa
@@ -184,16 +183,16 @@ class TestGitLabMethods(unittest.TestCase):
                   path='/api/v3/projects/1/repository/branches', method="get",
                   query=r'per_page=1')
         def resp_one(url, request):
-            """
-            First request:
+            """First request:
+
             http://localhost/api/v3/projects/1/repository/branches?per_page=1
             """
             headers = {
                 'content-type': 'application/json',
-                'link': '<http://localhost/api/v3/projects/1/repository/branc' \
-                'hes?page=2&per_page=0>; rel="next", <http://localhost/api/v3' \
-                '/projects/1/repository/branches?page=2&per_page=0>; rel="las' \
-                't", <http://localhost/api/v3/projects/1/repository/branches?' \
+                'link': '<http://localhost/api/v3/projects/1/repository/branc'
+                'hes?page=2&per_page=0>; rel="next", <http://localhost/api/v3'
+                '/projects/1/repository/branches?page=2&per_page=0>; rel="las'
+                't", <http://localhost/api/v3/projects/1/repository/branches?'
                 'page=1&per_page=0>; rel="first"'
             }
             content = ('[{"branch_name": "otherbranch", '
@@ -207,10 +206,10 @@ class TestGitLabMethods(unittest.TestCase):
         def resp_two(url, request):
             headers = {
                 'content-type': 'application/json',
-                'link': '<http://localhost/api/v3/projects/1/repository/branc' \
-                'hes?page=1&per_page=0>; rel="prev", <http://localhost/api/v3' \
-                '/projects/1/repository/branches?page=2&per_page=0>; rel="las' \
-                't", <http://localhost/api/v3/projects/1/repository/branches?' \
+                'link': '<http://localhost/api/v3/projects/1/repository/branc'
+                'hes?page=1&per_page=0>; rel="prev", <http://localhost/api/v3'
+                '/projects/1/repository/branches?page=2&per_page=0>; rel="las'
+                't", <http://localhost/api/v3/projects/1/repository/branches?'
                 'page=1&per_page=0>; rel="first"'
             }
             content = ('[{"branch_name": "testbranch", '

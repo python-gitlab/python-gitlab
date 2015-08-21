@@ -627,7 +627,8 @@ class GitlabObject(object):
     """
     #: Url to use in GitLab for this object
     _url = None
-    #some objects (e.g. merge requests) have different urls for singular and plural
+    # Some objects (e.g. merge requests) have different urls for singular and
+    # plural
     _urlPlural = None
     _returnClass = None
     _constructorTypes = None
