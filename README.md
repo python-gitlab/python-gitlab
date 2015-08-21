@@ -47,28 +47,32 @@ gl = Gitlab('http://192.168.123.107', 'JVNSESs8EwWRx5yDxM5q')
 # Connect to get the current user
 gl.auth()
 # Print the user informations
-print gl.user
+print(gl.user)
 
 # Get a list of projects
 for p in gl.Project():
-    print (p.name)
+    print(p.name)
     # get associated issues
     issues = p.Issue()
     for issue in issues:
         closed = 0 if not issue.closed else 1
-        print ("  %d => %s (closed: %d)" % (issue.id, issue.title, closed))
+        print("  %d => %s (closed: %d)" % (issue.id, issue.title, closed))
         # and close them all
         issue.state_event = "close"
         issue.save()
 
 # Get the first 10 groups (pagination)
 for g in gl.Group(page=1, per_page=10):
-    print (g)
+    print(g)
+
+# To use pagination and retrieve all the items
+for g in gl.Group(all=True):
+    print(g)
 
 # Create a new project (as another_user)
 p = gl.Project({'name': 'myCoolProject', 'wiki_enabled': False})
 p.save(sudo="another_user")
-print p
+print(p)
 `````
 
 ## Command line use
