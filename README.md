@@ -40,6 +40,7 @@ Patches are welcome!
 
 `````python
 # See https://github.com/gitlabhq/gitlabhq/tree/master/doc/api for the source.
+from gitlab import Gitlab
 
 # Register a connection to a gitlab instance, using its URL and a user private
 # token
