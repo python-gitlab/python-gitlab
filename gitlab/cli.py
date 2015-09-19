@@ -82,9 +82,10 @@ def populate_sub_parser_by_class(cls, sub_parser):
 
         elif action_name in [GET, DELETE]:
             if cls not in [gitlab.CurrentUser]:
-                id_attr = cls.idAttr.replace('_', '-')
-                sub_parser_action.add_argument("--%s" % id_attr,
-                                               required=True)
+                if cls.getRequiresId:
+                    id_attr = cls.idAttr.replace('_', '-')
+                    sub_parser_action.add_argument("--%s" % id_attr,
+                                                   required=True)
                 [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                                 required=True)
                  for x in cls.requiredGetAttrs]
@@ -172,7 +173,7 @@ def do_get(cls, gl, what, args):
         die("%s objects can't be retrieved" % what)
 
     id = None
-    if cls not in [gitlab.CurrentUser]:
+    if cls not in [gitlab.CurrentUser] and cls.getRequiresId:
         id = get_id(cls, args)
 
     try:

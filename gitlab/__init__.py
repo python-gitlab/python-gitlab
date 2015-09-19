@@ -675,6 +675,8 @@ class GitlabObject(object):
     requiredUpdateAttrs = None
     #: Attributes that are optional when updating an object
     optionalUpdateAttrs = None
+    #: Whether the object ID is required in the GET url
+    getRequiresId = True
 
     idAttr = 'id'
     shortPrintAttr = None
@@ -1134,7 +1136,8 @@ class ProjectFile(GitlabObject):
     optionalCreateAttrs = ['encoding']
     requiredDeleteAttrs = ['branch_name', 'commit_message']
     getListWhenNoId = False
-    shortPrintAttr = 'name'
+    shortPrintAttr = 'file_path'
+    getRequiresId = False
 
 
 class ProjectSnippetNote(GitlabObject):
