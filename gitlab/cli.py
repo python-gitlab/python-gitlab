@@ -278,6 +278,7 @@ def main():
     args.pop("config_file")
     args.pop("verbose")
     args.pop("what")
+    args.pop("action")
 
     cls = None
     try:
