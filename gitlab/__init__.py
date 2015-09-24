@@ -854,7 +854,13 @@ class User(GitlabObject):
     requiredCreateAttrs = ['email', 'username', 'name']
     optionalCreateAttrs = ['password', 'skype', 'linkedin', 'twitter',
                            'projects_limit', 'extern_uid', 'provider',
-                           'bio', 'admin', 'can_create_group', 'website_url']
+                           'bio', 'admin', 'can_create_group', 'website_url',
+                           'confirm']
+
+    def _data_for_gitlab(self, extra_parameters={}):
+        if hasattr(self, 'confirm'):
+            self.confirm = str(self.confirm).lower()
+        return super(User, self)._data_for_gitlab(extra_parameters)
 
     def Key(self, id=None, **kwargs):
         return UserKey._get_list_or_object(self.gitlab, id,
