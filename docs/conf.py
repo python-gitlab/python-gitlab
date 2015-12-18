@@ -20,6 +20,7 @@ import sys
 
 import sphinx
 
+sys.path.append('../')
 import gitlab
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
@@ -116,7 +117,7 @@ pygments_style = 'sphinx'
 # a list of builtin themes.
 html_theme = 'default'
 if not on_rtd: # only import and set the theme if we're building docs locally
-    try: 
+    try:
         import sphinx_rtd_theme
         html_theme = 'sphinx_rtd_theme'
         html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
