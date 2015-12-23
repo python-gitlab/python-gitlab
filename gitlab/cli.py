@@ -271,7 +271,14 @@ def main():
     config_files = arg.config_file
     gitlab_id = arg.gitlab
     verbose = arg.verbose
-    action = arg.action
+
+    if hasattr(arg, "action"):
+        action = arg.action
+    else:
+        sys.stderr.write("error: an action is required\n\n")
+        parser.print_help()
+        sys.exit(1)
+
     what = arg.what
 
     # Remove CLI behavior-related args
