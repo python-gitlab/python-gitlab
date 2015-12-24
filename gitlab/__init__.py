@@ -381,7 +381,9 @@ class Gitlab(object):
             raise GitlabGetError('Missing attribute(s): %s' %
                                  ", ".join(missing))
 
-        url = self._construct_url(id_=id, obj=obj_class, parameters=kwargs)
+        sanitized_id = _sanitize(id)
+        url = self._construct_url(id_=sanitized_id, obj=obj_class,
+                                  parameters=kwargs)
         headers = self._create_headers()
 
         # Remove attributes that are used in url so that there is only
