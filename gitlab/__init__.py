@@ -892,10 +892,14 @@ class CurrentUser(GitlabObject):
 class GroupMember(GitlabObject):
     _url = '/groups/%(group_id)s/members'
     canGet = False
-    canUpdate = False
     requiredUrlAttrs = ['group_id']
     requiredCreateAttrs = ['access_level', 'user_id']
+    requiredUpdateAttrs = ['access_level']
     shortPrintAttr = 'username'
+
+    def _update(self, **kwargs):
+        self.user_id = self.id
+        super(GroupMember, self)._update(**kwargs)
 
 
 class Group(GitlabObject):
