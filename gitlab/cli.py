@@ -21,6 +21,7 @@ from __future__ import division
 from __future__ import absolute_import
 import argparse
 import inspect
+import operator
 import re
 import sys
 
@@ -256,7 +257,7 @@ def main():
                 classes.append(cls)
         except AttributeError:
             pass
-    classes.sort()
+    classes.sort(key=operator.attrgetter("__name__"))
 
     for cls in classes:
         arg_name = clsToWhat(cls)
