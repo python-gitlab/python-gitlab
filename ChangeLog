@@ -1,3 +1,20 @@
+Version 0.10
+
+ * Implement pagination for list() (#63)
+ * Fix url when fetching a single MergeRequest
+ * Add support to update MergeRequestNotes
+ * API: Provide a Gitlab.from_config method
+ * setup.py: require requests>=1 (#69)
+ * Fix deletion of object not using 'id' as ID (#68)
+ * Fix GET/POST for project files
+ * Make 'confirm' an optional attribute for user creation
+ * Python 3 compatibility fixes
+ * Add support for group members update (#73)
+
+Version 0.9.2
+
+ * CLI: fix the update and delete subcommands (#62)
+
 Version 0.9.1
 
  * Fix the setup.py script
