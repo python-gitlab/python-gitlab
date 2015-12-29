@@ -23,6 +23,25 @@ cleanup() {
 }
 trap cleanup EXIT
 
+PY_VER=2
+while getopts :p: opt "$@"; do
+    case $opt in
+        p)
+            PY_VER=$OPTARG;;
+        *)
+            echo "Unknown option: $opt"
+            exit 1;;
+    esac
+done
+
+case $PY_VER in
+    2) VENV_CMD=virtualenv;;
+    3) VENV_CMD=pyvenv;;
+    *)
+        echo "Wrong python version (2 or 3)"
+        exit 1;;
+esac
+
 docker run --name gitlab-test --detach --publish 8080:80 --publish 2222:22 genezys/gitlab:latest >/dev/null 2>&1
 
 LOGIN='root'
@@ -31,7 +50,7 @@ CONFIG=/tmp/python-gitlab.cfg
 GITLAB="gitlab --config-file $CONFIG"
 VENV=$(pwd)/.venv
 
-virtualenv $VENV
+$VENV_CMD $VENV
 . $VENV/bin/activate
 pip install -rrequirements.txt
 pip install -e .
@@ -55,7 +74,7 @@ $OK
 TOKEN=$(curl -s http://localhost:8080/api/v3/session \
     -X POST \
     --data "login=$LOGIN&password=$PASSWORD" \
-    | python -c 'import sys, json; print json.load(sys.stdin)["private_token"]')
+    | python -c 'import sys, json; print(json.load(sys.stdin)["private_token"])')
 
 cat > $CONFIG << EOF
 [global]
