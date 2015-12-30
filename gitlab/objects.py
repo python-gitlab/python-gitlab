@@ -681,6 +681,22 @@ class ProjectCommitManager(BaseManager):
     obj_cls = ProjectCommit
 
 
+class ProjectCommitStatus(GitlabObject):
+    _url = '/projects/%(project_id)s/statuses/%(commit_id)s'
+    canUpdate = False
+    canDelete = False
+    requiredUrlAttrs = ['project_id', 'commit_id']
+    requiredCreateAttrs = ['state']
+    optionalCreateAttrs = ['description', 'name', 'ref', 'target_url']
+    requiredGetAttrs = []
+    requiredUpdateAttrs = []
+    requiredDeleteAttrs = []
+
+
+class ProjectCommitStatusManager(BaseManager):
+    obj_cls = ProjectCommitStatus
+
+
 class ProjectKey(GitlabObject):
     _url = '/projects/%(project_id)s/keys'
     canUpdate = False
@@ -961,6 +977,7 @@ class Project(GitlabObject):
     managers = [
         ('branches', ProjectBranchManager, [('project_id', 'id')]),
         ('commits', ProjectCommitManager, [('project_id', 'id')]),
+        ('commitstatuses', ProjectCommitStatusManager, [('project_id', 'id')]),
         ('events', ProjectEventManager, [('project_id', 'id')]),
         ('files', ProjectFileManager, [('project_id', 'id')]),
         ('forks', ProjectForkManager, [('project_id', 'id')]),
