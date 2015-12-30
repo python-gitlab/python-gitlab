@@ -241,7 +241,7 @@ def main():
     parser.add_argument("-c", "--config-file", action='append',
                         help=("Configuration file to use. Can be used "
                               "multiple times."))
-    parser.add_argument("--gitlab",
+    parser.add_argument("-g", "--gitlab",
                         help=("Which configuration section should "
                               "be used. If not defined, the default selection "
                               "will be used."),
