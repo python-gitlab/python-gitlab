@@ -170,7 +170,7 @@ def do_list(cls, gl, what, args):
 
 
 def do_get(cls, gl, what, args):
-    if not cls.canGet:
+    if cls.canGet is False:
         die("%s objects can't be retrieved" % what)
 
     id = None
@@ -178,7 +178,7 @@ def do_get(cls, gl, what, args):
         id = get_id(cls, args)
 
     try:
-        o = cls(gl, id, **args)
+        o = cls.get(gl, id, **args)
     except Exception as e:
         die("Impossible to get object (%s)" % str(e))
 

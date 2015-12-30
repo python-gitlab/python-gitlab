@@ -696,11 +696,23 @@ class GitlabObject(object):
         return gl.list(cls, **kwargs)
 
     @classmethod
+    def get(cls, gl, id, **kwargs):
+        if cls.canGet is True:
+            return cls(gl, id, **kwargs)
+        elif cls.canGet == 'from_list':
+            for obj in cls.list(gl, **kwargs):
+                obj_id = getattr(obj, obj.idAttr)
+                if str(obj_id) == str(id):
+                    return obj
+
+            raise GitlabGetError("Object not found")
+
+    @classmethod
     def _get_list_or_object(cls, gl, id, **kwargs):
         if id is None and cls.getListWhenNoId:
             return cls.list(gl, **kwargs)
         else:
-            return cls(gl, id, **kwargs)
+            return cls.get(gl, id, **kwargs)
 
     def _get_object(self, k, v):
         if self._constructorTypes and k in self._constructorTypes:
@@ -834,7 +846,7 @@ class GitlabObject(object):
 
 class UserKey(GitlabObject):
     _url = '/users/%(user_id)s/keys'
-    canGet = False
+    canGet = 'from_list'
     canUpdate = False
     requiredUrlAttrs = ['user_id']
     requiredCreateAttrs = ['title', 'key']
@@ -882,7 +894,7 @@ class CurrentUser(GitlabObject):
 
 class GroupMember(GitlabObject):
     _url = '/groups/%(group_id)s/members'
-    canGet = False
+    canGet = 'from_list'
     requiredUrlAttrs = ['group_id']
     requiredCreateAttrs = ['access_level', 'user_id']
     requiredUpdateAttrs = ['access_level']
@@ -928,7 +940,7 @@ class Issue(GitlabObject):
     _url = '/issues'
     _constructorTypes = {'author': 'User', 'assignee': 'User',
                          'milestone': 'ProjectMilestone'}
-    canGet = False
+    canGet = 'from_list'
     canDelete = False
     canUpdate = False
     canCreate = False
@@ -997,7 +1009,7 @@ class ProjectKey(GitlabObject):
 
 class ProjectEvent(GitlabObject):
     _url = '/projects/%(project_id)s/events'
-    canGet = False
+    canGet = 'from_list'
     canDelete = False
     canUpdate = False
     canCreate = False
@@ -1073,7 +1085,7 @@ class ProjectNote(GitlabObject):
 class ProjectTag(GitlabObject):
     _url = '/projects/%(project_id)s/repository/tags'
     idAttr = 'name'
-    canGet = False
+    canGet = 'from_list'
     canDelete = False
     canUpdate = False
     requiredUrlAttrs = ['project_id']
