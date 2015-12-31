@@ -221,12 +221,6 @@ class Gitlab(object):
             request_headers['Content-type'] = content_type
         return request_headers
 
-    def setToken(self, token):
-        """(DEPRECATED) Sets the private token for authentication."""
-        warnings.warn("setToken is deprecated, use set_token instead",
-                      DeprecationWarning)
-        self.set_token(token)
-
     def set_token(self, token):
         """Sets the private token for authentication."""
         self.private_token = token if token else None
@@ -235,21 +229,10 @@ class Gitlab(object):
         elif "PRIVATE-TOKEN" in self.headers:
             del self.headers["PRIVATE-TOKEN"]
 
-    def setCredentials(self, email, password):
-        """(DEPRECATED) Sets the login and password for authentication."""
-        warnings.warn("setCredential is deprecated, use set_credentials "
-                      "instead",
-                      DeprecationWarning)
-        self.set_credentials(email, password)
-
     def set_credentials(self, email, password):
         """Sets the email/login and password for authentication."""
         self.email = email
         self.password = password
-
-    def rawGet(self, path, content_type=None, **kwargs):
-        warnings.warn("rawGet is deprecated", DeprecationWarning)
-        return self._raw_get(path, content_type, **kwargs)
 
     def _raw_get(self, path, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
@@ -265,10 +248,6 @@ class Gitlab(object):
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
 
-    def rawPost(self, path, data=None, content_type=None, **kwargs):
-        warnings.warn("rawPost is deprecated", DeprecationWarning)
-        return self._raw_post(path, data, content_type, **kwargs)
-
     def _raw_post(self, path, data=None, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
         headers = self._create_headers(content_type)
@@ -280,10 +259,6 @@ class Gitlab(object):
         except Exception:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
-
-    def rawPut(self, path, data=None, content_type=None, **kwargs):
-        warnings.warn("rawPut is deprecated", DeprecationWarning)
-        return self._raw_put(path, data, content_type, **kwargs)
 
     def _raw_put(self, path, data=None, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
@@ -297,10 +272,6 @@ class Gitlab(object):
         except Exception:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % self._url)
-
-    def rawDelete(self, path, content_type=None, **kwargs):
-        warnings.warn("rawDelete is deprecated", DeprecationWarning)
-        return self._raw_delete(path, content_type, **kwargs)
 
     def _raw_delete(self, path, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
