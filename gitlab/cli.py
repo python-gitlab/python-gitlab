@@ -149,8 +149,7 @@ def do_create(cls, gl, what, args):
         die("%s objects can't be created" % what)
 
     try:
-        o = cls(gl, args)
-        o.save()
+        o = cls.create(gl, args)
     except Exception as e:
         die("Impossible to create object (%s)" % str(e))
 

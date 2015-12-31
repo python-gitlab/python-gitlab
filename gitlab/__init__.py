@@ -761,6 +761,16 @@ class GitlabObject(object):
 
         return self.gitlab.delete(self, **kwargs)
 
+    @classmethod
+    def create(cls, gl, data, **kwargs):
+        if not cls.canCreate:
+            raise NotImplementedError
+
+        obj = cls(gl, data, **kwargs)
+        obj.save()
+
+        return obj
+
     def __init__(self, gl, data=None, **kwargs):
         self._created = False
         self.gitlab = gl
