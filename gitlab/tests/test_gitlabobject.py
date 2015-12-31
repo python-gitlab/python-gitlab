@@ -182,7 +182,7 @@ class TestGitLabObject(unittest.TestCase):
 
     def test_get_list_or_object_cant_get(self):
         with HTTMock(resp_get_issue):
-            gl_object = Issue(self.gl, data={"name": "name"})
+            gl_object = UserProject(self.gl, data={"name": "name"})
             self.assertRaises(NotImplementedError,
                               gl_object._get_list_or_object,
                               self.gl, id=1)
@@ -245,7 +245,7 @@ class TestGitLabObject(unittest.TestCase):
                                   "password": "password", "id": 1,
                                   "username": "username"})
         self.assertEqual(obj.name, "testname")
-        obj._created = True
+        obj._from_api = True
         obj.name = "newname"
         with HTTMock(resp_update_user):
             obj.save()
@@ -259,7 +259,7 @@ class TestGitLabObject(unittest.TestCase):
 
     def test_delete(self):
         obj = Group(self.gl, data={"name": "testname", "id": 1})
-        obj._created = True
+        obj._from_api = True
         with HTTMock(resp_delete_group):
             data = obj.delete()
             self.assertIs(data, True)

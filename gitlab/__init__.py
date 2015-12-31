@@ -351,9 +351,9 @@ class Gitlab(object):
 
         cls_kwargs = kwargs.copy()
 
-        # Add _created manually, because we are not creating objects
+        # Add _from_api manually, because we are not creating objects
         # through normal path
-        cls_kwargs['_created'] = True
+        cls_kwargs['_from_api'] = True
 
         get_all_results = params.get('all', False)
 
@@ -536,7 +536,7 @@ class Gitlab(object):
         l = []
         for o in r.json():
             p = Project(self, o)
-            p._created = True
+            p._from_api = True
             l.append(p)
 
         return l
@@ -737,7 +737,7 @@ class GitlabObject(object):
 
         json = self.gitlab.create(self, **kwargs)
         self._set_from_dict(json)
-        self._created = True
+        self._from_api = True
 
     def _update(self, **kwargs):
         if not self.canUpdate:
@@ -747,7 +747,7 @@ class GitlabObject(object):
         self._set_from_dict(json)
 
     def save(self, **kwargs):
-        if self._created:
+        if self._from_api:
             self._update(**kwargs)
         else:
             self._create(**kwargs)
@@ -756,7 +756,7 @@ class GitlabObject(object):
         if not self.canDelete:
             raise NotImplementedError
 
-        if not self._created:
+        if not self._from_api:
             raise GitlabDeleteError("Object not yet created")
 
         return self.gitlab.delete(self, **kwargs)
@@ -772,7 +772,7 @@ class GitlabObject(object):
         return obj
 
     def __init__(self, gl, data=None, **kwargs):
-        self._created = False
+        self._from_api = False
         self.gitlab = gl
 
         if (data is None or isinstance(data, six.integer_types) or
@@ -780,8 +780,7 @@ class GitlabObject(object):
             if not self.canGet:
                 raise NotImplementedError
             data = self.gitlab.get(self.__class__, data, **kwargs)
-            # Object is created because we got it from api
-            self._created = True
+            self._from_api = True
 
         self._set_from_dict(data)
 

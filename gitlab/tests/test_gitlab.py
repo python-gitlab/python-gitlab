@@ -337,7 +337,7 @@ class TestGitLabMethods(unittest.TestCase):
 
     def test_delete_unknown_path(self):
         obj = Project(self.gl, data={"name": "testname", "id": 1})
-        obj._created = True
+        obj._from_api = True
 
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects/1",
                   method="delete")
@@ -398,7 +398,7 @@ class TestGitLabMethods(unittest.TestCase):
         obj = User(self.gl, data={"email": "email", "password": "password",
                                   "username": "username", "name": "name",
                                   "can_create_group": True})
-        obj._created = True
+        obj._from_api = True
 
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects/1",
                   method="delete")
