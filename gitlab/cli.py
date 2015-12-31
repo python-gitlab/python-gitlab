@@ -246,7 +246,9 @@ def main():
                               "will be used."),
                         required=False)
 
-    subparsers = parser.add_subparsers(dest='what')
+    subparsers = parser.add_subparsers(title='object', dest='what',
+                                       help="Object to manipulate.")
+    subparsers.required = True
 
     # populate argparse for all Gitlab Object
     classes = []
@@ -262,8 +264,10 @@ def main():
         arg_name = clsToWhat(cls)
         object_group = subparsers.add_parser(arg_name)
 
-        object_subparsers = object_group.add_subparsers(dest='action')
+        object_subparsers = object_group.add_subparsers(
+            dest='action', help="Action to execute.")
         populate_sub_parser_by_class(cls, object_subparsers)
+        object_subparsers.required = True
 
     arg = parser.parse_args()
     args = arg.__dict__
