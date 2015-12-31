@@ -677,15 +677,19 @@ class TestGitLab(unittest.TestCase):
             self.assertEqual(data.id, 1)
 
     def test_Issue(self):
-        @urlmatch(scheme="http", netloc="localhost", path="/api/v3/issues/1",
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v3/issues",
                   method="get")
         def resp_get_issue(url, request):
             headers = {'content-type': 'application/json'}
-            content = '{"name": "name", "id": 1}'.encode("utf-8")
+            content = ('[{"name": "name", "id": 1}, '
+                       '{"name": "other_name", "id": 2}]')
+            content = content.encode("utf-8")
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_get_issue):
-            self.assertRaises(NotImplementedError, self.gl.Issue, id=1)
+            data = self.gl.Issue(id=2)
+            self.assertEqual(data.id, 2)
+            self.assertEqual(data.name, 'other_name')
 
     def test_User(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/users/1",

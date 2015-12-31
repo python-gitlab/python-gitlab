@@ -697,7 +697,9 @@ class GitlabObject(object):
 
     @classmethod
     def get(cls, gl, id, **kwargs):
-        if cls.canGet is True:
+        if cls.canGet is False:
+            raise NotImplementedError
+        elif cls.canGet is True:
             return cls(gl, id, **kwargs)
         elif cls.canGet == 'from_list':
             for obj in cls.list(gl, **kwargs):
