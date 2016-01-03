@@ -32,9 +32,7 @@ https://github.com/gpocentek/python-gitlab/issues
 
 ## Documentation
 
-Work In Progress: http://python-gitlab.readthedocs.org/en/latest/
-
-Patches are welcome!
+See http://python-gitlab.readthedocs.org/en/stable/
 
 ## Code snippet
 
