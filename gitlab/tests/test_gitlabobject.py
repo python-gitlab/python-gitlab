@@ -143,7 +143,7 @@ def resp_protect_branch_fail(url, request):
     return response(400, content, headers, None, 5, request)
 
 
-class TestGitLabObject(unittest.TestCase):
+class TestGitlabObject(unittest.TestCase):
 
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",

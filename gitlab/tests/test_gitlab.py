@@ -30,7 +30,7 @@ from httmock import urlmatch  # noqa
 from gitlab import *  # noqa
 
 
-class TestGitLabRawMethods(unittest.TestCase):
+class TestGitlabRawMethods(unittest.TestCase):
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
                          email="testuser@test.com", password="testpassword",
@@ -154,7 +154,7 @@ class TestGitLabRawMethods(unittest.TestCase):
             self.assertEqual(resp.status_code, 404)
 
 
-class TestGitLabMethods(unittest.TestCase):
+class TestGitlabMethods(unittest.TestCase):
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
                          email="testuser@test.com", password="testpassword",
@@ -503,7 +503,7 @@ class TestGitLabMethods(unittest.TestCase):
             self.assertRaises(GitlabUpdateError, self.gl.update, obj)
 
 
-class TestGitLab(unittest.TestCase):
+class TestGitlab(unittest.TestCase):
 
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
