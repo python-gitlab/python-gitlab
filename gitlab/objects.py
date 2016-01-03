@@ -44,29 +44,28 @@ class BaseManager(object):
         self.args = args
         self.parent = parent
 
-    def get(self, id, **kwargs):
+        if self.obj_cls is None:
+            raise AttributeError("obj_cls must be defined")
+
+    def _set_parent_args(self, **kwargs):
         if self.parent is not None:
             for attr, parent_attr in self.args:
                 kwargs.setdefault(attr, getattr(self.parent, parent_attr))
 
+    def get(self, id, **kwargs):
+        self._set_parent_args(**kwargs)
         if not self.obj_cls.canGet:
             raise NotImplementedError
         return self.obj_cls.get(self.gitlab, id, **kwargs)
 
     def list(self, **kwargs):
-        if self.parent is not None:
-            for attr, parent_attr in self.args:
-                kwargs.setdefault(attr, getattr(self.parent, parent_attr))
-
+        self._set_parent_args(**kwargs)
         if not self.obj_cls.canList:
             raise NotImplementedError
         return self.obj_cls.list(self.gitlab, **kwargs)
 
     def create(self, data, **kwargs):
-        if self.parent is not None:
-            for attr, parent_attr in self.args:
-                kwargs.setdefault(attr, getattr(self.parent, parent_attr))
-
+        self._set_parent_args(**kwargs)
         if not self.obj_cls.canCreate:
             raise NotImplementedError
         return self.obj_cls.create(self.gitlab, data, **kwargs)
