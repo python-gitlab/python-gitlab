@@ -294,7 +294,7 @@ class GitlabObject(object):
         id = self.__dict__[self.idAttr]
         print("%s%s: %s" % (" " * depth * 2, self.idAttr, id))
         for k in sorted(self.__dict__.keys()):
-            if k == self.idAttr or k == 'id':
+            if k in (self.idAttr, 'id', 'gitlab'):
                 continue
             if k[0] == '_':
                 continue
@@ -309,6 +309,8 @@ class GitlabObject(object):
                     v.pretty_print(1)
                 else:
                     print("%s: %s" % (pretty_k, v.id))
+            elif isinstance(v, BaseManager):
+                continue
             else:
                 if hasattr(v, __name__) and v.__name__ == 'Gitlab':
                     continue
