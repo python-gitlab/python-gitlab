@@ -11,8 +11,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   usage
    cli
+   usage
    api/gitlab
 
 
