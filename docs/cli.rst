@@ -6,6 +6,8 @@
 with GitLab servers. It uses a configuration file to define how to connect to
 the servers.
 
+.. _cli_configuration:
+
 Configuration
 =============
 

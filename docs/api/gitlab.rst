@@ -1,5 +1,6 @@
-API/gitlab-module
-=================
+############################
+``gitlab`` API documentation
+############################
 
 .. automodule:: gitlab
     :members:

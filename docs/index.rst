@@ -13,7 +13,7 @@ Contents:
 
    install
    cli
-   usage
+   api-usage
    api/gitlab
 
 
