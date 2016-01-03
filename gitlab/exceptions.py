@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 class GitlabError(Exception):
     def __init__(self, error_message="", response_code=None,
                  response_body=None):

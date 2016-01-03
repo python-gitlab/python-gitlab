@@ -78,6 +78,35 @@ class Gitlab(object):
         #: (Passed to requests-library)
         self.ssl_verify = ssl_verify
 
+        self.user_keys = UserKeyManager(self)
+        self.users = UserManager(self)
+        self.group_members = GroupMemberManager(self)
+        self.groups = GroupManager(self)
+        self.hooks = HookManager(self)
+        self.issues = IssueManager(self)
+        self.project_branches = ProjectBranchManager(self)
+        self.project_commits = ProjectCommitManager(self)
+        self.project_keys = ProjectKeyManager(self)
+        self.project_events = ProjectEventManager(self)
+        self.project_hooks = ProjectHookManager(self)
+        self.project_issue_notes = ProjectIssueNoteManager(self)
+        self.project_issues = ProjectIssueManager(self)
+        self.project_members = ProjectMemberManager(self)
+        self.project_notes = ProjectNoteManager(self)
+        self.project_tags = ProjectTagManager(self)
+        self.project_mergerequest_notes = ProjectMergeRequestNoteManager(self)
+        self.project_mergerequests = ProjectMergeRequestManager(self)
+        self.project_milestones = ProjectMilestoneManager(self)
+        self.project_labels = ProjectLabelManager(self)
+        self.project_files = ProjectFileManager(self)
+        self.project_snippet_notes = ProjectSnippetNoteManager(self)
+        self.project_snippets = ProjectSnippetManager(self)
+        self.user_projects = UserProjectManager(self)
+        self.projects = ProjectManager(self)
+        self.team_members = TeamMemberManager(self)
+        self.team_projects = TeamProjectManager(self)
+        self.teams = TeamManager(self)
+
     @staticmethod
     def from_config(gitlab_id=None, config_files=None):
         config = gitlab.config.GitlabConfigParser(gitlab_id=gitlab_id,

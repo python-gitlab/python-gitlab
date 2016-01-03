@@ -36,6 +36,42 @@ class jsonEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
+class BaseManager(object):
+    obj_cls = None
+
+    def __init__(self, gl, parent=None, args=[]):
+        self.gitlab = gl
+        self.args = args
+        self.parent = parent
+
+    def get(self, id, **kwargs):
+        if self.parent is not None:
+            for attr, parent_attr in self.args:
+                kwargs.setdefault(attr, getattr(self.parent, parent_attr))
+
+        if not self.obj_cls.canGet:
+            raise NotImplementedError
+        return self.obj_cls.get(self.gitlab, id, **kwargs)
+
+    def list(self, **kwargs):
+        if self.parent is not None:
+            for attr, parent_attr in self.args:
+                kwargs.setdefault(attr, getattr(self.parent, parent_attr))
+
+        if not self.obj_cls.canList:
+            raise NotImplementedError
+        return self.obj_cls.list(self.gitlab, **kwargs)
+
+    def create(self, data, **kwargs):
+        if self.parent is not None:
+            for attr, parent_attr in self.args:
+                kwargs.setdefault(attr, getattr(self.parent, parent_attr))
+
+        if not self.obj_cls.canCreate:
+            raise NotImplementedError
+        return self.obj_cls.create(self.gitlab, data, **kwargs)
+
+
 class GitlabObject(object):
     """Base class for all classes that interface with GitLab
 
@@ -84,6 +120,8 @@ class GitlabObject(object):
     optionalUpdateAttrs = None
     #: Whether the object ID is required in the GET url
     getRequiresId = True
+    #: List of managers to create
+    managers = []
 
     idAttr = 'id'
     shortPrintAttr = None
@@ -209,6 +247,13 @@ class GitlabObject(object):
         if not hasattr(self, "id"):
             self.id = None
 
+        self._set_managers()
+
+    def _set_managers(self):
+        for var, cls, attrs in self.managers:
+            manager = cls(self.gitlab, self, attrs)
+            setattr(self, var, manager)
+
     def __str__(self):
         return '%s => %s' % (type(self), str(self.__dict__))
 
@@ -282,6 +327,10 @@ class UserKey(GitlabObject):
     requiredCreateAttrs = ['title', 'key']
 
 
+class UserKeyManager(BaseManager):
+    obj_cls = UserKey
+
+
 class User(GitlabObject):
     _url = '/users'
     shortPrintAttr = 'username'
@@ -291,6 +340,7 @@ class User(GitlabObject):
                            'projects_limit', 'extern_uid', 'provider',
                            'bio', 'admin', 'can_create_group', 'website_url',
                            'confirm']
+    managers = [('keys', UserKeyManager, [('user_id', 'id')])]
 
     def _data_for_gitlab(self, extra_parameters={}):
         if hasattr(self, 'confirm'):
@@ -298,9 +348,15 @@ class User(GitlabObject):
         return super(User, self)._data_for_gitlab(extra_parameters)
 
     def Key(self, id=None, **kwargs):
+        warnings.warn("`Key` is deprecated, use `keys` instead",
+                      DeprecationWarning)
         return UserKey._get_list_or_object(self.gitlab, id,
                                            user_id=self.id,
                                            **kwargs)
+
+
+class UserManager(BaseManager):
+    obj_cls = User
 
 
 class CurrentUserKey(GitlabObject):
@@ -310,6 +366,10 @@ class CurrentUserKey(GitlabObject):
     requiredCreateAttrs = ['title', 'key']
 
 
+class CurrentUserKeyManager(BaseManager):
+    obj_cls = CurrentUserKey
+
+
 class CurrentUser(GitlabObject):
     _url = '/user'
     canList = False
@@ -317,8 +377,11 @@ class CurrentUser(GitlabObject):
     canUpdate = False
     canDelete = False
     shortPrintAttr = 'username'
+    managers = [('keys', CurrentUserKeyManager, [('user_id', 'id')])]
 
     def Key(self, id=None, **kwargs):
+        warnings.warn("`Key` is deprecated, use `keys` instead",
+                      DeprecationWarning)
         return CurrentUserKey._get_list_or_object(self.gitlab, id, **kwargs)
 
 
@@ -335,12 +398,17 @@ class GroupMember(GitlabObject):
         super(GroupMember, self)._update(**kwargs)
 
 
+class GroupMemberManager(BaseManager):
+    obj_cls = GroupMember
+
+
 class Group(GitlabObject):
     _url = '/groups'
     canUpdate = False
     _constructorTypes = {'projects': 'Project'}
     requiredCreateAttrs = ['name', 'path']
     shortPrintAttr = 'name'
+    managers = [('members', GroupMemberManager, [('group_id', 'id')])]
 
     GUEST_ACCESS = 10
     REPORTER_ACCESS = 20
@@ -349,6 +417,8 @@ class Group(GitlabObject):
     OWNER_ACCESS = 50
 
     def Member(self, id=None, **kwargs):
+        warnings.warn("`Member` is deprecated, use `members` instead",
+                      DeprecationWarning)
         return GroupMember._get_list_or_object(self.gitlab, id,
                                                group_id=self.id,
                                                **kwargs)
@@ -359,11 +429,19 @@ class Group(GitlabObject):
         raise_error_from_response(r, GitlabTransferProjectError, 201)
 
 
+class GroupManager(BaseManager):
+    obj_cls = Group
+
+
 class Hook(GitlabObject):
     _url = '/hooks'
     canUpdate = False
     requiredCreateAttrs = ['url']
     shortPrintAttr = 'url'
+
+
+class HookManager(BaseManager):
+    obj_cls = Hook
 
 
 class Issue(GitlabObject):
@@ -375,6 +453,10 @@ class Issue(GitlabObject):
     canUpdate = False
     canCreate = False
     shortPrintAttr = 'title'
+
+
+class IssueManager(BaseManager):
+    obj_cls = Issue
 
 
 class ProjectBranch(GitlabObject):
@@ -403,6 +485,10 @@ class ProjectBranch(GitlabObject):
         self.protect(False, **kwargs)
 
 
+class ProjectBranchManager(BaseManager):
+    obj_cls = ProjectBranch
+
+
 class ProjectCommit(GitlabObject):
     _url = '/projects/%(project_id)s/repository/commits'
     canDelete = False
@@ -424,10 +510,13 @@ class ProjectCommit(GitlabObject):
                {'project_id': self.project_id, 'commit_id': self.id})
         url += '?filepath=%s' % filepath
         r = self.gitlab._raw_get(url, **kwargs)
-
         raise_error_from_response(r, GitlabGetError)
 
         return r.content
+
+
+class ProjectCommitManager(BaseManager):
+    obj_cls = ProjectCommit
 
 
 class ProjectKey(GitlabObject):
@@ -435,6 +524,10 @@ class ProjectKey(GitlabObject):
     canUpdate = False
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['title', 'key']
+
+
+class ProjectKeyManager(BaseManager):
+    obj_cls = ProjectKey
 
 
 class ProjectEvent(GitlabObject):
@@ -447,6 +540,10 @@ class ProjectEvent(GitlabObject):
     shortPrintAttr = 'target_title'
 
 
+class ProjectEventManager(BaseManager):
+    obj_cls = ProjectEvent
+
+
 class ProjectHook(GitlabObject):
     _url = '/projects/%(project_id)s/hooks'
     requiredUrlAttrs = ['project_id']
@@ -456,6 +553,10 @@ class ProjectHook(GitlabObject):
     shortPrintAttr = 'url'
 
 
+class ProjectHookManager(BaseManager):
+    obj_cls = ProjectHook
+
+
 class ProjectIssueNote(GitlabObject):
     _url = '/projects/%(project_id)s/issues/%(issue_id)s/notes'
     _constructorTypes = {'author': 'User'}
@@ -463,6 +564,10 @@ class ProjectIssueNote(GitlabObject):
     canDelete = False
     requiredUrlAttrs = ['project_id', 'issue_id']
     requiredCreateAttrs = ['body']
+
+
+class ProjectIssueNoteManager(BaseManager):
+    obj_cls = ProjectIssueNote
 
 
 class ProjectIssue(GitlabObject):
@@ -475,8 +580,9 @@ class ProjectIssue(GitlabObject):
     # FIXME: state_event is only valid with update
     optionalCreateAttrs = ['description', 'assignee_id', 'milestone_id',
                            'labels', 'state_event']
-
     shortPrintAttr = 'title'
+    managers = [('notes', ProjectIssueNoteManager,
+                 [('project_id', 'project_id'), ('issue_id', 'id')])]
 
     def _data_for_gitlab(self, extra_parameters={}):
         # Gitlab-api returns labels in a json list and takes them in a
@@ -490,10 +596,16 @@ class ProjectIssue(GitlabObject):
         return super(ProjectIssue, self)._data_for_gitlab(extra_parameters)
 
     def Note(self, id=None, **kwargs):
+        warnings.warn("`Note` is deprecated, use `notes` instead",
+                      DeprecationWarning)
         return ProjectIssueNote._get_list_or_object(self.gitlab, id,
                                                     project_id=self.project_id,
                                                     issue_id=self.id,
                                                     **kwargs)
+
+
+class ProjectIssueManager(BaseManager):
+    obj_cls = ProjectIssue
 
 
 class ProjectMember(GitlabObject):
@@ -503,6 +615,10 @@ class ProjectMember(GitlabObject):
     shortPrintAttr = 'username'
 
 
+class ProjectMemberManager(BaseManager):
+    obj_cls = ProjectMember
+
+
 class ProjectNote(GitlabObject):
     _url = '/projects/%(project_id)s/notes'
     _constructorTypes = {'author': 'User'}
@@ -510,6 +626,10 @@ class ProjectNote(GitlabObject):
     canDelete = False
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['body']
+
+
+class ProjectNoteManager(BaseManager):
+    obj_cls = ProjectNote
 
 
 class ProjectTag(GitlabObject):
@@ -524,12 +644,20 @@ class ProjectTag(GitlabObject):
     shortPrintAttr = 'name'
 
 
+class ProjectTagManager(BaseManager):
+    obj_cls = ProjectTag
+
+
 class ProjectMergeRequestNote(GitlabObject):
     _url = '/projects/%(project_id)s/merge_requests/%(merge_request_id)s/notes'
     _constructorTypes = {'author': 'User'}
     canDelete = False
     requiredUrlAttrs = ['project_id', 'merge_request_id']
     requiredCreateAttrs = ['body']
+
+
+class ProjectMergeRequestNoteManager(BaseManager):
+    obj_cls = ProjectMergeRequestNote
 
 
 class ProjectMergeRequest(GitlabObject):
@@ -540,11 +668,19 @@ class ProjectMergeRequest(GitlabObject):
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['source_branch', 'target_branch', 'title']
     optionalCreateAttrs = ['assignee_id']
+    managers = [('notes', ProjectMergeRequestNoteManager,
+                 [('project_id', 'project_id'), ('merge_request_id', 'id')])]
 
     def Note(self, id=None, **kwargs):
+        warnings.warn("`Note` is deprecated, use `notes` instead",
+                      DeprecationWarning)
         return ProjectMergeRequestNote._get_list_or_object(
             self.gitlab, id, project_id=self.project_id,
             merge_request_id=self.id, **kwargs)
+
+
+class ProjectMergeRequestManager(BaseManager):
+    obj_cls = ProjectMergeRequest
 
 
 class ProjectMilestone(GitlabObject):
@@ -556,6 +692,10 @@ class ProjectMilestone(GitlabObject):
     shortPrintAttr = 'title'
 
 
+class ProjectMilestoneManager(BaseManager):
+    obj_cls = ProjectMilestone
+
+
 class ProjectLabel(GitlabObject):
     _url = '/projects/%(project_id)s/labels'
     requiredUrlAttrs = ['project_id']
@@ -565,6 +705,10 @@ class ProjectLabel(GitlabObject):
     requiredUpdateAttrs = []
     # FIXME: new_name is only valid with update
     optionalCreateAttrs = ['new_name']
+
+
+class ProjectLabelManager(BaseManager):
+    obj_cls = ProjectLabel
 
 
 class ProjectFile(GitlabObject):
@@ -581,6 +725,10 @@ class ProjectFile(GitlabObject):
     getRequiresId = False
 
 
+class ProjectFileManager(BaseManager):
+    obj_cls = ProjectFile
+
+
 class ProjectSnippetNote(GitlabObject):
     _url = '/projects/%(project_id)s/snippets/%(snippet_id)s/notes'
     _constructorTypes = {'author': 'User'}
@@ -590,6 +738,10 @@ class ProjectSnippetNote(GitlabObject):
     requiredCreateAttrs = ['body']
 
 
+class ProjectSnippetNoteManager(BaseManager):
+    obj_cls = ProjectSnippetNote
+
+
 class ProjectSnippet(GitlabObject):
     _url = '/projects/%(project_id)s/snippets'
     _constructorTypes = {'author': 'User'}
@@ -597,6 +749,8 @@ class ProjectSnippet(GitlabObject):
     requiredCreateAttrs = ['title', 'file_name', 'code']
     optionalCreateAttrs = ['lifetime']
     shortPrintAttr = 'title'
+    managers = [('notes', ProjectSnippetNoteManager,
+                 [('project_id', 'project_id'), ('snippet_id', 'id')])]
 
     def Content(self, **kwargs):
         url = ("/projects/%(project_id)s/snippets/%(snippet_id)s/raw" %
@@ -606,6 +760,8 @@ class ProjectSnippet(GitlabObject):
         return r.content
 
     def Note(self, id=None, **kwargs):
+        warnings.warn("`Note` is deprecated, use `notes` instead",
+                      DeprecationWarning)
         return ProjectSnippetNote._get_list_or_object(
             self.gitlab, id,
             project_id=self.project_id,
@@ -613,19 +769,8 @@ class ProjectSnippet(GitlabObject):
             **kwargs)
 
 
-class UserProject(GitlabObject):
-    _url = '/projects/user/%(user_id)s'
-    _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
-    canUpdate = False
-    canDelete = False
-    canList = False
-    canGet = False
-    requiredUrlAttrs = ['user_id']
-    requiredCreateAttrs = ['name']
-    optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
-                           'merge_requests_enabled', 'wiki_enabled',
-                           'snippets_enabled', 'public', 'visibility_level',
-                           'description']
+class ProjectSnippetManager(BaseManager):
+    obj_cls = ProjectSnippet
 
 
 class Project(GitlabObject):
@@ -637,75 +782,119 @@ class Project(GitlabObject):
                            'merge_requests_enabled', 'wiki_enabled',
                            'snippets_enabled', 'public', 'visibility_level',
                            'namespace_id', 'description', 'path', 'import_url']
-
     shortPrintAttr = 'path'
+    managers = [
+        ('branches', ProjectBranchManager, [('project_id', 'id')]),
+        ('commits', ProjectCommitManager, [('project_id', 'id')]),
+        ('events', ProjectEventManager, [('project_id', 'id')]),
+        ('files', ProjectFileManager, [('project_id', 'id')]),
+        ('hooks', ProjectHookManager, [('project_id', 'id')]),
+        ('keys', ProjectKeyManager, [('project_id', 'id')]),
+        ('issues', ProjectIssueManager, [('project_id', 'id')]),
+        ('labels', ProjectLabelManager, [('project_id', 'id')]),
+        ('members', ProjectMemberManager, [('project_id', 'id')]),
+        ('mergerequests', ProjectMergeRequestManager, [('project_id', 'id')]),
+        ('milestones', ProjectMilestoneManager, [('project_id', 'id')]),
+        ('notes', ProjectNoteManager, [('project_id', 'id')]),
+        ('snippets', ProjectSnippetManager, [('project_id', 'id')]),
+        ('tags', ProjectTagManager, [('project_id', 'id')]),
+    ]
 
     def Branch(self, id=None, **kwargs):
+        warnings.warn("`Branch` is deprecated, use `branches` instead",
+                      DeprecationWarning)
         return ProjectBranch._get_list_or_object(self.gitlab, id,
                                                  project_id=self.id,
                                                  **kwargs)
 
     def Commit(self, id=None, **kwargs):
+        warnings.warn("`Commit` is deprecated, use `commits` instead",
+                      DeprecationWarning)
         return ProjectCommit._get_list_or_object(self.gitlab, id,
                                                  project_id=self.id,
                                                  **kwargs)
 
     def Event(self, id=None, **kwargs):
+        warnings.warn("`Event` is deprecated, use `events` instead",
+                      DeprecationWarning)
         return ProjectEvent._get_list_or_object(self.gitlab, id,
                                                 project_id=self.id,
                                                 **kwargs)
 
+    def File(self, id=None, **kwargs):
+        warnings.warn("`File` is deprecated, use `files` instead",
+                      DeprecationWarning)
+        return ProjectFile._get_list_or_object(self.gitlab, id,
+                                               project_id=self.id,
+                                               **kwargs)
+
     def Hook(self, id=None, **kwargs):
+        warnings.warn("`Hook` is deprecated, use `hooks` instead",
+                      DeprecationWarning)
         return ProjectHook._get_list_or_object(self.gitlab, id,
                                                project_id=self.id,
                                                **kwargs)
 
     def Key(self, id=None, **kwargs):
+        warnings.warn("`Key` is deprecated, use `keys` instead",
+                      DeprecationWarning)
         return ProjectKey._get_list_or_object(self.gitlab, id,
                                               project_id=self.id,
                                               **kwargs)
 
     def Issue(self, id=None, **kwargs):
+        warnings.warn("`Issue` is deprecated, use `issues` instead",
+                      DeprecationWarning)
         return ProjectIssue._get_list_or_object(self.gitlab, id,
                                                 project_id=self.id,
                                                 **kwargs)
 
+    def Label(self, id=None, **kwargs):
+        warnings.warn("`Label` is deprecated, use `labels` instead",
+                      DeprecationWarning)
+        return ProjectLabel._get_list_or_object(self.gitlab, id,
+                                                project_id=self.id,
+                                                **kwargs)
+
     def Member(self, id=None, **kwargs):
+        warnings.warn("`Member` is deprecated, use `members` instead",
+                      DeprecationWarning)
         return ProjectMember._get_list_or_object(self.gitlab, id,
                                                  project_id=self.id,
                                                  **kwargs)
 
     def MergeRequest(self, id=None, **kwargs):
+        warnings.warn(
+            "`MergeRequest` is deprecated, use `mergerequests` instead",
+            DeprecationWarning)
         return ProjectMergeRequest._get_list_or_object(self.gitlab, id,
                                                        project_id=self.id,
                                                        **kwargs)
 
     def Milestone(self, id=None, **kwargs):
+        warnings.warn("`Milestone` is deprecated, use `milestones` instead",
+                      DeprecationWarning)
         return ProjectMilestone._get_list_or_object(self.gitlab, id,
                                                     project_id=self.id,
                                                     **kwargs)
 
     def Note(self, id=None, **kwargs):
+        warnings.warn("`Note` is deprecated, use `notes` instead",
+                      DeprecationWarning)
         return ProjectNote._get_list_or_object(self.gitlab, id,
                                                project_id=self.id,
                                                **kwargs)
 
     def Snippet(self, id=None, **kwargs):
+        warnings.warn("`Snippet` is deprecated, use `snippets` instead",
+                      DeprecationWarning)
         return ProjectSnippet._get_list_or_object(self.gitlab, id,
                                                   project_id=self.id,
                                                   **kwargs)
 
-    def Label(self, id=None, **kwargs):
-        return ProjectLabel._get_list_or_object(self.gitlab, id,
-                                                project_id=self.id,
-                                                **kwargs)
-
-    def File(self, id=None, **kwargs):
-        return ProjectFile._get_list_or_object(self.gitlab, id,
-                                               project_id=self.id,
-                                               **kwargs)
-
     def Tag(self, id=None, **kwargs):
+        warnings.warn("`Tag` is deprecated, use `tags` instead",
+                      DeprecationWarning)
         return ProjectTag._get_list_or_object(self.gitlab, id,
                                               project_id=self.id,
                                               **kwargs)
@@ -775,6 +964,33 @@ class TeamMember(GitlabObject):
     shortPrintAttr = 'username'
 
 
+class UserProject(GitlabObject):
+    _url = '/projects/user/%(user_id)s'
+    _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
+    canUpdate = False
+    canDelete = False
+    canList = False
+    canGet = False
+    requiredUrlAttrs = ['user_id']
+    requiredCreateAttrs = ['name']
+    optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
+                           'merge_requests_enabled', 'wiki_enabled',
+                           'snippets_enabled', 'public', 'visibility_level',
+                           'description']
+
+
+class ProjectManager(BaseManager):
+    obj_cls = Project
+
+
+class UserProjectManager(BaseManager):
+    obj_cls = UserProject
+
+
+class TeamMemberManager(BaseManager):
+    obj_cls = TeamMember
+
+
 class TeamProject(GitlabObject):
     _url = '/user_teams/%(team_id)s/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
@@ -784,18 +1000,34 @@ class TeamProject(GitlabObject):
     shortPrintAttr = 'name'
 
 
+class TeamProjectManager(BaseManager):
+    obj_cls = TeamProject
+
+
 class Team(GitlabObject):
     _url = '/user_teams'
     shortPrintAttr = 'name'
     requiredCreateAttrs = ['name', 'path']
     canUpdate = False
+    managers = [
+        ('members', TeamMemberManager, [('team_id', 'id')]),
+        ('projects', TeamProjectManager, [('team_id', 'id')])
+    ]
 
     def Member(self, id=None, **kwargs):
+        warnings.warn("`Member` is deprecated, use `members` instead",
+                      DeprecationWarning)
         return TeamMember._get_list_or_object(self.gitlab, id,
                                               team_id=self.id,
                                               **kwargs)
 
     def Project(self, id=None, **kwargs):
+        warnings.warn("`Project` is deprecated, use `projects` instead",
+                      DeprecationWarning)
         return TeamProject._get_list_or_object(self.gitlab, id,
                                                team_id=self.id,
                                                **kwargs)
+
+
+class TeamManager(BaseManager):
+    obj_cls = Team
