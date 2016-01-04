@@ -522,12 +522,12 @@ class Gitlab(object):
         """
         return Team._get_list_or_object(self, id, **kwargs)
 
-    def ForkProject(self, id=None, **kwargs):
+    def ProjectFork(self, id=None, **kwargs):
         """Fork a project for a user.
 
         id must be a dict.
         """
-        return ForkProject._get_list_or_object(self, id, **kwargs)
+        return ProjectFork._get_list_or_object(self, id, **kwargs)
 
 
 def _get_display_encoding():
@@ -1313,11 +1313,10 @@ class Team(GitlabObject):
                                                team_id=self.id,
                                                **kwargs)
 
-class ForkProject(GitlabObject):
+class ProjectFork(GitlabObject):
     _url = '/projects/fork/%(project_id)s'
     canUpdate = False
     canDelete = False
     canList = False
     canGet = False
     requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['project_id']
