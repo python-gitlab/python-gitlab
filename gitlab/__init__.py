@@ -444,6 +444,13 @@ class Gitlab(object):
         """
         return UserProject._get_list_or_object(self, id, **kwargs)
 
+    def ProjectFork(self, id=None, **kwargs):
+        """Fork a project for a user.
+
+        id must be a dict.
+        """
+        return ProjectFork._get_list_or_object(self, id, **kwargs)
+
     def _list_projects(self, url, **kwargs):
         r = self._raw_get(url, **kwargs)
         raise_error_from_response(r, GitlabListError)
