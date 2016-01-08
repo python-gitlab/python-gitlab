@@ -15,12 +15,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-try:
-    import ConfigParser as configparser
-except ImportError:
-    import configparser
 import os
 
+from six.moves import configparser
 
 _DEFAULT_FILES = [
     '/etc/python-gitlab.cfg',
