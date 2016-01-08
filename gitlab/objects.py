@@ -554,6 +554,10 @@ class ProjectFork(GitlabObject):
     requiredUrlAttrs = ['project_id']
 
 
+class ProjectForkManager(BaseManager):
+    obj_cls = ProjectFork
+
+
 class ProjectHook(GitlabObject):
     _url = '/projects/%(project_id)s/hooks'
     requiredUrlAttrs = ['project_id']
@@ -798,6 +802,7 @@ class Project(GitlabObject):
         ('commits', ProjectCommitManager, [('project_id', 'id')]),
         ('events', ProjectEventManager, [('project_id', 'id')]),
         ('files', ProjectFileManager, [('project_id', 'id')]),
+        ('forks', ProjectForkManager, [('project_id', 'id')]),
         ('hooks', ProjectHookManager, [('project_id', 'id')]),
         ('keys', ProjectKeyManager, [('project_id', 'id')]),
         ('issues', ProjectIssueManager, [('project_id', 'id')]),

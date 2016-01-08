@@ -88,6 +88,7 @@ class Gitlab(object):
         self.project_commits = ProjectCommitManager(self)
         self.project_keys = ProjectKeyManager(self)
         self.project_events = ProjectEventManager(self)
+        self.project_forks = ProjectForkManager(self)
         self.project_hooks = ProjectHookManager(self)
         self.project_issue_notes = ProjectIssueNoteManager(self)
         self.project_issues = ProjectIssueManager(self)
@@ -450,13 +451,6 @@ class Gitlab(object):
                       "use `user_projects` instead",
                       DeprecationWarning)
         return UserProject._get_list_or_object(self, id, **kwargs)
-
-    def ProjectFork(self, id=None, **kwargs):
-        """Fork a project for a user.
-
-        id must be a dict.
-        """
-        return ProjectFork._get_list_or_object(self, id, **kwargs)
 
     def _list_projects(self, url, **kwargs):
         r = self._raw_get(url, **kwargs)
