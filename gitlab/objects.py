@@ -545,6 +545,15 @@ class ProjectEventManager(BaseManager):
     obj_cls = ProjectEvent
 
 
+class ProjectFork(GitlabObject):
+    _url = '/projects/fork/%(project_id)s'
+    canUpdate = False
+    canDelete = False
+    canList = False
+    canGet = False
+    requiredUrlAttrs = ['project_id']
+
+
 class ProjectHook(GitlabObject):
     _url = '/projects/%(project_id)s/hooks'
     requiredUrlAttrs = ['project_id']
@@ -954,6 +963,25 @@ class Project(GitlabObject):
         url += ("?file_path=%s&branch_name=%s&commit_message=%s" %
                 (path, branch, message))
         r = self.gitlab._raw_delete(url, **kwargs)
+        raise_error_from_response(r, GitlabDeleteError)
+
+    def create_fork_relation(self, forked_from_id):
+        """Create a forked from/to relation between existing projects.
+
+        Args:
+            forked_from_id (int): The ID of the project that was forked from
+
+        Raises:
+            GitlabCreateError: Operation failed
+            GitlabConnectionError: Connection to GitLab-server failed
+        """
+        url = "/projects/%s/fork/%s" % (self.id, forked_from_id)
+        r = self.gitlab._raw_post(url)
+        raise_error_from_response(r, GitlabCreateError, 201)
+
+    def delete_fork_relation(self):
+        url = "/projects/%s/fork" % self.id
+        r = self.gitlab._raw_delete(url)
         raise_error_from_response(r, GitlabDeleteError)
 
 
