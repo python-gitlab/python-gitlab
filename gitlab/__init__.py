@@ -421,6 +421,8 @@ class Gitlab(object):
         object is NOT saved on the server. Use the save() method on the object
         to write it on the server.
         """
+        warnings.warn("`Hook` is deprecated, use `hooks` instead",
+                      DeprecationWarning)
         return Hook._get_list_or_object(self, id, **kwargs)
 
     def Project(self, id=None, **kwargs):
@@ -435,6 +437,8 @@ class Gitlab(object):
         object is NOT saved on the server. Use the save() method on the object
         to write it on the server.
         """
+        warnings.warn("`Project` is deprecated, use `projects` instead",
+                      DeprecationWarning)
         return Project._get_list_or_object(self, id, **kwargs)
 
     def UserProject(self, id=None, **kwargs):
@@ -442,6 +446,9 @@ class Gitlab(object):
 
         id must be a dict.
         """
+        warnings.warn("`UserProject` is deprecated, "
+                      "use `user_projects` instead",
+                      DeprecationWarning)
         return UserProject._get_list_or_object(self, id, **kwargs)
 
     def _list_projects(self, url, **kwargs):
@@ -484,6 +491,8 @@ class Gitlab(object):
                 save() method on the object to write it on the server.
             kwargs: Arbitrary keyword arguments
         """
+        warnings.warn("`Group` is deprecated, use `groups` instead",
+                      DeprecationWarning)
         return Group._get_list_or_object(self, id, **kwargs)
 
     def Issue(self, id=None, **kwargs):
@@ -492,6 +501,8 @@ class Gitlab(object):
         Does not support creation or getting a single issue unlike other
         methods in this class yet.
         """
+        warnings.warn("`Issue` is deprecated, use `issues` instead",
+                      DeprecationWarning)
         return Issue._get_list_or_object(self, id, **kwargs)
 
     def User(self, id=None, **kwargs):
@@ -506,6 +517,8 @@ class Gitlab(object):
         object is NOT saved on the server. Use the save() method on the object
         to write it on the server.
         """
+        warnings.warn("`User` is deprecated, use `users` instead",
+                      DeprecationWarning)
         return User._get_list_or_object(self, id, **kwargs)
 
     def Team(self, id=None, **kwargs):
@@ -520,4 +533,6 @@ class Gitlab(object):
         object is NOT saved on the server. Use the save() method on the object
         to write it on the server.
         """
+        warnings.warn("`Team` is deprecated, use `teams` instead",
+                      DeprecationWarning)
         return Team._get_list_or_object(self, id, **kwargs)
