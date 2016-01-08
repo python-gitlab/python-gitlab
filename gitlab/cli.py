@@ -66,8 +66,7 @@ def clsToWhat(cls):
 def populate_sub_parser_by_class(cls, sub_parser):
     for action_name in ACTIONS:
         attr = 'can' + action_name.capitalize()
-        y = getattr(cls, attr) or getattr(gitlab.GitlabObject, attr)
-        if not y:
+        if not getattr(cls, attr):
             continue
         sub_parser_action = sub_parser.add_parser(action_name)
         [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
