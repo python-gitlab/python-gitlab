@@ -469,14 +469,23 @@ class Gitlab(object):
 
         Returns a list of matching projects.
         """
+        warnings.warn("`search_projects()` is deprecated, "
+                      "use `projects.search()` instead",
+                      DeprecationWarning)
         return self._list_projects("/projects/search/" + query, **kwargs)
 
     def all_projects(self, **kwargs):
         """Lists all the projects (need admin rights)."""
+        warnings.warn("`all_projects()` is deprecated, "
+                      "use `projects.all()` instead",
+                      DeprecationWarning)
         return self._list_projects("/projects/all", **kwargs)
 
     def owned_projects(self, **kwargs):
         """Lists owned projects."""
+        warnings.warn("`owned_projects()` is deprecated, "
+                      "use `projects.owned()` instead",
+                      DeprecationWarning)
         return self._list_projects("/projects/owned", **kwargs)
 
     def Group(self, id=None, **kwargs):

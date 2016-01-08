@@ -145,3 +145,72 @@ class TestGitlabManager(unittest.TestCase):
             self.assertIsInstance(fake_obj, FakeObject)
             self.assertEqual(fake_obj.id, 1)
             self.assertEqual(fake_obj.name, "fake_name")
+
+    def test_project_manager_owned(self):
+        mgr = ProjectManager(self.gitlab)
+
+        @urlmatch(scheme="http", netloc="localhost",
+                  path="/api/v3/projects/owned", method="get")
+        def resp_get_all(url, request):
+            headers = {'content-type': 'application/json'}
+            content = ('[{"name": "name1", "id": 1}, '
+                       '{"name": "name2", "id": 2}]')
+            content = content.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_get_all):
+            data = mgr.owned()
+            self.assertEqual(type(data), list)
+            self.assertEqual(2, len(data))
+            self.assertEqual(type(data[0]), Project)
+            self.assertEqual(type(data[1]), Project)
+            self.assertEqual(data[0].name, "name1")
+            self.assertEqual(data[1].name, "name2")
+            self.assertEqual(data[0].id, 1)
+            self.assertEqual(data[1].id, 2)
+
+    def test_project_manager_all(self):
+        mgr = ProjectManager(self.gitlab)
+
+        @urlmatch(scheme="http", netloc="localhost",
+                  path="/api/v3/projects/all", method="get")
+        def resp_get_all(url, request):
+            headers = {'content-type': 'application/json'}
+            content = ('[{"name": "name1", "id": 1}, '
+                       '{"name": "name2", "id": 2}]')
+            content = content.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_get_all):
+            data = mgr.all()
+            self.assertEqual(type(data), list)
+            self.assertEqual(2, len(data))
+            self.assertEqual(type(data[0]), Project)
+            self.assertEqual(type(data[1]), Project)
+            self.assertEqual(data[0].name, "name1")
+            self.assertEqual(data[1].name, "name2")
+            self.assertEqual(data[0].id, 1)
+            self.assertEqual(data[1].id, 2)
+
+    def test_project_manager_search(self):
+        mgr = ProjectManager(self.gitlab)
+
+        @urlmatch(scheme="http", netloc="localhost",
+                  path="/api/v3/projects/search/foo", method="get")
+        def resp_get_all(url, request):
+            headers = {'content-type': 'application/json'}
+            content = ('[{"name": "foo1", "id": 1}, '
+                       '{"name": "foo2", "id": 2}]')
+            content = content.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_get_all):
+            data = mgr.search('foo')
+            self.assertEqual(type(data), list)
+            self.assertEqual(2, len(data))
+            self.assertEqual(type(data[0]), Project)
+            self.assertEqual(type(data[1]), Project)
+            self.assertEqual(data[0].name, "foo1")
+            self.assertEqual(data[1].name, "foo2")
+            self.assertEqual(data[0].id, 1)
+            self.assertEqual(data[1].id, 2)

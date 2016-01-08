@@ -1016,6 +1016,33 @@ class UserProject(GitlabObject):
 class ProjectManager(BaseManager):
     obj_cls = Project
 
+    def _custom_list(self, url, **kwargs):
+        r = self.gitlab._raw_get(url, **kwargs)
+        raise_error_from_response(r, GitlabListError)
+
+        l = []
+        for o in r.json():
+            p = Project(self, o)
+            p._from_api = True
+            l.append(p)
+
+        return l
+
+    def search(self, query, **kwargs):
+        """Searches projects by name.
+
+        Returns a list of matching projects.
+        """
+        return self._custom_list("/projects/search/" + query, **kwargs)
+
+    def all(self, **kwargs):
+        """Lists all the projects (need admin rights)."""
+        return self._custom_list("/projects/all", **kwargs)
+
+    def owned(self, **kwargs):
+        """Lists owned projects."""
+        return self._custom_list("/projects/owned", **kwargs)
+
 
 class UserProjectManager(BaseManager):
     obj_cls = UserProject
