@@ -1,3 +1,3 @@
-include README.md COPYING AUTHORS ChangeLog requirements.txt test-requirements.txt
+include COPYING AUTHORS ChangeLog requirements.txt test-requirements.txt
 include tox.ini .testr.conf
 recursive-include tools *
