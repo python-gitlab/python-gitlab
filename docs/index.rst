@@ -14,6 +14,7 @@ Contents:
    install
    cli
    api-usage
+   upgrade-from-0.10
    api/gitlab
 
 
