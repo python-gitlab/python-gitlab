@@ -47,6 +47,7 @@ extra_actions = {
     gitlab.Project: {SEARCH: {'requiredAttrs': ['query']},
                      OWNED: {'requiredAttrs': []},
                      ALL: {'requiredAttrs': []}},
+    gitlab.Group: {SEARCH: {'requiredAttrs': ['query']}},
 }
 
 
@@ -209,23 +210,30 @@ def do_update(cls, gl, what, args):
     return o
 
 
+def do_group_search(gl, what, args):
+    try:
+        return gl.groups.search(args['query'])
+    except Exception as e:
+        die("Impossible to search projects (%s)" % str(e))
+
+
 def do_project_search(gl, what, args):
     try:
-        return gl.search_projects(args['query'])
+        return gl.projects.search(args['query'])
     except Exception as e:
         die("Impossible to search projects (%s)" % str(e))
 
 
 def do_project_all(gl, what, args):
     try:
-        return gl.all_projects()
+        return gl.projects.all()
     except Exception as e:
         die("Impossible to list all projects (%s)" % str(e))
 
 
 def do_project_owned(gl, what, args):
     try:
-        return gl.owned_projects()
+        return gl.projects.owned()
     except Exception as e:
         die("Impossible to list owned projects (%s)" % str(e))
 
@@ -312,10 +320,15 @@ def main():
         getattr(o, action)()
 
     elif action == SEARCH:
-        if cls != gitlab.Project:
+
+        if cls == gitlab.Project:
+            l = do_project_search(gl, what, args)
+        elif cls == gitlab.Group:
+            l = do_group_search(gl, what, args)
+        else:
             die("%s objects don't support this request" % what)
 
-        for o in do_project_search(gl, what, args):
+        for o in l:
             o.display(verbose)
 
     elif action == OWNED:
