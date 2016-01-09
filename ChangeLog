@@ -1,3 +1,19 @@
+Version 0.11
+
+ * functional_tests.sh: support python 2 and 3
+ * Add a get method for GitlabObject
+ * CLI: Add the -g short option for --gitlab
+ * Provide a create method for GitlabObject's
+ * Rename the _created attribute _from_api
+ * More unit tests
+ * CLI: fix error when arguments are missing (python 3)
+ * Remove deprecated methods
+ * Implement managers to get access to resources
+ * Documentation improvements
+ * Add fork project support
+ * Deprecate the "old" Gitlab methods
+ * Add support for groups search
+
 Version 0.10
 
  * Implement pagination for list() (#63)
