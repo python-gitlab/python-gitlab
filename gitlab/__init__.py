@@ -14,7 +14,8 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Package for interfacing with GitLab-api """
+"""Wrapper for the GitLab API."""
+
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
@@ -50,16 +51,59 @@ def _sanitize_dict(src):
 
 
 class Gitlab(object):
-    """Represents a GitLab server connection
+    """Represents a GitLab server connection.
 
     Args:
-        url (str): the URL of the Gitlab server
-        private_token (str): the user private token
-        email (str): the user email/login
-        password (str): the user password (associated with email)
-        ssl_verify (bool): (Passed to requests-library)
-        timeout (float or tuple(float,float)): (Passed to
-            requests-library). Timeout to use for requests to gitlab server
+        url (str): The URL of the GitLab server.
+        private_token (str): The user private token
+        email (str): The user email or login.
+        password (str): The user password (associated with email).
+        ssl_verify (bool): Whether SSL certificates should be validated.
+        timeout (float or tuple(float,float)): Timeout to use for requests to
+            the GitLab server.
+
+    Attributes:
+        user_keys (UserKeyManager): Manager for GitLab users' SSH keys.
+        users (UserManager): Manager for GitLab users
+        group_members (GroupMemberManager): Manager for GitLab group members
+        groups (GroupManager): Manager for GitLab members
+        hooks (HookManager): Manager for GitLab hooks
+        issues (IssueManager): Manager for GitLab issues
+        project_branches (ProjectBranchManager): Manager for GitLab projects
+            branches
+        project_commits (ProjectCommitManager): Manager for GitLab projects
+            commits
+        project_keys (ProjectKeyManager): Manager for GitLab projects keys
+        project_events (ProjectEventManager): Manager for GitLab projects
+            events
+        project_forks (ProjectForkManager): Manager for GitLab projects forks
+        project_hooks (ProjectHookManager): Manager for GitLab projects hooks
+        project_issue_notes (ProjectIssueNoteManager): Manager for GitLab notes
+            on issues
+        project_issues (ProjectIssueManager): Manager for GitLab projects
+            issues
+        project_members (ProjectMemberManager): Manager for GitLab projects
+            members
+        project_notes (ProjectNoteManager): Manager for GitLab projects notes
+        project_tags (ProjectTagManager): Manager for GitLab projects tags
+        project_mergerequest_notes (ProjectMergeRequestNoteManager): Manager
+            for GitLab notes on merge requests
+        project_mergerequests (ProjectMergeRequestManager): Manager for GitLab
+            projects merge requests
+        project_milestones (ProjectMilestoneManager): Manager for GitLab
+            projects milestones
+        project_labels (ProjectLabelManager): Manager for GitLab projects
+            labels
+        project_files (ProjectFileManager): Manager for GitLab projects files
+        project_snippet_notes (ProjectSnippetNoteManager): Manager for GitLab
+            note on snippets
+        project_snippets (ProjectSnippetManager): Manager for GitLab projects
+            snippets
+        user_projects (UserProjectManager): Manager for GitLab projects users
+        projects (ProjectManager): Manager for GitLab projects
+        team_members (TeamMemberManager): Manager for GitLab teams members
+        team_projects (TeamProjectManager): Manager for GitLab teams projects
+        teams (TeamManager): Manager for GitLab teams
     """
 
     def __init__(self, url, private_token=None,
@@ -71,11 +115,11 @@ class Gitlab(object):
         #: Headers that will be used in request to GitLab
         self.headers = {}
         self.set_token(private_token)
-        #: the user email
+        #: The user email
         self.email = email
-        #: the user password (associated with email)
+        #: The user password (associated with email)
         self.password = password
-        #: (Passed to requests-library)
+        #: Whether SSL certificates should be validated
         self.ssl_verify = ssl_verify
 
         self.user_keys = UserKeyManager(self)
@@ -110,6 +154,18 @@ class Gitlab(object):
 
     @staticmethod
     def from_config(gitlab_id=None, config_files=None):
+        """Create a Gitlab connection from configuration files.
+
+        Args:
+            gitlab_id (str): ID of the configuration section.
+            config_files list[str]: List of paths to configuration files.
+
+        Returns:
+            (gitlab.Gitlab): A Gitlab connection.
+
+        Raises:
+            gitlab.config.GitlabDataError: If the configuration is not correct.
+        """
         config = gitlab.config.GitlabConfigParser(gitlab_id=gitlab_id,
                                                   config_files=config_files)
         return Gitlab(config.url, private_token=config.token,
@@ -120,7 +176,8 @@ class Gitlab(object):
 
         Uses either the private token, or the email/password pair.
 
-        The user attribute will hold a CurrentUser object on success.
+        The `user` attribute will hold a `gitlab.objects.CurrentUser` object on
+        success.
         """
         if self.private_token:
             self.token_auth()
@@ -128,6 +185,7 @@ class Gitlab(object):
             self.credentials_auth()
 
     def credentials_auth(self):
+        """Performs an authentication using email/password."""
         if not self.email or not self.password:
             raise GitlabAuthenticationError("Missing email/password")
 
@@ -135,13 +193,21 @@ class Gitlab(object):
         r = self._raw_post('/session', data, content_type='application/json')
         raise_error_from_response(r, GitlabAuthenticationError, 201)
         self.user = CurrentUser(self, r.json())
+        """(gitlab.objects.CurrentUser): Object representing the user currently
+            logged.
+        """
         self.set_token(self.user.private_token)
 
     def token_auth(self):
+        """Performs an authentication using the private token."""
         self.user = CurrentUser(self)
 
     def set_url(self, url):
-        """Updates the gitlab URL."""
+        """Updates the GitLab URL.
+
+        Args:
+            url (str): Base URL of the GitLab server.
+        """
         self._url = '%s/api/v3' % url
 
     def _construct_url(self, id_, obj, parameters):
@@ -167,7 +233,11 @@ class Gitlab(object):
         return request_headers
 
     def set_token(self, token):
-        """Sets the private token for authentication."""
+        """Sets the private token for authentication.
+
+        Args:
+            token (str): The private token.
+        """
         self.private_token = token if token else None
         if token:
             self.headers["PRIVATE-TOKEN"] = token
@@ -175,7 +245,12 @@ class Gitlab(object):
             del self.headers["PRIVATE-TOKEN"]
 
     def set_credentials(self, email, password):
-        """Sets the email/login and password for authentication."""
+        """Sets the email/login and password for authentication.
+
+        Args:
+            email (str): The user email or login.
+            password (str): The user password.
+        """
         self.email = email
         self.password = password
 
@@ -233,6 +308,19 @@ class Gitlab(object):
                 "Can't connect to GitLab server (%s)" % self._url)
 
     def list(self, obj_class, **kwargs):
+        """Request the listing of GitLab resources.
+
+        Args:
+            obj_class (object): The class of resource to request.
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            list(obj_class): A list of objects of class `obj_class`.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabListError: If the server fails to perform the request.
+        """
         missing = []
         for k in itertools.chain(obj_class.requiredUrlAttrs,
                                  obj_class.requiredListAttrs):
@@ -288,6 +376,20 @@ class Gitlab(object):
         return results
 
     def get(self, obj_class, id=None, **kwargs):
+        """Request a GitLab resources.
+
+        Args:
+            obj_class (object): The class of resource to request.
+            id: The object ID.
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            obj_class: An object of class `obj_class`.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
+        """
         missing = []
         for k in itertools.chain(obj_class.requiredUrlAttrs,
                                  obj_class.requiredGetAttrs):
@@ -319,6 +421,19 @@ class Gitlab(object):
         return r.json()
 
     def delete(self, obj, **kwargs):
+        """Delete an object on the GitLab server.
+
+        Args:
+            obj (object): The object to delete.
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            bool: True if the operation succeeds.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabDeleteError: If the server fails to perform the request.
+        """
         params = obj.__dict__.copy()
         params.update(kwargs)
         missing = []
@@ -353,6 +468,23 @@ class Gitlab(object):
         return True
 
     def create(self, obj, **kwargs):
+        """Create an object on the GitLab server.
+
+        The object class and attributes define the request to be made on the
+        GitLab server.
+
+        Args:
+            obj (object): The object to create.
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            str: A json representation of the object as returned by the GitLab
+                server
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabCreateError: If the server fails to perform the request.
+        """
         params = obj.__dict__.copy()
         params.update(kwargs)
         missing = []
@@ -383,6 +515,23 @@ class Gitlab(object):
         return r.json()
 
     def update(self, obj, **kwargs):
+        """Update an object on the GitLab server.
+
+        The object class and attributes define the request to be made on the
+        GitLab server.
+
+        Args:
+            obj (object): The object to create.
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            str: A json representation of the object as returned by the GitLab
+                server
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabUpdateError: If the server fails to perform the request.
+        """
         params = obj.__dict__.copy()
         params.update(kwargs)
         missing = []

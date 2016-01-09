@@ -38,9 +38,31 @@ class jsonEncoder(json.JSONEncoder):
 
 
 class BaseManager(object):
+    """Base manager class for API operations.
+
+    Managers provide method to manage GitLab API objects, such as retrieval,
+    listing, creation.
+
+    Inherited class must define the ``obj_cls`` attribute.
+
+    Attributes:
+        obj_cls (class): class of objects wrapped by this manager.
+    """
+
     obj_cls = None
 
     def __init__(self, gl, parent=None, args=[]):
+        """Constructs a manager.
+
+        Args:
+            gl (gitlab.Gitlab): Gitlab object referencing the GitLab server.
+            parent (Optional[Manager]): A parent manager.
+            args (list): A list of tuples defining a link between the
+                parent/child attributes.
+
+        Raises:
+            AttributeError: If `obj_cls` is None.
+        """
         self.gitlab = gl
         self.args = args
         self.parent = parent
@@ -54,18 +76,59 @@ class BaseManager(object):
                 kwargs.setdefault(attr, getattr(self.parent, parent_attr))
 
     def get(self, id, **kwargs):
+        """Get a GitLab object.
+
+        Args:
+            id: ID of the object to retrieve.
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            object: An object of class `obj_cls`.
+
+        Raises:
+            NotImplementedError: If objects cannot be retrieved.
+            GitlabGetError: If the server fails to perform the request.
+        """
         self._set_parent_args(**kwargs)
         if not self.obj_cls.canGet:
             raise NotImplementedError
         return self.obj_cls.get(self.gitlab, id, **kwargs)
 
     def list(self, **kwargs):
+        """Get a list of GitLab objects.
+
+        Args:
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            list[object]: A list of `obj_cls` objects.
+
+        Raises:
+            NotImplementedError: If objects cannot be listed.
+            GitlabListError: If the server fails to perform the request.
+        """
         self._set_parent_args(**kwargs)
         if not self.obj_cls.canList:
             raise NotImplementedError
         return self.obj_cls.list(self.gitlab, **kwargs)
 
     def create(self, data, **kwargs):
+        """Create a new object of class `obj_cls`.
+
+        Args:
+            data (dict): The parameters to send to the GitLab server to create
+                the object. Required and optional arguments are defined in the
+                `requiredCreateAttrs` and `optionalCreateAttrs` of the
+                `obj_cls` class.
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            object: A newly create `obj_cls` object.
+
+        Raises:
+            NotImplementedError: If objects cannot be created.
+            GitlabCreateError: If the server fails to perform the request.
+        """
         self._set_parent_args(**kwargs)
         if not self.obj_cls.canCreate:
             raise NotImplementedError
@@ -85,15 +148,7 @@ class BaseManager(object):
 
 
 class GitlabObject(object):
-    """Base class for all classes that interface with GitLab
-
-    Args:
-        gl (gitlab.Gitlab): GitLab server connection
-        data: If data is integer or string type, get object from GitLab
-        data: If data is dictionary, create new object locally. To save object
-           in GitLab, call save-method
-        kwargs: Arbitrary keyword arguments
-    """
+    """Base class for all classes that interface with GitLab."""
     #: Url to use in GitLab for this object
     _url = None
     # Some objects (e.g. merge requests) have different urls for singular and
@@ -104,38 +159,39 @@ class GitlabObject(object):
     #: Whether _get_list_or_object should return list or object when id is None
     getListWhenNoId = True
 
-    #: Tells if GitLab-api allows retrieving single objects
+    #: Tells if GitLab-api allows retrieving single objects.
     canGet = True
-    #: Tells if GitLab-api allows listing of objects
+    #: Tells if GitLab-api allows listing of objects.
     canList = True
-    #: Tells if GitLab-api allows creation of new objects
+    #: Tells if GitLab-api allows creation of new objects.
     canCreate = True
-    #: Tells if GitLab-api allows updating object
+    #: Tells if GitLab-api allows updating object.
     canUpdate = True
-    #: Tells if GitLab-api allows deleting object
+    #: Tells if GitLab-api allows deleting object.
     canDelete = True
-    #: Attributes that are required for constructing url
+    #: Attributes that are required for constructing url.
     requiredUrlAttrs = []
-    #: Attributes that are required when retrieving list of objects
+    #: Attributes that are required when retrieving list of objects.
     requiredListAttrs = []
-    #: Attributes that are required when retrieving single object
+    #: Attributes that are required when retrieving single object.
     requiredGetAttrs = []
-    #: Attributes that are required when deleting object
+    #: Attributes that are required when deleting object.
     requiredDeleteAttrs = []
-    #: Attributes that are required when creating a new object
+    #: Attributes that are required when creating a new object.
     requiredCreateAttrs = []
-    #: Attributes that are optional when creating a new object
+    #: Attributes that are optional when creating a new object.
     optionalCreateAttrs = []
-    #: Attributes that are required when updating an object
+    #: Attributes that are required when updating an object.
     requiredUpdateAttrs = None
-    #: Attributes that are optional when updating an object
+    #: Attributes that are optional when updating an object.
     optionalUpdateAttrs = None
-    #: Whether the object ID is required in the GET url
+    #: Whether the object ID is required in the GET url.
     getRequiresId = True
-    #: List of managers to create
+    #: List of managers to create.
     managers = []
-
+    #: Name of the identifier of an object.
     idAttr = 'id'
+    #: Attribute to use as ID when displaying the object.
     shortPrintAttr = None
 
     def _data_for_gitlab(self, extra_parameters={}):
@@ -151,6 +207,20 @@ class GitlabObject(object):
 
     @classmethod
     def list(cls, gl, **kwargs):
+        """Retrieve a list of objects from GitLab.
+
+        Args:
+            gl (gitlab.Gitlab): Gitlab object referencing the GitLab server.
+            per_page (int): Maximum number of items to return.
+            page (int): ID of the page to return when using pagination.
+
+        Returns:
+            list[object]: A list of objects.
+
+        Raises:
+            NotImplementedError: If objects can't be listed.
+            GitlabListError: If the server cannot perform the request.
+        """
         if not cls.canList:
             raise NotImplementedError
 
@@ -161,6 +231,20 @@ class GitlabObject(object):
 
     @classmethod
     def get(cls, gl, id, **kwargs):
+        """Retrieve a single object.
+
+        Args:
+            gl (gitlab.Gitlab): Gitlab object referencing the GitLab server.
+            id (int or str): ID of the object to retrieve.
+
+        Returns:
+            object: The found GitLab object.
+
+        Raises:
+            NotImplementedError: If objects can't be retrieved.
+            GitlabGetError: If the server cannot perform the request.
+        """
+
         if cls.canGet is False:
             raise NotImplementedError
         elif cls.canGet is True:
@@ -229,6 +313,19 @@ class GitlabObject(object):
 
     @classmethod
     def create(cls, gl, data, **kwargs):
+        """Create an object.
+
+        Args:
+            gl (gitlab.Gitlab): Gitlab object referencing the GitLab server.
+            data (dict): The data used to define the object.
+
+        Returns:
+            object: The new object.
+
+        Raises:
+            NotImplementedError: If objects can't be created.
+            GitlabCreateError: If the server cannot perform the request.
+        """
         if not cls.canCreate:
             raise NotImplementedError
 
@@ -238,7 +335,20 @@ class GitlabObject(object):
         return obj
 
     def __init__(self, gl, data=None, **kwargs):
+        """Constructs a new object.
+
+        Do not use this method. Use the `get` or `create` class methods
+        instead.
+
+        Args:
+            gl (gitlab.Gitlab): Gitlab object referencing the GitLab server.
+            data: If `data` is a dict, create a new object using the
+                information. If it is an int or a string, get a GitLab object
+                from an API request.
+            **kwargs: Additional arguments to send to GitLab.
+        """
         self._from_api = False
+        #: (gitlab.Gitlab): Gitlab connection.
         self.gitlab = gl
 
         if (data is None or isinstance(data, six.integer_types) or
@@ -276,6 +386,11 @@ class GitlabObject(object):
             self.short_print()
 
     def short_print(self, depth=0):
+        """Print the object on the standard output (verbose).
+
+        Args:
+            depth (int): Used internaly for recursive call.
+        """
         id = self.__dict__[self.idAttr]
         print("%s%s: %s" % (" " * depth * 2, self.idAttr, id))
         if self.shortPrintAttr:
@@ -303,6 +418,11 @@ class GitlabObject(object):
             return str(obj)
 
     def pretty_print(self, depth=0):
+        """Print the object on the standard output (verbose).
+
+        Args:
+            depth (int): Used internaly for recursive call.
+        """
         id = self.__dict__[self.idAttr]
         print("%s%s: %s" % (" " * depth * 2, self.idAttr, id))
         for k in sorted(self.__dict__.keys()):
@@ -330,6 +450,11 @@ class GitlabObject(object):
                 print("%s%s: %s" % (" " * depth * 2, pretty_k, v))
 
     def json(self):
+        """Dump the object as json.
+
+        Returns:
+            str: The json string.
+        """
         return json.dumps(self.__dict__, cls=jsonEncoder)
 
 
@@ -961,15 +1086,15 @@ class Project(GitlabObject):
         """Creates file in project repository
 
         Args:
-            path (str): Full path to new file
-            branch (str): The name of branch
-            content (str): Content of the file
-            message (str): Commit message
-            kwargs: Arbitrary keyword arguments
+            path (str): Full path to new file.
+            branch (str): The name of branch.
+            content (str): Content of the file.
+            message (str): Commit message.
+            **kwargs: Arbitrary keyword arguments.
 
         Raises:
-            GitlabCreateError: Operation failed
-            GitlabConnectionError: Connection to GitLab-server failed
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabCreateError: If the server fails to perform the request.
         """
         url = "/projects/%s/repository/files" % self.id
         url += ("?file_path=%s&branch_name=%s&content=%s&commit_message=%s" %
@@ -998,14 +1123,20 @@ class Project(GitlabObject):
             forked_from_id (int): The ID of the project that was forked from
 
         Raises:
-            GitlabCreateError: Operation failed
-            GitlabConnectionError: Connection to GitLab-server failed
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabCreateError: If the server fails to perform the request.
         """
         url = "/projects/%s/fork/%s" % (self.id, forked_from_id)
         r = self.gitlab._raw_post(url)
         raise_error_from_response(r, GitlabCreateError, 201)
 
     def delete_fork_relation(self):
+        """Delete a forked relation between existing projects.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabDeleteError: If the server fails to perform the request.
+        """
         url = "/projects/%s/fork" % self.id
         r = self.gitlab._raw_delete(url)
         raise_error_from_response(r, GitlabDeleteError)
@@ -1038,19 +1169,38 @@ class ProjectManager(BaseManager):
     obj_cls = Project
 
     def search(self, query, **kwargs):
-        """Searches projects by name.
+        """Search projects by name.
 
-        Returns a list of matching projects.
+        Args:
+            query (str): The query string to send to GitLab for the search.
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            list(Project): A list of matching projects.
         """
         return self._custom_list("/projects/search/" + query, Project,
                                  **kwargs)
 
     def all(self, **kwargs):
-        """Lists all the projects (need admin rights)."""
+        """List all the projects (need admin rights).
+
+        Args:
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            list(Project): The list of projects.
+        """
         return self._custom_list("/projects/all", Project, **kwargs)
 
     def owned(self, **kwargs):
-        """Lists owned projects."""
+        """List owned projects.
+
+        Args:
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            list(Project): The list of owned projects.
+        """
         return self._custom_list("/projects/owned", Project, **kwargs)
 
 
