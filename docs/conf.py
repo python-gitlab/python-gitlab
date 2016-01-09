@@ -61,7 +61,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'python-gitlab'
-copyright = '2013-2015, Gauvain Pocentek, Mika Mäenpää'
+copyright = '2013-2016, Gauvain Pocentek, Mika Mäenpää'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
