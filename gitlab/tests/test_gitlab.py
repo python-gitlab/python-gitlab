@@ -338,7 +338,7 @@ class TestGitlabMethods(unittest.TestCase):
             self.assertRaises(GitlabGetError, self.gl.get,
                               Project, 1)
 
-    def test_delete(self):
+    def test_delete_from_object(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/groups/1",
                   method="delete")
         def resp_delete_group(url, request):
@@ -349,6 +349,24 @@ class TestGitlabMethods(unittest.TestCase):
         obj = Group(self.gl, data={"name": "testname", "id": 1})
         with HTTMock(resp_delete_group):
             data = self.gl.delete(obj)
+            self.assertIs(data, True)
+
+    def test_delete_from_invalid_class(self):
+        class InvalidClass(object):
+            pass
+
+        self.assertRaises(GitlabError, self.gl.delete, InvalidClass, 1)
+
+    def test_delete_from_class(self):
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v3/groups/1",
+                  method="delete")
+        def resp_delete_group(url, request):
+            headers = {'content-type': 'application/json'}
+            content = ''.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_delete_group):
+            data = self.gl.delete(Group, 1)
             self.assertIs(data, True)
 
     def test_delete_unknown_path(self):

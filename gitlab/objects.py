@@ -134,6 +134,21 @@ class BaseManager(object):
             raise NotImplementedError
         return self.obj_cls.create(self.gitlab, data, **kwargs)
 
+    def delete(self, id, **kwargs):
+        """Delete a GitLab object.
+
+        Args:
+            id: ID of the object to delete.
+
+        Raises:
+            NotImplementedError: If objects cannot be deleted.
+            GitlabDeleteError: If the server fails to perform the request.
+        """
+        self._set_parent_args(**kwargs)
+        if not self.obj_cls.canDelete:
+            raise NotImplementedError
+        self.gitlab.delete(self.obj_cls, id, **kwargs)
+
     def _custom_list(self, url, cls, **kwargs):
         r = self.gitlab._raw_get(url, **kwargs)
         raise_error_from_response(r, GitlabListError)

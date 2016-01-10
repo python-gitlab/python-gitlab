@@ -19,6 +19,7 @@
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+import inspect
 import itertools
 import json
 import warnings
@@ -419,11 +420,14 @@ class Gitlab(object):
         raise_error_from_response(r, GitlabGetError)
         return r.json()
 
-    def delete(self, obj, **kwargs):
+    def delete(self, obj, id=None, **kwargs):
         """Delete an object on the GitLab server.
 
         Args:
-            obj (object): The object to delete.
+            obj (object or id): The object, or the class of the object to
+                delete. If it is the class, the id of the object must be
+                specified as the `id` arguments.
+            id: ID of the object to remove. Required if `obj` is a class.
             **kwargs: Additional arguments to send to GitLab.
 
         Returns:
@@ -433,7 +437,13 @@ class Gitlab(object):
             GitlabConnectionError: If the server cannot be reached.
             GitlabDeleteError: If the server fails to perform the request.
         """
-        params = obj.__dict__.copy()
+        if inspect.isclass(obj):
+            if not issubclass(obj, GitlabObject):
+                raise GitlabError("Invalid class: %s" % obj)
+            params = {}
+            params[obj.idAttr] = id
+        else:
+            params = obj.__dict__.copy()
         params.update(kwargs)
         missing = []
         for k in itertools.chain(obj.requiredUrlAttrs,
@@ -444,7 +454,7 @@ class Gitlab(object):
             raise GitlabDeleteError('Missing attribute(s): %s' %
                                     ", ".join(missing))
 
-        obj_id = getattr(obj, obj.idAttr)
+        obj_id = params[obj.idAttr]
         url = self._construct_url(id_=obj_id, obj=obj, parameters=params)
         headers = self._create_headers()
 

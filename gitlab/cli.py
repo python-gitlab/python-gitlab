@@ -188,9 +188,9 @@ def do_delete(cls, gl, what, args):
     if not cls.canDelete:
         _die("%s objects can't be deleted" % what)
 
-    o = do_get(cls, gl, what, args)
+    id = args.pop(cls.idAttr)
     try:
-        o.delete()
+        gl.delete(cls, id, **args)
     except Exception as e:
         _die("Impossible to destroy object (%s)" % str(e))
 
