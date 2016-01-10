@@ -41,13 +41,12 @@ warnings.simplefilter('always', DeprecationWarning)
 
 
 def _sanitize(value):
+    if isinstance(value, dict):
+        return dict((k, _sanitize(v))
+                    for k, v in six.iteritems(value))
     if isinstance(value, six.string_types):
         return value.replace('/', '%2F')
     return value
-
-
-def _sanitize_dict(src):
-    return dict((k, _sanitize(v)) for k, v in src.items())
 
 
 class Gitlab(object):
@@ -213,7 +212,7 @@ class Gitlab(object):
     def _construct_url(self, id_, obj, parameters):
         if 'next_url' in parameters:
             return parameters['next_url']
-        args = _sanitize_dict(parameters)
+        args = _sanitize(parameters)
         if id_ is None and obj._urlPlural is not None:
             url = obj._urlPlural % args
         else:
