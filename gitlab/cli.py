@@ -51,20 +51,20 @@ extra_actions = {
 }
 
 
-def die(msg):
+def _die(msg):
     sys.stderr.write(msg + "\n")
     sys.exit(1)
 
 
-def whatToCls(what):
+def _what_to_cls(what):
     return "".join([s.capitalize() for s in what.split("-")])
 
 
-def clsToWhat(cls):
+def _cls_to_what(cls):
     return camel_re.sub(r'\1-\2', cls.__name__).lower()
 
 
-def populate_sub_parser_by_class(cls, sub_parser):
+def _populate_sub_parser_by_class(cls, sub_parser):
     for action_name in ACTIONS:
         attr = 'can' + action_name.capitalize()
         if not getattr(cls, attr):
@@ -132,72 +132,72 @@ def do_auth(gitlab_id, config_files):
         gl.auth()
         return gl
     except Exception as e:
-        die(str(e))
+        _die(str(e))
 
 
-def get_id(cls, args):
+def _get_id(cls, args):
     try:
         id = args.pop(cls.idAttr)
     except Exception:
-        die("Missing --%s argument" % cls.idAttr.replace('_', '-'))
+        _die("Missing --%s argument" % cls.idAttr.replace('_', '-'))
 
     return id
 
 
 def do_create(cls, gl, what, args):
     if not cls.canCreate:
-        die("%s objects can't be created" % what)
+        _die("%s objects can't be created" % what)
 
     try:
         o = cls.create(gl, args)
     except Exception as e:
-        die("Impossible to create object (%s)" % str(e))
+        _die("Impossible to create object (%s)" % str(e))
 
     return o
 
 
 def do_list(cls, gl, what, args):
     if not cls.canList:
-        die("%s objects can't be listed" % what)
+        _die("%s objects can't be listed" % what)
 
     try:
         l = cls.list(gl, **args)
     except Exception as e:
-        die("Impossible to list objects (%s)" % str(e))
+        _die("Impossible to list objects (%s)" % str(e))
 
     return l
 
 
 def do_get(cls, gl, what, args):
     if cls.canGet is False:
-        die("%s objects can't be retrieved" % what)
+        _die("%s objects can't be retrieved" % what)
 
     id = None
     if cls not in [gitlab.CurrentUser] and cls.getRequiresId:
-        id = get_id(cls, args)
+        id = _get_id(cls, args)
 
     try:
         o = cls.get(gl, id, **args)
     except Exception as e:
-        die("Impossible to get object (%s)" % str(e))
+        _die("Impossible to get object (%s)" % str(e))
 
     return o
 
 
 def do_delete(cls, gl, what, args):
     if not cls.canDelete:
-        die("%s objects can't be deleted" % what)
+        _die("%s objects can't be deleted" % what)
 
     o = do_get(cls, gl, what, args)
     try:
         o.delete()
     except Exception as e:
-        die("Impossible to destroy object (%s)" % str(e))
+        _die("Impossible to destroy object (%s)" % str(e))
 
 
 def do_update(cls, gl, what, args):
     if not cls.canUpdate:
-        die("%s objects can't be updated" % what)
+        _die("%s objects can't be updated" % what)
 
     o = do_get(cls, gl, what, args)
     try:
@@ -205,7 +205,7 @@ def do_update(cls, gl, what, args):
             o.__dict__[k] = v
         o.save()
     except Exception as e:
-        die("Impossible to update object (%s)" % str(e))
+        _die("Impossible to update object (%s)" % str(e))
 
     return o
 
@@ -214,28 +214,28 @@ def do_group_search(gl, what, args):
     try:
         return gl.groups.search(args['query'])
     except Exception as e:
-        die("Impossible to search projects (%s)" % str(e))
+        _die("Impossible to search projects (%s)" % str(e))
 
 
 def do_project_search(gl, what, args):
     try:
         return gl.projects.search(args['query'])
     except Exception as e:
-        die("Impossible to search projects (%s)" % str(e))
+        _die("Impossible to search projects (%s)" % str(e))
 
 
 def do_project_all(gl, what, args):
     try:
         return gl.projects.all()
     except Exception as e:
-        die("Impossible to list all projects (%s)" % str(e))
+        _die("Impossible to list all projects (%s)" % str(e))
 
 
 def do_project_owned(gl, what, args):
     try:
         return gl.projects.owned()
     except Exception as e:
-        die("Impossible to list owned projects (%s)" % str(e))
+        _die("Impossible to list owned projects (%s)" % str(e))
 
 
 def main():
@@ -268,12 +268,12 @@ def main():
     classes.sort(key=operator.attrgetter("__name__"))
 
     for cls in classes:
-        arg_name = clsToWhat(cls)
+        arg_name = _cls_to_what(cls)
         object_group = subparsers.add_parser(arg_name)
 
         object_subparsers = object_group.add_subparsers(
             dest='action', help="Action to execute.")
-        populate_sub_parser_by_class(cls, object_subparsers)
+        _populate_sub_parser_by_class(cls, object_subparsers)
         object_subparsers.required = True
 
     arg = parser.parse_args()
@@ -294,9 +294,9 @@ def main():
 
     cls = None
     try:
-        cls = gitlab.__dict__[whatToCls(what)]
+        cls = gitlab.__dict__[_what_to_cls(what)]
     except Exception:
-        die("Unknown object: %s" % what)
+        _die("Unknown object: %s" % what)
 
     gl = do_auth(gitlab_id, config_files)
 
@@ -314,7 +314,7 @@ def main():
 
     elif action == PROTECT or action == UNPROTECT:
         if cls != gitlab.ProjectBranch:
-            die("%s objects can't be protected" % what)
+            _die("%s objects can't be protected" % what)
 
         o = do_get(cls, gl, what, args)
         getattr(o, action)()
@@ -326,21 +326,21 @@ def main():
         elif cls == gitlab.Group:
             l = do_group_search(gl, what, args)
         else:
-            die("%s objects don't support this request" % what)
+            _die("%s objects don't support this request" % what)
 
         for o in l:
             o.display(verbose)
 
     elif action == OWNED:
         if cls != gitlab.Project:
-            die("%s objects don't support this request" % what)
+            _die("%s objects don't support this request" % what)
 
         for o in do_project_owned(gl, what, args):
             o.display(verbose)
 
     elif action == ALL:
         if cls != gitlab.Project:
-            die("%s objects don't support this request" % what)
+            _die("%s objects don't support this request" % what)
 
         for o in do_project_all(gl, what, args):
             o.display(verbose)
