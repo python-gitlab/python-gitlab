@@ -23,31 +23,16 @@ cleanup() {
 }
 trap cleanup EXIT
 
-PY_VER=2
-while getopts :p: opt "$@"; do
-    case $opt in
-        p)
-            PY_VER=$OPTARG;;
-        *)
-            echo "Unknown option: $opt"
-            exit 1;;
-    esac
-done
+setenv_script=$(dirname $0)/build_test_env.sh
 
-case $PY_VER in
-    2) VENV_CMD=virtualenv;;
-    3) VENV_CMD=pyvenv;;
-    *)
-        echo "Wrong python version (2 or 3)"
-        exit 1;;
-esac
+. $setenv_script "$@"
 
-docker run --name gitlab-test --detach --publish 8080:80 --publish 2222:22 genezys/gitlab:latest >/dev/null 2>&1
-
-LOGIN='root'
-PASSWORD='5iveL!fe'
 CONFIG=/tmp/python-gitlab.cfg
 GITLAB="gitlab --config-file $CONFIG"
+GREEN='\033[0;32m'
+NC='\033[0m'
+OK="echo -e ${GREEN}OK${NC}"
+
 VENV=$(pwd)/.venv
 
 $VENV_CMD $VENV
@@ -55,42 +40,8 @@ $VENV_CMD $VENV
 pip install -rrequirements.txt
 pip install -e .
 
-GREEN='\033[0;32m'
-NC='\033[0m'
-OK="echo -e ${GREEN}OK${NC}"
-
-echo -n "Waiting for gitlab to come online... "
-I=0
-while :; do
-    sleep 5
-    curl -s http://localhost:8080/users/sign_in 2>/dev/null | grep -q "GitLab Community Edition" && break
-    let I=I+5
-    [ $I -eq 120 ] && exit 1
-done
-sleep 5
-$OK
-
-# Get the token
-TOKEN=$(curl -s http://localhost:8080/api/v3/session \
-    -X POST \
-    --data "login=$LOGIN&password=$PASSWORD" \
-    | python -c 'import sys, json; print(json.load(sys.stdin)["private_token"])')
-
-cat > $CONFIG << EOF
-[global]
-default = local
-timeout = 2
-
-[local]
-url = http://localhost:8080
-private_token = $TOKEN
-EOF
-
-echo "Config file content ($CONFIG):"
-cat $CONFIG
-
 # NOTE(gpocentek): the first call might fail without a little delay
-sleep 10
+sleep 5
 
 set -e
 
