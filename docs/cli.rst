@@ -128,3 +128,64 @@ Example:
 .. code-block:: console
 
    $ gitlab -v -g elsewhere -c /tmp/gl.cfg project list
+
+
+Examples
+========
+
+List all the projects:
+
+.. code-block:: console
+
+   $ gitlab project list
+
+Limit to 5 items per request, display the 1st page only
+
+.. code-block:: console
+
+   $ gitlab project list --page 1 --per-page 5
+
+Get a specific project (id 2):
+
+.. code-block:: console
+
+   $ gitlab project get --id 2
+
+Get a list of snippets for this project:
+
+.. code-block:: console
+
+   $ gitlab project-issue list --project-id 2
+
+Delete a snippet (id 3):
+
+.. code-block:: console
+
+   $ gitlab project-snippet delete --id 3 --project-id 2
+
+Update a snippet:
+
+.. code-block:: console
+
+   $ gitlab project-snippet update --id 4 --project-id 2 \
+       --code "My New Code"
+
+Create a snippet:
+
+.. code-block:: console
+
+   $ gitlab project-snippet create --project-id=2
+   Impossible to create object (Missing attribute(s): title, file-name, code)
+
+   $ # oops, let's add the attributes:
+   $ gitlab project-snippet create --project-id=2 --title="the title" \
+       --file-name="the name" --code="the code"
+
+Define the status of a commit (as would be done from a CI tool for example):
+
+.. code-block:: console
+
+   $ gitlab project-commit-status create --project-id 2 \
+       --commit-id a43290c --state success --name ci/jenkins \
+       --target-url http://server/build/123 \
+       --description "Jenkins build succeeded"
