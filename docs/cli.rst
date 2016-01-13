@@ -174,12 +174,12 @@ Create a snippet:
 
 .. code-block:: console
 
-   $ gitlab project-snippet create --project-id=2
+   $ gitlab project-snippet create --project-id 2
    Impossible to create object (Missing attribute(s): title, file-name, code)
 
    $ # oops, let's add the attributes:
-   $ gitlab project-snippet create --project-id=2 --title="the title" \
-       --file-name="the name" --code="the code"
+   $ gitlab project-snippet create --project-id 2 --title "the title" \
+       --file-name "the name" --code "the code"
 
 Define the status of a commit (as would be done from a CI tool for example):
 
