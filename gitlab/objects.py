@@ -18,6 +18,7 @@
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+import copy
 import itertools
 import json
 import sys
@@ -71,11 +72,14 @@ class BaseManager(object):
             raise AttributeError("obj_cls must be defined")
 
     def _set_parent_args(self, **kwargs):
+        args = copy.copy(kwargs)
         if self.parent is not None:
             for attr, parent_attr in self.args:
-                kwargs.setdefault(attr, getattr(self.parent, parent_attr))
+                args.setdefault(attr, getattr(self.parent, parent_attr))
 
-    def get(self, id, **kwargs):
+        return args
+
+    def get(self, id=None, **kwargs):
         """Get a GitLab object.
 
         Args:
@@ -89,10 +93,11 @@ class BaseManager(object):
             NotImplementedError: If objects cannot be retrieved.
             GitlabGetError: If the server fails to perform the request.
         """
-        self._set_parent_args(**kwargs)
+        args = self._set_parent_args(**kwargs)
+        print(args)
         if not self.obj_cls.canGet:
             raise NotImplementedError
-        return self.obj_cls.get(self.gitlab, id, **kwargs)
+        return self.obj_cls.get(self.gitlab, id, **args)
 
     def list(self, **kwargs):
         """Get a list of GitLab objects.
@@ -107,10 +112,10 @@ class BaseManager(object):
             NotImplementedError: If objects cannot be listed.
             GitlabListError: If the server fails to perform the request.
         """
-        self._set_parent_args(**kwargs)
+        args = self._set_parent_args(**kwargs)
         if not self.obj_cls.canList:
             raise NotImplementedError
-        return self.obj_cls.list(self.gitlab, **kwargs)
+        return self.obj_cls.list(self.gitlab, **args)
 
     def create(self, data, **kwargs):
         """Create a new object of class `obj_cls`.
@@ -129,10 +134,10 @@ class BaseManager(object):
             NotImplementedError: If objects cannot be created.
             GitlabCreateError: If the server fails to perform the request.
         """
-        self._set_parent_args(**kwargs)
+        args = self._set_parent_args(**kwargs)
         if not self.obj_cls.canCreate:
             raise NotImplementedError
-        return self.obj_cls.create(self.gitlab, data, **kwargs)
+        return self.obj_cls.create(self.gitlab, data, **args)
 
     def delete(self, id, **kwargs):
         """Delete a GitLab object.
@@ -144,10 +149,10 @@ class BaseManager(object):
             NotImplementedError: If objects cannot be deleted.
             GitlabDeleteError: If the server fails to perform the request.
         """
-        self._set_parent_args(**kwargs)
+        args = self._set_parent_args(**kwargs)
         if not self.obj_cls.canDelete:
             raise NotImplementedError
-        self.gitlab.delete(self.obj_cls, id, **kwargs)
+        self.gitlab.delete(self.obj_cls, id, **args)
 
     def _custom_list(self, url, cls, **kwargs):
         r = self.gitlab._raw_get(url, **kwargs)
