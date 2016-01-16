@@ -94,7 +94,6 @@ class BaseManager(object):
             GitlabGetError: If the server fails to perform the request.
         """
         args = self._set_parent_args(**kwargs)
-        print(args)
         if not self.obj_cls.canGet:
             raise NotImplementedError
         return self.obj_cls.get(self.gitlab, id, **args)
