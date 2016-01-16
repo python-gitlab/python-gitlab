@@ -29,7 +29,9 @@ from gitlab.objects import BaseManager  # noqa
 
 
 class FakeChildObject(GitlabObject):
-    _url = "/fake"
+    _url = "/fake/%(parent_id)s/fakechild"
+    requiredCreateAttrs = ['name']
+    requiredUrlAttrs = ['parent_id']
 
 
 class FakeChildManager(BaseManager):
@@ -38,7 +40,8 @@ class FakeChildManager(BaseManager):
 
 class FakeObject(GitlabObject):
     _url = "/fake"
-    managers = [('children', FakeChildManager, [('child_id', 'id')])]
+    requiredCreateAttrs = ['name']
+    managers = [('children', FakeChildManager, [('parent_id', 'id')])]
 
 
 class FakeObjectManager(BaseManager):
@@ -50,6 +53,23 @@ class TestGitlabManager(unittest.TestCase):
         self.gitlab = Gitlab("http://localhost", private_token="private_token",
                              email="testuser@test.com",
                              password="testpassword", ssl_verify=True)
+
+    def test_set_parent_args(self):
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v3/fake",
+                  method="POST")
+        def resp_create(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '{"id": 1, "name": "name"}'.encode("utf-8")
+            return response(201, content, headers, None, 5, request)
+
+        mgr = FakeChildManager(self.gitlab)
+        args = mgr._set_parent_args(name="name")
+        self.assertEqual(args, {"name": "name"})
+
+        with HTTMock(resp_create):
+            o = FakeObjectManager(self.gitlab).create({"name": "name"})
+            args = o.children._set_parent_args(name="name")
+            self.assertEqual(args, {"name": "name", "parent_id": 1})
 
     def test_constructor(self):
         self.assertRaises(AttributeError, BaseManager, self.gitlab)
@@ -128,7 +148,7 @@ class TestGitlabManager(unittest.TestCase):
     def test_create(self):
         mgr = FakeObjectManager(self.gitlab)
         FakeObject.canCreate = False
-        self.assertRaises(NotImplementedError, mgr.create, {'foo': 'bar'})
+        self.assertRaises(NotImplementedError, mgr.create, {'name': 'name'})
 
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/fake",
                   method="post")
