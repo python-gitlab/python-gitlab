@@ -1,3 +1,10 @@
+Version 0.11.1
+
+ * Fix discovery of parents object attrs for managers
+ * Support setting commit status
+ * Support deletion without getting the object first
+ * Improve the documentation
+
 Version 0.11
 
  * functional_tests.sh: support python 2 and 3
