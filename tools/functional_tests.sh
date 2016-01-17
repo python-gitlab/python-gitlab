@@ -70,15 +70,23 @@ echo -n "Testing adding member to a project... "
 $GITLAB project-member create --project-id $PROJECT_ID --user-id $USER_ID --access-level 40 >/dev/null 2>&1
 $OK
 
-echo -n "Creating a file... "
+echo -n "Testing file creation... "
 $GITLAB project-file create --project-id $PROJECT_ID --file-path README --branch-name master --content "CONTENT" --commit-message "Initial commit" >/dev/null 2>&1
 $OK
 
-echo -n "Creating a branch... "
+echo -n "Testing issue creation... "
+ISSUE_ID=$($GITLAB project-issue create --project-id $PROJECT_ID --title "my issue" --description "my issue description" | grep ^id: | cut -d' ' -f2)
+$OK
+
+echo -n "Testing note creation... "
+$GITLAB project-issue-note create --project-id $PROJECT_ID --issue-id $ISSUE_ID --body "the body" >/dev/null 2>&1
+$OK
+
+echo -n "Testing branch creation... "
 $GITLAB project-branch create --project-id $PROJECT_ID --branch-name branch1 --ref master >/dev/null 2>&1
 $OK
 
-echo -n "Deleting a branch... "
+echo -n "Testing branch deletion... "
 $GITLAB project-branch delete --project-id $PROJECT_ID --name branch1 >/dev/null 2>&1
 $OK
 
