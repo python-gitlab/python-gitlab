@@ -177,11 +177,12 @@ class GitlabObject(object):
     # Some objects (e.g. merge requests) have different urls for singular and
     # plural
     _urlPlural = None
+    _id_in_delete_url = True
     _returnClass = None
     _constructorTypes = None
+
     #: Whether _get_list_or_object should return list or object when id is None
     getListWhenNoId = True
-
     #: Tells if GitLab-api allows retrieving single objects.
     canGet = True
     #: Tells if GitLab-api allows listing of objects.
@@ -897,6 +898,8 @@ class ProjectMilestoneManager(BaseManager):
 
 class ProjectLabel(GitlabObject):
     _url = '/projects/%(project_id)s/labels'
+    _id_in_delete_url = False
+    canGet = 'from_list'
     requiredUrlAttrs = ['project_id']
     idAttr = 'name'
     requiredDeleteAttrs = ['name']

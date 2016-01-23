@@ -454,7 +454,7 @@ class Gitlab(object):
             raise GitlabDeleteError('Missing attribute(s): %s' %
                                     ", ".join(missing))
 
-        obj_id = params[obj.idAttr]
+        obj_id = params[obj.idAttr] if obj._id_in_delete_url else None
         url = self._construct_url(id_=obj_id, obj=obj, parameters=params)
         headers = self._create_headers()
 

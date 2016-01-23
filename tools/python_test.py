@@ -115,12 +115,12 @@ assert(readme.decode() == 'Initial content')
 
 # labels
 label1 = admin_project.labels.create({'name': 'label1', 'color': '#778899'})
+label1 = admin_project.labels.get('label1')
 assert(len(admin_project.labels.list()) == 1)
 label1.new_name = 'label1updated'
 label1.save()
 assert(label1.name == 'label1updated')
-# FIXME(gpocentek): broken
-# label1.delete()
+label1.delete()
 
 # milestones
 m1 = admin_project.milestones.create({'title': 'milestone1'})
