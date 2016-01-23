@@ -264,9 +264,9 @@ class Gitlab(object):
                                 headers=headers,
                                 verify=self.ssl_verify,
                                 timeout=self.timeout)
-        except Exception:
+        except Exception as e:
             raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % self._url)
+                "Can't connect to GitLab server (%s)" % e)
 
     def _raw_post(self, path, data=None, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
@@ -276,9 +276,9 @@ class Gitlab(object):
                                  headers=headers,
                                  verify=self.ssl_verify,
                                  timeout=self.timeout)
-        except Exception:
+        except Exception as e:
             raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % self._url)
+                "Can't connect to GitLab server (%s)" % e)
 
     def _raw_put(self, path, data=None, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
@@ -289,9 +289,9 @@ class Gitlab(object):
                                 headers=headers,
                                 verify=self.ssl_verify,
                                 timeout=self.timeout)
-        except Exception:
+        except Exception as e:
             raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % self._url)
+                "Can't connect to GitLab server (%s)" % e)
 
     def _raw_delete(self, path, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
@@ -303,9 +303,9 @@ class Gitlab(object):
                                    headers=headers,
                                    verify=self.ssl_verify,
                                    timeout=self.timeout)
-        except Exception:
+        except Exception as e:
             raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % self._url)
+                "Can't connect to GitLab server (%s)" % e)
 
     def list(self, obj_class, **kwargs):
         """Request the listing of GitLab resources.
@@ -343,9 +343,9 @@ class Gitlab(object):
             r = requests.get(url, params=params, headers=headers,
                              verify=self.ssl_verify,
                              timeout=self.timeout)
-        except Exception:
+        except Exception as e:
             raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % self._url)
+                "Can't connect to GitLab server (%s)" % e)
 
         raise_error_from_response(r, GitlabListError)
 
@@ -413,9 +413,9 @@ class Gitlab(object):
         try:
             r = requests.get(url, params=params, headers=headers,
                              verify=self.ssl_verify, timeout=self.timeout)
-        except Exception:
+        except Exception as e:
             raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % self._url)
+                "Can't connect to GitLab server (%s)" % e)
 
         raise_error_from_response(r, GitlabGetError)
         return r.json()
@@ -469,9 +469,9 @@ class Gitlab(object):
                                 headers=headers,
                                 verify=self.ssl_verify,
                                 timeout=self.timeout)
-        except Exception:
+        except Exception as e:
             raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % self._url)
+                "Can't connect to GitLab server (%s)" % e)
 
         raise_error_from_response(r, GitlabDeleteError)
         return True
@@ -516,9 +516,9 @@ class Gitlab(object):
                               headers=headers,
                               verify=self.ssl_verify,
                               timeout=self.timeout)
-        except Exception:
+        except Exception as e:
             raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % self._url)
+                "Can't connect to GitLab server (%s)" % e)
 
         raise_error_from_response(r, GitlabCreateError, 201)
         return r.json()
@@ -562,9 +562,9 @@ class Gitlab(object):
                              headers=headers,
                              verify=self.ssl_verify,
                              timeout=self.timeout)
-        except Exception:
+        except Exception as e:
             raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % self._url)
+                "Can't connect to GitLab server (%s)" % e)
 
         raise_error_from_response(r, GitlabUpdateError)
         return r.json()
