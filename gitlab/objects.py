@@ -26,16 +26,17 @@ import warnings
 
 import six
 
+import gitlab
 from gitlab.exceptions import *  # noqa
 
 
 class jsonEncoder(json.JSONEncoder):
     def default(self, obj):
-        from gitlab import Gitlab
         if isinstance(obj, GitlabObject):
-            return {k: v for k, v in obj.__dict__.iteritems()
-                    if not isinstance(v, BaseManager)}
-        elif isinstance(obj, Gitlab):
+            return {k: v for k, v in six.iteritems(obj.__dict__)
+                    if (not isinstance(v, BaseManager)
+                        and not k[0] == '_')}
+        elif isinstance(obj, gitlab.Gitlab):
             return {'url': obj._url}
         return json.JSONEncoder.default(self, obj)
 

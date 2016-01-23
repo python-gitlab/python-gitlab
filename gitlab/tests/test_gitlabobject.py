@@ -21,6 +21,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import json
 try:
     import unittest
 except ImportError:
@@ -149,6 +150,14 @@ class TestGitlabObject(unittest.TestCase):
         self.gl = Gitlab("http://localhost", private_token="private_token",
                          email="testuser@test.com", password="testpassword",
                          ssl_verify=True)
+
+    def test_json(self):
+        gl_object = CurrentUser(self.gl, data={"username": "testname"})
+        json_str = gl_object.json()
+        data = json.loads(json_str)
+        self.assertIn("id", data)
+        self.assertEqual(data["username"], "testname")
+        self.assertEqual(data["gitlab"]["url"], "http://localhost/api/v3")
 
     def test_list_not_implemented(self):
         self.assertRaises(NotImplementedError, CurrentUser.list, self.gl)
