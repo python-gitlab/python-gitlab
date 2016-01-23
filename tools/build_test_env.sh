@@ -33,7 +33,8 @@ case $PY_VER in
         exit 1;;
 esac
 
-docker run --name gitlab-test --detach --publish 8080:80 --publish 2222:22 gpocentek/test-python-gitlab:latest >/dev/null 2>&1
+docker run --name gitlab-test --detach --publish 8080:80 \
+    --publish 2222:22 gpocentek/test-python-gitlab:latest >/dev/null 2>&1
 
 LOGIN='root'
 PASSWORD='5iveL!fe'
@@ -46,7 +47,8 @@ echo -n "Waiting for gitlab to come online... "
 I=0
 while :; do
     sleep 5
-    curl -s http://localhost:8080/users/sign_in 2>/dev/null | grep -q "GitLab Community Edition" && break
+    curl -s http://localhost:8080/users/sign_in 2>/dev/null \
+        | grep -q "GitLab Community Edition" && break
     let I=I+5
     [ $I -eq 120 ] && exit 1
 done
@@ -57,7 +59,8 @@ $OK
 TOKEN=$(curl -s http://localhost:8080/api/v3/session \
     -X POST \
     --data "login=$LOGIN&password=$PASSWORD" \
-    | python -c 'import sys, json; print(json.load(sys.stdin)["private_token"])')
+    | python -c \
+        'import sys, json; print(json.load(sys.stdin)["private_token"])')
 
 cat > $CONFIG << EOF
 [global]
