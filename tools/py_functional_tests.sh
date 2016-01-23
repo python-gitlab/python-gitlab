@@ -34,4 +34,6 @@ $VENV_CMD $VENV
 pip install -rrequirements.txt
 pip install -e .
 
+sleep 10
+
 python $(dirname $0)/python_test.py
