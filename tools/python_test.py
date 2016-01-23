@@ -110,6 +110,7 @@ readme = admin_project.files.create({'file_path': 'README.rst',
                                      'branch_name': 'master',
                                      'content': 'Initial content',
                                      'commit_message': 'New commit'})
+assert(readme.decode() == 'Initial content')
 
 # labels
 label1 = admin_project.labels.create({'name': 'label1', 'color': '#778899'})

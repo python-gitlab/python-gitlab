@@ -18,6 +18,7 @@
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+import base64
 import copy
 import itertools
 import json
@@ -921,6 +922,14 @@ class ProjectFile(GitlabObject):
     getListWhenNoId = False
     shortPrintAttr = 'file_path'
     getRequiresId = False
+
+    def decode(self):
+        """Returns the decoded content.
+
+        Returns:
+            (str): the decoded content.
+        """
+        return base64.b64decode(self.content)
 
 
 class ProjectFileManager(BaseManager):
