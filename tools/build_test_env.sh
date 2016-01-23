@@ -55,7 +55,7 @@ cleanup() {
     docker kill gitlab-test >/dev/null 2>&1
     docker rm gitlab-test >/dev/null 2>&1
     command -v deactivate >/dev/null 2>&1 && deactivate || true
-    rm -rf $VENV
+    rm -rf "$VENV"
 }
 [ -z "${BUILD_TEST_ENV_AUTO_CLEANUP+set}" ] || {
     trap cleanup EXIT
@@ -68,10 +68,10 @@ docker run --name gitlab-test --detach --publish 8080:80 \
 LOGIN='root'
 PASSWORD='5iveL!fe'
 CONFIG=/tmp/python-gitlab.cfg
-GITLAB() { gitlab --config-file $CONFIG "$@"; }
+GITLAB() { gitlab --config-file "$CONFIG" "$@"; }
 GREEN='\033[0;32m'
 NC='\033[0m'
-OK() { echo -e ${GREEN}OK${NC}; }
+OK() { echo -e "${GREEN}OK${NC}"; }
 
 log "Waiting for gitlab to come online... "
 I=0
@@ -82,7 +82,7 @@ while :; do
     curl -s http://localhost:8080/users/sign_in 2>/dev/null \
         | grep -q "GitLab Community Edition" && break
     let I=I+5
-    [ $I -eq 120 ] && exit 1
+    [ "$I" -eq 120 ] && exit 1
 done
 sleep 5
 
@@ -106,8 +106,8 @@ EOF
 log "Config file content ($CONFIG):"
 log <$CONFIG
 
-$VENV_CMD $VENV
-. $VENV/bin/activate
+"$VENV_CMD" "$VENV"
+. "$VENV"/bin/activate
 pip install -rrequirements.txt
 pip install -e .
 
