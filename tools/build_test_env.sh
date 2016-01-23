@@ -68,7 +68,7 @@ docker run --name gitlab-test --detach --publish 8080:80 \
 LOGIN='root'
 PASSWORD='5iveL!fe'
 CONFIG=/tmp/python-gitlab.cfg
-GITLAB="gitlab --config-file $CONFIG"
+GITLAB() { gitlab --config-file $CONFIG "$@"; }
 GREEN='\033[0;32m'
 NC='\033[0m'
 OK() { echo -e ${GREEN}OK${NC}; }

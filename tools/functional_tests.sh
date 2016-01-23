@@ -21,60 +21,60 @@ BUILD_TEST_ENV_AUTO_CLEANUP=true
 set -e
 
 echo -n "Testing project creation... "
-PROJECT_ID=$($GITLAB project create --name test-project1 \
+PROJECT_ID=$(GITLAB project create --name test-project1 \
     | grep ^id: | cut -d' ' -f2)
-$GITLAB project list | grep -q test-project1
+GITLAB project list | grep -q test-project1
 OK
 
 echo -n "Testing project update... "
-$GITLAB project update --id $PROJECT_ID --description "My New Description"
+GITLAB project update --id $PROJECT_ID --description "My New Description"
 OK
 
 echo -n "Testing user creation... "
-USER_ID=$($GITLAB user create --email fake@email.com --username user1 \
+USER_ID=$(GITLAB user create --email fake@email.com --username user1 \
     --name "User One" --password fakepassword | grep ^id: | cut -d' ' -f2)
 OK
 
 echo -n "Testing verbose output... "
-$GITLAB -v user list | grep -q avatar-url
+GITLAB -v user list | grep -q avatar-url
 OK
 
 echo -n "Testing CLI args not in output... "
-$GITLAB -v user list | grep -qv config-file
+GITLAB -v user list | grep -qv config-file
 OK
 
 echo -n "Testing adding member to a project... "
-$GITLAB project-member create --project-id $PROJECT_ID \
+GITLAB project-member create --project-id $PROJECT_ID \
     --user-id $USER_ID --access-level 40 >/dev/null 2>&1
 OK
 
 echo -n "Testing file creation... "
-$GITLAB project-file create --project-id $PROJECT_ID \
+GITLAB project-file create --project-id $PROJECT_ID \
     --file-path README --branch-name master --content "CONTENT" \
     --commit-message "Initial commit" >/dev/null 2>&1
 OK
 
 echo -n "Testing issue creation... "
-ISSUE_ID=$($GITLAB project-issue create --project-id $PROJECT_ID \
+ISSUE_ID=$(GITLAB project-issue create --project-id $PROJECT_ID \
     --title "my issue" --description "my issue description" \
     | grep ^id: | cut -d' ' -f2)
 OK
 
 echo -n "Testing note creation... "
-$GITLAB project-issue-note create --project-id $PROJECT_ID \
+GITLAB project-issue-note create --project-id $PROJECT_ID \
     --issue-id $ISSUE_ID --body "the body" >/dev/null 2>&1
 OK
 
 echo -n "Testing branch creation... "
-$GITLAB project-branch create --project-id $PROJECT_ID \
+GITLAB project-branch create --project-id $PROJECT_ID \
     --branch-name branch1 --ref master >/dev/null 2>&1
 OK
 
 echo -n "Testing branch deletion... "
-$GITLAB project-branch delete --project-id $PROJECT_ID \
+GITLAB project-branch delete --project-id $PROJECT_ID \
     --name branch1 >/dev/null 2>&1
 OK
 
 echo -n "Testing project deletion... "
-$GITLAB project delete --id $PROJECT_ID
+GITLAB project delete --id $PROJECT_ID
 OK
