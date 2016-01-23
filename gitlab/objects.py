@@ -33,7 +33,8 @@ class jsonEncoder(json.JSONEncoder):
     def default(self, obj):
         from gitlab import Gitlab
         if isinstance(obj, GitlabObject):
-            return obj.__dict__
+            return {k: v for k, v in obj.__dict__.iteritems()
+                    if not isinstance(v, BaseManager)}
         elif isinstance(obj, Gitlab):
             return {'url': obj._url}
         return json.JSONEncoder.default(self, obj)
@@ -475,7 +476,7 @@ class GitlabObject(object):
         Returns:
             str: The json string.
         """
-        return json.dumps(self.__dict__, cls=jsonEncoder)
+        return json.dumps(self, cls=jsonEncoder)
 
 
 class UserKey(GitlabObject):
