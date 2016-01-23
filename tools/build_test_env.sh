@@ -39,6 +39,15 @@ case $PY_VER in
     *) fatal "Wrong python version (2 or 3)";;
 esac
 
+for req in \
+    curl \
+    docker \
+    "${VENV_CMD}" \
+    ;
+do
+    command -v "${req}" >/dev/null 2>&1 || fatal "${req} is required"
+done
+
 VENV=$(pwd)/.venv
 
 cleanup() {
