@@ -891,6 +891,19 @@ class ProjectMilestone(GitlabObject):
     optionalCreateAttrs = ['description', 'due_date', 'state_event']
     shortPrintAttr = 'title'
 
+    def issues(self):
+        url = "/projects/%s/milestones/%s/issues" % (self.project_id, self.id)
+        r = self.gitlab._raw_get(url)
+        raise_error_from_response(r, GitlabDeleteError)
+
+        l = []
+        for j in r.json():
+            o = ProjectIssue(self, j)
+            o._from_api = True
+            l.append(o)
+
+        return l
+
 
 class ProjectMilestoneManager(BaseManager):
     obj_cls = ProjectMilestone

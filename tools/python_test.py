@@ -131,3 +131,16 @@ m1.state_event = 'close'
 m1.save()
 m1 = admin_project.milestones.get(1)
 assert(m1.state == 'closed')
+
+# issues
+issue1 = admin_project.issues.create({'title': 'my issue 1',
+                                      'milestone_id': m1.id})
+issue2 = admin_project.issues.create({'title': 'my issue 2'})
+issue3 = admin_project.issues.create({'title': 'my issue 3'})
+assert(len(admin_project.issues.list()) == 3)
+issue3.state_event = 'close'
+issue3.save()
+assert(len(admin_project.issues.list(state='closed')) == 1)
+assert(len(admin_project.issues.list(state='opened')) == 2)
+assert(len(admin_project.issues.list(milestone='milestone1')) == 1)
+assert(m1.issues()[0].title == 'my issue 1')
