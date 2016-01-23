@@ -1,5 +1,6 @@
-[![Build Status](https://travis-ci.org/gpocentek/python-gitlab.svg?branch=master)](https://travis-ci.org/gpocentek/python-gitlab)
-
+.. image:: https://travis-ci.org/gpocentek/python-gitlab.svg?branch=master
+   :target: https://travis-ci.org/gpocentek/python-gitlab
+    
 Python GitLab
 =============
 
