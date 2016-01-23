@@ -29,14 +29,14 @@ PY_VER=2
 while getopts :p: opt "$@"; do
     case $opt in
         p) PY_VER=$OPTARG;;
-        *) echo "Unknown option: $opt"; exit 1;;
+        *) fatal "Unknown option: $opt";;
     esac
 done
 
 case $PY_VER in
     2) VENV_CMD=virtualenv;;
     3) VENV_CMD=pyvenv;;
-    *) echo "Wrong python version (2 or 3)"; exit 1;;
+    *) fatal "Wrong python version (2 or 3)";;
 esac
 
 VENV=$(pwd)/.venv
@@ -63,7 +63,7 @@ GREEN='\033[0;32m'
 NC='\033[0m'
 OK="echo -e ${GREEN}OK${NC}"
 
-echo -n "Waiting for gitlab to come online... "
+log "Waiting for gitlab to come online... "
 I=0
 while :; do
     sleep 5
@@ -73,7 +73,6 @@ while :; do
     [ $I -eq 120 ] && exit 1
 done
 sleep 5
-$OK
 
 # Get the token
 TOKEN=$(curl -s http://localhost:8080/api/v3/session \
@@ -92,8 +91,8 @@ url = http://localhost:8080
 private_token = $TOKEN
 EOF
 
-echo "Config file content ($CONFIG):"
-cat $CONFIG
+log "Config file content ($CONFIG):"
+log <$CONFIG
 
 $VENV_CMD $VENV
 . $VENV/bin/activate
