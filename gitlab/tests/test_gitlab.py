@@ -429,9 +429,8 @@ class TestGitlabMethods(unittest.TestCase):
         self.assertRaises(GitlabCreateError, self.gl.create, obj)
 
     def test_create_unknown_path(self):
-        obj = User(self.gl, data={"email": "email", "password": "password",
-                                  "username": "username", "name": "name",
-                                  "can_create_group": True})
+        obj = Project(self.gl, data={"name": "name"})
+        obj.id = 1
         obj._from_api = True
 
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects/1",
@@ -442,7 +441,7 @@ class TestGitlabMethods(unittest.TestCase):
             return response(404, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
-            self.assertRaises(GitlabCreateError, self.gl.create, obj)
+            self.assertRaises(GitlabDeleteError, self.gl.delete, obj)
 
     def test_create_401(self):
         obj = Group(self.gl, data={"name": "testgroup", "path": "testpath"})
