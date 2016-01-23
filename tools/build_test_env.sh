@@ -33,7 +33,7 @@ case $PY_VER in
         exit 1;;
 esac
 
-docker run --name gitlab-test --detach --publish 8080:80 --publish 2222:22 genezys/gitlab:latest >/dev/null 2>&1
+docker run --name gitlab-test --detach --publish 8080:80 --publish 2222:22 gpocentek/test-python-gitlab:latest >/dev/null 2>&1
 
 LOGIN='root'
 PASSWORD='5iveL!fe'
