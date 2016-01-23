@@ -59,6 +59,7 @@ cleanup() {
 }
 [ -z "${BUILD_TEST_ENV_AUTO_CLEANUP+set}" ] || {
     trap cleanup EXIT
+    trap 'exit 1' HUP INT TERM
 }
 
 docker run --name gitlab-test --detach --publish 8080:80 \
