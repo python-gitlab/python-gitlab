@@ -75,7 +75,9 @@ OK="echo -e ${GREEN}OK${NC}"
 log "Waiting for gitlab to come online... "
 I=0
 while :; do
-    sleep 5
+    sleep 1
+    docker top gitlab-test >/dev/null 2>&1 || fatal "docker failed to start"
+    sleep 4
     curl -s http://localhost:8080/users/sign_in 2>/dev/null \
         | grep -q "GitLab Community Edition" && break
     let I=I+5
