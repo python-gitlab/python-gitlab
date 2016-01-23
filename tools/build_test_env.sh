@@ -62,7 +62,7 @@ TOKEN=$(curl -s http://localhost:8080/api/v3/session \
 cat > $CONFIG << EOF
 [global]
 default = local
-timeout = 2
+timeout = 10
 
 [local]
 url = http://localhost:8080
