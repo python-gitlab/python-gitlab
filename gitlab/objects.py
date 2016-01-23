@@ -31,6 +31,7 @@ from gitlab.exceptions import *  # noqa
 
 class jsonEncoder(json.JSONEncoder):
     def default(self, obj):
+        from gitlab import Gitlab
         if isinstance(obj, GitlabObject):
             return obj.__dict__
         elif isinstance(obj, Gitlab):
