@@ -106,10 +106,11 @@ readme.content = base64.b64encode("Improved README")
 readme.save(branch_name="master", commit_message="new commit")
 readme.delete(commit_message="Removing README")
 
-readme = admin_project.files.create({'file_path': 'README.rst',
-                                     'branch_name': 'master',
-                                     'content': 'Initial content',
-                                     'commit_message': 'New commit'})
+admin_project.files.create({'file_path': 'README.rst',
+                            'branch_name': 'master',
+                            'content': 'Initial content',
+                            'commit_message': 'New commit'})
+readme = admin_project.files.get(file_path='README.rst', ref='master')
 assert(readme.decode() == 'Initial content')
 
 # labels
