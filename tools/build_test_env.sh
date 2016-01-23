@@ -14,6 +14,17 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+pecho() { printf %s\\n "$*"; }
+log() {
+    [ "$#" -eq 0 ] || { pecho "$@"; return 0; }
+    while IFS= read -r log_line || [ -n "${log_line}" ]; do
+        log "${log_line}"
+    done
+}
+error() { log "ERROR: $@" >&2; }
+fatal() { error "$@"; exit 1; }
+try() { "$@" || fatal "'$@' failed"; }
+
 PY_VER=2
 while getopts :p: opt "$@"; do
     case $opt in
