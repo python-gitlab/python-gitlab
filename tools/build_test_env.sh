@@ -54,7 +54,7 @@ cleanup() {
     rm -f /tmp/python-gitlab.cfg
     docker kill gitlab-test >/dev/null 2>&1
     docker rm gitlab-test >/dev/null 2>&1
-    deactivate || true
+    command -v deactivate >/dev/null 2>&1 && deactivate || true
     rm -rf $VENV
 }
 [ -z "${BUILD_TEST_ENV_AUTO_CLEANUP+set}" ] || {
