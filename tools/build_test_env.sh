@@ -48,7 +48,7 @@ do
     command -v "${req}" >/dev/null 2>&1 || fatal "${req} is required"
 done
 
-VENV=$(pwd)/.venv
+VENV=$(pwd)/.venv || exit 1
 
 cleanup() {
     rm -f /tmp/python-gitlab.cfg
@@ -62,7 +62,7 @@ cleanup() {
     trap 'exit 1' HUP INT TERM
 }
 
-docker run --name gitlab-test --detach --publish 8080:80 \
+try docker run --name gitlab-test --detach --publish 8080:80 \
     --publish 2222:22 gpocentek/test-python-gitlab:latest >/dev/null 2>&1
 
 LOGIN='root'
@@ -87,11 +87,16 @@ done
 sleep 5
 
 # Get the token
-TOKEN=$(curl -s http://localhost:8080/api/v3/session \
-    -X POST \
-    --data "login=$LOGIN&password=$PASSWORD" \
-    | python -c \
-        'import sys, json; print(json.load(sys.stdin)["private_token"])')
+TOKEN_JSON=$(
+    try curl -s http://localhost:8080/api/v3/session \
+        -X POST \
+        --data "login=$LOGIN&password=$PASSWORD"
+) || exit 1
+TOKEN=$(
+    pecho "${TOKEN_JSON}" |
+    try python -c \
+        'import sys, json; print(json.load(sys.stdin)["private_token"])'
+) || exit 1
 
 cat > $CONFIG << EOF
 [global]
@@ -106,9 +111,9 @@ EOF
 log "Config file content ($CONFIG):"
 log <$CONFIG
 
-"$VENV_CMD" "$VENV"
-. "$VENV"/bin/activate
-pip install -rrequirements.txt
-pip install -e .
+try "$VENV_CMD" "$VENV"
+. "$VENV"/bin/activate || fatal "failed to activate Python virtual environment"
+try pip install -rrequirements.txt
+try pip install -e .
 
 sleep 20

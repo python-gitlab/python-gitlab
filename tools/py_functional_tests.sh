@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-setenv_script=$(dirname "$0")/build_test_env.sh
+setenv_script=$(dirname "$0")/build_test_env.sh || exit 1
 BUILD_TEST_ENV_AUTO_CLEANUP=true
-. "$setenv_script" "$@"
+. "$setenv_script" "$@" || exit 1
 
-python "$(dirname "$0")"/python_test.py
+try python "$(dirname "$0")"/python_test.py
