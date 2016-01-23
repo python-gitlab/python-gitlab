@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Copyright (C) 2016 Gauvain Pocentek <gauvain@pocentek.net>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -71,7 +71,7 @@ CONFIG=/tmp/python-gitlab.cfg
 GITLAB() { gitlab --config-file "$CONFIG" "$@"; }
 GREEN='\033[0;32m'
 NC='\033[0m'
-OK() { echo -e "${GREEN}OK${NC}"; }
+OK() { printf "${GREEN}OK${NC}\\n"; }
 
 log "Waiting for gitlab to come online... "
 I=0
@@ -81,7 +81,7 @@ while :; do
     sleep 4
     curl -s http://localhost:8080/users/sign_in 2>/dev/null \
         | grep -q "GitLab Community Edition" && break
-    let I=I+5
+    I=$((I+5))
     [ "$I" -eq 120 ] && exit 1
 done
 sleep 5

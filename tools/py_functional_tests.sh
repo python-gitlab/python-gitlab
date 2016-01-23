@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Copyright (C) 2015 Gauvain Pocentek <gauvain@pocentek.net>
 #
 # This program is free software: you can redistribute it and/or modify
