@@ -71,7 +71,7 @@ CONFIG=/tmp/python-gitlab.cfg
 GITLAB="gitlab --config-file $CONFIG"
 GREEN='\033[0;32m'
 NC='\033[0m'
-OK="echo -e ${GREEN}OK${NC}"
+OK() { echo -e ${GREEN}OK${NC}; }
 
 log "Waiting for gitlab to come online... "
 I=0
