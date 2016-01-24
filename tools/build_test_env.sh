@@ -29,7 +29,9 @@ PY_VER=2
 while getopts :p: opt "$@"; do
     case $opt in
         p) PY_VER=$OPTARG;;
-        *) fatal "Unknown option: $opt";;
+        :) fatal "Option -${OPTARG} requires a value";;
+        '?') fatal "Unknown option: -${OPTARG}";;
+        *) fatal "Internal error: opt=${opt}";;
     esac
 done
 
