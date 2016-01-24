@@ -836,7 +836,6 @@ class ProjectTag(GitlabObject):
     _url = '/projects/%(project_id)s/repository/tags'
     idAttr = 'name'
     canGet = 'from_list'
-    canDelete = False
     canUpdate = False
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['tag_name', 'ref']
