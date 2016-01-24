@@ -1020,6 +1020,17 @@ class ProjectSnippetManager(BaseManager):
     obj_cls = ProjectSnippet
 
 
+class ProjectTrigger(GitlabObject):
+    _url = '/projects/%(project_id)s/triggers'
+    canUpdate = False
+    idAttr = 'token'
+    requiredUrlAttrs = ['project_id']
+
+
+class ProjectTriggerManager(BaseManager):
+    obj_cls = ProjectTrigger
+
+
 class Project(GitlabObject):
     _url = '/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
@@ -1047,6 +1058,7 @@ class Project(GitlabObject):
         ('notes', ProjectNoteManager, [('project_id', 'id')]),
         ('snippets', ProjectSnippetManager, [('project_id', 'id')]),
         ('tags', ProjectTagManager, [('project_id', 'id')]),
+        ('triggers', ProjectTriggerManager, [('project_id', 'id')]),
     ]
 
     def Branch(self, id=None, **kwargs):

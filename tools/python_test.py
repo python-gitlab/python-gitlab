@@ -152,3 +152,9 @@ tag1.set_release_description('Description 1')
 tag1.set_release_description('Description 2')
 assert(tag1.release.description == 'Description 2')
 tag1.delete()
+
+# triggers
+tr1 = admin_project.triggers.create({})
+assert(len(admin_project.triggers.list()) == 1)
+tr1 = admin_project.triggers.get(tr1.token)
+tr1.delete()
