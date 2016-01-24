@@ -144,3 +144,8 @@ assert(len(admin_project.issues.list(state='closed')) == 1)
 assert(len(admin_project.issues.list(state='opened')) == 2)
 assert(len(admin_project.issues.list(milestone='milestone1')) == 1)
 assert(m1.issues()[0].title == 'my issue 1')
+
+# tags
+tag1 = admin_project.tags.create({'tag_name': 'v1.0', 'ref': 'master'})
+assert(len(admin_project.tags.list()) == 1)
+tag1.delete()
