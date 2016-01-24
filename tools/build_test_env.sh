@@ -17,20 +17,15 @@
 PY_VER=2
 while getopts :p: opt "$@"; do
     case $opt in
-        p)
-            PY_VER=$OPTARG;;
-        *)
-            echo "Unknown option: $opt"
-            exit 1;;
+        p) PY_VER=$OPTARG;;
+        *) echo "Unknown option: $opt"; exit 1;;
     esac
 done
 
 case $PY_VER in
     2) VENV_CMD=virtualenv;;
     3) VENV_CMD=pyvenv;;
-    *)
-        echo "Wrong python version (2 or 3)"
-        exit 1;;
+    *) echo "Wrong python version (2 or 3)"; exit 1;;
 esac
 
 VENV=$(pwd)/.venv
