@@ -51,9 +51,10 @@ do
 done
 
 VENV=$(pwd)/.venv || exit 1
+CONFIG=/tmp/python-gitlab.cfg
 
 cleanup() {
-    rm -f /tmp/python-gitlab.cfg
+    rm -f "${CONFIG}"
     docker kill gitlab-test >/dev/null 2>&1
     docker rm gitlab-test >/dev/null 2>&1
     command -v deactivate >/dev/null 2>&1 && deactivate || true
@@ -69,7 +70,6 @@ try docker run --name gitlab-test --detach --publish 8080:80 \
 
 LOGIN='root'
 PASSWORD='5iveL!fe'
-CONFIG=/tmp/python-gitlab.cfg
 GITLAB() { gitlab --config-file "$CONFIG" "$@"; }
 GREEN='\033[0;32m'
 NC='\033[0m'
