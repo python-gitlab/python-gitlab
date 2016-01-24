@@ -33,12 +33,26 @@ case $PY_VER in
         exit 1;;
 esac
 
+VENV=$(pwd)/.venv
+
+cleanup() {
+    rm -f /tmp/python-gitlab.cfg
+    docker kill gitlab-test >/dev/null 2>&1
+    docker rm gitlab-test >/dev/null 2>&1
+    deactivate || true
+    rm -rf $VENV
+}
+[ -z "${BUILD_TEST_ENV_AUTO_CLEANUP+set}" ] || {
+    trap cleanup EXIT
+}
+
 docker run --name gitlab-test --detach --publish 8080:80 \
     --publish 2222:22 gpocentek/test-python-gitlab:latest >/dev/null 2>&1
 
 LOGIN='root'
 PASSWORD='5iveL!fe'
 CONFIG=/tmp/python-gitlab.cfg
+GITLAB="gitlab --config-file $CONFIG"
 GREEN='\033[0;32m'
 NC='\033[0m'
 OK="echo -e ${GREEN}OK${NC}"
@@ -74,3 +88,10 @@ EOF
 
 echo "Config file content ($CONFIG):"
 cat $CONFIG
+
+$VENV_CMD $VENV
+. $VENV/bin/activate
+pip install -rrequirements.txt
+pip install -e .
+
+sleep 20

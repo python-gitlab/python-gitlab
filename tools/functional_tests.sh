@@ -14,34 +14,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-cleanup() {
-    rm -f /tmp/python-gitlab.cfg
-    docker kill gitlab-test >/dev/null 2>&1
-    docker rm gitlab-test >/dev/null 2>&1
-    deactivate || true
-    rm -rf $VENV
-}
-trap cleanup EXIT
-
 setenv_script=$(dirname $0)/build_test_env.sh
-
+BUILD_TEST_ENV_AUTO_CLEANUP=true
 . $setenv_script "$@"
-
-CONFIG=/tmp/python-gitlab.cfg
-GITLAB="gitlab --config-file $CONFIG"
-GREEN='\033[0;32m'
-NC='\033[0m'
-OK="echo -e ${GREEN}OK${NC}"
-
-VENV=$(pwd)/.venv
-
-$VENV_CMD $VENV
-. $VENV/bin/activate
-pip install -rrequirements.txt
-pip install -e .
-
-# NOTE(gpocentek): the first call might fail without a little delay
-sleep 20
 
 set -e
 
