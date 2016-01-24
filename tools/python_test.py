@@ -148,4 +148,7 @@ assert(m1.issues()[0].title == 'my issue 1')
 # tags
 tag1 = admin_project.tags.create({'tag_name': 'v1.0', 'ref': 'master'})
 assert(len(admin_project.tags.list()) == 1)
+tag1.set_release_description('Description 1')
+tag1.set_release_description('Description 2')
+assert(tag1.release.description == 'Description 2')
 tag1.delete()

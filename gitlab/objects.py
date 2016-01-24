@@ -638,7 +638,6 @@ class ProjectBranch(GitlabObject):
     canUpdate = False
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['branch_name', 'ref']
-    _constructorTypes = {'commit': 'ProjectCommit'}
 
     def protect(self, protect=True, **kwargs):
         url = self._url % {'project_id': self.project_id}
@@ -832,8 +831,23 @@ class ProjectNoteManager(BaseManager):
     obj_cls = ProjectNote
 
 
+class ProjectTagRelease(GitlabObject):
+    _url = '/projects/%(project_id)s/repository/tags/%(tag_name)/release'
+    canDelete = False
+    canList = False
+    requiredUrlAttrs = ['project_id', 'tag_name']
+    requiredCreateAttrs = ['description']
+    shortPrintAttr = 'description'
+
+
+class ProjectTagReleaseManager(BaseManager):
+    obj_cls = ProjectTagRelease
+
+
 class ProjectTag(GitlabObject):
     _url = '/projects/%(project_id)s/repository/tags'
+    _constructorTypes = {'release': 'ProjectTagRelease',
+                         'commit': 'ProjectCommit'}
     idAttr = 'name'
     canGet = 'from_list'
     canUpdate = False
@@ -841,6 +855,17 @@ class ProjectTag(GitlabObject):
     requiredCreateAttrs = ['tag_name', 'ref']
     optionalCreateAttrs = ['message']
     shortPrintAttr = 'name'
+
+    def set_release_description(self, description):
+        url = '/projects/%s/repository/tags/%s/release' % (self.project_id,
+                                                           self.name)
+        if self.release is None:
+            r = self.gitlab._raw_post(url, data={'description': description})
+            raise_error_from_response(r, GitlabCreateError, 201)
+        else:
+            r = self.gitlab._raw_put(url, data={'description': description})
+            raise_error_from_response(r, GitlabUpdateError, 200)
+        self.release = ProjectTagRelease(self, r.json())
 
 
 class ProjectTagManager(BaseManager):
