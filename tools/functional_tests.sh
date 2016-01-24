@@ -18,69 +18,65 @@ setenv_script=$(dirname "$0")/build_test_env.sh || exit 1
 BUILD_TEST_ENV_AUTO_CLEANUP=true
 . "$setenv_script" "$@" || exit 1
 
-printf %s "Testing project creation... "
-OUTPUT=$(try GITLAB project create --name test-project1) || exit 1
-PROJECT_ID=$(pecho "${OUTPUT}" | grep ^id: | cut -d' ' -f2)
-OUTPUT=$(try GITLAB project list) || exit 1
-pecho "${OUTPUT}" | grep -q test-project1 || fatal "test failed"
-OK
+testcase "project creation" '
+    OUTPUT=$(try GITLAB project create --name test-project1) || exit 1
+    PROJECT_ID=$(pecho "${OUTPUT}" | grep ^id: | cut -d" " -f2)
+    OUTPUT=$(try GITLAB project list) || exit 1
+    pecho "${OUTPUT}" | grep -q test-project1
+'
 
-printf %s "Testing project update... "
-GITLAB project update --id "$PROJECT_ID" --description "My New Description" \
-    || fatal "test failed"
-OK
+testcase "project update" '
+    GITLAB project update --id "$PROJECT_ID" --description "My New Description"
+'
 
-printf %s "Testing user creation... "
-OUTPUT=$(GITLAB user create --email fake@email.com --username user1 \
-    --name "User One" --password fakepassword) || fatal "test failed"
-OK
+testcase "user creation" '
+    OUTPUT=$(GITLAB user create --email fake@email.com --username user1 \
+        --name "User One" --password fakepassword)
+'
 USER_ID=$(pecho "${OUTPUT}" | grep ^id: | cut -d' ' -f2)
 
-printf %s "Testing verbose output... "
-OUTPUT=$(try GITLAB -v user list) || exit 1
-pecho "${OUTPUT}" | grep -q avatar-url || fatal "test failed"
-OK
+testcase "verbose output" '
+    OUTPUT=$(try GITLAB -v user list) || exit 1
+    pecho "${OUTPUT}" | grep -q avatar-url
+'
 
-printf %s "Testing CLI args not in output... "
-OUTPUT=$(try GITLAB -v user list) || exit 1
-pecho "${OUTPUT}" | grep -qv config-file || fatal "test failed"
-OK
+testcase "CLI args not in output" '
+    OUTPUT=$(try GITLAB -v user list) || exit 1
+    pecho "${OUTPUT}" | grep -qv config-file
+'
 
-printf %s "Testing adding member to a project... "
-GITLAB project-member create --project-id "$PROJECT_ID" \
-    --user-id "$USER_ID" --access-level 40 >/dev/null 2>&1 \
-    || fatal "test failed"
-OK
+testcase "adding member to a project" '
+    GITLAB project-member create --project-id "$PROJECT_ID" \
+        --user-id "$USER_ID" --access-level 40 >/dev/null 2>&1
+'
 
-printf %s "Testing file creation... "
-GITLAB project-file create --project-id "$PROJECT_ID" \
-    --file-path README --branch-name master --content "CONTENT" \
-    --commit-message "Initial commit" >/dev/null 2>&1 || fatal "test failed"
-OK
+testcase "file creation" '
+    GITLAB project-file create --project-id "$PROJECT_ID" \
+        --file-path README --branch-name master --content "CONTENT" \
+        --commit-message "Initial commit" >/dev/null 2>&1
+'
 
-printf %s "Testing issue creation... "
-OUTPUT=$(GITLAB project-issue create --project-id "$PROJECT_ID" \
-    --title "my issue" --description "my issue description") \
-    || fatal "test failed"
-OK
+testcase "issue creation" '
+    OUTPUT=$(GITLAB project-issue create --project-id "$PROJECT_ID" \
+        --title "my issue" --description "my issue description")
+'
 ISSUE_ID=$(pecho "${OUTPUT}" | grep ^id: | cut -d' ' -f2)
 
-printf %s "Testing note creation... "
-GITLAB project-issue-note create --project-id "$PROJECT_ID" \
-    --issue-id "$ISSUE_ID" --body "the body" >/dev/null 2>&1 \
-    || fatal "test failed"
-OK
+testcase "note creation" '
+    GITLAB project-issue-note create --project-id "$PROJECT_ID" \
+        --issue-id "$ISSUE_ID" --body "the body" >/dev/null 2>&1
+'
 
-printf %s "Testing branch creation... "
-GITLAB project-branch create --project-id "$PROJECT_ID" \
-    --branch-name branch1 --ref master >/dev/null 2>&1 || fatal "test failed"
-OK
+testcase "branch creation" '
+    GITLAB project-branch create --project-id "$PROJECT_ID" \
+        --branch-name branch1 --ref master >/dev/null 2>&1
+'
 
-printf %s "Testing branch deletion... "
-GITLAB project-branch delete --project-id "$PROJECT_ID" \
-    --name branch1 >/dev/null 2>&1 || fatal "test failed"
-OK
+testcase "branch deletion" '
+    GITLAB project-branch delete --project-id "$PROJECT_ID" \
+        --name branch1 >/dev/null 2>&1
+'
 
-printf %s "Testing project deletion... "
-GITLAB project delete --id "$PROJECT_ID" || fatal "test failed"
-OK
+testcase "project deletion" '
+    GITLAB project delete --id "$PROJECT_ID"
+'
