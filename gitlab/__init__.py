@@ -551,7 +551,8 @@ class Gitlab(object):
         if missing:
             raise GitlabUpdateError('Missing attribute(s): %s' %
                                     ", ".join(missing))
-        url = self._construct_url(id_=obj.id, obj=obj, parameters=params)
+        obj_id = params[obj.idAttr] if obj._id_in_update_url else None
+        url = self._construct_url(id_=obj_id, obj=obj, parameters=params)
         headers = self._create_headers(content_type="application/json")
 
         # build data that can really be sent to server

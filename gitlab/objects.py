@@ -178,6 +178,7 @@ class GitlabObject(object):
     # plural
     _urlPlural = None
     _id_in_delete_url = True
+    _id_in_update_url = True
     _returnClass = None
     _constructorTypes = None
 
@@ -936,6 +937,7 @@ class ProjectMilestoneManager(BaseManager):
 class ProjectLabel(GitlabObject):
     _url = '/projects/%(project_id)s/labels'
     _id_in_delete_url = False
+    _id_in_update_url = False
     canGet = 'from_list'
     requiredUrlAttrs = ['project_id']
     idAttr = 'name'
@@ -1031,6 +1033,17 @@ class ProjectTriggerManager(BaseManager):
     obj_cls = ProjectTrigger
 
 
+class ProjectVariable(GitlabObject):
+    _url = '/projects/%(project_id)s/variables'
+    idAttr = 'key'
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['key', 'value']
+
+
+class ProjectVariableManager(BaseManager):
+    obj_cls = ProjectVariable
+
+
 class Project(GitlabObject):
     _url = '/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
@@ -1059,6 +1072,7 @@ class Project(GitlabObject):
         ('snippets', ProjectSnippetManager, [('project_id', 'id')]),
         ('tags', ProjectTagManager, [('project_id', 'id')]),
         ('triggers', ProjectTriggerManager, [('project_id', 'id')]),
+        ('variables', ProjectVariableManager, [('project_id', 'id')]),
     ]
 
     def Branch(self, id=None, **kwargs):

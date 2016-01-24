@@ -89,7 +89,7 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                                                    required=True)
                 [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                                 required=True)
-                 for x in cls.requiredGetAttrs]
+                 for x in cls.requiredGetAttrs if x != cls.idAttr]
 
         elif action_name == CREATE:
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
@@ -109,7 +109,7 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                      else cls.requiredCreateAttrs)
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                             required=True)
-             for x in attrs]
+             for x in attrs if x != cls.idAttr]
 
             attrs = (cls.optionalUpdateAttrs
                      if cls.optionalUpdateAttrs is not None

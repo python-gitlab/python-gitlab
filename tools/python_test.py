@@ -158,3 +158,12 @@ tr1 = admin_project.triggers.create({})
 assert(len(admin_project.triggers.list()) == 1)
 tr1 = admin_project.triggers.get(tr1.token)
 tr1.delete()
+
+# variables
+v1 = admin_project.variables.create({'key': 'key1', 'value': 'value1'})
+assert(len(admin_project.variables.list()) == 1)
+v1.value = 'new_value1'
+v1.save()
+v1 = admin_project.variables.get(v1.key)
+assert(v1.value == 'new_value1')
+v1.delete()

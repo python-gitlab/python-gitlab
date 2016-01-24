@@ -41,7 +41,7 @@ pip install -rrequirements.txt
 pip install -e .
 
 # NOTE(gpocentek): the first call might fail without a little delay
-sleep 5
+sleep 20
 
 set -e
 
