@@ -207,9 +207,9 @@ class GitlabObject(object):
     #: Attributes that are optional when creating a new object.
     optionalCreateAttrs = []
     #: Attributes that are required when updating an object.
-    requiredUpdateAttrs = None
+    requiredUpdateAttrs = []
     #: Attributes that are optional when updating an object.
-    optionalUpdateAttrs = None
+    optionalUpdateAttrs = []
     #: Whether the object ID is required in the GET url.
     getRequiresId = True
     #: List of managers to create.
@@ -219,10 +219,15 @@ class GitlabObject(object):
     #: Attribute to use as ID when displaying the object.
     shortPrintAttr = None
 
-    def _data_for_gitlab(self, extra_parameters={}):
+    def _data_for_gitlab(self, extra_parameters={}, update=False):
         data = {}
-        for attribute in itertools.chain(self.requiredCreateAttrs,
-                                         self.optionalCreateAttrs):
+        if update and (self.requiredUpdateAttrs or self.optionalUpdateAttrs):
+            attributes = itertools.chain(self.requiredUpdateAttrs,
+                                         self.optionalUpdateAttrs)
+        else:
+            attributes = itertools.chain(self.requiredCreateAttrs,
+                                         self.optionalCreateAttrs)
+        for attribute in attributes:
             if hasattr(self, attribute):
                 data[attribute] = getattr(self, attribute)
 
@@ -506,7 +511,7 @@ class User(GitlabObject):
                            'confirm']
     managers = [('keys', UserKeyManager, [('user_id', 'id')])]
 
-    def _data_for_gitlab(self, extra_parameters={}):
+    def _data_for_gitlab(self, extra_parameters={}, update=False):
         if hasattr(self, 'confirm'):
             self.confirm = str(self.confirm).lower()
         return super(User, self)._data_for_gitlab(extra_parameters)
@@ -547,6 +552,28 @@ class CurrentUser(GitlabObject):
         warnings.warn("`Key` is deprecated, use `keys` instead",
                       DeprecationWarning)
         return CurrentUserKey._get_list_or_object(self.gitlab, id, **kwargs)
+
+
+class ApplicationSettings(GitlabObject):
+    _url = '/application/settings'
+    _id_in_update_url = False
+    optionalUpdateAttrs = ['after_sign_out_path', 'default_branch_protection',
+                           'default_project_visibility',
+                           'default_projects_limit',
+                           'default_snippet_visibility', 'gravatar_enabled',
+                           'home_page_url', 'restricted_signup_domains',
+                           'restricted_visibility_levels',
+                           'session_expire_delay', 'sign_in_text',
+                           'signin_enabled', 'signup_enabled',
+                           'twitter_sharing_enabled',
+                           'user_oauth_applications']
+    canList = False
+    canCreate = False
+    canDelete = False
+
+
+class ApplicationSettingsManager(BaseManager):
+    obj_cls = ApplicationSettings
 
 
 class GroupMember(GitlabObject):
@@ -784,7 +811,7 @@ class ProjectIssue(GitlabObject):
     managers = [('notes', ProjectIssueNoteManager,
                  [('project_id', 'project_id'), ('issue_id', 'id')])]
 
-    def _data_for_gitlab(self, extra_parameters={}):
+    def _data_for_gitlab(self, extra_parameters={}, update=False):
         # Gitlab-api returns labels in a json list and takes them in a
         # comma separated list.
         if hasattr(self, "labels"):

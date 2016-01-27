@@ -23,6 +23,13 @@ assert(token_from_auth == gl.private_token)
 gl.auth()
 assert(isinstance(gl.user, gitlab.objects.CurrentUser))
 
+# settings
+settings = gl.settings.get()
+settings.default_projects_limit = 42
+settings.save()
+settings = gl.settings.get()
+assert(settings.default_projects_limit == 42)
+
 # user manipulations
 new_user = gl.users.create({'email': 'foo@bar.com', 'username': 'foo',
                             'name': 'foo', 'password': 'foo_password'})

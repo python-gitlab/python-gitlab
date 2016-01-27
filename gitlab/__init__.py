@@ -122,6 +122,7 @@ class Gitlab(object):
         #: Whether SSL certificates should be validated
         self.ssl_verify = ssl_verify
 
+        self.settings = ApplicationSettingsManager(self)
         self.user_keys = UserKeyManager(self)
         self.users = UserManager(self)
         self.group_members = GroupMemberManager(self)
@@ -556,7 +557,7 @@ class Gitlab(object):
         headers = self._create_headers(content_type="application/json")
 
         # build data that can really be sent to server
-        data = obj._data_for_gitlab(extra_parameters=kwargs)
+        data = obj._data_for_gitlab(extra_parameters=kwargs, update=True)
 
         try:
             r = requests.put(url, data=data,

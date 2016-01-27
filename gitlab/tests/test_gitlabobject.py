@@ -159,6 +159,45 @@ class TestGitlabObject(unittest.TestCase):
         self.assertEqual(data["username"], "testname")
         self.assertEqual(data["gitlab"]["url"], "http://localhost/api/v3")
 
+    def test_data_for_gitlab(self):
+        class FakeObj1(GitlabObject):
+            _url = '/fake1'
+            requiredCreateAttrs = ['create_req']
+            optionalCreateAttrs = ['create_opt']
+            requiredUpdateAttrs = ['update_req']
+            optionalUpdateAttrs = ['update_opt']
+
+        class FakeObj2(GitlabObject):
+            _url = '/fake2'
+            requiredCreateAttrs = ['create_req']
+            optionalCreateAttrs = ['create_opt']
+
+        obj1 = FakeObj1(self.gl, {'update_req': 1, 'update_opt': 1,
+                                  'create_req': 1, 'create_opt': 1})
+        obj2 = FakeObj2(self.gl, {'create_req': 1, 'create_opt': 1})
+
+        obj1_data = json.loads(obj1._data_for_gitlab())
+        self.assertIn('create_req', obj1_data)
+        self.assertIn('create_opt', obj1_data)
+        self.assertNotIn('update_req', obj1_data)
+        self.assertNotIn('update_opt', obj1_data)
+        self.assertNotIn('gitlab', obj1_data)
+
+        obj1_data = json.loads(obj1._data_for_gitlab(update=True))
+        self.assertNotIn('create_req', obj1_data)
+        self.assertNotIn('create_opt', obj1_data)
+        self.assertIn('update_req', obj1_data)
+        self.assertIn('update_opt', obj1_data)
+
+        obj1_data = json.loads(obj1._data_for_gitlab(
+            extra_parameters={'foo': 'bar'}))
+        self.assertIn('foo', obj1_data)
+        self.assertEqual(obj1_data['foo'], 'bar')
+
+        obj2_data = json.loads(obj2._data_for_gitlab(update=True))
+        self.assertIn('create_req', obj2_data)
+        self.assertIn('create_opt', obj2_data)
+
     def test_list_not_implemented(self):
         self.assertRaises(NotImplementedError, CurrentUser.list, self.gl)
 
