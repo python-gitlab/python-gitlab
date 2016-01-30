@@ -503,11 +503,14 @@ class UserKeyManager(BaseManager):
 class User(GitlabObject):
     _url = '/users'
     shortPrintAttr = 'username'
-    # FIXME: password is required for create but not for update
-    requiredCreateAttrs = ['email', 'username', 'name']
-    optionalCreateAttrs = ['password', 'skype', 'linkedin', 'twitter',
-                           'projects_limit', 'extern_uid', 'provider',
-                           'bio', 'admin', 'can_create_group', 'website_url',
+    requiredCreateAttrs = ['email', 'username', 'name', 'password']
+    optionalCreateAttrs = ['skype', 'linkedin', 'twitter', 'projects_limit',
+                           'extern_uid', 'provider', 'bio', 'admin',
+                           'can_create_group', 'website_url', 'confirm']
+    requiredUpdateAttrs = ['email', 'username', 'name']
+    optionalUpdateAttrs = ['password', 'skype', 'linkedin', 'twitter',
+                           'projects_limit', 'extern_uid', 'provider', 'bio',
+                           'admin', 'can_create_group', 'website_url',
                            'confirm']
     managers = [('keys', UserKeyManager, [('user_id', 'id')])]
 
