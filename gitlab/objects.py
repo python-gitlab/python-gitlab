@@ -1207,14 +1207,20 @@ class Project(GitlabObject):
                                               **kwargs)
 
     def tree(self, path='', ref_name='', **kwargs):
-        url = "%s/%s/repository/tree" % (self._url, self.id)
-        url += '?path=%s&ref_name=%s' % (path, ref_name)
+        url = "/projects/%s/repository/tree" % (self.id)
+        params = []
+        if path:
+            params.append("path=%s" % path)
+        if ref_name:
+            params.append("ref_name=%s" % ref_name)
+        if params:
+            url += '?' + "&".join(params)
         r = self.gitlab._raw_get(url, **kwargs)
         raise_error_from_response(r, GitlabGetError)
         return r.json()
 
     def blob(self, sha, filepath, **kwargs):
-        url = "%s/%s/repository/blobs/%s" % (self._url, self.id, sha)
+        url = "/projects/%s/repository/blobs/%s" % (self.id, sha)
         url += '?filepath=%s' % (filepath)
         r = self.gitlab._raw_get(url, **kwargs)
         raise_error_from_response(r, GitlabGetError)

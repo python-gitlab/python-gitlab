@@ -121,6 +121,15 @@ admin_project.files.create({'file_path': 'README.rst',
 readme = admin_project.files.get(file_path='README.rst', ref='master')
 assert(readme.decode() == 'Initial content')
 
+tree = admin_project.tree()
+assert(len(tree) == 1)
+assert(tree[0]['name'] == 'README.rst')
+blob = admin_project.blob('master', 'README.rst')
+assert(blob == 'Initial content')
+archive1 = admin_project.archive()
+archive2 = admin_project.archive('master')
+assert(archive1 == archive2)
+
 # labels
 label1 = admin_project.labels.create({'name': 'label1', 'color': '#778899'})
 label1 = admin_project.labels.get('label1')
