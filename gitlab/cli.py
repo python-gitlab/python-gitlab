@@ -240,8 +240,14 @@ def do_project_owned(gl, what, args):
 
 
 def main():
+    if "--version" in sys.argv:
+        print(gitlab.__version__)
+        exit(0)
+
     parser = argparse.ArgumentParser(
         description="GitLab API Command Line Interface")
+    parser.add_argument("--version", help="Display the version.",
+                        action="store_true")
     parser.add_argument("-v", "--verbose", "--fancy",
                         help="Verbose mode",
                         action="store_true")
