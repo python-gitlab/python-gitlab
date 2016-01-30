@@ -1,4 +1,4 @@
 include COPYING AUTHORS ChangeLog requirements.txt test-requirements.txt
 include tox.ini .testr.conf
 recursive-include tools *
-recursive-include docs *.py *.rst api/.*rst Makefile make.bat
+recursive-include docs *.py *.rst api/*.rst Makefile make.bat
