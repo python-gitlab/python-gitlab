@@ -117,3 +117,13 @@ Use the ``all`` parameter to get all the items:
 .. code-block:: python
 
    all_groups = gl.groups.list(all=True)
+
+Sudo
+====
+
+If you have the administrator status, you can use ``sudo`` to act as another
+user. For example:
+
+.. code-block:: python
+
+   p = gl.projects.create({'name': 'awesome_project'}, sudo='user1')

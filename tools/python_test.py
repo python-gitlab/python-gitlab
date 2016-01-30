@@ -98,8 +98,9 @@ gr1_project = gl.projects.create({'name': 'gr1_project',
                                   'namespace_id': group1.id})
 gr2_project = gl.projects.create({'name': 'gr2_project',
                                   'namespace_id': group2.id})
+sudo_project = gl.projects.create({'name': 'sudo_project'}, sudo=user1.name)
 
-assert(len(gl.projects.all()) == 3)
+assert(len(gl.projects.all()) == 4)
 assert(len(gl.projects.owned()) == 2)
 assert(len(gl.projects.search("admin")) == 1)
 

@@ -189,3 +189,9 @@ Define the status of a commit (as would be done from a CI tool for example):
        --commit-id a43290c --state success --name ci/jenkins \
        --target-url http://server/build/123 \
        --description "Jenkins build succeeded"
+
+Use sudo to act as another user (admin only):
+
+.. code-block:: console
+
+   $ gitlab project create --name user_project1 --sudo username

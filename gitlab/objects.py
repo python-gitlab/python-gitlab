@@ -227,6 +227,7 @@ class GitlabObject(object):
         else:
             attributes = itertools.chain(self.requiredCreateAttrs,
                                          self.optionalCreateAttrs)
+        attributes = list(attributes) + ['sudo', 'page', 'per_page']
         for attribute in attributes:
             if hasattr(self, attribute):
                 data[attribute] = getattr(self, attribute)

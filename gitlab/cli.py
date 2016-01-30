@@ -73,6 +73,7 @@ def _populate_sub_parser_by_class(cls, sub_parser):
         [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                         required=True)
          for x in cls.requiredUrlAttrs]
+        sub_parser_action.add_argument("--sudo", required=False)
 
         if action_name == LIST:
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
