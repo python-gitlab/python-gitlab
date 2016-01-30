@@ -691,6 +691,30 @@ class ProjectBranchManager(BaseManager):
     obj_cls = ProjectBranch
 
 
+class ProjectBuild(GitlabObject):
+    _url = '/projects/%(project_id)s/builds'
+    _constructorTypes = {'user': 'User',
+                         'commit': 'ProjectCommit'}
+    requiredUrlAttrs = ['project_id']
+    canDelete = False
+    canUpdate = False
+    canCreate = False
+
+    def cancel(self):
+        url = '/projects/%s/builds/%s/cancel' % (self.project_id, self.id)
+        r = self.gitlab._raw_post(url)
+        raise_error_from_response(r, GitlabBuildCancelError, 201)
+
+    def retry(self):
+        url = '/projects/%s/builds/%s/retry' % (self.project_id, self.id)
+        r = self.gitlab._raw_post(url)
+        raise_error_from_response(r, GitlabBuildRetryError, 201)
+
+
+class ProjectBuildManager(BaseManager):
+    obj_cls = ProjectBuild
+
+
 class ProjectCommit(GitlabObject):
     _url = '/projects/%(project_id)s/repository/commits'
     canDelete = False
@@ -715,6 +739,20 @@ class ProjectCommit(GitlabObject):
         raise_error_from_response(r, GitlabGetError)
 
         return r.content
+
+    def builds(self, **kwargs):
+        url = '/projects/%s/repository/commits/%s/builds' % (self.project_id,
+                                                             self.id)
+        r = self.gitlab._raw_get(url, **kwargs)
+        raise_error_from_response(r, GitlabListError)
+
+        l = []
+        for j in r.json():
+            o = ProjectBuild(self, j)
+            o._from_api = True
+            l.append(o)
+
+        return l
 
 
 class ProjectCommitManager(BaseManager):
@@ -1088,6 +1126,7 @@ class Project(GitlabObject):
     shortPrintAttr = 'path'
     managers = [
         ('branches', ProjectBranchManager, [('project_id', 'id')]),
+        ('builds', ProjectBuildManager, [('project_id', 'id')]),
         ('commits', ProjectCommitManager, [('project_id', 'id')]),
         ('commitstatuses', ProjectCommitStatusManager, [('project_id', 'id')]),
         ('events', ProjectEventManager, [('project_id', 'id')]),

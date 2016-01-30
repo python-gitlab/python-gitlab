@@ -75,6 +75,14 @@ class GitlabTransferProjectError(GitlabOperationError):
     pass
 
 
+class GitlabBuildCancelError(GitlabOperationError):
+    pass
+
+
+class GitlabBuildRetryError(GitlabOperationError):
+    pass
+
+
 def raise_error_from_response(response, error, expected_code=200):
     """Tries to parse gitlab error message from response and raises error.
 
