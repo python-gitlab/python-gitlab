@@ -106,14 +106,14 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                                            required=True)
 
             attrs = (cls.requiredUpdateAttrs
-                     if cls.requiredUpdateAttrs is not None
+                     if (cls.requiredUpdateAttrs or cls.optionalUpdateAttrs)
                      else cls.requiredCreateAttrs)
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                             required=True)
              for x in attrs if x != cls.idAttr]
 
             attrs = (cls.optionalUpdateAttrs
-                     if cls.optionalUpdateAttrs is not None
+                     if (cls.requiredUpdateAttrs or cls.optionalUpdateAttrs)
                      else cls.optionalCreateAttrs)
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                             required=False)

@@ -728,9 +728,6 @@ class ProjectCommitStatus(GitlabObject):
     requiredUrlAttrs = ['project_id', 'commit_id']
     requiredCreateAttrs = ['state']
     optionalCreateAttrs = ['description', 'name', 'ref', 'target_url']
-    requiredGetAttrs = []
-    requiredUpdateAttrs = []
-    requiredDeleteAttrs = []
 
 
 class ProjectCommitStatusManager(BaseManager):
@@ -1079,11 +1076,15 @@ class Project(GitlabObject):
     _url = '/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
     requiredCreateAttrs = ['name']
-    requiredUpdateAttrs = []
     optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
                            'merge_requests_enabled', 'wiki_enabled',
                            'snippets_enabled', 'public', 'visibility_level',
                            'namespace_id', 'description', 'path', 'import_url']
+    optionalUpdateAttrs = ['name', 'default_branch', 'issues_enabled',
+                           'wall_enabled', 'merge_requests_enabled',
+                           'wiki_enabled', 'snippets_enabled', 'public',
+                           'visibility_level', 'namespace_id', 'description',
+                           'path', 'import_url']
     shortPrintAttr = 'path'
     managers = [
         ('branches', ProjectBranchManager, [('project_id', 'id')]),
