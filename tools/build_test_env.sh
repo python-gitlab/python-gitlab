@@ -56,13 +56,13 @@ CONFIG=/tmp/python-gitlab.cfg
 cleanup() {
     rm -f "${CONFIG}"
     log "Stopping gitlab-test docker container..."
-    docker stop gitlab-test >/dev/null 2>&1 &
+    docker stop gitlab-test >/dev/null &
     docker_stop_pid=$!
     log "Waiting for gitlab-test docker container to exit..."
-    docker wait gitlab-test >/dev/null 2>&1
+    docker wait gitlab-test >/dev/null
     wait "${docker_stop_pid}"
     log "Removing gitlab-test docker container..."
-    docker rm gitlab-test >/dev/null 2>&1
+    docker rm gitlab-test >/dev/null
     log "Deactivating Python virtualenv..."
     command -v deactivate >/dev/null 2>&1 && deactivate || true
     log "Deleting python virtualenv..."
@@ -75,7 +75,7 @@ cleanup() {
 }
 
 try docker run --name gitlab-test --detach --publish 8080:80 \
-    --publish 2222:22 gpocentek/test-python-gitlab:latest >/dev/null 2>&1
+    --publish 2222:22 gpocentek/test-python-gitlab:latest >/dev/null
 
 LOGIN='root'
 PASSWORD='5iveL!fe'
