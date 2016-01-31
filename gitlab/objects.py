@@ -619,6 +619,16 @@ class Group(GitlabObject):
                                                **kwargs)
 
     def transfer_project(self, id, **kwargs):
+        """Transfers a project to this new groups.
+
+        Attrs:
+            id (int): ID of the project to transfer.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabTransferProjectError: If the server fails to perform the
+                request.
+        """
         url = '/groups/%d/projects/%d' % (self.id, id)
         r = self.gitlab._raw_post(url, None, **kwargs)
         raise_error_from_response(r, GitlabTransferProjectError, 201)
@@ -672,6 +682,7 @@ class ProjectBranch(GitlabObject):
     requiredCreateAttrs = ['branch_name', 'ref']
 
     def protect(self, protect=True, **kwargs):
+        """Protects the project."""
         url = self._url % {'project_id': self.project_id}
         action = 'protect' if protect else 'unprotect'
         url = "%s/%s/%s" % (url, self.name, action)
@@ -684,6 +695,7 @@ class ProjectBranch(GitlabObject):
             del self.protected
 
     def unprotect(self, **kwargs):
+        """Unprotects the project."""
         self.protect(False, **kwargs)
 
 
@@ -701,11 +713,13 @@ class ProjectBuild(GitlabObject):
     canCreate = False
 
     def cancel(self):
+        """Cancel the build."""
         url = '/projects/%s/builds/%s/cancel' % (self.project_id, self.id)
         r = self.gitlab._raw_post(url)
         raise_error_from_response(r, GitlabBuildCancelError, 201)
 
     def retry(self):
+        """Retry the build."""
         url = '/projects/%s/builds/%s/retry' % (self.project_id, self.id)
         r = self.gitlab._raw_post(url)
         raise_error_from_response(r, GitlabBuildRetryError, 201)
@@ -724,6 +738,7 @@ class ProjectCommit(GitlabObject):
     shortPrintAttr = 'title'
 
     def diff(self, **kwargs):
+        """Generate the commit diff."""
         url = ('/projects/%(project_id)s/repository/commits/%(commit_id)s/diff'
                % {'project_id': self.project_id, 'commit_id': self.id})
         r = self.gitlab._raw_get(url, **kwargs)
@@ -732,6 +747,18 @@ class ProjectCommit(GitlabObject):
         return r.json()
 
     def blob(self, filepath, **kwargs):
+        """Generate the content of a file for this commit.
+
+        Args:
+            filepath (str): Path of the file to request.
+
+        Returns:
+            str: The content of the file
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
+        """
         url = ('/projects/%(project_id)s/repository/blobs/%(commit_id)s' %
                {'project_id': self.project_id, 'commit_id': self.id})
         url += '?filepath=%s' % filepath
@@ -741,6 +768,15 @@ class ProjectCommit(GitlabObject):
         return r.content
 
     def builds(self, **kwargs):
+        """List the build for this commit.
+
+        Returns:
+            list(ProjectBuild): A list of builds.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabListError: If the server fails to perform the request.
+        """
         url = '/projects/%s/repository/commits/%s/builds' % (self.project_id,
                                                              self.id)
         r = self.gitlab._raw_get(url, **kwargs)
@@ -924,6 +960,19 @@ class ProjectTag(GitlabObject):
     shortPrintAttr = 'name'
 
     def set_release_description(self, description):
+        """Set the release notes on the tag.
+
+        If the release doesn't exist yet, it will be created. If it already
+        exists, its description will be updated.
+
+        Args:
+            description (str): Description of the release.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabCreateError: If the server fails to create the release.
+            GitlabUpdateError: If the server fails to update the release.
+        """
         url = '/projects/%s/repository/tags/%s/release' % (self.project_id,
                                                            self.name)
         if self.release is None:
@@ -1032,7 +1081,7 @@ class ProjectFile(GitlabObject):
     getRequiresId = False
 
     def decode(self):
-        """Returns the decoded content.
+        """Returns the decoded content of the file.
 
         Returns:
             (str): the decoded content.
@@ -1246,6 +1295,19 @@ class Project(GitlabObject):
                                               **kwargs)
 
     def tree(self, path='', ref_name='', **kwargs):
+        """Return a list of files in the repository.
+
+        Args:
+            path (str): Path of the top folder (/ by default)
+            ref_name (str): Reference to a commit or branch
+
+        Returns:
+            str: The json representation of the tree.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
+        """
         url = "/projects/%s/repository/tree" % (self.id)
         params = []
         if path:
@@ -1259,6 +1321,19 @@ class Project(GitlabObject):
         return r.json()
 
     def blob(self, sha, filepath, **kwargs):
+        """Return the content of a file for a commit.
+
+        Args:
+            sha (str): ID of the commit
+            filepath (str): Path of the file to return
+
+        Returns:
+            str: The file content
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
+        """
         url = "/projects/%s/repository/blobs/%s" % (self.id, sha)
         url += '?filepath=%s' % (filepath)
         r = self.gitlab._raw_get(url, **kwargs)
@@ -1266,6 +1341,18 @@ class Project(GitlabObject):
         return r.content
 
     def archive(self, sha=None, **kwargs):
+        """Return a tarball of the repository.
+
+        Args:
+            sha (str): ID of the commit (default branch by default).
+
+        Returns:
+            str: The binary data of the archive.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
+        """
         url = '/projects/%s/repository/archive' % self.id
         if sha:
             url += '?sha=%s' % sha

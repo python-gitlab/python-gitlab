@@ -8,7 +8,7 @@ Module contents
     :members:
     :undoc-members:
     :show-inheritance:
-    :exclude-members: Hook, Project, UserProject, Group, Issue, Team, User,
+    :exclude-members: Hook, UserProject, Group, Issue, Team, User,
                       all_projects, owned_projects, search_projects
 
 gitlab.exceptions module
@@ -27,5 +27,5 @@ gitlab.objects module
     :undoc-members:
     :show-inheritance:
     :exclude-members: Branch, Commit, Content, Event, File, Hook, Issue, Key,
-                      Label, Member, MergeRequest, Milestone, Note, Project,
-                      Snippet, Tag
+                      Label, Member, MergeRequest, Milestone, Note, Snippet,
+                      Tag
