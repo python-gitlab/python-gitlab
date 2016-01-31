@@ -55,10 +55,15 @@ CONFIG=/tmp/python-gitlab.cfg
 
 cleanup() {
     rm -f "${CONFIG}"
+    log "Killing gitlab-test docker container..."
     docker kill gitlab-test >/dev/null 2>&1
+    log "Removing gitlab-test docker container..."
     docker rm gitlab-test >/dev/null 2>&1
+    log "Deactivating Python virtualenv..."
     command -v deactivate >/dev/null 2>&1 && deactivate || true
+    log "Deleting python virtualenv..."
     rm -rf "$VENV"
+    log "Done."
 }
 [ -z "${BUILD_TEST_ENV_AUTO_CLEANUP+set}" ] || {
     trap cleanup EXIT
@@ -91,11 +96,12 @@ while :; do
     curl -s http://localhost:8080/users/sign_in 2>/dev/null \
         | grep -q "GitLab Community Edition" && break
     I=$((I+5))
-    [ "$I" -eq 120 ] && exit 1
+    [ "$I" -lt 120 ] || fatal "timed out"
 done
 sleep 5
 
 # Get the token
+log "Getting GitLab token..."
 TOKEN_JSON=$(
     try curl -s http://localhost:8080/api/v3/session \
         -X POST \
@@ -120,9 +126,17 @@ EOF
 log "Config file content ($CONFIG):"
 log <$CONFIG
 
+log "Creating Python virtualenv..."
 try "$VENV_CMD" "$VENV"
 . "$VENV"/bin/activate || fatal "failed to activate Python virtual environment"
+
+log "Installing dependencies into virtualenv..."
 try pip install -rrequirements.txt
+
+log "Installing into virtualenv..."
 try pip install -e .
 
+log "Pausing to give GitLab some time to finish starting up..."
 sleep 20
+
+log "Test environment initialized."
