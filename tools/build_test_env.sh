@@ -55,8 +55,8 @@ CONFIG=/tmp/python-gitlab.cfg
 
 cleanup() {
     rm -f "${CONFIG}"
-    log "Killing gitlab-test docker container..."
-    docker kill gitlab-test >/dev/null 2>&1
+    log "Stopping gitlab-test docker container..."
+    docker stop gitlab-test >/dev/null 2>&1
     log "Removing gitlab-test docker container..."
     docker rm gitlab-test >/dev/null 2>&1
     log "Deactivating Python virtualenv..."
