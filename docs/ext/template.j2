@@ -1,0 +1,21 @@
+Manager for :class:`gitlab.objects.{{ cls.__name__ }}` objects.
+
+Available actions for this class:
+
+{% if cls.canList %}- Objects listing{%endif%}
+{% if cls.canGet %}- Unique object retrieval{%endif%}
+{% if cls.canCreate %}- Object creation{%endif%}
+{% if cls.canUpdate %}- Object update{%endif%}
+{% if cls.canDelete %}- Object deletion{%endif%}
+
+{% if cls.canCreate %}
+Mandatory arguments for object creation: {{ md_create_keys }}
+
+Optional arguments for object creation:  {{ opt_create_keys }}
+{% endif %}
+
+{% if cls.canUpdate %}
+Mandatory arguments for object update: {{ md_create_keys }}
+
+Optional arguments for object update: {{ opt_create_keys }}
+{% endif %}
