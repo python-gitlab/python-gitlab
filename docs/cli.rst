@@ -22,8 +22,7 @@ Files
 ``~/.python-gitlab.cfg``
     User configuration file
 
-You can use a different configuration file with the :option:`--config-file`
-option.
+You can use a different configuration file with the ``--config-file`` option.
 
 Content
 -------
@@ -48,7 +47,7 @@ The configuration file uses the ``INI`` format. It contains at least a
    timeout = 1
 
 The ``default`` option of the ``[global]`` section defines the GitLab server to
-use if no server is explitly specified with the :option:`--gitlab` CLI option.
+use if no server is explitly specified with the ``--gitlab`` CLI option.
 
 The ``[global]`` section also defines the values for the default connexion
 parameters. You can override the values in each GitLab server section.
@@ -94,14 +93,14 @@ want to perform. For example:
 
    $ gitlab project list
 
-Use the :option:`--help` option to list the available object types and actions:
+Use the ``--help`` option to list the available object types and actions:
 
 .. code-block:: console
 
    $ gitlab --help
    $ gitlab project --help
 
-Some actions require additional parameters. Use the :option:`--help` option to
+Some actions require additional parameters. Use the ``--help`` option to
 list mandatory and optional arguments for an action:
 
 .. code-block:: console
