@@ -1,3 +1,26 @@
+Version 0.12
+
+ * Improve documentation
+ * Improve unit tests
+ * Improve test scripts
+ * Skip BaseManager attributes when encoding to JSON
+ * Fix the json() method for python 3
+ * Add Travis CI support
+ * Add a decode method for ProjectFile
+ * Make connection exceptions more explicit
+ * Fix ProjectLabel get and delete
+ * Implement ProjectMilestone.issues()
+ * ProjectTag supports deletion
+ * Implement setting release info on a tag
+ * Implement project triggers support
+ * Implement project variables support
+ * Add support for application settings
+ * Fix the 'password' requirement for User creation
+ * Add sudo support
+ * Fix project update
+ * Fix Project.tree()
+ * Add support for project builds
+
 Version 0.11.1
 
  * Fix discovery of parents object attrs for managers
