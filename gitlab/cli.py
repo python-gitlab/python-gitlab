@@ -337,6 +337,7 @@ def main():
 
         for o in l:
             o.display(verbose)
+            print("")
 
     elif action == OWNED:
         if cls != gitlab.Project:
@@ -344,6 +345,7 @@ def main():
 
         for o in do_project_owned(gl, what, args):
             o.display(verbose)
+            print("")
 
     elif action == ALL:
         if cls != gitlab.Project:
@@ -351,5 +353,6 @@ def main():
 
         for o in do_project_all(gl, what, args):
             o.display(verbose)
+            print("")
 
     sys.exit(0)
