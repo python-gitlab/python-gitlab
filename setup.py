@@ -3,11 +3,17 @@
 
 from setuptools import setup
 from setuptools import find_packages
-import gitlab.version
+
+
+def get_version():
+    with open('gitlab/__init__.py') as f:
+        for line in f:
+            if line.startswith('__version__'):
+                return eval(line.split('=')[-1])
 
 
 setup(name='python-gitlab',
-      version=gitlab.version.version,
+      version=get_version(),
       description='Interact with GitLab API',
       long_description='Interact with GitLab API',
       author='Gauvain Pocentek',
