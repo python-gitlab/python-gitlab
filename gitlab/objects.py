@@ -527,6 +527,20 @@ class User(GitlabObject):
                                            user_id=self.id,
                                            **kwargs)
 
+    def block(self, **kwargs):
+        """Blocks the user."""
+        url = '/users/%s/block' % self.id
+        r = self.gitlab._raw_put(url, **kwargs)
+        raise_error_from_response(r, GitlabBlockError)
+        self.state = 'blocked'
+
+    def unblock(self, **kwargs):
+        """Unblocks the user."""
+        url = '/users/%s/unblock' % self.id
+        r = self.gitlab._raw_put(url, **kwargs)
+        raise_error_from_response(r, GitlabUnblockError)
+        self.state = 'active'
+
 
 class UserManager(BaseManager):
     obj_cls = User

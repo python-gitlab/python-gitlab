@@ -40,6 +40,9 @@ for user in users_list:
 assert(new_user.username == user.username)
 assert(new_user.email == user.email)
 
+new_user.block()
+new_user.unblock()
+
 # SSH keys
 key = new_user.keys.create({'title': 'testkey', 'key': SSH_KEY})
 assert(len(new_user.keys.list()) == 1)
