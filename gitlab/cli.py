@@ -63,69 +63,6 @@ def _cls_to_what(cls):
     return camel_re.sub(r'\1-\2', cls.__name__).lower()
 
 
-def _populate_sub_parser_by_class(cls, sub_parser):
-    for action_name in ['list', 'get', 'create', 'update', 'delete']:
-        attr = 'can' + action_name.capitalize()
-        if not getattr(cls, attr):
-            continue
-        sub_parser_action = sub_parser.add_parser(action_name)
-        [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
-                                        required=True)
-         for x in cls.requiredUrlAttrs]
-        sub_parser_action.add_argument("--sudo", required=False)
-
-        if action_name == "list":
-            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
-                                            required=True)
-             for x in cls.requiredListAttrs]
-            sub_parser_action.add_argument("--page", required=False)
-            sub_parser_action.add_argument("--per-page", required=False)
-
-        elif action_name in ["get", "delete"]:
-            if cls not in [gitlab.CurrentUser]:
-                if cls.getRequiresId:
-                    id_attr = cls.idAttr.replace('_', '-')
-                    sub_parser_action.add_argument("--%s" % id_attr,
-                                                   required=True)
-                [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
-                                                required=True)
-                 for x in cls.requiredGetAttrs if x != cls.idAttr]
-
-        elif action_name == "create":
-            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
-                                            required=True)
-             for x in cls.requiredCreateAttrs]
-            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
-                                            required=False)
-             for x in cls.optionalCreateAttrs]
-
-        elif action_name == "update":
-            id_attr = cls.idAttr.replace('_', '-')
-            sub_parser_action.add_argument("--%s" % id_attr,
-                                           required=True)
-
-            attrs = (cls.requiredUpdateAttrs
-                     if (cls.requiredUpdateAttrs or cls.optionalUpdateAttrs)
-                     else cls.requiredCreateAttrs)
-            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
-                                            required=True)
-             for x in attrs if x != cls.idAttr]
-
-            attrs = (cls.optionalUpdateAttrs
-                     if (cls.requiredUpdateAttrs or cls.optionalUpdateAttrs)
-                     else cls.optionalCreateAttrs)
-            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
-                                            required=False)
-             for x in attrs]
-
-    if cls in EXTRA_ACTIONS:
-        for action_name in sorted(EXTRA_ACTIONS[cls]):
-            sub_parser_action = sub_parser.add_parser(action_name)
-            d = EXTRA_ACTIONS[cls][action_name]
-            [sub_parser_action.add_argument("--%s" % arg, required=True)
-             for arg in d.get('required', [])]
-
-
 def do_auth(gitlab_id, config_files):
     try:
         gl = gitlab.Gitlab.from_config(gitlab_id, config_files)
@@ -286,11 +223,70 @@ class GitlabCLI(object):
             _die("Impossible to get milestone issues (%s)" % str(e))
 
 
-def main():
-    if "--version" in sys.argv:
-        print(gitlab.__version__)
-        exit(0)
+def _populate_sub_parser_by_class(cls, sub_parser):
+    for action_name in ['list', 'get', 'create', 'update', 'delete']:
+        attr = 'can' + action_name.capitalize()
+        if not getattr(cls, attr):
+            continue
+        sub_parser_action = sub_parser.add_parser(action_name)
+        [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                        required=True)
+         for x in cls.requiredUrlAttrs]
+        sub_parser_action.add_argument("--sudo", required=False)
 
+        if action_name == "list":
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                            required=True)
+             for x in cls.requiredListAttrs]
+            sub_parser_action.add_argument("--page", required=False)
+            sub_parser_action.add_argument("--per-page", required=False)
+
+        elif action_name in ["get", "delete"]:
+            if cls not in [gitlab.CurrentUser]:
+                if cls.getRequiresId:
+                    id_attr = cls.idAttr.replace('_', '-')
+                    sub_parser_action.add_argument("--%s" % id_attr,
+                                                   required=True)
+                [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                                required=True)
+                 for x in cls.requiredGetAttrs if x != cls.idAttr]
+
+        elif action_name == "create":
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                            required=True)
+             for x in cls.requiredCreateAttrs]
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                            required=False)
+             for x in cls.optionalCreateAttrs]
+
+        elif action_name == "update":
+            id_attr = cls.idAttr.replace('_', '-')
+            sub_parser_action.add_argument("--%s" % id_attr,
+                                           required=True)
+
+            attrs = (cls.requiredUpdateAttrs
+                     if (cls.requiredUpdateAttrs or cls.optionalUpdateAttrs)
+                     else cls.requiredCreateAttrs)
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                            required=True)
+             for x in attrs if x != cls.idAttr]
+
+            attrs = (cls.optionalUpdateAttrs
+                     if (cls.requiredUpdateAttrs or cls.optionalUpdateAttrs)
+                     else cls.optionalCreateAttrs)
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                            required=False)
+             for x in attrs]
+
+    if cls in EXTRA_ACTIONS:
+        for action_name in sorted(EXTRA_ACTIONS[cls]):
+            sub_parser_action = sub_parser.add_parser(action_name)
+            d = EXTRA_ACTIONS[cls][action_name]
+            [sub_parser_action.add_argument("--%s" % arg, required=True)
+             for arg in d.get('required', [])]
+
+
+def _build_parser(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(
         description="GitLab API Command Line Interface")
     parser.add_argument("--version", help="Display the version.",
@@ -330,7 +326,20 @@ def main():
         _populate_sub_parser_by_class(cls, object_subparsers)
         object_subparsers.required = True
 
-    arg = parser.parse_args()
+    return parser
+
+
+def _parse_args(args=sys.argv[1:]):
+    parser = _build_parser()
+    return parser.parse_args(args)
+
+
+def main():
+    if "--version" in sys.argv:
+        print(gitlab.__version__)
+        exit(0)
+
+    arg = _parse_args()
     args = arg.__dict__
 
     config_files = arg.config_file

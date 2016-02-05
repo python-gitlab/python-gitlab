@@ -492,7 +492,3 @@ class TestProjectSnippet(unittest.TestCase):
     def test_blob_fail(self):
         with HTTMock(self.resp_content_fail):
             self.assertRaises(GitlabGetError, self.obj.Content)
-
-
-if __name__ == "__main__":
-    main()
