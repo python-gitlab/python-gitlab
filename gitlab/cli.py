@@ -25,29 +25,28 @@ import operator
 import re
 import sys
 
+import six
+
 import gitlab
 
 camel_re = re.compile('(.)([A-Z])')
-LIST = 'list'
-GET = 'get'
-CREATE = 'create'
-UPDATE = 'update'
-DELETE = 'delete'
-PROTECT = 'protect'
-UNPROTECT = 'unprotect'
-SEARCH = 'search'
-OWNED = 'owned'
-ALL = 'all'
-ACTIONS = [LIST, GET, CREATE, UPDATE, DELETE]
-EXTRA_ACTION = [PROTECT, UNPROTECT, SEARCH, OWNED, ALL]
 
-extra_actions = {
-    gitlab.ProjectBranch: {PROTECT: {'requiredAttrs': ['id', 'project-id']},
-                           UNPROTECT: {'requiredAttrs': ['id', 'project-id']}},
-    gitlab.Project: {SEARCH: {'requiredAttrs': ['query']},
-                     OWNED: {'requiredAttrs': []},
-                     ALL: {'requiredAttrs': []}},
-    gitlab.Group: {SEARCH: {'requiredAttrs': ['query']}},
+EXTRA_ACTIONS = {
+    gitlab.Group: {'search': {'required': ['query']}},
+    gitlab.ProjectBranch: {'protect': {'required': ['id', 'project-id']},
+                           'unprotect': {'required': ['id', 'project-id']}},
+    gitlab.ProjectBuild: {'cancel': {'required': ['id', 'project-id']},
+                          'retry': {'required': ['id', 'project-id']}},
+    gitlab.ProjectCommit: {'diff': {'required': ['id', 'project-id']},
+                           'blob': {'required': ['id', 'project-id',
+                                                 'filepath']},
+                           'builds': {'required': ['id', 'project-id']}},
+    gitlab.ProjectMilestone: {'issues': {'required': ['id', 'project-id']}},
+    gitlab.Project: {'search': {'required': ['query']},
+                     'owned': {},
+                     'all': {}},
+    gitlab.User: {'block': {'required': ['id']},
+                  'unblock': {'required': ['id']}},
 }
 
 
@@ -65,7 +64,7 @@ def _cls_to_what(cls):
 
 
 def _populate_sub_parser_by_class(cls, sub_parser):
-    for action_name in ACTIONS:
+    for action_name in ['list', 'get', 'create', 'update', 'delete']:
         attr = 'can' + action_name.capitalize()
         if not getattr(cls, attr):
             continue
@@ -75,14 +74,14 @@ def _populate_sub_parser_by_class(cls, sub_parser):
          for x in cls.requiredUrlAttrs]
         sub_parser_action.add_argument("--sudo", required=False)
 
-        if action_name == LIST:
+        if action_name == "list":
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                             required=True)
              for x in cls.requiredListAttrs]
             sub_parser_action.add_argument("--page", required=False)
             sub_parser_action.add_argument("--per-page", required=False)
 
-        elif action_name in [GET, DELETE]:
+        elif action_name in ["get", "delete"]:
             if cls not in [gitlab.CurrentUser]:
                 if cls.getRequiresId:
                     id_attr = cls.idAttr.replace('_', '-')
@@ -92,7 +91,7 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                                                 required=True)
                  for x in cls.requiredGetAttrs if x != cls.idAttr]
 
-        elif action_name == CREATE:
+        elif action_name == "create":
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                             required=True)
              for x in cls.requiredCreateAttrs]
@@ -100,7 +99,7 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                                             required=False)
              for x in cls.optionalCreateAttrs]
 
-        elif action_name == UPDATE:
+        elif action_name == "update":
             id_attr = cls.idAttr.replace('_', '-')
             sub_parser_action.add_argument("--%s" % id_attr,
                                            required=True)
@@ -119,12 +118,12 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                                             required=False)
              for x in attrs]
 
-    if cls in extra_actions:
-        for action_name in sorted(extra_actions[cls]):
+    if cls in EXTRA_ACTIONS:
+        for action_name in sorted(EXTRA_ACTIONS[cls]):
             sub_parser_action = sub_parser.add_parser(action_name)
-            d = extra_actions[cls][action_name]
+            d = EXTRA_ACTIONS[cls][action_name]
             [sub_parser_action.add_argument("--%s" % arg, required=True)
-             for arg in d['requiredAttrs']]
+             for arg in d.get('required', [])]
 
 
 def do_auth(gitlab_id, config_files):
@@ -136,107 +135,155 @@ def do_auth(gitlab_id, config_files):
         _die(str(e))
 
 
-def _get_id(cls, args):
-    try:
+class GitlabCLI(object):
+    def _get_id(self, cls, args):
+        try:
+            id = args.pop(cls.idAttr)
+        except Exception:
+            _die("Missing --%s argument" % cls.idAttr.replace('_', '-'))
+
+        return id
+
+    def do_create(self, cls, gl, what, args):
+        if not cls.canCreate:
+            _die("%s objects can't be created" % what)
+
+        try:
+            o = cls.create(gl, args)
+        except Exception as e:
+            _die("Impossible to create object (%s)" % str(e))
+
+        return o
+
+    def do_list(self, cls, gl, what, args):
+        if not cls.canList:
+            _die("%s objects can't be listed" % what)
+
+        try:
+            l = cls.list(gl, **args)
+        except Exception as e:
+            _die("Impossible to list objects (%s)" % str(e))
+
+        return l
+
+    def do_get(self, cls, gl, what, args):
+        if cls.canGet is False:
+            _die("%s objects can't be retrieved" % what)
+
+        id = None
+        if cls not in [gitlab.CurrentUser] and cls.getRequiresId:
+            id = self._get_id(cls, args)
+
+        try:
+            o = cls.get(gl, id, **args)
+        except Exception as e:
+            _die("Impossible to get object (%s)" % str(e))
+
+        return o
+
+    def do_delete(self, cls, gl, what, args):
+        if not cls.canDelete:
+            _die("%s objects can't be deleted" % what)
+
         id = args.pop(cls.idAttr)
-    except Exception:
-        _die("Missing --%s argument" % cls.idAttr.replace('_', '-'))
+        try:
+            gl.delete(cls, id, **args)
+        except Exception as e:
+            _die("Impossible to destroy object (%s)" % str(e))
 
-    return id
+    def do_update(self, cls, gl, what, args):
+        if not cls.canUpdate:
+            _die("%s objects can't be updated" % what)
 
+        o = self.do_get(cls, gl, what, args)
+        try:
+            for k, v in args.items():
+                o.__dict__[k] = v
+            o.save()
+        except Exception as e:
+            _die("Impossible to update object (%s)" % str(e))
 
-def do_create(cls, gl, what, args):
-    if not cls.canCreate:
-        _die("%s objects can't be created" % what)
+        return o
 
-    try:
-        o = cls.create(gl, args)
-    except Exception as e:
-        _die("Impossible to create object (%s)" % str(e))
+    def do_group_search(self, cls, gl, what, args):
+        try:
+            return gl.groups.search(args['query'])
+        except Exception as e:
+            _die("Impossible to search projects (%s)" % str(e))
 
-    return o
+    def do_project_search(self, cls, gl, what, args):
+        try:
+            return gl.projects.search(args['query'])
+        except Exception as e:
+            _die("Impossible to search projects (%s)" % str(e))
 
+    def do_project_all(self, cls, gl, what, args):
+        try:
+            return gl.projects.all()
+        except Exception as e:
+            _die("Impossible to list all projects (%s)" % str(e))
 
-def do_list(cls, gl, what, args):
-    if not cls.canList:
-        _die("%s objects can't be listed" % what)
+    def do_project_owned(self, cls, gl, what, args):
+        try:
+            return gl.projects.owned()
+        except Exception as e:
+            _die("Impossible to list owned projects (%s)" % str(e))
 
-    try:
-        l = cls.list(gl, **args)
-    except Exception as e:
-        _die("Impossible to list objects (%s)" % str(e))
+    def do_user_block(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            o.block()
+        except Exception as e:
+            _die("Impossible to block user (%s)" % str(e))
 
-    return l
+    def do_user_unblock(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            o.unblock()
+        except Exception as e:
+            _die("Impossible to block user (%s)" % str(e))
 
+    def do_project_commit_diff(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            return [x['diff'] for x in o.diff()]
+        except Exception as e:
+            _die("Impossible to get commit diff (%s)" % str(e))
 
-def do_get(cls, gl, what, args):
-    if cls.canGet is False:
-        _die("%s objects can't be retrieved" % what)
+    def do_project_commit_blob(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            return o.blob(args['filepath'])
+        except Exception as e:
+            _die("Impossible to get commit blob (%s)" % str(e))
 
-    id = None
-    if cls not in [gitlab.CurrentUser] and cls.getRequiresId:
-        id = _get_id(cls, args)
+    def do_project_commit_builds(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            return o.builds()
+        except Exception as e:
+            _die("Impossible to get commit builds (%s)" % str(e))
 
-    try:
-        o = cls.get(gl, id, **args)
-    except Exception as e:
-        _die("Impossible to get object (%s)" % str(e))
+    def do_project_build_cancel(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            return o.cancel()
+        except Exception as e:
+            _die("Impossible to cancel project build (%s)" % str(e))
 
-    return o
+    def do_project_build_retry(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            return o.retry()
+        except Exception as e:
+            _die("Impossible to retry project build (%s)" % str(e))
 
-
-def do_delete(cls, gl, what, args):
-    if not cls.canDelete:
-        _die("%s objects can't be deleted" % what)
-
-    id = args.pop(cls.idAttr)
-    try:
-        gl.delete(cls, id, **args)
-    except Exception as e:
-        _die("Impossible to destroy object (%s)" % str(e))
-
-
-def do_update(cls, gl, what, args):
-    if not cls.canUpdate:
-        _die("%s objects can't be updated" % what)
-
-    o = do_get(cls, gl, what, args)
-    try:
-        for k, v in args.items():
-            o.__dict__[k] = v
-        o.save()
-    except Exception as e:
-        _die("Impossible to update object (%s)" % str(e))
-
-    return o
-
-
-def do_group_search(gl, what, args):
-    try:
-        return gl.groups.search(args['query'])
-    except Exception as e:
-        _die("Impossible to search projects (%s)" % str(e))
-
-
-def do_project_search(gl, what, args):
-    try:
-        return gl.projects.search(args['query'])
-    except Exception as e:
-        _die("Impossible to search projects (%s)" % str(e))
-
-
-def do_project_all(gl, what, args):
-    try:
-        return gl.projects.all()
-    except Exception as e:
-        _die("Impossible to list all projects (%s)" % str(e))
-
-
-def do_project_owned(gl, what, args):
-    try:
-        return gl.projects.owned()
-    except Exception as e:
-        _die("Impossible to list owned projects (%s)" % str(e))
+    def do_project_milestone_issues(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            return o.issues()
+        except Exception as e:
+            _die("Impossible to get milestone issues (%s)" % str(e))
 
 
 def main():
@@ -293,11 +340,8 @@ def main():
     what = arg.what
 
     # Remove CLI behavior-related args
-    args.pop("gitlab")
-    args.pop("config_file")
-    args.pop("verbose")
-    args.pop("what")
-    args.pop("action")
+    for item in ("gitlab", "config_file", "verbose", "what", "action"):
+        args.pop(item)
 
     cls = None
     try:
@@ -307,52 +351,31 @@ def main():
 
     gl = do_auth(gitlab_id, config_files)
 
-    if action == CREATE or action == GET:
-        o = globals()['do_%s' % action.lower()](cls, gl, what, args)
-        o.display(verbose)
+    cli = GitlabCLI()
+    method = None
+    what = what.replace('-', '_')
+    action = action.lower()
+    for test in ["do_%s_%s" % (what, action),
+                 "do_%s" % action]:
+        if hasattr(cli, test):
+            method = test
 
-    elif action == LIST:
-        for o in do_list(cls, gl, what, args):
-            o.display(verbose)
-            print("")
+    if method is None:
+        sys.stderr.write("Don't know how to deal with this!\n")
+        sys.exit(1)
 
-    elif action == DELETE or action == UPDATE:
-        o = globals()['do_%s' % action.lower()](cls, gl, what, args)
+    ret_val = getattr(cli, method)(cls, gl, what, args)
 
-    elif action == PROTECT or action == UNPROTECT:
-        if cls != gitlab.ProjectBranch:
-            _die("%s objects can't be protected" % what)
-
-        o = do_get(cls, gl, what, args)
-        getattr(o, action)()
-
-    elif action == SEARCH:
-
-        if cls == gitlab.Project:
-            l = do_project_search(gl, what, args)
-        elif cls == gitlab.Group:
-            l = do_group_search(gl, what, args)
-        else:
-            _die("%s objects don't support this request" % what)
-
-        for o in l:
-            o.display(verbose)
-            print("")
-
-    elif action == OWNED:
-        if cls != gitlab.Project:
-            _die("%s objects don't support this request" % what)
-
-        for o in do_project_owned(gl, what, args):
-            o.display(verbose)
-            print("")
-
-    elif action == ALL:
-        if cls != gitlab.Project:
-            _die("%s objects don't support this request" % what)
-
-        for o in do_project_all(gl, what, args):
-            o.display(verbose)
-            print("")
+    if isinstance(ret_val, list):
+        for o in ret_val:
+            if isinstance(o, gitlab.GitlabObject):
+                o.display(verbose)
+                print("")
+            else:
+                print(o)
+    elif isinstance(ret_val, gitlab.GitlabObject):
+        ret_val.display(verbose)
+    elif isinstance(ret_val, six.string_types):
+        print(ret_val)
 
     sys.exit(0)
