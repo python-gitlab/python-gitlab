@@ -163,7 +163,7 @@ class BaseManager(object):
 
         l = []
         for j in r.json():
-            o = cls(self, j)
+            o = cls(self.gitlab, j)
             o._from_api = True
             l.append(o)
 
