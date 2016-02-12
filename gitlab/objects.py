@@ -568,7 +568,16 @@ class UserManager(BaseManager):
     def search(self, query, **kwargs):
         """Search users.
 
-        Returns a list of matching users.
+        Args:
+            query (str): The query string to send to GitLab for the search.
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            list(User): A list of matching users.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabListError: If the server fails to perform the request.
         """
         url = self.obj_cls._url + '?search=' + query
         return self._custom_list(url, self.obj_cls, **kwargs)
@@ -576,8 +585,16 @@ class UserManager(BaseManager):
     def get_by_username(self, username, **kwargs):
         """Get a user by its username.
 
-        Returns a User object or None if the named user does not
-        exist.
+        Args:
+            username (str): The name of the user.
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            User: The matching user.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
         """
         url = self.obj_cls._url + '?username=' + username
         results = self._custom_list(url, self.obj_cls, **kwargs)
