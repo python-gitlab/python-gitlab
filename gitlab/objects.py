@@ -34,9 +34,7 @@ from gitlab.exceptions import *  # noqa
 class jsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, GitlabObject):
-            return {k: v for k, v in six.iteritems(obj.__dict__)
-                    if (not isinstance(v, BaseManager)
-                        and not k[0] == '_')}
+            return obj.as_dict()
         elif isinstance(obj, gitlab.Gitlab):
             return {'url': obj._url}
         return json.JSONEncoder.default(self, obj)
@@ -488,6 +486,19 @@ class GitlabObject(object):
         """
         return json.dumps(self, cls=jsonEncoder)
 
+    def as_dict(self):
+        """Dump the object as a dict."""
+        return {k: v for k, v in six.iteritems(self.__dict__)
+                if (not isinstance(v, BaseManager) and not k[0] == '_')}
+
+    def __eq__(self, other):
+        if type(other) is type(self):
+            return self.as_dict() == other.as_dict()
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
 
 class UserKey(GitlabObject):
     _url = '/users/%(user_id)s/keys'
@@ -541,9 +552,40 @@ class User(GitlabObject):
         raise_error_from_response(r, GitlabUnblockError)
         self.state = 'active'
 
+    def __eq__(self, other):
+        if type(other) is type(self):
+            selfdict = self.as_dict()
+            otherdict = other.as_dict()
+            selfdict.pop(u'password', None)
+            otherdict.pop(u'password', None)
+            return selfdict == otherdict
+        return False
+
 
 class UserManager(BaseManager):
     obj_cls = User
+
+    def search(self, query, **kwargs):
+        """Search users.
+
+        Returns a list of matching users.
+        """
+        url = self.obj_cls._url + '?search=' + query
+        return self._custom_list(url, self.obj_cls, **kwargs)
+
+    def get_by_username(self, username, **kwargs):
+        """Get a user by its username.
+
+        Returns a User object or None if the named user does not
+        exist.
+        """
+        url = self.obj_cls._url + '?username=' + username
+        results = self._custom_list(url, self.obj_cls, **kwargs)
+        assert len(results) in (0, 1)
+        try:
+            return results[0]
+        except IndexError:
+            raise GitlabGetError('no such user: ' + username)
 
 
 class CurrentUserKey(GitlabObject):
