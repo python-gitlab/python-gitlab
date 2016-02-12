@@ -34,9 +34,7 @@ from gitlab.exceptions import *  # noqa
 class jsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, GitlabObject):
-            return {k: v for k, v in six.iteritems(obj.__dict__)
-                    if (not isinstance(v, BaseManager)
-                        and not k[0] == '_')}
+            return obj.as_dict()
         elif isinstance(obj, gitlab.Gitlab):
             return {'url': obj._url}
         return json.JSONEncoder.default(self, obj)
@@ -487,6 +485,11 @@ class GitlabObject(object):
             str: The json string.
         """
         return json.dumps(self, cls=jsonEncoder)
+
+    def as_dict(self):
+        """Dump the object as a dict."""
+        return {k: v for k, v in six.iteritems(self.__dict__)
+                if (not isinstance(v, BaseManager) and not k[0] == '_')}
 
 
 class UserKey(GitlabObject):
