@@ -46,7 +46,8 @@ EXTRA_ACTIONS = {
                      'owned': {},
                      'all': {}},
     gitlab.User: {'block': {'required': ['id']},
-                  'unblock': {'required': ['id']}},
+                  'unblock': {'required': ['id']},
+                  'search': {'required': ['query']}},
 }
 
 
@@ -221,6 +222,12 @@ class GitlabCLI(object):
             return o.issues()
         except Exception as e:
             _die("Impossible to get milestone issues (%s)" % str(e))
+
+    def do_user_search(self, cls, gl, what, args):
+        try:
+            return gl.users.search(args['query'])
+        except Exception as e:
+            _die("Impossible to search users (%s)" % str(e))
 
 
 def _populate_sub_parser_by_class(cls, sub_parser):
