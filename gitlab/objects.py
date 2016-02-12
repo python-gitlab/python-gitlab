@@ -491,6 +491,14 @@ class GitlabObject(object):
         return {k: v for k, v in six.iteritems(self.__dict__)
                 if (not isinstance(v, BaseManager) and not k[0] == '_')}
 
+    def __eq__(self, other):
+        if type(other) is type(self):
+            return self.as_dict() == other.as_dict()
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
 
 class UserKey(GitlabObject):
     _url = '/users/%(user_id)s/keys'
@@ -543,6 +551,15 @@ class User(GitlabObject):
         r = self.gitlab._raw_put(url, **kwargs)
         raise_error_from_response(r, GitlabUnblockError)
         self.state = 'active'
+
+    def __eq__(self, other):
+        if type(other) is type(self):
+            selfdict = self.as_dict()
+            otherdict = other.as_dict()
+            selfdict.pop(u'password', None)
+            otherdict.pop(u'password', None)
+            return selfdict == otherdict
+        return False
 
 
 class UserManager(BaseManager):
