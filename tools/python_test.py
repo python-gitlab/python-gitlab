@@ -43,12 +43,24 @@ assert(new_user.email == user.email)
 new_user.block()
 new_user.unblock()
 
+foobar_user = gl.users.create(
+    {'email': 'foobar@example.com', 'username': 'foobar',
+     'name': 'Foo Bar', 'password': 'foobar_password'})
+
+assert gl.users.search('foobar') == [foobar_user]
+usercmp = lambda x,y: cmp(x.id, y.id)
+expected = sorted([new_user, foobar_user], cmp=usercmp)
+actual = sorted(gl.users.search('foo'), cmp=usercmp)
+assert expected == actual
+assert gl.users.search('asdf') == []
+
 # SSH keys
 key = new_user.keys.create({'title': 'testkey', 'key': SSH_KEY})
 assert(len(new_user.keys.list()) == 1)
 key.delete()
 
 new_user.delete()
+foobar_user.delete()
 assert(len(gl.users.list()) == 1)
 
 # current user key

@@ -565,6 +565,14 @@ class User(GitlabObject):
 class UserManager(BaseManager):
     obj_cls = User
 
+    def search(self, query, **kwargs):
+        """Search users.
+
+        Returns a list of matching users.
+        """
+        url = self.obj_cls._url + '?search=' + query
+        return self._custom_list(url, self.obj_cls, **kwargs)
+
 
 class CurrentUserKey(GitlabObject):
     _url = '/user/keys'
