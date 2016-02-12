@@ -573,6 +573,20 @@ class UserManager(BaseManager):
         url = self.obj_cls._url + '?search=' + query
         return self._custom_list(url, self.obj_cls, **kwargs)
 
+    def get_by_username(self, username, **kwargs):
+        """Get a user by its username.
+
+        Returns a User object or None if the named user does not
+        exist.
+        """
+        url = self.obj_cls._url + '?username=' + username
+        results = self._custom_list(url, self.obj_cls, **kwargs)
+        assert len(results) in (0, 1)
+        try:
+            return results[0]
+        except IndexError:
+            raise GitlabGetError('no such user: ' + username)
+
 
 class CurrentUserKey(GitlabObject):
     _url = '/user/keys'

@@ -258,6 +258,32 @@ class TestGitlabManager(unittest.TestCase):
             self.assertEqual(data[0].id, 1)
             self.assertEqual(data[1].id, 2)
 
+    def test_user_manager_get_by_username(self):
+        mgr = UserManager(self.gitlab)
+
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v3/users",
+                  query="username=foo", method="get")
+        def resp_get_username(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '[{"name": "foo", "id": 1}]'.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_get_username):
+            data = mgr.get_by_username('foo')
+            self.assertEqual(type(data), User)
+            self.assertEqual(data.name, "foo")
+            self.assertEqual(data.id, 1)
+
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v3/users",
+                  query="username=foo", method="get")
+        def resp_get_username_nomatch(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '[]'.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_get_username_nomatch):
+            self.assertRaises(GitlabGetError, mgr.get_by_username, 'foo')
+
     def test_group_manager_search(self):
         mgr = GroupManager(self.gitlab)
 

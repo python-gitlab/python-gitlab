@@ -54,6 +54,15 @@ actual = sorted(gl.users.search('foo'), cmp=usercmp)
 assert expected == actual
 assert gl.users.search('asdf') == []
 
+assert gl.users.get_by_username('foobar') == foobar_user
+assert gl.users.get_by_username('foo') == new_user
+try:
+    gl.users.get_by_username('asdf')
+except gitlab.GitlabGetError:
+    pass
+else:
+    assert False
+
 # SSH keys
 key = new_user.keys.create({'title': 'testkey', 'key': SSH_KEY})
 assert(len(new_user.keys.list()) == 1)
