@@ -375,6 +375,7 @@ def main():
                  "do_%s" % action]:
         if hasattr(cli, test):
             method = test
+            break
 
     if method is None:
         sys.stderr.write("Don't know how to deal with this!\n")
