@@ -47,7 +47,8 @@ EXTRA_ACTIONS = {
                      'all': {}},
     gitlab.User: {'block': {'required': ['id']},
                   'unblock': {'required': ['id']},
-                  'search': {'required': ['query']}},
+                  'search': {'required': ['query']},
+                  'get-by-username': {'required': ['query']}},
 }
 
 
@@ -229,6 +230,12 @@ class GitlabCLI(object):
         except Exception as e:
             _die("Impossible to search users (%s)" % str(e))
 
+    def do_user_getbyusername(self, cls, gl, what, args):
+        try:
+            return gl.users.search(args['query'])
+        except Exception as e:
+            _die("Impossible to get user %s (%s)" % (args['query'], str(e)))
+
 
 def _populate_sub_parser_by_class(cls, sub_parser):
     for action_name in ['list', 'get', 'create', 'update', 'delete']:
@@ -370,7 +377,7 @@ def main():
     cli = GitlabCLI()
     method = None
     what = what.replace('-', '_')
-    action = action.lower()
+    action = action.lower().replace('-', '')
     for test in ["do_%s_%s" % (what, action),
                  "do_%s" % action]:
         if hasattr(cli, test):

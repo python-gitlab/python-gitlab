@@ -35,6 +35,14 @@ testcase "user creation" '
 '
 USER_ID=$(pecho "${OUTPUT}" | grep ^id: | cut -d' ' -f2)
 
+testcase "user get (by id)" '
+    GITLAB user get --id $USER_ID >/dev/null 2>&1
+'
+
+testcase "user get (by username)" '
+    GITLAB user get-by-username --query user1 >/dev/null 2>&1
+'
+
 testcase "verbose output" '
     OUTPUT=$(try GITLAB -v user list) || exit 1
     pecho "${OUTPUT}" | grep -q avatar-url

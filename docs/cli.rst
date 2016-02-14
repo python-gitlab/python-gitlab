@@ -150,6 +150,13 @@ Get a specific project (id 2):
 
    $ gitlab project get --id 2
 
+Get a specific user by id or by username:
+
+.. code-block:: console
+
+   $ gitlab user get --id 3
+   $ gitlab user get-by-username --query jdoe
+
 Get a list of snippets for this project:
 
 .. code-block:: console
