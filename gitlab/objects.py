@@ -177,7 +177,6 @@ class GitlabObject(object):
     _urlPlural = None
     _id_in_delete_url = True
     _id_in_update_url = True
-    _returnClass = None
     _constructorTypes = None
 
     #: Whether _get_list_or_object should return list or object when id is None

@@ -351,9 +351,6 @@ class Gitlab(object):
         raise_error_from_response(r, GitlabListError)
 
         cls = obj_class
-        if obj_class._returnClass:
-            cls = obj_class._returnClass
-
         cls_kwargs = kwargs.copy()
 
         # Add _from_api manually, because we are not creating objects
