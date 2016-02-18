@@ -112,11 +112,12 @@ You can use pagination to go throught long lists:
 
    ten_first_groups = gl.groups.list(page=0, per_page=10)
 
-Use the ``all`` parameter to get all the items:
+Use the ``all`` parameter to get all the items when using listing methods:
 
 .. code-block:: python
 
    all_groups = gl.groups.list(all=True)
+   all_owned_projects = gl.projects.owned(all=True)
 
 Sudo
 ====

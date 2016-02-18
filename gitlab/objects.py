@@ -155,18 +155,6 @@ class BaseManager(object):
             raise NotImplementedError
         self.gitlab.delete(self.obj_cls, id, **args)
 
-    def _custom_list(self, url, cls, **kwargs):
-        r = self.gitlab._raw_get(url, **kwargs)
-        raise_error_from_response(r, GitlabListError)
-
-        l = []
-        for j in r.json():
-            o = cls(self.gitlab, j)
-            o._from_api = True
-            l.append(o)
-
-        return l
-
 
 class GitlabObject(object):
     """Base class for all classes that interface with GitLab."""
@@ -569,6 +557,7 @@ class UserManager(BaseManager):
 
         Args:
             query (str): The query string to send to GitLab for the search.
+            all (bool): If True, return all the items, without pagination
             **kwargs: Additional arguments to send to GitLab.
 
         Returns:
@@ -579,7 +568,7 @@ class UserManager(BaseManager):
             GitlabListError: If the server fails to perform the request.
         """
         url = self.obj_cls._url + '?search=' + query
-        return self._custom_list(url, self.obj_cls, **kwargs)
+        return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
 
     def get_by_username(self, username, **kwargs):
         """Get a user by its username.
@@ -596,7 +585,7 @@ class UserManager(BaseManager):
             GitlabGetError: If the server fails to perform the request.
         """
         url = self.obj_cls._url + '?username=' + username
-        results = self._custom_list(url, self.obj_cls, **kwargs)
+        results = self.gitlab._raw_list(url, self.obj_cls, **kwargs)
         assert len(results) in (0, 1)
         try:
             return results[0]
@@ -712,10 +701,15 @@ class GroupManager(BaseManager):
     def search(self, query, **kwargs):
         """Searches groups by name.
 
-        Returns a list of matching groups.
+        Args:
+            query (str): The search string
+            all (bool): If True, return all the items, without pagination
+
+        Returns:
+            list(Group): a list of matching groups.
         """
         url = '/groups?search=' + query
-        return self._custom_list(url, Group, **kwargs)
+        return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
 
 
 class Hook(GitlabObject):
@@ -1524,35 +1518,38 @@ class ProjectManager(BaseManager):
 
         Args:
             query (str): The query string to send to GitLab for the search.
+            all (bool): If True, return all the items, without pagination
             **kwargs: Additional arguments to send to GitLab.
 
         Returns:
             list(Project): A list of matching projects.
         """
-        return self._custom_list("/projects/search/" + query, Project,
-                                 **kwargs)
+        return self.gitlab._raw_list("/projects/search/" + query, Project,
+                                     **kwargs)
 
     def all(self, **kwargs):
         """List all the projects (need admin rights).
 
         Args:
+            all (bool): If True, return all the items, without pagination
             **kwargs: Additional arguments to send to GitLab.
 
         Returns:
             list(Project): The list of projects.
         """
-        return self._custom_list("/projects/all", Project, **kwargs)
+        return self.gitlab._raw_list("/projects/all", Project, **kwargs)
 
     def owned(self, **kwargs):
         """List owned projects.
 
         Args:
+            all (bool): If True, return all the items, without pagination
             **kwargs: Additional arguments to send to GitLab.
 
         Returns:
             list(Project): The list of owned projects.
         """
-        return self._custom_list("/projects/owned", Project, **kwargs)
+        return self.gitlab._raw_list("/projects/owned", Project, **kwargs)
 
 
 class UserProjectManager(BaseManager):

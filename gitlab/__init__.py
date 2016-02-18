@@ -269,6 +269,31 @@ class Gitlab(object):
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
 
+    def _raw_list(self, path, cls, **kwargs):
+        r = self._raw_get(path, **kwargs)
+        raise_error_from_response(r, GitlabListError)
+
+        cls_kwargs = kwargs.copy()
+
+        # Add _from_api manually, because we are not creating objects
+        # through normal path
+        cls_kwargs['_from_api'] = True
+        get_all_results = kwargs.get('all', False)
+
+        # Remove parameters from kwargs before passing it to constructor
+        for key in ['all', 'page', 'per_page', 'sudo']:
+            if key in cls_kwargs:
+                del cls_kwargs[key]
+
+        results = [cls(self, item, **cls_kwargs) for item in r.json()
+                   if item is not None]
+        if ('next' in r.links and 'url' in r.links['next']
+           and get_all_results is True):
+            args = kwargs.copy()
+            args['next_url'] = r.links['next']['url']
+            results.extend(self.list(cls, **args))
+        return results
+
     def _raw_post(self, path, data=None, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
         headers = self._create_headers(content_type)
