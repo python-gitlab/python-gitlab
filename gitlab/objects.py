@@ -543,8 +543,8 @@ class User(GitlabObject):
         if type(other) is type(self):
             selfdict = self.as_dict()
             otherdict = other.as_dict()
-            selfdict.pop(u'password', None)
-            otherdict.pop(u'password', None)
+            selfdict.pop('password', None)
+            otherdict.pop('password', None)
             return selfdict == otherdict
         return False
 
