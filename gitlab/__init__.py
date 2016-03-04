@@ -568,7 +568,7 @@ class Gitlab(object):
         params.update(kwargs)
         missing = []
         for k in itertools.chain(obj.requiredUrlAttrs,
-                                 obj.requiredCreateAttrs):
+                                 obj.requiredUpdateAttrs):
             if k not in params:
                 missing.append(k)
         if missing:
