@@ -1516,6 +1516,16 @@ class ProjectManager(BaseManager):
     def search(self, query, **kwargs):
         """Search projects by name.
 
+        .. note::
+
+           The search is only performed on the project name (not on the
+           namespace or the description). To perform a smarter search, use the
+           ``search`` argument of the ``list()`` method:
+
+           .. code-block:: python
+
+               gl.projects.list(search=your_search_string)
+
         Args:
             query (str): The query string to send to GitLab for the search.
             all (bool): If True, return all the items, without pagination
