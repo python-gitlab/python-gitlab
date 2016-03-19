@@ -567,8 +567,11 @@ class Gitlab(object):
         params = obj.__dict__.copy()
         params.update(kwargs)
         missing = []
-        for k in itertools.chain(obj.requiredUrlAttrs,
-                                 obj.requiredCreateAttrs):
+        if obj.requiredUpdateAttrs or obj.optionalUpdateAttrs:
+            required_attrs = obj.requiredUpdateAttrs
+        else:
+            required_attrs = obj.requiredCreateAttrs
+        for k in itertools.chain(obj.requiredUrlAttrs, required_attrs):
             if k not in params:
                 missing.append(k)
         if missing:
