@@ -32,7 +32,7 @@ from gitlab.exceptions import *  # noqa
 from gitlab.objects import *  # noqa
 
 __title__ = 'python-gitlab'
-__version__ = '0.12.1'
+__version__ = '0.12.2'
 __author__ = 'Gauvain Pocentek'
 __email__ = 'gauvain@pocentek.net'
 __license__ = 'LGPL3'
