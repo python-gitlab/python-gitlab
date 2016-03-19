@@ -1,3 +1,26 @@
+Version 0.12.2
+
+ * Add new `ProjectHook` attributes
+ * Add support for user block/unblock
+ * Fix GitlabObject creation in _custom_list
+ * Add support for more CLI subcommands
+ * Add some unit tests for CLI
+ * Add a coverage tox env
+ * Define GitlabObject.as_dict() to dump object as a dict
+ * Define GitlabObject.__eq__() and __ne__() equivalence methods
+ * Define UserManager.search() to search for users
+ * Define UserManager.get_by_username() to get a user by username
+ * Implement "user search" CLI
+ * Improve the doc for UserManager
+ * CLI: implement user get-by-username
+ * Re-implement _custom_list in the Gitlab class
+ * Fix the 'invalid syntax' error on Python 3.2
+ * Gitlab.update(): use the proper attributes if defined
+
+Version 0.12.1
+
+ * Fix a broken upload to pypi
+
 Version 0.12
 
  * Improve documentation
