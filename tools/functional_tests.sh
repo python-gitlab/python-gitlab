@@ -80,6 +80,23 @@ testcase "branch creation" '
         --branch-name branch1 --ref master >/dev/null 2>&1
 '
 
+GITLAB project-file create --project-id "$PROJECT_ID" \
+    --file-path README2 --branch-name branch1 --content "CONTENT" \
+    --commit-message "second commit" >/dev/null 2>&1
+
+testcase "merge request creation" '
+    OUTPUT=$(GITLAB project-merge-request create \
+        --project-id "$PROJECT_ID" \
+        --source-branch branch1 --target-branch master \
+        --title "Update README")
+'
+MR_ID=$(pecho "${OUTPUT}" | grep ^id: | cut -d' ' -f2)
+
+testcase "merge request validation" '
+    GITLAB project-merge-request merge --project-id "$PROJECT_ID" \
+        --id "$MR_ID" >/dev/null 2>&1
+'
+
 testcase "branch deletion" '
     GITLAB project-branch delete --project-id "$PROJECT_ID" \
         --name branch1 >/dev/null 2>&1

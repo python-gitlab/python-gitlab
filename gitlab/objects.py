@@ -1085,6 +1085,43 @@ class ProjectMergeRequest(GitlabObject):
             self.gitlab, id, project_id=self.project_id,
             merge_request_id=self.id, **kwargs)
 
+    def merge(self, merge_commit_message=None,
+              should_remove_source_branch=False,
+              merged_when_build_succeeds=False,
+              **kwargs):
+        """Accept the merge request.
+
+        Args:
+            merge_commit_message (bool): Commit message
+            should_remove_source_branch (bool): If True, removes the source
+                                                branch
+            merged_when_build_succeeds (bool): Wait for the build to succeed,
+                                               then merge
+
+        Returns:
+            ProjectMergeRequet: The updated MR
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabMRForbiddenError: If the user doesn't have permission to
+                                    close thr MR
+            GitlabMRClosedError: If the MR is already closed
+        """
+        url = '/projects/%s/merge_requests/%s/merge' % (self.project_id,
+                                                        self.id)
+        data = {}
+        if merge_commit_message:
+            data['merge_commit_message'] = merge_commit_message
+        if should_remove_source_branch:
+            data['should_remove_source_branch'] = 'should_remove_source_branch'
+        if merged_when_build_succeeds:
+            data['merged_when_build_succeeds'] = 'merged_when_build_succeeds'
+
+        r = self.gitlab._raw_put(url, data=data, **kwargs)
+        errors = {401: GitlabMRForbiddenError,
+                  405: GitlabMRClosedError}
+        raise_error_from_response(r, errors)
+        return ProjectMergeRequest(self, r.json())
+
 
 class ProjectMergeRequestManager(BaseManager):
     obj_cls = ProjectMergeRequest

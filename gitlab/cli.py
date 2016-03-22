@@ -41,6 +41,12 @@ EXTRA_ACTIONS = {
                            'blob': {'required': ['id', 'project-id',
                                                  'filepath']},
                            'builds': {'required': ['id', 'project-id']}},
+    gitlab.ProjectMergeRequest: {
+        'merge': {'required': ['id', 'project-id'],
+                  'optional': ['merge-commit-message',
+                               'should-remove-source-branch',
+                               'merged-when-build-succeeds']}
+    },
     gitlab.ProjectMilestone: {'issues': {'required': ['id', 'project-id']}},
     gitlab.Project: {'search': {'required': ['query']},
                      'owned': {},
@@ -217,6 +223,18 @@ class GitlabCLI(object):
         except Exception as e:
             _die("Impossible to retry project build (%s)" % str(e))
 
+    def do_project_merge_request_merge(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            should_remove = args['should_remove_source_branch']
+            build_succeeds = args['merged_when_build_succeeds']
+            return o.merge(
+                merge_commit_message=args['merge_commit_message'],
+                should_remove_source_branch=should_remove,
+                merged_when_build_succeeds=build_succeeds)
+        except Exception as e:
+            _die("Impossible to validate merge request (%s)" % str(e))
+
     def do_project_milestone_issues(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
@@ -298,6 +316,8 @@ def _populate_sub_parser_by_class(cls, sub_parser):
             d = EXTRA_ACTIONS[cls][action_name]
             [sub_parser_action.add_argument("--%s" % arg, required=True)
              for arg in d.get('required', [])]
+            [sub_parser_action.add_argument("--%s" % arg, required=False)
+             for arg in d.get('optional', [])]
 
 
 def _build_parser(args=sys.argv[1:]):

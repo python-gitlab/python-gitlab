@@ -91,6 +91,18 @@ class GitlabUnblockError(GitlabOperationError):
     pass
 
 
+class GitlabMRForbiddenError(GitlabOperationError):
+    pass
+
+
+class GitlabMRClosedError(GitlabOperationError):
+    pass
+
+
+class GitlabMROnBuildSuccessError(GitlabOperationError):
+    pass
+
+
 def raise_error_from_response(response, error, expected_code=200):
     """Tries to parse gitlab error message from response and raises error.
 
@@ -99,7 +111,8 @@ def raise_error_from_response(response, error, expected_code=200):
     If response status code is 401, raises instead GitlabAuthenticationError.
 
     response: requests response object
-    error: Error-class to raise. Should be inherited from GitLabError
+    error: Error-class or dict {return-code => class} of possible error class
+           to raise. Should be inherited from GitLabError
     """
 
     if expected_code == response.status_code:
@@ -110,8 +123,11 @@ def raise_error_from_response(response, error, expected_code=200):
     except (KeyError, ValueError):
         message = response.content
 
-    if response.status_code == 401:
-        error = GitlabAuthenticationError
+    if isinstance(error, dict):
+        error = error.get(response.status_code, GitlabOperationError)
+    else:
+        if response.status_code == 401:
+            error = GitlabAuthenticationError
 
     raise error(error_message=message,
                 response_code=response.status_code,

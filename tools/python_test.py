@@ -208,3 +208,21 @@ v1.save()
 v1 = admin_project.variables.get(v1.key)
 assert(v1.value == 'new_value1')
 v1.delete()
+
+# branches and merges
+to_merge = admin_project.branches.create({'branch_name': 'branch1',
+                                          'ref': 'master'})
+admin_project.files.create({'file_path': 'README2.rst',
+                            'branch_name': 'branch1',
+                            'content': 'Initial content',
+                            'commit_message': 'New commit in new branch'})
+mr = admin_project.mergerequests.create({'source_branch': 'branch1',
+                                         'target_branch': 'master',
+                                         'title': 'MR readme2'})
+ret = mr.merge()
+admin_project.branches.delete('branch1')
+
+try:
+    mr.merge()
+except gitlab.GitlabMRClosedError:
+    pass
