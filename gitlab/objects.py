@@ -664,6 +664,7 @@ class Group(GitlabObject):
     canUpdate = False
     _constructorTypes = {'projects': 'Project'}
     requiredCreateAttrs = ['name', 'path']
+    optionalCreateAttrs = ['description', 'visibility_level']
     shortPrintAttr = 'name'
     managers = [('members', GroupMemberManager, [('group_id', 'id')])]
 
@@ -672,6 +673,10 @@ class Group(GitlabObject):
     DEVELOPER_ACCESS = 30
     MASTER_ACCESS = 40
     OWNER_ACCESS = 50
+
+    VISIBILITY_PRIVATE = 0
+    VISIBILITY_INTERNAL = 10
+    VISIBILITY_PUBLIC = 20
 
     def Member(self, id=None, **kwargs):
         warnings.warn("`Member` is deprecated, use `members` instead",
