@@ -1569,7 +1569,7 @@ class ProjectManager(BaseManager):
             **kwargs: Additional arguments to send to GitLab.
 
         Returns:
-            list(Project): A list of matching projects.
+            list(gitlab.Gitlab.Project): A list of matching projects.
         """
         return self.gitlab._raw_list("/projects/search/" + query, Project,
                                      **kwargs)
@@ -1582,7 +1582,7 @@ class ProjectManager(BaseManager):
             **kwargs: Additional arguments to send to GitLab.
 
         Returns:
-            list(Project): The list of projects.
+            list(gitlab.Gitlab.Project): The list of projects.
         """
         return self.gitlab._raw_list("/projects/all", Project, **kwargs)
 
@@ -1594,7 +1594,7 @@ class ProjectManager(BaseManager):
             **kwargs: Additional arguments to send to GitLab.
 
         Returns:
-            list(Project): The list of owned projects.
+            list(gitlab.Gitlab.Project): The list of owned projects.
         """
         return self.gitlab._raw_list("/projects/owned", Project, **kwargs)
 

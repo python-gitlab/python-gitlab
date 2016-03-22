@@ -110,9 +110,10 @@ def raise_error_from_response(response, error, expected_code=200):
 
     If response status code is 401, raises instead GitlabAuthenticationError.
 
-    response: requests response object
-    error: Error-class or dict {return-code => class} of possible error class
-           to raise. Should be inherited from GitLabError
+    Args:
+        response: requests response object
+        error: Error-class or dict {return-code => class} of possible error
+               class to raise. Should be inherited from GitLabError
     """
 
     if expected_code == response.status_code:
