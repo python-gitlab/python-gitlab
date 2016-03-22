@@ -944,7 +944,6 @@ class ProjectIssue(GitlabObject):
     _url = '/projects/%(project_id)s/issues/'
     _constructorTypes = {'author': 'User', 'assignee': 'User',
                          'milestone': 'ProjectMilestone'}
-    canDelete = False
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['title']
     # FIXME: state_event is only valid with update
@@ -1072,7 +1071,6 @@ class ProjectMergeRequest(GitlabObject):
     _url = '/projects/%(project_id)s/merge_request'
     _urlPlural = '/projects/%(project_id)s/merge_requests'
     _constructorTypes = {'author': 'User', 'assignee': 'User'}
-    canDelete = False
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['source_branch', 'target_branch', 'title']
     optionalCreateAttrs = ['assignee_id']
