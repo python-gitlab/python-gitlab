@@ -505,12 +505,13 @@ class User(GitlabObject):
     requiredCreateAttrs = ['email', 'username', 'name', 'password']
     optionalCreateAttrs = ['skype', 'linkedin', 'twitter', 'projects_limit',
                            'extern_uid', 'provider', 'bio', 'admin',
-                           'can_create_group', 'website_url', 'confirm']
+                           'can_create_group', 'website_url', 'confirm',
+                           'external']
     requiredUpdateAttrs = ['email', 'username', 'name']
     optionalUpdateAttrs = ['password', 'skype', 'linkedin', 'twitter',
                            'projects_limit', 'extern_uid', 'provider', 'bio',
                            'admin', 'can_create_group', 'website_url',
-                           'confirm']
+                           'confirm', 'external']
     managers = [('keys', UserKeyManager, [('user_id', 'id')])]
 
     def _data_for_gitlab(self, extra_parameters={}, update=False):
