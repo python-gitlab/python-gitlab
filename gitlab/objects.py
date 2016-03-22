@@ -1097,6 +1097,20 @@ class ProjectMergeRequest(GitlabObject):
         raise_error_from_response(r, errors)
         return ProjectMergeRequest(self, r.json())
 
+    def closes_issues(self, **kwargs):
+        """List issues closed by the MR.
+
+        Returns:
+            list (ProjectIssue): List of closed issues
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
+        """
+        url = ('/projects/%s/merge_requests/%s/closes_issues' %
+               (self.project_id, self.id))
+        return self.gitlab._raw_list(url, ProjectIssue, **kwargs)
+
     def merge(self, merge_commit_message=None,
               should_remove_source_branch=False,
               merged_when_build_succeeds=False,

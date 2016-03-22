@@ -42,6 +42,7 @@ EXTRA_ACTIONS = {
                                                  'filepath']},
                            'builds': {'required': ['id', 'project-id']}},
     gitlab.ProjectMergeRequest: {
+        'closes-issues': {'required': ['id', 'project-id']},
         'cancel': {'required': ['id', 'project-id']},
         'merge': {'required': ['id', 'project-id'],
                   'optional': ['merge-commit-message',
@@ -223,6 +224,14 @@ class GitlabCLI(object):
             return o.retry()
         except Exception as e:
             _die("Impossible to retry project build (%s)" % str(e))
+
+    def do_project_merge_request_closesissues(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            return o.closes_issues()
+        except Exception as e:
+            _die("Impossible to list issues closed by merge request (%s)" %
+                 str(e))
 
     def do_project_merge_request_cancel(self, cls, gl, what, args):
         try:
