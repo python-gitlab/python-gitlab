@@ -42,6 +42,7 @@ EXTRA_ACTIONS = {
                                                  'filepath']},
                            'builds': {'required': ['id', 'project-id']}},
     gitlab.ProjectMergeRequest: {
+        'cancel': {'required': ['id', 'project-id']},
         'merge': {'required': ['id', 'project-id'],
                   'optional': ['merge-commit-message',
                                'should-remove-source-branch',
@@ -222,6 +223,13 @@ class GitlabCLI(object):
             return o.retry()
         except Exception as e:
             _die("Impossible to retry project build (%s)" % str(e))
+
+    def do_project_merge_request_cancel(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            return o.cancel_merge_when_build_succeeds()
+        except Exception as e:
+            _die("Impossible to cancel merge request (%s)" % str(e))
 
     def do_project_merge_request_merge(self, cls, gl, what, args):
         try:

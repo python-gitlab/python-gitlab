@@ -1085,6 +1085,18 @@ class ProjectMergeRequest(GitlabObject):
             self.gitlab, id, project_id=self.project_id,
             merge_request_id=self.id, **kwargs)
 
+    def cancel_merge_when_build_succeeds(self, **kwargs):
+        """Cancel merge when build succeeds."""
+
+        u = ('/projects/%s/merge_requests/%s/cancel_merge_when_build_succeeds'
+             % (self.project_id, self.id))
+        r = self.gitlab._raw_put(u, **kwargs)
+        errors = {401: GitlabMRForbiddenError,
+                  405: GitlabMRClosedError,
+                  406: GitlabMROnBuildSuccessError}
+        raise_error_from_response(r, errors)
+        return ProjectMergeRequest(self, r.json())
+
     def merge(self, merge_commit_message=None,
               should_remove_source_branch=False,
               merged_when_build_succeeds=False,
