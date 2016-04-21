@@ -281,7 +281,7 @@ class Gitlab(object):
         get_all_results = kwargs.get('all', False)
 
         # Remove parameters from kwargs before passing it to constructor
-        for key in ['all', 'page', 'per_page', 'sudo']:
+        for key in ['all', 'page', 'per_page', 'sudo', 'next_url']:
             if key in cls_kwargs:
                 del cls_kwargs[key]
 
@@ -385,7 +385,7 @@ class Gitlab(object):
         get_all_results = params.get('all', False)
 
         # Remove parameters from kwargs before passing it to constructor
-        for key in ['all', 'page', 'per_page', 'sudo']:
+        for key in ['all', 'page', 'per_page', 'sudo', 'next_url']:
             if key in cls_kwargs:
                 del cls_kwargs[key]
 
