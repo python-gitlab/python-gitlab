@@ -717,6 +717,19 @@ class GroupManager(BaseManager):
         url = '/groups?search=' + query
         return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
 
+    def list_projects(self, gid, **kwargs):
+        """List all projects in a group
+
+        Attrs:
+            gid (int): ID of the group
+
+        Raises:
+            GitlabConnectionError: if the server cannot be reached.
+            GitlabListError: If the server fails to perform the request.
+        """
+        url = '/groups/%d/projects' % gid
+        return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
+
 
 class Hook(GitlabObject):
     _url = '/hooks'
