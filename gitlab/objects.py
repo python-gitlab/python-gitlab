@@ -718,14 +718,13 @@ class GroupManager(BaseManager):
         return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
 
     def list_projects(self, gid, **kwargs):
-        """List all projects in a group
+        """List projects in a group
 
         Attrs:
             gid (int): ID of the group
 
-        Raises:
-            GitlabConnectionError: if the server cannot be reached.
-            GitlabListError: If the server fails to perform the request.
+        Returns:
+            list(Group): a list of projects in the group
         """
         url = '/groups/%d/projects' % gid
         return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
