@@ -368,6 +368,10 @@ class Gitlab(object):
         for attribute in obj_class.requiredUrlAttrs:
             del params[attribute]
 
+        # Also remove the next-url attribute that make queries fail
+        if 'next_url' in params:
+            del params['next_url']
+
         try:
             r = self.session.get(url, params=params, headers=headers,
                                  verify=self.ssl_verify,
