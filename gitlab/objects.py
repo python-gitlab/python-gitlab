@@ -1475,7 +1475,7 @@ class Project(GitlabObject):
         return r.content
 
     def raw_blob(self, sha, **kwargs):
-        """Return the raw file contents for a blob by blob SHA.
+        """Returns the raw file contents for a blob by blob SHA.
 
         Args:
             sha(str): ID of the blob
@@ -1491,6 +1491,26 @@ class Project(GitlabObject):
         r = self.gitlab._raw_get(url, **kwargs)
         raise_error_from_response(r, GitlabGetError)
         return r.content
+
+    def compare(self, from_, to, **kwargs):
+        """Returns a diff between two branches/commits.
+
+        Args:
+            from_(str): orig branch/SHA
+            to(str): dest branch/SHA
+
+        Returns:
+            str: The diff
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
+        """
+        url = "/projects/%s/repository/compare" % self.id
+        url = "%s?from=%s&to=%s" % (url, from_, to)
+        r = self.gitlab._raw_get(url, **kwargs)
+        raise_error_from_response(r, GitlabGetError)
+        return r.json()
 
     def archive(self, sha=None, **kwargs):
         """Return a tarball of the repository.
