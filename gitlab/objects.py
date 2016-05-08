@@ -1512,6 +1512,21 @@ class Project(GitlabObject):
         raise_error_from_response(r, GitlabGetError)
         return r.json()
 
+    def contributors(self):
+        """Returns a list of contributors for the project.
+
+        Returns:
+            list: The contibutors
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
+        """
+        url = "/projects/%s/repository/contributors" % self.id
+        r = self.gitlab._raw_get(url)
+        raise_error_from_response(r, GitlabListError)
+        return r.json()
+
     def archive(self, sha=None, **kwargs):
         """Return a tarball of the repository.
 
