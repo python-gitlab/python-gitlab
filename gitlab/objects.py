@@ -1473,6 +1473,59 @@ class Project(GitlabObject):
         raise_error_from_response(r, GitlabGetError)
         return r.content
 
+    def raw_blob(self, sha, **kwargs):
+        """Returns the raw file contents for a blob by blob SHA.
+
+        Args:
+            sha(str): ID of the blob
+
+        Returns:
+            str: The blob content
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
+        """
+        url = "/projects/%s/repository/raw_blobs/%s" % (self.id, sha)
+        r = self.gitlab._raw_get(url, **kwargs)
+        raise_error_from_response(r, GitlabGetError)
+        return r.content
+
+    def compare(self, from_, to, **kwargs):
+        """Returns a diff between two branches/commits.
+
+        Args:
+            from_(str): orig branch/SHA
+            to(str): dest branch/SHA
+
+        Returns:
+            str: The diff
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
+        """
+        url = "/projects/%s/repository/compare" % self.id
+        url = "%s?from=%s&to=%s" % (url, from_, to)
+        r = self.gitlab._raw_get(url, **kwargs)
+        raise_error_from_response(r, GitlabGetError)
+        return r.json()
+
+    def contributors(self):
+        """Returns a list of contributors for the project.
+
+        Returns:
+            list: The contibutors
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
+        """
+        url = "/projects/%s/repository/contributors" % self.id
+        r = self.gitlab._raw_get(url)
+        raise_error_from_response(r, GitlabListError)
+        return r.json()
+
     def archive(self, sha=None, **kwargs):
         """Return a tarball of the repository.
 

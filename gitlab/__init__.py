@@ -122,6 +122,9 @@ class Gitlab(object):
         #: Whether SSL certificates should be validated
         self.ssl_verify = ssl_verify
 
+        #: Create a session object for requests
+        self.session = requests.Session()
+
         self.settings = ApplicationSettingsManager(self)
         self.user_keys = UserKeyManager(self)
         self.users = UserManager(self)
@@ -260,11 +263,11 @@ class Gitlab(object):
         headers = self._create_headers(content_type)
 
         try:
-            return requests.get(url,
-                                params=kwargs,
-                                headers=headers,
-                                verify=self.ssl_verify,
-                                timeout=self.timeout)
+            return self.session.get(url,
+                                    params=kwargs,
+                                    headers=headers,
+                                    verify=self.ssl_verify,
+                                    timeout=self.timeout)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -298,10 +301,10 @@ class Gitlab(object):
         url = '%s%s' % (self._url, path)
         headers = self._create_headers(content_type)
         try:
-            return requests.post(url, params=kwargs, data=data,
-                                 headers=headers,
-                                 verify=self.ssl_verify,
-                                 timeout=self.timeout)
+            return self.session.post(url, params=kwargs, data=data,
+                                     headers=headers,
+                                     verify=self.ssl_verify,
+                                     timeout=self.timeout)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -311,10 +314,10 @@ class Gitlab(object):
         headers = self._create_headers(content_type)
 
         try:
-            return requests.put(url, data=data, params=kwargs,
-                                headers=headers,
-                                verify=self.ssl_verify,
-                                timeout=self.timeout)
+            return self.session.put(url, data=data, params=kwargs,
+                                    headers=headers,
+                                    verify=self.ssl_verify,
+                                    timeout=self.timeout)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -324,11 +327,11 @@ class Gitlab(object):
         headers = self._create_headers(content_type)
 
         try:
-            return requests.delete(url,
-                                   params=kwargs,
-                                   headers=headers,
-                                   verify=self.ssl_verify,
-                                   timeout=self.timeout)
+            return self.session.delete(url,
+                                       params=kwargs,
+                                       headers=headers,
+                                       verify=self.ssl_verify,
+                                       timeout=self.timeout)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -365,10 +368,14 @@ class Gitlab(object):
         for attribute in obj_class.requiredUrlAttrs:
             del params[attribute]
 
+        # Also remove the next-url attribute that make queries fail
+        if 'next_url' in params:
+            del params['next_url']
+
         try:
-            r = requests.get(url, params=params, headers=headers,
-                             verify=self.ssl_verify,
-                             timeout=self.timeout)
+            r = self.session.get(url, params=params, headers=headers,
+                                 verify=self.ssl_verify,
+                                 timeout=self.timeout)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -434,8 +441,8 @@ class Gitlab(object):
             del params[attribute]
 
         try:
-            r = requests.get(url, params=params, headers=headers,
-                             verify=self.ssl_verify, timeout=self.timeout)
+            r = self.session.get(url, params=params, headers=headers,
+                                 verify=self.ssl_verify, timeout=self.timeout)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -487,11 +494,11 @@ class Gitlab(object):
             del params[attribute]
 
         try:
-            r = requests.delete(url,
-                                params=params,
-                                headers=headers,
-                                verify=self.ssl_verify,
-                                timeout=self.timeout)
+            r = self.session.delete(url,
+                                    params=params,
+                                    headers=headers,
+                                    verify=self.ssl_verify,
+                                    timeout=self.timeout)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -535,10 +542,10 @@ class Gitlab(object):
         data = obj._data_for_gitlab(extra_parameters=kwargs)
 
         try:
-            r = requests.post(url, data=data,
-                              headers=headers,
-                              verify=self.ssl_verify,
-                              timeout=self.timeout)
+            r = self.session.post(url, data=data,
+                                  headers=headers,
+                                  verify=self.ssl_verify,
+                                  timeout=self.timeout)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -585,10 +592,10 @@ class Gitlab(object):
         data = obj._data_for_gitlab(extra_parameters=kwargs, update=True)
 
         try:
-            r = requests.put(url, data=data,
-                             headers=headers,
-                             verify=self.ssl_verify,
-                             timeout=self.timeout)
+            r = self.session.put(url, data=data,
+                                 headers=headers,
+                                 verify=self.ssl_verify,
+                                 timeout=self.timeout)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
