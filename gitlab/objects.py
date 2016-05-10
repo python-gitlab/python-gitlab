@@ -215,7 +215,10 @@ class GitlabObject(object):
         attributes = list(attributes) + ['sudo', 'page', 'per_page']
         for attribute in attributes:
             if hasattr(self, attribute):
-                data[attribute] = getattr(self, attribute)
+                value = getattr(self, attribute)
+                if isinstance(value, list):
+                    value = ",".join(value)
+                data[attribute] = value
 
         data.update(extra_parameters)
 
@@ -1078,7 +1081,8 @@ class ProjectMergeRequest(GitlabObject):
     _constructorTypes = {'author': 'User', 'assignee': 'User'}
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['source_branch', 'target_branch', 'title']
-    optionalCreateAttrs = ['assignee_id']
+    optionalCreateAttrs = ['assignee_id', 'description', 'target_project_id',
+                           'labels', 'milestone_id']
     managers = [('notes', ProjectMergeRequestNoteManager,
                  [('project_id', 'project_id'), ('merge_request_id', 'id')])]
 
@@ -1088,6 +1092,19 @@ class ProjectMergeRequest(GitlabObject):
         return ProjectMergeRequestNote._get_list_or_object(
             self.gitlab, id, project_id=self.project_id,
             merge_request_id=self.id, **kwargs)
+
+    def _data_for_gitlab(self, extra_parameters={}, update=False):
+        data = (super(ProjectMergeRequest, self)
+                ._data_for_gitlab(extra_parameters))
+        if update:
+            # Drop source_branch attribute as it is not accepted by the gitlab
+            # server (Issue #76)
+            # We need to unserialize and reserialize the
+            # data, this is far from optimal
+            d = json.loads(data)
+            d.pop('source_branch', None)
+            data = json.dumps(d)
+        return data
 
     def cancel_merge_when_build_succeeds(self, **kwargs):
         """Cancel merge when build succeeds."""
