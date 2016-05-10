@@ -38,7 +38,8 @@ __email__ = 'gauvain@pocentek.net'
 __license__ = 'LGPL3'
 __copyright__ = 'Copyright 2013-2016 Gauvain Pocentek'
 
-warnings.simplefilter('always', DeprecationWarning)
+warnings.filterwarnings('default', category=DeprecationWarning,
+                        module='^gitlab')
 
 
 def _sanitize(value):
