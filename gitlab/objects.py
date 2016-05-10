@@ -1300,12 +1300,14 @@ class Project(GitlabObject):
     optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
                            'merge_requests_enabled', 'wiki_enabled',
                            'snippets_enabled', 'public', 'visibility_level',
-                           'namespace_id', 'description', 'path', 'import_url']
+                           'namespace_id', 'description', 'path', 'import_url',
+                           'builds_enabled', 'public_builds']
     optionalUpdateAttrs = ['name', 'default_branch', 'issues_enabled',
                            'wall_enabled', 'merge_requests_enabled',
                            'wiki_enabled', 'snippets_enabled', 'public',
                            'visibility_level', 'namespace_id', 'description',
-                           'path', 'import_url']
+                           'path', 'import_url', 'builds_enabled',
+                           'public_builds']
     shortPrintAttr = 'path'
     managers = [
         ('branches', ProjectBranchManager, [('project_id', 'id')]),
@@ -1627,7 +1629,8 @@ class UserProject(GitlabObject):
     optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
                            'merge_requests_enabled', 'wiki_enabled',
                            'snippets_enabled', 'public', 'visibility_level',
-                           'description']
+                           'description', 'builds_enabled', 'public_builds',
+                           'import_url']
 
 
 class ProjectManager(BaseManager):
