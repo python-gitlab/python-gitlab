@@ -471,16 +471,18 @@ class Gitlab(object):
         if inspect.isclass(obj):
             if not issubclass(obj, GitlabObject):
                 raise GitlabError("Invalid class: %s" % obj)
-            params = {}
-            params[obj.idAttr] = id
-        else:
-            params = obj.__dict__.copy()
+
+        params = {obj.idAttr: id if id else getattr(obj, obj.idAttr)}
         params.update(kwargs)
+
         missing = []
         for k in itertools.chain(obj.requiredUrlAttrs,
                                  obj.requiredDeleteAttrs):
             if k not in params:
-                missing.append(k)
+                try:
+                    params[k] = getattr(obj, k)
+                except KeyError:
+                    missing.append(k)
         if missing:
             raise GitlabDeleteError('Missing attribute(s): %s' %
                                     ", ".join(missing))
@@ -493,6 +495,10 @@ class Gitlab(object):
         # url-parameters left
         for attribute in obj.requiredUrlAttrs:
             del params[attribute]
+        if obj._id_in_delete_url:
+            # The ID is already built, no need to add it as extra key in query
+            # string
+            params.pop(obj.idAttr)
 
         try:
             r = self.session.delete(url,
