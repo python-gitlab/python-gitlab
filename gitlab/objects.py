@@ -1448,6 +1448,11 @@ class Project(GitlabObject):
                                               **kwargs)
 
     def tree(self, path='', ref_name='', **kwargs):
+        warnings.warn("`tree` is deprecated, use `repository_tree` instead",
+                      DeprecationWarning)
+        return self.repository_tree(path, ref_name, **kwargs)
+
+    def repository_tree(self, path='', ref_name='', **kwargs):
         """Return a list of files in the repository.
 
         Args:
@@ -1474,6 +1479,11 @@ class Project(GitlabObject):
         return r.json()
 
     def blob(self, sha, filepath, **kwargs):
+        warnings.warn("`blob` is deprecated, use `repository_blob` instead",
+                      DeprecationWarning)
+        return self.repository_blob(sha, filepath, **kwargs)
+
+    def repository_blob(self, sha, filepath, **kwargs):
         """Return the content of a file for a commit.
 
         Args:
@@ -1493,7 +1503,7 @@ class Project(GitlabObject):
         raise_error_from_response(r, GitlabGetError)
         return r.content
 
-    def raw_blob(self, sha, **kwargs):
+    def repository_raw_blob(self, sha, **kwargs):
         """Returns the raw file contents for a blob by blob SHA.
 
         Args:
@@ -1511,7 +1521,7 @@ class Project(GitlabObject):
         raise_error_from_response(r, GitlabGetError)
         return r.content
 
-    def compare(self, from_, to, **kwargs):
+    def repository_compare(self, from_, to, **kwargs):
         """Returns a diff between two branches/commits.
 
         Args:
@@ -1531,7 +1541,7 @@ class Project(GitlabObject):
         raise_error_from_response(r, GitlabGetError)
         return r.json()
 
-    def contributors(self):
+    def repository_contributors(self):
         """Returns a list of contributors for the project.
 
         Returns:
@@ -1580,6 +1590,9 @@ class Project(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabCreateError: If the server fails to perform the request.
         """
+        warnings.warn("`create_file` is deprecated, "
+                      "use `files.create()` instead",
+                      DeprecationWarning)
         url = "/projects/%s/repository/files" % self.id
         url += ("?file_path=%s&branch_name=%s&content=%s&commit_message=%s" %
                 (path, branch, content, message))
@@ -1587,6 +1600,9 @@ class Project(GitlabObject):
         raise_error_from_response(r, GitlabCreateError, 201)
 
     def update_file(self, path, branch, content, message, **kwargs):
+        warnings.warn("`update_file` is deprecated, "
+                      "use `files.update()` instead",
+                      DeprecationWarning)
         url = "/projects/%s/repository/files" % self.id
         url += ("?file_path=%s&branch_name=%s&content=%s&commit_message=%s" %
                 (path, branch, content, message))
@@ -1594,6 +1610,9 @@ class Project(GitlabObject):
         raise_error_from_response(r, GitlabUpdateError)
 
     def delete_file(self, path, branch, message, **kwargs):
+        warnings.warn("`delete_file` is deprecated, "
+                      "use `files.delete()` instead",
+                      DeprecationWarning)
         url = "/projects/%s/repository/files" % self.id
         url += ("?file_path=%s&branch_name=%s&commit_message=%s" %
                 (path, branch, message))

@@ -1,4 +1,5 @@
 import base64
+import time
 
 import gitlab
 
@@ -135,6 +136,7 @@ admin_project.files.create({'file_path': 'README',
                             'commit_message': 'Initial commit'})
 readme = admin_project.files.get(file_path='README', ref='master')
 readme.content = base64.b64encode("Improved README")
+time.sleep(2)
 readme.save(branch_name="master", commit_message="new commit")
 readme.delete(commit_message="Removing README")
 
@@ -145,10 +147,10 @@ admin_project.files.create({'file_path': 'README.rst',
 readme = admin_project.files.get(file_path='README.rst', ref='master')
 assert(readme.decode() == 'Initial content')
 
-tree = admin_project.tree()
+tree = admin_project.repository_tree()
 assert(len(tree) == 1)
 assert(tree[0]['name'] == 'README.rst')
-blob = admin_project.blob('master', 'README.rst')
+blob = admin_project.repository_blob('master', 'README.rst')
 assert(blob == 'Initial content')
 archive1 = admin_project.archive()
 archive2 = admin_project.archive('master')
