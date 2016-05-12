@@ -1226,7 +1226,7 @@ class ProjectFile(GitlabObject):
     requiredCreateAttrs = ['file_path', 'branch_name', 'content',
                            'commit_message']
     optionalCreateAttrs = ['encoding']
-    requiredDeleteAttrs = ['branch_name', 'commit_message']
+    requiredDeleteAttrs = ['branch_name', 'commit_message', 'file_path']
     getListWhenNoId = False
     shortPrintAttr = 'file_path'
     getRequiresId = False
