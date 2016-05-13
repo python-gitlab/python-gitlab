@@ -938,7 +938,6 @@ class ProjectHookManager(BaseManager):
 class ProjectIssueNote(GitlabObject):
     _url = '/projects/%(project_id)s/issues/%(issue_id)s/notes'
     _constructorTypes = {'author': 'User'}
-    canUpdate = False
     canDelete = False
     requiredUrlAttrs = ['project_id', 'issue_id']
     requiredCreateAttrs = ['body']
