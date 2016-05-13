@@ -52,7 +52,10 @@ EXTRA_ACTIONS = {
     gitlab.ProjectMilestone: {'issues': {'required': ['id', 'project-id']}},
     gitlab.Project: {'search': {'required': ['query']},
                      'owned': {},
-                     'all': {}},
+                     'all': {},
+                     'starred': {},
+                     'star': {'required': ['id']},
+                     'unstar': {'required': ['id']}},
     gitlab.User: {'block': {'required': ['id']},
                   'unblock': {'required': ['id']},
                   'search': {'required': ['query']},
@@ -170,11 +173,31 @@ class GitlabCLI(object):
         except Exception as e:
             _die("Impossible to list all projects (%s)" % str(e))
 
+    def do_project_starred(self, cls, gl, what, args):
+        try:
+            return gl.projects.starred()
+        except Exception as e:
+            _die("Impossible to list starred projects (%s)" % str(e))
+
     def do_project_owned(self, cls, gl, what, args):
         try:
             return gl.projects.owned()
         except Exception as e:
             _die("Impossible to list owned projects (%s)" % str(e))
+
+    def do_project_star(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            o.star()
+        except Exception as e:
+            _die("Impossible to star project (%s)" % str(e))
+
+    def do_project_unstar(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            o.unstar()
+        except Exception as e:
+            _die("Impossible to unstar project (%s)" % str(e))
 
     def do_user_block(self, cls, gl, what, args):
         try:

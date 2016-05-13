@@ -116,7 +116,12 @@ def raise_error_from_response(response, error, expected_code=200):
                class to raise. Should be inherited from GitLabError
     """
 
-    if expected_code == response.status_code:
+    if isinstance(expected_code, int):
+        expected_codes = [expected_code]
+    else:
+        expected_codes = expected_code
+
+    if response.status_code in expected_codes:
         return
 
     try:

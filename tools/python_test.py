@@ -228,3 +228,9 @@ try:
     mr.merge()
 except gitlab.GitlabMRClosedError:
     pass
+
+# stars
+admin_project = admin_project.star()
+assert(admin_project.star_count == 1)
+admin_project = admin_project.unstar()
+assert(admin_project.star_count == 0)

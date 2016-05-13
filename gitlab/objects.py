@@ -1651,6 +1651,34 @@ class Project(GitlabObject):
         r = self.gitlab._raw_delete(url)
         raise_error_from_response(r, GitlabDeleteError)
 
+    def star(self):
+        """Star a project.
+
+        Returns:
+            Project: the updated Project
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        url = "/projects/%s/star" % self.id
+        r = self.gitlab._raw_post(url)
+        raise_error_from_response(r, GitlabGetError, [201, 304])
+        return Project(self.gitlab, r.json()) if r.status_code == 201 else self
+
+    def unstar(self):
+        """Unstar a project.
+
+        Returns:
+            Project: the updated Project
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        url = "/projects/%s/star" % self.id
+        r = self.gitlab._raw_delete(url)
+        raise_error_from_response(r, GitlabDeleteError, [200, 304])
+        return Project(self.gitlab, r.json()) if r.status_code == 200 else self
+
 
 class TeamMember(GitlabObject):
     _url = '/user_teams/%(team_id)s/members'
@@ -1726,6 +1754,18 @@ class ProjectManager(BaseManager):
             list(gitlab.Gitlab.Project): The list of owned projects.
         """
         return self.gitlab._raw_list("/projects/owned", Project, **kwargs)
+
+    def starred(self, **kwargs):
+        """List starred projects.
+
+        Args:
+            all (bool): If True, return all the items, without pagination
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            list(gitlab.Gitlab.Project): The list of starred projects.
+        """
+        return self.gitlab._raw_list("/projects/starred", Project, **kwargs)
 
 
 class UserProjectManager(BaseManager):
