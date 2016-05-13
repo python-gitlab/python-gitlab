@@ -70,6 +70,7 @@ class Gitlab(object):
         groups (GroupManager): Manager for GitLab members
         hooks (HookManager): Manager for GitLab hooks
         issues (IssueManager): Manager for GitLab issues
+        licenses (LicenseManager): Manager for licenses
         project_branches (ProjectBranchManager): Manager for GitLab projects
             branches
         project_commits (ProjectCommitManager): Manager for GitLab projects
@@ -133,6 +134,7 @@ class Gitlab(object):
         self.groups = GroupManager(self)
         self.hooks = HookManager(self)
         self.issues = IssueManager(self)
+        self.licenses = LicenseManager(self)
         self.project_branches = ProjectBranchManager(self)
         self.project_commits = ProjectCommitManager(self)
         self.project_keys = ProjectKeyManager(self)

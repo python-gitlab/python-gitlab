@@ -747,6 +747,18 @@ class IssueManager(BaseManager):
     obj_cls = Issue
 
 
+class License(GitlabObject):
+    _url = '/licenses'
+    canDelete = False
+    canUpdate = False
+    canCreate = False
+    idAttr = 'key'
+
+
+class LicenseManager(BaseManager):
+    obj_cls = License
+
+
 class ProjectBranch(GitlabObject):
     _url = '/projects/%(project_id)s/repository/branches'
     _constructorTypes = {'author': 'User', "committer": "User"}
