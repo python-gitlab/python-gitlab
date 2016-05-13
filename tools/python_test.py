@@ -152,8 +152,8 @@ assert(len(tree) == 1)
 assert(tree[0]['name'] == 'README.rst')
 blob = admin_project.repository_blob('master', 'README.rst')
 assert(blob == 'Initial content')
-archive1 = admin_project.archive()
-archive2 = admin_project.archive('master')
+archive1 = admin_project.repository_archive()
+archive2 = admin_project.repository_archive('master')
 assert(archive1 == archive2)
 
 # labels
