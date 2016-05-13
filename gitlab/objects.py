@@ -1567,7 +1567,6 @@ class Project(GitlabObject):
         raise_error_from_response(r, GitlabListError)
         return r.json()
 
-
     def archive(self, sha=None, **kwargs):
         warnings.warn("`archive` is deprecated, "
                       "use `repository_archive` instead",
