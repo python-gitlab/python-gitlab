@@ -30,17 +30,26 @@ def _process_docstring(app, what, name, obj, options, lines):
 class GitlabDocstring(GoogleDocstring):
     def _build_doc(self):
         cls = self._obj.obj_cls
+        opt_get_list = cls.optionalGetAttrs
+        opt_list_list = cls.optionalListAttrs
         md_create_list = list(itertools.chain(cls.requiredUrlAttrs,
                                               cls.requiredCreateAttrs))
         opt_create_list = cls.optionalCreateAttrs
 
+        opt_get_keys = "None"
+        if opt_get_list:
+            opt_get_keys = ", ".join(['``%s``' % i for i in opt_get_list])
+
+        opt_list_keys = "None"
+        if opt_list_list:
+            opt_list_keys = ", ".join(['``%s``' % i for i in opt_list_list])
+
         md_create_keys = opt_create_keys = "None"
         if md_create_list:
-            md_create_keys = "%s" % ", ".join(['``%s``' % i for i in
-                                               md_create_list])
+            md_create_keys = ", ".join(['``%s``' % i for i in md_create_list])
         if opt_create_list:
-            opt_create_keys = "%s" % ", ".join(['``%s``' % i for i in
-                                                opt_create_list])
+            opt_create_keys = ", ".join(['``%s``' % i for i in
+                                         opt_create_list])
 
         md_update_list = list(itertools.chain(cls.requiredUrlAttrs,
                                               cls.requiredUpdateAttrs))
@@ -48,11 +57,10 @@ class GitlabDocstring(GoogleDocstring):
 
         md_update_keys = opt_update_keys = "None"
         if md_update_list:
-            md_update_keys = "%s" % ", ".join(['``%s``' % i for i in
-                                               md_update_list])
+            md_update_keys = ", ".join(['``%s``' % i for i in md_update_list])
         if opt_update_list:
-            opt_update_keys = "%s" % ", ".join(['``%s``' % i for i in
-                                                opt_update_list])
+            opt_update_keys = ", ".join(['``%s``' % i for i in
+                                         opt_update_list])
 
         tmpl_file = os.path.join(os.path.dirname(__file__), 'template.j2')
         with open(tmpl_file) as fd:
@@ -62,7 +70,9 @@ class GitlabDocstring(GoogleDocstring):
                                      md_create_keys=md_create_keys,
                                      opt_create_keys=opt_create_keys,
                                      md_update_keys=md_update_keys,
-                                     opt_update_keys=opt_update_keys)
+                                     opt_update_keys=opt_update_keys,
+                                     opt_get_keys=opt_get_keys,
+                                     opt_list_keys=opt_list_keys)
 
         return output.split('\n')
 

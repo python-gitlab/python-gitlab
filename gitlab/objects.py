@@ -183,6 +183,10 @@ class GitlabObject(object):
     requiredUrlAttrs = []
     #: Attributes that are required when retrieving list of objects.
     requiredListAttrs = []
+    #: Attributes that are optional when retrieving list of objects.
+    optionalListAttrs = []
+    #: Attributes that are optional when retrieving single object.
+    optionalGetAttrs = []
     #: Attributes that are required when retrieving single object.
     requiredGetAttrs = []
     #: Attributes that are required when deleting object.
@@ -753,6 +757,9 @@ class License(GitlabObject):
     canUpdate = False
     canCreate = False
     idAttr = 'key'
+
+    optionalListAttrs = ['popular']
+    optionalGetAttrs = ['project', 'fullname']
 
 
 class LicenseManager(BaseManager):

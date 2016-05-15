@@ -19,3 +19,11 @@ Mandatory arguments for object update: {{ md_create_keys }}
 
 Optional arguments for object update: {{ opt_create_keys }}
 {% endif %}
+
+{% if cls.canList %}
+Optional arguments for object listing: {{ opt_list_keys }}
+{% endif %}
+
+{% if cls.canGet %}
+Optional arguments for object listing: {{ opt_get_keys }}
+{% endif %}

@@ -313,7 +313,7 @@ def _populate_sub_parser_by_class(cls, sub_parser):
             sub_parser_action.add_argument("--page", required=False)
             sub_parser_action.add_argument("--per-page", required=False)
 
-        elif action_name in ["get", "delete"]:
+        if action_name in ["get", "delete"]:
             if cls not in [gitlab.CurrentUser]:
                 if cls.getRequiresId:
                     id_attr = cls.idAttr.replace('_', '-')
@@ -323,7 +323,17 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                                                 required=True)
                  for x in cls.requiredGetAttrs if x != cls.idAttr]
 
-        elif action_name == "create":
+        if action_name == "get":
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                            required=False)
+             for x in cls.optionalGetAttrs]
+
+        if action_name == "list":
+            [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
+                                            required=False)
+             for x in cls.optionalListAttrs]
+
+        if action_name == "create":
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                             required=True)
              for x in cls.requiredCreateAttrs]
@@ -331,7 +341,7 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                                             required=False)
              for x in cls.optionalCreateAttrs]
 
-        elif action_name == "update":
+        if action_name == "update":
             id_attr = cls.idAttr.replace('_', '-')
             sub_parser_action.add_argument("--%s" % id_attr,
                                            required=True)
