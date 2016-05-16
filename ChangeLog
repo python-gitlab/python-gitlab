@@ -1,3 +1,29 @@
+Version 0.13
+
+ * Add support for MergeRequest validation
+ * MR: add support for cancel_merge_when_build_succeeds
+ * MR: add support for closes_issues
+ * Add "external" parameter for users
+ * Add deletion support for issues and MR
+ * Add missing group creation parameters
+ * Add a Session instance for all HTTP requests
+ * Enable updates on ProjectIssueNotes
+ * Add support for Project raw_blob
+ * Implement project compare
+ * Implement project contributors
+ * Drop the next_url attribute when listing
+ * Remove unnecessary canUpdate property from ProjectIssuesNote
+ * Add new optional attributes for projects
+ * Enable deprecation warnings for gitlab only
+ * Rework merge requests update
+ * Rework the Gitlab.delete method
+ * ProjectFile: file_path is required for deletion
+ * Rename some methods to better match the API URLs
+ * Deprecate the file_* methods in favor of the files manager
+ * Implement star/unstar for projects
+ * Implement list/get licenses
+ * Manage optional parameters for list() and get()
+
 Version 0.12.2
 
  * Add new `ProjectHook` attributes
