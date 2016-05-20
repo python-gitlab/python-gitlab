@@ -91,6 +91,14 @@ class GitlabUnblockError(GitlabOperationError):
     pass
 
 
+class GitlabSubscribeError(GitlabOperationError):
+    pass
+
+
+class GitlabUnsubscribeError(GitlabOperationError):
+    pass
+
+
 class GitlabMRForbiddenError(GitlabOperationError):
     pass
 

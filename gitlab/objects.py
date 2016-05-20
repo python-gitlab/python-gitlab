@@ -998,6 +998,22 @@ class ProjectIssue(GitlabObject):
                                                     issue_id=self.id,
                                                     **kwargs)
 
+    def subscribe(self, **kwargs):
+        url = ('/projects/%(project_id)s/issues/%(issue_id)s/subscription' %
+               {'project_id': self.project_id, 'issue_id': self.id})
+
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabSubscribeError)
+        self._set_from_dict(r.json())
+
+    def unsubscribe(self, **kwargs):
+        url = ('/projects/%(project_id)s/issues/%(issue_id)s/subscription' %
+               {'project_id': self.project_id, 'issue_id': self.id})
+
+        r = self.gitlab._raw_delete(url, **kwargs)
+        raise_error_from_response(r, GitlabUnsubscribeError)
+        self._set_from_dict(r.json())
+
 
 class ProjectIssueManager(BaseManager):
     obj_cls = ProjectIssue
