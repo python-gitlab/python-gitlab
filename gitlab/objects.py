@@ -1093,6 +1093,18 @@ class ProjectMergeRequestNoteManager(BaseManager):
     obj_cls = ProjectMergeRequestNote
 
 
+class ProjectMergeRequestCommit(GitlabObject):
+    _url = '/projects/%(project_id)s/merge_requests/%(merge_request_id)s/commits'
+    canCreate = False
+    canUpdate = False
+    canDelete = False
+    requiredUrlAttrs = ['project_id', 'merge_request_id']
+
+
+class ProjectMergeRequestCommitManager(BaseManager):
+    obj_cls = ProjectMergeRequestCommit
+
+
 class ProjectMergeRequest(GitlabObject):
     _url = '/projects/%(project_id)s/merge_request'
     _urlPlural = '/projects/%(project_id)s/merge_requests'
@@ -1102,6 +1114,8 @@ class ProjectMergeRequest(GitlabObject):
     optionalCreateAttrs = ['assignee_id', 'description', 'target_project_id',
                            'labels', 'milestone_id']
     managers = [('notes', ProjectMergeRequestNoteManager,
+                 [('project_id', 'project_id'), ('merge_request_id', 'id')]),
+                ('commits', ProjectMergeRequestCommitManager,
                  [('project_id', 'project_id'), ('merge_request_id', 'id')])]
 
     def Note(self, id=None, **kwargs):
