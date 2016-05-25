@@ -1094,7 +1094,8 @@ class ProjectMergeRequestNoteManager(BaseManager):
 
 
 class ProjectMergeRequestCommit(GitlabObject):
-    _url = '/projects/%(project_id)s/merge_requests/%(merge_request_id)s/commits'
+    _url = ('/projects/%(project_id)s/'
+            'merge_requests/%(merge_request_id)s/commits')
     canCreate = False
     canUpdate = False
     canDelete = False

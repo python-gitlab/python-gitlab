@@ -90,8 +90,8 @@ class Gitlab(object):
         project_tags (ProjectTagManager): Manager for GitLab projects tags
         project_mergerequest_notes (ProjectMergeRequestNoteManager): Manager
             for GitLab notes on merge requests
-        project_mergerequest_commits (ProjectMergeRequestCommitManager): Manager
-            for GitLab commit list of merge requests
+        project_mergerequest_commits (ProjectMergeRequestCommitManager):
+            Manager for GitLab commit list of merge requests
         project_mergerequests (ProjectMergeRequestManager): Manager for GitLab
             projects merge requests
         project_milestones (ProjectMilestoneManager): Manager for GitLab
@@ -149,7 +149,8 @@ class Gitlab(object):
         self.project_notes = ProjectNoteManager(self)
         self.project_tags = ProjectTagManager(self)
         self.project_mergerequest_notes = ProjectMergeRequestNoteManager(self)
-        self.project_mergerequest_commits = ProjectMergeRequestCommitManager(self)
+        self.project_mergerequest_commits = \
+            ProjectMergeRequestCommitManager(self)
         self.project_mergerequests = ProjectMergeRequestManager(self)
         self.project_milestones = ProjectMilestoneManager(self)
         self.project_labels = ProjectLabelManager(self)
