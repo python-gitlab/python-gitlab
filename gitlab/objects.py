@@ -999,6 +999,12 @@ class ProjectIssue(GitlabObject):
                                                     **kwargs)
 
     def subscribe(self, **kwargs):
+        """Subscribe to an issue.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabSubscribeError: If the subscription cannot be done
+        """
         url = ('/projects/%(project_id)s/issues/%(issue_id)s/subscription' %
                {'project_id': self.project_id, 'issue_id': self.id})
 
@@ -1007,6 +1013,12 @@ class ProjectIssue(GitlabObject):
         self._set_from_dict(r.json())
 
     def unsubscribe(self, **kwargs):
+        """Unsubscribe an issue.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabSubscribeError: If the unsubscription cannot be done
+        """
         url = ('/projects/%(project_id)s/issues/%(issue_id)s/subscription' %
                {'project_id': self.project_id, 'issue_id': self.id})
 

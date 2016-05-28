@@ -41,6 +41,8 @@ EXTRA_ACTIONS = {
                            'blob': {'required': ['id', 'project-id',
                                                  'filepath']},
                            'builds': {'required': ['id', 'project-id']}},
+    gitlab.ProjectIssue: {'subscribe': {'required': ['id', 'project-id']},
+                          'unsubscribe': {'required': ['id', 'project-id']}},
     gitlab.ProjectMergeRequest: {
         'closes-issues': {'required': ['id', 'project-id']},
         'cancel': {'required': ['id', 'project-id']},
@@ -247,6 +249,20 @@ class GitlabCLI(object):
             return o.retry()
         except Exception as e:
             _die("Impossible to retry project build (%s)" % str(e))
+
+    def do_project_issue_subscribe(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            o.subscribe()
+        except Exception as e:
+            _die("Impossible to subscribe to issue (%s)" % str(e))
+
+    def do_project_issue_unsubscribe(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            o.unsubscribe()
+        except Exception as e:
+            _die("Impossible to subscribe to issue (%s)" % str(e))
 
     def do_project_merge_request_closesissues(self, cls, gl, what, args):
         try:
