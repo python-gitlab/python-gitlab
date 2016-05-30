@@ -78,6 +78,10 @@ section.
      - URL for the GitLab server
    * - ``private_token``
      - Your user token. Login/password is not supported.
+   * - ``http_username``
+     - Username for optional HTTP authentication
+   * - ``http_password``
+     - Password for optional HTTP authentication
 
 CLI
 ===
