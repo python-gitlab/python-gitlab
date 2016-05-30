@@ -62,7 +62,8 @@ class Gitlab(object):
         ssl_verify (bool): Whether SSL certificates should be validated.
         timeout (float or tuple(float,float)): Timeout to use for requests to
             the GitLab server.
-
+        http_username: (str): Username for HTTP authentication
+        http_password: (str): Password for HTTP authentication
     Attributes:
         user_keys (UserKeyManager): Manager for GitLab users' SSH keys.
         users (UserManager): Manager for GitLab users
@@ -108,8 +109,9 @@ class Gitlab(object):
         teams (TeamManager): Manager for GitLab teams
     """
 
-    def __init__(self, url, private_token=None,
-                 email=None, password=None, ssl_verify=True, timeout=None):
+    def __init__(self, url, private_token=None, email=None, password=None,
+                 ssl_verify=True, http_username=None, http_password=None,
+                 timeout=None):
 
         self._url = '%s/api/v3' % url
         #: Timeout to use for requests to gitlab server
@@ -123,6 +125,8 @@ class Gitlab(object):
         self.password = password
         #: Whether SSL certificates should be validated
         self.ssl_verify = ssl_verify
+        self.http_username = http_username
+        self.http_password = http_password
 
         #: Create a session object for requests
         self.session = requests.Session()
@@ -176,7 +180,9 @@ class Gitlab(object):
         config = gitlab.config.GitlabConfigParser(gitlab_id=gitlab_id,
                                                   config_files=config_files)
         return Gitlab(config.url, private_token=config.token,
-                      ssl_verify=config.ssl_verify, timeout=config.timeout)
+                      ssl_verify=config.ssl_verify, timeout=config.timeout,
+                      http_username=config.http_username,
+                      http_password=config.http_password)
 
     def auth(self):
         """Performs an authentication.
@@ -264,13 +270,15 @@ class Gitlab(object):
     def _raw_get(self, path, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path)
         headers = self._create_headers(content_type)
-
         try:
             return self.session.get(url,
                                     params=kwargs,
                                     headers=headers,
                                     verify=self.ssl_verify,
-                                    timeout=self.timeout)
+                                    timeout=self.timeout,
+                                    auth=requests.auth.HTTPBasicAuth(
+                                        self.http_username,
+                                        self.http_password))
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -307,7 +315,10 @@ class Gitlab(object):
             return self.session.post(url, params=kwargs, data=data,
                                      headers=headers,
                                      verify=self.ssl_verify,
-                                     timeout=self.timeout)
+                                     timeout=self.timeout,
+                                     auth=requests.auth.HTTPBasicAuth(
+                                         self.http_username,
+                                         self.http_password))
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -320,7 +331,10 @@ class Gitlab(object):
             return self.session.put(url, data=data, params=kwargs,
                                     headers=headers,
                                     verify=self.ssl_verify,
-                                    timeout=self.timeout)
+                                    timeout=self.timeout,
+                                    auth=requests.auth.HTTPBasicAuth(
+                                        self.http_username,
+                                        self.http_password))
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -334,7 +348,10 @@ class Gitlab(object):
                                        params=kwargs,
                                        headers=headers,
                                        verify=self.ssl_verify,
-                                       timeout=self.timeout)
+                                       timeout=self.timeout,
+                                       auth=requests.auth.HTTPBasicAuth(
+                                           self.http_username,
+                                           self.http_password))
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -374,11 +391,13 @@ class Gitlab(object):
         # Also remove the next-url attribute that make queries fail
         if 'next_url' in params:
             del params['next_url']
-
         try:
             r = self.session.get(url, params=params, headers=headers,
                                  verify=self.ssl_verify,
-                                 timeout=self.timeout)
+                                 timeout=self.timeout,
+                                 auth=requests.auth.HTTPBasicAuth(
+                                     self.http_username,
+                                     self.http_password))
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -445,7 +464,10 @@ class Gitlab(object):
 
         try:
             r = self.session.get(url, params=params, headers=headers,
-                                 verify=self.ssl_verify, timeout=self.timeout)
+                                 verify=self.ssl_verify, timeout=self.timeout,
+                                 auth=requests.auth.HTTPBasicAuth(
+                                     self.http_username,
+                                     self.http_password))
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
