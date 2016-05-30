@@ -78,3 +78,13 @@ class GitlabConfigParser(object):
             self.timeout = self._config.getint(self.gitlab_id, 'timeout')
         except Exception:
             pass
+
+        self.http_username = None
+        self.http_password = None
+        try:
+            self.http_username = self._config.get(self.gitlab_id,
+                                                  'http_username')
+            self.http_password = self._config.get(self.gitlab_id,
+                                                  'http_password')
+        except Exception:
+            pass
