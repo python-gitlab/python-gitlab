@@ -529,7 +529,10 @@ class Gitlab(object):
                                     params=params,
                                     headers=headers,
                                     verify=self.ssl_verify,
-                                    timeout=self.timeout)
+                                    timeout=self.timeout,
+                                    auth=requests.auth.HTTPBasicAuth(
+                                        self.http_username,
+                                        self.http_password))
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -576,7 +579,10 @@ class Gitlab(object):
             r = self.session.post(url, data=data,
                                   headers=headers,
                                   verify=self.ssl_verify,
-                                  timeout=self.timeout)
+                                  timeout=self.timeout,
+                                  auth=requests.auth.HTTPBasicAuth(
+                                     self.http_username,
+                                     self.http_password))
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -626,7 +632,10 @@ class Gitlab(object):
             r = self.session.put(url, data=data,
                                  headers=headers,
                                  verify=self.ssl_verify,
-                                 timeout=self.timeout)
+                                 timeout=self.timeout,
+                                 auth=requests.auth.HTTPBasicAuth(
+                                     self.http_username,
+                                     self.http_password))
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
