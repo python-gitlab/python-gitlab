@@ -1226,6 +1226,7 @@ class ProjectMilestone(GitlabObject):
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['title']
     optionalCreateAttrs = ['description', 'due_date', 'state_event']
+    optionalUpdateAttrs = requiredCreateAttrs + optionalCreateAttrs
     shortPrintAttr = 'title'
 
     def issues(self):
