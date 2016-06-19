@@ -717,6 +717,12 @@ class GroupManager(BaseManager):
         url = '/groups?search=' + query
         return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
 
+
+class GroupProjectManager(BaseManager):
+    obj_cls = GroupProject
+
+
+class GroupProject(GitlabObject):
     def list_projects(self, gid, **kwargs):
         """List projects in a group
 
