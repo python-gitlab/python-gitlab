@@ -910,7 +910,8 @@ class ProjectCommitStatus(GitlabObject):
     canDelete = False
     requiredUrlAttrs = ['project_id', 'commit_id']
     requiredCreateAttrs = ['state']
-    optionalCreateAttrs = ['description', 'name', 'ref', 'target_url']
+    optionalCreateAttrs = ['description', 'name', 'context', 'ref',
+                           'target_url']
 
 
 class ProjectCommitStatusManager(BaseManager):
