@@ -36,7 +36,9 @@ EXTRA_ACTIONS = {
     gitlab.ProjectBranch: {'protect': {'required': ['id', 'project-id']},
                            'unprotect': {'required': ['id', 'project-id']}},
     gitlab.ProjectBuild: {'cancel': {'required': ['id', 'project-id']},
-                          'retry': {'required': ['id', 'project-id']}},
+                          'retry': {'required': ['id', 'project-id']},
+                          'artifacts': {'required': ['id', 'project-id']},
+                          'trace': {'required': ['id', 'project-id']}},
     gitlab.ProjectCommit: {'diff': {'required': ['id', 'project-id']},
                            'blob': {'required': ['id', 'project-id',
                                                  'filepath']},
@@ -249,6 +251,20 @@ class GitlabCLI(object):
             return o.retry()
         except Exception as e:
             _die("Impossible to retry project build (%s)" % str(e))
+
+    def do_project_build_artifacts(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            return o.artifacts()
+        except Exception as e:
+            _die("Impossible to get project build artifacts (%s)" % str(e))
+
+    def do_project_build_trace(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            return o.trace()
+        except Exception as e:
+            _die("Impossible to get project build trace (%s)" % str(e))
 
     def do_project_issue_subscribe(self, cls, gl, what, args):
         try:

@@ -822,17 +822,47 @@ class ProjectBuild(GitlabObject):
     canUpdate = False
     canCreate = False
 
-    def cancel(self):
+    def cancel(self, **kwargs):
         """Cancel the build."""
         url = '/projects/%s/builds/%s/cancel' % (self.project_id, self.id)
         r = self.gitlab._raw_post(url)
         raise_error_from_response(r, GitlabBuildCancelError, 201)
 
-    def retry(self):
+    def retry(self, **kwargs):
         """Retry the build."""
         url = '/projects/%s/builds/%s/retry' % (self.project_id, self.id)
         r = self.gitlab._raw_post(url)
         raise_error_from_response(r, GitlabBuildRetryError, 201)
+
+    def artifacts(self, **kwargs):
+        """Get the build artifacts.
+
+        Returns:
+            str: The artifacts.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the artifacts are not available.
+        """
+        url = '/projects/%s/builds/%s/artifacts' % (self.project_id, self.id)
+        r = self.gitlab._raw_get(url)
+        raise_error_from_response(r, GitlabGetError, 200)
+        return r.content
+
+    def trace(self, **kwargs):
+        """Get the build trace.
+
+        Returns:
+            str: The trace.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the trace is not available.
+        """
+        url = '/projects/%s/builds/%s/trace' % (self.project_id, self.id)
+        r = self.gitlab._raw_get(url)
+        raise_error_from_response(r, GitlabGetError, 200)
+        return r.content
 
 
 class ProjectBuildManager(BaseManager):
