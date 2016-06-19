@@ -838,6 +838,35 @@ class ProjectBuildManager(BaseManager):
     obj_cls = ProjectBuild
 
 
+class ProjectCommitStatus(GitlabObject):
+    _url = '/projects/%(project_id)s/statuses/%(commit_id)s'
+    canUpdate = False
+    canDelete = False
+    requiredUrlAttrs = ['project_id', 'commit_id']
+    optionalGetAttrs = ['ref_name', 'stage', 'name', 'all']
+    requiredCreateAttrs = ['state']
+    optionalCreateAttrs = ['description', 'name', 'context', 'ref',
+                           'target_url']
+
+
+class ProjectCommitStatusManager(BaseManager):
+    obj_cls = ProjectCommitStatus
+
+
+class ProjectCommitComment(GitlabObject):
+    _url = '/projects/%(project_id)s/repository/commits/%(commit_id)s/comments'
+    canUpdate = False
+    cantGet = False
+    canDelete = False
+    requiredUrlAttrs = ['project_id', 'commit_id']
+    requiredCreateAttrs = ['note']
+    optionalCreateAttrs = ['path', 'line', 'line_type']
+
+
+class ProjectCommitCommentManager(BaseManager):
+    obj_cls = ProjectCommitComment
+
+
 class ProjectCommit(GitlabObject):
     _url = '/projects/%(project_id)s/repository/commits'
     canDelete = False
@@ -845,6 +874,8 @@ class ProjectCommit(GitlabObject):
     canCreate = False
     requiredUrlAttrs = ['project_id']
     shortPrintAttr = 'title'
+    managers = [('comments', ProjectCommitCommentManager,
+                 [('project_id', 'project_id'), ('commit_id', 'id')])]
 
     def diff(self, **kwargs):
         """Generate the commit diff."""
@@ -902,21 +933,6 @@ class ProjectCommit(GitlabObject):
 
 class ProjectCommitManager(BaseManager):
     obj_cls = ProjectCommit
-
-
-class ProjectCommitStatus(GitlabObject):
-    _url = '/projects/%(project_id)s/statuses/%(commit_id)s'
-    canUpdate = False
-    canDelete = False
-    requiredUrlAttrs = ['project_id', 'commit_id']
-    optionalGetAttrs = ['ref_name', 'stage', 'name', 'all']
-    requiredCreateAttrs = ['state']
-    optionalCreateAttrs = ['description', 'name', 'context', 'ref',
-                           'target_url']
-
-
-class ProjectCommitStatusManager(BaseManager):
-    obj_cls = ProjectCommitStatus
 
 
 class ProjectKey(GitlabObject):

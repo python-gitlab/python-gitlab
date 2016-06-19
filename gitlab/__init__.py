@@ -77,6 +77,8 @@ class Gitlab(object):
             branches
         project_commits (ProjectCommitManager): Manager for GitLab projects
             commits
+        project_commitcomments (ProjectCommitCommentManager): Manager for
+            GitLab projects commits comments
         project_keys (ProjectKeyManager): Manager for GitLab projects keys
         project_events (ProjectEventManager): Manager for GitLab projects
             events
@@ -143,6 +145,7 @@ class Gitlab(object):
         self.licenses = LicenseManager(self)
         self.project_branches = ProjectBranchManager(self)
         self.project_commits = ProjectCommitManager(self)
+        self.project_commit_comments = ProjectCommitCommentManager(self)
         self.project_keys = ProjectKeyManager(self)
         self.project_events = ProjectEventManager(self)
         self.project_forks = ProjectForkManager(self)
