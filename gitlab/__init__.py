@@ -67,6 +67,7 @@ class Gitlab(object):
     Attributes:
         user_keys (UserKeyManager): Manager for GitLab users' SSH keys.
         users (UserManager): Manager for GitLab users
+        group_projects (GroupProjectManager): Manager for GitLab group projects
         group_members (GroupMemberManager): Manager for GitLab group members
         groups (GroupManager): Manager for GitLab members
         hooks (HookManager): Manager for GitLab hooks
@@ -134,6 +135,7 @@ class Gitlab(object):
         self.settings = ApplicationSettingsManager(self)
         self.user_keys = UserKeyManager(self)
         self.users = UserManager(self)
+        self.group_projects = GroupProjectManager(self)
         self.group_members = GroupMemberManager(self)
         self.groups = GroupManager(self)
         self.hooks = HookManager(self)
