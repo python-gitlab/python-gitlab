@@ -666,6 +666,20 @@ class GroupMemberManager(BaseManager):
     obj_cls = GroupMember
 
 
+class GroupProject(GitlabObject):
+    _url = '/groups/%(group_id)s/projects'
+    canGet = 'from_list'
+    canCreate = False
+    canDelete = False
+    canUpdate = False
+    optionalListAttrs = ['archived', 'visibility', 'order_by', 'sort',
+                         'search', 'ci_enabled_first']
+
+
+class GroupProjectManager(BaseManager):
+    obj_cls = GroupProject
+
+
 class Group(GitlabObject):
     _url = '/groups'
     canUpdate = False
@@ -673,7 +687,8 @@ class Group(GitlabObject):
     requiredCreateAttrs = ['name', 'path']
     optionalCreateAttrs = ['description', 'visibility_level']
     shortPrintAttr = 'name'
-    managers = [('members', GroupMemberManager, [('group_id', 'id')])]
+    managers = [('members', GroupMemberManager, [('group_id', 'id')]),
+                ('projects', GroupProjectManager, [('group_id', 'id')])]
 
     GUEST_ACCESS = 10
     REPORTER_ACCESS = 20
@@ -723,24 +738,6 @@ class GroupManager(BaseManager):
         """
         url = '/groups?search=' + query
         return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
-
-
-class GroupProject(GitlabObject):
-    def list_projects(self, gid, **kwargs):
-        """List projects in a group
-
-        Attrs:
-            gid (int): ID of the group
-
-        Returns:
-            list(Group): a list of projects in the group
-        """
-        url = '/groups/%d/projects' % gid
-        return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
-
-
-class GroupProjectManager(BaseManager):
-    obj_cls = GroupProject
 
 
 class Hook(GitlabObject):
