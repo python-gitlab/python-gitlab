@@ -1038,9 +1038,11 @@ class ProjectIssue(GitlabObject):
                          'sort']
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['title']
-    # FIXME: state_event is only valid with update
     optionalCreateAttrs = ['description', 'assignee_id', 'milestone_id',
-                           'labels', 'state_event']
+                           'labels', 'created_at']
+    optionalUpdateAttrs = ['title', 'description', 'assignee_id',
+                           'milestone_id', 'labels', 'created_at',
+                           'state_event']
     shortPrintAttr = 'title'
     managers = [('notes', ProjectIssueNoteManager,
                  [('project_id', 'project_id'), ('issue_id', 'id')])]
@@ -1054,7 +1056,8 @@ class ProjectIssue(GitlabObject):
                 labels = ", ".join(self.labels)
                 extra_parameters['labels'] = labels
 
-        return super(ProjectIssue, self)._data_for_gitlab(extra_parameters)
+        return super(ProjectIssue, self)._data_for_gitlab(extra_parameters,
+                                                          update)
 
     def Note(self, id=None, **kwargs):
         warnings.warn("`Note` is deprecated, use `notes` instead",
