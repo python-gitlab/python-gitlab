@@ -1344,6 +1344,34 @@ class ProjectLabel(GitlabObject):
     requiredUpdateAttrs = ['name']
     optionalUpdateAttrs = ['new_name', 'color', 'description']
 
+    def subscribe(self, **kwargs):
+        """Subscribe to a label.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabSubscribeError: If the subscription cannot be done
+        """
+        url = ('/projects/%(project_id)s/labels/%(label_id)s/subscription' %
+               {'project_id': self.project_id, 'label_id': self.name})
+
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabSubscribeError, [201, 304])
+        self._set_from_dict(r.json())
+
+    def unsubscribe(self, **kwargs):
+        """Unsubscribe a label.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabSubscribeError: If the unsubscription cannot be done
+        """
+        url = ('/projects/%(project_id)s/labels/%(label_id)s/subscription' %
+               {'project_id': self.project_id, 'label_id': self.name})
+
+        r = self.gitlab._raw_delete(url, **kwargs)
+        raise_error_from_response(r, GitlabUnsubscribeError, [200, 304])
+        self._set_from_dict(r.json())
+
 
 class ProjectLabelManager(BaseManager):
     obj_cls = ProjectLabel

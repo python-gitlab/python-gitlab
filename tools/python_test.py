@@ -163,6 +163,10 @@ assert(len(admin_project.labels.list()) == 1)
 label1.new_name = 'label1updated'
 label1.save()
 assert(label1.name == 'label1updated')
+label1.subscribe()
+assert(label1.subscribed == True)
+label1.unsubscribe()
+assert(label1.subscribed == False)
 label1.delete()
 
 # milestones
