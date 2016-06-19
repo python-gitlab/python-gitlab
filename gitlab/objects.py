@@ -760,7 +760,7 @@ class Issue(GitlabObject):
     canUpdate = False
     canCreate = False
     shortPrintAttr = 'title'
-    optionalListAttrs = ['state', 'labels']
+    optionalListAttrs = ['state', 'labels', 'order_by', 'sort']
 
 
 class IssueManager(BaseManager):
@@ -1034,7 +1034,8 @@ class ProjectIssue(GitlabObject):
     _url = '/projects/%(project_id)s/issues/'
     _constructorTypes = {'author': 'User', 'assignee': 'User',
                          'milestone': 'ProjectMilestone'}
-    optionalListAttrs = ['state', 'labels', 'milestone', 'iid']
+    optionalListAttrs = ['state', 'labels', 'milestone', 'iid', 'order_by',
+                         'sort']
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['title']
     # FIXME: state_event is only valid with update
