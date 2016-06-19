@@ -1308,6 +1308,7 @@ class ProjectMilestone(GitlabObject):
     _url = '/projects/%(project_id)s/milestones'
     canDelete = False
     requiredUrlAttrs = ['project_id']
+    optionalListAttrs = ['iid', 'state']
     requiredCreateAttrs = ['title']
     optionalCreateAttrs = ['description', 'due_date', 'state_event']
     optionalUpdateAttrs = requiredCreateAttrs + optionalCreateAttrs
