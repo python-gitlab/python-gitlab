@@ -44,7 +44,9 @@ EXTRA_ACTIONS = {
                                                  'filepath']},
                            'builds': {'required': ['id', 'project-id']}},
     gitlab.ProjectIssue: {'subscribe': {'required': ['id', 'project-id']},
-                          'unsubscribe': {'required': ['id', 'project-id']}},
+                          'unsubscribe': {'required': ['id', 'project-id']},
+                          'move': {'required': ['id', 'project-id',
+                                                'to-project-id']}},
     gitlab.ProjectMergeRequest: {
         'closes-issues': {'required': ['id', 'project-id']},
         'cancel': {'required': ['id', 'project-id']},
@@ -279,6 +281,13 @@ class GitlabCLI(object):
             o.unsubscribe()
         except Exception as e:
             _die("Impossible to subscribe to issue (%s)" % str(e))
+
+    def do_project_issue_move(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            o.move(args['to_project_id'])
+        except Exception as e:
+            _die("Impossible to move issue (%s)" % str(e))
 
     def do_project_merge_request_closesissues(self, cls, gl, what, args):
         try:

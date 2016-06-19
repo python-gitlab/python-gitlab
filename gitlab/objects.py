@@ -1095,6 +1095,21 @@ class ProjectIssue(GitlabObject):
         raise_error_from_response(r, GitlabUnsubscribeError)
         self._set_from_dict(r.json())
 
+    def move(self, to_project_id, **kwargs):
+        """Move the issue to another project.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        url = ('/projects/%(project_id)s/issues/%(issue_id)s/move' %
+               {'project_id': self.project_id, 'issue_id': self.id})
+
+        data = {'to_project_id': to_project_id}
+        data.update(**kwargs)
+        r = self.gitlab._raw_post(url, data=data)
+        raise_error_from_response(r, GitlabUpdateError, 201)
+        self._set_from_dict(r.json())
+
 
 class ProjectIssueManager(BaseManager):
     obj_cls = ProjectIssue
