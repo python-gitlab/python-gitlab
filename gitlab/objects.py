@@ -718,10 +718,6 @@ class GroupManager(BaseManager):
         return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
 
 
-class GroupProjectManager(BaseManager):
-    obj_cls = GroupProject
-
-
 class GroupProject(GitlabObject):
     def list_projects(self, gid, **kwargs):
         """List projects in a group
@@ -734,6 +730,10 @@ class GroupProject(GitlabObject):
         """
         url = '/groups/%d/projects' % gid
         return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
+
+
+class GroupProjectManager(BaseManager):
+    obj_cls = GroupProject
 
 
 class Hook(GitlabObject):
