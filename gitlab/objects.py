@@ -1340,9 +1340,9 @@ class ProjectLabel(GitlabObject):
     idAttr = 'name'
     requiredDeleteAttrs = ['name']
     requiredCreateAttrs = ['name', 'color']
-    requiredUpdateAttrs = []
-    # FIXME: new_name is only valid with update
-    optionalCreateAttrs = ['new_name']
+    optionalCreateAttrs = ['description']
+    requiredUpdateAttrs = ['name']
+    optionalUpdateAttrs = ['new_name', 'color', 'description']
 
 
 class ProjectLabelManager(BaseManager):
