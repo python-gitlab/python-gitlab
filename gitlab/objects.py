@@ -782,6 +782,19 @@ class LicenseManager(BaseManager):
     obj_cls = License
 
 
+class Namespace(GitlabObject):
+    _url = '/namespaces'
+    canGet = 'from_list'
+    canUpdate = False
+    canDelete = False
+    canCreate = False
+    optionalListAttrs = ['search']
+
+
+class NamespaceManager(BaseManager):
+    obj_cls = Namespace
+
+
 class ProjectBranch(GitlabObject):
     _url = '/projects/%(project_id)s/repository/branches'
     _constructorTypes = {'author': 'User', "committer": "User"}

@@ -234,3 +234,9 @@ admin_project = admin_project.star()
 assert(admin_project.star_count == 1)
 admin_project = admin_project.unstar()
 assert(admin_project.star_count == 0)
+
+# namespaces
+ns = gl.namespaces.list()
+assert(len(ns) != 0)
+ns = gl.namespaces.list(search='root')[0]
+assert(ns.kind == 'user')
