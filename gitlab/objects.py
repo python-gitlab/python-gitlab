@@ -1021,7 +1021,7 @@ class ProjectHook(GitlabObject):
     _url = '/projects/%(project_id)s/hooks'
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['url']
-    optionalCreateAttrs = ['push_events', 'issues_events',
+    optionalCreateAttrs = ['push_events', 'issues_events', 'note_events',
                            'merge_requests_events', 'tag_push_events',
                            'build_events', 'enable_ssl_verification']
     shortPrintAttr = 'url'
