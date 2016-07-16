@@ -1796,7 +1796,7 @@ class Project(GitlabObject):
         warnings.warn("`archive` is deprecated, "
                       "use `repository_archive` instead",
                       DeprecationWarning)
-        return self.repository_archive(path, ref_name, **kwargs)
+        return self.repository_archive(sha, **kwargs)
 
     def repository_archive(self, sha=None, **kwargs):
         """Return a tarball of the repository.
