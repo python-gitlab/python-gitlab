@@ -1580,6 +1580,10 @@ class Project(GitlabObject):
         ('variables', ProjectVariableManager, [('project_id', 'id')]),
     ]
 
+    VISIBILITY_PRIVATE = 0
+    VISIBILITY_INTERNAL = 10
+    VISIBILITY_PUBLIC = 20
+
     def Branch(self, id=None, **kwargs):
         warnings.warn("`Branch` is deprecated, use `branches` instead",
                       DeprecationWarning)
