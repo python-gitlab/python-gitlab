@@ -2,10 +2,12 @@
 Branches
 ########
 
-Use :class:`ProjectBranch` objects to manipulate repository branches.
+Use :class:`~gitlab.objects.ProjectBranch` objects to manipulate repository
+branches.
 
-To create :class:`ProjectBranch` objects use the
-:class:`Gitlab.project_branches` or :class:`Project.branches` managers.
+To create :class:`~gitlab.objects.ProjectBranch` objects use the
+:attr:`gitlab.Gitlab.project_branches` or :attr:`Project.branches
+<gitlab.objects.Project.branches>` managers.
 
 Examples
 ========

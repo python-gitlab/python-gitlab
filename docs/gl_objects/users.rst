@@ -2,9 +2,10 @@
 Users
 #####
 
-Use :class:`User` objects to manipulate repository branches.
+Use :class:`~gitlab.objects.User` objects to manipulate repository branches.
 
-To create :class:`User` objects use the :class:`Gitlab.users` manager.
+To create :class:`~gitlab.objects.User` objects use the
+:attr:`gitlab.Gitlab.users` manager.
 
 Examples
 ========
@@ -54,10 +55,11 @@ Block/Unblock a user:
 SSH keys
 ========
 
-Use the :class:`UserKey` objects to manage user keys.
+Use the :class:`~gitlab.objects.UserKey` objects to manage user keys.
 
-To create :class:`UserKey` objects use the :class:`User.keys` or
-:class:`Gitlab.user_keys` managers.
+To create :class:`~gitlab.objects.UserKey` objects use the
+:attr:`User.keys <gitlab.objects.User.keys>` or :attr:`gitlab.Gitlab.user_keys`
+managers.
 
 Exemples
 --------
@@ -89,8 +91,13 @@ Delete an SSH key for a user:
 Current User
 ============
 
-Use the :class:`CurrentUser` object to get information about the currently
-logged-in user.
+Use the :class:`~gitlab.objects.CurrentUser` object to get information about
+the currently logged-in user.
+
+Use the :class:`~gitlab.objects.CurrentUserKey` objects to manage user keys.
+
+To create :class:`~gitlab.objects.CurrentUserKey` objects use the
+:attr:`gitlab.objects.CurrentUser.keys <CurrentUser.keys>` manager.
 
 Examples
 --------
@@ -124,5 +131,3 @@ Delete a key for the current user:
 .. literalinclude:: users.py
    :start-after: # currentuser key delete
    :end-before: # end currentuser key delete
-
-
