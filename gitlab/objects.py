@@ -1886,33 +1886,65 @@ class Project(GitlabObject):
         r = self.gitlab._raw_delete(url)
         raise_error_from_response(r, GitlabDeleteError)
 
-    def star(self):
+    def star(self, **kwargs):
         """Star a project.
 
         Returns:
             Project: the updated Project
 
         Raises:
+            GitlabCreateError: If the action cannot be done
             GitlabConnectionError: If the server cannot be reached.
         """
         url = "/projects/%s/star" % self.id
-        r = self.gitlab._raw_post(url)
-        raise_error_from_response(r, GitlabGetError, [201, 304])
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabCreateError, [201, 304])
         return Project(self.gitlab, r.json()) if r.status_code == 201 else self
 
-    def unstar(self):
+    def unstar(self, **kwargs):
         """Unstar a project.
 
         Returns:
             Project: the updated Project
 
         Raises:
+            GitlabDeleteError: If the action cannot be done
             GitlabConnectionError: If the server cannot be reached.
         """
         url = "/projects/%s/star" % self.id
-        r = self.gitlab._raw_delete(url)
+        r = self.gitlab._raw_delete(url, **kwargs)
         raise_error_from_response(r, GitlabDeleteError, [200, 304])
         return Project(self.gitlab, r.json()) if r.status_code == 200 else self
+
+    def archive_(self, **kwargs):
+        """Archive a project.
+
+        Returns:
+            Project: the updated Project
+
+        Raises:
+            GitlabCreateError: If the action cannot be done
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        url = "/projects/%s/archive" % self.id
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabCreateError, 201)
+        return Project(self.gitlab, r.json()) if r.status_code == 201 else self
+
+    def unarchive_(self, **kwargs):
+        """Unarchive a project.
+
+        Returns:
+            Project: the updated Project
+
+        Raises:
+            GitlabDeleteError: If the action cannot be done
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        url = "/projects/%s/unarchive" % self.id
+        r = self.gitlab._raw_delete(url, **kwargs)
+        raise_error_from_response(r, GitlabCreateError, 201)
+        return Project(self.gitlab, r.json()) if r.status_code == 201 else self
 
 
 class TeamMember(GitlabObject):
