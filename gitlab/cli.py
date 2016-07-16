@@ -61,7 +61,10 @@ EXTRA_ACTIONS = {
                      'all': {},
                      'starred': {},
                      'star': {'required': ['id']},
-                     'unstar': {'required': ['id']}},
+                     'unstar': {'required': ['id']},
+                     'archive': {'required': ['id']},
+                     'unarchive': {'required': ['id']},
+                     'share': {'required': ['id', 'group-id', 'group-access']}},
     gitlab.User: {'block': {'required': ['id']},
                   'unblock': {'required': ['id']},
                   'search': {'required': ['query']},
@@ -204,6 +207,27 @@ class GitlabCLI(object):
             o.unstar()
         except Exception as e:
             _die("Impossible to unstar project (%s)" % str(e))
+
+    def do_project_archive(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            o.archive_()
+        except Exception as e:
+            _die("Impossible to archive project (%s)" % str(e))
+
+    def do_project_unarchive(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            o.unarchive_()
+        except Exception as e:
+            _die("Impossible to unarchive project (%s)" % str(e))
+
+    def do_project_share(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            o.share(args['group_id'], args['group_access'])
+        except Exception as e:
+            _die("Impossible to share project (%s)" % str(e))
 
     def do_user_block(self, cls, gl, what, args):
         try:
