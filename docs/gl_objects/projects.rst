@@ -94,3 +94,46 @@ List the project events:
 .. literalinclude:: projects.py
    :start-after: # events list
    :end-before: # end events list
+
+Team members
+------------
+
+Use :class:`~gitlab.objects.ProjectMember` objects to manipulate projects
+members. The :attr:`gitlab.Gitlab.project_members` and :attr:`Project.members
+<gitlab.objects.Projects.members>` manager objects provide helper functions.
+
+List the project members:
+
+.. literalinclude:: projects.py
+   :start-after: # members list
+   :end-before: # end members list
+
+Search project members matching a query string:
+
+.. literalinclude:: projects.py
+   :start-after: # members search
+   :end-before: # end members search
+
+Get a single project member:
+
+.. literalinclude:: projects.py
+   :start-after: # members get
+   :end-before: # end members get
+
+Add a project member:
+
+.. literalinclude:: projects.py
+   :start-after: # members add
+   :end-before: # end members add
+
+Modify a project member (change the access level):
+
+.. literalinclude:: projects.py
+   :start-after: # members update
+   :end-before: # end members update
+
+Remove a member from the project team:
+
+.. literalinclude:: projects.py
+   :start-after: # members delete
+   :end-before: # end members delete

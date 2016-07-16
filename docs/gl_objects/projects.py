@@ -65,3 +65,43 @@ gl.project_events.list(project_id=1)
 # or
 project.events.list()
 # end events list
+
+# members list
+members = gl.project_members.list()
+# or
+members = project.members.list()
+# end members list
+
+# members search
+members = gl.project_members.list(query='foo')
+# or
+members = project.members.list(query='bar')
+# end members search
+
+# members get
+member = gl.project_members.get(1)
+# or
+member = project.members.get(1)
+# end members get
+
+# members add
+member = gl.project_members.create({'user_id': user.id, 'access_level':
+                                    gitlab.Group.DEVELOPER_ACCESS},
+                                   project_id=1)
+# or
+member = project.members.create({'user_id': user.id, 'access_level':
+                                 gitlab.Group.DEVELOPER_ACCESS})
+# end members add
+
+# members update
+member.access_level = gitlab.Group.MASTER_ACCESS
+member.save()
+# end members update
+
+# members delete
+gl.project_members.delete(user.id, project_id=1)
+# or
+project.members.delete(user.id)
+# or
+member.delete()
+# end members delete
