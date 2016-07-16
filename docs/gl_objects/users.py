@@ -10,7 +10,7 @@ users = gl.users.list(search='oo')
 # by ID
 user = gl.users.get(2)
 # by username
-user = gl.users.list(username='root')
+user = gl.users.list(username='root')[0]
 # end get
 
 # create
