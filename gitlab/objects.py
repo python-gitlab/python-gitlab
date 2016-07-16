@@ -1494,7 +1494,8 @@ class ProjectSnippet(GitlabObject):
     _constructorTypes = {'author': 'User'}
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['title', 'file_name', 'code']
-    optionalCreateAttrs = ['lifetime']
+    optionalCreateAttrs = ['lifetime', 'visibility_level']
+    optionalUpdateAttrs = ['title', 'file_name', 'code', 'visibility_level']
     shortPrintAttr = 'title'
     managers = [('notes', ProjectSnippetNoteManager,
                  [('project_id', 'project_id'), ('snippet_id', 'id')])]
