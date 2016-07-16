@@ -494,6 +494,18 @@ class GitlabObject(object):
         return not self.__eq__(other)
 
 
+class UserEmail(GitlabObject):
+    _url = '/users/%(user_id)s/emails'
+    canUpdate = False
+    shortPrintAttr = 'email'
+    requiredUrlAttrs = ['user_id']
+    requiredCreateAttrs = ['email']
+
+
+class UserEmailManager(BaseManager):
+    obj_cls = UserEmail
+
+
 class UserKey(GitlabObject):
     _url = '/users/%(user_id)s/keys'
     canGet = 'from_list'
@@ -519,7 +531,10 @@ class User(GitlabObject):
                            'projects_limit', 'extern_uid', 'provider', 'bio',
                            'admin', 'can_create_group', 'website_url',
                            'confirm', 'external']
-    managers = [('keys', UserKeyManager, [('user_id', 'id')])]
+    managers = [
+        ('emails', UserEmailManager, [('user_id', 'id')]),
+        ('keys', UserKeyManager, [('user_id', 'id')])
+    ]
 
     def _data_for_gitlab(self, extra_parameters={}, update=False):
         if hasattr(self, 'confirm'):
@@ -601,6 +616,17 @@ class UserManager(BaseManager):
             raise GitlabGetError('no such user: ' + username)
 
 
+class CurrentUserEmail(GitlabObject):
+    _url = '/user/emails'
+    canUpdate = False
+    shortPrintAttr = 'email'
+    requiredCreateAttrs = ['email']
+
+
+class CurrentUserEmailManager(BaseManager):
+    obj_cls = CurrentUserEmail
+
+
 class CurrentUserKey(GitlabObject):
     _url = '/user/keys'
     canUpdate = False
@@ -619,7 +645,10 @@ class CurrentUser(GitlabObject):
     canUpdate = False
     canDelete = False
     shortPrintAttr = 'username'
-    managers = [('keys', CurrentUserKeyManager, [('user_id', 'id')])]
+    managers = [
+        ('emails', CurrentUserEmailManager, [('user_id', 'id')]),
+        ('keys', CurrentUserKeyManager, [('user_id', 'id')])
+    ]
 
     def Key(self, id=None, **kwargs):
         warnings.warn("`Key` is deprecated, use `keys` instead",

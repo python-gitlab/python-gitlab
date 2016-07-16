@@ -88,6 +88,41 @@ Delete an SSH key for a user:
    :start-after: # key delete
    :end-before: # end key delete
 
+Emails
+======
+
+Use the :class:`~gitlab.objects.UserEmail` objects to manage user emails.
+
+To create :class:`~gitlab.objects.UserEmail` objects use the :attr:`User.emails
+<gitlab.objects.User.emails>` or :attr:`gitlab.Gitlab.user_emails` managers.
+
+Exemples
+--------
+
+List emails for a user:
+
+.. literalinclude:: users.py
+   :start-after: # email list
+   :end-before: # end email list
+
+Get an email for a user:
+
+.. literalinclude:: users.py
+   :start-after: # email get
+   :end-before: # end email get
+
+Create an email for a user:
+
+.. literalinclude:: users.py
+   :start-after: # email create
+   :end-before: # end email create
+
+Delete an email for a user:
+
+.. literalinclude:: users.py
+   :start-after: # email delete
+   :end-before: # end email delete
+
 Current User
 ============
 
@@ -98,6 +133,11 @@ Use the :class:`~gitlab.objects.CurrentUserKey` objects to manage user keys.
 
 To create :class:`~gitlab.objects.CurrentUserKey` objects use the
 :attr:`gitlab.objects.CurrentUser.keys <CurrentUser.keys>` manager.
+
+Use the :class:`~gitlab.objects.CurrentUserEmail` objects to manage user emails.
+
+To create :class:`~gitlab.objects.CurrentUserEmail` objects use the
+:attr:`gitlab.objects.CurrentUser.emails <CurrentUser.emails>` manager.
 
 Examples
 --------
@@ -131,3 +171,27 @@ Delete a key for the current user:
 .. literalinclude:: users.py
    :start-after: # currentuser key delete
    :end-before: # end currentuser key delete
+
+List the current user emails:
+
+.. literalinclude:: users.py
+   :start-after: # currentuser email list
+   :end-before: # end currentuser email list
+
+Get an email for the current user:
+
+.. literalinclude:: users.py
+   :start-after: # currentuser email get
+   :end-before: # end currentuser email get
+
+Create an email for the current user:
+
+.. literalinclude:: users.py
+   :start-after: # currentuser email create
+   :end-before: # end currentuser email create
+
+Delete an email for the current user:
+
+.. literalinclude:: users.py
+   :start-after: # currentuser email delete
+   :end-before: # end currentuser email delete

@@ -68,6 +68,13 @@ else:
 key = new_user.keys.create({'title': 'testkey', 'key': SSH_KEY})
 assert(len(new_user.keys.list()) == 1)
 key.delete()
+assert(len(new_user.keys.list()) == 0)
+
+# emails
+email = new_user.emails.create({'email': 'foo2@bar.com'})
+assert(len(new_user.emails.list()) == 1)
+email.delete()
+assert(len(new_user.emails.list()) == 0)
 
 new_user.delete()
 foobar_user.delete()

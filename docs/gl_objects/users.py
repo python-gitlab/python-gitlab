@@ -64,6 +64,32 @@ user.keys.delete(1)
 key.delete()
 # end key delete
 
+# email list
+emails = gl.user_emails.list(user_id=1)
+# or
+emails = user.emails.list()
+# end email list
+
+# email get
+email = gl.user_emails.list(1, user_id=1)
+# or
+email = user.emails.get(1)
+# end email get
+
+# email create
+k = gl.user_emails.create({'email': 'foo@bar.com'}, user_id=2)
+# or
+k = user.emails.create({'email': 'foo@bar.com'})
+# end email create
+
+# email delete
+gl.user_emails.delete(1, user_id=1)
+# or
+user.emails.delete(1)
+# or
+email.delete()
+# end email delete
+
 # currentuser get
 gl.auth()
 current_user = gl.user
@@ -86,3 +112,21 @@ gl.user.keys.delete(1)
 # or
 key.delete()
 # end currentuser key delete
+
+# currentuser email list
+emails = gl.user.emails.list()
+# end currentuser email list
+
+# currentuser email get
+email = gl.user.emails.get(1)
+# end currentuser email get
+
+# currentuser email create
+email = gl.user.emails.create({'email': 'foo@bar.com'})
+# end currentuser email create
+
+# currentuser email delete
+gl.user.emails.delete(1)
+# or
+email.delete()
+# end currentuser email delete

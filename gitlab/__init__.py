@@ -65,6 +65,7 @@ class Gitlab(object):
         http_username: (str): Username for HTTP authentication
         http_password: (str): Password for HTTP authentication
     Attributes:
+        user_emails (UserEmailManager): Manager for GitLab users' emails.
         user_keys (UserKeyManager): Manager for GitLab users' SSH keys.
         users (UserManager): Manager for GitLab users
         group_projects (GroupProjectManager): Manager for GitLab group projects
@@ -136,6 +137,7 @@ class Gitlab(object):
         self.session = requests.Session()
 
         self.settings = ApplicationSettingsManager(self)
+        self.user_emails = UserEmailManager(self)
         self.user_keys = UserKeyManager(self)
         self.users = UserManager(self)
         self.group_projects = GroupProjectManager(self)
