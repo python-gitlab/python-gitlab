@@ -1161,6 +1161,7 @@ class ProjectMember(GitlabObject):
     _url = '/projects/%(project_id)s/members'
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['access_level', 'user_id']
+    requiredUpdateAttrs = ['access_level']
     shortPrintAttr = 'username'
 
 
