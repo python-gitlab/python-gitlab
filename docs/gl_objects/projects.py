@@ -105,3 +105,7 @@ project.members.delete(user.id)
 # or
 member.delete()
 # end members delete
+
+# share
+project.share(group.id, group.DEVELOPER_ACCESS)
+# end share

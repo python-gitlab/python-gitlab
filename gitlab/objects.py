@@ -1948,6 +1948,22 @@ class Project(GitlabObject):
         raise_error_from_response(r, GitlabCreateError, 201)
         return Project(self.gitlab, r.json()) if r.status_code == 201 else self
 
+    def share(self, group_id, group_access, **kwargs):
+        """Share the project with a group.
+
+        Args:
+            group_id (int): ID of the group.
+            group_access (int): Access level for the group.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabCreateError: If the server fails to perform the request.
+        """
+        url = "/projects/%s/share" % self.id
+        data = {'group_id': group_id, 'group_access': group_access}
+        r = self.gitlab._raw_post(url, data=data, **kwargs)
+        raise_error_from_response(r, GitlabCreateError, 201)
+
 
 class TeamMember(GitlabObject):
     _url = '/user_teams/%(team_id)s/members'

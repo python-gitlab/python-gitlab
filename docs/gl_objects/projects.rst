@@ -137,3 +137,9 @@ Remove a member from the project team:
 .. literalinclude:: projects.py
    :start-after: # members delete
    :end-before: # end members delete
+
+Share the project with a group:
+
+.. literalinclude:: projects.py
+   :start-after: # share
+   :end-before: # end share
