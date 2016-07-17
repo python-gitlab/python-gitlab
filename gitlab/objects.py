@@ -1539,11 +1539,9 @@ class ProjectSnippet(GitlabObject):
                  [('project_id', 'project_id'), ('snippet_id', 'id')])]
 
     def Content(self, **kwargs):
-        url = ("/projects/%(project_id)s/snippets/%(snippet_id)s/raw" %
-               {'project_id': self.project_id, 'snippet_id': self.id})
-        r = self.gitlab._raw_get(url, **kwargs)
-        raise_error_from_response(r, GitlabGetError)
-        return r.content
+        warnings.warn("`Content` is deprecated, use `content` instead",
+                      DeprecationWarning)
+        return self.content()
 
     def Note(self, id=None, **kwargs):
         warnings.warn("`Note` is deprecated, use `notes` instead",
@@ -1553,6 +1551,30 @@ class ProjectSnippet(GitlabObject):
             project_id=self.project_id,
             snippet_id=self.id,
             **kwargs)
+
+    def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+        """Return the raw content of a snippet.
+
+        Args:
+            streamed (bool): If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment.
+            action (callable): Callable responsible of dealing with chunk of
+                data.
+            chunk_size (int): Size of each chunk.
+
+        Returns:
+            str: The snippet content
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
+        """
+        url = ("/projects/%(project_id)s/snippets/%(snippet_id)s/raw" %
+               {'project_id': self.project_id, 'snippet_id': self.id})
+        r = self.gitlab._raw_get(url, **kwargs)
+        raise_error_from_response(r, GitlabGetError)
+        return utils.response_content(r, streamed, action, chunk_size)
 
 
 class ProjectSnippetManager(BaseManager):
