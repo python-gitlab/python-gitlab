@@ -490,7 +490,7 @@ class TestGitlabMethods(unittest.TestCase):
             self.assertEqual(expected, data)
 
     def test_update_kw_missing(self):
-        obj = Group(self.gl, data={"name": "testgroup"})
+        obj = Hook(self.gl, data={"name": "testgroup"})
         self.assertRaises(GitlabUpdateError, self.gl.update, obj)
 
     def test_update_401(self):
