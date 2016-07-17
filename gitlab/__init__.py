@@ -77,6 +77,8 @@ class Gitlab(object):
         namespaces (NamespaceManager): Manager for namespaces
         project_branches (ProjectBranchManager): Manager for GitLab projects
             branches
+        project_builds (ProjectBuildManager): Manager for GitLab projects
+            builds
         project_commits (ProjectCommitManager): Manager for GitLab projects
             commits
         project_commitcomments (ProjectCommitCommentManager): Manager for
@@ -107,6 +109,8 @@ class Gitlab(object):
             note on snippets
         project_snippets (ProjectSnippetManager): Manager for GitLab projects
             snippets
+        project_triggers (ProjectTriggerManager): Manager for build triggers
+        project_variables (ProjectVariableManager): Manager for build variables
         user_projects (UserProjectManager): Manager for GitLab projects users
         projects (ProjectManager): Manager for GitLab projects
         runners (RunnerManager): Manager for the CI runners
@@ -150,6 +154,7 @@ class Gitlab(object):
         self.licenses = LicenseManager(self)
         self.namespaces = NamespaceManager(self)
         self.project_branches = ProjectBranchManager(self)
+        self.project_builds = ProjectBuildManager(self)
         self.project_commits = ProjectCommitManager(self)
         self.project_commit_comments = ProjectCommitCommentManager(self)
         self.project_keys = ProjectKeyManager(self)
@@ -168,6 +173,8 @@ class Gitlab(object):
         self.project_files = ProjectFileManager(self)
         self.project_snippet_notes = ProjectSnippetNoteManager(self)
         self.project_snippets = ProjectSnippetManager(self)
+        self.project_triggers = ProjectTriggerManager(self)
+        self.project_variables = ProjectVariableManager(self)
         self.user_projects = UserProjectManager(self)
         self.projects = ProjectManager(self)
         self.runners = RunnerManager(self)
