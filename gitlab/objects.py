@@ -1965,6 +1965,35 @@ class Project(GitlabObject):
         raise_error_from_response(r, GitlabCreateError, 201)
 
 
+class Runner(GitlabObject):
+    _url = '/runners'
+    canCreate = False
+    optionalUpdateAttrs = ['description', 'active', 'tag_list']
+
+
+class RunnerManager(BaseManager):
+    obj_cls = Runner
+
+    def all(self, scope=None, **kwargs):
+        """List all the runners.
+
+        Args:
+            scope (str): The scope of runners to show, one of: specific,
+                shared, active, paused, online
+
+        Returns:
+            list(Runner): a list of runners matching the scope.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabListError; If the resource cannot be found
+        """
+        url = '/runners/all'
+        if scope is not None:
+            url += '?scope=' + scope
+        return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
+
+
 class TeamMember(GitlabObject):
     _url = '/user_teams/%(team_id)s/members'
     canUpdate = False

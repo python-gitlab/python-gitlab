@@ -109,6 +109,7 @@ class Gitlab(object):
             snippets
         user_projects (UserProjectManager): Manager for GitLab projects users
         projects (ProjectManager): Manager for GitLab projects
+        runners (RunnerManager): Manager for the CI runners
         settings (ApplicationSettingsManager): manager for the Gitlab settings
         team_members (TeamMemberManager): Manager for GitLab teams members
         team_projects (TeamProjectManager): Manager for GitLab teams projects
@@ -169,6 +170,7 @@ class Gitlab(object):
         self.project_snippets = ProjectSnippetManager(self)
         self.user_projects = UserProjectManager(self)
         self.projects = ProjectManager(self)
+        self.runners = RunnerManager(self)
         self.team_members = TeamMemberManager(self)
         self.team_projects = TeamProjectManager(self)
         self.teams = TeamManager(self)
