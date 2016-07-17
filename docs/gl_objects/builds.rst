@@ -116,7 +116,16 @@ Get a build artifacts:
 
 .. warning::
 
-   Artifacts are entirely stored in memory.
+   Artifacts are entirely stored in memory in this example.
+
+.. _streaming_example:
+
+You can download artifacts as a stream. Provide a callable to handle the
+stream:
+
+.. literalinclude:: builds.py
+   :start-after: # stream artifacts
+   :end-before: # end stream artifacts
 
 Mark a build artifact as kept when expiration is set:
 
@@ -132,7 +141,8 @@ Get a build trace:
 
 .. warning::
 
-   Traces are entirely stored in memory.
+   Traces are entirely stored in memory unless you use the streaming feature.
+   See :ref:`the artifacts example <streaming_example>`.
 
 Cancel/retry a build:
 

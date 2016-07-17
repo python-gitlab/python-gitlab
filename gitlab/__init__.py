@@ -286,7 +286,7 @@ class Gitlab(object):
         self.email = email
         self.password = password
 
-    def _raw_get(self, path, content_type=None, **kwargs):
+    def _raw_get(self, path, content_type=None, streamed=False, **kwargs):
         url = '%s%s' % (self._url, path)
         headers = self._create_headers(content_type)
         try:
@@ -295,6 +295,7 @@ class Gitlab(object):
                                     headers=headers,
                                     verify=self.ssl_verify,
                                     timeout=self.timeout,
+                                    stream=streamed,
                                     auth=requests.auth.HTTPBasicAuth(
                                         self.http_username,
                                         self.http_password))

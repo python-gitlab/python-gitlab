@@ -77,6 +77,19 @@ project.builds.get(build_id)
 build.artifacts()
 # end artifacts
 
+# stream artifacts
+class Foo(object):
+    def __init__(self):
+        self._fd = open('artifacts.zip', 'w')
+
+    def __call__(self, chunk):
+        self._fd.write(chunk)
+
+target = Foo()
+build.artifacts(streamed=True, streamed=True, action=target)
+del(target)  # flushes data on disk
+# end stream artifacts
+
 # keep artifacts
 build.keep_artifacts()
 # end keep artifacts

@@ -29,6 +29,7 @@ import six
 
 import gitlab
 from gitlab.exceptions import *  # noqa
+from gitlab import utils
 
 
 class jsonEncoder(json.JSONEncoder):
@@ -889,22 +890,31 @@ class ProjectBuild(GitlabObject):
         r = self.gitlab._raw_post(url)
         raise_error_from_response(r, GitlabGetError, 200)
 
-    def artifacts(self, **kwargs):
+    def artifacts(self, streamed=False, action=None, chunk_size=1024,
+                  **kwargs):
         """Get the build artifacts.
 
+        Args:
+            streamed (bool): If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment.
+            action (callable): Callable responsible of dealing with chunk of
+                data.
+            chunk_size (int): Size of each chunk.
+
         Returns:
-            str: The artifacts.
+            str: The artifacts if `streamed` is False, None otherwise.
 
         Raises:
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the artifacts are not available.
         """
         url = '/projects/%s/builds/%s/artifacts' % (self.project_id, self.id)
-        r = self.gitlab._raw_get(url)
+        r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
         raise_error_from_response(r, GitlabGetError, 200)
-        return r.content
+        return utils.response_content(r, streamed, action, chunk_size)
 
-    def trace(self, **kwargs):
+    def trace(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Get the build trace.
 
         Returns:
@@ -915,9 +925,9 @@ class ProjectBuild(GitlabObject):
             GitlabGetError: If the trace is not available.
         """
         url = '/projects/%s/builds/%s/trace' % (self.project_id, self.id)
-        r = self.gitlab._raw_get(url)
+        r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
         raise_error_from_response(r, GitlabGetError, 200)
-        return r.content
+        return utils.response_content(r, streamed, action, chunk_size)
 
 
 class ProjectBuildManager(BaseManager):
@@ -972,7 +982,8 @@ class ProjectCommit(GitlabObject):
 
         return r.json()
 
-    def blob(self, filepath, **kwargs):
+    def blob(self, filepath, streamed=False, action=None, chunk_size=1024,
+             **kwargs):
         """Generate the content of a file for this commit.
 
         Args:
@@ -988,10 +999,9 @@ class ProjectCommit(GitlabObject):
         url = ('/projects/%(project_id)s/repository/blobs/%(commit_id)s' %
                {'project_id': self.project_id, 'commit_id': self.id})
         url += '?filepath=%s' % filepath
-        r = self.gitlab._raw_get(url, **kwargs)
+        r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
         raise_error_from_response(r, GitlabGetError)
-
-        return r.content
+        return utils.response_content(r, streamed, action, chunk_size)
 
     def builds(self, **kwargs):
         """List the build for this commit.
@@ -1734,7 +1744,8 @@ class Project(GitlabObject):
                       DeprecationWarning)
         return self.repository_blob(sha, filepath, **kwargs)
 
-    def repository_blob(self, sha, filepath, **kwargs):
+    def repository_blob(self, sha, filepath, streamed=False, action=None,
+                        chunk_size=1024, **kwargs):
         """Return the content of a file for a commit.
 
         Args:
@@ -1750,11 +1761,12 @@ class Project(GitlabObject):
         """
         url = "/projects/%s/repository/blobs/%s" % (self.id, sha)
         url += '?filepath=%s' % (filepath)
-        r = self.gitlab._raw_get(url, **kwargs)
+        r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
         raise_error_from_response(r, GitlabGetError)
-        return r.content
+        return utils.response_content(r, streamed, action, chunk_size)
 
-    def repository_raw_blob(self, sha, **kwargs):
+    def repository_raw_blob(self, sha, streamed=False, action=None,
+                            chunk_size=1024, **kwargs):
         """Returns the raw file contents for a blob by blob SHA.
 
         Args:
@@ -1768,9 +1780,9 @@ class Project(GitlabObject):
             GitlabGetError: If the server fails to perform the request.
         """
         url = "/projects/%s/repository/raw_blobs/%s" % (self.id, sha)
-        r = self.gitlab._raw_get(url, **kwargs)
+        r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
         raise_error_from_response(r, GitlabGetError)
-        return r.content
+        return utils.response_content(r, streamed, action, chunk_size)
 
     def repository_compare(self, from_, to, **kwargs):
         """Returns a diff between two branches/commits.
@@ -1813,7 +1825,8 @@ class Project(GitlabObject):
                       DeprecationWarning)
         return self.repository_archive(sha, **kwargs)
 
-    def repository_archive(self, sha=None, **kwargs):
+    def repository_archive(self, sha=None, streamed=False, action=None,
+                           chunk_size=1024, **kwargs):
         """Return a tarball of the repository.
 
         Args:
@@ -1829,9 +1842,9 @@ class Project(GitlabObject):
         url = '/projects/%s/repository/archive' % self.id
         if sha:
             url += '?sha=%s' % sha
-        r = self.gitlab._raw_get(url, **kwargs)
+        r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
         raise_error_from_response(r, GitlabGetError)
-        return r.content
+        return utils.response_content(r, streamed, action, chunk_size)
 
     def create_file(self, path, branch, content, message, **kwargs):
         """Creates file in project repository
