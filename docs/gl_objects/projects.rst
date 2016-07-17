@@ -58,11 +58,17 @@ Delete a project:
    :start-after: # delete
    :end-before: # end delete
 
-Fork a project :
+Fork a project:
 
 .. literalinclude:: projects.py
    :start-after: # fork
    :end-before: # end fork
+
+Create/delete a fork relation between projects (requires admin permissions):
+
+.. literalinclude:: projects.py
+   :start-after: # forkrelation
+   :end-before: # end forkrelation
 
 Star/unstar a project:
 

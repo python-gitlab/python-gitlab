@@ -53,14 +53,19 @@ fork = gl.project_forks.create(project_id=1)
 fork = project.fork()
 # end fork
 
+# forkrelation
+project.create_fork_relation(source_project.id)
+project.delete_fork_relation()
+# end forkrelation
+
 # star
-p.star()
-p.unstar()
+project.star()
+project.unstar()
 # end star
 
 # archive
-p.archive_()
-p.unarchive_()
+project.archive_()
+project.unarchive_()
 # end archive
 
 # events list
