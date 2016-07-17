@@ -712,10 +712,10 @@ class GroupProjectManager(BaseManager):
 
 class Group(GitlabObject):
     _url = '/groups'
-    canUpdate = False
     _constructorTypes = {'projects': 'Project'}
     requiredCreateAttrs = ['name', 'path']
     optionalCreateAttrs = ['description', 'visibility_level']
+    optionalUpdateAttrs = ['name', 'path', 'description', 'visibility_level']
     shortPrintAttr = 'name'
     managers = [('members', GroupMemberManager, [('group_id', 'id')]),
                 ('projects', GroupProjectManager, [('group_id', 'id')])]
