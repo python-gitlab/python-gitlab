@@ -917,6 +917,14 @@ class ProjectBuild(GitlabObject):
     def trace(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Get the build trace.
 
+        Args:
+            streamed (bool): If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment.
+            action (callable): Callable responsible of dealing with chunk of
+                data.
+            chunk_size (int): Size of each chunk.
+
         Returns:
             str: The trace.
 
@@ -988,6 +996,12 @@ class ProjectCommit(GitlabObject):
 
         Args:
             filepath (str): Path of the file to request.
+            streamed (bool): If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment.
+            action (callable): Callable responsible of dealing with chunk of
+                data.
+            chunk_size (int): Size of each chunk.
 
         Returns:
             str: The content of the file
@@ -1751,6 +1765,12 @@ class Project(GitlabObject):
         Args:
             sha (str): ID of the commit
             filepath (str): Path of the file to return
+            streamed (bool): If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment.
+            action (callable): Callable responsible of dealing with chunk of
+                data.
+            chunk_size (int): Size of each chunk.
 
         Returns:
             str: The file content
@@ -1771,6 +1791,12 @@ class Project(GitlabObject):
 
         Args:
             sha(str): ID of the blob
+            streamed (bool): If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment.
+            action (callable): Callable responsible of dealing with chunk of
+                data.
+            chunk_size (int): Size of each chunk.
 
         Returns:
             str: The blob content
@@ -1831,6 +1857,12 @@ class Project(GitlabObject):
 
         Args:
             sha (str): ID of the commit (default branch by default).
+            streamed (bool): If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment.
+            action (callable): Callable responsible of dealing with chunk of
+                data.
+            chunk_size (int): Size of each chunk.
 
         Returns:
             str: The binary data of the archive.
