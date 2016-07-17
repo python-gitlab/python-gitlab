@@ -143,3 +143,40 @@ Share the project with a group:
 .. literalinclude:: projects.py
    :start-after: # share
    :end-before: # end share
+
+Hooks
+-----
+
+Use :class:`~gitlab.objects.ProjectHook` objects to manipulate projects
+hooks. The :attr:`gitlab.Gitlab.project_hooks` and :attr:`Project.hooks
+<gitlab.objects.Projects.hooks>` manager objects provide helper functions.
+
+List the project hooks:
+
+.. literalinclude:: projects.py
+   :start-after: # hook list
+   :end-before: # end hook list
+
+Get a project hook
+
+.. literalinclude:: projects.py
+   :start-after: # hook get
+   :end-before: # end hook get
+
+Create a project hook:
+
+.. literalinclude:: projects.py
+   :start-after: # hook create
+   :end-before: # end hook create
+
+Update a project hook:
+
+.. literalinclude:: projects.py
+   :start-after: # hook update
+   :end-before: # end hook update
+
+Delete a project hook:
+
+.. literalinclude:: projects.py
+   :start-after: # hook delete
+   :end-before: # end hook delete

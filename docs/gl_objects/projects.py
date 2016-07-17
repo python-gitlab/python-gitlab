@@ -109,3 +109,36 @@ member.delete()
 # share
 project.share(group.id, group.DEVELOPER_ACCESS)
 # end share
+
+# hook list
+hooks = gl.project_hooks.list(project_id=1)
+# or
+hooks = project.hooks.list()
+# end hook list
+
+# hook get
+hook = gl.project_hooks.get(1, project_id=1)
+# or
+hook = project.hooks.get(1)
+# end hook get
+
+# hook create
+hook = gl.project_hooks.create({'url': 'http://my/action/url',
+                                'push_events': 1},
+                               project_id=1)
+# or
+hook = project.hooks.create({'url': 'http://my/action/url', 'push_events': 1})
+# end hook create
+
+# hook update
+hook.push_events = 0
+hook.save()
+# end hook update
+
+# hook delete
+gl.project_hooks.delete(1, project_id=1)
+# or
+project.hooks.delete(1)
+# or
+hook.delete()
+# end hook delete
