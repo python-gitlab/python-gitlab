@@ -858,7 +858,8 @@ class ProjectBranchManager(BaseManager):
 class ProjectBuild(GitlabObject):
     _url = '/projects/%(project_id)s/builds'
     _constructorTypes = {'user': 'User',
-                         'commit': 'ProjectCommit'}
+                         'commit': 'ProjectCommit',
+                         'runner': 'Runner'}
     requiredUrlAttrs = ['project_id']
     canDelete = False
     canUpdate = False
@@ -875,6 +876,18 @@ class ProjectBuild(GitlabObject):
         url = '/projects/%s/builds/%s/retry' % (self.project_id, self.id)
         r = self.gitlab._raw_post(url)
         raise_error_from_response(r, GitlabBuildRetryError, 201)
+
+    def keep_artifacts(self, **kwargs):
+        """Prevent artifacts from being delete when expiration is set.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabCreateError: If the request failed.
+        """
+        url = ('/projects/%s/builds/%s/artifacts/keep' %
+               (self.project_id, self.id))
+        r = self.gitlab._raw_post(url)
+        raise_error_from_response(r, GitlabGetError, 200)
 
     def artifacts(self, **kwargs):
         """Get the build artifacts.
