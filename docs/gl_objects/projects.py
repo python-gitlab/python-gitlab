@@ -14,6 +14,9 @@ projects = gl.projects.starred()
 
 # List all the projects
 projects = gl.projects.all()
+
+# Search projects
+projects = gl.projects.search('query')
 # end list
 
 # get
