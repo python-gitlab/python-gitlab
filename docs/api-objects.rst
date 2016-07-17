@@ -6,6 +6,7 @@ API objects manipulation
 
    gl_objects/branches
    gl_objects/builds
+   gl_objects/groups
    gl_objects/projects
    gl_objects/runners
    gl_objects/users
