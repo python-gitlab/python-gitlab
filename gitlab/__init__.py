@@ -109,6 +109,7 @@ class Gitlab(object):
             snippets
         user_projects (UserProjectManager): Manager for GitLab projects users
         projects (ProjectManager): Manager for GitLab projects
+        settings (ApplicationSettingsManager): manager for the Gitlab settings
         team_members (TeamMemberManager): Manager for GitLab teams members
         team_projects (TeamProjectManager): Manager for GitLab teams projects
         teams (TeamManager): Manager for GitLab teams
