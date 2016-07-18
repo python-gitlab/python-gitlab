@@ -86,7 +86,7 @@ class Foo(object):
         self._fd.write(chunk)
 
 target = Foo()
-build.artifacts(streamed=True, streamed=True, action=target)
+build.artifacts(streamed=True, action=target)
 del(target)  # flushes data on disk
 # end stream artifacts
 
