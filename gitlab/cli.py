@@ -73,7 +73,9 @@ EXTRA_ACTIONS = {
 }
 
 
-def _die(msg):
+def _die(msg, e=None):
+    if e:
+        msg = "%s (%s)" % (msg, e)
     sys.stderr.write(msg + "\n")
     sys.exit(1)
 
@@ -111,7 +113,7 @@ class GitlabCLI(object):
         try:
             o = cls.create(gl, args)
         except Exception as e:
-            _die("Impossible to create object (%s)" % str(e))
+            _die("Impossible to create object", e)
 
         return o
 
@@ -122,7 +124,7 @@ class GitlabCLI(object):
         try:
             l = cls.list(gl, **args)
         except Exception as e:
-            _die("Impossible to list objects (%s)" % str(e))
+            _die("Impossible to list objects", e)
 
         return l
 
@@ -137,7 +139,7 @@ class GitlabCLI(object):
         try:
             o = cls.get(gl, id, **args)
         except Exception as e:
-            _die("Impossible to get object (%s)" % str(e))
+            _die("Impossible to get object", e)
 
         return o
 
@@ -149,7 +151,7 @@ class GitlabCLI(object):
         try:
             gl.delete(cls, id, **args)
         except Exception as e:
-            _die("Impossible to destroy object (%s)" % str(e))
+            _die("Impossible to destroy object", e)
 
     def do_update(self, cls, gl, what, args):
         if not cls.canUpdate:
@@ -161,7 +163,7 @@ class GitlabCLI(object):
                 o.__dict__[k] = v
             o.save()
         except Exception as e:
-            _die("Impossible to update object (%s)" % str(e))
+            _die("Impossible to update object", e)
 
         return o
 
@@ -169,165 +171,164 @@ class GitlabCLI(object):
         try:
             return gl.groups.search(args['query'])
         except Exception as e:
-            _die("Impossible to search projects (%s)" % str(e))
+            _die("Impossible to search projects", e)
 
     def do_project_search(self, cls, gl, what, args):
         try:
             return gl.projects.search(args['query'])
         except Exception as e:
-            _die("Impossible to search projects (%s)" % str(e))
+            _die("Impossible to search projects", e)
 
     def do_project_all(self, cls, gl, what, args):
         try:
             return gl.projects.all()
         except Exception as e:
-            _die("Impossible to list all projects (%s)" % str(e))
+            _die("Impossible to list all projects", e)
 
     def do_project_starred(self, cls, gl, what, args):
         try:
             return gl.projects.starred()
         except Exception as e:
-            _die("Impossible to list starred projects (%s)" % str(e))
+            _die("Impossible to list starred projects", e)
 
     def do_project_owned(self, cls, gl, what, args):
         try:
             return gl.projects.owned()
         except Exception as e:
-            _die("Impossible to list owned projects (%s)" % str(e))
+            _die("Impossible to list owned projects", e)
 
     def do_project_star(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             o.star()
         except Exception as e:
-            _die("Impossible to star project (%s)" % str(e))
+            _die("Impossible to star project", e)
 
     def do_project_unstar(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             o.unstar()
         except Exception as e:
-            _die("Impossible to unstar project (%s)" % str(e))
+            _die("Impossible to unstar project", e)
 
     def do_project_archive(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             o.archive_()
         except Exception as e:
-            _die("Impossible to archive project (%s)" % str(e))
+            _die("Impossible to archive project", e)
 
     def do_project_unarchive(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             o.unarchive_()
         except Exception as e:
-            _die("Impossible to unarchive project (%s)" % str(e))
+            _die("Impossible to unarchive project", e)
 
     def do_project_share(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             o.share(args['group_id'], args['group_access'])
         except Exception as e:
-            _die("Impossible to share project (%s)" % str(e))
+            _die("Impossible to share project", e)
 
     def do_user_block(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             o.block()
         except Exception as e:
-            _die("Impossible to block user (%s)" % str(e))
+            _die("Impossible to block user", e)
 
     def do_user_unblock(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             o.unblock()
         except Exception as e:
-            _die("Impossible to block user (%s)" % str(e))
+            _die("Impossible to block user", e)
 
     def do_project_commit_diff(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             return [x['diff'] for x in o.diff()]
         except Exception as e:
-            _die("Impossible to get commit diff (%s)" % str(e))
+            _die("Impossible to get commit diff", e)
 
     def do_project_commit_blob(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             return o.blob(args['filepath'])
         except Exception as e:
-            _die("Impossible to get commit blob (%s)" % str(e))
+            _die("Impossible to get commit blob", e)
 
     def do_project_commit_builds(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             return o.builds()
         except Exception as e:
-            _die("Impossible to get commit builds (%s)" % str(e))
+            _die("Impossible to get commit builds", e)
 
     def do_project_build_cancel(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             return o.cancel()
         except Exception as e:
-            _die("Impossible to cancel project build (%s)" % str(e))
+            _die("Impossible to cancel project build", e)
 
     def do_project_build_retry(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             return o.retry()
         except Exception as e:
-            _die("Impossible to retry project build (%s)" % str(e))
+            _die("Impossible to retry project build", e)
 
     def do_project_build_artifacts(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             return o.artifacts()
         except Exception as e:
-            _die("Impossible to get project build artifacts (%s)" % str(e))
+            _die("Impossible to get project build artifacts", e)
 
     def do_project_build_trace(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             return o.trace()
         except Exception as e:
-            _die("Impossible to get project build trace (%s)" % str(e))
+            _die("Impossible to get project build trace", e)
 
     def do_project_issue_subscribe(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             o.subscribe()
         except Exception as e:
-            _die("Impossible to subscribe to issue (%s)" % str(e))
+            _die("Impossible to subscribe to issue", e)
 
     def do_project_issue_unsubscribe(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             o.unsubscribe()
         except Exception as e:
-            _die("Impossible to subscribe to issue (%s)" % str(e))
+            _die("Impossible to subscribe to issue", e)
 
     def do_project_issue_move(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             o.move(args['to_project_id'])
         except Exception as e:
-            _die("Impossible to move issue (%s)" % str(e))
+            _die("Impossible to move issue", e)
 
     def do_project_merge_request_closesissues(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             return o.closes_issues()
         except Exception as e:
-            _die("Impossible to list issues closed by merge request (%s)" %
-                 str(e))
+            _die("Impossible to list issues closed by merge request", e)
 
     def do_project_merge_request_cancel(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             return o.cancel_merge_when_build_succeeds()
         except Exception as e:
-            _die("Impossible to cancel merge request (%s)" % str(e))
+            _die("Impossible to cancel merge request", e)
 
     def do_project_merge_request_merge(self, cls, gl, what, args):
         try:
@@ -339,26 +340,26 @@ class GitlabCLI(object):
                 should_remove_source_branch=should_remove,
                 merged_when_build_succeeds=build_succeeds)
         except Exception as e:
-            _die("Impossible to validate merge request (%s)" % str(e))
+            _die("Impossible to validate merge request", e)
 
     def do_project_milestone_issues(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
             return o.issues()
         except Exception as e:
-            _die("Impossible to get milestone issues (%s)" % str(e))
+            _die("Impossible to get milestone issues", e)
 
     def do_user_search(self, cls, gl, what, args):
         try:
             return gl.users.search(args['query'])
         except Exception as e:
-            _die("Impossible to search users (%s)" % str(e))
+            _die("Impossible to search users", e)
 
     def do_user_getbyusername(self, cls, gl, what, args):
         try:
             return gl.users.search(args['query'])
         except Exception as e:
-            _die("Impossible to get user %s (%s)" % (args['query'], str(e)))
+            _die("Impossible to get user %s" % args['query'], e)
 
 
 def _populate_sub_parser_by_class(cls, sub_parser):
