@@ -91,7 +91,7 @@ Archive/unarchive a project:
 Events
 ------
 
-Use :class:`~gitlab.objects.ProjectEvent` objects to manipulate projects. The
+Use :class:`~gitlab.objects.ProjectEvent` objects to manipulate events. The
 :attr:`gitlab.Gitlab.project_events` and :attr:`Project.events
 <gitlab.objects.Project.events>` manager objects provide helper functions.
 

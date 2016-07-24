@@ -7,7 +7,7 @@ Build triggers
 
 Use :class:`~gitlab.objects.ProjectTrigger` objects to manipulate build
 triggers. The :attr:`gitlab.Gitlab.project_triggers` and
-:attr:`gitlab.objects.Projeect.triggers` manager objects provide helper
+:attr:`gitlab.objects.Project.triggers` manager objects provide helper
 functions.
 
 Examples
@@ -42,7 +42,7 @@ Build variables
 
 Use :class:`~gitlab.objects.ProjectVariable` objects to manipulate build
 variables. The :attr:`gitlab.Gitlab.project_variables` and
-:attr:`gitlab.objects.Projeect.variables` manager objects provide helper
+:attr:`gitlab.objects.Project.variables` manager objects provide helper
 functions.
 
 Examples
@@ -82,7 +82,7 @@ Builds
 ======
 
 Use :class:`~gitlab.objects.ProjectBuild` objects to manipulate builds. The
-:attr:`gitlab.Gitlab.project_builds` and :attr:`gitlab.objects.Projeect.builds`
+:attr:`gitlab.Gitlab.project_builds` and :attr:`gitlab.objects.Project.builds`
 manager objects provide helper functions.
 
 Examples
