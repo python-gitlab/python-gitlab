@@ -15,7 +15,6 @@ Contents:
    cli
    api-usage
    api-objects
-   faq
    upgrade-from-0.10
    api/modules
 
