@@ -81,8 +81,10 @@ class Gitlab(object):
             builds
         project_commits (ProjectCommitManager): Manager for GitLab projects
             commits
-        project_commitcomments (ProjectCommitCommentManager): Manager for
+        project_commit_comments (ProjectCommitCommentManager): Manager for
             GitLab projects commits comments
+        project_commit_statuses (ProjectCommitStatusManager): Manager for
+            GitLab projects commits statuses
         project_keys (ProjectKeyManager): Manager for GitLab projects keys
         project_events (ProjectEventManager): Manager for GitLab projects
             events
@@ -157,6 +159,7 @@ class Gitlab(object):
         self.project_builds = ProjectBuildManager(self)
         self.project_commits = ProjectCommitManager(self)
         self.project_commit_comments = ProjectCommitCommentManager(self)
+        self.project_commit_statuses = ProjectCommitStatusManager(self)
         self.project_keys = ProjectKeyManager(self)
         self.project_events = ProjectEventManager(self)
         self.project_forks = ProjectForkManager(self)
@@ -242,14 +245,24 @@ class Gitlab(object):
         """
         self._url = '%s/api/v3' % url
 
-    def _construct_url(self, id_, obj, parameters):
+    def _construct_url(self, id_, obj, parameters, action=None):
         if 'next_url' in parameters:
             return parameters['next_url']
         args = _sanitize(parameters)
+
+        url_attr = '_url'
+        if action is not None:
+            attr = '_%s_url' % action
+            if hasattr(obj, attr):
+                url_attr = attr
+        obj_url = getattr(obj, url_attr)
+
+        # TODO(gpocentek): the following will need an update when we have
+        # object with both urlPlural and _ACTION_url attributes
         if id_ is None and obj._urlPlural is not None:
             url = obj._urlPlural % args
         else:
-            url = obj._url % args
+            url = obj_url % args
 
         if id_ is not None:
             url = '%s%s/%s' % (self._url, url, str(id_))
@@ -589,7 +602,8 @@ class Gitlab(object):
             raise GitlabCreateError('Missing attribute(s): %s' %
                                     ", ".join(missing))
 
-        url = self._construct_url(id_=None, obj=obj, parameters=params)
+        url = self._construct_url(id_=None, obj=obj, parameters=params,
+                                  action='create')
         headers = self._create_headers(content_type="application/json")
 
         # build data that can really be sent to server

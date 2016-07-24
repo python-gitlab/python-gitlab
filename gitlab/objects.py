@@ -943,7 +943,8 @@ class ProjectBuildManager(BaseManager):
 
 
 class ProjectCommitStatus(GitlabObject):
-    _url = '/projects/%(project_id)s/statuses/%(commit_id)s'
+    _url = '/projects/%(project_id)s/repository/commits/%(commit_id)s/statuses'
+    _create_url = '/projects/%(project_id)s/statuses/%(commit_id)s'
     canUpdate = False
     canDelete = False
     requiredUrlAttrs = ['project_id', 'commit_id']
@@ -979,6 +980,8 @@ class ProjectCommit(GitlabObject):
     requiredUrlAttrs = ['project_id']
     shortPrintAttr = 'title'
     managers = [('comments', ProjectCommitCommentManager,
+                 [('project_id', 'project_id'), ('commit_id', 'id')]),
+                ('statuses', ProjectCommitStatusManager,
                  [('project_id', 'project_id'), ('commit_id', 'id')])]
 
     def diff(self, **kwargs):
@@ -1623,7 +1626,10 @@ class Project(GitlabObject):
         ('branches', ProjectBranchManager, [('project_id', 'id')]),
         ('builds', ProjectBuildManager, [('project_id', 'id')]),
         ('commits', ProjectCommitManager, [('project_id', 'id')]),
-        ('commitstatuses', ProjectCommitStatusManager, [('project_id', 'id')]),
+        ('commit_comments', ProjectCommitCommentManager,
+         [('project_id', 'id')]),
+        ('commit_statuses', ProjectCommitStatusManager,
+         [('project_id', 'id')]),
         ('events', ProjectEventManager, [('project_id', 'id')]),
         ('files', ProjectFileManager, [('project_id', 'id')]),
         ('forks', ProjectForkManager, [('project_id', 'id')]),
