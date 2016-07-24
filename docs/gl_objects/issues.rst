@@ -25,6 +25,22 @@ Use the ``state`` and ``label`` parameters to filter the results. Use the
    :start-after: # filtered list
    :end-before: # end filtered list
 
+Group issues
+============
+
+Use :class:`~gitlab.objects.GroupIssue` objects to manipulate issues. The
+:attr:`gitlab.Gitlab.project_issues` and :attr:`Group.issues
+<gitlab.objects.Group.issues>` manager objects provide helper functions.
+
+Examples
+--------
+
+List the group issues:
+
+.. literalinclude:: issues.py
+   :start-after: # group issues list
+   :end-before: # end group issues list
+
 Project issues
 ==============
 

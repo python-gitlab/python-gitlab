@@ -8,6 +8,16 @@ closed_issues = gl.issues.list(state='closed')
 tagged_issues = gl.issues.list(labels=['foo', 'bar'])
 # end filtered list
 
+# group issues list
+issues = gl.group_issues.list(group_id=1)
+# or
+issues = group.issues.list()
+# Filter using the state, labels and milestone parameters
+issues = group.issues.list(milestone='1.0', state='opened')
+# Order using the order_by and sort parameters
+issues = group.issues.list(order_by='created_at', sort='desc')
+# end group issues list
+
 # project issues list
 issues = gl.project_issues.list(project_id=1)
 # or

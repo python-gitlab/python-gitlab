@@ -679,6 +679,20 @@ class ApplicationSettingsManager(BaseManager):
     obj_cls = ApplicationSettings
 
 
+class GroupIssue(GitlabObject):
+    _url = '/groups/%(group_id)s/issues'
+    canGet = 'from_list'
+    canCreate = False
+    canUpdate = False
+    canDelete = False
+    requiredUrlAttrs = ['group_id']
+    optionalListAttrs = ['state', 'labels', 'milestone', 'order_by', 'sort']
+
+
+class GroupIssueManager(BaseManager):
+    obj_cls = GroupIssue
+
+
 class GroupMember(GitlabObject):
     _url = '/groups/%(group_id)s/members'
     canGet = 'from_list'
@@ -718,7 +732,8 @@ class Group(GitlabObject):
     optionalUpdateAttrs = ['name', 'path', 'description', 'visibility_level']
     shortPrintAttr = 'name'
     managers = [('members', GroupMemberManager, [('group_id', 'id')]),
-                ('projects', GroupProjectManager, [('group_id', 'id')])]
+                ('projects', GroupProjectManager, [('group_id', 'id')]),
+                ('issues', GroupIssueManager, [('group_id', 'id')])]
 
     GUEST_ACCESS = 10
     REPORTER_ACCESS = 20
