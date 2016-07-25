@@ -1627,12 +1627,14 @@ class Project(GitlabObject):
     requiredCreateAttrs = ['name']
     optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
                            'merge_requests_enabled', 'wiki_enabled',
-                           'snippets_enabled', 'public', 'visibility_level',
-                           'namespace_id', 'description', 'path', 'import_url',
+                           'snippets_enabled', 'container_registry_enabled',
+                           'public', 'visibility_level', 'namespace_id',
+                           'description', 'path', 'import_url',
                            'builds_enabled', 'public_builds']
     optionalUpdateAttrs = ['name', 'default_branch', 'issues_enabled',
                            'wall_enabled', 'merge_requests_enabled',
-                           'wiki_enabled', 'snippets_enabled', 'public',
+                           'wiki_enabled', 'snippets_enabled',
+                           'container_registry_enabled', 'public',
                            'visibility_level', 'namespace_id', 'description',
                            'path', 'import_url', 'builds_enabled',
                            'public_builds']
