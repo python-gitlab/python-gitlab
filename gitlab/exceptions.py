@@ -110,6 +110,7 @@ class GitlabMRClosedError(GitlabOperationError):
 class GitlabMROnBuildSuccessError(GitlabOperationError):
     pass
 
+
 class GitlabServiceSlackError(GitlabOperationError):
     pass
 
