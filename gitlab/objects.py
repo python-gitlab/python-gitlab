@@ -1956,11 +1956,6 @@ class Project(GitlabObject):
         r = self.gitlab._raw_put(url, data=None, content_type=None, **kwargs)
         raise_error_from_response(r, GitlabUpdateError)
 
-    def slack_service(self, webhook, username=None, channel=None, **kwargs):
-        url = "/projects/%s/services/slack" % self.id
-        r = self.gitlab._raw_put(url, data={'webhook': webhook, 'username': username, 'channel': channel}, **kwargs)
-        raise_error_from_response(r, GitlabServiceSlackError)
-
     def delete_file(self, path, branch, message, **kwargs):
         warnings.warn("`delete_file` is deprecated, "
                       "use `files.delete()` instead",
@@ -2071,6 +2066,11 @@ class Project(GitlabObject):
         data = {'group_id': group_id, 'group_access': group_access}
         r = self.gitlab._raw_post(url, data=data, **kwargs)
         raise_error_from_response(r, GitlabCreateError, 201)
+
+    def slack_service(self, webhook, username=None, channel=None, **kwargs):
+        url = "/projects/%s/services/slack" % self.id
+        r = self.gitlab._raw_put(url, data={'webhook': webhook, 'username': username, 'channel': channel}, **kwargs)
+        raise_error_from_response(r, GitlabServiceSlackError)
 
 
 class Runner(GitlabObject):
