@@ -2071,7 +2071,11 @@ class Project(GitlabObject):
         url = "/projects/%s/services/slack" % self.id
         r = self.gitlab._raw_put(
             url,
-            data={'webhook': webhook, 'username': username, 'channel': channel},
+            data={
+                'webhook': webhook,
+                'username': username,
+                'channel': channel
+            },
             **kwargs
         )
         raise_error_from_response(r, GitlabServiceSlackError)
