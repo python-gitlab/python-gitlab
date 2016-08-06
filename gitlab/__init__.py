@@ -420,7 +420,6 @@ class Gitlab(object):
                                   ", ".join(missing))
 
         url = self._construct_url(id_=None, obj=obj_class, parameters=kwargs)
-        print(url)
         headers = self._create_headers()
 
         # Remove attributes that are used in url so that there is only
