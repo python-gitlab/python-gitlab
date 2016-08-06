@@ -99,9 +99,9 @@ actions on the GitLab resources. For example:
 
 .. code-block:: python
 
-   # get a tarball of the git repository
+   # star a git repository
    project = gl.projects.get(1)
-   project.archive()
+   project.star()
 
 Pagination
 ==========
