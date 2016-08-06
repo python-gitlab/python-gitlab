@@ -679,6 +679,18 @@ class ApplicationSettingsManager(BaseManager):
     obj_cls = ApplicationSettings
 
 
+class Key(GitlabObject):
+    _url = '/deploy_keys'
+    canGet = 'from_list'
+    canCreate = False
+    canUpdate = False
+    canDelete = False
+
+
+class KeyManager(BaseManager):
+    obj_cls = Key
+
+
 class GroupIssue(GitlabObject):
     _url = '/groups/%(group_id)s/issues'
     canGet = 'from_list'
