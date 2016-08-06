@@ -7,6 +7,7 @@ API objects manipulation
    gl_objects/branches
    gl_objects/builds
    gl_objects/commits
+   gl_objects/deploy_keys
    gl_objects/groups
    gl_objects/issues
    gl_objects/namespaces
