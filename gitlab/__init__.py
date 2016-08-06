@@ -88,6 +88,8 @@ class Gitlab(object):
         project_commit_statuses (ProjectCommitStatusManager): Manager for
             GitLab projects commits statuses
         project_keys (ProjectKeyManager): Manager for GitLab projects keys
+        project_environments (ProjectEnvironmentManager): Manager for GitLab
+            projects environments
         project_events (ProjectEventManager): Manager for GitLab projects
             events
         project_forks (ProjectForkManager): Manager for GitLab projects forks
@@ -165,6 +167,7 @@ class Gitlab(object):
         self.project_commit_comments = ProjectCommitCommentManager(self)
         self.project_commit_statuses = ProjectCommitStatusManager(self)
         self.project_keys = ProjectKeyManager(self)
+        self.project_environments = ProjectEnvironmentManager(self)
         self.project_events = ProjectEventManager(self)
         self.project_forks = ProjectForkManager(self)
         self.project_hooks = ProjectHookManager(self)
@@ -417,6 +420,7 @@ class Gitlab(object):
                                   ", ".join(missing))
 
         url = self._construct_url(id_=None, obj=obj_class, parameters=kwargs)
+        print(url)
         headers = self._create_headers()
 
         # Remove attributes that are used in url so that there is only

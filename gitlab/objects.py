@@ -1075,6 +1075,19 @@ class ProjectCommitManager(BaseManager):
     obj_cls = ProjectCommit
 
 
+class ProjectEnvironment(GitlabObject):
+    _url = '/projects/%(project_id)s/environments'
+    canGet = 'from_list'
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['name']
+    optionalCreateAttrs = ['external_url']
+    optionalUpdateAttrs = ['name', 'external_url']
+
+
+class ProjectEnvironmentManager(BaseManager):
+    obj_cls = ProjectEnvironment
+
+
 class ProjectKey(GitlabObject):
     _url = '/projects/%(project_id)s/keys'
     canUpdate = False
@@ -1659,6 +1672,7 @@ class Project(GitlabObject):
          [('project_id', 'id')]),
         ('commit_statuses', ProjectCommitStatusManager,
          [('project_id', 'id')]),
+        ('environments', ProjectEnvironmentManager, [('project_id', 'id')]),
         ('events', ProjectEventManager, [('project_id', 'id')]),
         ('files', ProjectFileManager, [('project_id', 'id')]),
         ('forks', ProjectForkManager, [('project_id', 'id')]),
