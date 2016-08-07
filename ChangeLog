@@ -1,3 +1,54 @@
+Version 0.14
+
+ * Remove 'next_url' from kwargs before passing it to the cls constructor.
+ * List projects under group
+ * Add support for subscribe and unsubscribe in issues
+ * Project issue: doc and CLI for (un)subscribe
+ * Added support for HTTP basic authentication
+ * Add support for build artifacts and trace
+ * --title is a required argument for ProjectMilestone
+ * Commit status: add optional context url
+ * Commit status: optional get attrs
+ * Add support for commit comments
+ * Issues: add optional listing parameters
+ * Issues: add missing optional listing parameters
+ * Project issue: proper update attributes
+ * Add support for project-issue move
+ * Update ProjectLabel attributes
+ * Milestone: optional listing attrs
+ * Add support for namespaces
+ * Add support for label (un)subscribe
+ * MR: add (un)subscribe support
+ * Add `note_events` to project hooks attributes
+ * Add code examples for a bunch of resources
+ * Implement user emails support
+ * Project: add VISIBILITY_* constants
+ * Fix the Project.archive call
+ * Implement archive/unarchive for a projet
+ * Update ProjectSnippet attributes
+ * Fix ProjectMember update
+ * Implement sharing project with a group
+ * Implement CLI for project archive/unarchive/share
+ * Implement runners global API
+ * Gitlab: add managers for build-related resources
+ * Implement ProjectBuild.keep_artifacts
+ * Allow to stream the downloads when appropriate
+ * Groups can be updated
+ * Replace Snippet.Content() with a new content() method
+ * CLI: refactor _die()
+ * Improve commit statuses and comments
+ * Add support from listing group issues
+ * Added a new project attribute to enable the container registry.
+ * Add a contributing section in README
+ * Add support for global deploy key listing
+ * Add support for project environments
+ * MR: get list of changes and commits
+ * Fix the listing of some resources
+ * MR: fix updates
+ * Handle empty messages from server in exceptions
+ * MR (un)subscribe: don't fail if state doesn't change
+ * MR merge(): update the object
+
 Version 0.13
 
  * Add support for MergeRequest validation
