@@ -29,7 +29,7 @@ label.save()
 # delete
 gl.project_labels.delete(label_id, project_id=1)
 # or
-project.labels.list(label_id)
+project.labels.delete(label_id)
 # or
 label.delete()
 # end delete
