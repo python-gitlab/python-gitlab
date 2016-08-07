@@ -1415,6 +1415,36 @@ class ProjectMergeRequest(GitlabObject):
                (self.project_id, self.id))
         return self.gitlab._raw_list(url, ProjectIssue, **kwargs)
 
+    def commits(self, **kwargs):
+        """List the merge request commits.
+
+        Returns:
+            list (ProjectCommit): List of commits
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabListError: If the server fails to perform the request.
+        """
+        url = ('/projects/%s/merge_requests/%s/commits' %
+               (self.project_id, self.id))
+        return self.gitlab._raw_list(url, ProjectCommit, **kwargs)
+
+    def changes(self, **kwargs):
+        """List the merge request changes.
+
+        Returns:
+            list (dict): List of changes
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabListError: If the server fails to perform the request.
+        """
+        url = ('/projects/%s/merge_requests/%s/commits' %
+               (self.project_id, self.id))
+        r = self.gitlab._raw_get(url, **kwargs)
+        raise_error_from_response(r, GitlabListError)
+        return r.json()
+
     def merge(self, merge_commit_message=None,
               should_remove_source_branch=False,
               merged_when_build_succeeds=False,
