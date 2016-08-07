@@ -323,11 +323,12 @@ class Gitlab(object):
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
 
-    def _raw_list(self, path, cls, **kwargs):
+    def _raw_list(self, path, cls, extra_attrs={}, **kwargs):
         r = self._raw_get(path, **kwargs)
         raise_error_from_response(r, GitlabListError)
 
-        cls_kwargs = kwargs.copy()
+        cls_kwargs = extra_attrs.copy()
+        cls_kwargs.update(kwargs.copy())
 
         # Add _from_api manually, because we are not creating objects
         # through normal path

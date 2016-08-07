@@ -1059,16 +1059,9 @@ class ProjectCommit(GitlabObject):
         """
         url = '/projects/%s/repository/commits/%s/builds' % (self.project_id,
                                                              self.id)
-        r = self.gitlab._raw_get(url, **kwargs)
-        raise_error_from_response(r, GitlabListError)
-
-        l = []
-        for j in r.json():
-            o = ProjectBuild(self, j)
-            o._from_api = True
-            l.append(o)
-
-        return l
+        return self.gitlab._raw_list(url, ProjectBuild,
+                                     {'project_id': self.project_id},
+                                     **kwargs)
 
 
 class ProjectCommitManager(BaseManager):
@@ -1413,7 +1406,9 @@ class ProjectMergeRequest(GitlabObject):
         """
         url = ('/projects/%s/merge_requests/%s/closes_issues' %
                (self.project_id, self.id))
-        return self.gitlab._raw_list(url, ProjectIssue, **kwargs)
+        return self.gitlab._raw_list(url, ProjectIssue,
+                                     {'project_id': self.project_id},
+                                     **kwargs)
 
     def commits(self, **kwargs):
         """List the merge request commits.
@@ -1427,7 +1422,9 @@ class ProjectMergeRequest(GitlabObject):
         """
         url = ('/projects/%s/merge_requests/%s/commits' %
                (self.project_id, self.id))
-        return self.gitlab._raw_list(url, ProjectCommit, **kwargs)
+        return self.gitlab._raw_list(url, ProjectCommit,
+                                     {'project_id': self.project_id},
+                                     **kwargs)
 
     def changes(self, **kwargs):
         """List the merge request changes.
@@ -1497,18 +1494,11 @@ class ProjectMilestone(GitlabObject):
     optionalUpdateAttrs = requiredCreateAttrs + optionalCreateAttrs
     shortPrintAttr = 'title'
 
-    def issues(self):
+    def issues(self, **kwargs):
         url = "/projects/%s/milestones/%s/issues" % (self.project_id, self.id)
-        r = self.gitlab._raw_get(url)
-        raise_error_from_response(r, GitlabDeleteError)
-
-        l = []
-        for j in r.json():
-            o = ProjectIssue(self, j)
-            o._from_api = True
-            l.append(o)
-
-        return l
+        return self.gitlab._raw_list(url, ProjectIssue,
+                                     {'project_id': self.project_id},
+                                     **kwargs)
 
 
 class ProjectMilestoneManager(BaseManager):
