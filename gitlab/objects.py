@@ -1370,7 +1370,8 @@ class ProjectMergeRequest(GitlabObject):
 
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabSubscribeError, [201, 304])
-        self._set_from_dict(r.json())
+        if r.status_code == 201:
+            self._set_from_dict(r.json())
 
     def unsubscribe(self, **kwargs):
         """Unsubscribe a MR.
@@ -1385,7 +1386,8 @@ class ProjectMergeRequest(GitlabObject):
 
         r = self.gitlab._raw_delete(url, **kwargs)
         raise_error_from_response(r, GitlabUnsubscribeError, [200, 304])
-        self._set_from_dict(r.json())
+        if r.status_code == 200:
+            self._set_from_dict(r.json())
 
     def cancel_merge_when_build_succeeds(self, **kwargs):
         """Cancel merge when build succeeds."""
