@@ -134,7 +134,7 @@ def raise_error_from_response(response, error, expected_code=200):
 
     try:
         message = response.json()['message']
-    except (KeyError, ValueError):
+    except (KeyError, ValueError, TypeError):
         message = response.content
 
     if isinstance(error, dict):
