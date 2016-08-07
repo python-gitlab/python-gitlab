@@ -1329,6 +1329,11 @@ class ProjectMergeRequest(GitlabObject):
     requiredCreateAttrs = ['source_branch', 'target_branch', 'title']
     optionalCreateAttrs = ['assignee_id', 'description', 'target_project_id',
                            'labels', 'milestone_id']
+    optionalUpdateAttrs = ['target_branch', 'assignee_id', 'title',
+                           'description', 'state_event', 'labels',
+                           'milestone_id']
+    optionalListAttrs = ['iid', 'state', 'order_by', 'sort']
+
     managers = [('notes', ProjectMergeRequestNoteManager,
                  [('project_id', 'project_id'), ('merge_request_id', 'id')])]
 
@@ -1341,7 +1346,7 @@ class ProjectMergeRequest(GitlabObject):
 
     def _data_for_gitlab(self, extra_parameters={}, update=False):
         data = (super(ProjectMergeRequest, self)
-                ._data_for_gitlab(extra_parameters))
+                ._data_for_gitlab(extra_parameters, update=update))
         if update:
             # Drop source_branch attribute as it is not accepted by the gitlab
             # server (Issue #76)
@@ -1456,7 +1461,7 @@ class ProjectMergeRequest(GitlabObject):
                                                then merge
 
         Returns:
-            ProjectMergeRequet: The updated MR
+            ProjectMergeRequest: The updated MR
         Raises:
             GitlabConnectionError: If the server cannot be reached.
             GitlabMRForbiddenError: If the user doesn't have permission to
