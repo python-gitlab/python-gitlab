@@ -1484,7 +1484,7 @@ class ProjectMergeRequest(GitlabObject):
         errors = {401: GitlabMRForbiddenError,
                   405: GitlabMRClosedError}
         raise_error_from_response(r, errors)
-        return ProjectMergeRequest(self, r.json())
+        self._set_from_dict(r.json())
 
 
 class ProjectMergeRequestManager(BaseManager):
