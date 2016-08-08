@@ -1,10 +1,19 @@
+sudo: required
+services:
+  - docker
+
 language: python
 python: 2.7
 env:
   - TOX_ENV=py34
   - TOX_ENV=py27
   - TOX_ENV=pep8
+  - TOX_ENV=docs
+  - TOX_ENV=noop_py
+  - TOX_ENV=noop_cli
 install:
   - pip install tox
 script:
   - tox -e $TOX_ENV
+after_success:
+  if [ "$TOX_ENV" = "noop_py" ]; then ./tools/py_functional_tests.sh; elif [ "$TOX_ENV" = "noop_cli" ]; then ./tools/functional_tests.sh; fi
