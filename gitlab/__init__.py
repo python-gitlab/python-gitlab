@@ -306,6 +306,20 @@ class Gitlab(object):
         self.email = email
         self.password = password
 
+    def enable_debug(self):
+        import logging
+        try:
+            from http.client import HTTPConnection
+        except ImportError:
+            from httplib import HTTPConnection
+
+        HTTPConnection.debuglevel = 1
+        logging.basicConfig()
+        logging.getLogger().setLevel(logging.DEBUG)
+        requests_log = logging.getLogger("requests.packages.urllib3")
+        requests_log.setLevel(logging.DEBUG)
+        requests_log.propagate = True
+
     def _raw_get(self, path, content_type=None, streamed=False, **kwargs):
         url = '%s%s' % (self._url, path)
         headers = self._create_headers(content_type)
