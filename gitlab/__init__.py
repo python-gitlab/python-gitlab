@@ -311,7 +311,7 @@ class Gitlab(object):
         try:
             from http.client import HTTPConnection
         except ImportError:
-            from httplib import HTTPConnection
+            from httplib import HTTPConnection  # noqa
 
         HTTPConnection.debuglevel = 1
         logging.basicConfig()
