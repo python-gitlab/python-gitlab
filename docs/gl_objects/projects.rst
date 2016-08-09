@@ -254,6 +254,48 @@ Delete a snippet:
    :start-after: # snippets delete
    :end-before: # end snippets delete
 
+Notes
+-----
+
+You can manipulate notes (comments) on the following resources:
+
+* :class:`~gitlab.objects.ProjectIssue` with
+  :class:`~gitlab.objects.ProjectIssueNote`
+* :class:`~gitlab.objects.ProjectMergeRequest` with
+  :class:`~gitlab.objects.ProjectMergeRequestNote`
+* :class:`~gitlab.objects.ProjectSnippet` with
+  :class:`~gitlab.objects.ProjectSnippetNote`
+
+List the notes for a resource:
+
+.. literalinclude:: projects.py
+   :start-after: # notes list
+   :end-before: # end notes list
+
+Get a note for a resource:
+
+.. literalinclude:: projects.py
+   :start-after: # notes get
+   :end-before: # end notes get
+
+Create a note for a resource:
+
+.. literalinclude:: projects.py
+   :start-after: # notes create
+   :end-before: # end notes create
+
+Update a note for a resource:
+
+.. literalinclude:: projects.py
+   :start-after: # notes update
+   :end-before: # end notes update
+
+Delete a note for a resource:
+
+.. literalinclude:: projects.py
+   :start-after: # notes delete
+   :end-before: # end notes delete
+
 Events
 ------
 

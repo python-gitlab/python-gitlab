@@ -317,3 +317,47 @@ project.snippets.delete(snippet_id)
 # or
 snippet.delete()
 # end snippets delete
+
+# notes list
+i_notes = gl.project_issue_notes.list(project_id=1, issue_id=2)
+mr_notes = gl.project_mergerequest_notes.list(project_id=1, merge_request_id=2)
+s_notes = gl.project_snippet_notes.list(project_id=1, snippet_id=2)
+# or
+i_notes = issue.notes.list()
+mr_notes = mr.notes.list()
+s_notes = snippet.notes.list()
+# end notes list
+
+# notes get
+i_notes = gl.project_issue_notes.get(note_id, project_id=1, issue_id=2)
+mr_notes = gl.project_mergerequest_notes.get(note_id, project_id=1,
+                                             merge_request_id=2)
+s_notes = gl.project_snippet_notes.get(note_id, project_id=1, snippet_id=2)
+# or
+i_note = issue.notes.get(note_id)
+mr_note = mr.notes.get(note_id)
+s_note = snippet.notes.get(note_id)
+# end notes get
+
+# notes create
+i_note = gl.project_issue_notes.create({'body': 'note content'},
+                                       project_id=1, issue_id=2)
+mr_note = gl.project_mergerequest_notes.create({'body': 'note content'}
+                                               project_id=1,
+                                               merge_request_id=2)
+s_note = gl.project_snippet_notes.create({'body': 'note content'},
+                                          project_id=1, snippet_id=2)
+# or
+i_note = issue.notes.create({'body': 'note content'})
+mr_note = mr.notes.create({'body': 'note content'})
+s_note = snippet.notes.create({'body': 'note content'})
+# end notes create
+
+# notes update
+note.body = 'updated note content'
+note.save()
+# end notes update
+
+# notes delete
+note.delete()
+# end notes delete
