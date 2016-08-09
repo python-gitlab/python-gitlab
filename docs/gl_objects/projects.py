@@ -48,9 +48,9 @@ project.delete()
 # end delete
 
 # fork
-fork = gl.project_forks.create(project_id=1)
+fork = gl.project_forks.create({}, project_id=1)
 # or
-fork = project.fork()
+fork = project.forks.create({})
 # end fork
 
 # forkrelation
