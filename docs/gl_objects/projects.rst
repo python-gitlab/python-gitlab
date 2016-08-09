@@ -206,6 +206,54 @@ Delete a tag:
    :start-after: # tags delete
    :end-before: # end tags delete
 
+Snippets
+--------
+
+Use :class:`~gitlab.objects.ProjectSnippet` objects to manipulate snippets. The
+:attr:`gitlab.Gitlab.project_snippets` and :attr:`Project.snippets
+<gitlab.objects.Project.snippets>` manager objects provide helper functions.
+
+List the project snippets:
+
+.. literalinclude:: projects.py
+   :start-after: # snippets list
+   :end-before: # end snippets list
+
+Get a snippet:
+
+.. literalinclude:: projects.py
+   :start-after: # snippets get
+   :end-before: # end snippets get
+
+Get the content of a snippet:
+
+.. literalinclude:: projects.py
+   :start-after: # snippets content
+   :end-before: # end snippets content
+
+.. warning::
+
+   The snippet content is entirely stored in memory unless you use the
+   streaming feature. See :ref:`the artifacts example <streaming_example>`.
+
+Create a snippet:
+
+.. literalinclude:: projects.py
+   :start-after: # snippets create
+   :end-before: # end snippets create
+
+Update a snippet:
+
+.. literalinclude:: projects.py
+   :start-after: # snippets update
+   :end-before: # end snippets update
+
+Delete a snippet:
+
+.. literalinclude:: projects.py
+   :start-after: # snippets delete
+   :end-before: # end snippets delete
+
 Events
 ------
 

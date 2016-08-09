@@ -273,3 +273,47 @@ tag.delete()
 # tags release
 tag.set_release_description('awesome v1.0 release')
 # end tags release
+
+# snippets list
+snippets = gl.project_snippets.list(project_id=1)
+# or
+snippets = project.snippets.list()
+# end snippets list
+
+# snippets get
+snippet = gl.project_snippets.list(snippet_id, project_id=1)
+# or
+snippets = project.snippets.list(snippet_id)
+# end snippets get
+
+# snippets create
+snippet = gl.project_snippets.create({'title': 'sample 1',
+                                      'file_name': 'foo.py',
+                                      'code': 'import gitlab',
+                                      'visibility_level':
+                                      Project.VISIBILITY_PRIVATE},
+                                     project_id=1)
+# or
+snippet = project.snippets.create({'title': 'sample 1',
+                                   'file_name': 'foo.py',
+                                   'code': 'import gitlab',
+                                   'visibility_level':
+                                   Project.VISIBILITY_PRIVATE})
+# end snippets create
+
+# snippets content
+print(snippet.content())
+# end snippets content
+
+# snippets update
+snippet.code = 'import gitlab\nimport whatever'
+snippet.save
+# end snippets update
+
+# snippets delete
+gl.project_snippets.delete(snippet_id, project_id=1)
+# or
+project.snippets.delete(snippet_id)
+# or
+snippet.delete()
+# end snippets delete
