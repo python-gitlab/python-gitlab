@@ -16,6 +16,7 @@ API objects manipulation
    gl_objects/licenses
    gl_objects/mrs
    gl_objects/namespaces
+   gl_objects/milestones
    gl_objects/projects
    gl_objects/runners
    gl_objects/users
