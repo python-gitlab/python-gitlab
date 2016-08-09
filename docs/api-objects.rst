@@ -20,4 +20,5 @@ API objects manipulation
    gl_objects/projects
    gl_objects/runners
    gl_objects/settings
+   gl_objects/system_hooks
    gl_objects/users
