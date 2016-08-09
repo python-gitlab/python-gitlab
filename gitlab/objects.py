@@ -660,14 +660,26 @@ class CurrentUser(GitlabObject):
 class ApplicationSettings(GitlabObject):
     _url = '/application/settings'
     _id_in_update_url = False
-    optionalUpdateAttrs = ['after_sign_out_path', 'default_branch_protection',
+    optionalUpdateAttrs = ['after_sign_out_path',
+                           'container_registry_token_expire_delay',
+                           'default_branch_protection',
                            'default_project_visibility',
                            'default_projects_limit',
-                           'default_snippet_visibility', 'gravatar_enabled',
-                           'home_page_url', 'restricted_signup_domains',
+                           'default_snippet_visibility',
+                           'domain_blacklist',
+                           'domain_blacklist_enabled',
+                           'domain_whitelist',
+                           'enabled_git_access_protocol'
+                           'gravatar_enabled',
+                           'home_page_url',
+                           'max_attachment_size',
+                           'repository_storage',
+                           'restricted_signup_domains',
                            'restricted_visibility_levels',
-                           'session_expire_delay', 'sign_in_text',
-                           'signin_enabled', 'signup_enabled',
+                           'session_expire_delay',
+                           'sign_in_text',
+                           'signin_enabled',
+                           'signup_enabled',
                            'twitter_sharing_enabled',
                            'user_oauth_applications']
     canList = False
