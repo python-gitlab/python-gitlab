@@ -88,6 +88,57 @@ Archive/unarchive a project:
    conflict with a previous misuse of the ``archive`` method (deprecated but
    not yet removed).
 
+Repository
+----------
+
+The following examples show how you can manipulate the project code repository.
+
+List the repository tree:
+
+.. literalinclude:: projects.py
+   :start-after: # repository tree
+   :end-before: # end repository tree
+
+Get the content of a file for a commit:
+
+.. literalinclude:: projects.py
+   :start-after: # repository blob
+   :end-before: # end repository blob
+
+Get the repository archive:
+
+.. literalinclude:: projects.py
+   :start-after: # repository archive
+   :end-before: # end repository archive
+
+.. warning::
+
+   Archives are entirely stored in memory unless you use the streaming feature.
+   See :ref:`the artifacts example <streaming_example>`.
+
+Get the content of a file using the blob id:
+
+.. literalinclude:: projects.py
+   :start-after: # repository raw_blob
+   :end-before: # end repository raw_blob
+
+.. warning::
+
+   Blobs are entirely stored in memory unless you use the streaming feature.
+   See :ref:`the artifacts example <streaming_example>`.
+
+Compare two branches, tags or commits:
+
+.. literalinclude:: projects.py
+   :start-after: # repository compare
+   :end-before: # end repository compare
+
+Get a list of contributors for the repository:
+
+.. literalinclude:: projects.py
+   :start-after: # repository contributors
+   :end-before: # end repository contributors
+
 Events
 ------
 

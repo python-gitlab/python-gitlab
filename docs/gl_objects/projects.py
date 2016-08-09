@@ -150,3 +150,47 @@ project.hooks.delete(1)
 # or
 hook.delete()
 # end hook delete
+
+# repository tree
+# list the content of the root directory for the default branch
+items = project.repository_tree()
+
+# list the content of a subdirectory on a specific branch
+items = project.repository_tree(path='docs', ref='branch1')
+# end repository tree
+
+# repository blob
+file_content = p.repository_blob('master', 'README.rst')
+# end repository blob
+
+# repository raw_blob
+# find the id for the blob (simple search)
+id = [d['id'] for d in p.repository_tree() if d['name'] == 'README.rst'][0]
+
+# get the content
+file_content = p.repository_raw_blob(id)
+# end repository raw_blob
+
+# repository compare
+result = project.repository_compare('master', 'branch1')
+
+# get the commits
+for i in commit:
+    print(result.commits)
+
+# get the diffs
+for file_diff in commit.diffs:
+    print(file_diff)
+# end repository compare
+
+# repository archive
+# get the archive for the default branch
+tgz = project.repository_archive()
+
+# get the archive for a branch/tag/commit
+tgz = project.repository_archive(sha='4567abc')
+# end repository archive
+
+# repository contributors
+contributors = project.repository_contributors()
+# end repository contributors
