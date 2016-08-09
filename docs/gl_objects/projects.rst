@@ -169,6 +169,43 @@ Delete a file:
    :start-after: # files delete
    :end-before: # end files delete
 
+Tags
+----
+
+Use :class:`~gitlab.objects.ProjectTag` objects to manipulate tags. The
+:attr:`gitlab.Gitlab.project_tags` and :attr:`Project.tags
+<gitlab.objects.Project.tags>` manager objects provide helper functions.
+
+List the project tags:
+
+.. literalinclude:: projects.py
+   :start-after: # tags list
+   :end-before: # end tags list
+
+Get a tag:
+
+.. literalinclude:: projects.py
+   :start-after: # tags get
+   :end-before: # end tags get
+
+Create a tag:
+
+.. literalinclude:: projects.py
+   :start-after: # tags create
+   :end-before: # end tags create
+
+Set or update the release note for a tag:
+
+.. literalinclude:: projects.py
+   :start-after: # tags release
+   :end-before: # end tags release
+
+Delete a tag:
+
+.. literalinclude:: projects.py
+   :start-after: # tags delete
+   :end-before: # end tags delete
+
 Events
 ------
 

@@ -242,3 +242,34 @@ project.files.delete({'file_path': 'testfile',
 # or
 f.delete(commit_message='Delete testfile')
 # end files delete
+
+# tags list
+tags = gl.project_tags.list(project_id=1)
+# or
+tags = project.tags.list()
+# end tags list
+
+# tags get
+tag = gl.project_tags.list('1.0', project_id=1)
+# or
+tags = project.tags.list('1.0')
+# end tags get
+
+# tags create
+tag = gl.project_tags.create({'tag_name': '1.0', 'ref': 'master'},
+                             project_id=1)
+# or
+tag = project.tags.create({'tag_name': '1.0', 'ref': 'master'})
+# end tags create
+
+# tags delete
+gl.project_tags.delete('1.0', project_id=1)
+# or
+project.tags.delete('1.0')
+# or
+tag.delete()
+# end tags delete
+
+# tags release
+tag.set_release_description('awesome v1.0 release')
+# end tags release
