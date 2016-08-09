@@ -139,6 +139,36 @@ Get a list of contributors for the repository:
    :start-after: # repository contributors
    :end-before: # end repository contributors
 
+Files
+-----
+
+The following examples show how you can manipulate the project files.
+
+Get a file:
+
+.. literalinclude:: projects.py
+   :start-after: # files get
+   :end-before: # end files get
+
+Create a new file:
+
+.. literalinclude:: projects.py
+   :start-after: # files create
+   :end-before: # end files create
+
+Update a file. The entire content must be uploaded, as plain text or as base64
+encoded text:
+
+.. literalinclude:: projects.py
+   :start-after: # files update
+   :end-before: # end files update
+
+Delete a file:
+
+.. literalinclude:: projects.py
+   :start-after: # files delete
+   :end-before: # end files delete
+
 Events
 ------
 

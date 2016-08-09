@@ -194,3 +194,51 @@ tgz = project.repository_archive(sha='4567abc')
 # repository contributors
 contributors = project.repository_contributors()
 # end repository contributors
+
+# files get
+f = gl.project_files.get(file_path='README.rst', ref='master',
+                         project_id=1)
+# or
+f = project.files.get(file_path='README.rst', ref='master')
+
+# get the base64 encoded content
+print(f.content)
+
+# get the decoded content
+print(f.decode())
+# end files get
+
+# files create
+f = gl.project_files.create({'file_path': 'testfile',
+                             'branch_name': 'master',
+                             'content': file_content,
+                             'commit_message': 'Create testfile'},
+                            project_id=1)
+# or
+f = project.files.create({'file_path': 'testfile',
+                          'branch_name': 'master',
+                          'content': file_content,
+                          'commit_message': 'Create testfile'})
+# end files create
+
+# files update
+f.content = 'new content'
+f.save(branch='master', commit_message='Update testfile')
+
+# or for binary data
+f.content = base64.b64encode(open('image.png').read())
+f.save(branch='master', commit_message='Update testfile', encoding='base64')
+# end files update
+
+# files delete
+gl.project_files.delete({'file_path': 'testfile',
+                         'branch_name': 'master',
+                         'commit_message': 'Delete testfile'},
+                        project_id=1)
+# or
+project.files.delete({'file_path': 'testfile',
+                      'branch_name': 'master',
+                      'commit_message': 'Delete testfile'})
+# or
+f.delete(commit_message='Delete testfile')
+# end files delete
