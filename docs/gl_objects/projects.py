@@ -94,15 +94,15 @@ member = project.members.get(1)
 
 # members add
 member = gl.project_members.create({'user_id': user.id, 'access_level':
-                                    gitlab.Group.DEVELOPER_ACCESS},
+                                    gitlab.DEVELOPER_ACCESS},
                                    project_id=1)
 # or
 member = project.members.create({'user_id': user.id, 'access_level':
-                                 gitlab.Group.DEVELOPER_ACCESS})
+                                 gitlab.DEVELOPER_ACCESS})
 # end members add
 
 # members update
-member.access_level = gitlab.Group.MASTER_ACCESS
+member.access_level = gitlab.MASTER_ACCESS
 member.save()
 # end members update
 
@@ -115,7 +115,7 @@ member.delete()
 # end members delete
 
 # share
-project.share(group.id, group.DEVELOPER_ACCESS)
+project.share(group.id, gitlab.DEVELOPER_ACCESS)
 # end share
 
 # hook list
@@ -291,14 +291,14 @@ snippet = gl.project_snippets.create({'title': 'sample 1',
                                       'file_name': 'foo.py',
                                       'code': 'import gitlab',
                                       'visibility_level':
-                                      Project.VISIBILITY_PRIVATE},
+                                      gitlab.VISIBILITY_PRIVATE},
                                      project_id=1)
 # or
 snippet = project.snippets.create({'title': 'sample 1',
                                    'file_name': 'foo.py',
                                    'code': 'import gitlab',
                                    'visibility_level':
-                                   Project.VISIBILITY_PRIVATE})
+                                   gitlab.VISIBILITY_PRIVATE})
 # end snippets create
 
 # snippets content

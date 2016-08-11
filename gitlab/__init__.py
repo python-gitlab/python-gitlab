@@ -28,6 +28,7 @@ import requests
 import six
 
 import gitlab.config
+from gitlab.const import *  # noqa
 from gitlab.exceptions import *  # noqa
 from gitlab.objects import *  # noqa
 

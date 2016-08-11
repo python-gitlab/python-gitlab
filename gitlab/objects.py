@@ -795,15 +795,15 @@ class Group(GitlabObject):
                 ('projects', GroupProjectManager, [('group_id', 'id')]),
                 ('issues', GroupIssueManager, [('group_id', 'id')])]
 
-    GUEST_ACCESS = 10
-    REPORTER_ACCESS = 20
-    DEVELOPER_ACCESS = 30
-    MASTER_ACCESS = 40
-    OWNER_ACCESS = 50
+    GUEST_ACCESS = gitlab.GUEST_ACCESS
+    REPORTER_ACCESS = gitlab.REPORTER_ACCESS
+    DEVELOPER_ACCESS = gitlab.DEVELOPER_ACCESS
+    MASTER_ACCESS = gitlab.MASTER_ACCESS
+    OWNER_ACCESS = gitlab.OWNER_ACCESS
 
-    VISIBILITY_PRIVATE = 0
-    VISIBILITY_INTERNAL = 10
-    VISIBILITY_PUBLIC = 20
+    VISIBILITY_PRIVATE = gitlab.VISIBILITY_PRIVATE
+    VISIBILITY_INTERNAL = gitlab.VISIBILITY_INTERNAL
+    VISIBILITY_PUBLIC = gitlab.VISIBILITY_PUBLIC
 
     def Member(self, id=None, **kwargs):
         warnings.warn("`Member` is deprecated, use `members` instead",
@@ -1787,9 +1787,9 @@ class Project(GitlabObject):
         ('variables', ProjectVariableManager, [('project_id', 'id')]),
     ]
 
-    VISIBILITY_PRIVATE = 0
-    VISIBILITY_INTERNAL = 10
-    VISIBILITY_PUBLIC = 20
+    VISIBILITY_PRIVATE = gitlab.VISIBILITY_PRIVATE
+    VISIBILITY_INTERNAL = gitlab.VISIBILITY_INTERNAL
+    VISIBILITY_PUBLIC = gitlab.VISIBILITY_PUBLIC
 
     def Branch(self, id=None, **kwargs):
         warnings.warn("`Branch` is deprecated, use `branches` instead",

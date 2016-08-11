@@ -45,15 +45,15 @@ members = group.members.get(member_id)
 
 # member create
 member = gl.group_members.create({'user_id': user_id,
-                                  'access_level': Group.GUEST_ACCESS},
+                                  'access_level': gitlab.GUEST_ACCESS},
                                  group_id=1)
 # or
 member = group.members.create({'user_id': user_id,
-                               'access_level': Group.GUEST_ACCESS})
+                               'access_level': gitlab.GUEST_ACCESS})
 # end member create
 
 # member update
-member.access_level = Group.DEVELOPER_ACCESS
+member.access_level = gitlab.DEVELOPER_ACCESS
 member.save()
 # end member update
 
