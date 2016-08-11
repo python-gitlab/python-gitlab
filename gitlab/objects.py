@@ -1237,6 +1237,17 @@ class ProjectIssue(GitlabObject):
         raise_error_from_response(r, GitlabUpdateError, 201)
         self._set_from_dict(r.json())
 
+    def todo(self, **kwargs):
+        """Create a todo for the issue.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        url = ('/projects/%(project_id)s/issues/%(issue_id)s/todo' %
+               {'project_id': self.project_id, 'issue_id': self.id})
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabTodoError, [201, 304])
+
 
 class ProjectIssueManager(BaseManager):
     obj_cls = ProjectIssue
@@ -1497,6 +1508,17 @@ class ProjectMergeRequest(GitlabObject):
                   405: GitlabMRClosedError}
         raise_error_from_response(r, errors)
         self._set_from_dict(r.json())
+
+    def todo(self, **kwargs):
+        """Create a todo for the merge request.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/todo' %
+               {'project_id': self.project_id, 'mr_id': self.id})
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabTodoError, [201, 304])
 
 
 class ProjectMergeRequestManager(BaseManager):
@@ -2154,7 +2176,7 @@ class RunnerManager(BaseManager):
 
         Raises:
             GitlabConnectionError: If the server cannot be reached.
-            GitlabListError; If the resource cannot be found
+            GitlabListError: If the resource cannot be found
         """
         url = '/runners/all'
         if scope is not None:
@@ -2168,6 +2190,33 @@ class TeamMember(GitlabObject):
     requiredUrlAttrs = ['teamd_id']
     requiredCreateAttrs = ['access_level']
     shortPrintAttr = 'username'
+
+
+class Todo(GitlabObject):
+    _url = '/todos'
+    canGet = 'from_list'
+    canUpdate = False
+    canCreate = False
+    optionalListAttrs = ['action', 'author_id', 'project_id', 'state', 'type']
+
+
+class TodoManager(BaseManager):
+    obj_cls = Todo
+
+    def delete_all(self, **kwargs):
+        """Mark all the todos as done.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabDeleteError: If the resource cannot be found
+
+        Returns:
+            The number of todos maked done.
+        """
+        url = '/todos'
+        r = self.gitlab._raw_delete(url, **kwargs)
+        raise_error_from_response(r, GitlabDeleteError)
+        return int(r.text)
 
 
 class UserProject(GitlabObject):

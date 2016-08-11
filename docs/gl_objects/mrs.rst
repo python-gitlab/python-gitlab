@@ -83,3 +83,9 @@ Subscribe/unsubscribe a MR:
 .. literalinclude:: mrs.py
    :start-after: # subscribe
    :end-before: # end subscribe
+
+Mark a MR as todo:
+
+.. literalinclude:: mrs.py
+   :start-after: # todo
+   :end-before: # end todo

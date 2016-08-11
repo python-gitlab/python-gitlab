@@ -73,3 +73,7 @@ issue.unsubscribe()
 # project issue move
 issue.move(new_project_id)
 # end project issue move
+
+# project issue todo
+issue.todo()
+# end project issue todo

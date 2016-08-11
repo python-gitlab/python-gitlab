@@ -59,3 +59,7 @@ mr.closes_issues()
 mr.subscribe()
 mr.unsubscribe()
 # end subscribe
+
+# todo
+mr.todo()
+# end todo

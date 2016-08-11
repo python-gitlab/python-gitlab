@@ -124,6 +124,7 @@ class Gitlab(object):
         team_members (TeamMemberManager): Manager for GitLab teams members
         team_projects (TeamProjectManager): Manager for GitLab teams projects
         teams (TeamManager): Manager for GitLab teams
+        todos (TodoManager): Manager for user todos
     """
 
     def __init__(self, url, private_token=None, email=None, password=None,
@@ -191,6 +192,7 @@ class Gitlab(object):
         self.team_members = TeamMemberManager(self)
         self.team_projects = TeamProjectManager(self)
         self.teams = TeamManager(self)
+        self.todos = TodoManager(self)
 
     @staticmethod
     def from_config(gitlab_id=None, config_files=None):

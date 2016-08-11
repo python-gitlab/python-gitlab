@@ -98,3 +98,9 @@ Move an issue to another project:
 .. literalinclude:: issues.py
    :start-after: # project issue move
    :end-before: # end project issue move
+
+Make an issue as todo:
+
+.. literalinclude:: issues.py
+   :start-after: # project issue todo
+   :end-before: # end project issue todo

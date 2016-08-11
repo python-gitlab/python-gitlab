@@ -111,6 +111,10 @@ class GitlabMROnBuildSuccessError(GitlabOperationError):
     pass
 
 
+class GitlabTodoError(GitlabOperationError):
+    pass
+
+
 def raise_error_from_response(response, error, expected_code=200):
     """Tries to parse gitlab error message from response and raises error.
 
