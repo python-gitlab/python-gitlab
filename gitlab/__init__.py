@@ -193,6 +193,7 @@ class Gitlab(object):
         self.team_projects = TeamProjectManager(self)
         self.teams = TeamManager(self)
         self.todos = TodoManager(self)
+        self.sidekiq = SidekiqManager(self)
 
     @staticmethod
     def from_config(gitlab_id=None, config_files=None):

@@ -23,3 +23,4 @@ API objects manipulation
    gl_objects/system_hooks
    gl_objects/todos
    gl_objects/users
+   gl_objects/sidekiq
