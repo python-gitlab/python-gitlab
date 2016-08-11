@@ -578,13 +578,6 @@ class User(GitlabObject):
             self.confirm = str(self.confirm).lower()
         return super(User, self)._data_for_gitlab(extra_parameters)
 
-    def Key(self, id=None, **kwargs):
-        warnings.warn("`Key` is deprecated, use `keys` instead",
-                      DeprecationWarning)
-        return UserKey._get_list_or_object(self.gitlab, id,
-                                           user_id=self.id,
-                                           **kwargs)
-
     def block(self, **kwargs):
         """Blocks the user."""
         url = '/users/%s/block' % self.id
@@ -686,11 +679,6 @@ class CurrentUser(GitlabObject):
         ('emails', CurrentUserEmailManager, [('user_id', 'id')]),
         ('keys', CurrentUserKeyManager, [('user_id', 'id')])
     ]
-
-    def Key(self, id=None, **kwargs):
-        warnings.warn("`Key` is deprecated, use `keys` instead",
-                      DeprecationWarning)
-        return CurrentUserKey._get_list_or_object(self.gitlab, id, **kwargs)
 
 
 class ApplicationSettings(GitlabObject):
@@ -804,13 +792,6 @@ class Group(GitlabObject):
     VISIBILITY_PRIVATE = gitlab.VISIBILITY_PRIVATE
     VISIBILITY_INTERNAL = gitlab.VISIBILITY_INTERNAL
     VISIBILITY_PUBLIC = gitlab.VISIBILITY_PUBLIC
-
-    def Member(self, id=None, **kwargs):
-        warnings.warn("`Member` is deprecated, use `members` instead",
-                      DeprecationWarning)
-        return GroupMember._get_list_or_object(self.gitlab, id,
-                                               group_id=self.id,
-                                               **kwargs)
 
     def transfer_project(self, id, **kwargs):
         """Transfers a project to this new groups.
@@ -1222,14 +1203,6 @@ class ProjectIssue(GitlabObject):
         return super(ProjectIssue, self)._data_for_gitlab(extra_parameters,
                                                           update)
 
-    def Note(self, id=None, **kwargs):
-        warnings.warn("`Note` is deprecated, use `notes` instead",
-                      DeprecationWarning)
-        return ProjectIssueNote._get_list_or_object(self.gitlab, id,
-                                                    project_id=self.project_id,
-                                                    issue_id=self.id,
-                                                    **kwargs)
-
     def subscribe(self, **kwargs):
         """Subscribe to an issue.
 
@@ -1395,13 +1368,6 @@ class ProjectMergeRequest(GitlabObject):
 
     managers = [('notes', ProjectMergeRequestNoteManager,
                  [('project_id', 'project_id'), ('merge_request_id', 'id')])]
-
-    def Note(self, id=None, **kwargs):
-        warnings.warn("`Note` is deprecated, use `notes` instead",
-                      DeprecationWarning)
-        return ProjectMergeRequestNote._get_list_or_object(
-            self.gitlab, id, project_id=self.project_id,
-            merge_request_id=self.id, **kwargs)
 
     def _data_for_gitlab(self, extra_parameters={}, update=False):
         data = (super(ProjectMergeRequest, self)
@@ -1683,15 +1649,6 @@ class ProjectSnippet(GitlabObject):
                       DeprecationWarning)
         return self.content()
 
-    def Note(self, id=None, **kwargs):
-        warnings.warn("`Note` is deprecated, use `notes` instead",
-                      DeprecationWarning)
-        return ProjectSnippetNote._get_list_or_object(
-            self.gitlab, id,
-            project_id=self.project_id,
-            snippet_id=self.id,
-            **kwargs)
-
     def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Return the raw content of a snippet.
 
@@ -1790,105 +1747,6 @@ class Project(GitlabObject):
     VISIBILITY_PRIVATE = gitlab.VISIBILITY_PRIVATE
     VISIBILITY_INTERNAL = gitlab.VISIBILITY_INTERNAL
     VISIBILITY_PUBLIC = gitlab.VISIBILITY_PUBLIC
-
-    def Branch(self, id=None, **kwargs):
-        warnings.warn("`Branch` is deprecated, use `branches` instead",
-                      DeprecationWarning)
-        return ProjectBranch._get_list_or_object(self.gitlab, id,
-                                                 project_id=self.id,
-                                                 **kwargs)
-
-    def Commit(self, id=None, **kwargs):
-        warnings.warn("`Commit` is deprecated, use `commits` instead",
-                      DeprecationWarning)
-        return ProjectCommit._get_list_or_object(self.gitlab, id,
-                                                 project_id=self.id,
-                                                 **kwargs)
-
-    def Event(self, id=None, **kwargs):
-        warnings.warn("`Event` is deprecated, use `events` instead",
-                      DeprecationWarning)
-        return ProjectEvent._get_list_or_object(self.gitlab, id,
-                                                project_id=self.id,
-                                                **kwargs)
-
-    def File(self, id=None, **kwargs):
-        warnings.warn("`File` is deprecated, use `files` instead",
-                      DeprecationWarning)
-        return ProjectFile._get_list_or_object(self.gitlab, id,
-                                               project_id=self.id,
-                                               **kwargs)
-
-    def Hook(self, id=None, **kwargs):
-        warnings.warn("`Hook` is deprecated, use `hooks` instead",
-                      DeprecationWarning)
-        return ProjectHook._get_list_or_object(self.gitlab, id,
-                                               project_id=self.id,
-                                               **kwargs)
-
-    def Key(self, id=None, **kwargs):
-        warnings.warn("`Key` is deprecated, use `keys` instead",
-                      DeprecationWarning)
-        return ProjectKey._get_list_or_object(self.gitlab, id,
-                                              project_id=self.id,
-                                              **kwargs)
-
-    def Issue(self, id=None, **kwargs):
-        warnings.warn("`Issue` is deprecated, use `issues` instead",
-                      DeprecationWarning)
-        return ProjectIssue._get_list_or_object(self.gitlab, id,
-                                                project_id=self.id,
-                                                **kwargs)
-
-    def Label(self, id=None, **kwargs):
-        warnings.warn("`Label` is deprecated, use `labels` instead",
-                      DeprecationWarning)
-        return ProjectLabel._get_list_or_object(self.gitlab, id,
-                                                project_id=self.id,
-                                                **kwargs)
-
-    def Member(self, id=None, **kwargs):
-        warnings.warn("`Member` is deprecated, use `members` instead",
-                      DeprecationWarning)
-        return ProjectMember._get_list_or_object(self.gitlab, id,
-                                                 project_id=self.id,
-                                                 **kwargs)
-
-    def MergeRequest(self, id=None, **kwargs):
-        warnings.warn(
-            "`MergeRequest` is deprecated, use `mergerequests` instead",
-            DeprecationWarning)
-        return ProjectMergeRequest._get_list_or_object(self.gitlab, id,
-                                                       project_id=self.id,
-                                                       **kwargs)
-
-    def Milestone(self, id=None, **kwargs):
-        warnings.warn("`Milestone` is deprecated, use `milestones` instead",
-                      DeprecationWarning)
-        return ProjectMilestone._get_list_or_object(self.gitlab, id,
-                                                    project_id=self.id,
-                                                    **kwargs)
-
-    def Note(self, id=None, **kwargs):
-        warnings.warn("`Note` is deprecated, use `notes` instead",
-                      DeprecationWarning)
-        return ProjectNote._get_list_or_object(self.gitlab, id,
-                                               project_id=self.id,
-                                               **kwargs)
-
-    def Snippet(self, id=None, **kwargs):
-        warnings.warn("`Snippet` is deprecated, use `snippets` instead",
-                      DeprecationWarning)
-        return ProjectSnippet._get_list_or_object(self.gitlab, id,
-                                                  project_id=self.id,
-                                                  **kwargs)
-
-    def Tag(self, id=None, **kwargs):
-        warnings.warn("`Tag` is deprecated, use `tags` instead",
-                      DeprecationWarning)
-        return ProjectTag._get_list_or_object(self.gitlab, id,
-                                              project_id=self.id,
-                                              **kwargs)
 
     def tree(self, path='', ref_name='', **kwargs):
         warnings.warn("`tree` is deprecated, use `repository_tree` instead",
@@ -2365,20 +2223,6 @@ class Team(GitlabObject):
         ('members', TeamMemberManager, [('team_id', 'id')]),
         ('projects', TeamProjectManager, [('team_id', 'id')])
     ]
-
-    def Member(self, id=None, **kwargs):
-        warnings.warn("`Member` is deprecated, use `members` instead",
-                      DeprecationWarning)
-        return TeamMember._get_list_or_object(self.gitlab, id,
-                                              team_id=self.id,
-                                              **kwargs)
-
-    def Project(self, id=None, **kwargs):
-        warnings.warn("`Project` is deprecated, use `projects` instead",
-                      DeprecationWarning)
-        return TeamProject._get_list_or_object(self.gitlab, id,
-                                               team_id=self.id,
-                                               **kwargs)
 
 
 class TeamManager(BaseManager):
