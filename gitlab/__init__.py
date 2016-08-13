@@ -112,6 +112,8 @@ class Gitlab(object):
         project_labels (ProjectLabelManager): Manager for GitLab projects
             labels
         project_files (ProjectFileManager): Manager for GitLab projects files
+        project_services (ProjectServiceManager): Manager for the GitLab
+            projects services
         project_snippet_notes (ProjectSnippetNoteManager): Manager for GitLab
             note on snippets
         project_snippets (ProjectSnippetManager): Manager for GitLab projects
@@ -183,6 +185,7 @@ class Gitlab(object):
         self.project_milestones = ProjectMilestoneManager(self)
         self.project_labels = ProjectLabelManager(self)
         self.project_files = ProjectFileManager(self)
+        self.project_services = ProjectServiceManager(self)
         self.project_snippet_notes = ProjectSnippetNoteManager(self)
         self.project_snippets = ProjectSnippetManager(self)
         self.project_triggers = ProjectTriggerManager(self)

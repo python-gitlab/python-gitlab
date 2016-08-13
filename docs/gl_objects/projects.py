@@ -361,3 +361,24 @@ note.save()
 # notes delete
 note.delete()
 # end notes delete
+
+# service get
+service = gl.project_services.get(service_name='asana', project_id=1)
+# or
+service = project.services.get(service_name='asana', project_id=1)
+# display it's status (enabled/disabled)
+print(service.active)
+# end service get
+
+# service list
+services = gl.project_services.available()
+# end service list
+
+# service update
+service.api_key = 'randomkey'
+service.save()
+# end service update
+
+# service delete
+service.delete()
+# end service delete

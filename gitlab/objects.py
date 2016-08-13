@@ -287,6 +287,9 @@ class GitlabObject(object):
             return v
 
     def _set_from_dict(self, data):
+        if not hasattr(data, 'items'):
+            return
+
         for k, v in data.items():
             if isinstance(v, list):
                 self.__dict__[k] = []
@@ -1687,6 +1690,82 @@ class ProjectVariableManager(BaseManager):
     obj_cls = ProjectVariable
 
 
+class ProjectService(GitlabObject):
+    _url = '/projects/%(project_id)s/services/%(service_name)s'
+    canList = False
+    canCreate = False
+    _id_in_update_url = False
+    _id_in_delete_url = False
+    requiredUrlAttrs = ['project_id', 'service_name']
+
+    _service_attrs = {
+        'asana': (('api_key', ), ('restrict_to_branch', )),
+        'assembla': (('token', ), ('subdomain', )),
+        'bamboo': (('bamboo_url', 'build_key', 'username', 'password'),
+                   tuple()),
+        'buildkite': (('token', 'project_url'), ('enable_ssl_verification', )),
+        'campfire': (('token', ), ('subdomain', 'room')),
+        'custom-issue-tracker': (('new_issue_url', 'issues_url',
+                                  'project_url'),
+                                 ('description', 'title')),
+        'drone-ci': (('token', 'drone_url'), ('enable_ssl_verification', )),
+        'emails-on-push': (('recipients', ), ('disable_diffs',
+                                              'send_from_committer_email')),
+        'external-wiki': (('external_wiki_url', ), tuple()),
+        'flowdock': (('token', ), tuple()),
+        'gemnasium': (('api_key', 'token', ), tuple()),
+        'hipchat': (('token', ), ('color', 'notify', 'room', 'api_version',
+                                  'server')),
+        'irker': (('recipients', ), ('default_irc_uri', 'server_port',
+                                     'server_host', 'colorize_messages')),
+        'jira': (('new_issue_url', 'project_url', 'issues_url'),
+                 ('description', 'username', 'password')),
+        'pivotaltracker': (('token', ), tuple()),
+        'pushover': (('api_key', 'user_key', 'priority'), ('device', 'sound')),
+        'redmine': (('new_issue_url', 'project_url', 'issues_url'),
+                    ('description', )),
+        'slack': (('webhook', ), ('username', 'channel')),
+        'teamcity': (('teamcity_url', 'build_type', 'username', 'password'),
+                     tuple())
+    }
+
+    def _data_for_gitlab(self, extra_parameters={}, update=False,
+                         as_json=True):
+        data = (super(ProjectService, self)
+                ._data_for_gitlab(extra_parameters, update=update,
+                                  as_json=False))
+        missing = []
+        # Mandatory args
+        for attr in self._service_attrs[self.service_name][0]:
+            if not hasattr(self, attr):
+                missing.append(attr)
+            else:
+                data[attr] = getattr(self, attr)
+
+        if missing:
+            raise GitlabUpdateError('Missing attribute(s): %s' %
+                                    ", ".join(missing))
+
+        # Optional args
+        for attr in self._service_attrs[self.service_name][1]:
+            if hasattr(self, attr):
+                data[attr] = getattr(self, attr)
+
+        return json.dumps(data)
+
+
+class ProjectServiceManager(BaseManager):
+    obj_cls = ProjectService
+
+    def available(self, **kwargs):
+        """List the services known by python-gitlab.
+
+        Returns:
+            list (str): The list of service code names.
+        """
+        return json.dumps(ProjectService._service_attrs.keys())
+
+
 class Project(GitlabObject):
     _url = '/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
@@ -1725,6 +1804,7 @@ class Project(GitlabObject):
         ('mergerequests', ProjectMergeRequestManager, [('project_id', 'id')]),
         ('milestones', ProjectMilestoneManager, [('project_id', 'id')]),
         ('notes', ProjectNoteManager, [('project_id', 'id')]),
+        ('services', ProjectServiceManager, [('project_id', 'id')]),
         ('snippets', ProjectSnippetManager, [('project_id', 'id')]),
         ('tags', ProjectTagManager, [('project_id', 'id')]),
         ('triggers', ProjectTriggerManager, [('project_id', 'id')]),

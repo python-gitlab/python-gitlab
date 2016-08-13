@@ -371,7 +371,7 @@ List the project hooks:
    :start-after: # hook list
    :end-before: # end hook list
 
-Get a project hook
+Get a project hook:
 
 .. literalinclude:: projects.py
    :start-after: # hook get
@@ -394,3 +394,35 @@ Delete a project hook:
 .. literalinclude:: projects.py
    :start-after: # hook delete
    :end-before: # end hook delete
+
+Services
+--------
+
+Use :class:`~gitlab.objects.ProjectService` objects to manipulate projects
+services. The :attr:`gitlab.Gitlab.project_services` and
+:attr:`Project.services <gitlab.objects.Projects.services>` manager objects
+provide helper functions.
+
+Get a service:
+
+.. literalinclude:: projects.py
+   :start-after: # service get
+   :end-before: # end service get
+
+List the code names of available services (doesn't return objects):
+
+.. literalinclude:: projects.py
+   :start-after: # service list
+   :end-before: # end service list
+
+Configure and enable a service:
+
+.. literalinclude:: projects.py
+   :start-after: # service update
+   :end-before: # end service update
+
+Disable a service:
+
+.. literalinclude:: projects.py
+   :start-after: # service delete
+   :end-before: # end service delete
