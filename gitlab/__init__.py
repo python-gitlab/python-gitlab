@@ -276,10 +276,9 @@ class Gitlab(object):
             url = obj_url % args
 
         if id_ is not None:
-            url = '%s%s/%s' % (self._url, url, str(id_))
+            return '%s/%s' % (url, str(id_))
         else:
-            url = '%s%s' % (self._url, url)
-        return url
+            return url
 
     def _create_headers(self, content_type=None, headers={}):
         request_headers = self.headers.copy()
@@ -325,7 +324,11 @@ class Gitlab(object):
         requests_log.propagate = True
 
     def _raw_get(self, path, content_type=None, streamed=False, **kwargs):
-        url = '%s%s' % (self._url, path)
+        if path.startswith('http://') or path.startswith('https://'):
+            url = path
+        else:
+            url = '%s%s' % (self._url, path)
+
         headers = self._create_headers(content_type)
         try:
             return self.session.get(url,
@@ -342,23 +345,24 @@ class Gitlab(object):
                 "Can't connect to GitLab server (%s)" % e)
 
     def _raw_list(self, path, cls, extra_attrs={}, **kwargs):
-        r = self._raw_get(path, **kwargs)
-        raise_error_from_response(r, GitlabListError)
+        params = extra_attrs.copy()
+        params.update(kwargs.copy())
 
-        cls_kwargs = extra_attrs.copy()
-        cls_kwargs.update(kwargs.copy())
-
-        # Add _from_api manually, because we are not creating objects
-        # through normal path
-        cls_kwargs['_from_api'] = True
         get_all_results = kwargs.get('all', False)
 
         # Remove parameters from kwargs before passing it to constructor
         for key in ['all', 'page', 'per_page', 'sudo', 'next_url']:
-            if key in cls_kwargs:
-                del cls_kwargs[key]
+            if key in params:
+                del params[key]
 
-        results = [cls(self, item, **cls_kwargs) for item in r.json()
+        r = self._raw_get(path, **params)
+        raise_error_from_response(r, GitlabListError)
+
+        # Add _from_api manually, because we are not creating objects
+        # through normal path
+        params['_from_api'] = True
+
+        results = [cls(self, item, **params) for item in r.json()
                    if item is not None]
         if ('next' in r.links and 'url' in r.links['next']
            and get_all_results is True):
@@ -439,52 +443,8 @@ class Gitlab(object):
                                   ", ".join(missing))
 
         url = self._construct_url(id_=None, obj=obj_class, parameters=kwargs)
-        headers = self._create_headers()
 
-        # Remove attributes that are used in url so that there is only
-        # url-parameters left
-        params = kwargs.copy()
-        for attribute in obj_class.requiredUrlAttrs:
-            del params[attribute]
-
-        # Also remove the next-url attribute that make queries fail
-        if 'next_url' in params:
-            del params['next_url']
-        try:
-            r = self.session.get(url, params=params, headers=headers,
-                                 verify=self.ssl_verify,
-                                 timeout=self.timeout,
-                                 auth=requests.auth.HTTPBasicAuth(
-                                     self.http_username,
-                                     self.http_password))
-        except Exception as e:
-            raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % e)
-
-        raise_error_from_response(r, GitlabListError)
-
-        cls = obj_class
-        cls_kwargs = kwargs.copy()
-
-        # Add _from_api manually, because we are not creating objects
-        # through normal path
-        cls_kwargs['_from_api'] = True
-
-        get_all_results = params.get('all', False)
-
-        # Remove parameters from kwargs before passing it to constructor
-        for key in ['all', 'page', 'per_page', 'sudo', 'next_url']:
-            if key in cls_kwargs:
-                del cls_kwargs[key]
-
-        results = [cls(self, item, **cls_kwargs) for item in r.json()
-                   if item is not None]
-        if ('next' in r.links and 'url' in r.links['next']
-           and get_all_results is True):
-            args = kwargs.copy()
-            args['next_url'] = r.links['next']['url']
-            results.extend(self.list(obj_class, **args))
-        return results
+        return self._raw_list(url, obj_class, **kwargs)
 
     def get(self, obj_class, id=None, **kwargs):
         """Request a GitLab resources.
@@ -510,27 +470,10 @@ class Gitlab(object):
             raise GitlabGetError('Missing attribute(s): %s' %
                                  ", ".join(missing))
 
-        sanitized_id = _sanitize(id)
-        url = self._construct_url(id_=sanitized_id, obj=obj_class,
+        url = self._construct_url(id_=_sanitize(id), obj=obj_class,
                                   parameters=kwargs)
-        headers = self._create_headers()
 
-        # Remove attributes that are used in url so that there is only
-        # url-parameters left
-        params = kwargs.copy()
-        for attribute in obj_class.requiredUrlAttrs:
-            del params[attribute]
-
-        try:
-            r = self.session.get(url, params=params, headers=headers,
-                                 verify=self.ssl_verify, timeout=self.timeout,
-                                 auth=requests.auth.HTTPBasicAuth(
-                                     self.http_username,
-                                     self.http_password))
-        except Exception as e:
-            raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % e)
-
+        r = self._raw_get(url, **kwargs)
         raise_error_from_response(r, GitlabGetError)
         return r.json()
 
@@ -572,30 +515,13 @@ class Gitlab(object):
 
         obj_id = params[obj.idAttr] if obj._id_in_delete_url else None
         url = self._construct_url(id_=obj_id, obj=obj, parameters=params)
-        headers = self._create_headers()
 
-        # Remove attributes that are used in url so that there is only
-        # url-parameters left
-        for attribute in obj.requiredUrlAttrs:
-            del params[attribute]
         if obj._id_in_delete_url:
             # The ID is already built, no need to add it as extra key in query
             # string
             params.pop(obj.idAttr)
 
-        try:
-            r = self.session.delete(url,
-                                    params=params,
-                                    headers=headers,
-                                    verify=self.ssl_verify,
-                                    timeout=self.timeout,
-                                    auth=requests.auth.HTTPBasicAuth(
-                                        self.http_username,
-                                        self.http_password))
-        except Exception as e:
-            raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % e)
-
+        r = self._raw_delete(url, **params)
         raise_error_from_response(r, GitlabDeleteError)
         return True
 
@@ -630,23 +556,11 @@ class Gitlab(object):
 
         url = self._construct_url(id_=None, obj=obj, parameters=params,
                                   action='create')
-        headers = self._create_headers(content_type="application/json")
 
         # build data that can really be sent to server
         data = obj._data_for_gitlab(extra_parameters=kwargs)
 
-        try:
-            r = self.session.post(url, data=data,
-                                  headers=headers,
-                                  verify=self.ssl_verify,
-                                  timeout=self.timeout,
-                                  auth=requests.auth.HTTPBasicAuth(
-                                      self.http_username,
-                                      self.http_password))
-        except Exception as e:
-            raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % e)
-
+        r = self._raw_post(url, data=data, content_type='application/json')
         raise_error_from_response(r, GitlabCreateError, 201)
         return r.json()
 
@@ -683,34 +597,10 @@ class Gitlab(object):
                                     ", ".join(missing))
         obj_id = params[obj.idAttr] if obj._id_in_update_url else None
         url = self._construct_url(id_=obj_id, obj=obj, parameters=params)
-        headers = self._create_headers(content_type="application/json")
 
         # build data that can really be sent to server
         data = obj._data_for_gitlab(extra_parameters=kwargs, update=True)
 
-        try:
-            r = self.session.put(url, data=data,
-                                 headers=headers,
-                                 verify=self.ssl_verify,
-                                 timeout=self.timeout,
-                                 auth=requests.auth.HTTPBasicAuth(
-                                     self.http_username,
-                                     self.http_password))
-        except Exception as e:
-            raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % e)
-
+        r = self._raw_put(url, data=data, content_type='application/json')
         raise_error_from_response(r, GitlabUpdateError)
         return r.json()
-
-    def _list_projects(self, url, **kwargs):
-        r = self._raw_get(url, **kwargs)
-        raise_error_from_response(r, GitlabListError)
-
-        l = []
-        for o in r.json():
-            p = Project(self, o)
-            p._from_api = True
-            l.append(p)
-
-        return l
