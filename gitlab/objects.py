@@ -168,8 +168,6 @@ class GitlabObject(object):
     _id_in_update_url = True
     _constructorTypes = None
 
-    #: Whether _get_list_or_object should return list or object when id is None
-    getListWhenNoId = True
     #: Tells if GitLab-api allows retrieving single objects.
     canGet = True
     #: Tells if GitLab-api allows listing of objects.
@@ -281,13 +279,6 @@ class GitlabObject(object):
                     return obj
 
             raise GitlabGetError("Object not found")
-
-    @classmethod
-    def _get_list_or_object(cls, gl, id, **kwargs):
-        if id is None and cls.getListWhenNoId:
-            return cls.list(gl, **kwargs)
-        else:
-            return cls.get(gl, id, **kwargs)
 
     def _get_object(self, k, v):
         if self._constructorTypes and k in self._constructorTypes:
@@ -1604,7 +1595,6 @@ class ProjectFile(GitlabObject):
                            'commit_message']
     optionalCreateAttrs = ['encoding']
     requiredDeleteAttrs = ['branch_name', 'commit_message', 'file_path']
-    getListWhenNoId = False
     shortPrintAttr = 'file_path'
     getRequiresId = False
 

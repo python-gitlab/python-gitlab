@@ -210,43 +210,6 @@ class TestGitlabObject(unittest.TestCase):
             self.assertEqual(data[0].name, "name")
             self.assertEqual(data[0].id, 1)
 
-    def test_get_list_or_object_with_list(self):
-        with HTTMock(resp_list_project):
-            gl_object = Project(self.gl, data={"name": "name"})
-            data = gl_object._get_list_or_object(self.gl, id=None)
-            self.assertEqual(type(data), list)
-            self.assertEqual(len(data), 1)
-            self.assertEqual(type(data[0]), Project)
-            self.assertEqual(data[0].name, "name")
-            self.assertEqual(data[0].id, 1)
-
-    def test_get_list_or_object_with_get(self):
-        with HTTMock(resp_get_project):
-            gl_object = Project(self.gl, data={"name": "name"})
-            data = gl_object._get_list_or_object(self.gl, id=1)
-            self.assertEqual(type(data), Project)
-            self.assertEqual(data.name, "name")
-            self.assertEqual(data.id, 1)
-
-    def test_get_list_or_object_cant_get(self):
-        with HTTMock(resp_get_issue):
-            gl_object = UserProject(self.gl, data={"name": "name"})
-            self.assertRaises(NotImplementedError,
-                              gl_object._get_list_or_object,
-                              self.gl, id=1)
-
-    def test_get_list_or_object_cantlist(self):
-        gl_object = CurrentUser(self.gl, data={"name": "name"})
-        self.assertRaises(NotImplementedError, gl_object._get_list_or_object,
-                          self.gl, id=None)
-
-    def test_get_list_or_object_create(self):
-        data = {"name": "name"}
-        gl_object = Project(self.gl, data=data)
-        data = gl_object._get_list_or_object(Project, id=data)
-        self.assertEqual(type(data), Project)
-        self.assertEqual(data.name, "name")
-
     def test_create_cantcreate(self):
         gl_object = CurrentUser(self.gl, data={"username": "testname"})
         self.assertRaises(NotImplementedError, gl_object._create)
