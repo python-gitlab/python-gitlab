@@ -1290,10 +1290,6 @@ class ProjectTagRelease(GitlabObject):
     shortPrintAttr = 'description'
 
 
-class ProjectTagReleaseManager(BaseManager):
-    obj_cls = ProjectTagRelease
-
-
 class ProjectTag(GitlabObject):
     _url = '/projects/%(project_id)s/repository/tags'
     _constructorTypes = {'release': 'ProjectTagRelease',
