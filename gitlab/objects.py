@@ -209,7 +209,8 @@ class GitlabObject(object):
     #: Attribute to use as ID when displaying the object.
     shortPrintAttr = None
 
-    def _data_for_gitlab(self, extra_parameters={}, update=False):
+    def _data_for_gitlab(self, extra_parameters={}, update=False,
+                         as_json=True):
         data = {}
         if update and (self.requiredUpdateAttrs or self.optionalUpdateAttrs):
             attributes = itertools.chain(self.requiredUpdateAttrs,
@@ -227,7 +228,7 @@ class GitlabObject(object):
 
         data.update(extra_parameters)
 
-        return json.dumps(data)
+        return json.dumps(data) if as_json else data
 
     @classmethod
     def list(cls, gl, **kwargs):
@@ -573,7 +574,8 @@ class User(GitlabObject):
         ('keys', UserKeyManager, [('user_id', 'id')])
     ]
 
-    def _data_for_gitlab(self, extra_parameters={}, update=False):
+    def _data_for_gitlab(self, extra_parameters={}, update=False,
+                         as_json=True):
         if hasattr(self, 'confirm'):
             self.confirm = str(self.confirm).lower()
         return super(User, self)._data_for_gitlab(extra_parameters)
@@ -1191,7 +1193,8 @@ class ProjectIssue(GitlabObject):
     managers = [('notes', ProjectIssueNoteManager,
                  [('project_id', 'project_id'), ('issue_id', 'id')])]
 
-    def _data_for_gitlab(self, extra_parameters={}, update=False):
+    def _data_for_gitlab(self, extra_parameters={}, update=False,
+                         as_json=True):
         # Gitlab-api returns labels in a json list and takes them in a
         # comma separated list.
         if hasattr(self, "labels"):
@@ -1369,18 +1372,16 @@ class ProjectMergeRequest(GitlabObject):
     managers = [('notes', ProjectMergeRequestNoteManager,
                  [('project_id', 'project_id'), ('merge_request_id', 'id')])]
 
-    def _data_for_gitlab(self, extra_parameters={}, update=False):
+    def _data_for_gitlab(self, extra_parameters={}, update=False,
+                         as_json=True):
         data = (super(ProjectMergeRequest, self)
-                ._data_for_gitlab(extra_parameters, update=update))
+                ._data_for_gitlab(extra_parameters, update=update,
+                                  as_json=False))
         if update:
             # Drop source_branch attribute as it is not accepted by the gitlab
             # server (Issue #76)
-            # We need to unserialize and reserialize the
-            # data, this is far from optimal
-            d = json.loads(data)
-            d.pop('source_branch', None)
-            data = json.dumps(d)
-        return data
+            data.pop('source_branch', None)
+        return json.dumps(data)
 
     def subscribe(self, **kwargs):
         """Subscribe to a MR.
