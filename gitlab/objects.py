@@ -1010,7 +1010,7 @@ class ProjectCommitStatusManager(BaseManager):
 class ProjectCommitComment(GitlabObject):
     _url = '/projects/%(project_id)s/repository/commits/%(commit_id)s/comments'
     canUpdate = False
-    cantGet = False
+    canGet = False
     canDelete = False
     requiredUrlAttrs = ['project_id', 'commit_id']
     requiredCreateAttrs = ['note']
