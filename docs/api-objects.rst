@@ -5,6 +5,7 @@ API objects manipulation
 .. toctree::
    :maxdepth: 1
 
+   gl_objects/access_requests
    gl_objects/branches
    gl_objects/builds
    gl_objects/commits

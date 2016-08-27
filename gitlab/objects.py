@@ -768,6 +768,34 @@ class GroupProjectManager(BaseManager):
     obj_cls = GroupProject
 
 
+class GroupAccessRequest(GitlabObject):
+    _url = '/groups/%(group_id)s/access_requests'
+    canGet = 'from_list'
+    canUpdate = False
+
+    def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
+        """Approve an access request.
+
+        Attrs:
+            access_level (int): The access level for the user.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabUpdateError: If the server fails to perform the request.
+        """
+
+        url = ('/groups/%(group_id)s/access_requests/%(id)s/approve' %
+               {'group_id': self.group_id, 'id': self.id})
+        data = {'access_level': access_level}
+        r = self.gitlab._raw_put(url, data=data, **kwargs)
+        raise_error_from_response(r, GitlabUpdateError, 201)
+        self._set_from_dict(r.json())
+
+
+class GroupAccessRequestManager(BaseManager):
+    obj_cls = GroupAccessRequest
+
+
 class Group(GitlabObject):
     _url = '/groups'
     _constructorTypes = {'projects': 'Project'}
@@ -775,9 +803,12 @@ class Group(GitlabObject):
     optionalCreateAttrs = ['description', 'visibility_level']
     optionalUpdateAttrs = ['name', 'path', 'description', 'visibility_level']
     shortPrintAttr = 'name'
-    managers = [('members', GroupMemberManager, [('group_id', 'id')]),
-                ('projects', GroupProjectManager, [('group_id', 'id')]),
-                ('issues', GroupIssueManager, [('group_id', 'id')])]
+    managers = [
+        ('accessrequests', GroupAccessRequestManager, [('group_id', 'id')]),
+        ('members', GroupMemberManager, [('group_id', 'id')]),
+        ('projects', GroupProjectManager, [('group_id', 'id')]),
+        ('issues', GroupIssueManager, [('group_id', 'id')])
+    ]
 
     GUEST_ACCESS = gitlab.GUEST_ACCESS
     REPORTER_ACCESS = gitlab.REPORTER_ACCESS
@@ -1803,6 +1834,34 @@ class ProjectServiceManager(BaseManager):
         return json.dumps(ProjectService._service_attrs.keys())
 
 
+class ProjectAccessRequest(GitlabObject):
+    _url = '/projects/%(project_id)s/access_requests'
+    canGet = 'from_list'
+    canUpdate = False
+
+    def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
+        """Approve an access request.
+
+        Attrs:
+            access_level (int): The access level for the user.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabUpdateError: If the server fails to perform the request.
+        """
+
+        url = ('/projects/%(project_id)s/access_requests/%(id)s/approve' %
+               {'project_id': self.project_id, 'id': self.id})
+        data = {'access_level': access_level}
+        r = self.gitlab._raw_put(url, data=data, **kwargs)
+        raise_error_from_response(r, GitlabUpdateError, 201)
+        self._set_from_dict(r.json())
+
+
+class ProjectAccessRequestManager(BaseManager):
+    obj_cls = ProjectAccessRequest
+
+
 class Project(GitlabObject):
     _url = '/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
@@ -1822,6 +1881,8 @@ class Project(GitlabObject):
                            'public_builds']
     shortPrintAttr = 'path'
     managers = [
+        ('accessrequests', ProjectAccessRequestManager,
+         [('project_id', 'id')]),
         ('branches', ProjectBranchManager, [('project_id', 'id')]),
         ('builds', ProjectBuildManager, [('project_id', 'id')]),
         ('commits', ProjectCommitManager, [('project_id', 'id')]),

@@ -70,6 +70,8 @@ class Gitlab(object):
         user_keys (UserKeyManager): Manager for GitLab users' SSH keys.
         users (UserManager): Manager for GitLab users
         keys (DeployKeyManager): Manager for deploy keys
+        group_accessrequests (GroupAccessRequestManager): Manager for GitLab
+            groups access requests
         group_issues (GroupIssueManager): Manager for GitLab group issues
         group_projects (GroupProjectManager): Manager for GitLab group projects
         group_members (GroupMemberManager): Manager for GitLab group members
@@ -78,6 +80,8 @@ class Gitlab(object):
         issues (IssueManager): Manager for GitLab issues
         licenses (LicenseManager): Manager for licenses
         namespaces (NamespaceManager): Manager for namespaces
+        project_accessrequests (ProjectAccessRequestManager): Manager for
+            GitLab projects access requests
         project_branches (ProjectBranchManager): Manager for GitLab projects
             branches
         project_builds (ProjectBuildManager): Manager for GitLab projects
@@ -159,6 +163,7 @@ class Gitlab(object):
         self.user_keys = UserKeyManager(self)
         self.users = UserManager(self)
         self.keys = KeyManager(self)
+        self.group_accessrequests = GroupAccessRequestManager(self)
         self.group_issues = GroupIssueManager(self)
         self.group_projects = GroupProjectManager(self)
         self.group_members = GroupMemberManager(self)
@@ -167,6 +172,7 @@ class Gitlab(object):
         self.issues = IssueManager(self)
         self.licenses = LicenseManager(self)
         self.namespaces = NamespaceManager(self)
+        self.project_accessrequests = ProjectAccessRequestManager(self)
         self.project_branches = ProjectBranchManager(self)
         self.project_builds = ProjectBuildManager(self)
         self.project_commits = ProjectCommitManager(self)
