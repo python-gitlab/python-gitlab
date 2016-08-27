@@ -1,3 +1,23 @@
+Version 0.15
+
+ * Add a basic HTTP debug method
+ * Run more tests in travis
+ * Fix fork creation documentation
+ * Add more API examples in docs
+ * Update the ApplicationSettings attributes
+ * Implement the todo API
+ * Add sidekiq metrics support
+ * Move the constants at the gitlab root level
+ * Remove methods marked as deprecated 7 months ago
+ * Refactor the Gitlab class
+ * Remove _get_list_or_object() and its tests
+ * Fix canGet attribute (typo)
+ * Remove unused ProjectTagReleaseManager class
+ * Add support for project services API
+ * Add support for project pipelines
+ * Add support for access requests
+ * Add support for project deployments
+
 Version 0.14
 
  * Remove 'next_url' from kwargs before passing it to the cls constructor.
