@@ -75,11 +75,27 @@ class GitlabTransferProjectError(GitlabOperationError):
     pass
 
 
-class GitlabBuildCancelError(GitlabOperationError):
+class GitlabCancelError(GitlabOperationError):
     pass
 
 
-class GitlabBuildRetryError(GitlabOperationError):
+class GitlabBuildCancelError(GitlabCancelError):
+    pass
+
+
+class GitlabPipelineCancelError(GitlabCancelError):
+    pass
+
+
+class GitlabRetryError(GitlabOperationError):
+    pass
+
+
+class GitlabBuildRetryError(GitlabRetryError):
+    pass
+
+
+class GitlabPipelineRetryError(GitlabRetryError):
     pass
 
 

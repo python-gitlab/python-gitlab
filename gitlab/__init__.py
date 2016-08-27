@@ -102,6 +102,8 @@ class Gitlab(object):
         project_members (ProjectMemberManager): Manager for GitLab projects
             members
         project_notes (ProjectNoteManager): Manager for GitLab projects notes
+        project_pipelines (ProjectPipelineManager): Manager for GitLab projects
+            pipelines
         project_tags (ProjectTagManager): Manager for GitLab projects tags
         project_mergerequest_notes (ProjectMergeRequestNoteManager): Manager
             for GitLab notes on merge requests
@@ -179,6 +181,7 @@ class Gitlab(object):
         self.project_issues = ProjectIssueManager(self)
         self.project_members = ProjectMemberManager(self)
         self.project_notes = ProjectNoteManager(self)
+        self.project_pipelines = ProjectPipelineManager(self)
         self.project_tags = ProjectTagManager(self)
         self.project_mergerequest_notes = ProjectMergeRequestNoteManager(self)
         self.project_mergerequests = ProjectMergeRequestManager(self)

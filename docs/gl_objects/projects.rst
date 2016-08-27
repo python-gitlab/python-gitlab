@@ -395,6 +395,37 @@ Delete a project hook:
    :start-after: # hook delete
    :end-before: # end hook delete
 
+Pipelines
+---------
+
+Use :class:`~gitlab.objects.ProjectPipeline` objects to manipulate projects
+pipelines. The :attr:`gitlab.Gitlab.project_pipelines` and
+:attr:`Project.services <gitlab.objects.Projects.pipelines>` manager objects
+provide helper functions.
+
+List pipelines for a project:
+
+.. literalinclude:: projects.py
+   :start-after: # pipeline list
+   :end-before: # end pipeline list
+
+Get a pipeline for a project:
+
+.. literalinclude:: projects.py
+   :start-after: # pipeline get
+   :end-before: # end pipeline get
+
+Retry the failed builds for a pipeline:
+
+.. literalinclude:: projects.py
+   :start-after: # pipeline retry
+   :end-before: # end pipeline retry
+
+Cancel builds in a pipeline:
+
+.. literalinclude:: projects.py
+   :start-after: # pipeline cancel
+   :end-before: # end pipeline cancel
 Services
 --------
 

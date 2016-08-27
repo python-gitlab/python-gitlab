@@ -382,3 +382,23 @@ service.save()
 # service delete
 service.delete()
 # end service delete
+
+# pipeline list
+pipelines = gl.project_pipelines.list(project_id=1)
+# or
+pipelines = project.pipelines.list()
+# end pipeline list
+
+# pipeline get
+pipeline = gl.project_pipelines.get(pipeline_id, project_id=1)
+# or
+pipeline = project.pipelines.get(pipeline_id)
+# end pipeline get
+
+# pipeline retry
+pipeline.retry()
+# end pipeline retry
+
+# pipeline cancel
+pipeline.cancel()
+# end pipeline cancel

@@ -1610,6 +1610,43 @@ class ProjectFileManager(BaseManager):
     obj_cls = ProjectFile
 
 
+class ProjectPipeline(GitlabObject):
+    _url = '/projects/%(project_id)s/pipelines'
+    canCreate = False
+    canUpdate = False
+    canDelete = False
+
+    def retry(self, **kwargs):
+        """Retries failed builds in a pipeline.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabPipelineRetryError: If the retry cannot be done.
+        """
+        url = ('/projects/%(project_id)s/pipelines/%(id)s/retry' %
+               {'project_id': self.project_id, 'id': self.id})
+        r = self.gitlab._raw_post(url, data=None, content_type=None, **kwargs)
+        raise_error_from_response(r, GitlabPipelineRetryError, 201)
+        self._set_from_dict(r.json())
+
+    def cancel(self, **kwargs):
+        """Cancel builds in a pipeline.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabPipelineCancelError: If the retry cannot be done.
+        """
+        url = ('/projects/%(project_id)s/pipelines/%(id)s/cancel' %
+               {'project_id': self.project_id, 'id': self.id})
+        r = self.gitlab._raw_post(url, data=None, content_type=None, **kwargs)
+        raise_error_from_response(r, GitlabPipelineRetryError, 200)
+        self._set_from_dict(r.json())
+
+
+class ProjectPipelineManager(BaseManager):
+    obj_cls = ProjectPipeline
+
+
 class ProjectSnippetNote(GitlabObject):
     _url = '/projects/%(project_id)s/snippets/%(snippet_id)s/notes'
     _constructorTypes = {'author': 'User'}
@@ -1804,6 +1841,7 @@ class Project(GitlabObject):
         ('mergerequests', ProjectMergeRequestManager, [('project_id', 'id')]),
         ('milestones', ProjectMilestoneManager, [('project_id', 'id')]),
         ('notes', ProjectNoteManager, [('project_id', 'id')]),
+        ('pipelines', ProjectPipelineManager, [('project_id', 'id')]),
         ('services', ProjectServiceManager, [('project_id', 'id')]),
         ('snippets', ProjectSnippetManager, [('project_id', 'id')]),
         ('tags', ProjectTagManager, [('project_id', 'id')]),
