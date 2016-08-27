@@ -10,6 +10,7 @@ API objects manipulation
    gl_objects/builds
    gl_objects/commits
    gl_objects/deploy_keys
+   gl_objects/deployments
    gl_objects/environments
    gl_objects/groups
    gl_objects/issues

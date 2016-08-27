@@ -92,6 +92,8 @@ class Gitlab(object):
             GitLab projects commits comments
         project_commit_statuses (ProjectCommitStatusManager): Manager for
             GitLab projects commits statuses
+        project_deployments (ProjectDeploymentManager): Manager for GitLab
+            projects deployments
         project_keys (ProjectKeyManager): Manager for GitLab projects keys
         project_environments (ProjectEnvironmentManager): Manager for GitLab
             projects environments
@@ -178,6 +180,7 @@ class Gitlab(object):
         self.project_commits = ProjectCommitManager(self)
         self.project_commit_comments = ProjectCommitCommentManager(self)
         self.project_commit_statuses = ProjectCommitStatusManager(self)
+        self.project_deployments = ProjectDeploymentManager(self)
         self.project_keys = ProjectKeyManager(self)
         self.project_environments = ProjectEnvironmentManager(self)
         self.project_events = ProjectEventManager(self)

@@ -1862,6 +1862,17 @@ class ProjectAccessRequestManager(BaseManager):
     obj_cls = ProjectAccessRequest
 
 
+class ProjectDeployment(GitlabObject):
+    _url = '/projects/%(project_id)s/deployments'
+    canCreate = False
+    canUpdate = False
+    canDelete = False
+
+
+class ProjectDeploymentManager(BaseManager):
+    obj_cls = ProjectDeployment
+
+
 class Project(GitlabObject):
     _url = '/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
@@ -1890,6 +1901,7 @@ class Project(GitlabObject):
          [('project_id', 'id')]),
         ('commit_statuses', ProjectCommitStatusManager,
          [('project_id', 'id')]),
+        ('deployments', ProjectDeploymentManager, [('project_id', 'id')]),
         ('environments', ProjectEnvironmentManager, [('project_id', 'id')]),
         ('events', ProjectEventManager, [('project_id', 'id')]),
         ('files', ProjectFileManager, [('project_id', 'id')]),
