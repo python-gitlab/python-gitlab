@@ -426,6 +426,7 @@ Cancel builds in a pipeline:
 .. literalinclude:: projects.py
    :start-after: # pipeline cancel
    :end-before: # end pipeline cancel
+
 Services
 --------
 
