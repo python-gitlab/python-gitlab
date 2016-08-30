@@ -106,18 +106,27 @@ actions on the GitLab resources. For example:
 Pagination
 ==========
 
-You can use pagination to go throught long lists:
+You can use pagination to iterate over long lists. All the Gitlab objects
+listing methods support the ``page`` and ``per_page`` parameters:
 
 .. code-block:: python
 
    ten_first_groups = gl.groups.list(page=0, per_page=10)
 
-Use the ``all`` parameter to get all the items when using listing methods:
+By default GitLab does not return the complete list of items.  Use the ``all``
+parameter to get all the items when using listing methods:
 
 .. code-block:: python
 
    all_groups = gl.groups.list(all=True)
    all_owned_projects = gl.projects.owned(all=True)
+
+.. note::
+
+   python-gitlab will iterate over the list by calling the correspnding API
+   multiple times. This might take some time if you have a lot of items to
+   retrieve. This might also consume a lot of memory as all the items will be
+   stored in RAM.
 
 Sudo
 ====
