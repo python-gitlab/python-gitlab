@@ -338,11 +338,11 @@ class Gitlab(object):
         requests_log.setLevel(logging.DEBUG)
         requests_log.propagate = True
 
-    def _raw_get(self, path, content_type=None, streamed=False, **kwargs):
-        if path.startswith('http://') or path.startswith('https://'):
-            url = path
+    def _raw_get(self, path_, content_type=None, streamed=False, **kwargs):
+        if path_.startswith('http://') or path_.startswith('https://'):
+            url = path_
         else:
-            url = '%s%s' % (self._url, path)
+            url = '%s%s' % (self._url, path_)
 
         headers = self._create_headers(content_type)
         try:
@@ -359,13 +359,13 @@ class Gitlab(object):
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
 
-    def _raw_list(self, path, cls, extra_attrs={}, **kwargs):
+    def _raw_list(self, path_, cls, extra_attrs={}, **kwargs):
         params = extra_attrs.copy()
         params.update(kwargs.copy())
 
         get_all_results = kwargs.get('all', False)
 
-        r = self._raw_get(path, **params)
+        r = self._raw_get(path_, **params)
         raise_error_from_response(r, GitlabListError)
 
         # Remove parameters from kwargs before passing it to constructor
@@ -374,7 +374,7 @@ class Gitlab(object):
                 del params[key]
 
         # Add _from_api manually, because we are not creating objects
-        # through normal path
+        # through normal path_
         params['_from_api'] = True
 
         results = [cls(self, item, **params) for item in r.json()
@@ -386,8 +386,8 @@ class Gitlab(object):
             results.extend(self.list(cls, **args))
         return results
 
-    def _raw_post(self, path, data=None, content_type=None, **kwargs):
-        url = '%s%s' % (self._url, path)
+    def _raw_post(self, path_, data=None, content_type=None, **kwargs):
+        url = '%s%s' % (self._url, path_)
         headers = self._create_headers(content_type)
         try:
             return self.session.post(url, params=kwargs, data=data,
@@ -401,8 +401,8 @@ class Gitlab(object):
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
 
-    def _raw_put(self, path, data=None, content_type=None, **kwargs):
-        url = '%s%s' % (self._url, path)
+    def _raw_put(self, path_, data=None, content_type=None, **kwargs):
+        url = '%s%s' % (self._url, path_)
         headers = self._create_headers(content_type)
 
         try:
@@ -417,8 +417,8 @@ class Gitlab(object):
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
 
-    def _raw_delete(self, path, content_type=None, **kwargs):
-        url = '%s%s' % (self._url, path)
+    def _raw_delete(self, path_, content_type=None, **kwargs):
+        url = '%s%s' % (self._url, path_)
         headers = self._create_headers(content_type)
 
         try:
