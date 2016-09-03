@@ -136,6 +136,13 @@ assert(len(gl.projects.all()) == 4)
 assert(len(gl.projects.owned()) == 2)
 assert(len(gl.projects.search("admin")) == 1)
 
+# test pagination
+l1 = gl.projects.list(per_page=1, page=1)
+l2 = gl.projects.list(per_page=1, page=2)
+assert(len(l1) == 1)
+assert(len(l2) == 1)
+assert(l1[0].id != l2[0].id)
+
 # project content (files)
 admin_project.files.create({'file_path': 'README',
                             'branch_name': 'master',

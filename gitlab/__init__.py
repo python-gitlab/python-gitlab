@@ -365,13 +365,13 @@ class Gitlab(object):
 
         get_all_results = kwargs.get('all', False)
 
+        r = self._raw_get(path, **params)
+        raise_error_from_response(r, GitlabListError)
+
         # Remove parameters from kwargs before passing it to constructor
         for key in ['all', 'page', 'per_page', 'sudo', 'next_url']:
             if key in params:
                 del params[key]
-
-        r = self._raw_get(path, **params)
-        raise_error_from_response(r, GitlabListError)
 
         # Add _from_api manually, because we are not creating objects
         # through normal path
