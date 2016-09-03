@@ -1,3 +1,9 @@
+Version 0.15.1
+
+ * docs: improve the pagination section
+ * Fix and test pagination
+ * 'path' is an existing gitlab attr, don't use it as method argument
+
 Version 0.15
 
  * Add a basic HTTP debug method
