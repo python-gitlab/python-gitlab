@@ -365,11 +365,17 @@ class Gitlab(object):
 
         get_all_results = kwargs.get('all', False)
 
+        # Remove these keys to avoid breaking the listing (urls will get too
+        # long otherwise)
+        for key in ['all', 'next_url']:
+            if key in params:
+                del params[key]
+
         r = self._raw_get(path_, **params)
         raise_error_from_response(r, GitlabListError)
 
-        # Remove parameters from kwargs before passing it to constructor
-        for key in ['all', 'page', 'per_page', 'sudo', 'next_url']:
+        # These attributes are not needed in the object
+        for key in ['page', 'per_page', 'sudo']:
             if key in params:
                 del params[key]
 
