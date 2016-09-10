@@ -51,6 +51,9 @@ project.delete()
 fork = gl.project_forks.create({}, project_id=1)
 # or
 fork = project.forks.create({})
+
+# fork to a specific namespace
+fork gl.project_forks.create({'namespace': 'myteam'}, project_id=1)
 # end fork
 
 # forkrelation
