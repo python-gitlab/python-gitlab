@@ -1169,6 +1169,7 @@ class ProjectFork(GitlabObject):
     canList = False
     canGet = False
     requiredUrlAttrs = ['project_id']
+    optionalCreateAttrs = ['namespace']
 
 
 class ProjectForkManager(BaseManager):
