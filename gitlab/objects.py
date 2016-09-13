@@ -689,7 +689,7 @@ class ApplicationSettings(GitlabObject):
                            'domain_blacklist',
                            'domain_blacklist_enabled',
                            'domain_whitelist',
-                           'enabled_git_access_protocol'
+                           'enabled_git_access_protocol',
                            'gravatar_enabled',
                            'home_page_url',
                            'max_attachment_size',
