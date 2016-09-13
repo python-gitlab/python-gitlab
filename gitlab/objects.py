@@ -1788,7 +1788,7 @@ class ProjectService(GitlabObject):
         'irker': (('recipients', ), ('default_irc_uri', 'server_port',
                                      'server_host', 'colorize_messages')),
         'jira': (('new_issue_url', 'project_url', 'issues_url'),
-                 ('description', 'username', 'password')),
+                 ('api_url', 'description', 'username', 'password')),
         'pivotaltracker': (('token', ), tuple()),
         'pushover': (('api_key', 'user_key', 'priority'), ('device', 'sound')),
         'redmine': (('new_issue_url', 'project_url', 'issues_url'),
