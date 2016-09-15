@@ -41,3 +41,10 @@ Protect/unprotect a repository branch:
 .. literalinclude:: branches.py
    :start-after: # protect
    :end-before: # end protect
+   
+.. note::
+   
+   By default, developers will not be able to push or merge into
+   protected branches. This can be changed by passing ``developers_can_push``
+   or ``developers_can_merge`` like so: 
+   ``branch.protect(developers_can_push=False, developers_can_merge=True)``
