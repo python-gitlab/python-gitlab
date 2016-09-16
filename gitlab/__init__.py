@@ -528,7 +528,7 @@ class Gitlab(object):
             if k not in params:
                 try:
                     params[k] = getattr(obj, k)
-                except KeyError:
+                except AttributeError:
                     missing.append(k)
         if missing:
             raise GitlabDeleteError('Missing attribute(s): %s' %
