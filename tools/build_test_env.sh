@@ -75,7 +75,7 @@ cleanup() {
 }
 
 try docker run --name gitlab-test --detach --publish 8080:80 \
-    --publish 2222:22 gpocentek/test-python-gitlab:latest >/dev/null
+    --publish 2222:22 costela/test-python-gitlab:latest >/dev/null
 
 LOGIN='root'
 PASSWORD='5iveL!fe'
@@ -100,7 +100,7 @@ while :; do
     curl -s http://localhost:8080/users/sign_in 2>/dev/null \
         | grep -q "GitLab Community Edition" && break
     I=$((I+5))
-    [ "$I" -lt 120 ] || fatal "timed out"
+    [ "$I" -lt 300 ] || fatal "timed out"
 done
 sleep 5
 
