@@ -1883,14 +1883,16 @@ class Project(GitlabObject):
                            'snippets_enabled', 'container_registry_enabled',
                            'public', 'visibility_level', 'namespace_id',
                            'description', 'path', 'import_url',
-                           'builds_enabled', 'public_builds', 'only_allow_merge_if_build_succeeds']
+                           'builds_enabled', 'public_builds',
+                           'only_allow_merge_if_build_succeeds']
     optionalUpdateAttrs = ['name', 'default_branch', 'issues_enabled',
                            'wall_enabled', 'merge_requests_enabled',
                            'wiki_enabled', 'snippets_enabled',
                            'container_registry_enabled', 'public',
                            'visibility_level', 'namespace_id', 'description',
                            'path', 'import_url', 'builds_enabled',
-                           'public_builds', 'only_allow_merge_if_build_succeeds']
+                           'public_builds',
+                           'only_allow_merge_if_build_succeeds']
     shortPrintAttr = 'path'
     managers = [
         ('accessrequests', ProjectAccessRequestManager,
