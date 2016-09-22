@@ -46,6 +46,16 @@ Create a project for a user (admin only):
    :start-after: # user create
    :end-before: # end user create
 
+Create a project in a group:
+
+You need to get the id of the group, then use the namespace_id attribute to create the group:
+
+.. code:: python
+
+  group_id = gl.groups.search('my-group')[0].id
+  project = gl.projects.create({'name': 'myrepo', 'namespace_id': group_id})
+
+
 Update a project:
 
 .. literalinclude:: projects.py
