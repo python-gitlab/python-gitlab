@@ -379,6 +379,8 @@ def _populate_sub_parser_by_class(cls, sub_parser):
              for x in cls.requiredListAttrs]
             sub_parser_action.add_argument("--page", required=False)
             sub_parser_action.add_argument("--per-page", required=False)
+            sub_parser_action.add_argument("--all", required=False,
+                                           action='store_true')
 
         if action_name in ["get", "delete"]:
             if cls not in [gitlab.CurrentUser]:

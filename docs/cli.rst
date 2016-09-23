@@ -136,11 +136,17 @@ Example:
 Examples
 ========
 
-List all the projects:
+List the projects (paginated):
 
 .. code-block:: console
 
    $ gitlab project list
+
+List all the projects:
+
+.. code-block:: console
+
+   $ gitlab project list --all
 
 Limit to 5 items per request, display the 1st page only
 
