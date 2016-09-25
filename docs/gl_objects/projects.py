@@ -226,11 +226,11 @@ f = project.files.create({'file_path': 'testfile',
 
 # files update
 f.content = 'new content'
-f.save(branch='master', commit_message='Update testfile')
+f.save(branch_name='master', commit_message='Update testfile')
 
 # or for binary data
 f.content = base64.b64encode(open('image.png').read())
-f.save(branch='master', commit_message='Update testfile', encoding='base64')
+f.save(branch_name='master', commit_message='Update testfile', encoding='base64')
 # end files update
 
 # files delete
