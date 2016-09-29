@@ -1379,8 +1379,7 @@ class ProjectMergeRequestNoteManager(BaseManager):
 
 
 class ProjectMergeRequest(GitlabObject):
-    _url = '/projects/%(project_id)s/merge_request'
-    _urlPlural = '/projects/%(project_id)s/merge_requests'
+    _url = '/projects/%(project_id)s/merge_requests'
     _constructorTypes = {'author': 'User', 'assignee': 'User'}
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['source_branch', 'target_branch', 'title']
