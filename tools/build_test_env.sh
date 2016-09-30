@@ -102,20 +102,25 @@ while :; do
     I=$((I+5))
     [ "$I" -lt 120 ] || fatal "timed out"
 done
-sleep 5
 
 # Get the token
 log "Getting GitLab token..."
-TOKEN_JSON=$(
-    try curl -s http://localhost:8080/api/v3/session \
-        -X POST \
-        --data "login=$LOGIN&password=$PASSWORD"
-) || exit 1
-TOKEN=$(
-    pecho "${TOKEN_JSON}" |
-    try python -c \
-        'import sys, json; print(json.load(sys.stdin)["private_token"])'
-) || exit 1
+I=0
+while :; do
+    sleep 1
+    TOKEN_JSON=$(
+        try curl -s http://localhost:8080/api/v3/session \
+            -X POST \
+            --data "login=$LOGIN&password=$PASSWORD"
+    ) >/dev/null 2>&1 || true
+    TOKEN=$(
+        pecho "${TOKEN_JSON}" |
+        try python -c \
+            'import sys, json; print(json.load(sys.stdin)["private_token"])'
+    ) >/dev/null 2>&1 && break
+    I=$((I+1))
+    [ "$I" -lt 20 ] || fatal "timed out"
+done
 
 cat > $CONFIG << EOF
 [global]
