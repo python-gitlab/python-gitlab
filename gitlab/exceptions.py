@@ -95,6 +95,10 @@ class GitlabBuildRetryError(GitlabRetryError):
     pass
 
 
+class GitlabBuildEraseError(GitlabRetryError):
+    pass
+
+
 class GitlabPipelineRetryError(GitlabRetryError):
     pass
 
