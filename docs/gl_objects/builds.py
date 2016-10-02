@@ -103,10 +103,6 @@ build.cancel()
 build.retry()
 # end retry
 
-# delete
-gl.project_builds.delete(build_id, project_id=1)
-# or
-project.builds.delete(build_id)
-# or
-build.delete()
-# end delete
+# erase
+build.erase()
+# end erase
