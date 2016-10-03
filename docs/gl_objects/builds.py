@@ -106,3 +106,7 @@ build.retry()
 # erase
 build.erase()
 # end erase
+
+# play
+build.play()
+# end play

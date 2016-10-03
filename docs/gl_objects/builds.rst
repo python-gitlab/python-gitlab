@@ -150,6 +150,12 @@ Cancel/retry a build:
    :start-after: # retry
    :end-before: # end retry
 
+Play (trigger) a build:
+
+.. literalinclude:: builds.py
+   :start-after: # play
+   :end-before: # end play
+
 Erase a build (artifacts and trace):
 
 .. literalinclude:: builds.py
