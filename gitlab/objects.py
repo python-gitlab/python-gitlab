@@ -961,6 +961,12 @@ class ProjectBuild(GitlabObject):
         r = self.gitlab._raw_post(url)
         raise_error_from_response(r, GitlabBuildRetryError, 201)
 
+    def erase(self, **kwargs):
+        """Erase the build (remove build artifacts and trace)."""
+        url = '/projects/%s/builds/%s/erase' % (self.project_id, self.id)
+        r = self.gitlab._raw_post(url)
+        raise_error_from_response(r, GitlabBuildEraseError, 201)
+
     def keep_artifacts(self, **kwargs):
         """Prevent artifacts from being delete when expiration is set.
 

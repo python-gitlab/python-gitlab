@@ -150,8 +150,8 @@ Cancel/retry a build:
    :start-after: # retry
    :end-before: # end retry
 
-Erase a build:
+Erase a build (artifacts and trace):
 
 .. literalinclude:: builds.py
-   :start-after: # delete
-   :end-before: # end delete
+   :start-after: # erase
+   :end-before: # end erase
