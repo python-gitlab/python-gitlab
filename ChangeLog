@@ -1,3 +1,19 @@
+Version 0.16
+
+ * Add the ability to fork to a specific namespace
+ * JIRA service - add api_url to optional attributes
+ * Fix bug: Missing coma concatenates array values
+ * docs: branch protection notes
+ * Create a project in a group
+ * Add only_allow_merge_if_build_succeeds option to project objects
+ * Add support for --all in CLI
+ * Fix examples for file modification
+ * Use the plural merge_requests URL everywhere
+ * Rework travis and tox setup
+ * Workaround gitlab setup failure in tests
+ * Add ProjectBuild.erase()
+ * Implement ProjectBuild.play()
+
 Version 0.15.1
 
  * docs: improve the pagination section
