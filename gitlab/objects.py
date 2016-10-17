@@ -965,7 +965,7 @@ class ProjectBuild(GitlabObject):
         """Trigger a build explicitly."""
         url = '/projects/%s/builds/%s/play' % (self.project_id, self.id)
         r = self.gitlab._raw_post(url)
-        raise_error_from_response(r, GitlabBuildPlayError, 201)
+        raise_error_from_response(r, GitlabBuildPlayError)
 
     def erase(self, **kwargs):
         """Erase the build (remove build artifacts and trace)."""
