@@ -280,13 +280,14 @@ class GitlabObject(object):
 
             raise GitlabGetError("Object not found")
 
-    def _get_object(self, k, v):
+    def _get_object(self, k, v, **kwargs):
         if self._constructorTypes and k in self._constructorTypes:
-            return globals()[self._constructorTypes[k]](self.gitlab, v)
+            return globals()[self._constructorTypes[k]](self.gitlab, v,
+                                                        **kwargs)
         else:
             return v
 
-    def _set_from_dict(self, data):
+    def _set_from_dict(self, data, **kwargs):
         if not hasattr(data, 'items'):
             return
 
@@ -294,11 +295,11 @@ class GitlabObject(object):
             if isinstance(v, list):
                 self.__dict__[k] = []
                 for i in v:
-                    self.__dict__[k].append(self._get_object(k, i))
+                    self.__dict__[k].append(self._get_object(k, i, **kwargs))
             elif v is None:
                 self.__dict__[k] = None
             else:
-                self.__dict__[k] = self._get_object(k, v)
+                self.__dict__[k] = self._get_object(k, v, **kwargs)
 
     def _create(self, **kwargs):
         if not self.canCreate:
@@ -377,7 +378,7 @@ class GitlabObject(object):
             data = self.gitlab.get(self.__class__, data, **kwargs)
             self._from_api = True
 
-        self._set_from_dict(data)
+        self._set_from_dict(data, **kwargs)
 
         if kwargs:
             for k, v in kwargs.items():
