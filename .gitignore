@@ -7,3 +7,4 @@ MANIFEST
 .idea/
 docs/_build
 .testrepository/
+.tox
