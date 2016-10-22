@@ -378,6 +378,22 @@ class GitlabObject(object):
             data = self.gitlab.get(self.__class__, data, **kwargs)
             self._from_api = True
 
+            # the API returned a list because custom kwargs where used
+            # instead of the id to request an object. Usually parameters
+            # other than an id return ambiguous results. However in the
+            # gitlab universe iids together with a project_id are
+            # unambiguous for merge requests and issues, too.
+            # So if there is only one element we can use it as our data
+            # source.
+            if 'iid' in kwargs and isinstance(data, list):
+                if len(data) < 1:
+                    raise GitlabGetError('Not found')
+                elif len(data) == 1:
+                    data = data[0]
+                else:
+                    raise GitlabGetError('Impossible! You found multiple'
+                                         ' elements with the same iid.')
+
         self._set_from_dict(data, **kwargs)
 
         if kwargs:
