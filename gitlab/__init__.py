@@ -82,6 +82,10 @@ class Gitlab(object):
         namespaces (NamespaceManager): Manager for namespaces
         project_accessrequests (ProjectAccessRequestManager): Manager for
             GitLab projects access requests
+        project_boards (ProjectBoardManager): Manager for GitLab projects
+            boards
+        project_board_lists (ProjectBoardListManager): Manager for GitLab
+            project board lists
         project_branches (ProjectBranchManager): Manager for GitLab projects
             branches
         project_builds (ProjectBuildManager): Manager for GitLab projects
@@ -175,6 +179,8 @@ class Gitlab(object):
         self.licenses = LicenseManager(self)
         self.namespaces = NamespaceManager(self)
         self.project_accessrequests = ProjectAccessRequestManager(self)
+        self.project_boards = ProjectBoardManager(self)
+        self.project_board_listss = ProjectBoardListManager(self)
         self.project_branches = ProjectBranchManager(self)
         self.project_builds = ProjectBuildManager(self)
         self.project_commits = ProjectCommitManager(self)

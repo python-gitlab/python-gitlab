@@ -253,6 +253,19 @@ assert(admin_project.star_count == 1)
 admin_project = admin_project.unstar()
 assert(admin_project.star_count == 0)
 
+# project boards
+#boards = admin_project.boards.list()
+#assert(len(boards))
+#board = boards[0]
+#lists = board.lists.list()
+#begin_size = len(lists)
+#last_list = lists[-1]
+#last_list.position = 0
+#last_list.save()
+#last_list.delete()
+#lists = board.lists.list()
+#assert(len(lists) == begin_size - 1)
+
 # namespaces
 ns = gl.namespaces.list()
 assert(len(ns) != 0)

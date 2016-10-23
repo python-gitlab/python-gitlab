@@ -925,6 +925,34 @@ class NamespaceManager(BaseManager):
     obj_cls = Namespace
 
 
+class ProjectBoardList(GitlabObject):
+    _url = '/projects/%(project_id)s/boards/%(board_id)s/lists'
+    requiredUrlAttrs = ['project_id', 'board_id']
+    _constructorTypes = {'label': 'ProjectLabel'}
+    requiredCreateAttrs = ['label_id']
+    requiredUpdateAttrs = ['position']
+
+
+class ProjectBoardListManager(BaseManager):
+    obj_cls = ProjectBoardList
+
+
+class ProjectBoard(GitlabObject):
+    _url = '/projects/%(project_id)s/boards'
+    requiredUrlAttrs = ['project_id']
+    _constructorTypes = {'labels': 'ProjectBoardList'}
+    canGet = 'from_list'
+    canUpdate = False
+    canCreate = False
+    canDelete = False
+    managers = [('lists', ProjectBoardListManager,
+                 [('project_id', 'project_id'), ('board_id', 'id')])]
+
+
+class ProjectBoardManager(BaseManager):
+    obj_cls = ProjectBoard
+
+
 class ProjectBranch(GitlabObject):
     _url = '/projects/%(project_id)s/repository/branches'
     _constructorTypes = {'author': 'User', "committer": "User"}
@@ -1925,6 +1953,8 @@ class Project(GitlabObject):
     managers = [
         ('accessrequests', ProjectAccessRequestManager,
          [('project_id', 'id')]),
+        ('boards', ProjectBoardManager, [('project_id', 'id')]),
+        ('board_lists', ProjectBoardListManager, [('project_id', 'id')]),
         ('branches', ProjectBranchManager, [('project_id', 'id')]),
         ('builds', ProjectBuildManager, [('project_id', 'id')]),
         ('commits', ProjectCommitManager, [('project_id', 'id')]),

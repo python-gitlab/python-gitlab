@@ -468,3 +468,57 @@ Disable a service:
 .. literalinclude:: projects.py
    :start-after: # service delete
    :end-before: # end service delete
+
+Boards
+------
+
+Boards are a visual representation of existing issues for a project. Issues can
+be moved from one list to the other to track progress and help with
+priorities.
+
+Get the list of existing boards for a project:
+
+.. literalinclude:: projects.py
+   :start-after: # boards list
+   :end-before: # end boards list
+
+Get a single board for a project:
+
+.. literalinclude:: projects.py
+   :start-after: # boards get
+   :end-before: # end boards get
+
+Boards have lists of issues. Each list is defined by a
+:class:`~gitlab.objects.ProjectLabel` and a position in the board.
+
+List the issue lists for a board:
+
+.. literalinclude:: projects.py
+   :start-after: # board lists list
+   :end-before: # end board lists list
+
+Get a single list:
+
+.. literalinclude:: projects.py
+   :start-after: # board lists get
+   :end-before: # end board lists get
+
+Create a new list. Note that getting the label ID is broken at the moment (see
+https://gitlab.com/gitlab-org/gitlab-ce/issues/23448):
+
+.. literalinclude:: projects.py
+   :start-after: # board lists create
+   :end-before: # end board lists create
+
+Change a list position. The first list is at position 0. Moving a list will
+insert it at the given position and move the following lists up a position:
+
+.. literalinclude:: projects.py
+   :start-after: # board lists update
+   :end-before: # end board lists update
+
+Delete a list:
+
+.. literalinclude:: projects.py
+   :start-after: # board lists delete
+   :end-before: # end board lists delete

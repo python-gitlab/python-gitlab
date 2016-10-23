@@ -405,3 +405,39 @@ pipeline.retry()
 # pipeline cancel
 pipeline.cancel()
 # end pipeline cancel
+
+# boards list
+boards = gl.project_boards.list(project_id=1)
+# or
+boards = project.boards.list()
+# end boards list
+
+# boards get
+board = gl.project_boards.get(board_id, project_id=1)
+# or
+board = project.boards.get(board_id)
+# end boards get
+
+# board lists list
+b_lists = board.lists.list()
+# end board lists list
+
+# board lists get
+b_list = board.lists.get(list_id)
+# end board lists get
+
+# board lists create
+# First get a ProjectLabel
+label = get_or_create_label()
+# Then use its ID to create the new board list
+b_list = board.lists.create({'label_id': label.id})
+# end board lists create
+
+# board lists update
+b_list.position = 2
+b_list.save()
+# end board lists update
+
+# board lists delete
+b_list.delete()
+# end boards lists delete
