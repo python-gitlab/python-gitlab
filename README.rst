@@ -107,7 +107,7 @@ A freshly configured gitlab container will be available at
 http://localhost:8080 (login ``root`` / password ``5iveL!fe``). A configuration
 for python-gitlab will be written in ``/tmp/python-gitlab.cfg``.
 
-To cleanup the environement delete the container:
+To cleanup the environment delete the container:
 
 .. code-block:: bash
 
