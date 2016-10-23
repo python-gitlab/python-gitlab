@@ -752,6 +752,30 @@ class KeyManager(BaseManager):
     obj_cls = Key
 
 
+class NotificationSettings(GitlabObject):
+    _url = '/notification_settings'
+    _id_in_update_url = False
+    optionalUpdateAttrs = ['level',
+                           'notification_email',
+                           'new_note',
+                           'new_issue',
+                           'reopen_issue',
+                           'close_issue',
+                           'reassign_issue',
+                           'new_merge_request',
+                           'reopen_merge_request',
+                           'close_merge_request',
+                           'reassign_merge_request',
+                           'merge_merge_request']
+    canList = False
+    canCreate = False
+    canDelete = False
+
+
+class NotificationSettingsManager(BaseManager):
+    obj_cls = NotificationSettings
+
+
 class GroupIssue(GitlabObject):
     _url = '/groups/%(group_id)s/issues'
     canGet = 'from_list'
@@ -781,6 +805,15 @@ class GroupMember(GitlabObject):
 
 class GroupMemberManager(BaseManager):
     obj_cls = GroupMember
+
+
+class GroupNotificationSettings(NotificationSettings):
+    _url = '/groups/%(group_id)s/notification_settings'
+    requiredUrlAttrs = ['group_id']
+
+
+class GroupNotificationSettingsManager(BaseManager):
+    obj_cls = GroupNotificationSettings
 
 
 class GroupProject(GitlabObject):
@@ -835,6 +868,8 @@ class Group(GitlabObject):
     managers = [
         ('accessrequests', GroupAccessRequestManager, [('group_id', 'id')]),
         ('members', GroupMemberManager, [('group_id', 'id')]),
+        ('notificationsettings', GroupNotificationSettingsManager,
+         [('group_id', 'id')]),
         ('projects', GroupProjectManager, [('group_id', 'id')]),
         ('issues', GroupIssueManager, [('group_id', 'id')])
     ]
@@ -1383,6 +1418,15 @@ class ProjectNote(GitlabObject):
 
 class ProjectNoteManager(BaseManager):
     obj_cls = ProjectNote
+
+
+class ProjectNotificationSettings(NotificationSettings):
+    _url = '/projects/%(project_id)s/notification_settings'
+    requiredUrlAttrs = ['project_id']
+
+
+class ProjectNotificationSettingsManager(BaseManager):
+    obj_cls = ProjectNotificationSettings
 
 
 class ProjectTagRelease(GitlabObject):
@@ -1987,6 +2031,8 @@ class Project(GitlabObject):
         ('mergerequests', ProjectMergeRequestManager, [('project_id', 'id')]),
         ('milestones', ProjectMilestoneManager, [('project_id', 'id')]),
         ('notes', ProjectNoteManager, [('project_id', 'id')]),
+        ('notificationsettings', ProjectNotificationSettingsManager,
+         [('project_id', 'id')]),
         ('pipelines', ProjectPipelineManager, [('project_id', 'id')]),
         ('services', ProjectServiceManager, [('project_id', 'id')]),
         ('snippets', ProjectSnippetManager, [('project_id', 'id')]),

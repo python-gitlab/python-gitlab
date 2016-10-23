@@ -282,3 +282,10 @@ msg = gl.broadcastmessages.get(1)
 assert(msg.color == '#444444')
 msg.delete()
 assert(len(gl.broadcastmessages.list()) == 0)
+
+# notification settings
+settings = gl.notificationsettings.get()
+settings.level = gitlab.NOTIFICATION_LEVEL_WATCH
+settings.save()
+settings = gl.notificationsettings.get()
+assert(settings.level == gitlab.NOTIFICATION_LEVEL_WATCH)

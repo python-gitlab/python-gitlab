@@ -82,6 +82,8 @@ class Gitlab(object):
         issues (IssueManager): Manager for GitLab issues
         licenses (LicenseManager): Manager for licenses
         namespaces (NamespaceManager): Manager for namespaces
+        notificationsettings (NotificationSettingsManager): Manager for global
+            notification settings
         project_accessrequests (ProjectAccessRequestManager): Manager for
             GitLab projects access requests
         project_boards (ProjectBoardManager): Manager for GitLab projects
@@ -181,6 +183,7 @@ class Gitlab(object):
         self.issues = IssueManager(self)
         self.licenses = LicenseManager(self)
         self.namespaces = NamespaceManager(self)
+        self.notificationsettings = NotificationSettingsManager(self)
         self.project_accessrequests = ProjectAccessRequestManager(self)
         self.project_boards = ProjectBoardManager(self)
         self.project_board_listss = ProjectBoardListManager(self)
