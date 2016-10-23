@@ -271,3 +271,14 @@ ns = gl.namespaces.list()
 assert(len(ns) != 0)
 ns = gl.namespaces.list(search='root')[0]
 assert(ns.kind == 'user')
+
+# broadcast messages
+msg = gl.broadcastmessages.create({'message': 'this is the message'})
+msg.color = '#444444'
+msg.save()
+msg = gl.broadcastmessages.list()[0]
+assert(msg.color == '#444444')
+msg = gl.broadcastmessages.get(1)
+assert(msg.color == '#444444')
+msg.delete()
+assert(len(gl.broadcastmessages.list()) == 0)

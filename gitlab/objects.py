@@ -728,6 +728,18 @@ class ApplicationSettingsManager(BaseManager):
     obj_cls = ApplicationSettings
 
 
+class BroadcastMessage(GitlabObject):
+    _url = '/broadcast_messages'
+    requiredCreateAttrs = ['message']
+    optionalCreateAttrs = ['starts_at', 'ends_at', 'color', 'font']
+    requiredUpdateAttrs = []
+    optionalUpdateAttrs = ['message', 'starts_at', 'ends_at', 'color', 'font']
+
+
+class BroadcastMessageManager(BaseManager):
+    obj_cls = BroadcastMessage
+
+
 class Key(GitlabObject):
     _url = '/deploy_keys'
     canGet = 'from_list'

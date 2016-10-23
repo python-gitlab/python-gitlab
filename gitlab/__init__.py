@@ -69,6 +69,8 @@ class Gitlab(object):
         user_emails (UserEmailManager): Manager for GitLab users' emails.
         user_keys (UserKeyManager): Manager for GitLab users' SSH keys.
         users (UserManager): Manager for GitLab users
+        broadcastmessages (BroadcastMessageManager): Manager for broadcast
+            messages
         keys (DeployKeyManager): Manager for deploy keys
         group_accessrequests (GroupAccessRequestManager): Manager for GitLab
             groups access requests
@@ -168,6 +170,7 @@ class Gitlab(object):
         self.user_emails = UserEmailManager(self)
         self.user_keys = UserKeyManager(self)
         self.users = UserManager(self)
+        self.broadcastmessages = BroadcastMessageManager(self)
         self.keys = KeyManager(self)
         self.group_accessrequests = GroupAccessRequestManager(self)
         self.group_issues = GroupIssueManager(self)
