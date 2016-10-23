@@ -265,6 +265,27 @@ class Gitlab(object):
         """
         self.set_token(self.user.private_token)
 
+    def version(self):
+        """Returns the version and revision of the gitlab server.
+
+        Note that self.version and self.revision will be set on the gitlab
+        object.
+
+        Returns:
+            tuple (str, str): The server version and server revision, or
+                              ('unknown', 'unknwown') if the server doesn't
+                              support this API call (gitlab < 8.13.0)
+        """
+        r = self._raw_get('/version')
+        try:
+            raise_error_from_response(r, GitlabGetError, 200)
+            data = r.json()
+            self.version, self.revision = data['version'], data['revision']
+        except GitlabGetError:
+            self.version = self.revision = 'unknown'
+
+        return self.version, self.revision
+
     def token_auth(self):
         """Performs an authentication using the private token."""
         self.user = CurrentUser(self)
