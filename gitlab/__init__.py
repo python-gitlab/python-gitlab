@@ -58,6 +58,7 @@ class Gitlab(object):
     Args:
         url (str): The URL of the GitLab server.
         private_token (str): The user private token
+        oauth_token (str): An oauth token
         email (str): The user email or login.
         password (str): The user password (associated with email).
         ssl_verify (bool): Whether SSL certificates should be validated.
@@ -146,16 +147,16 @@ class Gitlab(object):
         todos (TodoManager): Manager for user todos
     """
 
-    def __init__(self, url, private_token=None, email=None, password=None,
-                 ssl_verify=True, http_username=None, http_password=None,
-                 timeout=None):
+    def __init__(self, url, private_token=None, oauth_token=None, email=None,
+                 password=None, ssl_verify=True, http_username=None,
+                 http_password=None, timeout=None):
 
         self._url = '%s/api/v3' % url
         #: Timeout to use for requests to gitlab server
         self.timeout = timeout
         #: Headers that will be used in request to GitLab
         self.headers = {}
-        self.set_token(private_token)
+        self.set_token(private_token, oauth_token)
         #: The user email
         self.email = email
         #: The user password (associated with email)
@@ -239,7 +240,7 @@ class Gitlab(object):
         """
         config = gitlab.config.GitlabConfigParser(gitlab_id=gitlab_id,
                                                   config_files=config_files)
-        return Gitlab(config.url, private_token=config.token,
+        return Gitlab(config.url, private_token=config.token, oauth_token=None,
                       ssl_verify=config.ssl_verify, timeout=config.timeout,
                       http_username=config.http_username,
                       http_password=config.http_password)
@@ -252,7 +253,7 @@ class Gitlab(object):
         The `user` attribute will hold a `gitlab.objects.CurrentUser` object on
         success.
         """
-        if self.private_token:
+        if self.oauth_token or self.private_token:
             self.token_auth()
         else:
             self.credentials_auth()
@@ -335,17 +336,35 @@ class Gitlab(object):
             request_headers['Content-type'] = content_type
         return request_headers
 
-    def set_token(self, token):
+    def set_token(self, token=None, oauth_token=None):
         """Sets the private token for authentication.
 
+        Only one of ``token`` and ``oauth_token`` should be provided.
+
+        Raises:
+            GitlabAuthenticationError: When both ``token`` and ``oauth_token``
+                are provided.
+
         Args:
-            token (str): The private token.
+            token (str): A private token.
+            oauth_token (str): An oauth token.
         """
         self.private_token = token if token else None
-        if token:
+        self.oauth_token = oauth_token if oauth_token else None
+
+        if token is not None and oauth_token is not None:
+            raise GitlabAuthenticationError("Private and OAuth token both "
+                                            "provided: define only one")
+
+        if oauth_token:
+            self.headers.pop("PRIVATE-TOKEN", None)
+            self.headers["Authorization"] = "Bearer: %s" % oauth_token
+        elif token:
+            self.headers.pop("Authorization", None)
             self.headers["PRIVATE-TOKEN"] = token
-        elif "PRIVATE-TOKEN" in self.headers:
-            del self.headers["PRIVATE-TOKEN"]
+        else:
+            self.headers.pop("PRIVATE-TOKEN", None)
+            self.headers.pop("Authorization", None)
 
     def set_credentials(self, email, password):
         """Sets the email/login and password for authentication.
