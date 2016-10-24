@@ -398,7 +398,9 @@ class GitlabObject(object):
 
         if kwargs:
             for k, v in kwargs.items():
-                self.__dict__[k] = v
+                # Don't overwrite attributes returned by the server (#171)
+                if k not in self.__dict__ or not self.__dict__[k]:
+                    self.__dict__[k] = v
 
         # Special handling for api-objects that don't have id-number in api
         # responses. Currently only Labels and Files
