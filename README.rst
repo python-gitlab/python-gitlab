@@ -5,7 +5,7 @@
    :target: https://badge.fury.io/py/python-gitlab
 
 .. image:: https://readthedocs.org/projects/python-gitlab/badge/?version=latest
-   :target: https://python-gitlab.readthedocs.cwioorg/en/latest/?badge=latest
+   :target: https://python-gitlab.readthedocs.org/en/latest/?badge=latest
 
 Python GitLab
 =============
