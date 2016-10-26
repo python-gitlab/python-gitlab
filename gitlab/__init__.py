@@ -358,7 +358,7 @@ class Gitlab(object):
 
         if oauth_token:
             self.headers.pop("PRIVATE-TOKEN", None)
-            self.headers["Authorization"] = "Bearer: %s" % oauth_token
+            self.headers["Authorization"] = "Bearer %s" % oauth_token
         elif token:
             self.headers.pop("Authorization", None)
             self.headers["PRIVATE-TOKEN"] = token
@@ -397,6 +397,14 @@ class Gitlab(object):
             url = '%s%s' % (self._url, path_)
 
         headers = self._create_headers(content_type)
+
+        if 'Authorization' in self.headers:
+            auth = None
+        else:
+            auth = requests.auth.HTTPBasicAuth(
+                self.http_username,
+                self.http_password)
+
         try:
             return self.session.get(url,
                                     params=kwargs,
@@ -404,9 +412,7 @@ class Gitlab(object):
                                     verify=self.ssl_verify,
                                     timeout=self.timeout,
                                     stream=streamed,
-                                    auth=requests.auth.HTTPBasicAuth(
-                                        self.http_username,
-                                        self.http_password))
+                                    auth=auth)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -438,7 +444,7 @@ class Gitlab(object):
         results = [cls(self, item, **params) for item in r.json()
                    if item is not None]
         if ('next' in r.links and 'url' in r.links['next']
-           and get_all_results is True):
+                and get_all_results is True):
             args = kwargs.copy()
             args['next_url'] = r.links['next']['url']
             results.extend(self.list(cls, **args))
