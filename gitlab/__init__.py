@@ -358,7 +358,7 @@ class Gitlab(object):
 
         if oauth_token:
             self.headers.pop("PRIVATE-TOKEN", None)
-            self.headers["Authorization"] = "Bearer: %s" % oauth_token
+            self.headers["Authorization"] = "Bearer %s" % oauth_token
         elif token:
             self.headers.pop("Authorization", None)
             self.headers["PRIVATE-TOKEN"] = token
@@ -397,6 +397,13 @@ class Gitlab(object):
             url = '%s%s' % (self._url, path_)
 
         headers = self._create_headers(content_type)
+        auth = requests.auth.HTTPBasicAuth(
+                                        self.http_username,
+                                        self.http_password)
+
+        if headers["Authorization"]:
+            auth = None
+
         try:
             return self.session.get(url,
                                     params=kwargs,
@@ -404,9 +411,7 @@ class Gitlab(object):
                                     verify=self.ssl_verify,
                                     timeout=self.timeout,
                                     stream=streamed,
-                                    auth=requests.auth.HTTPBasicAuth(
-                                        self.http_username,
-                                        self.http_password))
+                                    auth=auth)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -447,14 +452,19 @@ class Gitlab(object):
     def _raw_post(self, path_, data=None, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path_)
         headers = self._create_headers(content_type)
+        auth = requests.auth.HTTPBasicAuth(
+                                        self.http_username,
+                                        self.http_password)
+
+        if headers["Authorization"]:
+            auth = None
+
         try:
             return self.session.post(url, params=kwargs, data=data,
                                      headers=headers,
                                      verify=self.ssl_verify,
                                      timeout=self.timeout,
-                                     auth=requests.auth.HTTPBasicAuth(
-                                         self.http_username,
-                                         self.http_password))
+                                     auth=auth)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -462,15 +472,19 @@ class Gitlab(object):
     def _raw_put(self, path_, data=None, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path_)
         headers = self._create_headers(content_type)
+        auth = requests.auth.HTTPBasicAuth(
+                                        self.http_username,
+                                        self.http_password)
+
+        if headers["Authorization"]:
+            auth = None
 
         try:
             return self.session.put(url, data=data, params=kwargs,
                                     headers=headers,
                                     verify=self.ssl_verify,
                                     timeout=self.timeout,
-                                    auth=requests.auth.HTTPBasicAuth(
-                                        self.http_username,
-                                        self.http_password))
+                                    auth=auth)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -478,6 +492,12 @@ class Gitlab(object):
     def _raw_delete(self, path_, content_type=None, **kwargs):
         url = '%s%s' % (self._url, path_)
         headers = self._create_headers(content_type)
+        auth = requests.auth.HTTPBasicAuth(
+                                        self.http_username,
+                                        self.http_password)
+
+        if headers["Authorization"]:
+            auth = None
 
         try:
             return self.session.delete(url,
@@ -485,9 +505,7 @@ class Gitlab(object):
                                        headers=headers,
                                        verify=self.ssl_verify,
                                        timeout=self.timeout,
-                                       auth=requests.auth.HTTPBasicAuth(
-                                           self.http_username,
-                                           self.http_password))
+                                       auth=auth)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
