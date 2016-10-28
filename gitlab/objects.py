@@ -1605,7 +1605,7 @@ class ProjectMergeRequest(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabListError: If the server fails to perform the request.
         """
-        url = ('/projects/%s/merge_requests/%s/commits' %
+        url = ('/projects/%s/merge_requests/%s/changes' %
                (self.project_id, self.id))
         r = self.gitlab._raw_get(url, **kwargs)
         raise_error_from_response(r, GitlabListError)
