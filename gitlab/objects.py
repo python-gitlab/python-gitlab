@@ -1253,6 +1253,18 @@ class ProjectKey(GitlabObject):
 class ProjectKeyManager(BaseManager):
     obj_cls = ProjectKey
 
+    def enable_deploy_key(self, project_id, key_id):
+        """Enable a deploy key in a project."""
+        url = '/projects/%s/deploy_keys/%s/enable' % (project_id, key_id)
+        r = self.gitlab._raw_post(url)
+        raise_error_from_response(r, GitlabBuildRetryError, 201)
+
+    def disable_deploy_key(self, project_id, key_id):
+        """Disable a deploy key in a project."""
+        url = '/projects/%s/deploy_keys/%s/disable' % (project_id, key_id)
+        r = self.gitlab._raw_post(url)
+        raise_error_from_response(r, GitlabBuildRetryError, 201)
+
 
 class ProjectEvent(GitlabObject):
     _url = '/projects/%(project_id)s/events'
