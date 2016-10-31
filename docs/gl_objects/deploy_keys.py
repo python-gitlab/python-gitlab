@@ -34,3 +34,15 @@ key = project.keys.list(key_id)
 # or
 key.delete()
 # end delete
+
+# enable
+key = gl.project_keys.enable(key_id, project_id=1)
+# or
+key = project.keys.enable(key_id)
+# end enable
+
+# disable
+key = gl.project_keys.disable(key_id, project_id=1)
+# or
+key = project.keys.disable(key_id)
+# end disable
