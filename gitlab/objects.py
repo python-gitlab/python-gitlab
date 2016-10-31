@@ -1262,7 +1262,7 @@ class ProjectKeyManager(BaseManager):
     def disable_deploy_key(self, project_id, key_id):
         """Disable a deploy key in a project."""
         url = '/projects/%s/deploy_keys/%s/disable' % (project_id, key_id)
-        r = self.gitlab._raw_post(url)
+        r = self.gitlab._raw_delete(url)
         raise_error_from_response(r, GitlabBuildRetryError, 201)
 
 
