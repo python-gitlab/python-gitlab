@@ -229,7 +229,9 @@ f.content = 'new content'
 f.save(branch_name='master', commit_message='Update testfile')
 
 # or for binary data
-f.content = base64.b64encode(open('image.png').read())
+# Note: decode() is required with python 3 for data serialization. You can omit
+# it with python 2
+f.content = base64.b64encode(open('image.png').read()).decode()
 f.save(branch_name='master', commit_message='Update testfile', encoding='base64')
 # end files update
 
