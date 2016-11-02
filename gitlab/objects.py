@@ -1249,17 +1249,17 @@ class ProjectKey(GitlabObject):
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['title', 'key']
 
-    def enable(self, key_id, project_id):
+    def enable(self, key_id):
         """Enable a deploy key for a project."""
-        url = '/projects/%s/deploy_keys/%s/enable' % (project_id, key_id)
+        url = '/projects/%s/deploy_keys/%s/enable' % (self.project_id, key_id)
         r = self.gitlab._raw_post(url)
-        raise_error_from_response(r, GitlabProjectDeployKeyError, 201)
+        raise_error_from_response(r, GitlabProjectDeployKeyError, 200)
 
-    def disable(self, key_id, project_id):
+    def disable(self, key_id):
         """Disable a deploy key for a project."""
-        url = '/projects/%s/deploy_keys/%s/disable' % (project_id, key_id)
+        url = '/projects/%s/deploy_keys/%s/disable' % (self.project_id, key_id)
         r = self.gitlab._raw_delete(url)
-        raise_error_from_response(r, GitlabProjectDeployKeyError, 201)
+        raise_error_from_response(r, GitlabProjectDeployKeyError, 200)
 
 
 class ProjectKeyManager(BaseManager):
