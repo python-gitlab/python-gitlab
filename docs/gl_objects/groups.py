@@ -64,3 +64,24 @@ group.members.delete(member_id)
 # or
 member.delete()
 # end member delete
+
+# ldap sync list
+group.ldap_group_links
+# end ldap sync list
+
+# ldap sync create
+gl.group_ldap_links.create({'cn': 'some_ldap_group_name',
+                             'provider': 'ldapmain', 'group_access': 50},
+                            group_id=1)
+# or
+group.ldaplinks.create({'cn': 'some_ldap_group_name',
+                             'provider': 'ldapmain', 'group_access': 50})
+# end ldap sync create
+
+# ldap sync delete
+gl.group_ldap_links.delete('some_ldap_group_name', group_id=1)
+# or
+group.ldaplinks.delete('some_ldap_group_name')
+# or
+ldaplink.delete()
+# end ldap sync delete

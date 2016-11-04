@@ -792,6 +792,20 @@ class GroupIssueManager(BaseManager):
     obj_cls = GroupIssue
 
 
+class GroupLdapSyncLink(GitlabObject):
+    _url = '/groups/%(group_id)s/ldap_group_links'
+    idAttr = 'cn'
+    canGet = False
+    canList = False
+    canUpdate = False
+    requiredUrlAttrs = ['group_id']
+    requiredCreateAttrs = ['cn', 'group_access', 'provider']
+
+
+class GroupLdapSyncLinkManager(BaseManager):
+    obj_cls = GroupLdapSyncLink
+
+
 class GroupMember(GitlabObject):
     _url = '/groups/%(group_id)s/members'
     canGet = 'from_list'
@@ -873,7 +887,8 @@ class Group(GitlabObject):
         ('notificationsettings', GroupNotificationSettingsManager,
          [('group_id', 'id')]),
         ('projects', GroupProjectManager, [('group_id', 'id')]),
-        ('issues', GroupIssueManager, [('group_id', 'id')])
+        ('issues', GroupIssueManager, [('group_id', 'id')]),
+        ('ldaplinks', GroupLdapSyncLinkManager, [('group_id', 'id')]),
     ]
 
     GUEST_ACCESS = gitlab.GUEST_ACCESS

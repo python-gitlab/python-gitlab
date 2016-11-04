@@ -109,3 +109,15 @@ Remove a member from the group:
 .. literalinclude:: groups.py
    :start-after: # member delete
    :end-before: # end member delete
+
+Add an LDAP group for synchronization:
+
+.. literalinclude:: groups.py
+   :start-after: # ldap sync create
+   :end-before: # end ldap sync create
+
+Remove an LDAP group for synchronization:
+
+.. literalinclude:: groups.py
+   :start-after: # ldap sync delete
+   :end-before: # end ldap sync delete
