@@ -581,6 +581,26 @@ class UserKeyManager(BaseManager):
     obj_cls = UserKey
 
 
+class UserProject(GitlabObject):
+    _url = '/projects/user/%(user_id)s'
+    _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
+    canUpdate = False
+    canDelete = False
+    canList = False
+    canGet = False
+    requiredUrlAttrs = ['user_id']
+    requiredCreateAttrs = ['name']
+    optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
+                           'merge_requests_enabled', 'wiki_enabled',
+                           'snippets_enabled', 'public', 'visibility_level',
+                           'description', 'builds_enabled', 'public_builds',
+                           'import_url', 'only_allow_merge_if_build_succeeds']
+
+
+class UserProjectManager(BaseManager):
+    obj_cls = UserProject
+
+
 class User(GitlabObject):
     _url = '/users'
     shortPrintAttr = 'username'
@@ -597,6 +617,7 @@ class User(GitlabObject):
     managers = (
         ('emails', UserEmailManager, [('user_id', 'id')]),
         ('keys', UserKeyManager, [('user_id', 'id')]),
+        ('projects', UserProjectManager, [('user_id', 'id')]),
     )
 
     def _data_for_gitlab(self, extra_parameters={}, update=False,
@@ -2061,10 +2082,6 @@ class Project(GitlabObject):
         ('branches', ProjectBranchManager, [('project_id', 'id')]),
         ('builds', ProjectBuildManager, [('project_id', 'id')]),
         ('commits', ProjectCommitManager, [('project_id', 'id')]),
-        ('commit_comments', ProjectCommitCommentManager,
-         [('project_id', 'id')]),
-        ('commit_statuses', ProjectCommitStatusManager,
-         [('project_id', 'id')]),
         ('deployments', ProjectDeploymentManager, [('project_id', 'id')]),
         ('environments', ProjectEnvironmentManager, [('project_id', 'id')]),
         ('events', ProjectEventManager, [('project_id', 'id')]),
@@ -2409,22 +2426,6 @@ class TodoManager(BaseManager):
         return int(r.text)
 
 
-class UserProject(GitlabObject):
-    _url = '/projects/user/%(user_id)s'
-    _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
-    canUpdate = False
-    canDelete = False
-    canList = False
-    canGet = False
-    requiredUrlAttrs = ['user_id']
-    requiredCreateAttrs = ['name']
-    optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
-                           'merge_requests_enabled', 'wiki_enabled',
-                           'snippets_enabled', 'public', 'visibility_level',
-                           'description', 'builds_enabled', 'public_builds',
-                           'import_url', 'only_allow_merge_if_build_succeeds']
-
-
 class ProjectManager(BaseManager):
     obj_cls = Project
 
@@ -2487,10 +2488,6 @@ class ProjectManager(BaseManager):
             list(gitlab.Gitlab.Project): The list of starred projects.
         """
         return self.gitlab._raw_list("/projects/starred", Project, **kwargs)
-
-
-class UserProjectManager(BaseManager):
-    obj_cls = UserProject
 
 
 class TeamMemberManager(BaseManager):
