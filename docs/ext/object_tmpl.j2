@@ -1,3 +1,10 @@
+{% for attr_name, cls, dummy in obj.managers %}
+.. attribute:: {{ attr_name }}
+
+   {{ cls | classref() }} - Manager for {{ cls.obj_cls | classref() }} objects.
+
+{% endfor %}
+
 .. method:: save(**kwargs)
 
    Send the modified object to the GitLab server. The following attributes are
