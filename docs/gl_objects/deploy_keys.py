@@ -34,3 +34,11 @@ key = project.keys.list(key_id)
 # or
 key.delete()
 # end delete
+
+# enable
+key = project.keys.enable(key_id)
+# end enable
+
+# disable
+key = project.keys.disable(key_id)
+# end disable

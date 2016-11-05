@@ -75,6 +75,10 @@ class GitlabTransferProjectError(GitlabOperationError):
     pass
 
 
+class GitlabProjectDeployKeyError(GitlabOperationError):
+    pass
+
+
 class GitlabCancelError(GitlabOperationError):
     pass
 

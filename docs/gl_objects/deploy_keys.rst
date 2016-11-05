@@ -56,3 +56,15 @@ Delete a deploy key for a project:
 .. literalinclude:: deploy_keys.py
    :start-after: # delete
    :end-before: # end delete
+
+Enable a deploy key for a project:
+
+.. literalinclude:: deploy_keys.py
+   :start-after: # enable
+   :end-before: # end enable
+
+Disable a deploy key for a project:
+
+.. literalinclude:: deploy_keys.py
+   :start-after: # disable
+   :end-before: # end disable
