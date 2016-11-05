@@ -61,10 +61,10 @@ class Gitlab(object):
         email (str): The user email or login.
         password (str): The user password (associated with email).
         ssl_verify (bool): Whether SSL certificates should be validated.
-        timeout (float or tuple(float,float)): Timeout to use for requests to
-            the GitLab server.
-        http_username: (str): Username for HTTP authentication
-        http_password: (str): Password for HTTP authentication
+        timeout (float): Timeout to use for requests to the GitLab server.
+        http_username (str): Username for HTTP authentication
+        http_password (str): Password for HTTP authentication
+
     Attributes:
         user_emails (UserEmailManager): Manager for GitLab users' emails.
         user_keys (UserKeyManager): Manager for GitLab users' SSH keys.
