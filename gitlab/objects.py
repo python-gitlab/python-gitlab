@@ -424,6 +424,11 @@ class GitlabObject(object):
     def __str__(self):
         return '%s => %s' % (type(self), str(self.__dict__))
 
+    def __repr__(self):
+        return '<%s %s:%s>' % (self.__class__.__name__,
+                               self.idAttr,
+                               getattr(self, self.idAttr))
+
     def display(self, pretty):
         if pretty:
             self.pretty_print()
