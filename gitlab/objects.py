@@ -407,12 +407,19 @@ class GitlabObject(object):
         if not hasattr(self, "id"):
             self.id = None
 
-        self._set_managers()
+    def _set_manager(self, var, cls, attrs):
+        manager = cls(self.gitlab, self, attrs)
+        setattr(self, var, manager)
 
-    def _set_managers(self):
+    def __getattr__(self, name):
+        # build a manager if it doesn't exist yet
         for var, cls, attrs in self.managers:
-            manager = cls(self.gitlab, self, attrs)
-            setattr(self, var, manager)
+            if var != name:
+                continue
+            self._set_manager(var, cls, attrs)
+            return getattr(self, var)
+
+        raise AttributeError
 
     def __str__(self):
         return '%s => %s' % (type(self), str(self.__dict__))
@@ -582,10 +589,10 @@ class User(GitlabObject):
                            'projects_limit', 'extern_uid', 'provider', 'bio',
                            'admin', 'can_create_group', 'website_url',
                            'confirm', 'external']
-    managers = [
+    managers = (
         ('emails', UserEmailManager, [('user_id', 'id')]),
         ('keys', UserKeyManager, [('user_id', 'id')])
-    ]
+    )
 
     def _data_for_gitlab(self, extra_parameters={}, update=False,
                          as_json=True):
@@ -690,11 +697,10 @@ class CurrentUser(GitlabObject):
     canUpdate = False
     canDelete = False
     shortPrintAttr = 'username'
-    managers = [
+    managers = (
         ('emails', CurrentUserEmailManager, [('user_id', 'id')]),
         ('keys', CurrentUserKeyManager, [('user_id', 'id')])
-    ]
-
+    )
 
 class ApplicationSettings(GitlabObject):
     _url = '/application/settings'
@@ -867,14 +873,14 @@ class Group(GitlabObject):
     optionalCreateAttrs = ['description', 'visibility_level']
     optionalUpdateAttrs = ['name', 'path', 'description', 'visibility_level']
     shortPrintAttr = 'name'
-    managers = [
+    managers = (
         ('accessrequests', GroupAccessRequestManager, [('group_id', 'id')]),
         ('members', GroupMemberManager, [('group_id', 'id')]),
         ('notificationsettings', GroupNotificationSettingsManager,
          [('group_id', 'id')]),
         ('projects', GroupProjectManager, [('group_id', 'id')]),
         ('issues', GroupIssueManager, [('group_id', 'id')])
-    ]
+    )
 
     GUEST_ACCESS = gitlab.GUEST_ACCESS
     REPORTER_ACCESS = gitlab.REPORTER_ACCESS
@@ -994,8 +1000,8 @@ class ProjectBoard(GitlabObject):
     canUpdate = False
     canCreate = False
     canDelete = False
-    managers = [('lists', ProjectBoardListManager,
-                 [('project_id', 'project_id'), ('board_id', 'id')])]
+    managers = (('lists', ProjectBoardListManager,
+                 [('project_id', 'project_id'), ('board_id', 'id')]))
 
 
 class ProjectBoardManager(BaseManager):
@@ -1168,10 +1174,12 @@ class ProjectCommit(GitlabObject):
     canCreate = False
     requiredUrlAttrs = ['project_id']
     shortPrintAttr = 'title'
-    managers = [('comments', ProjectCommitCommentManager,
-                 [('project_id', 'project_id'), ('commit_id', 'id')]),
-                ('statuses', ProjectCommitStatusManager,
-                 [('project_id', 'project_id'), ('commit_id', 'id')])]
+    managers = (
+        ('comments', ProjectCommitCommentManager,
+            [('project_id', 'project_id'), ('commit_id', 'id')]),
+        ('statuses', ProjectCommitStatusManager,
+            [('project_id', 'project_id'), ('commit_id', 'id')])
+    )
 
     def diff(self, **kwargs):
         """Generate the commit diff."""
@@ -1335,8 +1343,8 @@ class ProjectIssue(GitlabObject):
                            'milestone_id', 'labels', 'created_at',
                            'state_event']
     shortPrintAttr = 'title'
-    managers = [('notes', ProjectIssueNoteManager,
-                 [('project_id', 'project_id'), ('issue_id', 'id')])]
+    managers = (('notes', ProjectIssueNoteManager,
+                 [('project_id', 'project_id'), ('issue_id', 'id')]))
 
     def _data_for_gitlab(self, extra_parameters={}, update=False,
                          as_json=True):
@@ -1518,8 +1526,8 @@ class ProjectMergeRequest(GitlabObject):
                            'milestone_id']
     optionalListAttrs = ['iid', 'state', 'order_by', 'sort']
 
-    managers = [('notes', ProjectMergeRequestNoteManager,
-                 [('project_id', 'project_id'), ('merge_request_id', 'id')])]
+    managers = (('notes', ProjectMergeRequestNoteManager,
+                 [('project_id', 'project_id'), ('merge_request_id', 'id')]))
 
     def _data_for_gitlab(self, extra_parameters={}, update=False,
                          as_json=True):
@@ -1827,8 +1835,8 @@ class ProjectSnippet(GitlabObject):
     optionalCreateAttrs = ['lifetime', 'visibility_level']
     optionalUpdateAttrs = ['title', 'file_name', 'code', 'visibility_level']
     shortPrintAttr = 'title'
-    managers = [('notes', ProjectSnippetNoteManager,
-                 [('project_id', 'project_id'), ('snippet_id', 'id')])]
+    managers = (('notes', ProjectSnippetNoteManager,
+                 [('project_id', 'project_id'), ('snippet_id', 'id')]))
 
     def Content(self, **kwargs):
         warnings.warn("`Content` is deprecated, use `content` instead",
@@ -2021,7 +2029,7 @@ class Project(GitlabObject):
                            'public_builds',
                            'only_allow_merge_if_build_succeeds']
     shortPrintAttr = 'path'
-    managers = [
+    managers = (
         ('accessrequests', ProjectAccessRequestManager,
          [('project_id', 'id')]),
         ('boards', ProjectBoardManager, [('project_id', 'id')]),
@@ -2054,7 +2062,7 @@ class Project(GitlabObject):
         ('tags', ProjectTagManager, [('project_id', 'id')]),
         ('triggers', ProjectTriggerManager, [('project_id', 'id')]),
         ('variables', ProjectVariableManager, [('project_id', 'id')]),
-    ]
+    )
 
     VISIBILITY_PRIVATE = gitlab.VISIBILITY_PRIVATE
     VISIBILITY_INTERNAL = gitlab.VISIBILITY_INTERNAL
@@ -2531,10 +2539,10 @@ class Team(GitlabObject):
     shortPrintAttr = 'name'
     requiredCreateAttrs = ['name', 'path']
     canUpdate = False
-    managers = [
+    managers = (
         ('members', TeamMemberManager, [('team_id', 'id')]),
         ('projects', TeamProjectManager, [('team_id', 'id')])
-    ]
+    )
 
 
 class TeamManager(BaseManager):
