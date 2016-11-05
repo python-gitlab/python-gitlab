@@ -6,3 +6,4 @@ httmock
 jinja2
 mock
 sphinx>=1.3
+sphinx_rtd_theme

@@ -1,0 +1,25 @@
+.. method:: save(**kwargs)
+
+   Send the modified object to the GitLab server. The following attributes are
+   sent:
+
+{% if obj.requiredUpdateAttrs or obj.optionalUpdateAttrs %}
+   {% for a in obj.requiredUpdateAttrs %}
+   * ``{{ a }}`` (required)
+   {% endfor %}
+   {% for a in obj.optionalUpdateAttrs %}
+   * ``{{ a }}`` (optional)
+   {% endfor %}
+{% else %}
+   {% for a in obj.requiredCreateAttrs %}
+   * ``{{ a }}`` (required)
+   {% endfor %}
+   {% for a in obj.optionalCreateAttrs %}
+   * ``{{ a }}`` (optional)
+   {% endfor %}
+{% endif %}
+
+   Available keys for ``kwargs`` are:
+
+   * ``sudo`` (string or int): run the request as another user (requires admin
+     permissions)

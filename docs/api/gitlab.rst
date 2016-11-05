@@ -28,4 +28,9 @@ gitlab.objects module
     :show-inheritance:
     :exclude-members: Branch, Commit, Content, Event, File, Hook, Issue, Key,
                       Label, Member, MergeRequest, Milestone, Note, Snippet,
-                      Tag
+                      Tag, canGet, canList, canUpdate, canCreate, canDelete,
+                      requiredUrlAttrs, requiredListAttrs, optionalListAttrs,
+                      optionalGetAttrs, requiredGetAttrs, requiredDeleteAttrs,
+                      requiredCreateAttrs, optionalCreateAttrs,
+                      requiredUpdateAttrs, optionalUpdateAttrs, getRequiresId,
+                      shortPrintAttr, idAttr
