@@ -1257,7 +1257,8 @@ class ProjectKey(GitlabObject):
 
     def disable(self):
         """Disable a deploy key for a project."""
-        url = '/projects/%s/deploy_keys/%s/disable' % (self.project_id, self.id)
+        url = '/projects/%s/deploy_keys/%s/disable' % (self.project_id,
+                                                       self.id)
         r = self.gitlab._raw_delete(url)
         raise_error_from_response(r, GitlabProjectDeployKeyError, 200)
 
