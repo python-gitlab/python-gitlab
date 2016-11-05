@@ -702,6 +702,7 @@ class CurrentUser(GitlabObject):
         ('keys', CurrentUserKeyManager, [('user_id', 'id')])
     )
 
+
 class ApplicationSettings(GitlabObject):
     _url = '/application/settings'
     _id_in_update_url = False
