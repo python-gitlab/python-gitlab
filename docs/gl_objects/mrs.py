@@ -63,3 +63,11 @@ mr.unsubscribe()
 # todo
 mr.todo()
 # end todo
+
+# diff list
+diffs = mr.diffs.list()
+# end diff list
+
+# diff get
+diff = mr.diffs.get(diff_id)
+# end diff get

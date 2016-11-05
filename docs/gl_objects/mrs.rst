@@ -2,10 +2,12 @@
 Merge requests
 ##############
 
-Use :class:`~gitlab.objects.ProjectMergeRequest` objects to manipulate MRs for
-projects. The :attr:`gitlab.Gitlab.project_mergerequests` and
-:attr:`Project.mergerequests <gitlab.objects.Project.mergerequests>` manager
-objects provide helper functions.
+You can use merge requests to notify a project that a branch is ready for
+merging. The owner of the target projet can accept the merge request.
+
+* Object class: :class:`~gitlab.objects.ProjectMergeRequest`
+* Manager objects: :attr:`gitlab.Gitlab.project_mergerequests`,
+  :attr:`Project.mergerequests <gitlab.objects.Project.mergerequests>`
 
 Examples
 --------
@@ -89,3 +91,15 @@ Mark a MR as todo:
 .. literalinclude:: mrs.py
    :start-after: # todo
    :end-before: # end todo
+
+List the diffs for a merge request:
+
+.. literalinclude:: mrs.py
+   :start-after: # diff list
+   :end-before: # end diff list
+
+Get a diff for a merge request:
+
+.. literalinclude:: mrs.py
+   :start-after: # diff get
+   :end-before: # end diff get

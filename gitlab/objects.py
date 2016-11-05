@@ -1512,6 +1512,19 @@ class ProjectTagManager(BaseManager):
     obj_cls = ProjectTag
 
 
+class ProjectMergeRequestDiff(GitlabObject):
+    _url = ('/projects/%(project_id)s/merge_requests/'
+            '%(merge_request_id)s/versions')
+    canCreate = False
+    canUpdate = False
+    canDelete = False
+    requiredUrlAttrs = ['project_id', 'merge_request_id']
+
+
+class ProjectMergeRequestDiffManager(BaseManager):
+    obj_cls = ProjectMergeRequestDiff
+
+
 class ProjectMergeRequestNote(GitlabObject):
     _url = '/projects/%(project_id)s/merge_requests/%(merge_request_id)s/notes'
     _constructorTypes = {'author': 'User'}
@@ -1538,6 +1551,8 @@ class ProjectMergeRequest(GitlabObject):
 
     managers = (
         ('notes', ProjectMergeRequestNoteManager,
+            [('project_id', 'project_id'), ('merge_request_id', 'id')]),
+        ('diffs', ProjectMergeRequestDiffManager,
             [('project_id', 'project_id'), ('merge_request_id', 'id')]),
     )
 
