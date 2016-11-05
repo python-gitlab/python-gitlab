@@ -591,7 +591,7 @@ class User(GitlabObject):
                            'confirm', 'external']
     managers = (
         ('emails', UserEmailManager, [('user_id', 'id')]),
-        ('keys', UserKeyManager, [('user_id', 'id')])
+        ('keys', UserKeyManager, [('user_id', 'id')]),
     )
 
     def _data_for_gitlab(self, extra_parameters={}, update=False,
@@ -699,7 +699,7 @@ class CurrentUser(GitlabObject):
     shortPrintAttr = 'username'
     managers = (
         ('emails', CurrentUserEmailManager, [('user_id', 'id')]),
-        ('keys', CurrentUserKeyManager, [('user_id', 'id')])
+        ('keys', CurrentUserKeyManager, [('user_id', 'id')]),
     )
 
 
@@ -880,7 +880,7 @@ class Group(GitlabObject):
         ('notificationsettings', GroupNotificationSettingsManager,
          [('group_id', 'id')]),
         ('projects', GroupProjectManager, [('group_id', 'id')]),
-        ('issues', GroupIssueManager, [('group_id', 'id')])
+        ('issues', GroupIssueManager, [('group_id', 'id')]),
     )
 
     GUEST_ACCESS = gitlab.GUEST_ACCESS
@@ -1001,8 +1001,10 @@ class ProjectBoard(GitlabObject):
     canUpdate = False
     canCreate = False
     canDelete = False
-    managers = (('lists', ProjectBoardListManager,
-                 [('project_id', 'project_id'), ('board_id', 'id')]))
+    managers = (
+        ('lists', ProjectBoardListManager,
+            [('project_id', 'project_id'), ('board_id', 'id')]),
+    )
 
 
 class ProjectBoardManager(BaseManager):
@@ -1179,7 +1181,7 @@ class ProjectCommit(GitlabObject):
         ('comments', ProjectCommitCommentManager,
             [('project_id', 'project_id'), ('commit_id', 'id')]),
         ('statuses', ProjectCommitStatusManager,
-            [('project_id', 'project_id'), ('commit_id', 'id')])
+            [('project_id', 'project_id'), ('commit_id', 'id')]),
     )
 
     def diff(self, **kwargs):
@@ -1344,8 +1346,10 @@ class ProjectIssue(GitlabObject):
                            'milestone_id', 'labels', 'created_at',
                            'state_event']
     shortPrintAttr = 'title'
-    managers = (('notes', ProjectIssueNoteManager,
-                 [('project_id', 'project_id'), ('issue_id', 'id')]))
+    managers = (
+        ('notes', ProjectIssueNoteManager,
+            [('project_id', 'project_id'), ('issue_id', 'id')]),
+    )
 
     def _data_for_gitlab(self, extra_parameters={}, update=False,
                          as_json=True):
@@ -1527,8 +1531,10 @@ class ProjectMergeRequest(GitlabObject):
                            'milestone_id']
     optionalListAttrs = ['iid', 'state', 'order_by', 'sort']
 
-    managers = (('notes', ProjectMergeRequestNoteManager,
-                 [('project_id', 'project_id'), ('merge_request_id', 'id')]))
+    managers = (
+        ('notes', ProjectMergeRequestNoteManager,
+            [('project_id', 'project_id'), ('merge_request_id', 'id')]),
+    )
 
     def _data_for_gitlab(self, extra_parameters={}, update=False,
                          as_json=True):
@@ -1836,8 +1842,10 @@ class ProjectSnippet(GitlabObject):
     optionalCreateAttrs = ['lifetime', 'visibility_level']
     optionalUpdateAttrs = ['title', 'file_name', 'code', 'visibility_level']
     shortPrintAttr = 'title'
-    managers = (('notes', ProjectSnippetNoteManager,
-                 [('project_id', 'project_id'), ('snippet_id', 'id')]))
+    managers = (
+        ('notes', ProjectSnippetNoteManager,
+            [('project_id', 'project_id'), ('snippet_id', 'id')]),
+    )
 
     def Content(self, **kwargs):
         warnings.warn("`Content` is deprecated, use `content` instead",
@@ -2542,7 +2550,7 @@ class Team(GitlabObject):
     canUpdate = False
     managers = (
         ('members', TeamMemberManager, [('team_id', 'id')]),
-        ('projects', TeamProjectManager, [('team_id', 'id')])
+        ('projects', TeamProjectManager, [('team_id', 'id')]),
     )
 
 
