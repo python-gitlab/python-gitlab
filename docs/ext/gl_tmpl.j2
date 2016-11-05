@@ -1,0 +1,5 @@
+{% for attr, mgr in mgrs %}
+.. attribute:: {{ attr }}
+
+   {{ mgr.__class__ | classref() }} manager for {{ mgr.obj_cls | classref() }} objects.
+{% endfor %}
