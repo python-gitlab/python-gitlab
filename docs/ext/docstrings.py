@@ -33,27 +33,12 @@ def _process_docstring(app, what, name, obj, options, lines):
 
 
 class GitlabDocstring(GoogleDocstring):
-    _j2_env = None
-
-    def _build_j2_env(self):
-        if self._j2_env is None:
-            self._j2_env = jinja2.Environment(loader=jinja2.FileSystemLoader(
-                os.path.dirname(__file__)), trim_blocks=False)
-            self._j2_env.filters['classref'] = classref
-
-        return self._j2_env
-
-    def _build_manager_doc(self):
-        env = self._build_j2_env()
-        template = env.get_template('manager_tmpl.j2')
-        output = template.render(cls=self._obj.obj_cls)
-
-        return output.split('\n')
-
-    def _build_object_doc(self):
-        env = self._build_j2_env()
-        template = env.get_template('object_tmpl.j2')
-        output = template.render(obj=self._obj)
+    def _build_doc(self, tmpl, **kwargs):
+        env = jinja2.Environment(loader=jinja2.FileSystemLoader(
+            os.path.dirname(__file__)), trim_blocks=False)
+        env.filters['classref'] = classref
+        template = env.get_template(tmpl)
+        output = template.render(**kwargs)
 
         return output.split('\n')
 
@@ -61,6 +46,8 @@ class GitlabDocstring(GoogleDocstring):
         super(GitlabDocstring, self).__init__(*args, **kwargs)
 
         if hasattr(self._obj, 'obj_cls') and self._obj.obj_cls is not None:
-            self._parsed_lines = self._build_manager_doc()
+            self._parsed_lines = self._build_doc('manager_tmpl.j2',
+                                                 cls=self._obj.obj_cls)
         elif hasattr(self._obj, 'canUpdate') and self._obj.canUpdate:
-            self._parsed_lines = self._build_object_doc()
+            self._parsed_lines = self._build_doc('object_tmpl.j2',
+                                                 obj=self._obj)
