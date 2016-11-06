@@ -16,7 +16,6 @@ API objects manipulation
    gl_objects/groups
    gl_objects/issues
    gl_objects/labels
-   gl_objects/licenses
    gl_objects/notifications
    gl_objects/mrs
    gl_objects/namespaces
@@ -25,6 +24,7 @@ API objects manipulation
    gl_objects/runners
    gl_objects/settings
    gl_objects/system_hooks
+   gl_objects/templates
    gl_objects/todos
    gl_objects/users
    gl_objects/sidekiq

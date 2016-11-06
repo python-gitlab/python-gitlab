@@ -811,6 +811,30 @@ class NotificationSettingsManager(BaseManager):
     obj_cls = NotificationSettings
 
 
+class Gitignore(GitlabObject):
+    _url = '/templates/gitignores'
+    canDelete = False
+    canUpdate = False
+    canCreate = False
+    idAttr = 'name'
+
+
+class GitignoreManager(BaseManager):
+    obj_cls = Gitignore
+
+
+class Gitlabciyml(GitlabObject):
+    _url = '/templates/gitlab_ci_ymls'
+    canDelete = False
+    canUpdate = False
+    canCreate = False
+    idAttr = 'name'
+
+
+class GitlabciymlManager(BaseManager):
+    obj_cls = Gitlabciyml
+
+
 class GroupIssue(GitlabObject):
     _url = '/groups/%(group_id)s/issues'
     canGet = 'from_list'
