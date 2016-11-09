@@ -1376,6 +1376,7 @@ class ProjectIssueNote(GitlabObject):
     canDelete = False
     requiredUrlAttrs = ['project_id', 'issue_id']
     requiredCreateAttrs = ['body']
+    optionalCreateAttrs = ['created_at']
 
 
 class ProjectIssueNoteManager(BaseManager):
