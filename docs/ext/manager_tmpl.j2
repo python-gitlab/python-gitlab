@@ -62,6 +62,9 @@ Manager for {{ cls | classref() }} objects.
    {% for a in cls.requiredUrlAttrs %}
    * ``{{ a }}`` (required if not discovered on the parent objects)
    {% endfor %}
+   {% for a in cls.requiredCreateAttrs %}
+   * ``{{ a }}`` (optional)
+   {% endfor %}
    {% for a in cls.optionalCreateAttrs %}
    * ``{{ a }}`` (optional)
    {% endfor %}
