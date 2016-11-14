@@ -63,7 +63,7 @@ Manager for {{ cls | classref() }} objects.
    * ``{{ a }}`` (required if not discovered on the parent objects)
    {% endfor %}
    {% for a in cls.requiredCreateAttrs %}
-   * ``{{ a }}`` (optional)
+   * ``{{ a }}`` (required)
    {% endfor %}
    {% for a in cls.optionalCreateAttrs %}
    * ``{{ a }}`` (optional)
