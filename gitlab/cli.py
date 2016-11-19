@@ -58,7 +58,7 @@ EXTRA_ACTIONS = {
     gitlab.ProjectMilestone: {'issues': {'required': ['id', 'project-id']}},
     gitlab.Project: {'search': {'required': ['query']},
                      'owned': {},
-                     'all': {},
+                     'all': {'optional': [('all', bool)]},
                      'starred': {},
                      'star': {'required': ['id']},
                      'unstar': {'required': ['id']},
@@ -181,7 +181,7 @@ class GitlabCLI(object):
 
     def do_project_all(self, cls, gl, what, args):
         try:
-            return gl.projects.all()
+            return gl.projects.all(all=args['all'])
         except Exception as e:
             _die("Impossible to list all projects", e)
 
@@ -430,12 +430,21 @@ def _populate_sub_parser_by_class(cls, sub_parser):
              for x in attrs]
 
     if cls in EXTRA_ACTIONS:
+        def _add_arg(parser, required, data):
+            extra_args = {}
+            if isinstance(data, tuple):
+                if data[1] is bool:
+                    extra_args = {'action': 'store_true'}
+                data = data[0]
+
+            parser.add_argument("--%s" % data, required=required, **extra_args)
+
         for action_name in sorted(EXTRA_ACTIONS[cls]):
             sub_parser_action = sub_parser.add_parser(action_name)
             d = EXTRA_ACTIONS[cls][action_name]
-            [sub_parser_action.add_argument("--%s" % arg, required=True)
+            [_add_arg(sub_parser_action, True, arg)
              for arg in d.get('required', [])]
-            [sub_parser_action.add_argument("--%s" % arg, required=False)
+            [_add_arg(sub_parser_action, False, arg)
              for arg in d.get('optional', [])]
 
 
