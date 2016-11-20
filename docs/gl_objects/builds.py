@@ -110,3 +110,9 @@ build.erase()
 # play
 build.play()
 # end play
+
+# trigger run
+p = gl.projects.get(project_id)
+p.trigger_build('master', trigger_token,
+                {'extra_var1': 'foo', 'extra_var2': 'bar'})
+# end trigger run

@@ -5,10 +5,12 @@ Builds
 Build triggers
 ==============
 
-Use :class:`~gitlab.objects.ProjectTrigger` objects to manipulate build
-triggers. The :attr:`gitlab.Gitlab.project_triggers` and
-:attr:`gitlab.objects.Project.triggers` manager objects provide helper
-functions.
+Build triggers provide a way to interact with the GitLab CI. Using a trigger a
+user or an application can run a new build for a specific commit.
+
+* Object class: :class:`~gitlab.objects.ProjectTrigger`
+* Manager objects: :attr:`gitlab.Gitlab.project_triggers`,
+  :attr:`Project.triggers <gitlab.objects.Project.triggers>`
 
 Examples
 --------
@@ -40,10 +42,11 @@ Remove a trigger:
 Build variables
 ===============
 
-Use :class:`~gitlab.objects.ProjectVariable` objects to manipulate build
-variables. The :attr:`gitlab.Gitlab.project_variables` and
-:attr:`gitlab.objects.Project.variables` manager objects provide helper
-functions.
+You can associate variables to builds to modify the build script behavior.
+
+* Object class: :class:`~gitlab.objects.ProjectVariable`
+* Manager objects: :attr:`gitlab.Gitlab.project_variables`,
+  :attr:`gitlab.objects.Project.variables`
 
 Examples
 --------
@@ -81,12 +84,24 @@ Remove a variable:
 Builds
 ======
 
-Use :class:`~gitlab.objects.ProjectBuild` objects to manipulate builds. The
-:attr:`gitlab.Gitlab.project_builds` and :attr:`gitlab.objects.Project.builds`
-manager objects provide helper functions.
+Builds are associated to projects and commits. They provide information on the
+build that have been run, and methods to manipulate those builds.
+
+* Object class: :class:`~gitlab.objects.ProjectBuild`
+* Manager objects: :attr:`gitlab.Gitlab.project_builds`,
+  :attr:`gitlab.objects.Project.builds`
 
 Examples
 --------
+
+Build are usually automatically triggered, but you can explicitly trigger a
+new build:
+
+Trigger a new build on a project:
+
+.. literalinclude:: builds.py
+   :start-after: # trigger run
+   :end-before: # end trigger run
 
 List builds for the project:
 

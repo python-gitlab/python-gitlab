@@ -2386,6 +2386,27 @@ class Project(GitlabObject):
         r = self.gitlab._raw_post(url, data=data, **kwargs)
         raise_error_from_response(r, GitlabCreateError, 201)
 
+    def trigger_build(self, ref, token, variables={}, **kwargs):
+        """Trigger a CI build.
+
+        See https://gitlab.com/help/ci/triggers/README.md#trigger-a-build
+
+        Args:
+            ref (str): Commit to build; can be a commit SHA, a branch name, ...
+            token (str): The trigger token
+            variables (dict): Variables passed to the build script
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabCreateError: If the server fails to perform the request.
+        """
+        url = "/projects/%s/trigger/builds" % self.id
+        form = {r'variables[%s]' % k: v for k, v in six.iteritems(variables)}
+        data = {'ref': ref, 'token': token}
+        data.update(form)
+        r = self.gitlab._raw_post(url, data=data, **kwargs)
+        raise_error_from_response(r, GitlabCreateError, 201)
+
 
 class Runner(GitlabObject):
     _url = '/runners'
