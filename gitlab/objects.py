@@ -1732,9 +1732,9 @@ class ProjectMergeRequest(GitlabObject):
         if merge_commit_message:
             data['merge_commit_message'] = merge_commit_message
         if should_remove_source_branch:
-            data['should_remove_source_branch'] = 'should_remove_source_branch'
+            data['should_remove_source_branch'] = True
         if merged_when_build_succeeds:
-            data['merged_when_build_succeeds'] = 'merged_when_build_succeeds'
+            data['merged_when_build_succeeds'] = True
 
         r = self.gitlab._raw_put(url, data=data, **kwargs)
         errors = {401: GitlabMRForbiddenError,
