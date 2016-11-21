@@ -168,9 +168,12 @@ class Gitlab(object):
     def credentials_auth(self):
         """Performs an authentication using email/password."""
         if not self.email or not self.password:
-            raise GitlabAuthenticationError("Missing email/password")
+            # raise GitlabAuthenticationError("Missing email/password")
+            data = json.dumps({'email':self.http_username,
+                'password':self.http_password})
+        else:
+            data = json.dumps({'email': self.email, 'password': self.password})
 
-        data = json.dumps({'email': self.email, 'password': self.password})
         r = self._raw_post('/session', data, content_type='application/json')
         raise_error_from_response(r, GitlabAuthenticationError, 201)
         self.user = CurrentUser(self, r.json())
