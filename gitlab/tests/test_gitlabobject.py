@@ -455,3 +455,37 @@ class TestProjectSnippet(unittest.TestCase):
     def test_blob_fail(self):
         with HTTMock(self.resp_content_fail):
             self.assertRaises(GitlabGetError, self.obj.content)
+
+
+class TestSnippet(unittest.TestCase):
+    def setUp(self):
+        self.gl = Gitlab("http://localhost", private_token="private_token",
+                         email="testuser@test.com", password="testpassword",
+                         ssl_verify=True)
+        self.obj = Snippet(self.gl, data={"id": 3})
+
+    @urlmatch(scheme="http", netloc="localhost",
+              path="/api/v3/snippets/3/raw",
+              method="get")
+    def resp_content(self, url, request):
+        headers = {'content-type': 'application/json'}
+        content = 'content'.encode("utf-8")
+        return response(200, content, headers, None, 5, request)
+
+    @urlmatch(scheme="http", netloc="localhost",
+              path="/api/v3/snippets/3/raw",
+              method="get")
+    def resp_content_fail(self, url, request):
+        headers = {'content-type': 'application/json'}
+        content = '{"message": "messagecontent" }'.encode("utf-8")
+        return response(400, content, headers, None, 5, request)
+
+    def test_content(self):
+        with HTTMock(self.resp_content):
+            data = b'content'
+            content = self.obj.content()
+            self.assertEqual(content, data)
+
+    def test_blob_fail(self):
+        with HTTMock(self.resp_content_fail):
+            self.assertRaises(GitlabGetError, self.obj.content)

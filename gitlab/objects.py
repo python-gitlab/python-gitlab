@@ -1018,6 +1018,67 @@ class LicenseManager(BaseManager):
     obj_cls = License
 
 
+class Snippet(GitlabObject):
+    _url = '/snippets'
+    _constructorTypes = {'author': 'User'}
+    requiredCreateAttrs = ['title', 'file_name', 'content']
+    optionalCreateAttrs = ['lifetime', 'visibility_level']
+    optionalUpdateAttrs = ['title', 'file_name', 'content', 'visibility_level']
+    shortPrintAttr = 'title'
+
+    def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+        """Return the raw content of a snippet.
+
+        Args:
+            streamed (bool): If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment.
+            action (callable): Callable responsible of dealing with chunk of
+                data.
+            chunk_size (int): Size of each chunk.
+
+        Returns:
+            str: The snippet content
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
+        """
+        url = ("/snippets/%(snippet_id)s/raw" %
+               {'snippet_id': self.id})
+        r = self.gitlab._raw_get(url, **kwargs)
+        raise_error_from_response(r, GitlabGetError)
+        return utils.response_content(r, streamed, action, chunk_size)
+
+
+class SnippetManager(BaseManager):
+    obj_cls = Snippet
+
+    def all(self, **kwargs):
+        """List all the snippets
+
+        Args:
+            all (bool): If True, return all the items, without pagination
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            list(gitlab.Gitlab.Snippet): The list of snippets.
+        """
+        return self.gitlab._raw_list("/snippets/public", Snippet, **kwargs)
+
+    def owned(self, **kwargs):
+        """List owned snippets.
+
+        Args:
+            all (bool): If True, return all the items, without pagination
+            **kwargs: Additional arguments to send to GitLab.
+
+        Returns:
+            list(gitlab.Gitlab.Snippet): The list of owned snippets.
+        """
+        return self.gitlab._raw_list("/snippets", Snippet, **kwargs)
+
+
 class Namespace(GitlabObject):
     _url = '/namespaces'
     canGet = 'from_list'
