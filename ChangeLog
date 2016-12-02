@@ -1,3 +1,37 @@
+Version 0.17
+
+ * README: add badges for pypi and RTD
+ * Fix ProjectBuild.play (raised error on success)
+ * Pass kwargs to the object factory
+ * Add .tox to ignore to respect default tox settings
+ * Convert response list to single data source for iid requests
+ * Add support for boards API
+ * Add support for Gitlab.version()
+ * Add support for broadcast messages API
+ * Add support for the notification settings API
+ * Don't overwrite attributes returned by the server
+ * Fix bug when retrieving changes for merge request
+ * Feature: enable / disable the deploy key in a project
+ * Docs: add a note for python 3.5 for file content update
+ * ProjectHook: support the token attribute
+ * Rework the API documentation
+ * Fix docstring for http_{username,password}
+ * Build managers on demand on GitlabObject's
+ * API docs: add managers doc in GitlabObject's
+ * Sphinx ext: factorize the build methods
+ * Implement __repr__ for gitlab objects
+ * Add a 'report a bug' link on doc
+ * Remove deprecated methods
+ * Implement merge requests diff support
+ * Make the manager objects creation more dynamic
+ * Add support for templates API
+ * Add attr 'created_at' to ProjectIssueNote
+ * Add attr 'updated_at' to ProjectIssue
+ * CLI: add support for project all --all
+ * Add support for triggering a new build
+ * Rework requests arguments (support latest requests release)
+ * Fix `should_remove_source_branch`
+
 Version 0.16
 
  * Add the ability to fork to a specific namespace
