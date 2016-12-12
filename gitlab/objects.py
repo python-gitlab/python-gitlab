@@ -1992,8 +1992,16 @@ class ProjectService(GitlabObject):
                                   'server')),
         'irker': (('recipients', ), ('default_irc_uri', 'server_port',
                                      'server_host', 'colorize_messages')),
-        'jira': (('new_issue_url', 'project_url', 'issues_url'),
-                 ('api_url', 'description', 'username', 'password')),
+        'jira': (tuple(), (
+                 # Required fields in GitLab >= 8.14
+                 'url', 'project_key',
+
+                 # Required fields in GitLab < 8.14
+                 'new_issue_url', 'project_url', 'issues_url', 'api_url',
+                 'description',
+
+                 # Optional fields
+                 'username', 'password', 'jira_issue_transition_id')),
         'pivotaltracker': (('token', ), tuple()),
         'pushover': (('api_key', 'user_key', 'priority'), ('device', 'sound')),
         'redmine': (('new_issue_url', 'project_url', 'issues_url'),
