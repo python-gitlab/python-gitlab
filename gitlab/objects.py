@@ -2001,7 +2001,7 @@ class ProjectService(GitlabObject):
                  'description',
 
                  # Optional fields
-                 'username', 'password')),
+                 'username', 'password', 'jira_issue_transition_id')),
         'pivotaltracker': (('token', ), tuple()),
         'pushover': (('api_key', 'user_key', 'priority'), ('device', 'sound')),
         'redmine': (('new_issue_url', 'project_url', 'issues_url'),
