@@ -80,7 +80,7 @@ build.artifacts()
 # stream artifacts
 class Foo(object):
     def __init__(self):
-        self._fd = open('artifacts.zip', 'w')
+        self._fd = open('artifacts.zip', 'wb')
 
     def __call__(self, chunk):
         self._fd.write(chunk)
