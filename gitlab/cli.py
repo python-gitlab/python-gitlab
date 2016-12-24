@@ -511,8 +511,11 @@ def main():
     what = arg.what
 
     # Remove CLI behavior-related args
-    for item in ("gitlab", "config_file", "verbose", "what", "action"):
+    for item in ("gitlab", "config_file", "verbose", "what", "action",
+                 "version"):
         args.pop(item)
+
+    args = {k: v for k, v in args.items() if v is not None}
 
     cls = None
     try:
