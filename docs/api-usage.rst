@@ -111,7 +111,12 @@ listing methods support the ``page`` and ``per_page`` parameters:
 
 .. code-block:: python
 
-   ten_first_groups = gl.groups.list(page=0, per_page=10)
+   ten_first_groups = gl.groups.list(page=1, per_page=10)
+
+.. note::
+
+   The first page is page 1, not page 0.
+
 
 By default GitLab does not return the complete list of items.  Use the ``all``
 parameter to get all the items when using listing methods:
