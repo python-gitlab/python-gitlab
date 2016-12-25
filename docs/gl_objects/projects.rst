@@ -216,6 +216,8 @@ Delete a tag:
    :start-after: # tags delete
    :end-before: # end tags delete
 
+.. _project_snippets:
+
 Snippets
 --------
 
