@@ -103,6 +103,7 @@ class Gitlab(object):
         self.runners = RunnerManager(self)
         self.settings = ApplicationSettingsManager(self)
         self.sidekiq = SidekiqManager(self)
+        self.snippets = SnippetManager(self)
         self.users = UserManager(self)
         self.teams = TeamManager(self)
         self.todos = TodoManager(self)
@@ -469,7 +470,8 @@ class Gitlab(object):
             params.pop(obj.idAttr)
 
         r = self._raw_delete(url, **params)
-        raise_error_from_response(r, GitlabDeleteError)
+        raise_error_from_response(r, GitlabDeleteError,
+                                  expected_code=[200, 204])
         return True
 
     def create(self, obj, **kwargs):
