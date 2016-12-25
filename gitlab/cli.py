@@ -181,7 +181,7 @@ class GitlabCLI(object):
 
     def do_project_all(self, cls, gl, what, args):
         try:
-            return gl.projects.all(all=args['all'])
+            return gl.projects.all(all=args.get('all', False))
         except Exception as e:
             _die("Impossible to list all projects", e)
 
@@ -333,10 +333,10 @@ class GitlabCLI(object):
     def do_project_merge_request_merge(self, cls, gl, what, args):
         try:
             o = self.do_get(cls, gl, what, args)
-            should_remove = args['should_remove_source_branch']
-            build_succeeds = args['merged_when_build_succeeds']
+            should_remove = args.get('should_remove_source_branch', False)
+            build_succeeds = args.get('merged_when_build_succeeds', False)
             return o.merge(
-                merge_commit_message=args['merge_commit_message'],
+                merge_commit_message=args.get('merge_commit_message', ''),
                 should_remove_source_branch=should_remove,
                 merged_when_build_succeeds=build_succeeds)
         except Exception as e:
