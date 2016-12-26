@@ -2,6 +2,10 @@
 snippets = gl.snippets.list()
 # end list
 
+# public list
+public_snippets = gl.snippets.public()
+# nd public list
+
 # get
 snippet = gl.snippets.get(snippet_id)
 # get the content

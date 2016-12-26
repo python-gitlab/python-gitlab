@@ -1054,8 +1054,8 @@ class Snippet(GitlabObject):
 class SnippetManager(BaseManager):
     obj_cls = Snippet
 
-    def all(self, **kwargs):
-        """List all the snippets
+    def public(self, **kwargs):
+        """List all the public snippets.
 
         Args:
             all (bool): If True, return all the items, without pagination
@@ -1065,18 +1065,6 @@ class SnippetManager(BaseManager):
             list(gitlab.Gitlab.Snippet): The list of snippets.
         """
         return self.gitlab._raw_list("/snippets/public", Snippet, **kwargs)
-
-    def owned(self, **kwargs):
-        """List owned snippets.
-
-        Args:
-            all (bool): If True, return all the items, without pagination
-            **kwargs: Additional arguments to send to GitLab.
-
-        Returns:
-            list(gitlab.Gitlab.Snippet): The list of owned snippets.
-        """
-        return self.gitlab._raw_list("/snippets", Snippet, **kwargs)
 
 
 class Namespace(GitlabObject):

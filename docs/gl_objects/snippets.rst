@@ -11,11 +11,17 @@ You can store code snippets in Gitlab. Snippets can be attached to projects
 Examples
 ========
 
-List snippets:
+List snippets woned by the current user:
 
 .. literalinclude:: snippets.py
    :start-after: # list
    :end-before: # end list
+
+List the public snippets:
+
+.. literalinclude:: snippets.py
+   :start-after: # public list
+   :end-before: # end public list
 
 Get a snippet:
 
