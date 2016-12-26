@@ -9,7 +9,7 @@ public_snippets = gl.snippets.public()
 # get
 snippet = gl.snippets.get(snippet_id)
 # get the content
-content = snippet.content()
+content = snippet.raw()
 # end get
 
 # create
@@ -19,7 +19,7 @@ snippet = gl.snippets.create({'title': 'snippet1',
 # end create
 
 # update
-snippet.visibility_level = gitlab.VISIBILITY_PUBLIC
+snippet.visibility_level = gitlab.Project.VISIBILITY_PUBLIC
 snippet.save()
 # end update
 

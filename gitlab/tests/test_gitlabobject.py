@@ -483,9 +483,9 @@ class TestSnippet(unittest.TestCase):
     def test_content(self):
         with HTTMock(self.resp_content):
             data = b'content'
-            content = self.obj.content()
+            content = self.obj.raw()
             self.assertEqual(content, data)
 
     def test_blob_fail(self):
         with HTTMock(self.resp_content_fail):
-            self.assertRaises(GitlabGetError, self.obj.content)
+            self.assertRaises(GitlabGetError, self.obj.raw)

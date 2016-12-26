@@ -1026,7 +1026,7 @@ class Snippet(GitlabObject):
     optionalUpdateAttrs = ['title', 'file_name', 'content', 'visibility_level']
     shortPrintAttr = 'title'
 
-    def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+    def raw(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Return the raw content of a snippet.
 
         Args:
@@ -1038,14 +1038,13 @@ class Snippet(GitlabObject):
             chunk_size (int): Size of each chunk.
 
         Returns:
-            str: The snippet content
+            str: The snippet content.
 
         Raises:
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the server fails to perform the request.
         """
-        url = ("/snippets/%(snippet_id)s/raw" %
-               {'snippet_id': self.id})
+        url = ("/snippets/%(snippet_id)s/raw" % {'snippet_id': self.id})
         r = self.gitlab._raw_get(url, **kwargs)
         raise_error_from_response(r, GitlabGetError)
         return utils.response_content(r, streamed, action, chunk_size)
