@@ -289,3 +289,18 @@ settings.level = gitlab.NOTIFICATION_LEVEL_WATCH
 settings.save()
 settings = gl.notificationsettings.get()
 assert(settings.level == gitlab.NOTIFICATION_LEVEL_WATCH)
+
+# snippets
+snippets = gl.snippets.list()
+assert(len(snippets) == 0)
+snippet = gl.snippets.create({'title': 'snippet1', 'file_name': 'snippet1.py',
+                              'content': 'import gitlab'})
+snippet = gl.snippets.get(1)
+snippet.title = 'updated_title'
+snippet.save()
+snippet = gl.snippets.get(1)
+assert(snippet.title == 'updated_title')
+content = snippet.raw()
+assert(content == 'import gitlab')
+snippet.delete()
+assert(len(gl.snippets.list()) == 0)
