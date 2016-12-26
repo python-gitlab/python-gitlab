@@ -57,9 +57,6 @@ Manager for {{ cls | classref() }} objects.
    ``data`` is a dict defining the object attributes. Available attributes are:
 
    {% for a in cls.requiredUrlAttrs %}
-   * ``{{ a }}`` (required)
-   {% endfor %}
-   {% for a in cls.requiredUrlAttrs %}
    * ``{{ a }}`` (required if not discovered on the parent objects)
    {% endfor %}
    {% for a in cls.requiredCreateAttrs %}
