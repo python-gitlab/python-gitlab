@@ -2139,21 +2139,24 @@ class Project(GitlabObject):
     _url = '/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
     requiredCreateAttrs = ['name']
-    optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
-                           'merge_requests_enabled', 'wiki_enabled',
+    optionalCreateAttrs = ['path', 'namespace_id', 'description',
+                           'issues_enabled', 'merge_requests_enabled',
+                           'builds_enabled', 'wiki_enabled',
                            'snippets_enabled', 'container_registry_enabled',
-                           'public', 'visibility_level', 'namespace_id',
-                           'description', 'path', 'import_url',
-                           'builds_enabled', 'public_builds',
-                           'only_allow_merge_if_build_succeeds']
-    optionalUpdateAttrs = ['name', 'default_branch', 'issues_enabled',
-                           'wall_enabled', 'merge_requests_enabled',
-                           'wiki_enabled', 'snippets_enabled',
-                           'container_registry_enabled', 'public',
-                           'visibility_level', 'namespace_id', 'description',
-                           'path', 'import_url', 'builds_enabled',
-                           'public_builds',
-                           'only_allow_merge_if_build_succeeds']
+                           'shared_runners_enabled', 'public',
+                           'visibility_level', 'import_url', 'public_builds',
+                           'only_allow_merge_if_build_succeeds',
+                           'only_allow_merge_if_all_discussions_are_resolved',
+                           'lfs_enabled', 'request_access_enabled']
+    optionalUpdateAttrs = ['name', 'path', 'default_branch', 'description',
+                           'issues_enabled', 'merge_requests_enabled',
+                           'builds_enabled', 'wiki_enabled',
+                           'snippets_enabled', 'container_registry_enabled',
+                           'shared_runners_enabled', 'public',
+                           'visibility_level', 'import_url', 'public_builds',
+                           'only_allow_merge_if_build_succeeds',
+                           'only_allow_merge_if_all_discussions_are_resolved',
+                           'lfs_enabled', 'request_access_enabled']
     shortPrintAttr = 'path'
     managers = (
         ('accessrequests', ProjectAccessRequestManager,
