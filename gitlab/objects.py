@@ -222,6 +222,8 @@ class GitlabObject(object):
                 value = getattr(self, attribute)
                 if isinstance(value, list):
                     value = ",".join(value)
+                if attribute == 'sudo':
+                    value = str(value)
                 data[attribute] = value
 
         data.update(extra_parameters)
