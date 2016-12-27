@@ -1,3 +1,17 @@
+Version 0.18
+
+ * Fix JIRA service editing for GitLab 8.14+
+ * Add jira_issue_transition_id to the JIRA service optional fields
+ * Added support for Snippets (new API in Gitlab 8.15)
+ * [docs] update pagination section
+ * [docs] artifacts example: open file in wb mode
+ * [CLI] ignore empty arguments
+ * [CLI] Fix wrong use of arguments
+ * [docs] Add doc for snippets
+ * Fix duplicated data in API docs
+ * Update known attributes for projects
+ * sudo: always use strings
+
 Version 0.17
 
  * README: add badges for pypi and RTD
