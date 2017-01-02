@@ -736,6 +736,7 @@ class CurrentUser(GitlabObject):
 class ApplicationSettings(GitlabObject):
     _url = '/application/settings'
     _id_in_update_url = False
+    getRequiresId = False
     optionalUpdateAttrs = ['after_sign_out_path',
                            'container_registry_token_expire_delay',
                            'default_branch_protection',
@@ -794,6 +795,7 @@ class KeyManager(BaseManager):
 class NotificationSettings(GitlabObject):
     _url = '/notification_settings'
     _id_in_update_url = False
+    getRequiresId = False
     optionalUpdateAttrs = ['level',
                            'notification_email',
                            'new_note',
@@ -2022,6 +2024,7 @@ class ProjectService(GitlabObject):
     canCreate = False
     _id_in_update_url = False
     _id_in_delete_url = False
+    getRequiresId = False
     requiredUrlAttrs = ['project_id', 'service_name']
 
     _service_attrs = {

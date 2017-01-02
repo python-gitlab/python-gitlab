@@ -290,6 +290,14 @@ settings.save()
 settings = gl.notificationsettings.get()
 assert(settings.level == gitlab.NOTIFICATION_LEVEL_WATCH)
 
+# services
+service = admin_project.services.get(service_name='asana')
+service.active = True
+service.api_key = 'whatever'
+service.save()
+service = admin_project.services.get(service_name='asana')
+assert(service.active == True)
+
 # snippets
 snippets = gl.snippets.list()
 assert(len(snippets) == 0)
