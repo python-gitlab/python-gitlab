@@ -99,6 +99,8 @@ class BaseManager(object):
         args = self._set_parent_args(**kwargs)
         if not self.obj_cls.canGet:
             raise NotImplementedError
+        if id is None and self.obj_cls.getRequiresId is True:
+            raise ValueError('The id argument must be defined.')
         return self.obj_cls.get(self.gitlab, id, **args)
 
     def list(self, **kwargs):
