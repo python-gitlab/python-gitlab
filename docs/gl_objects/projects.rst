@@ -94,9 +94,8 @@ Archive/unarchive a project:
 
 .. note::
 
-   The underscore character at the end of the methods is used to workaround a
-   conflict with a previous misuse of the ``archive`` method (deprecated but
-   not yet removed).
+   Previous versions used ``archive_`` and ``unarchive_`` due to a naming issue,
+   they have been deprecated but not yet removed.
 
 Repository
 ----------
