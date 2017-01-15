@@ -67,8 +67,8 @@ project.unstar()
 # end star
 
 # archive
-project.archive_()
-project.unarchive_()
+project.archive()
+project.unarchive()
 # end archive
 
 # events list
