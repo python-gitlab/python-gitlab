@@ -223,7 +223,8 @@ class GitlabObject(object):
             if hasattr(self, attribute):
                 value = getattr(self, attribute)
                 if isinstance(value, list):
-                    value = ",".join(value)
+                    if value and isinstance(value[0], six.string_types):
+                        value = ",".join(value)
                 if attribute == 'sudo':
                     value = str(value)
                 data[attribute] = value
@@ -1278,8 +1279,9 @@ class ProjectCommit(GitlabObject):
     _url = '/projects/%(project_id)s/repository/commits'
     canDelete = False
     canUpdate = False
-    canCreate = False
     requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['branch_name', 'commit_message', 'actions']
+    optionalCreateAttrs = ['author_email', 'author_name']
     shortPrintAttr = 'title'
     managers = (
         ('comments', ProjectCommitCommentManager,

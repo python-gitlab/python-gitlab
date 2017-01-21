@@ -9,6 +9,26 @@ commits = project.commits.list(ref_name='my_branch')
 commits = project.commits.list(since='2016-01-01T00:00:00Z')
 # end filter list
 
+# create
+# See https://docs.gitlab.com/ce/api/commits.html#create-a-commit-with-multiple-files-and-actions
+# for actions detail
+data = {
+    'branch_name': 'master',
+    'commit_message': 'blah blah blah',
+    'actions': [
+        {
+            'action': 'create',
+            'file_path': 'blah',
+            'content': 'blah'
+        }
+    ]
+}
+
+commit = gl.project_commits.create(data, project_id=1)
+# or
+commit = project.commits.create(data)
+# end commit
+
 # get
 commit = gl.project_commits.get('e3d5a71b', project_id=1)
 # or

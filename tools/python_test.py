@@ -161,8 +161,21 @@ admin_project.files.create({'file_path': 'README.rst',
 readme = admin_project.files.get(file_path='README.rst', ref='master')
 assert(readme.decode() == 'Initial content')
 
+data = {
+    'branch_name': 'master',
+    'commit_message': 'blah blah blah',
+    'actions': [
+        {
+            'action': 'create',
+            'file_path': 'blah',
+            'content': 'blah'
+        }
+    ]
+}
+admin_project.commits.create(data)
+
 tree = admin_project.repository_tree()
-assert(len(tree) == 1)
+assert(len(tree) == 2)
 assert(tree[0]['name'] == 'README.rst')
 blob = admin_project.repository_blob('master', 'README.rst')
 assert(blob == 'Initial content')

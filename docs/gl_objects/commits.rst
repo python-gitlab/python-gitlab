@@ -5,10 +5,9 @@ Commits
 Commits
 =======
 
-Use :class:`~gitlab.objects.ProjectCommit` objects to manipulate commits. The
-:attr:`gitlab.Gitlab.project_commits` and
-:attr:`gitlab.objects.Project.commits` manager objects provide helper
-functions.
+* Object class: :class:`~gitlab.objects.ProjectCommit`
+* Manager objects: :attr:`gitlab.Gitlab.project_commits`,
+  :attr:`gitlab.objects.Project.commits`
 
 Examples
 --------
@@ -26,6 +25,12 @@ results:
    :start-after: # filter list
    :end-before: # end filter list
 
+Create a commit:
+
+.. literalinclude:: commits.py
+   :start-after: # create
+   :end-before: # end create
+
 Get a commit detail:
 
 .. literalinclude:: commits.py
@@ -41,11 +46,10 @@ Get the diff for a commit:
 Commit comments
 ===============
 
-Use :class:`~gitlab.objects.ProjectCommitStatus` objects to manipulate commits. The
-:attr:`gitlab.Gitlab.project_commit_comments` and
-:attr:`gitlab.objects.Project.commit_comments` and
-:attr:`gitlab.objects.ProjectCommit.comments` manager objects provide helper
-functions.
+* Object class: :class:`~gitlab.objects.ProjectCommiComment`
+* Manager objects: :attr:`gitlab.Gitlab.project_commit_comments`,
+  :attr:`gitlab.objects.Project.commit_comments`,
+  :attr:`gitlab.objects.ProjectCommit.comments`
 
 Examples
 --------
@@ -65,11 +69,10 @@ Add a comment on a commit:
 Commit status
 =============
 
-Use :class:`~gitlab.objects.ProjectCommitStatus` objects to manipulate commits.
-The :attr:`gitlab.Gitlab.project_commit_statuses`,
-:attr:`gitlab.objects.Project.commit_statuses` and
-:attr:`gitlab.objects.ProjectCommit.statuses` manager objects provide helper
-functions.
+* Object class: :class:`~gitlab.objects.ProjectCommitStatus`
+* Manager objects: :attr:`gitlab.Gitlab.project_commit_statuses`,
+  :attr:`gitlab.objects.Project.commit_statuses`,
+  :attr:`gitlab.objects.ProjectCommit.statuses`
 
 Examples
 --------
