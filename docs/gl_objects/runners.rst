@@ -2,11 +2,17 @@
 Runners
 #######
 
-Global runners
-==============
+Runners are external process used to run CI jobs. They are deployed by the
+administrator and registered to the GitLab instance.
 
-Use :class:`~gitlab.objects.Runner` objects to manipulate runners. The
-:attr:`gitlab.Gitlab.runners` manager object provides helper functions.
+Shared runners are available for all projects. Specific runners are enabled for
+a list of projects.
+
+Global runners (admin)
+======================
+
+* Object class: :class:`~gitlab.objects.Runner`
+* Manager objects: :attr:`gitlab.Gitlab.runners`
 
 Examples
 --------
@@ -48,3 +54,31 @@ Remove a runner:
 .. literalinclude:: runners.py
    :start-after: # delete
    :end-before: # end delete
+
+Project runners
+===============
+
+* Object class: :class:`~gitlab.objects.ProjectRunner`
+* Manager objects: :attr:`gitlab.Gitlab.runners`,
+  :attr:`gitlab.Gitlab.Project.runners`
+
+Examples
+--------
+
+List the runners for a project:
+
+.. literalinclude:: runners.py
+   :start-after: # project list
+   :end-before: # end project list
+
+Enable a specific runner for a project:
+
+.. literalinclude:: runners.py
+   :start-after: # project enable
+   :end-before: # end project enable
+
+Disable a specific runner for a project:
+
+.. literalinclude:: runners.py
+   :start-after: # project disable
+   :end-before: # end project disable

@@ -2142,6 +2142,16 @@ class ProjectDeploymentManager(BaseManager):
     obj_cls = ProjectDeployment
 
 
+class ProjectRunner(GitlabObject):
+    _url = '/projects/%(project_id)s/runners'
+    canUpdate = False
+    requiredCreateAttrs = ['runner_id']
+
+
+class ProjectRunnerManager(BaseManager):
+    obj_cls = ProjectRunner
+
+
 class Project(GitlabObject):
     _url = '/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
@@ -2189,6 +2199,7 @@ class Project(GitlabObject):
         ('notificationsettings', ProjectNotificationSettingsManager,
          [('project_id', 'id')]),
         ('pipelines', ProjectPipelineManager, [('project_id', 'id')]),
+        ('runners', ProjectRunnerManager, [('project_id', 'id')]),
         ('services', ProjectServiceManager, [('project_id', 'id')]),
         ('snippets', ProjectSnippetManager, [('project_id', 'id')]),
         ('tags', ProjectTagManager, [('project_id', 'id')]),
