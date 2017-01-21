@@ -2478,6 +2478,7 @@ class Runner(GitlabObject):
     _url = '/runners'
     canCreate = False
     optionalUpdateAttrs = ['description', 'active', 'tag_list']
+    optionalListAttrs = ['scope']
 
 
 class RunnerManager(BaseManager):

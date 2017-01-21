@@ -1,6 +1,8 @@
 # list
 # List owned runners
 runners = gl.runners.list()
+# With a filter
+runners = gl.runners.list(scope='active')
 # List all runners, using a filter
 runners = gl.runners.all(scope='paused')
 # end list

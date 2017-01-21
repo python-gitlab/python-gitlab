@@ -13,9 +13,14 @@ Examples
 
 Use the ``list()`` and ``all()`` methods to list runners.
 
-The ``all()`` method accepts a ``scope`` parameter to filter the list. Allowed
-values for this parameter are ``specific``, ``shared``, ``active``, ``paused``
-and ``online``.
+Both methods accept a ``scope`` parameter to filter the list. Allowed values
+for this parameter are:
+
+* ``active``
+* ``paused``
+* ``online``
+* ``specific`` (``all()`` only)
+* ``shared`` (``all()`` only)
 
 .. note::
 
