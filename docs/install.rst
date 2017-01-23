@@ -12,7 +12,7 @@ Use :command:`pip` to install the latest stable version of ``python-gitlab``:
 
 The current development version is available on `github
 <https://github.com/gpocentek/python-gitlab>`__. Use :command:`git` and
-:command:`pip` to install it:
+:command:`python setup.py` to install it:
 
 .. code-block:: console
 
