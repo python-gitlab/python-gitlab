@@ -4,7 +4,7 @@ keys = gl.keys.list()
 
 # global get
 key = gl.keys.get(key_id)
-# end global key
+# end global get
 
 # list
 keys = gl.project_keys.list(project_id=1)
