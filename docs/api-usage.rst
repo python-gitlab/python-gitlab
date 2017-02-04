@@ -2,7 +2,7 @@
 Getting started with the API
 ############################
 
-The ``gitlab`` package provides 3 basic types:
+The ``gitlab`` package provides 3 base types:
 
 * ``gitlab.Gitlab`` is the primary class, handling the HTTP requests. It holds
   the GitLab URL and authentication information.
@@ -67,6 +67,17 @@ Examples:
    user_data = {'email': 'jen@foo.com', 'username': 'jen', 'name': 'Jen'}
    user = gl.users.create(user_data)
    print(user)
+
+The attributes of objects are defined upon object creation, and depend on the
+GitLab API itself. To list the available information associated with an object
+use the python introspection tools:
+
+.. code-block:: python
+
+   project = gl.projects.get(1)
+   print(vars(project))
+   # or
+   print(project.__dict__)
 
 Some ``gitlab.GitlabObject`` classes also provide managers to access related
 GitLab resources:
