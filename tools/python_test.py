@@ -12,6 +12,13 @@ SSH_KEY = ("ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZAjAX8vTiHD7Yi3/EzuVaDChtih"
            "a6WP5lTi/HJIjAl6Hu+zHgdj1XVExeH+S52EwpZf/ylTJub0Bl5gHwf/siVE48mLMI"
            "sqrukXTZ6Zg+8EHAIvIQwJ1dKcXe8P5IoLT7VKrbkgAnolS0I8J+uH7KtErZJb5oZh"
            "S4OEwsNpaXMAr+6/wWSpircV2/e7sFLlhlKBC4Iq1MpqlZ7G3p foo@bar")
+DEPLOY_KEY = ("ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDFdRyjJQh+1niBpXqE2I8dzjG"
+              "MXFHlRjX9yk/UfOn075IdaockdU58sw2Ai1XIWFpZpfJkW7z+P47ZNSqm1gzeXI"
+              "rtKa9ZUp8A7SZe8vH4XVn7kh7bwWCUirqtn8El9XdqfkzOs/+FuViriUWoJVpA6"
+              "WZsDNaqINFKIA5fj/q8XQw+BcS92L09QJg9oVUuH0VVwNYbU2M2IRmSpybgC/gu"
+              "uWTrnCDMmLItksATifLvRZwgdI8dr+q6tbxbZknNcgEPrI2jT0hYN9ZcjNeWuyv"
+              "rke9IepE7SPBT41C+YtUX4dfDZDmczM1cE0YL/krdUCfuZHMa4ZS2YyNd6slufc"
+              "vn bar@foo")
 
 # login/password authentication
 gl = gitlab.Gitlab('http://localhost:8080', email=LOGIN, password=PASSWORD)
@@ -182,6 +189,15 @@ assert(blob == 'Initial content')
 archive1 = admin_project.repository_archive()
 archive2 = admin_project.repository_archive('master')
 assert(archive1 == archive2)
+
+# deploy keys
+deploy_key = admin_project.keys.create({'title': 'foo@bar', 'key': DEPLOY_KEY})
+project_keys = admin_project.keys.list()
+assert(len(project_keys) == 1)
+sudo_project.keys.enable(deploy_key.id)
+assert(len(sudo_project.keys.list()) == 1)
+sudo_project.keys.disable(deploy_key.id)
+assert(len(sudo_project.keys.list()) == 0)
 
 # labels
 label1 = admin_project.labels.create({'name': 'label1', 'color': '#778899'})

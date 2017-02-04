@@ -1366,22 +1366,21 @@ class ProjectKey(GitlabObject):
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['title', 'key']
 
-    def enable(self):
-        """Enable a deploy key for a project."""
-        url = '/projects/%s/deploy_keys/%s/enable' % (self.project_id, self.id)
-        r = self.gitlab._raw_post(url)
-        raise_error_from_response(r, GitlabProjectDeployKeyError, 201)
-
-    def disable(self):
-        """Disable a deploy key for a project."""
-        url = '/projects/%s/deploy_keys/%s/disable' % (self.project_id,
-                                                       self.id)
-        r = self.gitlab._raw_delete(url)
-        raise_error_from_response(r, GitlabProjectDeployKeyError, 200)
-
 
 class ProjectKeyManager(BaseManager):
     obj_cls = ProjectKey
+
+    def enable(self, key_id):
+        """Enable a deploy key for a project."""
+        url = '/projects/%s/deploy_keys/%s/enable' % (self.parent.id, key_id)
+        r = self.gitlab._raw_post(url)
+        raise_error_from_response(r, GitlabProjectDeployKeyError, 201)
+
+    def disable(self, key_id):
+        """Disable a deploy key for a project."""
+        url = '/projects/%s/deploy_keys/%s/disable' % (self.parent.id, key_id)
+        r = self.gitlab._raw_delete(url)
+        raise_error_from_response(r, GitlabProjectDeployKeyError, 200)
 
 
 class ProjectEvent(GitlabObject):

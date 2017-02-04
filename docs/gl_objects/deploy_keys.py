@@ -36,9 +36,9 @@ key.delete()
 # end delete
 
 # enable
-deploy_key.enable()
+project.keys.enable(key_id)
 # end enable
 
 # disable
-deploy_key.disable()
+project.keys.disable(key_id)
 # end disable
