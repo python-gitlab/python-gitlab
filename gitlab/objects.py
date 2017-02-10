@@ -1448,10 +1448,10 @@ class ProjectIssue(GitlabObject):
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['title']
     optionalCreateAttrs = ['description', 'assignee_id', 'milestone_id',
-                           'labels', 'created_at']
+                           'labels', 'created_at', 'due_date']
     optionalUpdateAttrs = ['title', 'description', 'assignee_id',
                            'milestone_id', 'labels', 'created_at',
-                           'updated_at', 'state_event']
+                           'updated_at', 'state_event', 'due_date']
     shortPrintAttr = 'title'
     managers = (
         ('notes', ProjectIssueNoteManager,
