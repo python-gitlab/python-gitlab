@@ -222,10 +222,10 @@ class GitlabObject(object):
         for attribute in attributes:
             if hasattr(self, attribute):
                 value = getattr(self, attribute)
-                if isinstance(value, list):
-                    if value and isinstance(value[0], six.string_types):
-                        value = ",".join(value)
-                if attribute == 'sudo':
+                # labels need to be sent as a comma-separated list
+                if attribute == 'labels' and isinstance(value, list):
+                    value = ", ".join(value)
+                elif attribute == 'sudo':
                     value = str(value)
                 data[attribute] = value
 
@@ -763,6 +763,15 @@ class ApplicationSettings(GitlabObject):
     canList = False
     canCreate = False
     canDelete = False
+
+    def _data_for_gitlab(self, extra_parameters={}, update=False,
+                         as_json=True):
+        data = (super(ApplicationSettings, self)
+                ._data_for_gitlab(extra_parameters, update=update,
+                                  as_json=False))
+        if not self.domain_whitelist:
+            data.pop('domain_whitelist', None)
+        return json.dumps(data)
 
 
 class ApplicationSettingsManager(BaseManager):
@@ -1457,19 +1466,6 @@ class ProjectIssue(GitlabObject):
         ('notes', ProjectIssueNoteManager,
             [('project_id', 'project_id'), ('issue_id', 'id')]),
     )
-
-    def _data_for_gitlab(self, extra_parameters={}, update=False,
-                         as_json=True):
-        # Gitlab-api returns labels in a json list and takes them in a
-        # comma separated list.
-        if hasattr(self, "labels"):
-            if (self.labels is not None and
-               not isinstance(self.labels, six.string_types)):
-                labels = ", ".join(self.labels)
-                extra_parameters['labels'] = labels
-
-        return super(ProjectIssue, self)._data_for_gitlab(extra_parameters,
-                                                          update)
 
     def subscribe(self, **kwargs):
         """Subscribe to an issue.
