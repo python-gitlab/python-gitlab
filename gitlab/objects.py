@@ -870,7 +870,9 @@ class GroupMember(GitlabObject):
     canGet = 'from_list'
     requiredUrlAttrs = ['group_id']
     requiredCreateAttrs = ['access_level', 'user_id']
+    optionalCreateAttrs = ['expires_at']
     requiredUpdateAttrs = ['access_level']
+    optionalCreateAttrs = ['expires_at']
     shortPrintAttr = 'username'
 
     def _update(self, **kwargs):
@@ -1530,7 +1532,9 @@ class ProjectMember(GitlabObject):
     _url = '/projects/%(project_id)s/members'
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['access_level', 'user_id']
+    optionalCreateAttrs = ['expires_at']
     requiredUpdateAttrs = ['access_level']
+    optionalCreateAttrs = ['expires_at']
     shortPrintAttr = 'username'
 
 
