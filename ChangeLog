@@ -1,3 +1,18 @@
+Version 0.19
+
+ * Update project.archive() docs
+ * Support the scope attribute in runners.list()
+ * Add support for project runners
+ * Add support for commit creation
+ * Fix install doc
+ * Add builds-email and pipelines-email services
+ * Deploy keys: rework enable/disable
+ * Document the dynamic aspect of objects
+ * Add pipeline_events to ProjectHook attrs
+ * Add due_date attribute to ProjectIssue
+ * Handle settings.domain_whitelist, partly
+ * {Project,Group}Member: support expires_at attribute
+
 Version 0.18
 
  * Fix JIRA service editing for GitLab 8.14+
