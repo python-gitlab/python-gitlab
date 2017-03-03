@@ -77,3 +77,23 @@ issue.move(new_project_id)
 # project issue todo
 issue.todo()
 # end project issue todo
+
+# project issue time tracking stats
+issue.time_stats()
+# end project issue time tracking stats
+
+# project issue set time estimate
+issue.set_time_estimate({'duration': '3h30m'})
+# end project issue set time estimate
+
+# project issue reset time estimate
+issue.reset_time_estimate()
+# end project issue reset time estimate
+
+# project issue set time spent
+issue.add_time_spent({'duration': '3h30m'})
+# end project issue set time spent
+
+# project issue reset time spent
+issue.reset_time_spent()
+# end project issue reset time spent
