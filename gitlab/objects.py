@@ -1137,7 +1137,7 @@ class ProjectBranch(GitlabObject):
     requiredCreateAttrs = ['branch_name', 'ref']
 
     def protect(self, protect=True, **kwargs):
-        """Protects the project."""
+        """Protects the branch."""
         url = self._url % {'project_id': self.project_id}
         action = 'protect' if protect else 'unprotect'
         url = "%s/%s/%s" % (url, self.name, action)
@@ -1150,7 +1150,7 @@ class ProjectBranch(GitlabObject):
             del self.protected
 
     def unprotect(self, **kwargs):
-        """Unprotects the project."""
+        """Unprotects the branch."""
         self.protect(False, **kwargs)
 
 
