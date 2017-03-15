@@ -146,6 +146,7 @@ class GitlabTodoError(GitlabOperationError):
 class GitlabTimeTrackingError(GitlabOperationError):
     pass
 
+
 class GitlabCherryPickError(GitlabOperationError):
     pass
 
