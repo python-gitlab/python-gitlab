@@ -304,6 +304,8 @@ class Gitlab(object):
             return self.session.get(url, params=kwargs, stream=streamed,
                                     **opts)
         except Exception as e:
+            if str(e) ==  "maximum recursion depth exceeded":
+                raise e
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
 
@@ -333,11 +335,16 @@ class Gitlab(object):
 
         results = [cls(self, item, **params) for item in r.json()
                    if item is not None]
-        if ('next' in r.links and 'url' in r.links['next']
-           and get_all_results is True):
-            args = kwargs.copy()
-            args['next_url'] = r.links['next']['url']
-            results.extend(self.list(cls, **args))
+        try:
+          if ('next' in r.links and 'url' in r.links['next']
+             and get_all_results is True):
+              args = kwargs.copy()
+              args['next_url'] = r.links['next']['url']
+              results.extend(self.list(cls, **args))
+        except Exception as e:
+            if str(e) !=  "maximum recursion depth exceeded":
+                raise e
+
         return results
 
     def _raw_post(self, path_, data=None, content_type=None, **kwargs):
