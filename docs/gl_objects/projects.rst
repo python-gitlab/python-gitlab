@@ -438,6 +438,12 @@ Cancel builds in a pipeline:
    :start-after: # pipeline cancel
    :end-before: # end pipeline cancel
 
+Create a pipeline for a particular reference:
+
+.. literalinclude:: projects.py
+   :start-after: # pipeline create
+   :end-before: # end pipeline create
+
 Services
 --------
 

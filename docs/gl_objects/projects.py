@@ -400,6 +400,12 @@ pipeline = gl.project_pipelines.get(pipeline_id, project_id=1)
 pipeline = project.pipelines.get(pipeline_id)
 # end pipeline get
 
+# pipeline create
+pipeline = gl.project_pipelines.create({'project_id': 1, 'ref': 'master'})
+# or
+project.pipelines.create({'ref': 'master'})
+# end pipeline create
+
 # pipeline retry
 pipeline.retry()
 # end pipeline retry
