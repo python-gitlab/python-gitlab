@@ -337,6 +337,7 @@ class Gitlab(object):
         if ('next' in r.links and 'url' in r.links['next']
            and get_all_results is True):
             args = kwargs.copy()
+            args.update(extra_attrs)
             args['next_url'] = r.links['next']['url']
             results.extend(self.list(cls, **args))
         return results
