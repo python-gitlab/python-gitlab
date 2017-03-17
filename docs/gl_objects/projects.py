@@ -403,7 +403,7 @@ pipeline = project.pipelines.get(pipeline_id)
 # pipeline create
 pipeline = gl.project_pipelines.create({'project_id': 1, 'ref': 'master'})
 # or
-project.pipelines.create({'ref': 'master'})
+pipeline = project.pipelines.create({'ref': 'master'})
 # end pipeline create
 
 # pipeline retry
