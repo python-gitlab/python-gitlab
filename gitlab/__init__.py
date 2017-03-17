@@ -340,11 +340,11 @@ class Gitlab(object):
             results.extend(self.list(cls, **args))
         return results
 
-    def _raw_post(self, path_, data=None, content_type=None, **kwargs):
+    def _raw_post(self, path_, data=None, content_type=None, files=None, **kwargs):
         url = '%s%s' % (self._url, path_)
         opts = self._get_session_opts(content_type)
         try:
-            return self.session.post(url, params=kwargs, data=data, **opts)
+            return self.session.post(url, params=kwargs, data=data, files=files, **opts)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)

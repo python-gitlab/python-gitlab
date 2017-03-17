@@ -562,6 +562,55 @@ class SidekiqManager(object):
         return self._simple_get('/sidekiq/compound_metrics', **kwargs)
 
 
+class ProjectUploadable(object):
+    """A mixin for objects that allow files to be uploaded/attached.
+    """
+
+    description_attr = "description"
+    """The attribute of the object that newly uploaded files'
+    markdown should be appended to.
+    """
+
+    project_id_attr = "project_id"
+    """The attribute that specifies the attribute that contains
+    the project id into which files may be uploaded.
+    """
+
+    # see #56 - add file uploading/attachment features
+    def attach_file(self, filename, filedata, **kwargs):
+        """Attach a file to the issue
+        
+        Args:
+            filename (str): The filename of the file being uploaded.
+            filedata (str): The raw data of the file being uploaded.
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        project_id = getattr(self, self.project_id_attr, None)
+        if project_id is None:
+            raise GitlabAttachFileError("{}'s project id could not be determined (tried using {!r})".format(
+                self,
+                self.project_id_attr,
+            ))
+
+        project = self.gitlab.projects.get(project_id)
+        res = project.upload(
+            filename = filename,
+            filedata = filedata,
+        )
+
+        orig_desc = getattr(self, self.description_attr, "")
+        # files are "attached" to issues and comments by uploading the
+        # the file into the project, and including the returned
+        # markdown in the description
+        setattr(self, self.description_attr, orig_desc + "\n\n" + res["markdown"])
+
+        # XXX:TODO: Is this correct? any changes to the current object instance 
+        # that have not yet been saved will be saved along with the
+        # file upload, which *may not* be what the user intended.
+        self.save()
+
+
 class UserEmail(GitlabObject):
     _url = '/users/%(user_id)s/emails'
     canUpdate = False
@@ -1437,7 +1486,7 @@ class ProjectHookManager(BaseManager):
     obj_cls = ProjectHook
 
 
-class ProjectIssueNote(GitlabObject):
+class ProjectIssueNote(GitlabObject, ProjectUploadable):
     _url = '/projects/%(project_id)s/issues/%(issue_id)s/notes'
     _constructorTypes = {'author': 'User'}
     canDelete = False
@@ -1445,12 +1494,16 @@ class ProjectIssueNote(GitlabObject):
     requiredCreateAttrs = ['body']
     optionalCreateAttrs = ['created_at']
 
+    # file attachment settings (see #56)
+    description_attr = "body"
+    project_id_attr = "project_id"
+
 
 class ProjectIssueNoteManager(BaseManager):
     obj_cls = ProjectIssueNote
 
 
-class ProjectIssue(GitlabObject):
+class ProjectIssue(GitlabObject, ProjectUploadable):
     _url = '/projects/%(project_id)s/issues/'
     _constructorTypes = {'author': 'User', 'assignee': 'User',
                          'milestone': 'ProjectMilestone'}
@@ -1468,6 +1521,10 @@ class ProjectIssue(GitlabObject):
         ('notes', ProjectIssueNoteManager,
             [('project_id', 'project_id'), ('issue_id', 'id')]),
     )
+
+    # file attachment settings (see #56)
+    description_attr = "description"
+    project_id_attr = "project_id"
 
     def subscribe(self, **kwargs):
         """Subscribe to an issue.
@@ -1593,6 +1650,7 @@ class ProjectIssueManager(BaseManager):
 
 class ProjectMember(GitlabObject):
     _url = '/projects/%(project_id)s/members'
+
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['access_level', 'user_id']
     optionalCreateAttrs = ['expires_at']
@@ -2552,6 +2610,39 @@ class Project(GitlabObject):
         data.update(form)
         r = self.gitlab._raw_post(url, data=data, **kwargs)
         raise_error_from_response(r, GitlabCreateError, 201)
+
+    # see #56 - add file attachment features
+    def upload(self, filename, filedata, **kwargs):
+        """Upload a file into the project. This will return the raw response
+        from the gitlab API in the form:
+        
+        {
+          "alt": "dk",
+          "url": "/uploads/66dbcd21ec5d24ed6ea225176098d52b/dk.png",
+          "markdown": "![dk](/uploads/66dbcd21ec5d24ed6ea225176098d52b/dk.png)"
+        }
+
+        See https://github.com/gitlabhq/gitlabhq/blob/master/doc/api/projects.md#upload-a-file
+        for more information.
+
+        Args:
+            filename (str): The name of the file being uploaded
+            filedata (bytes): The raw data of the file being uploaded
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached
+            GitlabUploadError: If the file upload fails
+        """
+        url = ("/projects/%(id)s/uploads" % {
+            "id": self.id,
+        })
+        r = self.gitlab._raw_post(
+            url,
+            files = {"file": (filename, filedata)},
+        )
+        # returns 201 status code (created)
+        raise_error_from_response(r, GitlabUploadError, expected_code=201)
+        return r.json()
 
 
 class Runner(GitlabObject):
