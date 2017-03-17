@@ -297,6 +297,11 @@ class GitlabObject(object):
             return
 
         for k, v in data.items():
+            # If a k attribute already exists and is a Manager, do nothing (see
+            # https://github.com/gpocentek/python-gitlab/issues/209)
+            if isinstance(getattr(self, k, None), BaseManager):
+                continue
+
             if isinstance(v, list):
                 self.__dict__[k] = []
                 for i in v:
@@ -937,7 +942,6 @@ class GroupAccessRequestManager(BaseManager):
 
 class Group(GitlabObject):
     _url = '/groups'
-    _constructorTypes = {'projects': 'Project'}
     requiredCreateAttrs = ['name', 'path']
     optionalCreateAttrs = ['description', 'visibility_level']
     optionalUpdateAttrs = ['name', 'path', 'description', 'visibility_level']
