@@ -11,6 +11,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   changelog
+   release_notes
    install
    cli
    api-usage

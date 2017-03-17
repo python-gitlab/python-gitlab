@@ -1,6 +1,6 @@
-###############################
-Release notes for python-gitlab
-###############################
+#############
+Release notes
+#############
 
 This page describes important changes between python-gitlab releases.
 
