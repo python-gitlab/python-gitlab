@@ -802,9 +802,26 @@ class Key(GitlabObject):
     canUpdate = False
     canDelete = False
 
+    def __init__(self, *args, **kwargs):
+        warnings.warn("`Key` is deprecated, use `DeployKey` instead",
+                      DeprecationWarning)
+        super(Key, self).__init__(*args, **kwargs)
+
 
 class KeyManager(BaseManager):
     obj_cls = Key
+
+
+class DeployKey(GitlabObject):
+    _url = '/deploy_keys'
+    canGet = 'from_list'
+    canCreate = False
+    canUpdate = False
+    canDelete = False
+
+
+class DeployKeyManager(BaseManager):
+    obj_cls = DeployKey
 
 
 class NotificationSettings(GitlabObject):

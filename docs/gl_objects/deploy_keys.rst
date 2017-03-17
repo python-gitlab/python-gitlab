@@ -5,8 +5,10 @@ Deploy keys
 Deploy keys
 ===========
 
-Use :class:`~gitlab.objects.Key` objects to manipulate deploy keys. The
-:attr:`gitlab.Gitlab.keys` manager object provides helper functions.
+Deploy keys allow read-only access to multiple projects with a single SSH key.
+
+* Object class: :class:`~gitlab.objects.DeployKey`
+* Manager object: :attr:`gitlab.Gitlab.deploykeys`
 
 Examples
 --------
@@ -26,9 +28,11 @@ Get a single deploy key:
 Deploy keys for projects
 ========================
 
-Use :class:`~gitlab.objects.ProjectKey` objects to manipulate deploy keys for
-projects. The :attr:`gitlab.Gitlab.project_keys` and :attr:`Project.keys
-<gitlab.objects.Project.keys>` manager objects provide helper functions.
+Deploy keys can be managed on a per-project basis.
+
+* Object class: :class:`~gitlab.objects.ProjectKey`
+* Manager objects: :attr:`gitlab.Gitlab.project_keys` and :attr:`Project.keys
+  <gitlab.objects.Project.keys>`
 
 Examples
 --------

@@ -91,6 +91,7 @@ class Gitlab(object):
 
         self.broadcastmessages = BroadcastMessageManager(self)
         self.keys = KeyManager(self)
+        self.deploykeys = DeployKeyManager(self)
         self.gitlabciymls = GitlabciymlManager(self)
         self.gitignores = GitignoreManager(self)
         self.groups = GroupManager(self)
