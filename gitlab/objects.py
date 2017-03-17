@@ -1714,7 +1714,6 @@ class ProjectMergeRequestDiffManager(BaseManager):
 class ProjectMergeRequestNote(GitlabObject):
     _url = '/projects/%(project_id)s/merge_requests/%(merge_request_id)s/notes'
     _constructorTypes = {'author': 'User'}
-    canDelete = False
     requiredUrlAttrs = ['project_id', 'merge_request_id']
     requiredCreateAttrs = ['body']
 
