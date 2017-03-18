@@ -915,20 +915,6 @@ class GroupNotificationSettingsManager(BaseManager):
     obj_cls = GroupNotificationSettings
 
 
-class GroupProject(GitlabObject):
-    _url = '/groups/%(group_id)s/projects'
-    canGet = 'from_list'
-    canCreate = False
-    canDelete = False
-    canUpdate = False
-    optionalListAttrs = ['archived', 'visibility', 'order_by', 'sort',
-                         'search', 'ci_enabled_first']
-
-
-class GroupProjectManager(BaseManager):
-    obj_cls = GroupProject
-
-
 class GroupAccessRequest(GitlabObject):
     _url = '/groups/%(group_id)s/access_requests'
     canGet = 'from_list'
@@ -955,64 +941,6 @@ class GroupAccessRequest(GitlabObject):
 
 class GroupAccessRequestManager(BaseManager):
     obj_cls = GroupAccessRequest
-
-
-class Group(GitlabObject):
-    _url = '/groups'
-    requiredCreateAttrs = ['name', 'path']
-    optionalCreateAttrs = ['description', 'visibility_level']
-    optionalUpdateAttrs = ['name', 'path', 'description', 'visibility_level']
-    shortPrintAttr = 'name'
-    managers = (
-        ('accessrequests', GroupAccessRequestManager, [('group_id', 'id')]),
-        ('members', GroupMemberManager, [('group_id', 'id')]),
-        ('notificationsettings', GroupNotificationSettingsManager,
-         [('group_id', 'id')]),
-        ('projects', GroupProjectManager, [('group_id', 'id')]),
-        ('issues', GroupIssueManager, [('group_id', 'id')]),
-    )
-
-    GUEST_ACCESS = gitlab.GUEST_ACCESS
-    REPORTER_ACCESS = gitlab.REPORTER_ACCESS
-    DEVELOPER_ACCESS = gitlab.DEVELOPER_ACCESS
-    MASTER_ACCESS = gitlab.MASTER_ACCESS
-    OWNER_ACCESS = gitlab.OWNER_ACCESS
-
-    VISIBILITY_PRIVATE = gitlab.VISIBILITY_PRIVATE
-    VISIBILITY_INTERNAL = gitlab.VISIBILITY_INTERNAL
-    VISIBILITY_PUBLIC = gitlab.VISIBILITY_PUBLIC
-
-    def transfer_project(self, id, **kwargs):
-        """Transfers a project to this new groups.
-
-        Attrs:
-            id (int): ID of the project to transfer.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabTransferProjectError: If the server fails to perform the
-                request.
-        """
-        url = '/groups/%d/projects/%d' % (self.id, id)
-        r = self.gitlab._raw_post(url, None, **kwargs)
-        raise_error_from_response(r, GitlabTransferProjectError, 201)
-
-
-class GroupManager(BaseManager):
-    obj_cls = Group
-
-    def search(self, query, **kwargs):
-        """Searches groups by name.
-
-        Args:
-            query (str): The search string
-            all (bool): If True, return all the items, without pagination
-
-        Returns:
-            list(Group): a list of matching groups.
-        """
-        url = '/groups?search=' + query
-        return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
 
 
 class Hook(GitlabObject):
@@ -2701,6 +2629,81 @@ class ProjectManager(BaseManager):
             list(gitlab.Gitlab.Project): The list of starred projects.
         """
         return self.gitlab._raw_list("/projects/starred", Project, **kwargs)
+
+
+class GroupProject(Project):
+    _url = '/groups/%(group_id)s/projects'
+    canGet = 'from_list'
+    canCreate = False
+    canDelete = False
+    canUpdate = False
+    optionalListAttrs = ['archived', 'visibility', 'order_by', 'sort',
+                         'search', 'ci_enabled_first']
+
+    def __init__(self, *args, **kwargs):
+        Project.__init__(self, *args, **kwargs)
+
+
+class GroupProjectManager(BaseManager):
+    obj_cls = GroupProject
+
+
+class Group(GitlabObject):
+    _url = '/groups'
+    requiredCreateAttrs = ['name', 'path']
+    optionalCreateAttrs = ['description', 'visibility_level']
+    optionalUpdateAttrs = ['name', 'path', 'description', 'visibility_level']
+    shortPrintAttr = 'name'
+    managers = (
+        ('accessrequests', GroupAccessRequestManager, [('group_id', 'id')]),
+        ('members', GroupMemberManager, [('group_id', 'id')]),
+        ('notificationsettings', GroupNotificationSettingsManager,
+         [('group_id', 'id')]),
+        ('projects', GroupProjectManager, [('group_id', 'id')]),
+        ('issues', GroupIssueManager, [('group_id', 'id')]),
+    )
+
+    GUEST_ACCESS = gitlab.GUEST_ACCESS
+    REPORTER_ACCESS = gitlab.REPORTER_ACCESS
+    DEVELOPER_ACCESS = gitlab.DEVELOPER_ACCESS
+    MASTER_ACCESS = gitlab.MASTER_ACCESS
+    OWNER_ACCESS = gitlab.OWNER_ACCESS
+
+    VISIBILITY_PRIVATE = gitlab.VISIBILITY_PRIVATE
+    VISIBILITY_INTERNAL = gitlab.VISIBILITY_INTERNAL
+    VISIBILITY_PUBLIC = gitlab.VISIBILITY_PUBLIC
+
+    def transfer_project(self, id, **kwargs):
+        """Transfers a project to this new groups.
+
+        Attrs:
+            id (int): ID of the project to transfer.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabTransferProjectError: If the server fails to perform the
+                request.
+        """
+        url = '/groups/%d/projects/%d' % (self.id, id)
+        r = self.gitlab._raw_post(url, None, **kwargs)
+        raise_error_from_response(r, GitlabTransferProjectError, 201)
+
+
+class GroupManager(BaseManager):
+    obj_cls = Group
+
+    def search(self, query, **kwargs):
+        """Searches groups by name.
+
+        Args:
+            query (str): The search string
+            all (bool): If True, return all the items, without pagination
+
+        Returns:
+            list(Group): a list of matching groups.
+        """
+        url = '/groups?search=' + query
+        return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
 
 
 class TeamMemberManager(BaseManager):
