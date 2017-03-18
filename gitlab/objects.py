@@ -1991,9 +1991,13 @@ class ProjectFileManager(BaseManager):
 
 class ProjectPipeline(GitlabObject):
     _url = '/projects/%(project_id)s/pipelines'
-    canCreate = False
+    _create_url = '/projects/%(project_id)s/pipeline'
+
     canUpdate = False
     canDelete = False
+
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['ref']
 
     def retry(self, **kwargs):
         """Retries failed builds in a pipeline.
