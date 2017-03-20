@@ -1588,7 +1588,7 @@ class ProjectIssue(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
         """
         url = ('/projects/%(project_id)s/issues/%(issue_id)s/'
-               'reset_spent_time' %
+               'add_spent_time' %
                {'project_id': self.project_id, 'issue_id': self.id})
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabTimeTrackingError, 200)
@@ -1601,7 +1601,7 @@ class ProjectIssue(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
         """
         url = ('/projects/%(project_id)s/issues/%(issue_id)s/'
-               'add_spent_time' %
+               'reset_spent_time' %
                {'project_id': self.project_id, 'issue_id': self.id})
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabTimeTrackingError, 200)
