@@ -1708,7 +1708,7 @@ class ProjectMergeRequest(GitlabObject):
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['source_branch', 'target_branch', 'title']
     optionalCreateAttrs = ['assignee_id', 'description', 'target_project_id',
-                           'labels', 'milestone_id','remove_source_branch']
+                           'labels', 'milestone_id', 'remove_source_branch']
     optionalUpdateAttrs = ['target_branch', 'assignee_id', 'title',
                            'description', 'state_event', 'labels',
                            'milestone_id']
