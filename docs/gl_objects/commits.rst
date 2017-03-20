@@ -43,7 +43,7 @@ Get the diff for a commit:
    :start-after: # diff
    :end-before: # end diff
 
-Cherry-pick a commit into another branch
+Cherry-pick a commit into another branch:
 
 .. literalinclude:: commits.py
    :start-after: # cherry

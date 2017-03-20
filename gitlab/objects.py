@@ -1362,8 +1362,8 @@ class ProjectCommit(GitlabObject):
         Raises:
             GitlabCherryPickError: If the cherry pick could not be applied.
         """
-        url = '/projects/{0:s}/repository/commits/{1:s}/cherry_pick'.format(
-            self.project_id, self.id)
+        pid = self.project_id
+        url = '/projects/%s/repository/commits/%s/cherry_pick' % (pid, self.id)
 
         r = self.gitlab._raw_post(url, data={'project_id': self.project_id,
                                              'branch': branch}, **kwargs)
