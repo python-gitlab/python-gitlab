@@ -111,8 +111,8 @@ class Gitlab(object):
         # build the "submanagers"
         for parent_cls in six.itervalues(globals()):
             if (not inspect.isclass(parent_cls)
-               or not issubclass(parent_cls, GitlabObject)
-               or parent_cls == CurrentUser):
+                or not issubclass(parent_cls, GitlabObject)
+                    or parent_cls == CurrentUser):
                 continue
 
             if not parent_cls.managers:
@@ -304,8 +304,6 @@ class Gitlab(object):
             return self.session.get(url, params=kwargs, stream=streamed,
                                     **opts)
         except Exception as e:
-            if str(e) ==  "maximum recursion depth exceeded":
-                raise e
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
 
@@ -313,11 +311,13 @@ class Gitlab(object):
         params = extra_attrs.copy()
         params.update(kwargs.copy())
 
-        get_all_results = kwargs.get('all', False)
+        catch_recursion_limit = kwargs.get('safe_all', False)
+        get_all_results = kwargs.get(
+            'all', False) == True or catch_recursion_limit
 
         # Remove these keys to avoid breaking the listing (urls will get too
         # long otherwise)
-        for key in ['all', 'next_url']:
+        for key in ['all', 'next_url', 'safe_all']:
             if key in params:
                 del params[key]
 
@@ -336,13 +336,16 @@ class Gitlab(object):
         results = [cls(self, item, **params) for item in r.json()
                    if item is not None]
         try:
-          if ('next' in r.links and 'url' in r.links['next']
-             and get_all_results is True):
-              args = kwargs.copy()
-              args['next_url'] = r.links['next']['url']
-              results.extend(self.list(cls, **args))
+            if ('next' in r.links and 'url' in r.links['next']
+                    and get_all_results):
+                args = kwargs.copy()
+                args['next_url'] = r.links['next']['url']
+                results.extend(self.list(cls, **args))
         except Exception as e:
-            if str(e) !=  "maximum recursion depth exceeded":
+            # Catch the recursion limit exception if the 'safe_all'
+            # kwarg was provided
+            if not (catch_recursion_limit and
+                    "maximum recursion depth exceeded" in str(e)):
                 raise e
 
         return results
