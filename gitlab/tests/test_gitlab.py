@@ -243,6 +243,75 @@ class TestGitlabMethods(unittest.TestCase):
             self.assertEqual(data[0].ref, "b")
             self.assertEqual(len(data), 2)
 
+    def test_list_recursion_limit_caught(self):
+        @urlmatch(scheme="http", netloc="localhost",
+                  path='/api/v3/projects/1/repository/branches', method="get")
+        def resp_one(url, request):
+            """First request:
+
+            http://localhost/api/v3/projects/1/repository/branches?per_page=1
+            """
+            headers = {
+                'content-type': 'application/json',
+                'link': '<http://localhost/api/v3/projects/1/repository/branc'
+                'hes?page=2&per_page=0>; rel="next", <http://localhost/api/v3'
+                '/projects/1/repository/branches?page=2&per_page=0>; rel="las'
+                't", <http://localhost/api/v3/projects/1/repository/branches?'
+                'page=1&per_page=0>; rel="first"'
+            }
+            content = ('[{"branch_name": "otherbranch", '
+                       '"project_id": 1, "ref": "b"}]').encode("utf-8")
+            resp = response(200, content, headers, None, 5, request)
+            return resp
+
+        @urlmatch(scheme="http", netloc="localhost",
+                  path='/api/v3/projects/1/repository/branches', method="get",
+                  query=r'.*page=2.*')
+        def resp_two(url, request):
+            # Mock a runtime error
+            raise RuntimeError("maximum recursion depth exceeded")
+
+        with HTTMock(resp_two, resp_one):
+            data = self.gl.list(ProjectBranch, project_id=1, per_page=1,
+                                safe_all=True)
+            self.assertEqual(data[0].branch_name, "otherbranch")
+            self.assertEqual(data[0].project_id, 1)
+            self.assertEqual(data[0].ref, "b")
+            self.assertEqual(len(data), 1)
+
+    def test_list_recursion_limit_not_caught(self):
+        @urlmatch(scheme="http", netloc="localhost",
+                  path='/api/v3/projects/1/repository/branches', method="get")
+        def resp_one(url, request):
+            """First request:
+
+            http://localhost/api/v3/projects/1/repository/branches?per_page=1
+            """
+            headers = {
+                'content-type': 'application/json',
+                'link': '<http://localhost/api/v3/projects/1/repository/branc'
+                'hes?page=2&per_page=0>; rel="next", <http://localhost/api/v3'
+                '/projects/1/repository/branches?page=2&per_page=0>; rel="las'
+                't", <http://localhost/api/v3/projects/1/repository/branches?'
+                'page=1&per_page=0>; rel="first"'
+            }
+            content = ('[{"branch_name": "otherbranch", '
+                       '"project_id": 1, "ref": "b"}]').encode("utf-8")
+            resp = response(200, content, headers, None, 5, request)
+            return resp
+
+        @urlmatch(scheme="http", netloc="localhost",
+                  path='/api/v3/projects/1/repository/branches', method="get",
+                  query=r'.*page=2.*')
+        def resp_two(url, request):
+            # Mock a runtime error
+            raise RuntimeError("maximum recursion depth exceeded")
+
+        with HTTMock(resp_two, resp_one):
+            with self.assertRaisesRegex(GitlabError, "(maximum recursion depth exceeded)"):
+                data = self.gl.list(ProjectBranch, project_id=1, per_page=1,
+                                    all=True)
+
     def test_list_401(self):
         @urlmatch(scheme="http", netloc="localhost",
                   path="/api/v3/projects/1/repository/branches", method="get")
