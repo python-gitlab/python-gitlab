@@ -1158,7 +1158,7 @@ class ProjectBranch(GitlabObject):
     requiredCreateAttrs = ['branch_name', 'ref']
 
     def protect(self, protect=True, **kwargs):
-        """Protects the project."""
+        """Protects the branch."""
         url = self._url % {'project_id': self.project_id}
         action = 'protect' if protect else 'unprotect'
         url = "%s/%s/%s" % (url, self.name, action)
@@ -1171,7 +1171,7 @@ class ProjectBranch(GitlabObject):
             del self.protected
 
     def unprotect(self, **kwargs):
-        """Unprotects the project."""
+        """Unprotects the branch."""
         self.protect(False, **kwargs)
 
 
@@ -1373,6 +1373,23 @@ class ProjectCommit(GitlabObject):
         return self.gitlab._raw_list(url, ProjectBuild,
                                      {'project_id': self.project_id},
                                      **kwargs)
+
+    def cherry_pick(self, branch, **kwargs):
+        """Cherry-pick a commit into a branch.
+
+        Args:
+            branch (str): Name of target branch.
+
+        Raises:
+            GitlabCherryPickError: If the cherry pick could not be applied.
+        """
+        url = ('/projects/%s/repository/commits/%s/cherry_pick' %
+               (self.project_id, self.id))
+
+        r = self.gitlab._raw_post(url, data={'project_id': self.project_id,
+                                             'branch': branch}, **kwargs)
+        errors = {400: GitlabCherryPickError}
+        raise_error_from_response(r, errors, expected_code=201)
 
 
 class ProjectCommitManager(BaseManager):
