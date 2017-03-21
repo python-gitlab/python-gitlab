@@ -1,5 +1,5 @@
-gitlab
-======
+API documentation
+=================
 
 .. toctree::
    :maxdepth: 4

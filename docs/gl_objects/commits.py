@@ -39,6 +39,10 @@ commit = project.commits.get('e3d5a71b')
 diff = commit.diff()
 # end diff
 
+# cherry
+commit.cherry_pick(branch='target_branch')
+# end cherry
+
 # comments list
 comments = gl.project_commit_comments.list(project_id=1, commit_id='master')
 # or

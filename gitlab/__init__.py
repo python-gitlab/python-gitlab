@@ -91,6 +91,7 @@ class Gitlab(object):
 
         self.broadcastmessages = BroadcastMessageManager(self)
         self.keys = KeyManager(self)
+        self.deploykeys = DeployKeyManager(self)
         self.gitlabciymls = GitlabciymlManager(self)
         self.gitignores = GitignoreManager(self)
         self.groups = GroupManager(self)
@@ -339,6 +340,7 @@ class Gitlab(object):
             if ('next' in r.links and 'url' in r.links['next']
                     and get_all_results):
                 args = kwargs.copy()
+                args.update(extra_attrs)
                 args['next_url'] = r.links['next']['url']
                 results.extend(self.list(cls, **args))
         except Exception as e:

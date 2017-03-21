@@ -1,7 +1,7 @@
-python-gitlab Changelog
-=======================
+ChangeLog
+=========
 
-Version 0.19_: - 2017-02-21
+Version 0.19_ - 2017-02-21
 ---------------------------
 
 * Update project.archive() docs
@@ -17,7 +17,7 @@ Version 0.19_: - 2017-02-21
 * Handle settings.domain_whitelist, partly
 * {Project,Group}Member: support expires_at attribute
 
-Version 0.18_: - 2016-12-27
+Version 0.18_ - 2016-12-27
 ---------------------------
 
 * Fix JIRA service editing for GitLab 8.14+
@@ -32,7 +32,7 @@ Version 0.18_: - 2016-12-27
 * Update known attributes for projects
 * sudo: always use strings
 
-Version 0.17_: - 2016-12-02
+Version 0.17_ - 2016-12-02
 ---------------------------
 
 * README: add badges for pypi and RTD
@@ -67,7 +67,7 @@ Version 0.17_: - 2016-12-02
 * Rework requests arguments (support latest requests release)
 * Fix `should_remove_source_branch`
 
-Version 0.16_: - 2016-10-16
+Version 0.16_ - 2016-10-16
 ---------------------------
 
 * Add the ability to fork to a specific namespace
@@ -84,14 +84,14 @@ Version 0.16_: - 2016-10-16
 * Add ProjectBuild.erase()
 * Implement ProjectBuild.play()
 
-Version 0.15.1_: - 2016-10-16
+Version 0.15.1_ - 2016-10-16
 -----------------------------
 
 * docs: improve the pagination section
 * Fix and test pagination
 * 'path' is an existing gitlab attr, don't use it as method argument
 
-Version 0.15_: - 2016-08-28
+Version 0.15_ - 2016-08-28
 ---------------------------
 
 * Add a basic HTTP debug method
@@ -112,7 +112,7 @@ Version 0.15_: - 2016-08-28
 * Add support for access requests
 * Add support for project deployments
 
-Version 0.14_: - 2016-08-07
+Version 0.14_ - 2016-08-07
 ---------------------------
 
 * Remove 'next_url' from kwargs before passing it to the cls constructor.
@@ -164,7 +164,7 @@ Version 0.14_: - 2016-08-07
 * MR (un)subscribe: don't fail if state doesn't change
 * MR merge(): update the object
 
-Version 0.13_: - 2016-05-16
+Version 0.13_ - 2016-05-16
 ---------------------------
 
 * Add support for MergeRequest validation
@@ -191,7 +191,7 @@ Version 0.13_: - 2016-05-16
 * Implement list/get licenses
 * Manage optional parameters for list() and get()
 
-Version 0.12.2_: - 2016-03-19
+Version 0.12.2_ - 2016-03-19
 -----------------------------
 
 * Add new `ProjectHook` attributes
@@ -211,12 +211,12 @@ Version 0.12.2_: - 2016-03-19
 * Fix the 'invalid syntax' error on Python 3.2
 * Gitlab.update(): use the proper attributes if defined
 
-Version 0.12.1_: - 2016-02-03
+Version 0.12.1_ - 2016-02-03
 -----------------------------
 
 * Fix a broken upload to pypi
 
-Version 0.12_: - 2016-02-03
+Version 0.12_ - 2016-02-03
 ---------------------------
 
 * Improve documentation
@@ -240,7 +240,7 @@ Version 0.12_: - 2016-02-03
 * Fix Project.tree()
 * Add support for project builds
 
-Version 0.11.1_: - 2016-01-17
+Version 0.11.1_ - 2016-01-17
 -----------------------------
 
 * Fix discovery of parents object attrs for managers
@@ -248,7 +248,7 @@ Version 0.11.1_: - 2016-01-17
 * Support deletion without getting the object first
 * Improve the documentation
 
-Version 0.11_: - 2016-01-09
+Version 0.11_ - 2016-01-09
 ---------------------------
 
 * functional_tests.sh: support python 2 and 3
@@ -265,7 +265,7 @@ Version 0.11_: - 2016-01-09
 * Deprecate the "old" Gitlab methods
 * Add support for groups search
 
-Version 0.10_: - 2015-12-29
+Version 0.10_ - 2015-12-29
 ---------------------------
 
 * Implement pagination for list() (#63)
@@ -279,17 +279,17 @@ Version 0.10_: - 2015-12-29
 * Python 3 compatibility fixes
 * Add support for group members update (#73)
 
-Version 0.9.2_: - 2015-07-11
+Version 0.9.2_ - 2015-07-11
 ----------------------------
 
 * CLI: fix the update and delete subcommands (#62)
 
-Version 0.9.1_: - 2015-05-15
+Version 0.9.1_ - 2015-05-15
 ----------------------------
 
 * Fix the setup.py script
 
-Version 0.9_: - 2015-05-15
+Version 0.9_ - 2015-05-15
 --------------------------
 
 * Implement argparse libray for parsing argument on CLI
@@ -307,7 +307,7 @@ Version 0.9_: - 2015-05-15
      set_token
 * Sphinx: don't hardcode the version in conf.py
 
-Version 0.8_: - 2014-10-26
+Version 0.8_ - 2014-10-26
 --------------------------
 
 * Better python 2.6 and python 3 support
@@ -318,7 +318,7 @@ Version 0.8_: - 2014-10-26
 * Moved url attributes to separate list
 * Added list for delete attributes
 
-Version 0.7_: - 2014-08-21
+Version 0.7_ - 2014-08-21
 --------------------------
 
 * Fix license classifier in setup.py
@@ -330,7 +330,7 @@ Version 0.7_: - 2014-08-21
 * Support namespace/name for project id (#28)
 * Fix handling of boolean values (#22)
 
-Version 0.6_: - 2014-01-16
+Version 0.6_ - 2014-01-16
 --------------------------
 
 * IDs can be unicode (#15)
@@ -338,7 +338,7 @@ Version 0.6_: - 2014-01-16
 * Add support for extra parameters when listing all projects (#12)
 * Projects listing: explicitly define arguments for pagination
 
-Version 0.5_: - 2013-12-26
+Version 0.5_ - 2013-12-26
 --------------------------
 
 * Add SSH key for user
@@ -352,7 +352,7 @@ Version 0.5_: - 2013-12-26
 * Define new optional attributes for user creation
 * Provide constants for access permissions in groups
 
-Version 0.4_: - 2013-09-26
+Version 0.4_ - 2013-09-26
 --------------------------
 
 * Fix strings encoding (Closes #6)
@@ -361,7 +361,7 @@ Version 0.4_: - 2013-09-26
 * Gitlab 6.1 methods: diff, blob (commit), tree, blob (project)
 * Add support for Gitlab 6.1 group members
 
-Version 0.3_: - 2013-08-27
+Version 0.3_ - 2013-08-27
 --------------------------
 
 * Use PRIVATE-TOKEN header for passing the auth token
@@ -370,7 +370,7 @@ Version 0.3_: - 2013-08-27
 * Add ssl_verify option to Gitlab object. Defauls to True
 * Correct url for merge requests API.
 
-Version 0.2_: - 2013-08-08
+Version 0.2_ - 2013-08-08
 --------------------------
 
 * provide a pip requirements.txt

@@ -42,7 +42,9 @@ EXTRA_ACTIONS = {
     gitlab.ProjectCommit: {'diff': {'required': ['id', 'project-id']},
                            'blob': {'required': ['id', 'project-id',
                                                  'filepath']},
-                           'builds': {'required': ['id', 'project-id']}},
+                           'builds': {'required': ['id', 'project-id']},
+                           'cherrypick': {'required': ['id', 'project-id',
+                                                       'branch']}},
     gitlab.ProjectIssue: {'subscribe': {'required': ['id', 'project-id']},
                           'unsubscribe': {'required': ['id', 'project-id']},
                           'move': {'required': ['id', 'project-id',
@@ -266,6 +268,13 @@ class GitlabCLI(object):
             return o.builds()
         except Exception as e:
             _die("Impossible to get commit builds", e)
+
+    def do_project_commit_cherrypick(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            o.cherry_pick(branch=args['branch'])
+        except Exception as e:
+            _die("Impossible to cherry-pick commit", e)
 
     def do_project_build_cancel(self, cls, gl, what, args):
         try:
