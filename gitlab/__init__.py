@@ -313,8 +313,8 @@ class Gitlab(object):
         params.update(kwargs.copy())
 
         catch_recursion_limit = kwargs.get('safe_all', False)
-        get_all_results = kwargs.get(
-            'all', False) == True or catch_recursion_limit
+        get_all_results = (kwargs.get('all', False) is True
+                           or catch_recursion_limit)
 
         # Remove these keys to avoid breaking the listing (urls will get too
         # long otherwise)
