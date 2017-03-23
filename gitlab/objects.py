@@ -297,6 +297,11 @@ class GitlabObject(object):
             return
 
         for k, v in data.items():
+            # If a k attribute already exists and is a Manager, do nothing (see
+            # https://github.com/gpocentek/python-gitlab/issues/209)
+            if isinstance(getattr(self, k, None), BaseManager):
+                continue
+
             if isinstance(v, list):
                 self.__dict__[k] = []
                 for i in v:
@@ -797,9 +802,26 @@ class Key(GitlabObject):
     canUpdate = False
     canDelete = False
 
+    def __init__(self, *args, **kwargs):
+        warnings.warn("`Key` is deprecated, use `DeployKey` instead",
+                      DeprecationWarning)
+        super(Key, self).__init__(*args, **kwargs)
+
 
 class KeyManager(BaseManager):
     obj_cls = Key
+
+
+class DeployKey(GitlabObject):
+    _url = '/deploy_keys'
+    canGet = 'from_list'
+    canCreate = False
+    canUpdate = False
+    canDelete = False
+
+
+class DeployKeyManager(BaseManager):
+    obj_cls = DeployKey
 
 
 class NotificationSettings(GitlabObject):
@@ -937,7 +959,6 @@ class GroupAccessRequestManager(BaseManager):
 
 class Group(GitlabObject):
     _url = '/groups'
-    _constructorTypes = {'projects': 'Project'}
     requiredCreateAttrs = ['name', 'path']
     optionalCreateAttrs = ['description', 'visibility_level']
     optionalUpdateAttrs = ['name', 'path', 'description', 'visibility_level']
@@ -1137,7 +1158,7 @@ class ProjectBranch(GitlabObject):
     requiredCreateAttrs = ['branch_name', 'ref']
 
     def protect(self, protect=True, **kwargs):
-        """Protects the project."""
+        """Protects the branch."""
         url = self._url % {'project_id': self.project_id}
         action = 'protect' if protect else 'unprotect'
         url = "%s/%s/%s" % (url, self.name, action)
@@ -1150,7 +1171,7 @@ class ProjectBranch(GitlabObject):
             del self.protected
 
     def unprotect(self, **kwargs):
-        """Unprotects the project."""
+        """Unprotects the branch."""
         self.protect(False, **kwargs)
 
 
@@ -1352,6 +1373,23 @@ class ProjectCommit(GitlabObject):
         return self.gitlab._raw_list(url, ProjectBuild,
                                      {'project_id': self.project_id},
                                      **kwargs)
+
+    def cherry_pick(self, branch, **kwargs):
+        """Cherry-pick a commit into a branch.
+
+        Args:
+            branch (str): Name of target branch.
+
+        Raises:
+            GitlabCherryPickError: If the cherry pick could not be applied.
+        """
+        url = ('/projects/%s/repository/commits/%s/cherry_pick' %
+               (self.project_id, self.id))
+
+        r = self.gitlab._raw_post(url, data={'project_id': self.project_id,
+                                             'branch': branch}, **kwargs)
+        errors = {400: GitlabCherryPickError}
+        raise_error_from_response(r, errors, expected_code=201)
 
 
 class ProjectCommitManager(BaseManager):
@@ -1567,7 +1605,7 @@ class ProjectIssue(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
         """
         url = ('/projects/%(project_id)s/issues/%(issue_id)s/'
-               'reset_spent_time' %
+               'add_spent_time' %
                {'project_id': self.project_id, 'issue_id': self.id})
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabTimeTrackingError, 200)
@@ -1580,7 +1618,7 @@ class ProjectIssue(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
         """
         url = ('/projects/%(project_id)s/issues/%(issue_id)s/'
-               'add_spent_time' %
+               'reset_spent_time' %
                {'project_id': self.project_id, 'issue_id': self.id})
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabTimeTrackingError, 200)
@@ -1693,7 +1731,6 @@ class ProjectMergeRequestDiffManager(BaseManager):
 class ProjectMergeRequestNote(GitlabObject):
     _url = '/projects/%(project_id)s/merge_requests/%(merge_request_id)s/notes'
     _constructorTypes = {'author': 'User'}
-    canDelete = False
     requiredUrlAttrs = ['project_id', 'merge_request_id']
     requiredCreateAttrs = ['body']
 
@@ -1708,7 +1745,7 @@ class ProjectMergeRequest(GitlabObject):
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['source_branch', 'target_branch', 'title']
     optionalCreateAttrs = ['assignee_id', 'description', 'target_project_id',
-                           'labels', 'milestone_id']
+                           'labels', 'milestone_id', 'remove_source_branch']
     optionalUpdateAttrs = ['target_branch', 'assignee_id', 'title',
                            'description', 'state_event', 'labels',
                            'milestone_id']
@@ -1971,9 +2008,13 @@ class ProjectFileManager(BaseManager):
 
 class ProjectPipeline(GitlabObject):
     _url = '/projects/%(project_id)s/pipelines'
-    canCreate = False
+    _create_url = '/projects/%(project_id)s/pipeline'
+
     canUpdate = False
     canDelete = False
+
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['ref']
 
     def retry(self, **kwargs):
         """Retries failed builds in a pipeline.

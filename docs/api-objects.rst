@@ -1,6 +1,6 @@
-########################
-API objects manipulation
-########################
+############
+API examples
+############
 
 .. toctree::
    :maxdepth: 1

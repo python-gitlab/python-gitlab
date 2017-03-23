@@ -1,9 +1,9 @@
 # global list
-keys = gl.keys.list()
+keys = gl.deploykeys.list()
 # end global list
 
 # global get
-key = gl.keys.get(key_id)
+key = gl.deploykeys.get(key_id)
 # end global get
 
 # list
