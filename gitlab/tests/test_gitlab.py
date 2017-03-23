@@ -26,7 +26,6 @@ except ImportError:
 from httmock import HTTMock  # noqa
 from httmock import response  # noqa
 from httmock import urlmatch  # noqa
-
 import six
 
 import gitlab
@@ -310,9 +309,9 @@ class TestGitlabMethods(unittest.TestCase):
             raise RuntimeError("maximum recursion depth exceeded")
 
         with HTTMock(resp_two, resp_one):
-            with six.assertRaisesRegex(self, GitlabError, "(maximum recursion depth exceeded)"):
-                data = self.gl.list(ProjectBranch, project_id=1, per_page=1,
-                                    all=True)
+            with six.assertRaisesRegex(self, GitlabError,
+                                       "(maximum recursion depth exceeded)"):
+                self.gl.list(ProjectBranch, project_id=1, per_page=1, all=True)
 
     def test_list_401(self):
         @urlmatch(scheme="http", netloc="localhost",
