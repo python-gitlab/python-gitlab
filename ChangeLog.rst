@@ -1,6 +1,22 @@
 ChangeLog
 =========
 
+Version 0.20_ - 2017-03-25
+---------------------------
+
+* Add time tracking support (#222)
+* Improve changelog (#229, #230)
+* Make sure that manager objects are never overwritten (#209)
+* Include chanlog and release notes in docs
+* Add DeployKey{,Manager} classes (#212)
+* Add support for merge request notes deletion (#227)
+* Properly handle extra args when listing with all=True (#233)
+* Implement pipeline creation API (#237)
+* Fix spent_time methods
+* Add 'delete source branch' option when creating MR (#241)
+* Provide API wrapper for cherry picking commits (#236)
+* Stop listing if recursion limit is hit (#234)
+
 Version 0.19_ - 2017-02-21
 ---------------------------
 
@@ -381,6 +397,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
+.. _0.20: https://github.com/gpocentek/python-gitlab/compare/0.19...0.20
 .. _0.19: https://github.com/gpocentek/python-gitlab/compare/0.18...0.19
 .. _0.18: https://github.com/gpocentek/python-gitlab/compare/0.17...0.18
 .. _0.17: https://github.com/gpocentek/python-gitlab/compare/0.16...0.17
