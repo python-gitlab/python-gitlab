@@ -1837,6 +1837,18 @@ class ProjectMergeRequest(GitlabObject):
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabTodoError, [201, 304])
 
+    def time_stats(self, **kwargs):
+        """Get time stats for the merge request.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/time_stats' %
+               {'project_id': self.project_id, 'mr_id': self.id})
+        r = self.gitlab._raw_get(url, **kwargs)
+        raise_error_from_response(r, GitlabGetError)
+        return r.json()
+
 
 class ProjectMergeRequestManager(BaseManager):
     obj_cls = ProjectMergeRequest
