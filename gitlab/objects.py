@@ -1874,6 +1874,7 @@ class ProjectMilestone(GitlabObject):
                                      {'project_id': self.project_id},
                                      **kwargs)
 
+
 class ProjectMilestoneManager(BaseManager):
     obj_cls = ProjectMilestone
 
