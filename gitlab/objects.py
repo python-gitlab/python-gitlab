@@ -1858,6 +1858,21 @@ class ProjectMilestone(GitlabObject):
                                      {'project_id': self.project_id},
                                      **kwargs)
 
+    def merge_requests(self, **kwargs):
+        """List the merge requests related to this milestone
+
+        Returns:
+            list (ProjectMergeRequest): List of merge requests
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabListError: If the server fails to perform the request.
+        """
+        url = ('/projects/%s/milestones/%s/merge_requests' %
+               (self.project_id, self.id))
+        return self.gitlab._raw_list(url, ProjectMergeRequest,
+                                     {'project_id': self.project_id},
+                                     **kwargs)
 
 class ProjectMilestoneManager(BaseManager):
     obj_cls = ProjectMilestone
