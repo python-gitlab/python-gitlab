@@ -614,16 +614,17 @@ class UserProjectManager(BaseManager):
 class User(GitlabObject):
     _url = '/users'
     shortPrintAttr = 'username'
-    requiredCreateAttrs = ['email', 'username', 'name', 'password']
-    optionalCreateAttrs = ['skype', 'linkedin', 'twitter', 'projects_limit',
-                           'extern_uid', 'provider', 'bio', 'admin',
-                           'can_create_group', 'website_url', 'confirm',
-                           'external']
+    requiredCreateAttrs = ['email', 'username', 'name']
+    optionalCreateAttrs = ['password', 'reset_password', 'skype', 'linkedin',
+                           'twitter', 'projects_limit', 'extern_uid',
+                           'provider', 'bio', 'admin', 'can_create_group',
+                           'website_url', 'confirm', 'external',
+                           'organization', 'location']
     requiredUpdateAttrs = ['email', 'username', 'name']
     optionalUpdateAttrs = ['password', 'skype', 'linkedin', 'twitter',
                            'projects_limit', 'extern_uid', 'provider', 'bio',
                            'admin', 'can_create_group', 'website_url',
-                           'confirm', 'external']
+                           'confirm', 'external', 'organization', 'location']
     managers = (
         ('emails', UserEmailManager, [('user_id', 'id')]),
         ('keys', UserKeyManager, [('user_id', 'id')]),
