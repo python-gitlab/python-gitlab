@@ -53,3 +53,9 @@ List the issues related to a milestone:
 .. literalinclude:: milestones.py
    :start-after: # issues
    :end-before: # end issues
+
+List the merge requests related to a milestone:
+
+.. literalinclude:: milestones.py
+   :start-after: # merge_requests
+   :end-before: # end merge_requests

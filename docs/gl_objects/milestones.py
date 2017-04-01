@@ -30,13 +30,18 @@ milestone.save()
 # state
 # close a milestone
 milestone.state_event = 'close'
-milestone.save
+milestone.save()
 
 # activate a milestone
 milestone.state_event = 'activate'
-m.save()
+milestone.save()
 # end state
 
 # issues
 issues = milestone.issues()
 # end issues
+
+# merge_requests
+merge_requests = milestone.merge_requests()
+# end merge_requests
+
