@@ -139,7 +139,7 @@ parameter to get all the items when using listing methods:
 
 .. note::
 
-   python-gitlab will iterate over the list by calling the correspnding API
+   python-gitlab will iterate over the list by calling the corresponding API
    multiple times. This might take some time if you have a lot of items to
    retrieve. This might also consume a lot of memory as all the items will be
    stored in RAM. If you're encountering the python recursion limit exception,
