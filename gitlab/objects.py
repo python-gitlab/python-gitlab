@@ -1902,9 +1902,9 @@ class ProjectLabel(GitlabObject):
     idAttr = 'name'
     requiredDeleteAttrs = ['name']
     requiredCreateAttrs = ['name', 'color']
-    optionalCreateAttrs = ['description']
+    optionalCreateAttrs = ['description', 'priority']
     requiredUpdateAttrs = ['name']
-    optionalUpdateAttrs = ['new_name', 'color', 'description']
+    optionalUpdateAttrs = ['new_name', 'color', 'description', 'priority']
 
     def subscribe(self, **kwargs):
         """Subscribe to a label.
