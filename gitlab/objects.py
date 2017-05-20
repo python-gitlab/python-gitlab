@@ -24,6 +24,7 @@ import itertools
 import json
 import sys
 import warnings
+import urllib
 
 import six
 
@@ -2348,7 +2349,7 @@ class Project(GitlabObject):
         url = "/projects/%s/repository/tree" % (self.id)
         params = []
         if path:
-            params.append("path=%s" % path)
+            params.append(urllib.urlencode({'path' : path}))
         if ref_name:
             params.append("ref_name=%s" % ref_name)
         if params:
@@ -2379,7 +2380,7 @@ class Project(GitlabObject):
             GitlabGetError: If the server fails to perform the request.
         """
         url = "/projects/%s/repository/blobs/%s" % (self.id, sha)
-        url += '?filepath=%s' % (filepath)
+        url += '?%s' % (urllib.urlencode({'filepath' : filepath}))
         r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
         raise_error_from_response(r, GitlabGetError)
         return utils.response_content(r, streamed, action, chunk_size)
