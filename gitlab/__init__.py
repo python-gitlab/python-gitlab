@@ -69,9 +69,10 @@ class Gitlab(object):
 
     def __init__(self, url, private_token=None, email=None, password=None,
                  ssl_verify=True, http_username=None, http_password=None,
-                 timeout=None):
+                 timeout=None, api_version='3'):
 
-        self._url = '%s/api/v3' % url
+        self._api_version = str(api_version)
+        self._url = '%s/api/v%s' % (url, api_version)
         #: Timeout to use for requests to gitlab server
         self.timeout = timeout
         #: Headers that will be used in request to GitLab
@@ -152,7 +153,8 @@ class Gitlab(object):
         return Gitlab(config.url, private_token=config.token,
                       ssl_verify=config.ssl_verify, timeout=config.timeout,
                       http_username=config.http_username,
-                      http_password=config.http_password)
+                      http_password=config.http_password,
+                      api_version=config.api_version)
 
     def auth(self):
         """Performs an authentication.
@@ -212,7 +214,7 @@ class Gitlab(object):
         Args:
             url (str): Base URL of the GitLab server.
         """
-        self._url = '%s/api/v3' % url
+        self._url = '%s/api/v%s' % (url, self._api_version)
 
     def _construct_url(self, id_, obj, parameters, action=None):
         if 'next_url' in parameters:
