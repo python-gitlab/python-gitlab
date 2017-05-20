@@ -100,8 +100,12 @@ user2 = gl.users.create({'email': 'user2@test.com', 'username': 'user2',
 group1 = gl.groups.create({'name': 'group1', 'path': 'group1'})
 group2 = gl.groups.create({'name': 'group2', 'path': 'group2'})
 
-assert(len(gl.groups.list()) == 2)
+p_id = gl.groups.search('group2')[0].id
+group3 = gl.groups.create({'name': 'group3', 'path': 'group3', 'parent_id': p_id})
+
+assert(len(gl.groups.list()) == 3)
 assert(len(gl.groups.search("1")) == 1)
+assert(group3.parent_id == p_id)
 
 group1.members.create({'access_level': gitlab.Group.OWNER_ACCESS,
                        'user_id': user1.id})

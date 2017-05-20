@@ -2702,8 +2702,10 @@ class GroupProjectManager(BaseManager):
 class Group(GitlabObject):
     _url = '/groups'
     requiredCreateAttrs = ['name', 'path']
-    optionalCreateAttrs = ['description', 'visibility_level']
-    optionalUpdateAttrs = ['name', 'path', 'description', 'visibility_level']
+    optionalCreateAttrs = ['description', 'visibility_level', 'parent_id',
+                           'lfs_enabled', 'request_access_enabled']
+    optionalUpdateAttrs = ['name', 'path', 'description', 'visibility_level',
+                           'lfs_enabled', 'request_access_enabled']
     shortPrintAttr = 'name'
     managers = (
         ('accessrequests', GroupAccessRequestManager, [('group_id', 'id')]),
