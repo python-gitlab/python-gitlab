@@ -2168,7 +2168,7 @@ class ProjectServiceManager(BaseManager):
         Returns:
             list (str): The list of service code names.
         """
-        return json.dumps(ProjectService._service_attrs.keys())
+        return list(ProjectService._service_attrs.keys())
 
 
 class ProjectAccessRequest(GitlabObject):
