@@ -31,7 +31,7 @@ project = gl.projects.create({'name': 'project1'})
 # end create
 
 # user create
-alice gl.users.list(username='alice')[0]
+alice = gl.users.list(username='alice')[0]
 user_project = gl.user_projects.create({'name': 'project',
                                         'user_id': alice.id})
 # end user create
