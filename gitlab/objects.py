@@ -1850,6 +1850,58 @@ class ProjectMergeRequest(GitlabObject):
         raise_error_from_response(r, GitlabGetError)
         return r.json()
 
+    def time_estimate(self, **kwargs):
+        """Set an estimated time of work for the merge request.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/'
+               'time_estimate' %
+               {'project_id': self.project_id, 'mr_id': self.id})
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabTimeTrackingError, 201)
+        return r.json()
+
+    def reset_time_estimate(self, **kwargs):
+        """Resets estimated time for the merge request to 0 seconds.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/'
+               'reset_time_estimate' %
+               {'project_id': self.project_id, 'mr_id': self.id})
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabTimeTrackingError, 200)
+        return r.json()
+
+    def add_spent_time(self, **kwargs):
+        """Set an estimated time of work for the merge request.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/'
+               'add_spent_time' %
+               {'project_id': self.project_id, 'mr_id': self.id})
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabTimeTrackingError, 200)
+        return r.json()
+
+    def reset_spent_time(self, **kwargs):
+        """Set an estimated time of work for the merge request.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/'
+               'reset_spent_time' %
+               {'project_id': self.project_id, 'mr_id': self.id})
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabTimeTrackingError, 200)
+        return r.json()
+
 
 class ProjectMergeRequestManager(BaseManager):
     obj_cls = ProjectMergeRequest
