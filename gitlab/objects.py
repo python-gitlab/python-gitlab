@@ -2695,7 +2695,7 @@ class GroupProject(Project):
         Project.__init__(self, *args, **kwargs)
 
 
-class GroupProjectManager(BaseManager):
+class GroupProjectManager(ProjectManager):
     obj_cls = GroupProject
 
 
