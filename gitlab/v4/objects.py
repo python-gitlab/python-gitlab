@@ -2222,16 +2222,3 @@ class Group(GitlabObject):
 
 class GroupManager(BaseManager):
     obj_cls = Group
-
-    def search(self, query, **kwargs):
-        """Searches groups by name.
-
-        Args:
-            query (str): The search string
-            all (bool): If True, return all the items, without pagination
-
-        Returns:
-            list(Group): a list of matching groups.
-        """
-        url = '/groups?search=' + query
-        return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
