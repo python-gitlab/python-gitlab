@@ -1498,13 +1498,12 @@ class ProjectFile(GitlabObject):
     _url = '/projects/%(project_id)s/repository/files'
     canList = False
     requiredUrlAttrs = ['project_id']
-    requiredGetAttrs = ['file_path', 'ref']
+    requiredGetAttrs = ['ref']
     requiredCreateAttrs = ['file_path', 'branch', 'content',
                            'commit_message']
     optionalCreateAttrs = ['encoding']
     requiredDeleteAttrs = ['branch', 'commit_message', 'file_path']
     shortPrintAttr = 'file_path'
-    getRequiresId = False
 
     def decode(self):
         """Returns the decoded content of the file.
@@ -1517,6 +1516,34 @@ class ProjectFile(GitlabObject):
 
 class ProjectFileManager(BaseManager):
     obj_cls = ProjectFile
+
+    def raw(self, filepath, ref, streamed=False, action=None, chunk_size=1024,
+            **kwargs):
+        """Return the content of a file for a commit.
+
+        Args:
+            ref (str): ID of the commit
+            filepath (str): Path of the file to return
+            streamed (bool): If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment.
+            action (callable): Callable responsible of dealing with chunk of
+                data.
+            chunk_size (int): Size of each chunk.
+
+        Returns:
+            str: The file content
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
+        """
+        url = ("/projects/%s/repository/files/%s/raw" %
+               (self.parent.id, filepath.replace('/', '%2F')))
+        url += '?ref=%s' % ref
+        r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
+        raise_error_from_response(r, GitlabGetError)
+        return utils.response_content(r, streamed, action, chunk_size)
 
 
 class ProjectPipeline(GitlabObject):
@@ -1860,33 +1887,6 @@ class Project(GitlabObject):
         r = self.gitlab._raw_get(url, **kwargs)
         raise_error_from_response(r, GitlabGetError)
         return r.json()
-
-    def repository_blob(self, sha, filepath, streamed=False, action=None,
-                        chunk_size=1024, **kwargs):
-        """Return the content of a file for a commit.
-
-        Args:
-            sha (str): ID of the commit
-            filepath (str): Path of the file to return
-            streamed (bool): If True the data will be processed by chunks of
-                `chunk_size` and each chunk is passed to `action` for
-                treatment.
-            action (callable): Callable responsible of dealing with chunk of
-                data.
-            chunk_size (int): Size of each chunk.
-
-        Returns:
-            str: The file content
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the server fails to perform the request.
-        """
-        url = "/projects/%s/repository/blobs/%s" % (self.id, sha)
-        url += '?%s' % (urllib.urlencode({'filepath': filepath}))
-        r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
-        raise_error_from_response(r, GitlabGetError)
-        return utils.response_content(r, streamed, action, chunk_size)
 
     def repository_raw_blob(self, sha, streamed=False, action=None,
                             chunk_size=1024, **kwargs):
