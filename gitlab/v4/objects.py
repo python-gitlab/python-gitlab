@@ -134,7 +134,8 @@ class User(GitlabObject):
     optionalUpdateAttrs = ['password', 'skype', 'linkedin', 'twitter',
                            'projects_limit', 'extern_uid', 'provider', 'bio',
                            'admin', 'can_create_group', 'website_url',
-                           'skip_confirmation', 'external', 'organization', 'location']
+                           'skip_confirmation', 'external', 'organization',
+                           'location']
     managers = (
         ('emails', 'UserEmailManager', [('user_id', 'id')]),
         ('keys', 'UserKeyManager', [('user_id', 'id')]),
@@ -1236,7 +1237,8 @@ class ProjectMergeRequest(GitlabObject):
     def cancel_merge_when_pipeline_succeeds(self, **kwargs):
         """Cancel merge when build succeeds."""
 
-        u = ('/projects/%s/merge_requests/%s/cancel_merge_when_pipeline_succeeds'
+        u = ('/projects/%s/merge_requests/%s/'
+             'cancel_merge_when_pipeline_succeeds'
              % (self.project_id, self.id))
         r = self.gitlab._raw_put(u, **kwargs)
         errors = {401: GitlabMRForbiddenError,
