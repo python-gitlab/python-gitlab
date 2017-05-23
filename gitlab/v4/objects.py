@@ -936,11 +936,11 @@ class ProjectIssue(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabSubscribeError: If the subscription cannot be done
         """
-        url = ('/projects/%(project_id)s/issues/%(issue_id)s/subscription' %
+        url = ('/projects/%(project_id)s/issues/%(issue_id)s/subscribe' %
                {'project_id': self.project_id, 'issue_id': self.id})
 
         r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabSubscribeError)
+        raise_error_from_response(r, GitlabSubscribeError, [201, 304])
         self._set_from_dict(r.json())
 
     def unsubscribe(self, **kwargs):
@@ -950,11 +950,11 @@ class ProjectIssue(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabUnsubscribeError: If the unsubscription cannot be done
         """
-        url = ('/projects/%(project_id)s/issues/%(issue_id)s/subscription' %
+        url = ('/projects/%(project_id)s/issues/%(issue_id)s/unsubscribe' %
                {'project_id': self.project_id, 'issue_id': self.id})
 
-        r = self.gitlab._raw_delete(url, **kwargs)
-        raise_error_from_response(r, GitlabUnsubscribeError)
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabUnsubscribeError, [201, 304])
         self._set_from_dict(r.json())
 
     def move(self, to_project_id, **kwargs):
@@ -1199,7 +1199,7 @@ class ProjectMergeRequest(GitlabObject):
             GitlabSubscribeError: If the subscription cannot be done
         """
         url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/'
-               'subscription' %
+               'subscribe' %
                {'project_id': self.project_id, 'mr_id': self.id})
 
         r = self.gitlab._raw_post(url, **kwargs)
@@ -1215,11 +1215,11 @@ class ProjectMergeRequest(GitlabObject):
             GitlabUnsubscribeError: If the unsubscription cannot be done
         """
         url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/'
-               'subscription' %
+               'unsubscribe' %
                {'project_id': self.project_id, 'mr_id': self.id})
 
-        r = self.gitlab._raw_delete(url, **kwargs)
-        raise_error_from_response(r, GitlabUnsubscribeError, [200, 304])
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabUnsubscribeError, [201, 304])
         if r.status_code == 200:
             self._set_from_dict(r.json())
 
@@ -1458,7 +1458,7 @@ class ProjectLabel(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabSubscribeError: If the subscription cannot be done
         """
-        url = ('/projects/%(project_id)s/labels/%(label_id)s/subscription' %
+        url = ('/projects/%(project_id)s/labels/%(label_id)s/subscribe' %
                {'project_id': self.project_id, 'label_id': self.name})
 
         r = self.gitlab._raw_post(url, **kwargs)
@@ -1472,11 +1472,11 @@ class ProjectLabel(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabUnsubscribeError: If the unsubscription cannot be done
         """
-        url = ('/projects/%(project_id)s/labels/%(label_id)s/subscription' %
+        url = ('/projects/%(project_id)s/labels/%(label_id)s/unsubscribe' %
                {'project_id': self.project_id, 'label_id': self.name})
 
-        r = self.gitlab._raw_delete(url, **kwargs)
-        raise_error_from_response(r, GitlabUnsubscribeError, [200, 304])
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabUnsubscribeError, [201, 304])
         self._set_from_dict(r.json())
 
 
