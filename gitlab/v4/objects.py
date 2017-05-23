@@ -140,15 +140,15 @@ class User(GitlabObject):
     def block(self, **kwargs):
         """Blocks the user."""
         url = '/users/%s/block' % self.id
-        r = self.gitlab._raw_put(url, **kwargs)
-        raise_error_from_response(r, GitlabBlockError)
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabBlockError, 201)
         self.state = 'blocked'
 
     def unblock(self, **kwargs):
         """Unblocks the user."""
         url = '/users/%s/unblock' % self.id
-        r = self.gitlab._raw_put(url, **kwargs)
-        raise_error_from_response(r, GitlabUnblockError)
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabUnblockError, 201)
         self.state = 'active'
 
     def __eq__(self, other):
