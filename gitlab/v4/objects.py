@@ -1776,7 +1776,9 @@ class Project(GitlabObject):
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
     optionalListAttrs = ['search']
     requiredCreateAttrs = ['name']
-    optionalListAttrs = ['search']
+    optionalListAttrs = ['search', 'owned', 'starred', 'archived',
+                         'visibility', 'order_by', 'sort', 'simple',
+                         'membership', 'statistics']
     optionalCreateAttrs = ['path', 'namespace_id', 'description',
                            'issues_enabled', 'merge_requests_enabled',
                            'builds_enabled', 'wiki_enabled',
@@ -2166,42 +2168,6 @@ class TodoManager(BaseManager):
 
 class ProjectManager(BaseManager):
     obj_cls = Project
-
-    def all(self, **kwargs):
-        """List all the projects (need admin rights).
-
-        Args:
-            all (bool): If True, return all the items, without pagination
-            **kwargs: Additional arguments to send to GitLab.
-
-        Returns:
-            list(gitlab.Gitlab.Project): The list of projects.
-        """
-        return self.gitlab._raw_list("/projects/all", Project, **kwargs)
-
-    def owned(self, **kwargs):
-        """List owned projects.
-
-        Args:
-            all (bool): If True, return all the items, without pagination
-            **kwargs: Additional arguments to send to GitLab.
-
-        Returns:
-            list(gitlab.Gitlab.Project): The list of owned projects.
-        """
-        return self.gitlab._raw_list("/projects/owned", Project, **kwargs)
-
-    def starred(self, **kwargs):
-        """List starred projects.
-
-        Args:
-            all (bool): If True, return all the items, without pagination
-            **kwargs: Additional arguments to send to GitLab.
-
-        Returns:
-            list(gitlab.Gitlab.Project): The list of starred projects.
-        """
-        return self.gitlab._raw_list("/projects/starred", Project, **kwargs)
 
 
 class GroupProject(Project):
