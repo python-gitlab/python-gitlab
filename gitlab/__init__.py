@@ -65,6 +65,7 @@ class Gitlab(object):
         timeout (float): Timeout to use for requests to the GitLab server.
         http_username (str): Username for HTTP authentication
         http_password (str): Password for HTTP authentication
+        api_version (str): Gitlab API version to use (3 or 4)
     """
 
     def __init__(self, url, private_token=None, email=None, password=None,
