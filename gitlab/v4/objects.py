@@ -2168,35 +2168,6 @@ class TodoManager(BaseManager):
 class ProjectManager(BaseManager):
     obj_cls = Project
 
-    def search(self, query, **kwargs):
-        """Search projects by name.
-
-        API v3 only.
-
-        .. note::
-
-           The search is only performed on the project name (not on the
-           namespace or the description). To perform a smarter search, use the
-           ``search`` argument of the ``list()`` method:
-
-           .. code-block:: python
-
-               gl.projects.list(search=your_search_string)
-
-        Args:
-            query (str): The query string to send to GitLab for the search.
-            all (bool): If True, return all the items, without pagination
-            **kwargs: Additional arguments to send to GitLab.
-
-        Returns:
-            list(gitlab.Gitlab.Project): A list of matching projects.
-        """
-        if self.gitlab.api_version == '4':
-            raise NotImplementedError("Not supported by v4 API")
-
-        return self.gitlab._raw_list("/projects/search/" + query, Project,
-                                     **kwargs)
-
     def all(self, **kwargs):
         """List all the projects (need admin rights).
 
