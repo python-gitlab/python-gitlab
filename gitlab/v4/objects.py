@@ -128,13 +128,13 @@ class User(GitlabObject):
     optionalCreateAttrs = ['password', 'reset_password', 'skype', 'linkedin',
                            'twitter', 'projects_limit', 'extern_uid',
                            'provider', 'bio', 'admin', 'can_create_group',
-                           'website_url', 'confirm', 'external',
+                           'website_url', 'skip_confirmation', 'external',
                            'organization', 'location']
     requiredUpdateAttrs = ['email', 'username', 'name']
     optionalUpdateAttrs = ['password', 'skype', 'linkedin', 'twitter',
                            'projects_limit', 'extern_uid', 'provider', 'bio',
                            'admin', 'can_create_group', 'website_url',
-                           'confirm', 'external', 'organization', 'location']
+                           'skip_confirmation', 'external', 'organization', 'location']
     managers = (
         ('emails', 'UserEmailManager', [('user_id', 'id')]),
         ('keys', 'UserKeyManager', [('user_id', 'id')]),
