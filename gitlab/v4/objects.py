@@ -876,7 +876,7 @@ class ProjectEventManager(BaseManager):
 
 
 class ProjectFork(GitlabObject):
-    _url = '/projects/fork/%(project_id)s'
+    _url = '/projects/%(project_id)s/fork'
     canUpdate = False
     canDelete = False
     canList = False
