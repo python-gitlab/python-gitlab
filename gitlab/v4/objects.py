@@ -1862,12 +1862,12 @@ class Project(GitlabObject):
         ('variables', 'ProjectVariableManager', [('project_id', 'id')]),
     )
 
-    def repository_tree(self, path='', ref_name='', **kwargs):
+    def repository_tree(self, path='', ref='', **kwargs):
         """Return a list of files in the repository.
 
         Args:
             path (str): Path of the top folder (/ by default)
-            ref_name (str): Reference to a commit or branch
+            ref (str): Reference to a commit or branch
 
         Returns:
             str: The json representation of the tree.
@@ -1880,8 +1880,8 @@ class Project(GitlabObject):
         params = []
         if path:
             params.append(urllib.urlencode({'path': path}))
-        if ref_name:
-            params.append("ref_name=%s" % ref_name)
+        if ref:
+            params.append("ref=%s" % ref)
         if params:
             url += '?' + "&".join(params)
         r = self.gitlab._raw_get(url, **kwargs)
