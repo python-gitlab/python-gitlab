@@ -584,7 +584,7 @@ class ProjectBranch(GitlabObject):
     idAttr = 'name'
     canUpdate = False
     requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['branch_name', 'ref']
+    requiredCreateAttrs = ['branch', 'ref']
 
     def protect(self, protect=True, **kwargs):
         """Protects the branch."""
@@ -741,7 +741,7 @@ class ProjectCommit(GitlabObject):
     canDelete = False
     canUpdate = False
     requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['branch_name', 'commit_message', 'actions']
+    requiredCreateAttrs = ['branch', 'commit_message', 'actions']
     optionalCreateAttrs = ['author_email', 'author_name']
     shortPrintAttr = 'title'
     managers = (
@@ -1489,10 +1489,10 @@ class ProjectFile(GitlabObject):
     canList = False
     requiredUrlAttrs = ['project_id']
     requiredGetAttrs = ['file_path', 'ref']
-    requiredCreateAttrs = ['file_path', 'branch_name', 'content',
+    requiredCreateAttrs = ['file_path', 'branch', 'content',
                            'commit_message']
     optionalCreateAttrs = ['encoding']
-    requiredDeleteAttrs = ['branch_name', 'commit_message', 'file_path']
+    requiredDeleteAttrs = ['branch', 'commit_message', 'file_path']
     shortPrintAttr = 'file_path'
     getRequiresId = False
 
