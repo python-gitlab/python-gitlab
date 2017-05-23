@@ -34,6 +34,12 @@ VISIBILITY_PRIVATE = 'private'
 VISIBILITY_INTERNAL = 'internal'
 VISIBILITY_PUBLIC = 'public'
 
+ACCESS_GUEST = 10
+ACCESS_REPORTER = 20
+ACCESS_DEVELOPER = 30
+ACCESS_MASTER = 40
+ACCESS_OWNER = 50
+
 
 class SidekiqManager(object):
     """Manager for the Sidekiq methods.
@@ -2197,12 +2203,6 @@ class Group(GitlabObject):
         ('projects', 'GroupProjectManager', [('group_id', 'id')]),
         ('issues', 'GroupIssueManager', [('group_id', 'id')]),
     )
-
-    GUEST_ACCESS = gitlab.GUEST_ACCESS
-    REPORTER_ACCESS = gitlab.REPORTER_ACCESS
-    DEVELOPER_ACCESS = gitlab.DEVELOPER_ACCESS
-    MASTER_ACCESS = gitlab.MASTER_ACCESS
-    OWNER_ACCESS = gitlab.OWNER_ACCESS
 
     def transfer_project(self, id, **kwargs):
         """Transfers a project to this new groups.
