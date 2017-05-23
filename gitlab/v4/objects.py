@@ -839,7 +839,7 @@ class ProjectEnvironmentManager(BaseManager):
 
 
 class ProjectKey(GitlabObject):
-    _url = '/projects/%(project_id)s/keys'
+    _url = '/projects/%(project_id)s/deploy_keys'
     canUpdate = False
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['title', 'key']
