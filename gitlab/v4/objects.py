@@ -472,7 +472,7 @@ class IssueManager(BaseManager):
 
 
 class License(GitlabObject):
-    _url = '/licenses'
+    _url = '/templates/licenses'
     canDelete = False
     canUpdate = False
     canCreate = False
