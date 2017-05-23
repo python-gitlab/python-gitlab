@@ -1223,10 +1223,10 @@ class ProjectMergeRequest(GitlabObject):
         if r.status_code == 200:
             self._set_from_dict(r.json())
 
-    def cancel_merge_when_build_succeeds(self, **kwargs):
+    def cancel_merge_when_pipeline_succeeds(self, **kwargs):
         """Cancel merge when build succeeds."""
 
-        u = ('/projects/%s/merge_requests/%s/cancel_merge_when_build_succeeds'
+        u = ('/projects/%s/merge_requests/%s/cancel_merge_when_pipeline_succeeds'
              % (self.project_id, self.id))
         r = self.gitlab._raw_put(u, **kwargs)
         errors = {401: GitlabMRForbiddenError,
