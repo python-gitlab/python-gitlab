@@ -1777,8 +1777,8 @@ class Project(GitlabObject):
                            'issues_enabled', 'merge_requests_enabled',
                            'builds_enabled', 'wiki_enabled',
                            'snippets_enabled', 'container_registry_enabled',
-                           'shared_runners_enabled', 'public',
-                           'visibility_level', 'import_url', 'public_builds',
+                           'shared_runners_enabled', 'visibility_level',
+                           'import_url', 'public_builds',
                            'only_allow_merge_if_build_succeeds',
                            'only_allow_merge_if_all_discussions_are_resolved',
                            'lfs_enabled', 'request_access_enabled']
@@ -1786,8 +1786,8 @@ class Project(GitlabObject):
                            'issues_enabled', 'merge_requests_enabled',
                            'builds_enabled', 'wiki_enabled',
                            'snippets_enabled', 'container_registry_enabled',
-                           'shared_runners_enabled', 'public',
-                           'visibility_level', 'import_url', 'public_builds',
+                           'shared_runners_enabled', 'visibility_level',
+                           'import_url', 'public_builds',
                            'only_allow_merge_if_build_succeeds',
                            'only_allow_merge_if_all_discussions_are_resolved',
                            'lfs_enabled', 'request_access_enabled']
