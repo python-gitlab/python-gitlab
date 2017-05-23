@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/gpocentek/python-gitlab.svg?branch=master
-   :target: https://travis-ci.org/gpocentek/python-gitlab
+.. image:: https://travis-ci.org/python-gitlab/python-gitlab.svg?branch=master
+   :target: https://travis-ci.org/python-gitlab/python-gitlab
 
 .. image:: https://badge.fury.io/py/python-gitlab.svg
    :target: https://badge.fury.io/py/python-gitlab
@@ -36,7 +36,7 @@ Bug reports
 ===========
 
 Please report bugs and feature requests at
-https://github.com/gpocentek/python-gitlab/issues.
+https://github.com/python-gitlab/python-gitlab/issues.
 
 
 Documentation

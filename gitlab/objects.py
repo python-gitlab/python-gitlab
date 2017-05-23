@@ -299,7 +299,7 @@ class GitlabObject(object):
 
         for k, v in data.items():
             # If a k attribute already exists and is a Manager, do nothing (see
-            # https://github.com/gpocentek/python-gitlab/issues/209)
+            # https://github.com/python-gitlab/python-gitlab/issues/209)
             if isinstance(getattr(self, k, None), BaseManager):
                 continue
 

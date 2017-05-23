@@ -11,11 +11,11 @@ Use :command:`pip` to install the latest stable version of ``python-gitlab``:
    $ pip install --upgrade python-gitlab
 
 The current development version is available on `github
-<https://github.com/gpocentek/python-gitlab>`__. Use :command:`git` and
+<https://github.com/python-gitlab/python-gitlab>`__. Use :command:`git` and
 :command:`python setup.py` to install it:
 
 .. code-block:: console
 
-   $ git clone https://github.com/gpocentek/python-gitlab
+   $ git clone https://github.com/python-gitlab/python-gitlab
    $ cd python-gitlab
    $ python setup.py install

@@ -18,7 +18,7 @@ Changes from 0.19 to 0.20
   Documentation:
   http://python-gitlab.readthedocs.io/en/stable/gl_objects/groups.html#examples
 
-  Related issue: https://github.com/gpocentek/python-gitlab/issues/209
+  Related issue: https://github.com/python-gitlab/python-gitlab/issues/209
 
 * The ``Key`` objects are deprecated in favor of the new ``DeployKey`` objects.
   They are exactly the same but the name makes more sense.
@@ -26,4 +26,4 @@ Changes from 0.19 to 0.20
   Documentation:
   http://python-gitlab.readthedocs.io/en/stable/gl_objects/deploy_keys.html
 
-  Related issue: https://github.com/gpocentek/python-gitlab/issues/212
+  Related issue: https://github.com/python-gitlab/python-gitlab/issues/212
