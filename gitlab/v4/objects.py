@@ -921,8 +921,7 @@ class ProjectIssue(GitlabObject):
     _url = '/projects/%(project_id)s/issues/'
     _constructorTypes = {'author': 'User', 'assignee': 'User',
                          'milestone': 'ProjectMilestone'}
-    optionalListAttrs = ['state', 'labels', 'milestone', 'iid', 'order_by',
-                         'sort']
+    optionalListAttrs = ['state', 'labels', 'milestone', 'order_by', 'sort']
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['title']
     optionalCreateAttrs = ['description', 'assignee_id', 'milestone_id',
@@ -1178,7 +1177,7 @@ class ProjectMergeRequest(GitlabObject):
     optionalUpdateAttrs = ['target_branch', 'assignee_id', 'title',
                            'description', 'state_event', 'labels',
                            'milestone_id']
-    optionalListAttrs = ['iid', 'state', 'order_by', 'sort']
+    optionalListAttrs = ['iids', 'state', 'order_by', 'sort']
 
     managers = (
         ('notes', 'ProjectMergeRequestNoteManager',
