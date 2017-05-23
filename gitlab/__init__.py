@@ -19,6 +19,7 @@
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+import importlib
 import inspect
 import itertools
 import json
@@ -31,7 +32,7 @@ import six
 import gitlab.config
 from gitlab.const import *  # noqa
 from gitlab.exceptions import *  # noqa
-from gitlab.objects import *  # noqa
+from gitlab.v3.objects import *  # noqa
 
 __title__ = 'python-gitlab'
 __version__ = '0.20'
@@ -91,40 +92,43 @@ class Gitlab(object):
         #: Create a session object for requests
         self.session = requests.Session()
 
-        self.broadcastmessages = BroadcastMessageManager(self)
-        self.keys = KeyManager(self)
-        self.deploykeys = DeployKeyManager(self)
-        self.gitlabciymls = GitlabciymlManager(self)
-        self.gitignores = GitignoreManager(self)
-        self.groups = GroupManager(self)
-        self.hooks = HookManager(self)
-        self.issues = IssueManager(self)
-        self.licenses = LicenseManager(self)
-        self.namespaces = NamespaceManager(self)
-        self.notificationsettings = NotificationSettingsManager(self)
-        self.projects = ProjectManager(self)
-        self.runners = RunnerManager(self)
-        self.settings = ApplicationSettingsManager(self)
-        self.sidekiq = SidekiqManager(self)
-        self.snippets = SnippetManager(self)
-        self.users = UserManager(self)
-        self.teams = TeamManager(self)
-        self.todos = TodoManager(self)
+        objects = importlib.import_module('gitlab.v%s.objects' %
+                                          self._api_version)
+
+        self.broadcastmessages = objects.BroadcastMessageManager(self)
+        self.keys = objects.KeyManager(self)
+        self.deploykeys = objects.DeployKeyManager(self)
+        self.gitlabciymls = objects.GitlabciymlManager(self)
+        self.gitignores = objects.GitignoreManager(self)
+        self.groups = objects.GroupManager(self)
+        self.hooks = objects.HookManager(self)
+        self.issues = objects.IssueManager(self)
+        self.licenses = objects.LicenseManager(self)
+        self.namespaces = objects.NamespaceManager(self)
+        self.notificationsettings = objects.NotificationSettingsManager(self)
+        self.projects = objects.ProjectManager(self)
+        self.runners = objects.RunnerManager(self)
+        self.settings = objects.ApplicationSettingsManager(self)
+        self.sidekiq = objects.SidekiqManager(self)
+        self.snippets = objects.SnippetManager(self)
+        self.users = objects.UserManager(self)
+        self.teams = objects.TeamManager(self)
+        self.todos = objects.TodoManager(self)
 
         # build the "submanagers"
-        for parent_cls in six.itervalues(globals()):
+        for parent_cls in six.itervalues(vars(objects)):
             if (not inspect.isclass(parent_cls)
-                or not issubclass(parent_cls, GitlabObject)
-                    or parent_cls == CurrentUser):
+                or not issubclass(parent_cls, objects.GitlabObject)
+                    or parent_cls == objects.CurrentUser):
                 continue
 
             if not parent_cls.managers:
                 continue
 
-            for var, cls, attrs in parent_cls.managers:
+            for var, cls_name, attrs in parent_cls.managers:
                 var_name = '%s_%s' % (self._cls_to_manager_prefix(parent_cls),
                                       var)
-                manager = cls(self)
+                manager = getattr(objects, cls_name)(self)
                 setattr(self, var_name, manager)
 
     @property

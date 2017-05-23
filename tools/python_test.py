@@ -29,7 +29,7 @@ token_from_auth = gl.private_token
 gl = gitlab.Gitlab.from_config(config_files=['/tmp/python-gitlab.cfg'])
 assert(token_from_auth == gl.private_token)
 gl.auth()
-assert(isinstance(gl.user, gitlab.objects.CurrentUser))
+assert(isinstance(gl.user, gitlab.v3.objects.CurrentUser))
 
 # settings
 settings = gl.settings.get()
