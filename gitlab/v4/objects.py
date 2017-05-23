@@ -2023,10 +2023,10 @@ class Project(GitlabObject):
             GitlabDeleteError: If the action cannot be done
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = "/projects/%s/star" % self.id
-        r = self.gitlab._raw_delete(url, **kwargs)
-        raise_error_from_response(r, GitlabDeleteError, [200, 304])
-        return Project(self.gitlab, r.json()) if r.status_code == 200 else self
+        url = "/projects/%s/unstar" % self.id
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabDeleteError, [201, 304])
+        return Project(self.gitlab, r.json()) if r.status_code == 201 else self
 
     def archive(self, **kwargs):
         """Archive a project.
