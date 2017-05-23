@@ -126,6 +126,10 @@ class Gitlab(object):
                 manager = cls(self)
                 setattr(self, var_name, manager)
 
+    @property
+    def api_version(self):
+        return self._api_version
+
     def _cls_to_manager_prefix(self, cls):
         # Manage bad naming decisions
         camel_case = (cls.__name__

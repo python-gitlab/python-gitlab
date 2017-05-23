@@ -2278,6 +2278,7 @@ class Project(GitlabObject):
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
     optionalListAttrs = ['search']
     requiredCreateAttrs = ['name']
+    optionalListAttrs = ['search']
     optionalCreateAttrs = ['path', 'namespace_id', 'description',
                            'issues_enabled', 'merge_requests_enabled',
                            'builds_enabled', 'wiki_enabled',
@@ -2678,6 +2679,8 @@ class ProjectManager(BaseManager):
     def search(self, query, **kwargs):
         """Search projects by name.
 
+        API v3 only.
+
         .. note::
 
            The search is only performed on the project name (not on the
@@ -2696,6 +2699,9 @@ class ProjectManager(BaseManager):
         Returns:
             list(gitlab.Gitlab.Project): A list of matching projects.
         """
+        if self.gitlab.api_version == '4':
+            raise NotImplementedError("Not supported by v4 API")
+
         return self.gitlab._raw_list("/projects/search/" + query, Project,
                                      **kwargs)
 
