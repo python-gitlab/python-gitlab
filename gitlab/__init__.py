@@ -495,7 +495,7 @@ class Gitlab(object):
 
         r = self._raw_delete(url, **params)
         raise_error_from_response(r, GitlabDeleteError,
-                                  expected_code=[200, 204])
+                                  expected_code=[200, 202, 204])
         return True
 
     def create(self, obj, **kwargs):
