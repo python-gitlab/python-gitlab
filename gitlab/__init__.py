@@ -112,7 +112,8 @@ class Gitlab(object):
         self.sidekiq = objects.SidekiqManager(self)
         self.snippets = objects.SnippetManager(self)
         self.users = objects.UserManager(self)
-        self.teams = objects.TeamManager(self)
+        if self._api_version == '3':
+            self.teams = objects.TeamManager(self)
         self.todos = objects.TodoManager(self)
 
         # build the "submanagers"

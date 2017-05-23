@@ -2138,14 +2138,6 @@ class RunnerManager(BaseManager):
         return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
 
 
-class TeamMember(GitlabObject):
-    _url = '/user_teams/%(team_id)s/members'
-    canUpdate = False
-    requiredUrlAttrs = ['teamd_id']
-    requiredCreateAttrs = ['access_level']
-    shortPrintAttr = 'username'
-
-
 class Todo(GitlabObject):
     _url = '/todos'
     canGet = 'from_list'
@@ -2317,35 +2309,3 @@ class GroupManager(BaseManager):
         """
         url = '/groups?search=' + query
         return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
-
-
-class TeamMemberManager(BaseManager):
-    obj_cls = TeamMember
-
-
-class TeamProject(GitlabObject):
-    _url = '/user_teams/%(team_id)s/projects'
-    _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
-    canUpdate = False
-    requiredCreateAttrs = ['greatest_access_level']
-    requiredUrlAttrs = ['team_id']
-    shortPrintAttr = 'name'
-
-
-class TeamProjectManager(BaseManager):
-    obj_cls = TeamProject
-
-
-class Team(GitlabObject):
-    _url = '/user_teams'
-    shortPrintAttr = 'name'
-    requiredCreateAttrs = ['name', 'path']
-    canUpdate = False
-    managers = (
-        ('members', 'TeamMemberManager', [('team_id', 'id')]),
-        ('projects', 'TeamProjectManager', [('team_id', 'id')]),
-    )
-
-
-class TeamManager(BaseManager):
-    obj_cls = Team
