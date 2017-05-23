@@ -2276,6 +2276,7 @@ class ProjectRunnerManager(BaseManager):
 class Project(GitlabObject):
     _url = '/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
+    optionalListAttrs = ['search']
     requiredCreateAttrs = ['name']
     optionalCreateAttrs = ['path', 'namespace_id', 'description',
                            'issues_enabled', 'merge_requests_enabled',

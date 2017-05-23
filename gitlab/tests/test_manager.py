@@ -215,8 +215,8 @@ class TestGitlabManager(unittest.TestCase):
     def test_project_manager_search(self):
         mgr = ProjectManager(self.gitlab)
 
-        @urlmatch(scheme="http", netloc="localhost",
-                  path="/api/v3/projects/search/foo", method="get")
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects",
+                  query="search=foo", method="get")
         def resp_get_all(url, request):
             headers = {'content-type': 'application/json'}
             content = ('[{"name": "foo1", "id": 1}, '
@@ -225,7 +225,7 @@ class TestGitlabManager(unittest.TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_get_all):
-            data = mgr.search('foo')
+            data = mgr.list(search='foo')
             self.assertEqual(type(data), list)
             self.assertEqual(2, len(data))
             self.assertEqual(type(data[0]), Project)
