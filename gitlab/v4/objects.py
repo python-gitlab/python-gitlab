@@ -30,6 +30,10 @@ from gitlab.base import *  # noqa
 from gitlab.exceptions import *  # noqa
 from gitlab import utils
 
+VISIBILITY_PRIVATE = 'private'
+VISIBILITY_INTERNAL = 'internal'
+VISIBILITY_PUBLIC = 'public'
+
 
 class SidekiqManager(object):
     """Manager for the Sidekiq methods.
@@ -102,7 +106,7 @@ class UserProject(GitlabObject):
     requiredCreateAttrs = ['name']
     optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
                            'merge_requests_enabled', 'wiki_enabled',
-                           'snippets_enabled', 'public', 'visibility_level',
+                           'snippets_enabled', 'public', 'visibility',
                            'description', 'builds_enabled', 'public_builds',
                            'import_url', 'only_allow_merge_if_build_succeeds']
 
@@ -490,8 +494,8 @@ class Snippet(GitlabObject):
     _url = '/snippets'
     _constructorTypes = {'author': 'User'}
     requiredCreateAttrs = ['title', 'file_name', 'content']
-    optionalCreateAttrs = ['lifetime', 'visibility_level']
-    optionalUpdateAttrs = ['title', 'file_name', 'content', 'visibility_level']
+    optionalCreateAttrs = ['lifetime', 'visibility']
+    optionalUpdateAttrs = ['title', 'file_name', 'content', 'visibility']
     shortPrintAttr = 'title'
 
     def raw(self, streamed=False, action=None, chunk_size=1024, **kwargs):
@@ -1568,8 +1572,8 @@ class ProjectSnippet(GitlabObject):
     _constructorTypes = {'author': 'User'}
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['title', 'file_name', 'code']
-    optionalCreateAttrs = ['lifetime', 'visibility_level']
-    optionalUpdateAttrs = ['title', 'file_name', 'code', 'visibility_level']
+    optionalCreateAttrs = ['lifetime', 'visibility']
+    optionalUpdateAttrs = ['title', 'file_name', 'code', 'visibility']
     shortPrintAttr = 'title'
     managers = (
         ('notes', 'ProjectSnippetNoteManager',
@@ -1777,7 +1781,7 @@ class Project(GitlabObject):
                            'issues_enabled', 'merge_requests_enabled',
                            'builds_enabled', 'wiki_enabled',
                            'snippets_enabled', 'container_registry_enabled',
-                           'shared_runners_enabled', 'visibility_level',
+                           'shared_runners_enabled', 'visibility',
                            'import_url', 'public_builds',
                            'only_allow_merge_if_build_succeeds',
                            'only_allow_merge_if_all_discussions_are_resolved',
@@ -1786,7 +1790,7 @@ class Project(GitlabObject):
                            'issues_enabled', 'merge_requests_enabled',
                            'builds_enabled', 'wiki_enabled',
                            'snippets_enabled', 'container_registry_enabled',
-                           'shared_runners_enabled', 'visibility_level',
+                           'shared_runners_enabled', 'visibility',
                            'import_url', 'public_builds',
                            'only_allow_merge_if_build_succeeds',
                            'only_allow_merge_if_all_discussions_are_resolved',
@@ -1824,10 +1828,6 @@ class Project(GitlabObject):
         ('triggers', 'ProjectTriggerManager', [('project_id', 'id')]),
         ('variables', 'ProjectVariableManager', [('project_id', 'id')]),
     )
-
-    VISIBILITY_PRIVATE = gitlab.VISIBILITY_PRIVATE
-    VISIBILITY_INTERNAL = gitlab.VISIBILITY_INTERNAL
-    VISIBILITY_PUBLIC = gitlab.VISIBILITY_PUBLIC
 
     def repository_tree(self, path='', ref_name='', **kwargs):
         """Return a list of files in the repository.
@@ -2184,9 +2184,9 @@ class GroupProjectManager(ProjectManager):
 class Group(GitlabObject):
     _url = '/groups'
     requiredCreateAttrs = ['name', 'path']
-    optionalCreateAttrs = ['description', 'visibility_level', 'parent_id',
+    optionalCreateAttrs = ['description', 'visibility', 'parent_id',
                            'lfs_enabled', 'request_access_enabled']
-    optionalUpdateAttrs = ['name', 'path', 'description', 'visibility_level',
+    optionalUpdateAttrs = ['name', 'path', 'description', 'visibility',
                            'lfs_enabled', 'request_access_enabled']
     shortPrintAttr = 'name'
     managers = (
@@ -2203,10 +2203,6 @@ class Group(GitlabObject):
     DEVELOPER_ACCESS = gitlab.DEVELOPER_ACCESS
     MASTER_ACCESS = gitlab.MASTER_ACCESS
     OWNER_ACCESS = gitlab.OWNER_ACCESS
-
-    VISIBILITY_PRIVATE = gitlab.VISIBILITY_PRIVATE
-    VISIBILITY_INTERNAL = gitlab.VISIBILITY_INTERNAL
-    VISIBILITY_PUBLIC = gitlab.VISIBILITY_PUBLIC
 
     def transfer_project(self, id, **kwargs):
         """Transfers a project to this new groups.
