@@ -7,6 +7,15 @@ This page describes important changes between python-gitlab releases.
 Changes from 0.20 to 0.21
 =========================
 
+* Initial support for the v4 API (experimental)
+
+  The support for v4 is stable enough to be tested, but some features might be
+  broken. Please report issues to
+  https://github.com/python-gitlab/python-gitlab/issues/
+
+  Be aware that the python-gitlab API for v4 objects might change in the next
+  releases.
+
 * Several methods have been deprecated in the ``gitlab.Gitlab`` class:
 
   + ``credentials_auth()`` is deprecated and will be removed. Call ``auth()``.
