@@ -124,6 +124,8 @@ class UserProjectManager(BaseManager):
 class User(GitlabObject):
     _url = '/users'
     shortPrintAttr = 'username'
+    optionalListAttrs = ['active', 'blocked', 'username', 'extern_uid',
+                         'provider', 'external']
     requiredCreateAttrs = ['email', 'username', 'name']
     optionalCreateAttrs = ['password', 'reset_password', 'skype', 'linkedin',
                            'twitter', 'projects_limit', 'extern_uid',
@@ -174,46 +176,6 @@ class User(GitlabObject):
 
 class UserManager(BaseManager):
     obj_cls = User
-
-    def search(self, query, **kwargs):
-        """Search users.
-
-        Args:
-            query (str): The query string to send to GitLab for the search.
-            all (bool): If True, return all the items, without pagination
-            **kwargs: Additional arguments to send to GitLab.
-
-        Returns:
-            list(User): A list of matching users.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabListError: If the server fails to perform the request.
-        """
-        url = self.obj_cls._url + '?search=' + query
-        return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
-
-    def get_by_username(self, username, **kwargs):
-        """Get a user by its username.
-
-        Args:
-            username (str): The name of the user.
-            **kwargs: Additional arguments to send to GitLab.
-
-        Returns:
-            User: The matching user.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the server fails to perform the request.
-        """
-        url = self.obj_cls._url + '?username=' + username
-        results = self.gitlab._raw_list(url, self.obj_cls, **kwargs)
-        assert len(results) in (0, 1)
-        try:
-            return results[0]
-        except IndexError:
-            raise GitlabGetError('no such user: ' + username)
 
 
 class CurrentUserEmail(GitlabObject):
