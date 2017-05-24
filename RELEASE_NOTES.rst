@@ -16,6 +16,12 @@ Changes from 0.20 to 0.21
   Be aware that the python-gitlab API for v4 objects might change in the next
   releases.
 
+  .. warning::
+
+     Consider defining explicitly which API version you want to use in the
+     configuration files or in your ``gitlab.Gitlab`` instances. The default
+     will change from v3 to v4 soon.
+
 * Several methods have been deprecated in the ``gitlab.Gitlab`` class:
 
   + ``credentials_auth()`` is deprecated and will be removed. Call ``auth()``.
