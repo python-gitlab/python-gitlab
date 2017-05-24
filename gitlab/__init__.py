@@ -19,6 +19,7 @@
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
+import importlib
 import inspect
 import itertools
 import json
@@ -31,7 +32,7 @@ import six
 import gitlab.config
 from gitlab.const import *  # noqa
 from gitlab.exceptions import *  # noqa
-from gitlab.objects import *  # noqa
+from gitlab.v3.objects import *  # noqa
 
 __title__ = 'python-gitlab'
 __version__ = '0.20'
@@ -65,13 +66,15 @@ class Gitlab(object):
         timeout (float): Timeout to use for requests to the GitLab server.
         http_username (str): Username for HTTP authentication
         http_password (str): Password for HTTP authentication
+        api_version (str): Gitlab API version to use (3 or 4)
     """
 
     def __init__(self, url, private_token=None, email=None, password=None,
                  ssl_verify=True, http_username=None, http_password=None,
-                 timeout=None):
+                 timeout=None, api_version='3'):
 
-        self._url = '%s/api/v3' % url
+        self._api_version = str(api_version)
+        self._url = '%s/api/v%s' % (url, api_version)
         #: Timeout to use for requests to gitlab server
         self.timeout = timeout
         #: Headers that will be used in request to GitLab
@@ -89,41 +92,49 @@ class Gitlab(object):
         #: Create a session object for requests
         self.session = requests.Session()
 
-        self.broadcastmessages = BroadcastMessageManager(self)
-        self.keys = KeyManager(self)
-        self.deploykeys = DeployKeyManager(self)
-        self.gitlabciymls = GitlabciymlManager(self)
-        self.gitignores = GitignoreManager(self)
-        self.groups = GroupManager(self)
-        self.hooks = HookManager(self)
-        self.issues = IssueManager(self)
-        self.licenses = LicenseManager(self)
-        self.namespaces = NamespaceManager(self)
-        self.notificationsettings = NotificationSettingsManager(self)
-        self.projects = ProjectManager(self)
-        self.runners = RunnerManager(self)
-        self.settings = ApplicationSettingsManager(self)
-        self.sidekiq = SidekiqManager(self)
-        self.snippets = SnippetManager(self)
-        self.users = UserManager(self)
-        self.teams = TeamManager(self)
-        self.todos = TodoManager(self)
+        objects = importlib.import_module('gitlab.v%s.objects' %
+                                          self._api_version)
+
+        self.broadcastmessages = objects.BroadcastMessageManager(self)
+        self.deploykeys = objects.DeployKeyManager(self)
+        self.gitlabciymls = objects.GitlabciymlManager(self)
+        self.gitignores = objects.GitignoreManager(self)
+        self.groups = objects.GroupManager(self)
+        self.hooks = objects.HookManager(self)
+        self.issues = objects.IssueManager(self)
+        self.licenses = objects.LicenseManager(self)
+        self.namespaces = objects.NamespaceManager(self)
+        self.notificationsettings = objects.NotificationSettingsManager(self)
+        self.projects = objects.ProjectManager(self)
+        self.runners = objects.RunnerManager(self)
+        self.settings = objects.ApplicationSettingsManager(self)
+        self.sidekiq = objects.SidekiqManager(self)
+        self.snippets = objects.SnippetManager(self)
+        self.users = objects.UserManager(self)
+        self.todos = objects.TodoManager(self)
+        if self._api_version == '3':
+            self.keys = objects.KeyManager(self)
+            self.teams = objects.TeamManager(self)
 
         # build the "submanagers"
-        for parent_cls in six.itervalues(globals()):
+        for parent_cls in six.itervalues(vars(objects)):
             if (not inspect.isclass(parent_cls)
-                or not issubclass(parent_cls, GitlabObject)
-                    or parent_cls == CurrentUser):
+                or not issubclass(parent_cls, objects.GitlabObject)
+                    or parent_cls == objects.CurrentUser):
                 continue
 
             if not parent_cls.managers:
                 continue
 
-            for var, cls, attrs in parent_cls.managers:
+            for var, cls_name, attrs in parent_cls.managers:
                 var_name = '%s_%s' % (self._cls_to_manager_prefix(parent_cls),
                                       var)
-                manager = cls(self)
+                manager = getattr(objects, cls_name)(self)
                 setattr(self, var_name, manager)
+
+    @property
+    def api_version(self):
+        return self._api_version
 
     def _cls_to_manager_prefix(self, cls):
         # Manage bad naming decisions
@@ -152,7 +163,8 @@ class Gitlab(object):
         return Gitlab(config.url, private_token=config.token,
                       ssl_verify=config.ssl_verify, timeout=config.timeout,
                       http_username=config.http_username,
-                      http_password=config.http_password)
+                      http_password=config.http_password,
+                      api_version=config.api_version)
 
     def auth(self):
         """Performs an authentication.
@@ -225,7 +237,7 @@ class Gitlab(object):
         warnings.warn('set_url() is deprecated, create a new Gitlab instance '
                       'if you need an updated URL.',
                       DeprecationWarning)
-        self._url = '%s/api/v3' % url
+        self._url = '%s/api/v%s' % (url, self._api_version)
 
     def _construct_url(self, id_, obj, parameters, action=None):
         if 'next_url' in parameters:
@@ -505,7 +517,7 @@ class Gitlab(object):
 
         r = self._raw_delete(url, **params)
         raise_error_from_response(r, GitlabDeleteError,
-                                  expected_code=[200, 204])
+                                  expected_code=[200, 202, 204])
         return True
 
     def create(self, obj, **kwargs):

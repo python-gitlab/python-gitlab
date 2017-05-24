@@ -25,7 +25,7 @@ from httmock import response  # noqa
 from httmock import urlmatch  # noqa
 
 from gitlab import *  # noqa
-from gitlab.objects import BaseManager  # noqa
+from gitlab.v3.objects import BaseManager  # noqa
 
 
 class FakeChildObject(GitlabObject):
