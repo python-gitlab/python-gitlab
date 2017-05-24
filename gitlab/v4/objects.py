@@ -1590,9 +1590,22 @@ class ProjectSnippetManager(BaseManager):
 
 class ProjectTrigger(GitlabObject):
     _url = '/projects/%(project_id)s/triggers'
-    canUpdate = False
-    idAttr = 'token'
-    requiredUrlAttrs = ['project_id', 'description']
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['description']
+    optionalUpdateAttrs = ['description']
+
+    def take_ownership(self, **kwargs):
+        """Update the owner of a trigger.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabGetError: If the server fails to perform the request.
+        """
+        url = ('/projects/%(project_id)s/triggers/%(id)s/take_ownership' %
+               {'project_id': self.project_id, 'id': self.id})
+        r = self.gitlab._raw_post(url, **kwargs)
+        raise_error_from_response(r, GitlabUpdateError, 200)
+        self._set_from_dict(r.json())
 
 
 class ProjectTriggerManager(BaseManager):
