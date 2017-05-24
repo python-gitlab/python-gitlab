@@ -36,10 +36,12 @@ The configuration file uses the ``INI`` format. It contains at least a
    default = somewhere
    ssl_verify = true
    timeout = 5
+   api_version = 3
 
    [somewhere]
    url = https://some.whe.re
    private_token = vTbFeqJYCY3sibBP7BZM
+   api_version = 4
 
    [elsewhere]
    url = http://else.whe.re:8080
@@ -78,6 +80,8 @@ section.
      - URL for the GitLab server
    * - ``private_token``
      - Your user token. Login/password is not supported.
+   * - ``api_version``
+     - API version to use (``3`` or ``4``), defaults to ``3``
    * - ``http_username``
      - Username for optional HTTP authentication
    * - ``http_password``

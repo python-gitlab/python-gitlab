@@ -40,6 +40,20 @@ You can also use configuration files to create ``gitlab.Gitlab`` objects:
 See the :ref:`cli_configuration` section for more information about
 configuration files.
 
+**GitLab v4 support**
+
+``python-gitlab`` uses the v3 GitLab API by default. Use the ``api_version``
+parameter to switch to v4:
+
+.. code-block:: python
+
+   import gitlab
+
+   gl = gitlab.Gitlab('http://10.0.0.1', 'JVNSESs8EwWRx5yDxM5q', api_version=4)
+
+.. warning::
+
+   The v4 support is experimental.
 
 Managers
 ========
