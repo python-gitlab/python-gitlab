@@ -1,6 +1,26 @@
 ChangeLog
 =========
 
+Version 0.21_ - 2017-05-24
+--------------------------
+
+* Add time_stats to ProjectMergeRequest
+* Update User options for creation and update (#246)
+* Add milestone.merge_requests() API
+* Fix docs typo (s/correspnding/corresponding/)
+* Support milestone start date (#251)
+* Add support for priority attribute in labels (#256)
+* Add support for nested groups (#257)
+* Make GroupProjectManager a subclass of ProjectManager (#255)
+* Available services: return a list instead of JSON (#258)
+* MR: add support for time tracking features (#248)
+* Fixed repository_tree and repository_blob path encoding (#265)
+* Add 'search' attribute to projects.list()
+* Initial gitlab API v4 support
+* Reorganise the code to handle v3 and v4 objects
+* Allow 202 as delete return code
+* Deprecate parameter related methods in gitlab.Gitlab
+
 Version 0.20_ - 2017-03-25
 ---------------------------
 
@@ -397,6 +417,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
+.. _0.21: https://github.com/python-gitlab/python-gitlab/compare/0.20...0.21
 .. _0.20: https://github.com/python-gitlab/python-gitlab/compare/0.19...0.20
 .. _0.19: https://github.com/python-gitlab/python-gitlab/compare/0.18...0.19
 .. _0.18: https://github.com/python-gitlab/python-gitlab/compare/0.17...0.18

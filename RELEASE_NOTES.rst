@@ -33,6 +33,9 @@ Changes from 0.20 to 0.21
   + ``set_credentials()`` is deprecated, use the ``email`` and ``password``
     arguments of the ``Gitlab`` constructor.
 
+* The service listing method (``ProjectServiceManager.list()``) now returns a
+  python list instead of a JSON string.
+
 Changes from 0.19 to 0.20
 =========================
 
