@@ -563,8 +563,8 @@ class ProjectBranchManager(BaseManager):
     obj_cls = ProjectBranch
 
 
-class ProjectBuild(GitlabObject):
-    _url = '/projects/%(project_id)s/builds'
+class ProjectJob(GitlabObject):
+    _url = '/projects/%(project_id)s/jobs'
     _constructorTypes = {'user': 'User',
                          'commit': 'ProjectCommit',
                          'runner': 'Runner'}
@@ -574,28 +574,28 @@ class ProjectBuild(GitlabObject):
     canCreate = False
 
     def cancel(self, **kwargs):
-        """Cancel the build."""
-        url = '/projects/%s/builds/%s/cancel' % (self.project_id, self.id)
+        """Cancel the job."""
+        url = '/projects/%s/jobs/%s/cancel' % (self.project_id, self.id)
         r = self.gitlab._raw_post(url)
-        raise_error_from_response(r, GitlabBuildCancelError, 201)
+        raise_error_from_response(r, GitlabJobCancelError, 201)
 
     def retry(self, **kwargs):
-        """Retry the build."""
-        url = '/projects/%s/builds/%s/retry' % (self.project_id, self.id)
+        """Retry the job."""
+        url = '/projects/%s/jobs/%s/retry' % (self.project_id, self.id)
         r = self.gitlab._raw_post(url)
-        raise_error_from_response(r, GitlabBuildRetryError, 201)
+        raise_error_from_response(r, GitlabJobRetryError, 201)
 
     def play(self, **kwargs):
-        """Trigger a build explicitly."""
-        url = '/projects/%s/builds/%s/play' % (self.project_id, self.id)
+        """Trigger a job explicitly."""
+        url = '/projects/%s/jobs/%s/play' % (self.project_id, self.id)
         r = self.gitlab._raw_post(url)
-        raise_error_from_response(r, GitlabBuildPlayError)
+        raise_error_from_response(r, GitlabJobPlayError)
 
     def erase(self, **kwargs):
-        """Erase the build (remove build artifacts and trace)."""
-        url = '/projects/%s/builds/%s/erase' % (self.project_id, self.id)
+        """Erase the job (remove job artifacts and trace)."""
+        url = '/projects/%s/jobs/%s/erase' % (self.project_id, self.id)
         r = self.gitlab._raw_post(url)
-        raise_error_from_response(r, GitlabBuildEraseError, 201)
+        raise_error_from_response(r, GitlabJobEraseError, 201)
 
     def keep_artifacts(self, **kwargs):
         """Prevent artifacts from being delete when expiration is set.
@@ -604,14 +604,14 @@ class ProjectBuild(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabCreateError: If the request failed.
         """
-        url = ('/projects/%s/builds/%s/artifacts/keep' %
+        url = ('/projects/%s/jobs/%s/artifacts/keep' %
                (self.project_id, self.id))
         r = self.gitlab._raw_post(url)
         raise_error_from_response(r, GitlabGetError, 200)
 
     def artifacts(self, streamed=False, action=None, chunk_size=1024,
                   **kwargs):
-        """Get the build artifacts.
+        """Get the job artifacts.
 
         Args:
             streamed (bool): If True the data will be processed by chunks of
@@ -628,13 +628,13 @@ class ProjectBuild(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the artifacts are not available.
         """
-        url = '/projects/%s/builds/%s/artifacts' % (self.project_id, self.id)
+        url = '/projects/%s/jobs/%s/artifacts' % (self.project_id, self.id)
         r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
         raise_error_from_response(r, GitlabGetError, 200)
         return utils.response_content(r, streamed, action, chunk_size)
 
     def trace(self, streamed=False, action=None, chunk_size=1024, **kwargs):
-        """Get the build trace.
+        """Get the job trace.
 
         Args:
             streamed (bool): If True the data will be processed by chunks of
@@ -651,14 +651,14 @@ class ProjectBuild(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the trace is not available.
         """
-        url = '/projects/%s/builds/%s/trace' % (self.project_id, self.id)
+        url = '/projects/%s/jobs/%s/trace' % (self.project_id, self.id)
         r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
         raise_error_from_response(r, GitlabGetError, 200)
         return utils.response_content(r, streamed, action, chunk_size)
 
 
-class ProjectBuildManager(BaseManager):
-    obj_cls = ProjectBuild
+class ProjectJobManager(BaseManager):
+    obj_cls = ProjectJob
 
 
 class ProjectCommitStatus(GitlabObject):
@@ -741,22 +741,6 @@ class ProjectCommit(GitlabObject):
         r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
         raise_error_from_response(r, GitlabGetError)
         return utils.response_content(r, streamed, action, chunk_size)
-
-    def builds(self, **kwargs):
-        """List the build for this commit.
-
-        Returns:
-            list(ProjectBuild): A list of builds.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabListError: If the server fails to perform the request.
-        """
-        url = '/projects/%s/repository/commits/%s/builds' % (self.project_id,
-                                                             self.id)
-        return self.gitlab._raw_list(url, ProjectBuild,
-                                     {'project_id': self.project_id},
-                                     **kwargs)
 
     def cherry_pick(self, branch, **kwargs):
         """Cherry-pick a commit into a branch.
@@ -1794,7 +1778,7 @@ class Project(GitlabObject):
         ('boards', 'ProjectBoardManager', [('project_id', 'id')]),
         ('board_lists', 'ProjectBoardListManager', [('project_id', 'id')]),
         ('branches', 'ProjectBranchManager', [('project_id', 'id')]),
-        ('builds', 'ProjectBuildManager', [('project_id', 'id')]),
+        ('builds', 'ProjectJobManager', [('project_id', 'id')]),
         ('commits', 'ProjectCommitManager', [('project_id', 'id')]),
         ('deployments', 'ProjectDeploymentManager', [('project_id', 'id')]),
         ('environments', 'ProjectEnvironmentManager', [('project_id', 'id')]),

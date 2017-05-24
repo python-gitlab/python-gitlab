@@ -83,15 +83,15 @@ class GitlabCancelError(GitlabOperationError):
     pass
 
 
-class GitlabBuildCancelError(GitlabCancelError):
-    pass
-
-
 class GitlabPipelineCancelError(GitlabCancelError):
     pass
 
 
 class GitlabRetryError(GitlabOperationError):
+    pass
+
+
+class GitlabBuildCancelError(GitlabCancelError):
     pass
 
 
@@ -104,6 +104,22 @@ class GitlabBuildPlayError(GitlabRetryError):
 
 
 class GitlabBuildEraseError(GitlabRetryError):
+    pass
+
+
+class GitlabJobCancelError(GitlabCancelError):
+    pass
+
+
+class GitlabJobRetryError(GitlabRetryError):
+    pass
+
+
+class GitlabJobPlayError(GitlabRetryError):
+    pass
+
+
+class GitlabJobEraseError(GitlabRetryError):
     pass
 
 
