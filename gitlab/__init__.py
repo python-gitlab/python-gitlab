@@ -76,7 +76,7 @@ class Gitlab(object):
         self.timeout = timeout
         #: Headers that will be used in request to GitLab
         self.headers = {}
-        self.set_token(private_token)
+        self._set_token(private_token)
         #: The user email
         self.email = email
         #: The user password (associated with email)
@@ -163,12 +163,17 @@ class Gitlab(object):
         success.
         """
         if self.private_token:
-            self.token_auth()
+            self._token_auth()
         else:
-            self.credentials_auth()
+            self._credentials_auth()
 
     def credentials_auth(self):
         """Performs an authentication using email/password."""
+        warnings.warn('credentials_auth() is deprecated and will be removed.',
+                      DeprecationWarning)
+        self._credentials_auth()
+
+    def _credentials_auth(self):
         if not self.email or not self.password:
             raise GitlabAuthenticationError("Missing email/password")
 
@@ -179,7 +184,16 @@ class Gitlab(object):
         """(gitlab.objects.CurrentUser): Object representing the user currently
             logged.
         """
-        self.set_token(self.user.private_token)
+        self._set_token(self.user.private_token)
+
+    def token_auth(self):
+        """Performs an authentication using the private token."""
+        warnings.warn('token_auth() is deprecated and will be removed.',
+                      DeprecationWarning)
+        self._token_auth()
+
+    def _token_auth(self):
+        self.user = CurrentUser(self)
 
     def version(self):
         """Returns the version and revision of the gitlab server.
@@ -202,16 +216,15 @@ class Gitlab(object):
 
         return self.version, self.revision
 
-    def token_auth(self):
-        """Performs an authentication using the private token."""
-        self.user = CurrentUser(self)
-
     def set_url(self, url):
         """Updates the GitLab URL.
 
         Args:
             url (str): Base URL of the GitLab server.
         """
+        warnings.warn('set_url() is deprecated, create a new Gitlab instance '
+                      'if you need an updated URL.',
+                      DeprecationWarning)
         self._url = '%s/api/v3' % url
 
     def _construct_url(self, id_, obj, parameters, action=None):
@@ -244,6 +257,12 @@ class Gitlab(object):
         Args:
             token (str): The private token.
         """
+        warnings.warn('set_token() is deprecated, use the private_token '
+                      'argument of the Gitlab constructor.',
+                      DeprecationWarning)
+        self._set_token(token)
+
+    def _set_token(self, token):
         self.private_token = token if token else None
         if token:
             self.headers["PRIVATE-TOKEN"] = token
@@ -257,6 +276,9 @@ class Gitlab(object):
             email (str): The user email or login.
             password (str): The user password.
         """
+        warnings.warn('set_credentials() is deprecated, use the email and '
+                      'password arguments of the Gitlab constructor.',
+                      DeprecationWarning)
         self.email = email
         self.password = password
 

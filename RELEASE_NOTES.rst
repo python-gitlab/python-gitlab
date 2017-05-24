@@ -4,6 +4,20 @@ Release notes
 
 This page describes important changes between python-gitlab releases.
 
+Changes from 0.20 to 0.21
+=========================
+
+* Several methods have been deprecated in the ``gitlab.Gitlab`` class:
+
+  + ``credentials_auth()`` is deprecated and will be removed. Call ``auth()``.
+  + ``token_auth()`` is deprecated and will be removed. Call ``auth()``.
+  + ``set_url()`` is deprecated, create a new ``Gitlab`` instance if you need
+    an updated URL.
+  + ``set_token()`` is deprecated, use the ``private_token`` argument of the
+    ``Gitlab`` constructor.
+  + ``set_credentials()`` is deprecated, use the ``email`` and ``password``
+    arguments of the ``Gitlab`` constructor.
+
 Changes from 0.19 to 0.20
 =========================
 

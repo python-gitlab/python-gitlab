@@ -341,7 +341,7 @@ class TestGitlabMethods(unittest.TestCase):
         self.assertRaises(GitlabListError, self.gl.list, ProjectBranch)
 
     def test_list_no_connection(self):
-        self.gl.set_url('http://localhost:66000')
+        self.gl._url = 'http://localhost:66000/api/v3'
         self.assertRaises(GitlabConnectionError, self.gl.list, ProjectBranch,
                           project_id=1)
 
@@ -613,27 +613,10 @@ class TestGitlab(unittest.TestCase):
                          email="testuser@test.com", password="testpassword",
                          ssl_verify=True)
 
-    def test_set_url(self):
-        self.gl.set_url("http://new_url")
-        self.assertEqual(self.gl._url, "http://new_url/api/v3")
-
-    def test_set_token(self):
-        token = "newtoken"
-        expected = {"PRIVATE-TOKEN": token}
-        self.gl.set_token(token)
-        self.assertEqual(self.gl.private_token, token)
-        self.assertDictContainsSubset(expected, self.gl.headers)
-
-    def test_set_credentials(self):
-        email = "credentialuser@test.com"
-        password = "credentialpassword"
-        self.gl.set_credentials(email=email, password=password)
-        self.assertEqual(self.gl.email, email)
-        self.assertEqual(self.gl.password, password)
-
     def test_credentials_auth_nopassword(self):
-        self.gl.set_credentials(email=None, password=None)
-        self.assertRaises(GitlabAuthenticationError, self.gl.credentials_auth)
+        self.gl.email = None
+        self.gl.password = None
+        self.assertRaises(GitlabAuthenticationError, self.gl._credentials_auth)
 
     def test_credentials_auth_notok(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/session",
@@ -645,10 +628,10 @@ class TestGitlab(unittest.TestCase):
 
         with HTTMock(resp_cont):
             self.assertRaises(GitlabAuthenticationError,
-                              self.gl.credentials_auth)
+                              self.gl._credentials_auth)
 
     def test_auth_with_credentials(self):
-        self.gl.set_token(None)
+        self.gl.private_token = None
         self.test_credentials_auth(callback=self.gl.auth)
 
     def test_auth_with_token(self):
@@ -656,7 +639,7 @@ class TestGitlab(unittest.TestCase):
 
     def test_credentials_auth(self, callback=None):
         if callback is None:
-            callback = self.gl.credentials_auth
+            callback = self.gl._credentials_auth
         token = "credauthtoken"
         id_ = 1
         expected = {"PRIVATE-TOKEN": token}
@@ -677,7 +660,7 @@ class TestGitlab(unittest.TestCase):
 
     def test_token_auth(self, callback=None):
         if callback is None:
-            callback = self.gl.token_auth
+            callback = self.gl._token_auth
         name = "username"
         id_ = 1
 
