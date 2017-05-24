@@ -305,6 +305,18 @@ class NotificationSettingsManager(BaseManager):
     obj_cls = NotificationSettings
 
 
+class Dockerfile(GitlabObject):
+    _url = '/templates/dockerfiles'
+    canDelete = False
+    canUpdate = False
+    canCreate = False
+    idAttr = 'name'
+
+
+class DockerfileManager(BaseManager):
+    obj_cls = Dockerfile
+
+
 class Gitignore(GitlabObject):
     _url = '/templates/gitignores'
     canDelete = False

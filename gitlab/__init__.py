@@ -115,6 +115,8 @@ class Gitlab(object):
         if self._api_version == '3':
             self.keys = objects.KeyManager(self)
             self.teams = objects.TeamManager(self)
+        else:
+            self.dockerfiles = objects.DockerfileManager(self)
 
         # build the "submanagers"
         for parent_cls in six.itervalues(vars(objects)):
