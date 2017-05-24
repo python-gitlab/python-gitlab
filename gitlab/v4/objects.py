@@ -307,23 +307,6 @@ class BroadcastMessageManager(BaseManager):
     obj_cls = BroadcastMessage
 
 
-class Key(GitlabObject):
-    _url = '/deploy_keys'
-    canGet = 'from_list'
-    canCreate = False
-    canUpdate = False
-    canDelete = False
-
-    def __init__(self, *args, **kwargs):
-        warnings.warn("`Key` is deprecated, use `DeployKey` instead",
-                      DeprecationWarning)
-        super(Key, self).__init__(*args, **kwargs)
-
-
-class KeyManager(BaseManager):
-    obj_cls = Key
-
-
 class DeployKey(GitlabObject):
     _url = '/deploy_keys'
     canGet = 'from_list'
@@ -2047,11 +2030,6 @@ class Project(GitlabObject):
         raise_error_from_response(r, GitlabCreateError, 201)
         return Project(self.gitlab, r.json()) if r.status_code == 201 else self
 
-    def archive_(self, **kwargs):
-        warnings.warn("`archive_()` is deprecated, use `archive()` instead",
-                      DeprecationWarning)
-        return self.archive(**kwargs)
-
     def unarchive(self, **kwargs):
         """Unarchive a project.
 
@@ -2066,12 +2044,6 @@ class Project(GitlabObject):
         r = self.gitlab._raw_delete(url, **kwargs)
         raise_error_from_response(r, GitlabCreateError, 201)
         return Project(self.gitlab, r.json()) if r.status_code == 201 else self
-
-    def unarchive_(self, **kwargs):
-        warnings.warn("`unarchive_()` is deprecated, "
-                      "use `unarchive()` instead",
-                      DeprecationWarning)
-        return self.unarchive(**kwargs)
 
     def share(self, group_id, group_access, **kwargs):
         """Share the project with a group.

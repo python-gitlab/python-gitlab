@@ -96,7 +96,6 @@ class Gitlab(object):
                                           self._api_version)
 
         self.broadcastmessages = objects.BroadcastMessageManager(self)
-        self.keys = objects.KeyManager(self)
         self.deploykeys = objects.DeployKeyManager(self)
         self.gitlabciymls = objects.GitlabciymlManager(self)
         self.gitignores = objects.GitignoreManager(self)
@@ -112,9 +111,10 @@ class Gitlab(object):
         self.sidekiq = objects.SidekiqManager(self)
         self.snippets = objects.SnippetManager(self)
         self.users = objects.UserManager(self)
-        if self._api_version == '3':
-            self.teams = objects.TeamManager(self)
         self.todos = objects.TodoManager(self)
+        if self._api_version == '3':
+            self.keys = objects.KeyManager(self)
+            self.teams = objects.TeamManager(self)
 
         # build the "submanagers"
         for parent_cls in six.itervalues(vars(objects)):
