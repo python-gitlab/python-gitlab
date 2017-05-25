@@ -1,3 +1,4 @@
+import inspect
 import itertools
 import os
 
@@ -9,7 +10,10 @@ from sphinx.ext.napoleon.docstring import GoogleDocstring
 
 
 def classref(value, short=True):
+    if not inspect.isclass(value):
+        return ':class:%s' % value
     tilde = '~' if short else ''
+    string = '%s.%s' % (value.__module__, value.__name__)
     return ':class:`%sgitlab.objects.%s`' % (tilde, value.__name__)
 
 
