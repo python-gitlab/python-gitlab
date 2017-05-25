@@ -1790,7 +1790,7 @@ class Project(GitlabObject):
         ('boards', 'ProjectBoardManager', [('project_id', 'id')]),
         ('board_lists', 'ProjectBoardListManager', [('project_id', 'id')]),
         ('branches', 'ProjectBranchManager', [('project_id', 'id')]),
-        ('builds', 'ProjectJobManager', [('project_id', 'id')]),
+        ('jobs', 'ProjectJobManager', [('project_id', 'id')]),
         ('commits', 'ProjectCommitManager', [('project_id', 'id')]),
         ('deployments', 'ProjectDeploymentManager', [('project_id', 'id')]),
         ('environments', 'ProjectEnvironmentManager', [('project_id', 'id')]),
