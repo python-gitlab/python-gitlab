@@ -11,14 +11,14 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   changelog
-   release_notes
    install
    cli
    api-usage
    api-objects
    upgrade-from-0.10
    api/modules
+   release_notes
+   changelog
 
 
 Indices and tables
