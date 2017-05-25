@@ -5,6 +5,7 @@ Version 0.21.1_ - 2017-05-25
 ----------------------------
 
 * Fix the manager name for jobs in the Project class
+* Fix the docs
 
 Version 0.21_ - 2017-05-24
 --------------------------
