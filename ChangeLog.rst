@@ -1,6 +1,11 @@
 ChangeLog
 =========
 
+Version 0.21.1_ - 2017-05-25
+----------------------------
+
+* Fix the manager name for jobs in the Project class
+
 Version 0.21_ - 2017-05-24
 --------------------------
 
@@ -417,6 +422,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
+.. _0.21.1: https://github.com/python-gitlab/python-gitlab/compare/0.21...0.21.1
 .. _0.21: https://github.com/python-gitlab/python-gitlab/compare/0.20...0.21
 .. _0.20: https://github.com/python-gitlab/python-gitlab/compare/0.19...0.20
 .. _0.19: https://github.com/python-gitlab/python-gitlab/compare/0.18...0.19
