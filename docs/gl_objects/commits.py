@@ -27,7 +27,7 @@ data = {
 commit = gl.project_commits.create(data, project_id=1)
 # or
 commit = project.commits.create(data)
-# end commit
+# end create
 
 # get
 commit = gl.project_commits.get('e3d5a71b', project_id=1)

@@ -25,7 +25,7 @@ g_ar = group.accessrequests.create({})
 # approve
 ar.approve()  # defaults to DEVELOPER level
 ar.approve(access_level=gitlab.MASTER_ACCESS)  # explicitly set access level
-# approve
+# end approve
 
 # delete
 gl.project_accessrequests.delete(user_id, project_id=1)

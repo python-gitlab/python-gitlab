@@ -109,29 +109,29 @@ Get time tracking stats:
 
 .. literalinclude:: issues.py
    :start-after: # project issue time tracking stats
-   :end-before: # end project time tracking stats
+   :end-before: # end project issue time tracking stats
 
 Set a time estimate for an issue:
 
 .. literalinclude:: issues.py
    :start-after: # project issue set time estimate
-   :end-before: # end project set time estimate
+   :end-before: # end project issue set time estimate
 
 Reset a time estimate for an issue:
 
 .. literalinclude:: issues.py
    :start-after: # project issue reset time estimate
-   :end-before: # end project reset time estimate
+   :end-before: # end project issue reset time estimate
 
 Add spent time for an issue:
 
 .. literalinclude:: issues.py
    :start-after: # project issue set time spent
-   :end-before: # end project set time spent
+   :end-before: # end project issue set time spent
 
 Reset spent time for an issue:
 
 .. literalinclude:: issues.py
    :start-after: # project issue reset time spent
-   :end-before: # end project reset time spent
+   :end-before: # end project issue reset time spent
 
