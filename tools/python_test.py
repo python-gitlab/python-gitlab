@@ -85,7 +85,7 @@ assert(len(new_user.emails.list()) == 0)
 
 new_user.delete()
 foobar_user.delete()
-assert(len(gl.users.list()) == 1)
+assert(len(gl.users.list()) == 3)
 
 # current user key
 key = gl.user.keys.create({'title': 'testkey', 'key': SSH_KEY})
@@ -163,7 +163,7 @@ readme = admin_project.files.get(file_path='README', ref='master')
 readme.content = base64.b64encode("Improved README")
 time.sleep(2)
 readme.save(branch_name="master", commit_message="new commit")
-readme.delete(commit_message="Removing README")
+readme.delete(commit_message="Removing README", branch_name="master")
 
 admin_project.files.create({'file_path': 'README.rst',
                             'branch_name': 'master',

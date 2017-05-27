@@ -431,7 +431,7 @@ class GitlabObject(object):
             self._set_manager(var, cls, attrs)
             return getattr(self, var)
 
-        raise AttributeError
+        raise AttributeError(name)
 
     def __str__(self):
         return '%s => %s' % (type(self), str(self.__dict__))
