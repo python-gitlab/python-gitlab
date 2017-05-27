@@ -26,9 +26,11 @@ fatal() { error "$@"; exit 1; }
 try() { "$@" || fatal "'$@' failed"; }
 
 PY_VER=2
-while getopts :p: opt "$@"; do
+API_VER=3
+while getopts :p:a: opt "$@"; do
     case $opt in
         p) PY_VER=$OPTARG;;
+        a) API_VER=$OPTARG;;
         :) fatal "Option -${OPTARG} requires a value";;
         '?') fatal "Unknown option: -${OPTARG}";;
         *) fatal "Internal error: opt=${opt}";;
@@ -39,6 +41,11 @@ case $PY_VER in
     2) VENV_CMD=virtualenv;;
     3) VENV_CMD=pyvenv;;
     *) fatal "Wrong python version (2 or 3)";;
+esac
+
+case $API_VER in
+    3|4) ;;
+    *) fatal "Wrong API version (3 or 4)";;
 esac
 
 for req in \
@@ -130,6 +137,7 @@ timeout = 10
 [local]
 url = http://localhost:8080
 private_token = $TOKEN
+api_version = $API_VER
 EOF
 
 log "Config file content ($CONFIG):"
