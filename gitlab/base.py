@@ -531,3 +531,317 @@ class GitlabObject(object):
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+
+class SaveMixin(object):
+    """Mixin for RESTObject's that can be updated."""
+    def save(self, **kwargs):
+        """Saves the changes made to the object to the server.
+
+        Args:
+            **kwargs: Extra option to send to the server (e.g. sudo)
+
+        The object is updated to match what the server returns.
+        """
+        updated_data = {}
+        required, optional = self.manager.get_update_attrs()
+        for attr in required:
+            # Get everything required, no matter if it's been updated
+            updated_data[attr] = getattr(self, attr)
+        # Add the updated attributes
+        updated_data.update(self._updated_attrs)
+
+        # class the manager
+        obj_id = self.get_id()
+        server_data = self.manager.update(obj_id, updated_data, **kwargs)
+        self._updated_attrs = {}
+        self._attrs.update(server_data)
+
+
+class RESTObject(object):
+    """Represents an object built from server data.
+
+    It holds the attributes know from te server, and the updated attributes in
+    another. This allows smart updates, if the object allows it.
+
+    You can redefine ``_id_attr`` in child classes to specify which attribute
+    must be used as uniq ID. None means that the object can be updated without
+    ID in the url.
+    """
+    _id_attr = 'id'
+
+    def __init__(self, manager, attrs):
+        self.__dict__.update({
+            'manager': manager,
+            '_attrs': attrs,
+            '_updated_attrs': {},
+        })
+
+    def __getattr__(self, name):
+        try:
+            return self.__dict__['_updated_attrs'][name]
+        except KeyError:
+            try:
+                return self.__dict__['_attrs'][name]
+            except KeyError:
+                raise AttributeError(name)
+
+    def __setattr__(self, name, value):
+        self.__dict__['_updated_attrs'][name] = value
+
+    def __str__(self):
+        data = self._attrs.copy()
+        data.update(self._updated_attrs)
+        return '%s => %s' % (type(self), data)
+
+    def __repr__(self):
+        if self._id_attr :
+            return '<%s %s:%s>' % (self.__class__.__name__,
+                                   self._id_attr,
+                                   self.get_id())
+        else:
+            return '<%s>' % self.__class__.__name__
+
+    def get_id(self):
+        if self._id_attr is None:
+            return None
+        return getattr(self, self._id_attr)
+
+
+class RESTObjectList(object):
+    """Generator object representing a list of RESTObject's.
+
+    This generator uses the Gitlab pagination system to fetch new data when
+    required.
+
+    Note: you should not instanciate such objects, they are returned by calls
+    to RESTManager.list()
+
+    Args:
+        manager: Manager to attach to the created objects
+        obj_cls: Type of objects to create from the json data
+        _list: A GitlabList object
+    """
+    def __init__(self, manager, obj_cls, _list):
+        self.manager = manager
+        self._obj_cls = obj_cls
+        self._list = _list
+
+    def __iter__(self):
+        return self
+
+    def __len__(self):
+        return len(self._list)
+
+    def __next__(self):
+        return self.next()
+
+    def next(self):
+        data = self._list.next()
+        return self._obj_cls(self.manager, data)
+
+
+class GetMixin(object):
+    def get(self, id, **kwargs):
+        """Retrieve a single object.
+
+        Args:
+            id (int or str): ID of the object to retrieve
+            **kwargs: Extra data to send to the Gitlab server (e.g. sudo)
+
+        Returns:
+            object: The generated RESTObject.
+
+        Raises:
+            GitlabGetError: If the server cannot perform the request.
+        """
+        path = '%s/%s' % (self._path, id)
+        server_data = self.gitlab.http_get(path, **kwargs)
+        return self._obj_cls(self, server_data)
+
+
+class GetWithoutIdMixin(object):
+    def get(self, **kwargs):
+        """Retrieve a single object.
+
+        Args:
+            **kwargs: Extra data to send to the Gitlab server (e.g. sudo)
+
+        Returns:
+            object: The generated RESTObject.
+
+        Raises:
+            GitlabGetError: If the server cannot perform the request.
+        """
+        server_data = self.gitlab.http_get(self._path, **kwargs)
+        return self._obj_cls(self, server_data)
+
+
+class ListMixin(object):
+    def list(self, **kwargs):
+        """Retrieves a list of objects.
+
+        Args:
+            **kwargs: Extra data to send to the Gitlab server (e.g. sudo).
+                      If ``all`` is passed and set to True, the entire list of
+                      objects will be returned.
+
+        Returns:
+            RESTObjectList: Generator going through the list of objects, making
+                            queries to the server when required.
+                            If ``all=True`` is passed as argument, returns
+                            list(RESTObjectList).
+        """
+
+        obj = self.gitlab.http_list(self._path, **kwargs)
+        if isinstance(obj, list):
+            return [self._obj_cls(self, item) for item in obj]
+        else:
+            return RESTObjectList(self, self._obj_cls, obj)
+
+
+class GetFromListMixin(ListMixin):
+    def get(self, id, **kwargs):
+        """Retrieve a single object.
+
+        Args:
+            id (int or str): ID of the object to retrieve
+            **kwargs: Extra data to send to the Gitlab server (e.g. sudo)
+
+        Returns:
+            object: The generated RESTObject.
+
+        Raises:
+            GitlabGetError: If the server cannot perform the request.
+        """
+        gen = self.list()
+        for obj in gen:
+            if str(obj.get_id()) == str(id):
+                return obj
+
+
+class RetrieveMixin(ListMixin, GetMixin):
+    pass
+
+
+class CreateMixin(object):
+    def _check_missing_attrs(self, data):
+        required, optional = self.get_create_attrs()
+        missing = []
+        for attr in required:
+            if attr not in data:
+                missing.append(attr)
+                continue
+        if missing:
+            raise AttributeError("Missing attributes: %s" % ", ".join(missing))
+
+    def get_create_attrs(self):
+        """Returns the required and optional arguments.
+
+        Returns:
+            tuple: 2 items: list of required arguments and list of optional
+                   arguments for creation (in that order)
+        """
+        if hasattr(self, '_create_attrs'):
+            return (self._create_attrs['required'],
+                    self._create_attrs['optional'])
+        return (tuple(), tuple())
+
+    def create(self, data, **kwargs):
+        """Created a new object.
+
+        Args:
+            data (dict): parameters to send to the server to create the
+                         resource
+            **kwargs: Extra data to send to the Gitlab server (e.g. sudo)
+
+        Returns:
+            RESTObject: a new instance of the manage object class build with
+                        the data sent by the server
+        """
+        self._check_missing_attrs(data)
+        if hasattr(self, '_sanitize_data'):
+            data = self._sanitize_data(data, 'create')
+        server_data = self.gitlab.http_post(self._path, post_data=data, **kwargs)
+        return self._obj_cls(self, server_data)
+
+
+class UpdateMixin(object):
+    def _check_missing_attrs(self, data):
+        required, optional = self.get_update_attrs()
+        missing = []
+        for attr in required:
+            if attr not in data:
+                missing.append(attr)
+                continue
+        if missing:
+            raise AttributeError("Missing attributes: %s" % ", ".join(missing))
+
+    def get_update_attrs(self):
+        """Returns the required and optional arguments.
+
+        Returns:
+            tuple: 2 items: list of required arguments and list of optional
+                   arguments for update (in that order)
+        """
+        if hasattr(self, '_update_attrs'):
+            return (self._update_attrs['required'],
+                    self._update_attrs['optional'])
+        return (tuple(), tuple())
+
+    def update(self, id=None, new_data={}, **kwargs):
+        """Update an object on the server.
+
+        Args:
+            id: ID of the object to update (can be None if not required)
+            new_data: the update data for the object
+            **kwargs: Extra data to send to the Gitlab server (e.g. sudo)
+
+        Returns:
+            dict: The new object data (*not* a RESTObject)
+        """
+
+        if id is None:
+            path = self._path
+        else:
+            path = '%s/%s' % (self._path, id)
+
+        self._check_missing_attrs(new_data)
+        if hasattr(self, '_sanitize_data'):
+            data = self._sanitize_data(new_data, 'update')
+        server_data = self.gitlab.http_put(self._path, post_data=data,
+                                           **kwargs)
+        return server_data
+
+
+class DeleteMixin(object):
+    def delete(self, id, **kwargs):
+        """Deletes an object on the server.
+
+        Args:
+            id: ID of the object to delete
+            **kwargs: Extra data to send to the Gitlab server (e.g. sudo)
+        """
+        path = '%s/%s' % (self._path, id)
+        self.gitlab.http_delete(path, **kwargs)
+
+
+class CRUDMixin(GetMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin):
+    pass
+
+
+class RESTManager(object):
+    """Base class for CRUD operations on objects.
+
+    Derivated class must define ``_path`` and ``_obj_cls``.
+
+    ``_path``: Base URL path on which requests will be sent (e.g. '/projects')
+    ``_obj_cls``: The class of objects that will be created
+    """
+
+    _path = None
+    _obj_cls = None
+
+    def __init__(self, gl, parent_attrs={}):
+        self.gitlab = gl
+        self._parent_attrs = {}  # for nested managers

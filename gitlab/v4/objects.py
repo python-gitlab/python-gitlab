@@ -40,7 +40,7 @@ ACCESS_MASTER = 40
 ACCESS_OWNER = 50
 
 
-class SidekiqManager(object):
+class SidekiqManager(RESTManager):
     """Manager for the Sidekiq methods.
 
     This manager doesn't actually manage objects but provides helper fonction
@@ -212,133 +212,106 @@ class CurrentUser(GitlabObject):
     )
 
 
-class ApplicationSettings(GitlabObject):
-    _url = '/application/settings'
-    _id_in_update_url = False
-    getRequiresId = False
-    optionalUpdateAttrs = ['after_sign_out_path',
-                           'container_registry_token_expire_delay',
-                           'default_branch_protection',
-                           'default_project_visibility',
-                           'default_projects_limit',
-                           'default_snippet_visibility',
-                           'domain_blacklist',
-                           'domain_blacklist_enabled',
-                           'domain_whitelist',
-                           'enabled_git_access_protocol',
-                           'gravatar_enabled',
-                           'home_page_url',
-                           'max_attachment_size',
-                           'repository_storage',
-                           'restricted_signup_domains',
-                           'restricted_visibility_levels',
-                           'session_expire_delay',
-                           'sign_in_text',
-                           'signin_enabled',
-                           'signup_enabled',
-                           'twitter_sharing_enabled',
-                           'user_oauth_applications']
-    canList = False
-    canCreate = False
-    canDelete = False
-
-    def _data_for_gitlab(self, extra_parameters={}, update=False,
-                         as_json=True):
-        data = (super(ApplicationSettings, self)
-                ._data_for_gitlab(extra_parameters, update=update,
-                                  as_json=False))
-        if not self.domain_whitelist:
-            data.pop('domain_whitelist', None)
-        return json.dumps(data)
+class ApplicationSettings(SaveMixin, RESTObject):
+    _id_attr = None
 
 
-class ApplicationSettingsManager(BaseManager):
-    obj_cls = ApplicationSettings
+class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+    _path = '/application/settings'
+    _obj_cls = ApplicationSettings
+    _update_attrs = {
+        'required': tuple(),
+        'optional': ('after_sign_out_path',
+                     'container_registry_token_expire_delay',
+                     'default_branch_protection', 'default_project_visibility',
+                     'default_projects_limit', 'default_snippet_visibility',
+                     'domain_blacklist', 'domain_blacklist_enabled',
+                     'domain_whitelist', 'enabled_git_access_protocol',
+                     'gravatar_enabled', 'home_page_url',
+                     'max_attachment_size', 'repository_storage',
+                     'restricted_signup_domains',
+                     'restricted_visibility_levels', 'session_expire_delay',
+                     'sign_in_text', 'signin_enabled', 'signup_enabled',
+                     'twitter_sharing_enabled', 'user_oauth_applications')
+    }
+
+    def _sanitize_data(self, data, action):
+        new_data = data.copy()
+        if 'domain_whitelist' in data and data['domain_whitelist'] is None:
+            new_data.pop('domain_whitelist')
+        return new_data
 
 
-class BroadcastMessage(GitlabObject):
-    _url = '/broadcast_messages'
-    requiredCreateAttrs = ['message']
-    optionalCreateAttrs = ['starts_at', 'ends_at', 'color', 'font']
-    requiredUpdateAttrs = []
-    optionalUpdateAttrs = ['message', 'starts_at', 'ends_at', 'color', 'font']
+class BroadcastMessage(SaveMixin, RESTObject):
+    pass
 
 
-class BroadcastMessageManager(BaseManager):
-    obj_cls = BroadcastMessage
+class BroadcastMessageManager(CRUDMixin, RESTManager):
+    _path = '/broadcast_messages'
+    _obj_cls = BroadcastMessage
+
+    _create_attrs = {
+        'required': ('message', ),
+        'optional': ('starts_at', 'ends_at', 'color', 'font'),
+    }
+    _update_attrs = {
+        'required': tuple(),
+        'optional': ('message', 'starts_at', 'ends_at', 'color', 'font'),
+    }
 
 
-class DeployKey(GitlabObject):
-    _url = '/deploy_keys'
-    canGet = 'from_list'
-    canCreate = False
-    canUpdate = False
-    canDelete = False
+class DeployKey(RESTObject):
+    pass
 
 
-class DeployKeyManager(BaseManager):
-    obj_cls = DeployKey
+class DeployKeyManager(GetFromListMixin, RESTManager):
+    _path = '/deploy_keys'
+    _obj_cls = DeployKey
 
 
-class NotificationSettings(GitlabObject):
-    _url = '/notification_settings'
-    _id_in_update_url = False
-    getRequiresId = False
-    optionalUpdateAttrs = ['level',
-                           'notification_email',
-                           'new_note',
-                           'new_issue',
-                           'reopen_issue',
-                           'close_issue',
-                           'reassign_issue',
-                           'new_merge_request',
-                           'reopen_merge_request',
-                           'close_merge_request',
-                           'reassign_merge_request',
-                           'merge_merge_request']
-    canList = False
-    canCreate = False
-    canDelete = False
+class NotificationSettings(SaveMixin, RESTObject):
+    _id_attr = None
 
 
-class NotificationSettingsManager(BaseManager):
-    obj_cls = NotificationSettings
+class NotificationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+    _path = '/notification_settings'
+    _obj_cls = NotificationSettings
+
+    _update_attrs = {
+        'required': tuple(),
+        'optional': ('level', 'notification_email', 'new_note', 'new_issue',
+                     'reopen_issue', 'close_issue', 'reassign_issue',
+                     'new_merge_request', 'reopen_merge_request',
+                     'close_merge_request', 'reassign_merge_request',
+                     'merge_merge_request')
+    }
 
 
-class Dockerfile(GitlabObject):
-    _url = '/templates/dockerfiles'
-    canDelete = False
-    canUpdate = False
-    canCreate = False
-    idAttr = 'name'
+class Dockerfile(RESTObject):
+    _id_attr = 'name'
 
 
-class DockerfileManager(BaseManager):
-    obj_cls = Dockerfile
+class DockerfileManager(RetrieveMixin, RESTManager):
+    _path = '/templates/dockerfiles'
+    _obj_cls = Dockerfile
 
 
-class Gitignore(GitlabObject):
-    _url = '/templates/gitignores'
-    canDelete = False
-    canUpdate = False
-    canCreate = False
-    idAttr = 'name'
+class Gitignore(RESTObject):
+    _id_attr = 'name'
 
 
-class GitignoreManager(BaseManager):
-    obj_cls = Gitignore
+class GitignoreManager(RetrieveMixin, RESTManager):
+    _path = '/templates/gitignores'
+    _obj_cls = Gitignore
 
 
-class Gitlabciyml(GitlabObject):
-    _url = '/templates/gitlab_ci_ymls'
-    canDelete = False
-    canUpdate = False
-    canCreate = False
-    idAttr = 'name'
+class Gitlabciyml(RESTObject):
+    _id_attr = 'name'
 
 
-class GitlabciymlManager(BaseManager):
-    obj_cls = Gitlabciyml
+class GitlabciymlManager(RetrieveMixin, RESTManager):
+    _path = '/templates/gitlab_ci_ymls'
+    _obj_cls = Gitlabciyml
 
 
 class GroupIssue(GitlabObject):

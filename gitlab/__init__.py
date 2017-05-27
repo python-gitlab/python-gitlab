@@ -644,9 +644,12 @@ class Gitlab(object):
         opts = self._get_session_opts(content_type='application/json')
         result = self.session.request(verb, url, json=post_data,
                                       params=params, stream=streamed, **opts)
-        if not (200 <= result.status_code < 300):
-            raise GitlabHttpError(response_code=result.status_code)
-        return result
+        if 200 <= result.status_code < 300:
+            return result
+
+
+        raise GitlabHttpError(response_code=result.status_code,
+                              error_message=result.content)
 
     def http_get(self, path, query_data={}, streamed=False, **kwargs):
         """Make a GET request to the Gitlab server.
@@ -748,7 +751,7 @@ class Gitlab(object):
             GitlabHttpError: When the return code is not 2xx
             GitlabParsingError: IF the json data could not be parsed
         """
-        result = self.hhtp_request('put', path, query_data=query_data,
+        result = self.http_request('put', path, query_data=query_data,
                                    post_data=post_data, **kwargs)
         try:
             return result.json()
@@ -808,6 +811,9 @@ class GitlabList(object):
     def __iter__(self):
         return self
 
+    def __len__(self):
+        return self._total_pages
+
     def __next__(self):
         return self.next()
 
@@ -819,6 +825,6 @@ class GitlabList(object):
         except IndexError:
             if self._next_url:
                 self._query(self._next_url)
-                return self._data[self._current]
+                return self.next()
 
             raise StopIteration
