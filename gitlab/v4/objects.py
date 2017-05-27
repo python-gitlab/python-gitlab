@@ -850,10 +850,10 @@ class ProjectHookManager(BaseManager):
 
 
 class ProjectIssueNote(GitlabObject):
-    _url = '/projects/%(project_id)s/issues/%(issue_id)s/notes'
+    _url = '/projects/%(project_id)s/issues/%(issue_iid)s/notes'
     _constructorTypes = {'author': 'User'}
     canDelete = False
-    requiredUrlAttrs = ['project_id', 'issue_id']
+    requiredUrlAttrs = ['project_id', 'issue_iid']
     requiredCreateAttrs = ['body']
     optionalCreateAttrs = ['created_at']
 
@@ -875,9 +875,10 @@ class ProjectIssue(GitlabObject):
                            'milestone_id', 'labels', 'created_at',
                            'updated_at', 'state_event', 'due_date']
     shortPrintAttr = 'title'
+    idAttr = 'iid'
     managers = (
         ('notes', 'ProjectIssueNoteManager',
-            [('project_id', 'project_id'), ('issue_id', 'id')]),
+            [('project_id', 'project_id'), ('issue_iid', 'iid')]),
     )
 
     def subscribe(self, **kwargs):
@@ -887,8 +888,8 @@ class ProjectIssue(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabSubscribeError: If the subscription cannot be done
         """
-        url = ('/projects/%(project_id)s/issues/%(issue_id)s/subscribe' %
-               {'project_id': self.project_id, 'issue_id': self.id})
+        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/subscribe' %
+               {'project_id': self.project_id, 'issue_iid': self.iid})
 
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabSubscribeError, [201, 304])
@@ -901,8 +902,8 @@ class ProjectIssue(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabUnsubscribeError: If the unsubscription cannot be done
         """
-        url = ('/projects/%(project_id)s/issues/%(issue_id)s/unsubscribe' %
-               {'project_id': self.project_id, 'issue_id': self.id})
+        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/unsubscribe' %
+               {'project_id': self.project_id, 'issue_iid': self.iid})
 
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabUnsubscribeError, [201, 304])
@@ -914,8 +915,8 @@ class ProjectIssue(GitlabObject):
         Raises:
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = ('/projects/%(project_id)s/issues/%(issue_id)s/move' %
-               {'project_id': self.project_id, 'issue_id': self.id})
+        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/move' %
+               {'project_id': self.project_id, 'issue_iid': self.iid})
 
         data = {'to_project_id': to_project_id}
         data.update(**kwargs)
@@ -929,8 +930,8 @@ class ProjectIssue(GitlabObject):
         Raises:
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = ('/projects/%(project_id)s/issues/%(issue_id)s/todo' %
-               {'project_id': self.project_id, 'issue_id': self.id})
+        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/todo' %
+               {'project_id': self.project_id, 'issue_iid': self.iid})
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabTodoError, [201, 304])
 
@@ -940,22 +941,26 @@ class ProjectIssue(GitlabObject):
         Raises:
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = ('/projects/%(project_id)s/issues/%(issue_id)s/time_stats' %
-               {'project_id': self.project_id, 'issue_id': self.id})
+        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/time_stats' %
+               {'project_id': self.project_id, 'issue_iid': self.iid})
         r = self.gitlab._raw_get(url, **kwargs)
         raise_error_from_response(r, GitlabGetError)
         return r.json()
 
-    def time_estimate(self, **kwargs):
+    def time_estimate(self, duration, **kwargs):
         """Set an estimated time of work for the issue.
+
+        Args:
+            duration (str): duration in human format (e.g. 3h30)
 
         Raises:
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = ('/projects/%(project_id)s/issues/%(issue_id)s/time_estimate' %
-               {'project_id': self.project_id, 'issue_id': self.id})
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabTimeTrackingError, 201)
+        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/time_estimate' %
+               {'project_id': self.project_id, 'issue_iid': self.iid})
+        data = {'duration': duration}
+        r = self.gitlab._raw_post(url, data, **kwargs)
+        raise_error_from_response(r, GitlabTimeTrackingError, 200)
         return r.json()
 
     def reset_time_estimate(self, **kwargs):
@@ -964,24 +969,28 @@ class ProjectIssue(GitlabObject):
         Raises:
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = ('/projects/%(project_id)s/issues/%(issue_id)s/'
+        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/'
                'reset_time_estimate' %
-               {'project_id': self.project_id, 'issue_id': self.id})
+               {'project_id': self.project_id, 'issue_iid': self.iid})
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabTimeTrackingError, 200)
         return r.json()
 
-    def add_spent_time(self, **kwargs):
+    def add_spent_time(self, duration, **kwargs):
         """Set an estimated time of work for the issue.
+
+        Args:
+            duration (str): duration in human format (e.g. 3h30)
 
         Raises:
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = ('/projects/%(project_id)s/issues/%(issue_id)s/'
+        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/'
                'add_spent_time' %
-               {'project_id': self.project_id, 'issue_id': self.id})
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabTimeTrackingError, 200)
+               {'project_id': self.project_id, 'issue_iid': self.iid})
+        data = {'duration': duration}
+        r = self.gitlab._raw_post(url, data, **kwargs)
+        raise_error_from_response(r, GitlabTimeTrackingError, 201)
         return r.json()
 
     def reset_spent_time(self, **kwargs):
@@ -990,9 +999,9 @@ class ProjectIssue(GitlabObject):
         Raises:
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = ('/projects/%(project_id)s/issues/%(issue_id)s/'
+        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/'
                'reset_spent_time' %
-               {'project_id': self.project_id, 'issue_id': self.id})
+               {'project_id': self.project_id, 'issue_iid': self.iid})
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabTimeTrackingError, 200)
         return r.json()
