@@ -8,7 +8,7 @@ Use :command:`pip` to install the latest stable version of ``python-gitlab``:
 
 .. code-block:: console
 
-   $ pip install --upgrade python-gitlab
+   $ sudo pip install --upgrade python-gitlab
 
 The current development version is available on `github
 <https://github.com/python-gitlab/python-gitlab>`__. Use :command:`git` and
@@ -18,4 +18,4 @@ The current development version is available on `github
 
    $ git clone https://github.com/python-gitlab/python-gitlab
    $ cd python-gitlab
-   $ python setup.py install
+   $ sudo python setup.py install
