@@ -673,7 +673,7 @@ class Gitlab(object):
            not streamed):
             try:
                 return result.json()
-            except Exception as e:
+            except Exception:
                 raise GitlaParsingError(
                     message="Failed to parse the server message")
         else:
@@ -726,8 +726,9 @@ class Gitlab(object):
                                    post_data=post_data, **kwargs)
         try:
             return result.json()
-        except Exception as e:
-            raise GitlabParsingError(message="Failed to parse the server message")
+        except Exception:
+            raise GitlabParsingError(
+                message="Failed to parse the server message")
 
     def http_put(self, path, query_data={}, post_data={}, **kwargs):
         """Make a PUT request to the Gitlab server.
@@ -751,8 +752,9 @@ class Gitlab(object):
                                    post_data=post_data, **kwargs)
         try:
             return result.json()
-        except Exception as e:
-            raise GitlabParsingError(message="Failed to parse the server message")
+        except Exception:
+            raise GitlabParsingError(
+                message="Failed to parse the server message")
 
     def http_delete(self, path, **kwargs):
         """Make a PUT request to the Gitlab server.
@@ -763,13 +765,12 @@ class Gitlab(object):
             **kwargs: Extra data to make the query (e.g. sudo, per_page, page)
 
         Returns:
-            True.
+            The requests object.
 
         Raises:
             GitlabHttpError: When the return code is not 2xx
         """
-        result = self.http_request('delete', path, **kwargs)
-        return True
+        return self.http_request('delete', path, **kwargs)
 
 
 class GitlabList(object):
@@ -798,8 +799,9 @@ class GitlabList(object):
 
         try:
             self._data = result.json()
-        except Exception as e:
-            raise GitlabParsingError(message="Failed to parse the server message")
+        except Exception:
+            raise GitlabParsingError(
+                message="Failed to parse the server message")
 
         self._current = 0
 
