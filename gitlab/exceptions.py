@@ -47,6 +47,14 @@ class GitlabOperationError(GitlabError):
     pass
 
 
+class GitlabHttpError(GitlabError):
+    pass
+
+
+class GitlaParsingError(GitlabHttpError):
+    pass
+
+
 class GitlabListError(GitlabOperationError):
     pass
 
