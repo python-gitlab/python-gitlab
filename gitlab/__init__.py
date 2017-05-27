@@ -344,9 +344,8 @@ class Gitlab(object):
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
 
-    def _raw_list(self, path_, cls, extra_attrs={}, **kwargs):
-        params = extra_attrs.copy()
-        params.update(kwargs.copy())
+    def _raw_list(self, path_, cls, **kwargs):
+        params = kwargs.copy()
 
         catch_recursion_limit = kwargs.get('safe_all', False)
         get_all_results = (kwargs.get('all', False) is True
@@ -376,7 +375,6 @@ class Gitlab(object):
             if ('next' in r.links and 'url' in r.links['next']
                     and get_all_results):
                 args = kwargs.copy()
-                args.update(extra_attrs)
                 args['next_url'] = r.links['next']['url']
                 results.extend(self.list(cls, **args))
         except Exception as e:

@@ -799,9 +799,7 @@ class ProjectCommit(GitlabObject):
         """
         url = '/projects/%s/repository/commits/%s/builds' % (self.project_id,
                                                              self.id)
-        return self.gitlab._raw_list(url, ProjectBuild,
-                                     {'project_id': self.project_id},
-                                     **kwargs)
+        return self.gitlab._raw_list(url, ProjectBuild, **kwargs)
 
     def cherry_pick(self, branch, **kwargs):
         """Cherry-pick a commit into a branch.
@@ -1254,9 +1252,7 @@ class ProjectMergeRequest(GitlabObject):
         """
         url = ('/projects/%s/merge_requests/%s/closes_issues' %
                (self.project_id, self.id))
-        return self.gitlab._raw_list(url, ProjectIssue,
-                                     {'project_id': self.project_id},
-                                     **kwargs)
+        return self.gitlab._raw_list(url, ProjectIssue, **kwargs)
 
     def commits(self, **kwargs):
         """List the merge request commits.
@@ -1270,9 +1266,7 @@ class ProjectMergeRequest(GitlabObject):
         """
         url = ('/projects/%s/merge_requests/%s/commits' %
                (self.project_id, self.id))
-        return self.gitlab._raw_list(url, ProjectCommit,
-                                     {'project_id': self.project_id},
-                                     **kwargs)
+        return self.gitlab._raw_list(url, ProjectCommit, **kwargs)
 
     def changes(self, **kwargs):
         """List the merge request changes.
@@ -1420,9 +1414,7 @@ class ProjectMilestone(GitlabObject):
 
     def issues(self, **kwargs):
         url = "/projects/%s/milestones/%s/issues" % (self.project_id, self.id)
-        return self.gitlab._raw_list(url, ProjectIssue,
-                                     {'project_id': self.project_id},
-                                     **kwargs)
+        return self.gitlab._raw_list(url, ProjectIssue, **kwargs)
 
     def merge_requests(self, **kwargs):
         """List the merge requests related to this milestone
@@ -1436,9 +1428,7 @@ class ProjectMilestone(GitlabObject):
         """
         url = ('/projects/%s/milestones/%s/merge_requests' %
                (self.project_id, self.id))
-        return self.gitlab._raw_list(url, ProjectMergeRequest,
-                                     {'project_id': self.project_id},
-                                     **kwargs)
+        return self.gitlab._raw_list(url, ProjectMergeRequest, **kwargs)
 
 
 class ProjectMilestoneManager(BaseManager):
