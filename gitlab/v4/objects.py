@@ -1090,11 +1090,11 @@ class ProjectTagManager(BaseManager):
 
 class ProjectMergeRequestDiff(GitlabObject):
     _url = ('/projects/%(project_id)s/merge_requests/'
-            '%(merge_request_id)s/versions')
+            '%(merge_request_iid)s/versions')
     canCreate = False
     canUpdate = False
     canDelete = False
-    requiredUrlAttrs = ['project_id', 'merge_request_id']
+    requiredUrlAttrs = ['project_id', 'merge_request_iid']
 
 
 class ProjectMergeRequestDiffManager(BaseManager):
@@ -1102,9 +1102,9 @@ class ProjectMergeRequestDiffManager(BaseManager):
 
 
 class ProjectMergeRequestNote(GitlabObject):
-    _url = '/projects/%(project_id)s/merge_requests/%(merge_request_id)s/notes'
+    _url = '/projects/%(project_id)s/merge_requests/%(merge_request_iid)s/notes'
     _constructorTypes = {'author': 'User'}
-    requiredUrlAttrs = ['project_id', 'merge_request_id']
+    requiredUrlAttrs = ['project_id', 'merge_request_iid']
     requiredCreateAttrs = ['body']
 
 
@@ -1123,12 +1123,13 @@ class ProjectMergeRequest(GitlabObject):
                            'description', 'state_event', 'labels',
                            'milestone_id']
     optionalListAttrs = ['iids', 'state', 'order_by', 'sort']
+    idAttr = 'iid'
 
     managers = (
         ('notes', 'ProjectMergeRequestNoteManager',
-            [('project_id', 'project_id'), ('merge_request_id', 'id')]),
+            [('project_id', 'project_id'), ('merge_request_iid', 'iid')]),
         ('diffs', 'ProjectMergeRequestDiffManager',
-            [('project_id', 'project_id'), ('merge_request_id', 'id')]),
+            [('project_id', 'project_id'), ('merge_request_iid', 'iid')]),
     )
 
     def _data_for_gitlab(self, extra_parameters={}, update=False,
@@ -1149,9 +1150,9 @@ class ProjectMergeRequest(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabSubscribeError: If the subscription cannot be done
         """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/'
+        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/'
                'subscribe' %
-               {'project_id': self.project_id, 'mr_id': self.id})
+               {'project_id': self.project_id, 'mr_iid': self.iid})
 
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabSubscribeError, [201, 304])
@@ -1165,9 +1166,9 @@ class ProjectMergeRequest(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabUnsubscribeError: If the unsubscription cannot be done
         """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/'
+        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/'
                'unsubscribe' %
-               {'project_id': self.project_id, 'mr_id': self.id})
+               {'project_id': self.project_id, 'mr_iid': self.iid})
 
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabUnsubscribeError, [201, 304])
@@ -1179,7 +1180,7 @@ class ProjectMergeRequest(GitlabObject):
 
         u = ('/projects/%s/merge_requests/%s/'
              'cancel_merge_when_pipeline_succeeds'
-             % (self.project_id, self.id))
+             % (self.project_id, self.iid))
         r = self.gitlab._raw_put(u, **kwargs)
         errors = {401: GitlabMRForbiddenError,
                   405: GitlabMRClosedError,
@@ -1198,7 +1199,7 @@ class ProjectMergeRequest(GitlabObject):
             GitlabGetError: If the server fails to perform the request.
         """
         url = ('/projects/%s/merge_requests/%s/closes_issues' %
-               (self.project_id, self.id))
+               (self.project_id, self.iid))
         return self.gitlab._raw_list(url, ProjectIssue,
                                      {'project_id': self.project_id},
                                      **kwargs)
@@ -1214,7 +1215,7 @@ class ProjectMergeRequest(GitlabObject):
             GitlabListError: If the server fails to perform the request.
         """
         url = ('/projects/%s/merge_requests/%s/commits' %
-               (self.project_id, self.id))
+               (self.project_id, self.iid))
         return self.gitlab._raw_list(url, ProjectCommit,
                                      {'project_id': self.project_id},
                                      **kwargs)
@@ -1230,7 +1231,7 @@ class ProjectMergeRequest(GitlabObject):
             GitlabListError: If the server fails to perform the request.
         """
         url = ('/projects/%s/merge_requests/%s/changes' %
-               (self.project_id, self.id))
+               (self.project_id, self.iid))
         r = self.gitlab._raw_get(url, **kwargs)
         raise_error_from_response(r, GitlabListError)
         return r.json()
@@ -1257,7 +1258,7 @@ class ProjectMergeRequest(GitlabObject):
             GitlabMRClosedError: If the MR is already closed
         """
         url = '/projects/%s/merge_requests/%s/merge' % (self.project_id,
-                                                        self.id)
+                                                        self.iid)
         data = {}
         if merge_commit_message:
             data['merge_commit_message'] = merge_commit_message
@@ -1278,8 +1279,8 @@ class ProjectMergeRequest(GitlabObject):
         Raises:
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/todo' %
-               {'project_id': self.project_id, 'mr_id': self.id})
+        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/todo' %
+               {'project_id': self.project_id, 'mr_iid': self.iid})
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabTodoError, [201, 304])
 
@@ -1289,23 +1290,28 @@ class ProjectMergeRequest(GitlabObject):
         Raises:
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/time_stats' %
-               {'project_id': self.project_id, 'mr_id': self.id})
+        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/'
+               'time_stats' %
+               {'project_id': self.project_id, 'mr_iid': self.iid})
         r = self.gitlab._raw_get(url, **kwargs)
         raise_error_from_response(r, GitlabGetError)
         return r.json()
 
-    def time_estimate(self, **kwargs):
+    def time_estimate(self, duration, **kwargs):
         """Set an estimated time of work for the merge request.
+
+        Args:
+            duration (str): duration in human format (e.g. 3h30)
 
         Raises:
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/'
+        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/'
                'time_estimate' %
-               {'project_id': self.project_id, 'mr_id': self.id})
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabTimeTrackingError, 201)
+               {'project_id': self.project_id, 'mr_iid': self.iid})
+        data = {'duration': duration}
+        r = self.gitlab._raw_post(url, data, **kwargs)
+        raise_error_from_response(r, GitlabTimeTrackingError, 200)
         return r.json()
 
     def reset_time_estimate(self, **kwargs):
@@ -1314,24 +1320,28 @@ class ProjectMergeRequest(GitlabObject):
         Raises:
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/'
+        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/'
                'reset_time_estimate' %
-               {'project_id': self.project_id, 'mr_id': self.id})
+               {'project_id': self.project_id, 'mr_iid': self.iid})
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabTimeTrackingError, 200)
         return r.json()
 
-    def add_spent_time(self, **kwargs):
+    def add_spent_time(self, duration, **kwargs):
         """Set an estimated time of work for the merge request.
+
+        Args:
+            duration (str): duration in human format (e.g. 3h30)
 
         Raises:
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/'
+        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/'
                'add_spent_time' %
-               {'project_id': self.project_id, 'mr_id': self.id})
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabTimeTrackingError, 200)
+               {'project_id': self.project_id, 'mr_iid': self.iid})
+        data = {'duration': duration}
+        r = self.gitlab._raw_post(url, data, **kwargs)
+        raise_error_from_response(r, GitlabTimeTrackingError, 201)
         return r.json()
 
     def reset_spent_time(self, **kwargs):
@@ -1340,9 +1350,9 @@ class ProjectMergeRequest(GitlabObject):
         Raises:
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_id)s/'
+        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/'
                'reset_spent_time' %
-               {'project_id': self.project_id, 'mr_id': self.id})
+               {'project_id': self.project_id, 'mr_iid': self.iid})
         r = self.gitlab._raw_post(url, **kwargs)
         raise_error_from_response(r, GitlabTimeTrackingError, 200)
         return r.json()
