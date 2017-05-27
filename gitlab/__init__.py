@@ -599,3 +599,224 @@ class Gitlab(object):
         r = self._raw_put(url, data=data, content_type='application/json')
         raise_error_from_response(r, GitlabUpdateError)
         return r.json()
+
+    def _build_url(self, path):
+        """Returns the full url from path.
+
+        If path is already a url, return it unchanged. If it's a path, append
+        it to the stored url.
+
+        This is a low-level method, different from _construct_url _build_url
+        have no knowledge of GitlabObject's.
+
+        Returns:
+            str: The full URL
+        """
+        if path.startswith('http://') or path.startswith('https://'):
+            return path
+        else:
+            return '%s%s' % (self._url, path)
+
+    def http_request(self, verb, path, query_data={}, post_data={},
+                     streamed=False, **kwargs):
+        """Make an HTTP request to the Gitlab server.
+
+        Args:
+            verb (str): The HTTP method to call ('get', 'post', 'put',
+                        'delete')
+            path (str): Path or full URL to query ('/projects' or
+                        'http://whatever/v4/api/projecs')
+            query_data (dict): Data to send as query parameters
+            post_data (dict): Data to send in the body (will be converted to
+                              json)
+            streamed (bool): Whether the data should be streamed
+            **kwargs: Extra data to make the query (e.g. sudo, per_page, page)
+
+        Returns:
+            A requests result object.
+
+        Raises:
+            GitlabHttpError: When the return code is not 2xx
+        """
+        url = self._build_url(path)
+        params = query_data.copy()
+        params.update(kwargs)
+        opts = self._get_session_opts(content_type='application/json')
+        result = self.session.request(verb, url, json=post_data,
+                                      params=params, stream=streamed, **opts)
+        if not (200 <= result.status_code < 300):
+            raise GitlabHttpError(response_code=result.status_code)
+        return result
+
+    def http_get(self, path, query_data={}, streamed=False, **kwargs):
+        """Make a GET request to the Gitlab server.
+
+        Args:
+            path (str): Path or full URL to query ('/projects' or
+                        'http://whatever/v4/api/projecs')
+            query_data (dict): Data to send as query parameters
+            streamed (bool): Whether the data should be streamed
+            **kwargs: Extra data to make the query (e.g. sudo, per_page, page)
+
+        Returns:
+            A requests result object is streamed is True or the content type is
+            not json.
+            The parsed json data otherwise.
+
+        Raises:
+            GitlabHttpError: When the return code is not 2xx
+            GitlabParsingError: IF the json data could not be parsed
+        """
+        result = self.http_request('get', path, query_data=query_data,
+                                   streamed=streamed, **kwargs)
+        if (result.headers['Content-Type'] == 'application/json' and
+           not streamed):
+            try:
+                return result.json()
+            except Exception as e:
+                raise GitlaParsingError(
+                    message="Failed to parse the server message")
+        else:
+            return r
+
+    def http_list(self, path, query_data={}, **kwargs):
+        """Make a GET request to the Gitlab server for list-oriented queries.
+
+        Args:
+            path (str): Path or full URL to query ('/projects' or
+                        'http://whatever/v4/api/projecs')
+            query_data (dict): Data to send as query parameters
+            **kwargs: Extra data to make the query (e.g. sudo, per_page, page,
+                      all)
+
+        Returns:
+            GitlabList: A generator giving access to the objects. If an ``all``
+            kwarg is defined and True, returns a list of all the objects (will
+            possibly make numerous calls to the Gtilab server and eat a lot of
+            memory)
+
+        Raises:
+            GitlabHttpError: When the return code is not 2xx
+            GitlabParsingError: IF the json data could not be parsed
+        """
+        url = self._build_url(path)
+        get_all = kwargs.pop('all', False)
+        obj_gen = GitlabList(self, url, query_data, **kwargs)
+        return list(obj_gen) if get_all else obj_gen
+
+    def http_post(self, path, query_data={}, post_data={}, **kwargs):
+        """Make a POST request to the Gitlab server.
+
+        Args:
+            path (str): Path or full URL to query ('/projects' or
+                        'http://whatever/v4/api/projecs')
+            query_data (dict): Data to send as query parameters
+            post_data (dict): Data to send in the body (will be converted to
+                              json)
+            **kwargs: Extra data to make the query (e.g. sudo, per_page, page)
+
+        Returns:
+            The parsed json returned by the server.
+
+        Raises:
+            GitlabHttpError: When the return code is not 2xx
+            GitlabParsingError: IF the json data could not be parsed
+        """
+        result = self.http_request('post', path, query_data=query_data,
+                                   post_data=post_data, **kwargs)
+        try:
+            return result.json()
+        except Exception as e:
+            raise GitlabParsingError(message="Failed to parse the server message")
+
+    def http_put(self, path, query_data={}, post_data={}, **kwargs):
+        """Make a PUT request to the Gitlab server.
+
+        Args:
+            path (str): Path or full URL to query ('/projects' or
+                        'http://whatever/v4/api/projecs')
+            query_data (dict): Data to send as query parameters
+            post_data (dict): Data to send in the body (will be converted to
+                              json)
+            **kwargs: Extra data to make the query (e.g. sudo, per_page, page)
+
+        Returns:
+            The parsed json returned by the server.
+
+        Raises:
+            GitlabHttpError: When the return code is not 2xx
+            GitlabParsingError: IF the json data could not be parsed
+        """
+        result = self.hhtp_request('put', path, query_data=query_data,
+                                   post_data=post_data, **kwargs)
+        try:
+            return result.json()
+        except Exception as e:
+            raise GitlabParsingError(message="Failed to parse the server message")
+
+    def http_delete(self, path, **kwargs):
+        """Make a PUT request to the Gitlab server.
+
+        Args:
+            path (str): Path or full URL to query ('/projects' or
+                        'http://whatever/v4/api/projecs')
+            **kwargs: Extra data to make the query (e.g. sudo, per_page, page)
+
+        Returns:
+            True.
+
+        Raises:
+            GitlabHttpError: When the return code is not 2xx
+        """
+        result = self.http_request('delete', path, **kwargs)
+        return True
+
+
+class GitlabList(object):
+    """Generator representing a list of remote objects.
+
+    The object handles the links returned by a query to the API, and will call
+    the API again when needed.
+    """
+
+    def __init__(self, gl, url, query_data, **kwargs):
+        self._gl = gl
+        self._query(url, query_data, **kwargs)
+
+    def _query(self, url, query_data={}, **kwargs):
+        result = self._gl.http_request('get', url, query_data=query_data,
+                                       **kwargs)
+        try:
+            self._next_url = result.links['next']['url']
+        except KeyError:
+            self._next_url = None
+        self._current_page = result.headers.get('X-Page')
+        self._next_page = result.headers.get('X-Next-Page')
+        self._per_page = result.headers.get('X-Per-Page')
+        self._total_pages = result.headers.get('X-Total-Pages')
+        self._total = result.headers.get('X-Total')
+
+        try:
+            self._data = result.json()
+        except Exception as e:
+            raise GitlabParsingError(message="Failed to parse the server message")
+
+        self._current = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return self.next()
+
+    def next(self):
+        try:
+            item = self._data[self._current]
+            self._current += 1
+            return item
+        except IndexError:
+            if self._next_url:
+                self._query(self._next_url)
+                return self._data[self._current]
+
+            raise StopIteration
