@@ -94,6 +94,7 @@ class Gitlab(object):
 
         objects = importlib.import_module('gitlab.v%s.objects' %
                                           self._api_version)
+        self._objects = objects
 
         self.broadcastmessages = objects.BroadcastMessageManager(self)
         self.deploykeys = objects.DeployKeyManager(self)
@@ -191,13 +192,16 @@ class Gitlab(object):
         if not self.email or not self.password:
             raise GitlabAuthenticationError("Missing email/password")
 
-        data = json.dumps({'email': self.email, 'password': self.password})
-        r = self._raw_post('/session', data, content_type='application/json')
-        raise_error_from_response(r, GitlabAuthenticationError, 201)
-        self.user = CurrentUser(self, r.json())
-        """(gitlab.objects.CurrentUser): Object representing the user currently
-            logged.
-        """
+        if self.api_version == '3':
+            data = json.dumps({'email': self.email, 'password': self.password})
+            r = self._raw_post('/session', data,
+                               content_type='application/json')
+            raise_error_from_response(r, GitlabAuthenticationError, 201)
+            self.user = objects.CurrentUser(self, r.json())
+        else:
+            manager = self._objects.CurrentUserManager()
+            self.user = credentials_auth(self.email, self.password)
+
         self._set_token(self.user.private_token)
 
     def token_auth(self):
@@ -207,7 +211,7 @@ class Gitlab(object):
         self._token_auth()
 
     def _token_auth(self):
-        self.user = CurrentUser(self)
+        self.user = self._objects.CurrentUserManager(self).get()
 
     def version(self):
         """Returns the version and revision of the gitlab server.

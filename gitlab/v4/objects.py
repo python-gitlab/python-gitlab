@@ -180,40 +180,45 @@ class UserManager(CRUDMixin, RESTManager):
         return new_data
 
 
-class CurrentUserEmail(GitlabObject):
-    _url = '/user/emails'
-    canUpdate = False
-    shortPrintAttr = 'email'
-    requiredCreateAttrs = ['email']
+class CurrentUserEmail(RESTObject):
+    _short_print_attr = 'email'
 
 
-class CurrentUserEmailManager(BaseManager):
-    obj_cls = CurrentUserEmail
+class CurrentUserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin,
+                              RESTManager):
+    _path = '/user/emails'
+    _obj_cls = CurrentUserEmail
+    _create_attrs = {'required': ('email', ), 'optional': tuple()}
 
 
-class CurrentUserKey(GitlabObject):
-    _url = '/user/keys'
-    canUpdate = False
-    shortPrintAttr = 'title'
-    requiredCreateAttrs = ['title', 'key']
+class CurrentUserKey(RESTObject):
+    _short_print_attr = 'title'
 
 
-class CurrentUserKeyManager(BaseManager):
-    obj_cls = CurrentUserKey
+class CurrentUserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin,
+                            RESTManager):
+    _path = '/user/keys'
+    _obj_cls = CurrentUserKey
+    _create_attrs = {'required': ('title', 'key'), 'optional': tuple()}
 
 
-class CurrentUser(GitlabObject):
-    _url = '/user'
-    canList = False
-    canCreate = False
-    canUpdate = False
-    canDelete = False
-    shortPrintAttr = 'username'
-    managers = (
-        ('emails', 'CurrentUserEmailManager', [('user_id', 'id')]),
-        ('keys', 'CurrentUserKeyManager', [('user_id', 'id')]),
+class CurrentUser(RESTObject):
+    _id_attr = None
+    _short_print_attr = 'username'
+    _managers = (
+        ('emails', 'CurrentUserEmailManager'),
+        ('keys', 'CurrentUserKeyManager'),
     )
 
+
+class CurrentUserManager(GetWithoutIdMixin, RESTManager):
+    _path = '/user'
+    _obj_cls = CurrentUser
+
+    def credentials_auth(self, email, password):
+        data = {'email': email, 'password': password}
+        server_data = self.gitlab.http_post('/session', post_data=data)
+        return CurrentUser(self, server_data)
 
 class ApplicationSettings(SaveMixin, RESTObject):
     _id_attr = None
