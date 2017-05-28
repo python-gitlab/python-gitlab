@@ -20,9 +20,9 @@ from __future__ import division
 from __future__ import absolute_import
 import base64
 import json
-import urllib
 
 import six
+from six.moves.urllib.parse import urlencode
 
 import gitlab
 from gitlab.base import *  # noqa
@@ -1846,7 +1846,7 @@ class Project(GitlabObject):
         url = "/projects/%s/repository/tree" % (self.id)
         params = []
         if path:
-            params.append(urllib.urlencode({'path': path}))
+            params.append(urlencode({'path': path}))
         if ref:
             params.append("ref=%s" % ref)
         if params:
