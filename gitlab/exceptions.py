@@ -39,6 +39,10 @@ class GitlabAuthenticationError(GitlabError):
     pass
 
 
+class GitlabParsingError(GitlabError):
+    pass
+
+
 class GitlabConnectionError(GitlabError):
     pass
 

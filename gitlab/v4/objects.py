@@ -22,7 +22,6 @@ import base64
 import json
 
 import six
-from six.moves import urllib
 
 import gitlab
 from gitlab.base import *  # noqa
@@ -72,7 +71,7 @@ class UserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = '/users/%(user_id)s/emails'
     _obj_cls = UserEmail
     _from_parent_attrs = {'user_id': 'id'}
-    _create_attrs = {'required': ('email', ), 'optional': tuple()}
+    _create_attrs = (('email', ), tuple())
 
 
 class UserKey(RESTObject):
@@ -83,7 +82,7 @@ class UserKeyManager(GetFromListMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = '/users/%(user_id)s/emails'
     _obj_cls = UserKey
     _from_parent_attrs = {'user_id': 'id'}
-    _create_attrs = {'required': ('title', 'key'), 'optional': tuple()}
+    _create_attrs = (('title', 'key'), tuple())
 
 
 class UserProject(RESTObject):
@@ -94,14 +93,13 @@ class UserProjectManager(CreateMixin, RESTManager):
     _path = '/projects/user/%(user_id)s'
     _obj_cls = UserProject
     _from_parent_attrs = {'user_id': 'id'}
-    _create_attrs = {
-        'required': ('name', ),
-        'optional': ('default_branch', 'issues_enabled', 'wall_enabled',
-                     'merge_requests_enabled', 'wiki_enabled',
-                     'snippets_enabled', 'public', 'visibility', 'description',
-                     'builds_enabled', 'public_builds', 'import_url',
-                     'only_allow_merge_if_build_succeeds')
-    }
+    _create_attrs = (
+        ('name', ),
+        ('default_branch', 'issues_enabled', 'wall_enabled',
+         'merge_requests_enabled', 'wiki_enabled', 'snippets_enabled',
+         'public', 'visibility', 'description', 'builds_enabled',
+         'public_builds', 'import_url', 'only_allow_merge_if_build_succeeds')
+    )
 
 
 class User(SaveMixin, RESTObject):
@@ -143,22 +141,20 @@ class UserManager(CRUDMixin, RESTManager):
 
     _list_filters = ('active', 'blocked', 'username', 'extern_uid', 'provider',
                      'external')
-    _create_attrs = {
-        'required': ('email', 'username', 'name'),
-        'optional': ('password', 'reset_password', 'skype', 'linkedin',
-                     'twitter', 'projects_limit', 'extern_uid', 'provider',
-                     'bio', 'admin', 'can_create_group', 'website_url',
-                     'skip_confirmation', 'external', 'organization',
-                     'location')
-    }
-    _update_attrs = {
-        'required': ('email', 'username', 'name'),
-        'optional': ('password', 'skype', 'linkedin', 'twitter',
-                     'projects_limit', 'extern_uid', 'provider', 'bio',
-                     'admin', 'can_create_group', 'website_url',
-                     'skip_confirmation', 'external', 'organization',
-                     'location')
-    }
+    _create_attrs = (
+        ('email', 'username', 'name'),
+        ('password', 'reset_password', 'skype', 'linkedin', 'twitter',
+         'projects_limit', 'extern_uid', 'provider', 'bio', 'admin',
+         'can_create_group', 'website_url', 'skip_confirmation', 'external',
+         'organization', 'location')
+    )
+    _update_attrs = (
+        ('email', 'username', 'name'),
+        ('password', 'skype', 'linkedin', 'twitter', 'projects_limit',
+         'extern_uid', 'provider', 'bio', 'admin', 'can_create_group',
+         'website_url', 'skip_confirmation', 'external', 'organization',
+         'location')
+    )
 
     def _sanitize_data(self, data, action):
         new_data = data.copy()
@@ -175,7 +171,7 @@ class CurrentUserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin,
                               RESTManager):
     _path = '/user/emails'
     _obj_cls = CurrentUserEmail
-    _create_attrs = {'required': ('email', ), 'optional': tuple()}
+    _create_attrs = (('email', ), tuple())
 
 
 class CurrentUserKey(RESTObject):
@@ -186,7 +182,7 @@ class CurrentUserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin,
                             RESTManager):
     _path = '/user/keys'
     _obj_cls = CurrentUserKey
-    _create_attrs = {'required': ('title', 'key'), 'optional': tuple()}
+    _create_attrs = (('title', 'key'), tuple())
 
 
 class CurrentUser(RESTObject):
@@ -214,21 +210,19 @@ class ApplicationSettings(SaveMixin, RESTObject):
 class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _path = '/application/settings'
     _obj_cls = ApplicationSettings
-    _update_attrs = {
-        'required': tuple(),
-        'optional': ('after_sign_out_path',
-                     'container_registry_token_expire_delay',
-                     'default_branch_protection', 'default_project_visibility',
-                     'default_projects_limit', 'default_snippet_visibility',
-                     'domain_blacklist', 'domain_blacklist_enabled',
-                     'domain_whitelist', 'enabled_git_access_protocol',
-                     'gravatar_enabled', 'home_page_url',
-                     'max_attachment_size', 'repository_storage',
-                     'restricted_signup_domains',
-                     'restricted_visibility_levels', 'session_expire_delay',
-                     'sign_in_text', 'signin_enabled', 'signup_enabled',
-                     'twitter_sharing_enabled', 'user_oauth_applications')
-    }
+    _update_attrs = (
+        tuple(),
+        ('after_sign_out_path', 'container_registry_token_expire_delay',
+         'default_branch_protection', 'default_project_visibility',
+         'default_projects_limit', 'default_snippet_visibility',
+         'domain_blacklist', 'domain_blacklist_enabled', 'domain_whitelist',
+         'enabled_git_access_protocol', 'gravatar_enabled', 'home_page_url',
+         'max_attachment_size', 'repository_storage',
+         'restricted_signup_domains', 'restricted_visibility_levels',
+         'session_expire_delay', 'sign_in_text', 'signin_enabled',
+         'signup_enabled', 'twitter_sharing_enabled',
+         'user_oauth_applications')
+    )
 
     def _sanitize_data(self, data, action):
         new_data = data.copy()
@@ -245,14 +239,9 @@ class BroadcastMessageManager(CRUDMixin, RESTManager):
     _path = '/broadcast_messages'
     _obj_cls = BroadcastMessage
 
-    _create_attrs = {
-        'required': ('message', ),
-        'optional': ('starts_at', 'ends_at', 'color', 'font'),
-    }
-    _update_attrs = {
-        'required': tuple(),
-        'optional': ('message', 'starts_at', 'ends_at', 'color', 'font'),
-    }
+    _create_attrs = (('message', ), ('starts_at', 'ends_at', 'color', 'font'))
+    _update_attrs = (tuple(), ('message', 'starts_at', 'ends_at', 'color',
+                               'font'))
 
 
 class DeployKey(RESTObject):
@@ -272,14 +261,13 @@ class NotificationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _path = '/notification_settings'
     _obj_cls = NotificationSettings
 
-    _update_attrs = {
-        'required': tuple(),
-        'optional': ('level', 'notification_email', 'new_note', 'new_issue',
-                     'reopen_issue', 'close_issue', 'reassign_issue',
-                     'new_merge_request', 'reopen_merge_request',
-                     'close_merge_request', 'reassign_merge_request',
-                     'merge_merge_request')
-    }
+    _update_attrs = (
+        tuple(),
+        ('level', 'notification_email', 'new_note', 'new_issue',
+         'reopen_issue', 'close_issue', 'reassign_issue', 'new_merge_request',
+         'reopen_merge_request', 'close_merge_request',
+         'reassign_merge_request', 'merge_merge_request')
+    )
 
 
 class Dockerfile(RESTObject):
@@ -309,128 +297,92 @@ class GitlabciymlManager(RetrieveMixin, RESTManager):
     _obj_cls = Gitlabciyml
 
 
-class GroupIssue(GitlabObject):
-    _url = '/groups/%(group_id)s/issues'
-    canGet = 'from_list'
-    canCreate = False
-    canUpdate = False
-    canDelete = False
-    requiredUrlAttrs = ['group_id']
-    optionalListAttrs = ['state', 'labels', 'milestone', 'order_by', 'sort']
+class GroupIssue(RESTObject):
+    pass
+
+class GroupIssueManager(GetFromListMixin, RESTManager):
+    _path = '/groups/%(group_id)s/issues'
+    _obj_cls = GroupIssue
+    _from_parent_attrs = {'group_id': 'id'}
+    _list_filters = ('state', 'labels', 'milestone', 'order_by', 'sort')
 
 
-class GroupIssueManager(BaseManager):
-    obj_cls = GroupIssue
+class GroupMember(SaveMixin, RESTObject):
+    _short_print_attr = 'username'
 
 
-class GroupMember(GitlabObject):
-    _url = '/groups/%(group_id)s/members'
-    canGet = 'from_list'
-    requiredUrlAttrs = ['group_id']
-    requiredCreateAttrs = ['access_level', 'user_id']
-    optionalCreateAttrs = ['expires_at']
-    requiredUpdateAttrs = ['access_level']
-    optionalCreateAttrs = ['expires_at']
-    shortPrintAttr = 'username'
-
-    def _update(self, **kwargs):
-        self.user_id = self.id
-        super(GroupMember, self)._update(**kwargs)
-
-
-class GroupMemberManager(BaseManager):
-    obj_cls = GroupMember
+class GroupMemberManager(GetFromListMixin, CreateMixin, UpdateMixin,
+                         RESTManager):
+    _path = '/groups/%(group_id)s/members'
+    _obj_cls = GroupMember
+    _from_parent_attrs = {'group_id': 'id'}
+    _create_attrs = (('access_level', 'user_id'), ('expires_at', ))
+    _update_attrs = (('access_level', ), ('expires_at', ))
 
 
 class GroupNotificationSettings(NotificationSettings):
-    _url = '/groups/%(group_id)s/notification_settings'
-    requiredUrlAttrs = ['group_id']
+    pass
 
 
-class GroupNotificationSettingsManager(BaseManager):
-    obj_cls = GroupNotificationSettings
+class GroupNotificationSettingsManager(NotificationSettingsManager):
+    _path = '/groups/%(group_id)s/notification_settings'
+    _obj_cls = GroupNotificationSettings
+    _from_parent_attrs = {'group_id': 'id'}
 
 
-class GroupAccessRequest(GitlabObject):
-    _url = '/groups/%(group_id)s/access_requests'
-    canGet = 'from_list'
-    canUpdate = False
-
-    def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
-        """Approve an access request.
-
-        Attrs:
-            access_level (int): The access level for the user.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabUpdateError: If the server fails to perform the request.
-        """
-
-        url = ('/groups/%(group_id)s/access_requests/%(id)s/approve' %
-               {'group_id': self.group_id, 'id': self.id})
-        data = {'access_level': access_level}
-        r = self.gitlab._raw_put(url, data=data, **kwargs)
-        raise_error_from_response(r, GitlabUpdateError, 201)
-        self._set_from_dict(r.json())
+class GroupAccessRequest(AccessRequestMixin, RESTObject):
+    pass
 
 
-class GroupAccessRequestManager(BaseManager):
-    obj_cls = GroupAccessRequest
+class GroupAccessRequestManager(GetFromListMixin, CreateMixin, DeleteMixin,
+                                RESTManager):
+    _path = '/groups/%(group_id)s/access_requests'
+    _obj_cls = GroupAccessRequest
+    _from_parent_attrs = {'group_id': 'id'}
 
 
-class Hook(GitlabObject):
+class Hook(RESTObject):
     _url = '/hooks'
-    canUpdate = False
-    requiredCreateAttrs = ['url']
-    shortPrintAttr = 'url'
+    _short_print_attr = 'url'
 
 
-class HookManager(BaseManager):
-    obj_cls = Hook
+class HookManager(NoUpdateMixin, RESTManager):
+    _path = '/hooks'
+    _obj_cls = Hook
+    _create_attrs = (('url', ), tuple())
 
 
-class Issue(GitlabObject):
+class Issue(RESTObject):
     _url = '/issues'
-    _constructorTypes = {'author': 'User', 'assignee': 'User',
-                         'milestone': 'ProjectMilestone'}
-    canGet = 'from_list'
-    canDelete = False
-    canUpdate = False
-    canCreate = False
-    shortPrintAttr = 'title'
-    optionalListAttrs = ['state', 'labels', 'order_by', 'sort']
+    _constructor_types = {'author': 'User',
+                          'assignee': 'User',
+                          'milestone': 'ProjectMilestone'}
+    _short_print_attr = 'title'
 
 
-class IssueManager(BaseManager):
-    obj_cls = Issue
+class IssueManager(GetFromListMixin, RESTManager):
+    _path = '/issues'
+    _obj_cls = Issue
+    _list_filters = ('state', 'labels', 'order_by', 'sort')
 
 
-class License(GitlabObject):
-    _url = '/templates/licenses'
-    canDelete = False
-    canUpdate = False
-    canCreate = False
-    idAttr = 'key'
-
-    optionalListAttrs = ['popular']
-    optionalGetAttrs = ['project', 'fullname']
+class License(RESTObject):
+    _id_attr = 'key'
 
 
-class LicenseManager(BaseManager):
-    obj_cls = License
+class LicenseManager(RetrieveMixin, RESTManager):
+    _path = '/templates/licenses'
+    _obj_cls = License
+    _list_filters =('popular')
+    _optional_get_attrs = ('project', 'fullname')
 
 
-class Snippet(GitlabObject):
-    _url = '/snippets'
-    _constructorTypes = {'author': 'User'}
-    requiredCreateAttrs = ['title', 'file_name', 'content']
-    optionalCreateAttrs = ['lifetime', 'visibility']
-    optionalUpdateAttrs = ['title', 'file_name', 'content', 'visibility']
-    shortPrintAttr = 'title'
+class Snippet(SaveMixin, RESTObject):
+    _constructor_types = {'author': 'User'}
+    _short_print_attr = 'title'
 
-    def raw(self, streamed=False, action=None, chunk_size=1024, **kwargs):
-        """Return the raw content of a snippet.
+    def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+        """Return the content of a snippet.
 
         Args:
             streamed (bool): If True the data will be processed by chunks of
@@ -447,14 +399,19 @@ class Snippet(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the server fails to perform the request.
         """
-        url = ("/snippets/%(snippet_id)s/raw" % {'snippet_id': self.id})
-        r = self.gitlab._raw_get(url, **kwargs)
-        raise_error_from_response(r, GitlabGetError)
+        path = '/snippets/%s/raw' % self.get_id()
+        result = self.manager.gitlab.http_get(path, streamed=streamed,
+                                              **kwargs)
         return utils.response_content(r, streamed, action, chunk_size)
 
 
-class SnippetManager(BaseManager):
-    obj_cls = Snippet
+class SnippetManager(CRUDMixin, RESTManager):
+    _path = '/snippets'
+    _obj_cls = Snippet
+    _create_attrs = (('title', 'file_name', 'content'),
+                     ('lifetime', 'visibility'))
+    _update_attrs = (tuple(),
+                     ('title', 'file_name', 'content', 'visibility'))
 
     def public(self, **kwargs):
         """List all the public snippets.
@@ -466,116 +423,101 @@ class SnippetManager(BaseManager):
         Returns:
             list(gitlab.Gitlab.Snippet): The list of snippets.
         """
-        return self.gitlab._raw_list("/snippets/public", Snippet, **kwargs)
+        return self.list(path='/snippets/public', **kwargs)
 
 
-class Namespace(GitlabObject):
-    _url = '/namespaces'
-    canGet = 'from_list'
-    canUpdate = False
-    canDelete = False
-    canCreate = False
-    optionalListAttrs = ['search']
+class Namespace(RESTObject):
+    pass
 
 
-class NamespaceManager(BaseManager):
-    obj_cls = Namespace
+class NamespaceManager(GetFromListMixin, RESTManager):
+    _path = '/namespaces'
+    _obj_cls = Namespace
+    _list_filters = ('search', )
 
 
-class ProjectBoardList(GitlabObject):
-    _url = '/projects/%(project_id)s/boards/%(board_id)s/lists'
-    requiredUrlAttrs = ['project_id', 'board_id']
-    _constructorTypes = {'label': 'ProjectLabel'}
-    requiredCreateAttrs = ['label_id']
-    requiredUpdateAttrs = ['position']
+class ProjectBoardList(SaveMixin, RESTObject):
+    _constructor_types = {'label': 'ProjectLabel'}
 
 
-class ProjectBoardListManager(BaseManager):
-    obj_cls = ProjectBoardList
+class ProjectBoardListManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/boards/%(board_id)s/lists'
+    _obj_cls = ProjectBoardList
+    _from_parent_attrs = {'project_id': 'project_id',
+                          'board_id': 'id'}
+    _create_attrs = (('label_id', ), tuple())
+    _update_attrs = (('position', ), tuple())
 
 
-class ProjectBoard(GitlabObject):
-    _url = '/projects/%(project_id)s/boards'
-    requiredUrlAttrs = ['project_id']
-    _constructorTypes = {'labels': 'ProjectBoardList'}
-    canGet = 'from_list'
-    canUpdate = False
-    canCreate = False
-    canDelete = False
-    managers = (
-        ('lists', 'ProjectBoardListManager',
-            [('project_id', 'project_id'), ('board_id', 'id')]),
-    )
+class ProjectBoard(RESTObject):
+    _constructor_types = {'labels': 'ProjectBoardList'}
+    _managers = (('lists', 'ProjectBoardListManager'), )
 
 
-class ProjectBoardManager(BaseManager):
-    obj_cls = ProjectBoard
+class ProjectBoardManager(GetFromListMixin, RESTManager):
+    _path = '/projects/%(project_id)s/boards'
+    _obj_cls = ProjectBoard
+    _from_parent_attrs = {'project_id': 'id'}
 
 
-class ProjectBranch(GitlabObject):
-    _url = '/projects/%(project_id)s/repository/branches'
-    _constructorTypes = {'author': 'User', "committer": "User"}
+class ProjectBranch(RESTObject):
+    _constructor_types = {'author': 'User', "committer": "User"}
+    _id_attr = 'name'
 
-    idAttr = 'name'
-    canUpdate = False
-    requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['branch', 'ref']
-
-    def protect(self, protect=True, **kwargs):
-        """Protects the branch."""
-        url = self._url % {'project_id': self.project_id}
-        action = 'protect' if protect else 'unprotect'
-        url = "%s/%s/%s" % (url, self.name, action)
-        r = self.gitlab._raw_put(url, data=None, content_type=None, **kwargs)
-        raise_error_from_response(r, GitlabProtectError)
-
-        if protect:
-            self.protected = protect
-        else:
-            del self.protected
+    def protect(self, developers_can_push=False, developers_can_merge=False,
+                **kwargs):
+        """Protects the branch.
+        
+        Args:
+            developers_can_push (bool): Set to True if developers are allowed
+                                        to push to the branch
+            developers_can_merge (bool): Set to True if developers are allowed
+                                         to merge to the branch
+        """
+        path = '%s/%s/protect' % (self.manager.path, self.get_id())
+        post_data = {'developers_can_push': developers_can_push,
+                     'developers_can_merge': developers_can_merge}
+        self.manager.gitlab.http_put(path, post_data=post_data, **kwargs)
+        self._attrs['protected'] = True
 
     def unprotect(self, **kwargs):
         """Unprotects the branch."""
-        self.protect(False, **kwargs)
+        path = '%s/%s/protect' % (self.manager.path, self.get_id())
+        self.manager.gitlab.http_put(path, **kwargs)
+        self._attrs['protected'] = False
 
 
-class ProjectBranchManager(BaseManager):
-    obj_cls = ProjectBranch
+class ProjectBranchManager(NoUpdateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/repository/branches'
+    _obj_cls = ProjectBranch
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('branch', 'ref'), tuple())
 
 
-class ProjectJob(GitlabObject):
-    _url = '/projects/%(project_id)s/jobs'
-    _constructorTypes = {'user': 'User',
-                         'commit': 'ProjectCommit',
-                         'runner': 'Runner'}
-    requiredUrlAttrs = ['project_id']
-    canDelete = False
-    canUpdate = False
-    canCreate = False
+class ProjectJob(RESTObject):
+    _constructor_types = {'user': 'User',
+                          'commit': 'ProjectCommit',
+                          'runner': 'Runner'}
 
     def cancel(self, **kwargs):
         """Cancel the job."""
-        url = '/projects/%s/jobs/%s/cancel' % (self.project_id, self.id)
-        r = self.gitlab._raw_post(url)
-        raise_error_from_response(r, GitlabJobCancelError, 201)
+        path = '%s/%s/cancel' % (self.manager.path, self.get_id())
+        self.manager.gitlab.http_post(path)
 
     def retry(self, **kwargs):
         """Retry the job."""
-        url = '/projects/%s/jobs/%s/retry' % (self.project_id, self.id)
-        r = self.gitlab._raw_post(url)
-        raise_error_from_response(r, GitlabJobRetryError, 201)
+        path = '%s/%s/retry' % (self.manager.path, self.get_id())
+        self.manager.gitlab.http_post(path)
 
     def play(self, **kwargs):
         """Trigger a job explicitly."""
-        url = '/projects/%s/jobs/%s/play' % (self.project_id, self.id)
-        r = self.gitlab._raw_post(url)
-        raise_error_from_response(r, GitlabJobPlayError)
+        path = '%s/%s/play' % (self.manager.path, self.get_id())
+        self.manager.gitlab.http_post(path)
 
     def erase(self, **kwargs):
         """Erase the job (remove job artifacts and trace)."""
-        url = '/projects/%s/jobs/%s/erase' % (self.project_id, self.id)
-        r = self.gitlab._raw_post(url)
-        raise_error_from_response(r, GitlabJobEraseError, 201)
+        path = '%s/%s/erase' % (self.manager.path, self.get_id())
+        self.manager.gitlab.http_post(path)
 
     def keep_artifacts(self, **kwargs):
         """Prevent artifacts from being delete when expiration is set.
@@ -584,10 +526,8 @@ class ProjectJob(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabCreateError: If the request failed.
         """
-        url = ('/projects/%s/jobs/%s/artifacts/keep' %
-               (self.project_id, self.id))
-        r = self.gitlab._raw_post(url)
-        raise_error_from_response(r, GitlabGetError, 200)
+        path = '%s/%s/artifacts/keep' % (self.manager.path, self.get_id())
+        self.manager.gitlab.http_post(path)
 
     def artifacts(self, streamed=False, action=None, chunk_size=1024,
                   **kwargs):
@@ -608,10 +548,10 @@ class ProjectJob(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the artifacts are not available.
         """
-        url = '/projects/%s/jobs/%s/artifacts' % (self.project_id, self.id)
-        r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
-        raise_error_from_response(r, GitlabGetError, 200)
-        return utils.response_content(r, streamed, action, chunk_size)
+        path = '%s/%s/artifacts' % (self.manager.path, self.get_id())
+        result = self.manager.gitlab.get_http(path, streamed=streamed,
+                                              **kwargs)
+        return utils.response_content(result, streamed, action, chunk_size)
 
     def trace(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Get the job trace.
@@ -631,96 +571,70 @@ class ProjectJob(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the trace is not available.
         """
-        url = '/projects/%s/jobs/%s/trace' % (self.project_id, self.id)
-        r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
-        raise_error_from_response(r, GitlabGetError, 200)
-        return utils.response_content(r, streamed, action, chunk_size)
+        path = '%s/%s/trace' % (self.manager.path, self.get_id())
+        result = self.manager.gitlab.get_http(path, streamed=streamed,
+                                              **kwargs)
+        return utils.response_content(result, streamed, action, chunk_size)
 
 
-class ProjectJobManager(BaseManager):
-    obj_cls = ProjectJob
+class ProjectJobManager(RetrieveMixin, RESTManager):
+    _path = '/projects/%(project_id)s/jobs'
+    _obj_cls = ProjectJob
+    _from_parent_attrs = {'project_id': 'id'}
 
 
-class ProjectCommitStatus(GitlabObject):
-    _url = '/projects/%(project_id)s/repository/commits/%(commit_id)s/statuses'
-    _create_url = '/projects/%(project_id)s/statuses/%(commit_id)s'
-    canUpdate = False
-    canDelete = False
-    requiredUrlAttrs = ['project_id', 'commit_id']
-    optionalGetAttrs = ['ref_name', 'stage', 'name', 'all']
-    requiredCreateAttrs = ['state']
-    optionalCreateAttrs = ['description', 'name', 'context', 'ref',
-                           'target_url']
+class ProjectCommitStatus(RESTObject):
+    pass
 
 
-class ProjectCommitStatusManager(BaseManager):
-    obj_cls = ProjectCommitStatus
+class ProjectCommitStatusManager(RetrieveMixin, CreateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/repository/commits/%(commit_id)s/statuses'
+    _obj_cls = ProjectCommitStatus
+    _from_parent_attrs = {'project_id': 'project_id', 'commit_id': 'id'}
+    _create_attrs = (('state', ),
+                     ('description', 'name', 'context', 'ref', 'target_url'))
+
+    def create(self, data, **kwargs):
+        """Creates a new object.
+
+        Args:
+            data (dict): parameters to send to the server to create the
+                         resource
+            **kwargs: Extra data to send to the Gitlab server (e.g. sudo or
+                      'ref_name', 'stage', 'name', 'all'.
+
+        Returns:
+            RESTObject: a new instance of the manage object class build with
+                        the data sent by the server
+        """
+        path = '/projects/%(project_id)s/statuses/%(commit_id)s'
+        computed_path = self._compute_path(path)
+        return CreateMixin.create(self, data, path=computed_path, **kwargs)
 
 
-class ProjectCommitComment(GitlabObject):
-    _url = '/projects/%(project_id)s/repository/commits/%(commit_id)s/comments'
-    canUpdate = False
-    canGet = False
-    canDelete = False
-    requiredUrlAttrs = ['project_id', 'commit_id']
-    requiredCreateAttrs = ['note']
-    optionalCreateAttrs = ['path', 'line', 'line_type']
+class ProjectCommitComment(RESTObject):
+    pass
 
 
-class ProjectCommitCommentManager(BaseManager):
-    obj_cls = ProjectCommitComment
+class ProjectCommitCommentManager(ListMixin, CreateMixin, RESTManager):
+    _path = ('/projects/%(project_id)s/repository/commits/%(commit_id)s'
+             '/comments')
+    _obj_cls = ProjectCommitComment
+    _from_parent_attrs = {'project_id': 'project_id', 'commit_id': 'id'}
+    _create_attrs = (('note', ), ('path', 'line', 'line_type'))
 
 
-class ProjectCommit(GitlabObject):
-    _url = '/projects/%(project_id)s/repository/commits'
-    canDelete = False
-    canUpdate = False
-    requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['branch', 'commit_message', 'actions']
-    optionalCreateAttrs = ['author_email', 'author_name']
-    shortPrintAttr = 'title'
-    managers = (
-        ('comments', 'ProjectCommitCommentManager',
-            [('project_id', 'project_id'), ('commit_id', 'id')]),
-        ('statuses', 'ProjectCommitStatusManager',
-            [('project_id', 'project_id'), ('commit_id', 'id')]),
+class ProjectCommit(RESTObject):
+    _short_print_attr = 'title'
+    _managers = (
+        ('comments', 'ProjectCommitCommentManager'),
+        ('statuses', 'ProjectCommitStatusManager'),
     )
 
     def diff(self, **kwargs):
         """Generate the commit diff."""
-        url = ('/projects/%(project_id)s/repository/commits/%(commit_id)s/diff'
-               % {'project_id': self.project_id, 'commit_id': self.id})
-        r = self.gitlab._raw_get(url, **kwargs)
-        raise_error_from_response(r, GitlabGetError)
-
-        return r.json()
-
-    def blob(self, filepath, streamed=False, action=None, chunk_size=1024,
-             **kwargs):
-        """Generate the content of a file for this commit.
-
-        Args:
-            filepath (str): Path of the file to request.
-            streamed (bool): If True the data will be processed by chunks of
-                `chunk_size` and each chunk is passed to `action` for
-                treatment.
-            action (callable): Callable responsible of dealing with chunk of
-                data.
-            chunk_size (int): Size of each chunk.
-
-        Returns:
-            str: The content of the file
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the server fails to perform the request.
-        """
-        url = ('/projects/%(project_id)s/repository/blobs/%(commit_id)s' %
-               {'project_id': self.project_id, 'commit_id': self.id})
-        url += '?filepath=%s' % filepath
-        r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
-        raise_error_from_response(r, GitlabGetError)
-        return utils.response_content(r, streamed, action, chunk_size)
+        path = '%s/%s/diff' % (self.manager.path, self.get_id())
+        return self.manager.gitlab.http_get(path, **kwargs)
 
     def cherry_pick(self, branch, **kwargs):
         """Cherry-pick a commit into a branch.
@@ -731,151 +645,121 @@ class ProjectCommit(GitlabObject):
         Raises:
             GitlabCherryPickError: If the cherry pick could not be applied.
         """
-        url = ('/projects/%s/repository/commits/%s/cherry_pick' %
-               (self.project_id, self.id))
-
-        r = self.gitlab._raw_post(url, data={'project_id': self.project_id,
-                                             'branch': branch}, **kwargs)
-        errors = {400: GitlabCherryPickError}
-        raise_error_from_response(r, errors, expected_code=201)
+        path = '%s/%s/cherry_pick' % (self.manager.path, self.get_id())
+        post_data = {'branch': branch}
+        self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
 
-class ProjectCommitManager(BaseManager):
-    obj_cls = ProjectCommit
+class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/repository/commits'
+    _obj_cls = ProjectCommit
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('branch', 'commit_message', 'actions'),
+                     ('author_email', 'author_name'))
 
 
-class ProjectEnvironment(GitlabObject):
-    _url = '/projects/%(project_id)s/environments'
-    canGet = 'from_list'
-    requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['name']
-    optionalCreateAttrs = ['external_url']
-    optionalUpdateAttrs = ['name', 'external_url']
+class ProjectEnvironment(SaveMixin, RESTObject):
+    pass
 
 
-class ProjectEnvironmentManager(BaseManager):
-    obj_cls = ProjectEnvironment
+class ProjectEnvironmentManager(GetFromListMixin, CreateMixin, UpdateMixin,
+                                DeleteMixin, RESTManager):
+    _path = '/projects/%(project_id)s/environments'
+    _obj_cls = ProjectEnvironment
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('name', ), ('external_url', ))
+    _update_attrs = (tuple(), ('name', 'external_url'))
 
 
-class ProjectKey(GitlabObject):
-    _url = '/projects/%(project_id)s/deploy_keys'
-    canUpdate = False
-    requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['title', 'key']
+class ProjectKey(RESTObject):
+    pass
 
 
-class ProjectKeyManager(BaseManager):
-    obj_cls = ProjectKey
+class ProjectKeyManager(NoUpdateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/deploy_keys'
+    _obj_cls = ProjectKey
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('title', 'key'), tuple())
 
-    def enable(self, key_id):
-        """Enable a deploy key for a project."""
-        url = '/projects/%s/deploy_keys/%s/enable' % (self.parent.id, key_id)
-        r = self.gitlab._raw_post(url)
-        raise_error_from_response(r, GitlabProjectDeployKeyError, 201)
+    def enable(self, key_id, **kwargs):
+        """Enable a deploy key for a project.
 
-
-class ProjectEvent(GitlabObject):
-    _url = '/projects/%(project_id)s/events'
-    canGet = 'from_list'
-    canDelete = False
-    canUpdate = False
-    canCreate = False
-    requiredUrlAttrs = ['project_id']
-    shortPrintAttr = 'target_title'
+        Args:
+            key_id (int): The ID of the key to enable
+        """
+        path = '%s/%s/enable' % (self.manager.path, key_id)
+        self.manager.gitlab.http_post(path, **kwargs)
 
 
-class ProjectEventManager(BaseManager):
-    obj_cls = ProjectEvent
+class ProjectEvent(RESTObject):
+    _short_print_attr = 'target_title'
 
 
-class ProjectFork(GitlabObject):
-    _url = '/projects/%(project_id)s/fork'
-    canUpdate = False
-    canDelete = False
-    canList = False
-    canGet = False
-    requiredUrlAttrs = ['project_id']
-    optionalCreateAttrs = ['namespace']
+class ProjectEventManager(GetFromListMixin, RESTManager):
+    _path ='/projects/%(project_id)s/events'
+    _obj_cls = ProjectEvent
+    _from_parent_attrs = {'project_id': 'id'}
 
 
-class ProjectForkManager(BaseManager):
-    obj_cls = ProjectFork
+class ProjectFork(RESTObject):
+    pass
 
 
-class ProjectHook(GitlabObject):
-    _url = '/projects/%(project_id)s/hooks'
+class ProjectForkManager(CreateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/fork'
+    _obj_cls = ProjectFork
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (tuple(), ('namespace', ))
+
+
+class ProjectHook(SaveMixin, RESTObject):
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['url']
     optionalCreateAttrs = ['push_events', 'issues_events', 'note_events',
                            'merge_requests_events', 'tag_push_events',
                            'build_events', 'enable_ssl_verification', 'token',
                            'pipeline_events']
-    shortPrintAttr = 'url'
+    _short_print_attr = 'url'
 
 
-class ProjectHookManager(BaseManager):
-    obj_cls = ProjectHook
-
-
-class ProjectIssueNote(GitlabObject):
-    _url = '/projects/%(project_id)s/issues/%(issue_iid)s/notes'
-    _constructorTypes = {'author': 'User'}
-    canDelete = False
-    requiredUrlAttrs = ['project_id', 'issue_iid']
-    requiredCreateAttrs = ['body']
-    optionalCreateAttrs = ['created_at']
-
-
-class ProjectIssueNoteManager(BaseManager):
-    obj_cls = ProjectIssueNote
-
-
-class ProjectIssue(GitlabObject):
-    _url = '/projects/%(project_id)s/issues/'
-    _constructorTypes = {'author': 'User', 'assignee': 'User',
-                         'milestone': 'ProjectMilestone'}
-    optionalListAttrs = ['state', 'labels', 'milestone', 'order_by', 'sort']
-    requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['title']
-    optionalCreateAttrs = ['description', 'assignee_id', 'milestone_id',
-                           'labels', 'created_at', 'due_date']
-    optionalUpdateAttrs = ['title', 'description', 'assignee_id',
-                           'milestone_id', 'labels', 'created_at',
-                           'updated_at', 'state_event', 'due_date']
-    shortPrintAttr = 'title'
-    idAttr = 'iid'
-    managers = (
-        ('notes', 'ProjectIssueNoteManager',
-            [('project_id', 'project_id'), ('issue_iid', 'iid')]),
+class ProjectHookManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/hooks'
+    _obj_cls = ProjectHook
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (
+        ('url', ),
+        ('push_events', 'issues_events', 'note_events',
+         'merge_requests_events', 'tag_push_events', 'build_events',
+         'enable_ssl_verification', 'token', 'pipeline_events')
+    )
+    _update_attrs = (
+        ('url', ),
+        ('push_events', 'issues_events', 'note_events',
+         'merge_requests_events', 'tag_push_events', 'build_events',
+         'enable_ssl_verification', 'token', 'pipeline_events')
     )
 
-    def subscribe(self, **kwargs):
-        """Subscribe to an issue.
 
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabSubscribeError: If the subscription cannot be done
-        """
-        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/subscribe' %
-               {'project_id': self.project_id, 'issue_iid': self.iid})
+class ProjectIssueNote(SaveMixin, RESTObject):
+    _constructor_types= {'author': 'User'}
 
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabSubscribeError, [201, 304])
-        self._set_from_dict(r.json())
 
-    def unsubscribe(self, **kwargs):
-        """Unsubscribe an issue.
+class ProjectIssueNoteManager(RetrieveMixin, CreateMixin, UpdateMixin,
+                              RESTManager):
+    _path = '/projects/%(project_id)s/issues/%(issue_iid)s/notes'
+    _obj_cls = ProjectIssueNote
+    _from_parent_attrs = {'project_id': 'project_id', 'issue_iid': 'iid'}
+    _create_attrs = (('body', ), ('created_at'))
+    _update_attrs = (('body', ), tuple())
 
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabUnsubscribeError: If the unsubscription cannot be done
-        """
-        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/unsubscribe' %
-               {'project_id': self.project_id, 'issue_iid': self.iid})
 
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabUnsubscribeError, [201, 304])
-        self._set_from_dict(r.json())
+class ProjectIssue(SubscribableMixin, TodoMixin, TimeTrackingMixin, SaveMixin,
+                  RESTObject):
+    _constructor_types = {'author': 'User', 'assignee': 'User', 'milestone':
+                          'ProjectMilestone'}
+    _short_print_attr = 'title'
+    _id_attr = 'iid'
+    _managers = (('notes', 'ProjectIssueNoteManager'), )
 
     def move(self, to_project_id, **kwargs):
         """Move the issue to another project.
@@ -883,160 +767,70 @@ class ProjectIssue(GitlabObject):
         Raises:
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/move' %
-               {'project_id': self.project_id, 'issue_iid': self.iid})
-
+        path = '%s/%s/move' % (self.manager.path, self.get_id())
         data = {'to_project_id': to_project_id}
-        data.update(**kwargs)
-        r = self.gitlab._raw_post(url, data=data)
-        raise_error_from_response(r, GitlabUpdateError, 201)
-        self._set_from_dict(r.json())
-
-    def todo(self, **kwargs):
-        """Create a todo for the issue.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-        """
-        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/todo' %
-               {'project_id': self.project_id, 'issue_iid': self.iid})
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabTodoError, [201, 304])
-
-    def time_stats(self, **kwargs):
-        """Get time stats for the issue.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-        """
-        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/time_stats' %
-               {'project_id': self.project_id, 'issue_iid': self.iid})
-        r = self.gitlab._raw_get(url, **kwargs)
-        raise_error_from_response(r, GitlabGetError)
-        return r.json()
-
-    def time_estimate(self, duration, **kwargs):
-        """Set an estimated time of work for the issue.
-
-        Args:
-            duration (str): duration in human format (e.g. 3h30)
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-        """
-        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/time_estimate' %
-               {'project_id': self.project_id, 'issue_iid': self.iid})
-        data = {'duration': duration}
-        r = self.gitlab._raw_post(url, data, **kwargs)
-        raise_error_from_response(r, GitlabTimeTrackingError, 200)
-        return r.json()
-
-    def reset_time_estimate(self, **kwargs):
-        """Resets estimated time for the issue to 0 seconds.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-        """
-        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/'
-               'reset_time_estimate' %
-               {'project_id': self.project_id, 'issue_iid': self.iid})
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabTimeTrackingError, 200)
-        return r.json()
-
-    def add_spent_time(self, duration, **kwargs):
-        """Set an estimated time of work for the issue.
-
-        Args:
-            duration (str): duration in human format (e.g. 3h30)
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-        """
-        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/'
-               'add_spent_time' %
-               {'project_id': self.project_id, 'issue_iid': self.iid})
-        data = {'duration': duration}
-        r = self.gitlab._raw_post(url, data, **kwargs)
-        raise_error_from_response(r, GitlabTimeTrackingError, 201)
-        return r.json()
-
-    def reset_spent_time(self, **kwargs):
-        """Set an estimated time of work for the issue.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-        """
-        url = ('/projects/%(project_id)s/issues/%(issue_iid)s/'
-               'reset_spent_time' %
-               {'project_id': self.project_id, 'issue_iid': self.iid})
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabTimeTrackingError, 200)
-        return r.json()
+        server_data = self.manager.gitlab.http_post(url, post_data=data,
+                                                    **kwargs)
+        self._update_attrs(server_data)
 
 
-class ProjectIssueManager(BaseManager):
-    obj_cls = ProjectIssue
+class ProjectIssueManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/issues/'
+    _obj_cls = ProjectIssue
+    _from_parent_attrs = {'project_id': 'id'}
+    _list_filters = ('state', 'labels', 'milestone', 'order_by', 'sort')
+    _create_attrs = (('title', ),
+                     ('description', 'assignee_id', 'milestone_id', 'labels',
+                      'created_at', 'due_date'))
+    _update_attrs = (tuple(), ('title', 'description', 'assignee_id',
+                               'milestone_id', 'labels', 'created_at',
+                               'updated_at', 'state_event', 'due_date'))
 
 
-class ProjectMember(GitlabObject):
-    _url = '/projects/%(project_id)s/members'
-    requiredUrlAttrs = ['project_id']
+class ProjectMember(SaveMixin, RESTObject):
     requiredCreateAttrs = ['access_level', 'user_id']
     optionalCreateAttrs = ['expires_at']
     requiredUpdateAttrs = ['access_level']
     optionalCreateAttrs = ['expires_at']
-    shortPrintAttr = 'username'
+    _short_print_attr = 'username'
 
 
-class ProjectMemberManager(BaseManager):
-    obj_cls = ProjectMember
+class ProjectMemberManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/members'
+    _obj_cls = ProjectMember
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('access_level', 'user_id'), ('expires_at', ))
+    _update_attrs = (('access_level', ), ('expires_at', ))
 
 
-class ProjectNote(GitlabObject):
-    _url = '/projects/%(project_id)s/notes'
-    _constructorTypes = {'author': 'User'}
-    canUpdate = False
-    canDelete = False
-    requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['body']
+class ProjectNote(RESTObject):
+    _constructor_types = {'author': 'User'}
 
 
-class ProjectNoteManager(BaseManager):
-    obj_cls = ProjectNote
+class ProjectNoteManager(RetrieveMixin, RESTManager):
+    _path ='/projects/%(project_id)s/notes'
+    _obj_cls = ProjectNote
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('body', ), tuple())
 
 
 class ProjectNotificationSettings(NotificationSettings):
-    _url = '/projects/%(project_id)s/notification_settings'
-    requiredUrlAttrs = ['project_id']
+    pass
 
 
-class ProjectNotificationSettingsManager(BaseManager):
-    obj_cls = ProjectNotificationSettings
+class ProjectNotificationSettingsManager(NotificationSettingsManager):
+    _path = '/projects/%(project_id)s/notification_settings'
+    _obj_cls = ProjectNotificationSettings
+    _from_parent_attrs = {'project_id': 'id'}
 
 
-class ProjectTagRelease(GitlabObject):
-    _url = '/projects/%(project_id)s/repository/tags/%(tag_name)/release'
-    canDelete = False
-    canList = False
-    requiredUrlAttrs = ['project_id', 'tag_name']
-    requiredCreateAttrs = ['description']
-    shortPrintAttr = 'description'
+class ProjectTag(RESTObject):
+    _constructor_types = {'release': 'ProjectTagRelease',
+                          'commit': 'ProjectCommit'}
+    _id_attr = 'name'
+    _short_print_attr = 'name'
 
-
-class ProjectTag(GitlabObject):
-    _url = '/projects/%(project_id)s/repository/tags'
-    _constructorTypes = {'release': 'ProjectTagRelease',
-                         'commit': 'ProjectCommit'}
-    idAttr = 'name'
-    canGet = 'from_list'
-    canUpdate = False
-    requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['tag_name', 'ref']
-    optionalCreateAttrs = ['message']
-    shortPrintAttr = 'name'
-
-    def set_release_description(self, description):
+    def set_release_description(self, description, **kwargs):
         """Set the release notes on the tag.
 
         If the release doesn't exist yet, it will be created. If it already
@@ -1050,121 +844,64 @@ class ProjectTag(GitlabObject):
             GitlabCreateError: If the server fails to create the release.
             GitlabUpdateError: If the server fails to update the release.
         """
-        url = '/projects/%s/repository/tags/%s/release' % (self.project_id,
-                                                           self.name)
+        _path = '%s/%s/release' % (self.manager.path, self.get_id())
+        data = {'description': description}
         if self.release is None:
-            r = self.gitlab._raw_post(url, data={'description': description})
-            raise_error_from_response(r, GitlabCreateError, 201)
+            result = self.manager.gitlab.http_post(url, post_data=data,
+                                                   **kwargs)
         else:
-            r = self.gitlab._raw_put(url, data={'description': description})
-            raise_error_from_response(r, GitlabUpdateError, 200)
-        self.release = ProjectTagRelease(self, r.json())
+            result = self.manager.gitlab.http_put(url, post_data=data,
+                                                  **kwargs)
+        self.release = result.json()
 
 
-class ProjectTagManager(BaseManager):
-    obj_cls = ProjectTag
+class ProjectTagManager(GetFromListMixin, CreateMixin, DeleteMixin,
+                        RESTManager):
+    _path = '/projects/%(project_id)s/repository/tags'
+    _obj_cls = ProjectTag
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('tag_name', 'ref'), ('message',))
 
 
-class ProjectMergeRequestDiff(GitlabObject):
-    _url = ('/projects/%(project_id)s/merge_requests/'
-            '%(merge_request_iid)s/versions')
-    canCreate = False
-    canUpdate = False
-    canDelete = False
-    requiredUrlAttrs = ['project_id', 'merge_request_iid']
+class ProjectMergeRequestDiff(RESTObject):
+    pass
 
 
-class ProjectMergeRequestDiffManager(BaseManager):
-    obj_cls = ProjectMergeRequestDiff
+class ProjectMergeRequestDiffManager(RetrieveMixin, RESTManager):
+    _path = '/projects/%(project_id)s/merge_requests/%(mr_iid)s/versions'
+    _obj_cls = ProjectMergeRequestDiff
+    _from_parent_attrs = {'project_id': 'project_id', 'mr_iid': 'iid'}
 
 
-class ProjectMergeRequestNote(GitlabObject):
-    _url = ('/projects/%(project_id)s/merge_requests/%(merge_request_iid)s'
-            '/notes')
-    _constructorTypes = {'author': 'User'}
-    requiredUrlAttrs = ['project_id', 'merge_request_iid']
-    requiredCreateAttrs = ['body']
+class ProjectMergeRequestNote(SaveMixin, RESTObject):
+    _constructor_types = {'author': 'User'}
 
 
-class ProjectMergeRequestNoteManager(BaseManager):
-    obj_cls = ProjectMergeRequestNote
+class ProjectMergeRequestNoteManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/merge_requests/%(mr_iid)s/notes'
+    _obj_cls = ProjectMergeRequestNote
+    _from_parent_attrs = {'project_id': 'project_id', 'mr_iid': 'iid'}
+    _create_attrs = (('body', ), tuple())
+    _update_attrs = (('body', ), tuple())
 
 
-class ProjectMergeRequest(GitlabObject):
-    _url = '/projects/%(project_id)s/merge_requests'
-    _constructorTypes = {'author': 'User', 'assignee': 'User'}
-    requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['source_branch', 'target_branch', 'title']
-    optionalCreateAttrs = ['assignee_id', 'description', 'target_project_id',
-                           'labels', 'milestone_id', 'remove_source_branch']
-    optionalUpdateAttrs = ['target_branch', 'assignee_id', 'title',
-                           'description', 'state_event', 'labels',
-                           'milestone_id']
-    optionalListAttrs = ['iids', 'state', 'order_by', 'sort']
-    idAttr = 'iid'
+class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
+                          SaveMixin, RESTObject):
+    _constructor_types = {'author': 'User', 'assignee': 'User'}
+    _id_attr = 'iid'
 
-    managers = (
-        ('notes', 'ProjectMergeRequestNoteManager',
-            [('project_id', 'project_id'), ('merge_request_iid', 'iid')]),
-        ('diffs', 'ProjectMergeRequestDiffManager',
-            [('project_id', 'project_id'), ('merge_request_iid', 'iid')]),
+    _managers = (
+        ('notes', 'ProjectMergeRequestNoteManager'),
+        ('diffs', 'ProjectMergeRequestDiffManager')
     )
-
-    def _data_for_gitlab(self, extra_parameters={}, update=False,
-                         as_json=True):
-        data = (super(ProjectMergeRequest, self)
-                ._data_for_gitlab(extra_parameters, update=update,
-                                  as_json=False))
-        if update:
-            # Drop source_branch attribute as it is not accepted by the gitlab
-            # server (Issue #76)
-            data.pop('source_branch', None)
-        return json.dumps(data)
-
-    def subscribe(self, **kwargs):
-        """Subscribe to a MR.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabSubscribeError: If the subscription cannot be done
-        """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/'
-               'subscribe' %
-               {'project_id': self.project_id, 'mr_iid': self.iid})
-
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabSubscribeError, [201, 304])
-        if r.status_code == 201:
-            self._set_from_dict(r.json())
-
-    def unsubscribe(self, **kwargs):
-        """Unsubscribe a MR.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabUnsubscribeError: If the unsubscription cannot be done
-        """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/'
-               'unsubscribe' %
-               {'project_id': self.project_id, 'mr_iid': self.iid})
-
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabUnsubscribeError, [201, 304])
-        if r.status_code == 200:
-            self._set_from_dict(r.json())
 
     def cancel_merge_when_pipeline_succeeds(self, **kwargs):
         """Cancel merge when build succeeds."""
 
-        u = ('/projects/%s/merge_requests/%s/'
-             'cancel_merge_when_pipeline_succeeds'
-             % (self.project_id, self.iid))
-        r = self.gitlab._raw_put(u, **kwargs)
-        errors = {401: GitlabMRForbiddenError,
-                  405: GitlabMRClosedError,
-                  406: GitlabMROnBuildSuccessError}
-        raise_error_from_response(r, errors)
-        return ProjectMergeRequest(self, r.json())
+        path = ('%s/%s/cancel_merge_when_pipeline_succeeds' %
+                (self.manager.path, self.get_id()))
+        server_data = self.manager.gitlab.http_put(path, **kwargs)
+        self._update_attrs(server_data)
 
     def closes_issues(self, **kwargs):
         """List issues closed by the MR.
@@ -1176,6 +913,7 @@ class ProjectMergeRequest(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the server fails to perform the request.
         """
+        # FIXME(gpocentek)
         url = ('/projects/%s/merge_requests/%s/closes_issues' %
                (self.project_id, self.iid))
         return self.gitlab._raw_list(url, ProjectIssue, **kwargs)
@@ -1190,6 +928,7 @@ class ProjectMergeRequest(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabListError: If the server fails to perform the request.
         """
+        # FIXME(gpocentek)
         url = ('/projects/%s/merge_requests/%s/commits' %
                (self.project_id, self.iid))
         return self.gitlab._raw_list(url, ProjectCommit, **kwargs)
@@ -1204,11 +943,8 @@ class ProjectMergeRequest(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabListError: If the server fails to perform the request.
         """
-        url = ('/projects/%s/merge_requests/%s/changes' %
-               (self.project_id, self.iid))
-        r = self.gitlab._raw_get(url, **kwargs)
-        raise_error_from_response(r, GitlabListError)
-        return r.json()
+        path = '%s/%s/changes' % (self.manager.path, self.get_id())
+        return self.manager.gitlab.http_get(path, **kwargs)
 
     def merge(self, merge_commit_message=None,
               should_remove_source_branch=False,
@@ -1231,8 +967,7 @@ class ProjectMergeRequest(GitlabObject):
                                     close thr MR
             GitlabMRClosedError: If the MR is already closed
         """
-        url = '/projects/%s/merge_requests/%s/merge' % (self.project_id,
-                                                        self.iid)
+        path = '%s/%s/merge' % (self.manager.path, self.get_id())
         data = {}
         if merge_commit_message:
             data['merge_commit_message'] = merge_commit_message
@@ -1241,114 +976,31 @@ class ProjectMergeRequest(GitlabObject):
         if merged_when_build_succeeds:
             data['merged_when_build_succeeds'] = True
 
-        r = self.gitlab._raw_put(url, data=data, **kwargs)
-        errors = {401: GitlabMRForbiddenError,
-                  405: GitlabMRClosedError}
-        raise_error_from_response(r, errors)
-        self._set_from_dict(r.json())
-
-    def todo(self, **kwargs):
-        """Create a todo for the merge request.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-        """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/todo' %
-               {'project_id': self.project_id, 'mr_iid': self.iid})
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabTodoError, [201, 304])
-
-    def time_stats(self, **kwargs):
-        """Get time stats for the merge request.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-        """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/'
-               'time_stats' %
-               {'project_id': self.project_id, 'mr_iid': self.iid})
-        r = self.gitlab._raw_get(url, **kwargs)
-        raise_error_from_response(r, GitlabGetError)
-        return r.json()
-
-    def time_estimate(self, duration, **kwargs):
-        """Set an estimated time of work for the merge request.
-
-        Args:
-            duration (str): duration in human format (e.g. 3h30)
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-        """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/'
-               'time_estimate' %
-               {'project_id': self.project_id, 'mr_iid': self.iid})
-        data = {'duration': duration}
-        r = self.gitlab._raw_post(url, data, **kwargs)
-        raise_error_from_response(r, GitlabTimeTrackingError, 200)
-        return r.json()
-
-    def reset_time_estimate(self, **kwargs):
-        """Resets estimated time for the merge request to 0 seconds.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-        """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/'
-               'reset_time_estimate' %
-               {'project_id': self.project_id, 'mr_iid': self.iid})
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabTimeTrackingError, 200)
-        return r.json()
-
-    def add_spent_time(self, duration, **kwargs):
-        """Set an estimated time of work for the merge request.
-
-        Args:
-            duration (str): duration in human format (e.g. 3h30)
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-        """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/'
-               'add_spent_time' %
-               {'project_id': self.project_id, 'mr_iid': self.iid})
-        data = {'duration': duration}
-        r = self.gitlab._raw_post(url, data, **kwargs)
-        raise_error_from_response(r, GitlabTimeTrackingError, 201)
-        return r.json()
-
-    def reset_spent_time(self, **kwargs):
-        """Set an estimated time of work for the merge request.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-        """
-        url = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/'
-               'reset_spent_time' %
-               {'project_id': self.project_id, 'mr_iid': self.iid})
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabTimeTrackingError, 200)
-        return r.json()
+        server_data = self.manager.gitlab.http_put(path, post_data=data,
+                                                   **kwargs)
+        self._update_attrs(server_data)
 
 
-class ProjectMergeRequestManager(BaseManager):
-    obj_cls = ProjectMergeRequest
+class ProjectMergeRequestManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/merge_requests'
+    _obj_cls = ProjectMergeRequest
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (
+        ('source_branch', 'target_branch', 'title'),
+        ('assignee_id', 'description', 'target_project_id', 'labels',
+         'milestone_id', 'remove_source_branch')
+    )
+    _update_attrs = (tuple(), ('target_branch', 'assignee_id', 'title',
+                               'description', 'state_event', 'labels',
+                               'milestone_id'))
+    _list_filters = ('iids', 'state', 'order_by', 'sort')
 
 
-class ProjectMilestone(GitlabObject):
-    _url = '/projects/%(project_id)s/milestones'
-    canDelete = False
-    requiredUrlAttrs = ['project_id']
-    optionalListAttrs = ['iids', 'state']
-    requiredCreateAttrs = ['title']
-    optionalCreateAttrs = ['description', 'due_date', 'start_date',
-                           'state_event']
-    optionalUpdateAttrs = requiredCreateAttrs + optionalCreateAttrs
-    shortPrintAttr = 'title'
+class ProjectMilestone(SaveMixin, RESTObject):
+    _short_print_attr = 'title'
 
     def issues(self, **kwargs):
-        url = "/projects/%s/milestones/%s/issues" % (self.project_id, self.id)
+        url = '/projects/%s/milestones/%s/issues' % (self.project_id, self.id)
         return self.gitlab._raw_list(url, ProjectIssue, **kwargs)
 
     def merge_requests(self, **kwargs):
@@ -1361,71 +1013,70 @@ class ProjectMilestone(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabListError: If the server fails to perform the request.
         """
+        # FIXME(gpocentek)
         url = ('/projects/%s/milestones/%s/merge_requests' %
                (self.project_id, self.id))
         return self.gitlab._raw_list(url, ProjectMergeRequest, **kwargs)
 
 
-class ProjectMilestoneManager(BaseManager):
-    obj_cls = ProjectMilestone
+class ProjectMilestoneManager(RetrieveMixin, CreateMixin, DeleteMixin,
+                              RESTManager):
+    _path = '/projects/%(project_id)s/milestones'
+    _obj_cls = ProjectMilestone
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('title', ), ('description', 'due_date', 'start_date',
+                                   'state_event'))
+    _update_attrs = (tuple(), ('title', 'description', 'due_date',
+                               'start_date', 'state_event'))
+    _list_filters = ('iids', 'state')
 
 
-class ProjectLabel(GitlabObject):
-    _url = '/projects/%(project_id)s/labels'
-    _id_in_delete_url = False
-    _id_in_update_url = False
-    canGet = 'from_list'
-    requiredUrlAttrs = ['project_id']
-    idAttr = 'name'
-    requiredDeleteAttrs = ['name']
+class ProjectLabel(SubscribableMixin, SaveMixin, RESTObject):
+    _id_attr = 'name'
     requiredCreateAttrs = ['name', 'color']
     optionalCreateAttrs = ['description', 'priority']
     requiredUpdateAttrs = ['name']
     optionalUpdateAttrs = ['new_name', 'color', 'description', 'priority']
 
-    def subscribe(self, **kwargs):
-        """Subscribe to a label.
 
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabSubscribeError: If the subscription cannot be done
+class ProjectLabelManager(GetFromListMixin, CreateMixin, UpdateMixin,
+                          RESTManager):
+    _path = '/projects/%(project_id)s/labels'
+    _obj_cls = ProjectLabel
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('name', 'color'), ('description', 'priority'))
+    _update_attrs = (('name', ),
+                     ('new_name', 'color', 'description', 'priority'))
+
+    # Delete without ID.
+    def delete(self, name, **kwargs):
+        """Deletes a Label on the server.
+
+        Args:
+            name: The name of the label.
+            **kwargs: Extra data to send to the Gitlab server (e.g. sudo)
         """
-        url = ('/projects/%(project_id)s/labels/%(label_id)s/subscribe' %
-               {'project_id': self.project_id, 'label_id': self.name})
+        self.gitlab.http_delete(path, query_data={'name': self.name}, **kwargs)
 
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabSubscribeError, [201, 304])
-        self._set_from_dict(r.json())
+    # Update without ID, but we need an ID to get from list.
+    def save(self, **kwargs):
+        """Saves the changes made to the object to the server.
 
-    def unsubscribe(self, **kwargs):
-        """Unsubscribe a label.
+        Args:
+            **kwargs: Extra option to send to the server (e.g. sudo)
 
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabUnsubscribeError: If the unsubscription cannot be done
+        The object is updated to match what the server returns.
         """
-        url = ('/projects/%(project_id)s/labels/%(label_id)s/unsubscribe' %
-               {'project_id': self.project_id, 'label_id': self.name})
+        updated_data = self._get_updated_data()
 
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabUnsubscribeError, [201, 304])
-        self._set_from_dict(r.json())
-
-
-class ProjectLabelManager(BaseManager):
-    obj_cls = ProjectLabel
+        # call the manager
+        server_data = self.manager.update(None, updated_data, **kwargs)
+        self._update_attrs(server_data)
 
 
-class ProjectFile(GitlabObject):
-    _url = '/projects/%(project_id)s/repository/files'
-    canList = False
-    requiredUrlAttrs = ['project_id']
-    requiredGetAttrs = ['ref']
-    requiredCreateAttrs = ['file_path', 'branch', 'content',
-                           'commit_message']
-    optionalCreateAttrs = ['encoding']
-    requiredDeleteAttrs = ['branch', 'commit_message', 'file_path']
-    shortPrintAttr = 'file_path'
+class ProjectFile(SaveMixin, RESTObject):
+    _id_attr = 'file_path'
+    _short_print_attr = 'file_path'
 
     def decode(self):
         """Returns the decoded content of the file.
@@ -1436,10 +1087,33 @@ class ProjectFile(GitlabObject):
         return base64.b64decode(self.content)
 
 
-class ProjectFileManager(BaseManager):
-    obj_cls = ProjectFile
+class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
+                         RESTManager):
+    _path = '/projects/%(project_id)s/repository/files'
+    _obj_cls = ProjectFile
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('file_path', 'branch', 'content', 'commit_message'),
+                     ('encoding', 'author_email', 'author_name'))
+    _update_attrs = (('file_path', 'branch', 'content', 'commit_message'),
+                     ('encoding', 'author_email', 'author_name'))
 
-    def raw(self, filepath, ref, streamed=False, action=None, chunk_size=1024,
+    def get(self, file_path, **kwargs):
+        """Retrieve a single object.
+
+        Args:
+            id (int or str): ID of the object to retrieve
+            **kwargs: Extra data to send to the Gitlab server (e.g. sudo)
+
+        Returns:
+            object: The generated RESTObject.
+
+        Raises:
+            GitlabGetError: If the server cannot perform the request.
+        """
+        file_path = file_path.replace('/', '%2F')
+        return GetMixin.get(self, file_path, **kwargs)
+
+    def raw(self, file_path, ref, streamed=False, action=None, chunk_size=1024,
             **kwargs):
         """Return the content of a file for a commit.
 
@@ -1460,80 +1134,65 @@ class ProjectFileManager(BaseManager):
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the server fails to perform the request.
         """
-        url = ("/projects/%s/repository/files/%s/raw" %
-               (self.parent.id, filepath.replace('/', '%2F')))
-        url += '?ref=%s' % ref
-        r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
-        raise_error_from_response(r, GitlabGetError)
-        return utils.response_content(r, streamed, action, chunk_size)
+        file_path = file_path.replace('/', '%2F')
+        path = '%s/%s/raw' % (self.path, file_path)
+        query_data = {'ref': ref}
+        result = self.gitlab.http_get(path, query_data=query_data,
+                                      streamed=streamed, **kwargs)
+        return utils.response_content(result, streamed, action, chunk_size)
 
 
-class ProjectPipeline(GitlabObject):
-    _url = '/projects/%(project_id)s/pipelines'
-    _create_url = '/projects/%(project_id)s/pipeline'
-
-    canUpdate = False
-    canDelete = False
-
-    requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['ref']
+class ProjectPipeline(RESTObject):
+    def cancel(self, **kwargs):
+        """Cancel the job."""
+        path = '%s/%s/cancel' % (self.manager.path, self.get_id())
+        self.manager.gitlab.http_post(path)
 
     def retry(self, **kwargs):
-        """Retries failed builds in a pipeline.
+        """Retry the job."""
+        path = '%s/%s/retry' % (self.manager.path, self.get_id())
+        self.manager.gitlab.http_post(path)
 
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabPipelineRetryError: If the retry cannot be done.
+
+class ProjectPipelineManager(RetrieveMixin, CreateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/pipelines'
+    _obj_cls = ProjectPipeline
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('ref', ), tuple())
+
+    def create(self, data, **kwargs):
+        """Creates a new object.
+
+        Args:
+            data (dict): parameters to send to the server to create the
+                         resource
+            **kwargs: Extra data to send to the Gitlab server (e.g. sudo)
+
+        Returns:
+            RESTObject: a new instance of the manage object class build with
+                        the data sent by the server
         """
-        url = ('/projects/%(project_id)s/pipelines/%(id)s/retry' %
-               {'project_id': self.project_id, 'id': self.id})
-        r = self.gitlab._raw_post(url, data=None, content_type=None, **kwargs)
-        raise_error_from_response(r, GitlabPipelineRetryError, 201)
-        self._set_from_dict(r.json())
-
-    def cancel(self, **kwargs):
-        """Cancel builds in a pipeline.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabPipelineCancelError: If the retry cannot be done.
-        """
-        url = ('/projects/%(project_id)s/pipelines/%(id)s/cancel' %
-               {'project_id': self.project_id, 'id': self.id})
-        r = self.gitlab._raw_post(url, data=None, content_type=None, **kwargs)
-        raise_error_from_response(r, GitlabPipelineRetryError, 200)
-        self._set_from_dict(r.json())
+        path = self.path[:-1]  # drop the 's'
+        return CreateMixin.create(self, data, path=path, **kwargs)
 
 
-class ProjectPipelineManager(BaseManager):
-    obj_cls = ProjectPipeline
+class ProjectSnippetNote(RESTObject):
+    _constructor_types = {'author': 'User'}
 
 
-class ProjectSnippetNote(GitlabObject):
-    _url = '/projects/%(project_id)s/snippets/%(snippet_id)s/notes'
-    _constructorTypes = {'author': 'User'}
-    canUpdate = False
-    canDelete = False
-    requiredUrlAttrs = ['project_id', 'snippet_id']
-    requiredCreateAttrs = ['body']
+class ProjectSnippetNoteManager(RetrieveMixin, CreateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/snippets/%(snippet_id)s/notes'
+    _obj_cls = ProjectSnippetNote
+    _from_parent_attrs = {'project_id': 'project_id',
+                          'snippet_id': 'id'}
+    _create_attrs = (('body', ), tuple())
 
 
-class ProjectSnippetNoteManager(BaseManager):
-    obj_cls = ProjectSnippetNote
-
-
-class ProjectSnippet(GitlabObject):
+class ProjectSnippet(SaveMixin, RESTObject):
     _url = '/projects/%(project_id)s/snippets'
-    _constructorTypes = {'author': 'User'}
-    requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['title', 'file_name', 'code']
-    optionalCreateAttrs = ['lifetime', 'visibility']
-    optionalUpdateAttrs = ['title', 'file_name', 'code', 'visibility']
-    shortPrintAttr = 'title'
-    managers = (
-        ('notes', 'ProjectSnippetNoteManager',
-            [('project_id', 'project_id'), ('snippet_id', 'id')]),
-    )
+    _constructor_types = {'author': 'User'}
+    _short_print_attr = 'title'
+    _managers = (('notes', 'ProjectSnippetNoteManager'), )
 
     def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Return the raw content of a snippet.
@@ -1553,23 +1212,22 @@ class ProjectSnippet(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the server fails to perform the request.
         """
-        url = ("/projects/%(project_id)s/snippets/%(snippet_id)s/raw" %
-               {'project_id': self.project_id, 'snippet_id': self.id})
-        r = self.gitlab._raw_get(url, **kwargs)
-        raise_error_from_response(r, GitlabGetError)
+        path = "%s/%s/raw" % (self.manager.path, self.get_id())
+        result = self.manager.gitlab.http_get(path, streamed=streamed,
+                                              **kwargs)
         return utils.response_content(r, streamed, action, chunk_size)
 
 
-class ProjectSnippetManager(BaseManager):
-    obj_cls = ProjectSnippet
+class ProjectSnippetManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/snippets'
+    _obj_cls = ProjectSnippet
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('title', 'file_name', 'code'),
+                     ('lifetime', 'visibility'))
+    _update_attrs = (tuple(), ('title', 'file_name', 'code', 'visibility'))
 
 
-class ProjectTrigger(GitlabObject):
-    _url = '/projects/%(project_id)s/triggers'
-    requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['description']
-    optionalUpdateAttrs = ['description']
-
+class ProjectTrigger(SaveMixin, RESTObject):
     def take_ownership(self, **kwargs):
         """Update the owner of a trigger.
 
@@ -1577,26 +1235,29 @@ class ProjectTrigger(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the server fails to perform the request.
         """
-        url = ('/projects/%(project_id)s/triggers/%(id)s/take_ownership' %
-               {'project_id': self.project_id, 'id': self.id})
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabUpdateError, 200)
-        self._set_from_dict(r.json())
+        path = '%s/%s/take_ownership' % (self.manager.path, self.get_id())
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        self._update_attrs(server_data)
 
 
-class ProjectTriggerManager(BaseManager):
-    obj_cls = ProjectTrigger
+class ProjectTriggerManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/triggers'
+    _obj_cls = ProjectTrigger
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('description', ), tuple())
+    _update_attrs = (('description', ), tuple())
 
 
-class ProjectVariable(GitlabObject):
-    _url = '/projects/%(project_id)s/variables'
-    idAttr = 'key'
-    requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['key', 'value']
+class ProjectVariable(SaveMixin, RESTObject):
+    _id_attr = 'key'
 
 
-class ProjectVariableManager(BaseManager):
-    obj_cls = ProjectVariable
+class ProjectVariableManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/variables'
+    _obj_cls = ProjectVariable
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('key', 'vaule'), tuple())
+    _update_attrs = (('key', 'vaule'), tuple())
 
 
 class ProjectService(GitlabObject):
@@ -1688,113 +1349,70 @@ class ProjectServiceManager(BaseManager):
         return list(ProjectService._service_attrs.keys())
 
 
-class ProjectAccessRequest(GitlabObject):
-    _url = '/projects/%(project_id)s/access_requests'
-    canGet = 'from_list'
-    canUpdate = False
-
-    def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
-        """Approve an access request.
-
-        Attrs:
-            access_level (int): The access level for the user.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabUpdateError: If the server fails to perform the request.
-        """
-
-        url = ('/projects/%(project_id)s/access_requests/%(id)s/approve' %
-               {'project_id': self.project_id, 'id': self.id})
-        data = {'access_level': access_level}
-        r = self.gitlab._raw_put(url, data=data, **kwargs)
-        raise_error_from_response(r, GitlabUpdateError, 201)
-        self._set_from_dict(r.json())
+class ProjectAccessRequest(AccessRequestMixin, RESTObject):
+    pass
 
 
-class ProjectAccessRequestManager(BaseManager):
-    obj_cls = ProjectAccessRequest
+class ProjectAccessRequestManager(GetFromListMixin, CreateMixin, DeleteMixin,
+                                  RESTManager):
+    _path = '/projects/%(project_id)s/access_requests'
+    _obj_cls = ProjectAccessRequest
+    _from_parent_attrs = {'project_id': 'id'}
 
 
-class ProjectDeployment(GitlabObject):
-    _url = '/projects/%(project_id)s/deployments'
-    canCreate = False
-    canUpdate = False
-    canDelete = False
+class ProjectDeployment(RESTObject):
+    pass
 
 
-class ProjectDeploymentManager(BaseManager):
-    obj_cls = ProjectDeployment
+class ProjectDeploymentManager(RetrieveMixin, RESTManager):
+    _path = '/projects/%(project_id)s/deployments'
+    _obj_cls = ProjectDeployment
+    _from_parent_attrs = {'project_id': 'id'}
 
 
-class ProjectRunner(GitlabObject):
-    _url = '/projects/%(project_id)s/runners'
+class ProjectRunner(RESTObject):
     canUpdate = False
     requiredCreateAttrs = ['runner_id']
 
 
-class ProjectRunnerManager(BaseManager):
-    obj_cls = ProjectRunner
+class ProjectRunnerManager(NoUpdateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/runners'
+    _obj_cls = ProjectRunner
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('runner_id', ), tuple())
 
 
-class Project(GitlabObject):
-    _url = '/projects'
-    _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
-    optionalListAttrs = ['search']
-    requiredCreateAttrs = ['name']
-    optionalListAttrs = ['search', 'owned', 'starred', 'archived',
-                         'visibility', 'order_by', 'sort', 'simple',
-                         'membership', 'statistics']
-    optionalCreateAttrs = ['path', 'namespace_id', 'description',
-                           'issues_enabled', 'merge_requests_enabled',
-                           'builds_enabled', 'wiki_enabled',
-                           'snippets_enabled', 'container_registry_enabled',
-                           'shared_runners_enabled', 'visibility',
-                           'import_url', 'public_builds',
-                           'only_allow_merge_if_build_succeeds',
-                           'only_allow_merge_if_all_discussions_are_resolved',
-                           'lfs_enabled', 'request_access_enabled']
-    optionalUpdateAttrs = ['name', 'path', 'default_branch', 'description',
-                           'issues_enabled', 'merge_requests_enabled',
-                           'builds_enabled', 'wiki_enabled',
-                           'snippets_enabled', 'container_registry_enabled',
-                           'shared_runners_enabled', 'visibility',
-                           'import_url', 'public_builds',
-                           'only_allow_merge_if_build_succeeds',
-                           'only_allow_merge_if_all_discussions_are_resolved',
-                           'lfs_enabled', 'request_access_enabled']
-    shortPrintAttr = 'path'
-    managers = (
-        ('accessrequests', 'ProjectAccessRequestManager',
-         [('project_id', 'id')]),
-        ('boards', 'ProjectBoardManager', [('project_id', 'id')]),
-        ('board_lists', 'ProjectBoardListManager', [('project_id', 'id')]),
-        ('branches', 'ProjectBranchManager', [('project_id', 'id')]),
-        ('jobs', 'ProjectJobManager', [('project_id', 'id')]),
-        ('commits', 'ProjectCommitManager', [('project_id', 'id')]),
-        ('deployments', 'ProjectDeploymentManager', [('project_id', 'id')]),
-        ('environments', 'ProjectEnvironmentManager', [('project_id', 'id')]),
-        ('events', 'ProjectEventManager', [('project_id', 'id')]),
-        ('files', 'ProjectFileManager', [('project_id', 'id')]),
-        ('forks', 'ProjectForkManager', [('project_id', 'id')]),
-        ('hooks', 'ProjectHookManager', [('project_id', 'id')]),
-        ('keys', 'ProjectKeyManager', [('project_id', 'id')]),
-        ('issues', 'ProjectIssueManager', [('project_id', 'id')]),
-        ('labels', 'ProjectLabelManager', [('project_id', 'id')]),
-        ('members', 'ProjectMemberManager', [('project_id', 'id')]),
-        ('mergerequests', 'ProjectMergeRequestManager',
-         [('project_id', 'id')]),
-        ('milestones', 'ProjectMilestoneManager', [('project_id', 'id')]),
-        ('notes', 'ProjectNoteManager', [('project_id', 'id')]),
-        ('notificationsettings', 'ProjectNotificationSettingsManager',
-         [('project_id', 'id')]),
-        ('pipelines', 'ProjectPipelineManager', [('project_id', 'id')]),
-        ('runners', 'ProjectRunnerManager', [('project_id', 'id')]),
-        ('services', 'ProjectServiceManager', [('project_id', 'id')]),
-        ('snippets', 'ProjectSnippetManager', [('project_id', 'id')]),
-        ('tags', 'ProjectTagManager', [('project_id', 'id')]),
-        ('triggers', 'ProjectTriggerManager', [('project_id', 'id')]),
-        ('variables', 'ProjectVariableManager', [('project_id', 'id')]),
+
+class Project(SaveMixin, RESTObject):
+    _constructor_types = {'owner': 'User', 'namespace': 'Group'}
+    _short_print_attr = 'path'
+    _managers = (
+        ('accessrequests', 'ProjectAccessRequestManager'),
+        ('boards', 'ProjectBoardManager'),
+        ('branches', 'ProjectBranchManager'),
+        ('jobs', 'ProjectJobManager'),
+        ('commits', 'ProjectCommitManager'),
+        ('deployments', 'ProjectDeploymentManager'),
+        ('environments', 'ProjectEnvironmentManager'),
+        ('events', 'ProjectEventManager'),
+        ('files', 'ProjectFileManager'),
+        ('forks', 'ProjectForkManager'),
+        ('hooks', 'ProjectHookManager'),
+        ('keys', 'ProjectKeyManager'),
+        ('issues', 'ProjectIssueManager'),
+        ('labels', 'ProjectLabelManager'),
+        ('members', 'ProjectMemberManager'),
+        ('mergerequests', 'ProjectMergeRequestManager'),
+        ('milestones', 'ProjectMilestoneManager'),
+        ('notes', 'ProjectNoteManager'),
+        ('notificationsettings', 'ProjectNotificationSettingsManager'),
+        ('pipelines', 'ProjectPipelineManager'),
+        ('runners', 'ProjectRunnerManager'),
+        ('services', 'ProjectServiceManager'),
+        ('snippets', 'ProjectSnippetManager'),
+        ('tags', 'ProjectTagManager'),
+        ('triggers', 'ProjectTriggerManager'),
+        ('variables', 'ProjectVariableManager'),
     )
 
     def repository_tree(self, path='', ref='', **kwargs):
@@ -1811,17 +1429,14 @@ class Project(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the server fails to perform the request.
         """
-        url = "/projects/%s/repository/tree" % (self.id)
-        params = []
+        path = '/projects/%s/repository/tree' % self.get_id()
+        query_data = {}
         if path:
-            params.append(urllib.parse.urlencode({'path': path}))
+            query_data['path'] = path
         if ref:
-            params.append("ref=%s" % ref)
-        if params:
-            url += '?' + "&".join(params)
-        r = self.gitlab._raw_get(url, **kwargs)
-        raise_error_from_response(r, GitlabGetError)
-        return r.json()
+            query_data['ref'] = ref
+        return self.manager.gitlab.http_get(path, query_data=query_data,
+                                            **kwargs)
 
     def repository_raw_blob(self, sha, streamed=False, action=None,
                             chunk_size=1024, **kwargs):
@@ -1843,10 +1458,9 @@ class Project(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the server fails to perform the request.
         """
-        url = "/projects/%s/repository/raw_blobs/%s" % (self.id, sha)
-        r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
-        raise_error_from_response(r, GitlabGetError)
-        return utils.response_content(r, streamed, action, chunk_size)
+        path = '/projects/%s/repository/raw_blobs/%s' % (self.get_id(), sha)
+        result = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
+        return utils.response_content(result, streamed, action, chunk_size)
 
     def repository_compare(self, from_, to, **kwargs):
         """Returns a diff between two branches/commits.
@@ -1862,13 +1476,12 @@ class Project(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the server fails to perform the request.
         """
-        url = "/projects/%s/repository/compare" % self.id
-        url = "%s?from=%s&to=%s" % (url, from_, to)
-        r = self.gitlab._raw_get(url, **kwargs)
-        raise_error_from_response(r, GitlabGetError)
-        return r.json()
+        path = '/projects/%s/repository/compare' % self.get_id()
+        query_data = {'from': from_, 'to': to}
+        return self.manager.gitlab.http_get(path, query_data=query_data,
+                                            **kwargs)
 
-    def repository_contributors(self):
+    def repository_contributors(self, **kwargs):
         """Returns a list of contributors for the project.
 
         Returns:
@@ -1878,10 +1491,8 @@ class Project(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the server fails to perform the request.
         """
-        url = "/projects/%s/repository/contributors" % self.id
-        r = self.gitlab._raw_get(url)
-        raise_error_from_response(r, GitlabListError)
-        return r.json()
+        path = '/projects/%s/repository/contributors' % self.get_id()
+        return self.manager.gitlab.http_get(path, **kwargs)
 
     def repository_archive(self, sha=None, streamed=False, action=None,
                            chunk_size=1024, **kwargs):
@@ -1903,14 +1514,15 @@ class Project(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabGetError: If the server fails to perform the request.
         """
-        url = '/projects/%s/repository/archive' % self.id
+        path = '/projects/%s/repository/archive' % self.get_id()
+        query_data = {}
         if sha:
-            url += '?sha=%s' % sha
-        r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
-        raise_error_from_response(r, GitlabGetError)
-        return utils.response_content(r, streamed, action, chunk_size)
+            query_data['sha'] = sha
+        result = self.gitlab._raw_get(path, query_data=query_data,
+                                      streamed=streamed, **kwargs)
+        return utils.response_content(result, streamed, action, chunk_size)
 
-    def create_fork_relation(self, forked_from_id):
+    def create_fork_relation(self, forked_from_id, **kwargs):
         """Create a forked from/to relation between existing projects.
 
         Args:
@@ -1920,20 +1532,18 @@ class Project(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabCreateError: If the server fails to perform the request.
         """
-        url = "/projects/%s/fork/%s" % (self.id, forked_from_id)
-        r = self.gitlab._raw_post(url)
-        raise_error_from_response(r, GitlabCreateError, 201)
+        path = '/projects/%s/fork/%s' % (self.get_id(), forked_from_id)
+        self.manager.gitlab.http_post(path, **kwargs)
 
-    def delete_fork_relation(self):
+    def delete_fork_relation(self, **kwargs):
         """Delete a forked relation between existing projects.
 
         Raises:
             GitlabConnectionError: If the server cannot be reached.
             GitlabDeleteError: If the server fails to perform the request.
         """
-        url = "/projects/%s/fork" % self.id
-        r = self.gitlab._raw_delete(url)
-        raise_error_from_response(r, GitlabDeleteError)
+        path = '/projects/%s/fork' % self.get_id()
+        self.manager.gitlab.http_delete(path, **kwargs)
 
     def star(self, **kwargs):
         """Star a project.
@@ -1945,10 +1555,9 @@ class Project(GitlabObject):
             GitlabCreateError: If the action cannot be done
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = "/projects/%s/star" % self.id
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabCreateError, [201, 304])
-        return Project(self.gitlab, r.json()) if r.status_code == 201 else self
+        path = '/projects/%s/star' % self.get_id()
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        self._update_attrs(server_data)
 
     def unstar(self, **kwargs):
         """Unstar a project.
@@ -1960,10 +1569,9 @@ class Project(GitlabObject):
             GitlabDeleteError: If the action cannot be done
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = "/projects/%s/unstar" % self.id
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabDeleteError, [201, 304])
-        return Project(self.gitlab, r.json()) if r.status_code == 201 else self
+        path = '/projects/%s/unstar' % self.get_id()
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        self._update_attrs(server_data)
 
     def archive(self, **kwargs):
         """Archive a project.
@@ -1975,10 +1583,9 @@ class Project(GitlabObject):
             GitlabCreateError: If the action cannot be done
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = "/projects/%s/archive" % self.id
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabCreateError, 201)
-        return Project(self.gitlab, r.json()) if r.status_code == 201 else self
+        path = '/projects/%s/archive' % self.get_id()
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        self._update_attrs(server_data)
 
     def unarchive(self, **kwargs):
         """Unarchive a project.
@@ -1990,12 +1597,11 @@ class Project(GitlabObject):
             GitlabDeleteError: If the action cannot be done
             GitlabConnectionError: If the server cannot be reached.
         """
-        url = "/projects/%s/unarchive" % self.id
-        r = self.gitlab._raw_delete(url, **kwargs)
-        raise_error_from_response(r, GitlabCreateError, 201)
-        return Project(self.gitlab, r.json()) if r.status_code == 201 else self
+        path = '/projects/%s/unarchive' % self.get_id()
+        server_data = self.manager.gitlab.http_post(url, **kwargs)
+        self._update_attrs(server_data)
 
-    def share(self, group_id, group_access, **kwargs):
+    def share(self, group_id, group_access, expires_at=None, **kwargs):
         """Share the project with a group.
 
         Args:
@@ -2006,10 +1612,11 @@ class Project(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabCreateError: If the server fails to perform the request.
         """
-        url = "/projects/%s/share" % self.id
-        data = {'group_id': group_id, 'group_access': group_access}
-        r = self.gitlab._raw_post(url, data=data, **kwargs)
-        raise_error_from_response(r, GitlabCreateError, 201)
+        path = '/projects/%s/share' % self.get_id()
+        data = {'group_id': group_id,
+                'group_access': group_access,
+                'expires_at': expires_at}
+        self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
     def trigger_pipeline(self, ref, token, variables={}, **kwargs):
         """Trigger a CI build.
@@ -2025,23 +1632,23 @@ class Project(GitlabObject):
             GitlabConnectionError: If the server cannot be reached.
             GitlabCreateError: If the server fails to perform the request.
         """
-        url = "/projects/%s/trigger/pipeline" % self.id
+        path = '/projects/%s/trigger/pipeline' % self.get_id()
         form = {r'variables[%s]' % k: v for k, v in six.iteritems(variables)}
-        data = {'ref': ref, 'token': token}
-        data.update(form)
-        r = self.gitlab._raw_post(url, data=data, **kwargs)
-        raise_error_from_response(r, GitlabCreateError, 201)
+        post_data = {'ref': ref, 'token': token}
+        post_data.update(form)
+        self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
 
-class Runner(GitlabObject):
-    _url = '/runners'
-    canCreate = False
-    optionalUpdateAttrs = ['description', 'active', 'tag_list']
-    optionalListAttrs = ['scope']
+class Runner(SaveMixin, RESTObject):
+    pass
 
 
-class RunnerManager(BaseManager):
-    obj_cls = Runner
+class RunnerManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
+    _path = '/runners'
+    _obj_cls = Runner
+    _update_attrs = (tuple(), ('description', 'active', 'tag_list'))
+    _list_filters = ('scope', )
+
 
     def all(self, scope=None, **kwargs):
         """List all the runners.
@@ -2057,79 +1664,95 @@ class RunnerManager(BaseManager):
             GitlabConnectionError: If the server cannot be reached.
             GitlabListError: If the resource cannot be found
         """
-        url = '/runners/all'
+        path = '/runners/all'
+        query_data = {}
         if scope is not None:
-            url += '?scope=' + scope
-        return self.gitlab._raw_list(url, self.obj_cls, **kwargs)
+            query_data['scope'] = scope
+        return self.gitlab.http_list(path, query_data, **kwargs)
 
 
-class Todo(GitlabObject):
-    _url = '/todos'
-    canGet = 'from_list'
-    canUpdate = False
-    canCreate = False
-    optionalListAttrs = ['action', 'author_id', 'project_id', 'state', 'type']
+class Todo(RESTObject):
+    def mark_as_done(self, **kwargs):
+        """Mark the todo as done.
+
+        Args:
+            **kwargs: Additional data to send to the server (e.g. sudo)
+        """
+        path = '%s/%s/mark_as_done' % (self.manager.path, self.id)
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        self._update_attrs(server_data)
 
 
-class TodoManager(BaseManager):
-    obj_cls = Todo
+class TodoManager(GetFromListMixin, DeleteMixin, RESTManager):
+    _path = '/todos'
+    _obj_cls = Todo
+    _list_filters = ('action', 'author_id', 'project_id', 'state', 'type')
 
-    def delete_all(self, **kwargs):
+    def mark_all_as_done(self, **kwargs):
         """Mark all the todos as done.
+
+        Returns:
+            The number of todos maked done.
 
         Raises:
             GitlabConnectionError: If the server cannot be reached.
             GitlabDeleteError: If the resource cannot be found
-
-        Returns:
-            The number of todos maked done.
         """
-        url = '/todos'
-        r = self.gitlab._raw_delete(url, **kwargs)
-        raise_error_from_response(r, GitlabDeleteError)
-        return int(r.text)
+        self.gitlab.http_post('/todos/mark_as_done', **kwargs)
 
 
-class ProjectManager(BaseManager):
-    obj_cls = Project
+class ProjectManager(CRUDMixin, RESTManager):
+    _path = '/projects'
+    _obj_cls = Project
+    _create_attrs = (
+        ('name', ),
+        ('path', 'namespace_id', 'description', 'issues_enabled',
+         'merge_requests_enabled', 'builds_enabled', 'wiki_enabled',
+         'snippets_enabled', 'container_registry_enabled',
+         'shared_runners_enabled', 'visibility', 'import_url', 'public_builds',
+         'only_allow_merge_if_build_succeeds',
+         'only_allow_merge_if_all_discussions_are_resolved', 'lfs_enabled',
+         'request_access_enabled')
+    )
+    _update_attrs = (
+        tuple(),
+        ('name', 'path', 'default_branch', 'description', 'issues_enabled',
+         'merge_requests_enabled', 'builds_enabled', 'wiki_enabled',
+         'snippets_enabled', 'container_registry_enabled',
+         'shared_runners_enabled', 'visibility', 'import_url', 'public_builds',
+         'only_allow_merge_if_build_succeeds',
+         'only_allow_merge_if_all_discussions_are_resolved', 'lfs_enabled',
+         'request_access_enabled')
+    )
+    _list_filters = ('search', 'owned', 'starred', 'archived', 'visibility',
+                     'order_by', 'sort', 'simple', 'membership', 'statistics')
 
 
-class GroupProject(Project):
-    _url = '/groups/%(group_id)s/projects'
-    canGet = 'from_list'
-    canCreate = False
-    canDelete = False
-    canUpdate = False
-    optionalListAttrs = ['archived', 'visibility', 'order_by', 'sort',
-                         'search', 'ci_enabled_first']
-
+class GroupProject(RESTObject):
     def __init__(self, *args, **kwargs):
         Project.__init__(self, *args, **kwargs)
 
 
-class GroupProjectManager(ProjectManager):
-    obj_cls = GroupProject
+class GroupProjectManager(GetFromListMixin, RESTManager):
+    _path = '/groups/%(group_id)s/projects'
+    _obj_cls = GroupProject
+    _from_parent_attrs = {'group_id': 'id'}
+    _list_filters = ('archived', 'visibility', 'order_by', 'sort', 'search',
+                     'ci_enabled_first')
 
 
-class Group(GitlabObject):
-    _url = '/groups'
-    requiredCreateAttrs = ['name', 'path']
-    optionalCreateAttrs = ['description', 'visibility', 'parent_id',
-                           'lfs_enabled', 'request_access_enabled']
-    optionalUpdateAttrs = ['name', 'path', 'description', 'visibility',
-                           'lfs_enabled', 'request_access_enabled']
-    shortPrintAttr = 'name'
-    managers = (
-        ('accessrequests', 'GroupAccessRequestManager', [('group_id', 'id')]),
-        ('members', 'GroupMemberManager', [('group_id', 'id')]),
-        ('notificationsettings', 'GroupNotificationSettingsManager',
-         [('group_id', 'id')]),
-        ('projects', 'GroupProjectManager', [('group_id', 'id')]),
-        ('issues', 'GroupIssueManager', [('group_id', 'id')]),
+class Group(SaveMixin, RESTObject):
+    _short_print_attr = 'name'
+    _managers = (
+        ('accessrequests', 'GroupAccessRequestManager'),
+        ('members', 'GroupMemberManager'),
+        ('notificationsettings', 'GroupNotificationSettingsManager'),
+        ('projects', 'GroupProjectManager'),
+        ('issues', 'GroupIssueManager'),
     )
 
     def transfer_project(self, id, **kwargs):
-        """Transfers a project to this new groups.
+        """Transfers a project to this group.
 
         Attrs:
             id (int): ID of the project to transfer.
@@ -2139,10 +1762,20 @@ class Group(GitlabObject):
             GitlabTransferProjectError: If the server fails to perform the
                 request.
         """
-        url = '/groups/%d/projects/%d' % (self.id, id)
-        r = self.gitlab._raw_post(url, None, **kwargs)
-        raise_error_from_response(r, GitlabTransferProjectError, 201)
+        path = '/groups/%d/projects/%d' % (self.id, id)
+        self.manager.gitlab.http_post(path, **kwargs)
 
 
-class GroupManager(BaseManager):
-    obj_cls = Group
+class GroupManager(CRUDMixin, RESTManager):
+    _path = '/groups'
+    _obj_cls = Group
+    _create_attrs = (
+        ('name', 'path'),
+        ('description', 'visibility', 'parent_id', 'lfs_enabled',
+         'request_access_enabled')
+    )
+    _update_attrs = (
+        tuple(),
+        ('name', 'path', 'description', 'visibility', 'lfs_enabled',
+         'request_access_enabled')
+    )
