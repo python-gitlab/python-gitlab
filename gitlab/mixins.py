@@ -32,7 +32,7 @@ class GetMixin(object):
         Raises:
             GitlabGetError: If the server cannot perform the request.
         """
-        path = '%s/%s' % (self._path, id)
+        path = '%s/%s' % (self.path, id)
         server_data = self.gitlab.http_get(path, **kwargs)
         return self._obj_cls(self, server_data)
 
@@ -50,7 +50,7 @@ class GetWithoutIdMixin(object):
         Raises:
             GitlabGetError: If the server cannot perform the request.
         """
-        server_data = self.gitlab.http_get(self._path, **kwargs)
+        server_data = self.gitlab.http_get(self.path, **kwargs)
         return self._obj_cls(self, server_data)
 
 
@@ -70,7 +70,7 @@ class ListMixin(object):
                             list(RESTObjectList).
         """
 
-        obj = self.gitlab.http_list(self._path, **kwargs)
+        obj = self.gitlab.http_list(self.path, **kwargs)
         if isinstance(obj, list):
             return [self._obj_cls(self, item) for item in obj]
         else:
@@ -139,7 +139,7 @@ class CreateMixin(object):
         self._check_missing_attrs(data)
         if hasattr(self, '_sanitize_data'):
             data = self._sanitize_data(data, 'create')
-        server_data = self.gitlab.http_post(self._path, post_data=data,
+        server_data = self.gitlab.http_post(self.path, post_data=data,
                                             **kwargs)
         return self._obj_cls(self, server_data)
 
@@ -180,9 +180,9 @@ class UpdateMixin(object):
         """
 
         if id is None:
-            path = self._path
+            path = self.path
         else:
-            path = '%s/%s' % (self._path, id)
+            path = '%s/%s' % (self.path, id)
 
         self._check_missing_attrs(new_data)
         if hasattr(self, '_sanitize_data'):
@@ -199,7 +199,7 @@ class DeleteMixin(object):
             id: ID of the object to delete
             **kwargs: Extra data to send to the Gitlab server (e.g. sudo)
         """
-        path = '%s/%s' % (self._path, id)
+        path = '%s/%s' % (self.path, id)
         self.gitlab.http_delete(path, **kwargs)
 
 

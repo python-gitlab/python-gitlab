@@ -575,7 +575,13 @@ class RESTObject(object):
             'manager': manager,
             '_attrs': attrs,
             '_updated_attrs': {},
+            '_module': importlib.import_module(self.__module__)
         })
+
+        # TODO(gpocentek): manage the creation of new objects from the received
+        # data (_constructor_types)
+
+        self._create_managers()
 
     def __getattr__(self, name):
         try:
@@ -601,6 +607,16 @@ class RESTObject(object):
                                    self.get_id())
         else:
             return '<%s>' % self.__class__.__name__
+
+    def _create_managers(self):
+        managers = getattr(self, '_managers', None)
+        if managers is None:
+            return
+
+        for attr, cls_name in self._managers:
+            cls = getattr(self._module, cls_name)
+            manager = cls(self.manager.gitlab, parent=self)
+            self.__dict__[attr] = manager
 
     def get_id(self):
         if self._id_attr is None:
@@ -653,6 +669,19 @@ class RESTManager(object):
     _path = None
     _obj_cls = None
 
-    def __init__(self, gl, parent_attrs={}):
+    def __init__(self, gl, parent=None):
         self.gitlab = gl
-        self._parent_attrs = {}  # for nested managers
+        self._parent = parent  # for nested managers
+        self._computed_path = self._compute_path()
+
+    def _compute_path(self):
+        if self._parent is None or not hasattr(self, '_from_parent_attrs'):
+            return self._path
+
+        data = {self_attr: getattr(self._parent, parent_attr)
+                for self_attr, parent_attr in self._from_parent_attrs.items()}
+        return self._path % data
+
+    @property
+    def path(self):
+        return self._computed_path
