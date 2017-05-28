@@ -27,6 +27,7 @@ import six
 import gitlab
 from gitlab.base import *  # noqa
 from gitlab.exceptions import *  # noqa
+from gitlab.mixins import *  # noqa
 from gitlab import utils
 
 VISIBILITY_PRIVATE = 'private'
