@@ -23,7 +23,7 @@ import json
 import warnings
 
 import six
-from six.moves.urllib.parse import urlencode
+from six.moves import urllib
 
 import gitlab
 from gitlab.base import *  # noqa
@@ -1841,7 +1841,7 @@ class Project(GitlabObject):
         url = "/projects/%s/repository/tree" % (self.id)
         params = []
         if path:
-            params.append(urlencode({'path': path}))
+            params.append(urllib.parse.urlencode({'path': path}))
         if ref_name:
             params.append("ref_name=%s" % ref_name)
         if params:
@@ -1872,7 +1872,7 @@ class Project(GitlabObject):
             GitlabGetError: If the server fails to perform the request.
         """
         url = "/projects/%s/repository/blobs/%s" % (self.id, sha)
-        url += '?%s' % (urlencode({'filepath': filepath}))
+        url += '?%s' % (urllib.parse.urlencode({'filepath': filepath}))
         r = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
         raise_error_from_response(r, GitlabGetError)
         return utils.response_content(r, streamed, action, chunk_size)
