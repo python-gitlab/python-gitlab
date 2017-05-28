@@ -139,7 +139,8 @@ class CreateMixin(object):
         self._check_missing_attrs(data)
         if hasattr(self, '_sanitize_data'):
             data = self._sanitize_data(data, 'create')
-        server_data = self.gitlab.http_post(self._path, post_data=data, **kwargs)
+        server_data = self.gitlab.http_post(self._path, post_data=data,
+                                            **kwargs)
         return self._obj_cls(self, server_data)
 
 
@@ -186,8 +187,7 @@ class UpdateMixin(object):
         self._check_missing_attrs(new_data)
         if hasattr(self, '_sanitize_data'):
             data = self._sanitize_data(new_data, 'update')
-        server_data = self.gitlab.http_put(self._path, post_data=data,
-                                           **kwargs)
+        server_data = self.gitlab.http_put(path, post_data=data, **kwargs)
         return server_data
 
 

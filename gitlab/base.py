@@ -595,7 +595,7 @@ class RESTObject(object):
         return '%s => %s' % (type(self), data)
 
     def __repr__(self):
-        if self._id_attr :
+        if self._id_attr:
             return '<%s %s:%s>' % (self.__class__.__name__,
                                    self._id_attr,
                                    self.get_id())
