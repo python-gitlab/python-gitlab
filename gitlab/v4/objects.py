@@ -77,105 +77,107 @@ class SidekiqManager(RESTManager):
         return self._simple_get('/sidekiq/compound_metrics', **kwargs)
 
 
-class UserEmail(GitlabObject):
-    _url = '/users/%(user_id)s/emails'
-    canUpdate = False
-    shortPrintAttr = 'email'
-    requiredUrlAttrs = ['user_id']
-    requiredCreateAttrs = ['email']
+class UserEmail(RESTObject):
+    _short_print_attr = 'email'
 
 
-class UserEmailManager(BaseManager):
-    obj_cls = UserEmail
+class UserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+    _path = '/users/%(user_id)s/emails'
+    _obj_cls = UserEmail
+    _from_parent_attrs = {'user_id': 'id'}
+    _create_attrs = {'required': ('email', ), 'optional': tuple()}
 
 
-class UserKey(GitlabObject):
-    _url = '/users/%(user_id)s/keys'
-    canGet = 'from_list'
-    canUpdate = False
-    requiredUrlAttrs = ['user_id']
-    requiredCreateAttrs = ['title', 'key']
+class UserKey(RESTObject):
+    pass
 
 
-class UserKeyManager(BaseManager):
-    obj_cls = UserKey
+class UserKeyManager(GetFromListMixin, CreateMixin, DeleteMixin, RESTManager):
+    _path = '/users/%(user_id)s/emails'
+    _obj_cls = UserKey
+    _from_parent_attrs = {'user_id': 'id'}
+    _create_attrs = {'required': ('title', 'key'), 'optional': tuple()}
 
 
-class UserProject(GitlabObject):
-    _url = '/projects/user/%(user_id)s'
-    _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
-    canUpdate = False
-    canDelete = False
-    canList = False
-    canGet = False
-    requiredUrlAttrs = ['user_id']
-    requiredCreateAttrs = ['name']
-    optionalCreateAttrs = ['default_branch', 'issues_enabled', 'wall_enabled',
-                           'merge_requests_enabled', 'wiki_enabled',
-                           'snippets_enabled', 'public', 'visibility',
-                           'description', 'builds_enabled', 'public_builds',
-                           'import_url', 'only_allow_merge_if_build_succeeds']
+class UserProject(RESTObject):
+    _constructor_types = {'owner': 'User', 'namespace': 'Group'}
 
 
-class UserProjectManager(BaseManager):
-    obj_cls = UserProject
+class UserProjectManager(CreateMixin, RESTManager):
+    _path = '/projects/user/%(user_id)s'
+    _obj_cls = UserProject
+    _from_parent_attrs = {'user_id': 'id'}
+    _create_attrs = {
+        'required': ('name', ),
+        'optional': ('default_branch', 'issues_enabled', 'wall_enabled',
+                     'merge_requests_enabled', 'wiki_enabled',
+                     'snippets_enabled', 'public', 'visibility', 'description',
+                     'builds_enabled', 'public_builds', 'import_url',
+                     'only_allow_merge_if_build_succeeds')
+    }
 
 
-class User(GitlabObject):
-    _url = '/users'
-    shortPrintAttr = 'username'
-    optionalListAttrs = ['active', 'blocked', 'username', 'extern_uid',
-                         'provider', 'external']
-    requiredCreateAttrs = ['email', 'username', 'name']
-    optionalCreateAttrs = ['password', 'reset_password', 'skype', 'linkedin',
-                           'twitter', 'projects_limit', 'extern_uid',
-                           'provider', 'bio', 'admin', 'can_create_group',
-                           'website_url', 'skip_confirmation', 'external',
-                           'organization', 'location']
-    requiredUpdateAttrs = ['email', 'username', 'name']
-    optionalUpdateAttrs = ['password', 'skype', 'linkedin', 'twitter',
-                           'projects_limit', 'extern_uid', 'provider', 'bio',
-                           'admin', 'can_create_group', 'website_url',
-                           'skip_confirmation', 'external', 'organization',
-                           'location']
-    managers = (
-        ('emails', 'UserEmailManager', [('user_id', 'id')]),
-        ('keys', 'UserKeyManager', [('user_id', 'id')]),
-        ('projects', 'UserProjectManager', [('user_id', 'id')]),
+class User(SaveMixin, RESTObject):
+    _short_print_attr = 'username'
+    _managers = (
+        ('emails', 'UserEmailManager'),
+        ('keys', 'UserKeyManager'),
+        ('projects', 'UserProjectManager'),
     )
 
-    def _data_for_gitlab(self, extra_parameters={}, update=False,
-                         as_json=True):
-        if hasattr(self, 'confirm'):
-            self.confirm = str(self.confirm).lower()
-        return super(User, self)._data_for_gitlab(extra_parameters)
-
     def block(self, **kwargs):
-        """Blocks the user."""
-        url = '/users/%s/block' % self.id
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabBlockError, 201)
-        self.state = 'blocked'
+        """Blocks the user.
+
+        Returns:
+            bool: whether the user status has been changed.
+        """
+        path = '/users/%s/block' % self.id
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if server_data is True:
+            self._attrs['state'] = 'blocked'
+        return server_data
 
     def unblock(self, **kwargs):
-        """Unblocks the user."""
-        url = '/users/%s/unblock' % self.id
-        r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabUnblockError, 201)
-        self.state = 'active'
+        """Unblocks the user.
 
-    def __eq__(self, other):
-        if type(other) is type(self):
-            selfdict = self.as_dict()
-            otherdict = other.as_dict()
-            selfdict.pop('password', None)
-            otherdict.pop('password', None)
-            return selfdict == otherdict
-        return False
+        Returns:
+            bool: whether the user status has been changed.
+        """
+        path = '/users/%s/unblock' % self.id
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if server_data is True:
+            self._attrs['state'] = 'active'
+        return server_data
 
 
-class UserManager(BaseManager):
-    obj_cls = User
+class UserManager(CRUDMixin, RESTManager):
+    _path = '/users'
+    _obj_cls = User
+
+    _list_filters = ('active', 'blocked', 'username', 'extern_uid', 'provider',
+                     'external')
+    _create_attrs = {
+        'required': ('email', 'username', 'name'),
+        'optional': ('password', 'reset_password', 'skype', 'linkedin',
+                     'twitter', 'projects_limit', 'extern_uid', 'provider',
+                     'bio', 'admin', 'can_create_group', 'website_url',
+                     'skip_confirmation', 'external', 'organization',
+                     'location')
+    }
+    _update_attrs = {
+        'required': ('email', 'username', 'name'),
+        'optional': ('password', 'skype', 'linkedin', 'twitter',
+                     'projects_limit', 'extern_uid', 'provider', 'bio',
+                     'admin', 'can_create_group', 'website_url',
+                     'skip_confirmation', 'external', 'organization',
+                     'location')
+    }
+
+    def _sanitize_data(self, data, action):
+        new_data = data.copy()
+        if 'confirm' in data:
+            new_data['confirm'] = str(new_data['confirm']).lower()
+        return new_data
 
 
 class CurrentUserEmail(GitlabObject):
