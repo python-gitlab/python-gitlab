@@ -47,34 +47,21 @@ class SidekiqManager(RESTManager):
     This manager doesn't actually manage objects but provides helper fonction
     for the sidekiq metrics API.
     """
-    def __init__(self, gl):
-        """Constructs a Sidekiq manager.
-
-        Args:
-            gl (gitlab.Gitlab): Gitlab object referencing the GitLab server.
-        """
-        self.gitlab = gl
-
-    def _simple_get(self, url, **kwargs):
-        r = self.gitlab._raw_get(url, **kwargs)
-        raise_error_from_response(r, GitlabGetError)
-        return r.json()
-
     def queue_metrics(self, **kwargs):
         """Returns the registred queues information."""
-        return self._simple_get('/sidekiq/queue_metrics', **kwargs)
+        return self.gitlab.http_get('/sidekiq/queue_metrics', **kwargs)
 
     def process_metrics(self, **kwargs):
         """Returns the registred sidekiq workers."""
-        return self._simple_get('/sidekiq/process_metrics', **kwargs)
+        return self.gitlab.http_get('/sidekiq/process_metrics', **kwargs)
 
     def job_stats(self, **kwargs):
         """Returns statistics about the jobs performed."""
-        return self._simple_get('/sidekiq/job_stats', **kwargs)
+        return self.gitlab.http_get('/sidekiq/job_stats', **kwargs)
 
     def compound_metrics(self, **kwargs):
         """Returns all available metrics and statistics."""
-        return self._simple_get('/sidekiq/compound_metrics', **kwargs)
+        return self.gitlab.http_get('/sidekiq/compound_metrics', **kwargs)
 
 
 class UserEmail(RESTObject):
