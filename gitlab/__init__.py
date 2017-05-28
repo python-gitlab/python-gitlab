@@ -683,7 +683,7 @@ class Gitlab(object):
                 raise GitlaParsingError(
                     message="Failed to parse the server message")
         else:
-            return r
+            return result
 
     def http_list(self, path, query_data={}, **kwargs):
         """Make a GET request to the Gitlab server for list-oriented queries.
@@ -722,7 +722,8 @@ class Gitlab(object):
             **kwargs: Extra data to make the query (e.g. sudo, per_page, page)
 
         Returns:
-            The parsed json returned by the server.
+            The parsed json returned by the server if json is return, else the
+            raw content.
 
         Raises:
             GitlabHttpError: When the return code is not 2xx
@@ -730,11 +731,14 @@ class Gitlab(object):
         """
         result = self.http_request('post', path, query_data=query_data,
                                    post_data=post_data, **kwargs)
-        try:
-            return result.json()
-        except Exception:
-            raise GitlabParsingError(
-                message="Failed to parse the server message")
+        if result.headers.get('Content-Type', None) == 'application/json':
+            try:
+                return result.json()
+            except Exception:
+                raise GitlabParsingError(
+                    message="Failed to parse the server message")
+        else:
+            return result.content
 
     def http_put(self, path, query_data={}, post_data={}, **kwargs):
         """Make a PUT request to the Gitlab server.

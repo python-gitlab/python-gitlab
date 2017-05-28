@@ -533,31 +533,6 @@ class GitlabObject(object):
         return not self.__eq__(other)
 
 
-class SaveMixin(object):
-    """Mixin for RESTObject's that can be updated."""
-    def save(self, **kwargs):
-        """Saves the changes made to the object to the server.
-
-        Args:
-            **kwargs: Extra option to send to the server (e.g. sudo)
-
-        The object is updated to match what the server returns.
-        """
-        updated_data = {}
-        required, optional = self.manager.get_update_attrs()
-        for attr in required:
-            # Get everything required, no matter if it's been updated
-            updated_data[attr] = getattr(self, attr)
-        # Add the updated attributes
-        updated_data.update(self._updated_attrs)
-
-        # class the manager
-        obj_id = self.get_id()
-        server_data = self.manager.update(obj_id, updated_data, **kwargs)
-        self._updated_attrs = {}
-        self._attrs.update(server_data)
-
-
 class RESTObject(object):
     """Represents an object built from server data.
 
@@ -618,6 +593,10 @@ class RESTObject(object):
             manager = cls(self.manager.gitlab, parent=self)
             self.__dict__[attr] = manager
 
+    def _update_attrs(self, new_attrs):
+        self._updated_attrs = {}
+        self._attrs.update(new_attrs)
+
     def get_id(self):
         if self._id_attr is None:
             return None
@@ -674,13 +653,15 @@ class RESTManager(object):
         self._parent = parent  # for nested managers
         self._computed_path = self._compute_path()
 
-    def _compute_path(self):
+    def _compute_path(self, path=None):
+        if path is None:
+            path = self._path
         if self._parent is None or not hasattr(self, '_from_parent_attrs'):
-            return self._path
+            return path
 
         data = {self_attr: getattr(self._parent, parent_attr)
                 for self_attr, parent_attr in self._from_parent_attrs.items()}
-        return self._path % data
+        return path % data
 
     @property
     def path(self):

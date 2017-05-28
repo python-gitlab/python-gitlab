@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import gitlab
 from gitlab import base
 
 
@@ -70,7 +71,10 @@ class ListMixin(object):
                             list(RESTObjectList).
         """
 
-        obj = self.gitlab.http_list(self.path, **kwargs)
+        # Allow to overwrite the path, handy for custom listings
+        path = kwargs.pop('path', self.path)
+
+        obj = self.gitlab.http_list(path, **kwargs)
         if isinstance(obj, list):
             return [self._obj_cls(self, item) for item in obj]
         else:
@@ -102,7 +106,7 @@ class RetrieveMixin(ListMixin, GetMixin):
 
 
 class CreateMixin(object):
-    def _check_missing_attrs(self, data):
+    def _check_missing_create_attrs(self, data):
         required, optional = self.get_create_attrs()
         missing = []
         for attr in required:
@@ -119,13 +123,10 @@ class CreateMixin(object):
             tuple: 2 items: list of required arguments and list of optional
                    arguments for creation (in that order)
         """
-        if hasattr(self, '_create_attrs'):
-            return (self._create_attrs['required'],
-                    self._create_attrs['optional'])
-        return (tuple(), tuple())
+        return getattr(self, '_create_attrs', (tuple(), tuple()))
 
     def create(self, data, **kwargs):
-        """Created a new object.
+        """Creates a new object.
 
         Args:
             data (dict): parameters to send to the server to create the
@@ -136,16 +137,17 @@ class CreateMixin(object):
             RESTObject: a new instance of the manage object class build with
                         the data sent by the server
         """
-        self._check_missing_attrs(data)
+        self._check_missing_create_attrs(data)
         if hasattr(self, '_sanitize_data'):
             data = self._sanitize_data(data, 'create')
-        server_data = self.gitlab.http_post(self.path, post_data=data,
-                                            **kwargs)
+        # Handle specific URL for creation
+        path = kwargs.get('path', self.path)
+        server_data = self.gitlab.http_post(path, post_data=data, **kwargs)
         return self._obj_cls(self, server_data)
 
 
 class UpdateMixin(object):
-    def _check_missing_attrs(self, data):
+    def _check_missing_update_attrs(self, data):
         required, optional = self.get_update_attrs()
         missing = []
         for attr in required:
@@ -162,10 +164,7 @@ class UpdateMixin(object):
             tuple: 2 items: list of required arguments and list of optional
                    arguments for update (in that order)
         """
-        if hasattr(self, '_update_attrs'):
-            return (self._update_attrs['required'],
-                    self._update_attrs['optional'])
-        return (tuple(), tuple())
+        return getattr(self, '_update_attrs', (tuple(), tuple()))
 
     def update(self, id=None, new_data={}, **kwargs):
         """Update an object on the server.
@@ -184,9 +183,11 @@ class UpdateMixin(object):
         else:
             path = '%s/%s' % (self.path, id)
 
-        self._check_missing_attrs(new_data)
+        self._check_missing_update_attrs(new_data)
         if hasattr(self, '_sanitize_data'):
             data = self._sanitize_data(new_data, 'update')
+        else:
+            data = new_data
         server_data = self.gitlab.http_put(path, post_data=data, **kwargs)
         return server_data
 
@@ -205,3 +206,145 @@ class DeleteMixin(object):
 
 class CRUDMixin(GetMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin):
     pass
+
+
+class NoUpdateMixin(GetMixin, ListMixin, CreateMixin, DeleteMixin):
+    pass
+
+
+class SaveMixin(object):
+    """Mixin for RESTObject's that can be updated."""
+    def _get_updated_data(self):
+        updated_data = {}
+        required, optional = self.manager.get_update_attrs()
+        for attr in required:
+            # Get everything required, no matter if it's been updated
+            updated_data[attr] = getattr(self, attr)
+        # Add the updated attributes
+        updated_data.update(self._updated_attrs)
+
+        return updated_data
+
+    def save(self, **kwargs):
+        """Saves the changes made to the object to the server.
+
+        Args:
+            **kwargs: Extra option to send to the server (e.g. sudo)
+
+        The object is updated to match what the server returns.
+        """
+        updated_data = self._get_updated_data()
+
+        # call the manager
+        obj_id = self.get_id()
+        server_data = self.manager.update(obj_id, updated_data, **kwargs)
+        self._update_attrs(server_data)
+
+
+class AccessRequestMixin(object):
+    def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
+        """Approve an access request.
+
+        Attrs:
+            access_level (int): The access level for the user.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabUpdateError: If the server fails to perform the request.
+        """
+
+        path = '%s/%s/approve' % (self.manager.path, self.id)
+        data = {'access_level': access_level}
+        server_data = self.manager.gitlab.http_put(url, post_data=data,
+                                                   **kwargs)
+        self._update_attrs(server_data)
+
+
+class SubscribableMixin(object):
+    def subscribe(self, **kwarg):
+        """Subscribe to the object notifications.
+
+        raises:
+            gitlabconnectionerror: if the server cannot be reached.
+            gitlabsubscribeerror: if the subscription cannot be done
+        """
+        path = '%s/%s/subscribe' % (self.manager.path, self.get_id())
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        self._update_attrs(server_data)
+
+    def unsubscribe(self, **kwargs):
+        """Unsubscribe from the object notifications.
+
+        raises:
+            gitlabconnectionerror: if the server cannot be reached.
+            gitlabunsubscribeerror: if the unsubscription cannot be done
+        """
+        path = '%s/%s/unsubscribe' % (self.manager.path, self.get_id())
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        self._update_attrs(server_data)
+
+
+class TodoMixin(object):
+    def todo(self, **kwargs):
+        """Create a todo associated to the object.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        path = '%s/%s/todo' % (self.manager.path, self.get_id())
+        self.manager.gitlab.http_post(path, **kwargs)
+
+
+class TimeTrackingMixin(object):
+    def time_stats(self, **kwargs):
+        """Get time stats for the object.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        path = '%s/%s/time_stats' % (self.manager.path, self.get_id())
+        return self.manager.gitlab.http_get(path, **kwargs)
+
+    def time_estimate(self, duration, **kwargs):
+        """Set an estimated time of work for the object.
+
+        Args:
+            duration (str): duration in human format (e.g. 3h30)
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        path = '%s/%s/time_estimate' % (self.manager.path, self.get_id())
+        data = {'duration': duration}
+        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+
+    def reset_time_estimate(self, **kwargs):
+        """Resets estimated time for the object to 0 seconds.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        path = '%s/%s/rest_time_estimate' % (self.manager.path, self.get_id())
+        return self.manager.gitlab.http_post(path, **kwargs)
+
+    def add_spent_time(self, duration, **kwargs):
+        """Add time spent working on the object.
+
+        Args:
+            duration (str): duration in human format (e.g. 3h30)
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        path = '%s/%s/add_spent_time' % (self.manager.path, self.get_id())
+        data = {'duration': duration}
+        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+
+    def reset_spent_time(self, **kwargs):
+        """Resets the time spent working on the object.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+        """
+        path = '%s/%s/reset_spent_time' % (self.manager.path, self.get_id())
+        return self.manager.gitlab.http_post(path, **kwargs)
