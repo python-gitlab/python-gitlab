@@ -647,7 +647,6 @@ class Gitlab(object):
         if 200 <= result.status_code < 300:
             return result
 
-
         raise GitlabHttpError(response_code=result.status_code,
                               error_message=result.content)
 
