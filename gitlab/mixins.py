@@ -255,13 +255,13 @@ class AccessRequestMixin(object):
 
         path = '%s/%s/approve' % (self.manager.path, self.id)
         data = {'access_level': access_level}
-        server_data = self.manager.gitlab.http_put(url, post_data=data,
+        server_data = self.manager.gitlab.http_put(path, post_data=data,
                                                    **kwargs)
         self._update_attrs(server_data)
 
 
 class SubscribableMixin(object):
-    def subscribe(self, **kwarg):
+    def subscribe(self, **kwargs):
         """Subscribe to the object notifications.
 
         raises:
