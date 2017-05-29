@@ -683,8 +683,8 @@ class Gitlab(object):
             try:
                 return result.json()
             except Exception:
-                raise GitlaParsingError(
-                    message="Failed to parse the server message")
+                raise GitlabParsingError(
+                    error_message="Failed to parse the server message")
         else:
             return result
 
@@ -734,14 +734,11 @@ class Gitlab(object):
         """
         result = self.http_request('post', path, query_data=query_data,
                                    post_data=post_data, **kwargs)
-        if result.headers.get('Content-Type', None) == 'application/json':
-            try:
-                return result.json()
-            except Exception:
-                raise GitlabParsingError(
-                    message="Failed to parse the server message")
-        else:
-            return result.content
+        try:
+            return result.json()
+        except Exception:
+            raise GitlabParsingError(
+                error_message="Failed to parse the server message")
 
     def http_put(self, path, query_data={}, post_data={}, **kwargs):
         """Make a PUT request to the Gitlab server.
@@ -767,7 +764,7 @@ class Gitlab(object):
             return result.json()
         except Exception:
             raise GitlabParsingError(
-                message="Failed to parse the server message")
+                error_message="Failed to parse the server message")
 
     def http_delete(self, path, **kwargs):
         """Make a PUT request to the Gitlab server.
@@ -814,7 +811,7 @@ class GitlabList(object):
             self._data = result.json()
         except Exception:
             raise GitlabParsingError(
-                message="Failed to parse the server message")
+                error_message="Failed to parse the server message")
 
         self._current = 0
 
@@ -822,7 +819,7 @@ class GitlabList(object):
         return self
 
     def __len__(self):
-        return self._total_pages
+        return int(self._total_pages)
 
     def __next__(self):
         return self.next()
