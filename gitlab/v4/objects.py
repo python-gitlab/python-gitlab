@@ -23,7 +23,6 @@ import json
 
 import six
 
-import gitlab
 from gitlab.base import *  # noqa
 from gitlab.exceptions import *  # noqa
 from gitlab.mixins import *  # noqa
@@ -203,6 +202,7 @@ class CurrentUserManager(GetWithoutIdMixin, RESTManager):
         server_data = self.gitlab.http_post('/session', post_data=data)
         return CurrentUser(self, server_data)
 
+
 class ApplicationSettings(SaveMixin, RESTObject):
     _id_attr = None
 
@@ -300,6 +300,7 @@ class GitlabciymlManager(RetrieveMixin, RESTManager):
 class GroupIssue(RESTObject):
     pass
 
+
 class GroupIssueManager(GetFromListMixin, RESTManager):
     _path = '/groups/%(group_id)s/issues'
     _obj_cls = GroupIssue
@@ -373,7 +374,7 @@ class License(RESTObject):
 class LicenseManager(RetrieveMixin, RESTManager):
     _path = '/templates/licenses'
     _obj_cls = License
-    _list_filters =('popular')
+    _list_filters = ('popular', )
     _optional_get_attrs = ('project', 'fullname')
 
 
@@ -402,7 +403,7 @@ class Snippet(SaveMixin, RESTObject):
         path = '/snippets/%s/raw' % self.get_id()
         result = self.manager.gitlab.http_get(path, streamed=streamed,
                                               **kwargs)
-        return utils.response_content(r, streamed, action, chunk_size)
+        return utils.response_content(result, streamed, action, chunk_size)
 
 
 class SnippetManager(CRUDMixin, RESTManager):
@@ -467,7 +468,7 @@ class ProjectBranch(RESTObject):
     def protect(self, developers_can_push=False, developers_can_merge=False,
                 **kwargs):
         """Protects the branch.
-        
+
         Args:
             developers_can_push (bool): Set to True if developers are allowed
                                         to push to the branch
@@ -588,7 +589,8 @@ class ProjectCommitStatus(RESTObject):
 
 
 class ProjectCommitStatusManager(RetrieveMixin, CreateMixin, RESTManager):
-    _path = '/projects/%(project_id)s/repository/commits/%(commit_id)s/statuses'
+    _path = ('/projects/%(project_id)s/repository/commits/%(commit_id)s'
+             '/statuses')
     _obj_cls = ProjectCommitStatus
     _from_parent_attrs = {'project_id': 'project_id', 'commit_id': 'id'}
     _create_attrs = (('state', ),
@@ -696,7 +698,7 @@ class ProjectEvent(RESTObject):
 
 
 class ProjectEventManager(GetFromListMixin, RESTManager):
-    _path ='/projects/%(project_id)s/events'
+    _path = '/projects/%(project_id)s/events'
     _obj_cls = ProjectEvent
     _from_parent_attrs = {'project_id': 'id'}
 
@@ -741,7 +743,7 @@ class ProjectHookManager(CRUDMixin, RESTManager):
 
 
 class ProjectIssueNote(SaveMixin, RESTObject):
-    _constructor_types= {'author': 'User'}
+    _constructor_types = {'author': 'User'}
 
 
 class ProjectIssueNoteManager(RetrieveMixin, CreateMixin, UpdateMixin,
@@ -754,7 +756,7 @@ class ProjectIssueNoteManager(RetrieveMixin, CreateMixin, UpdateMixin,
 
 
 class ProjectIssue(SubscribableMixin, TodoMixin, TimeTrackingMixin, SaveMixin,
-                  RESTObject):
+                   RESTObject):
     _constructor_types = {'author': 'User', 'assignee': 'User', 'milestone':
                           'ProjectMilestone'}
     _short_print_attr = 'title'
@@ -769,7 +771,7 @@ class ProjectIssue(SubscribableMixin, TodoMixin, TimeTrackingMixin, SaveMixin,
         """
         path = '%s/%s/move' % (self.manager.path, self.get_id())
         data = {'to_project_id': to_project_id}
-        server_data = self.manager.gitlab.http_post(url, post_data=data,
+        server_data = self.manager.gitlab.http_post(path, post_data=data,
                                                     **kwargs)
         self._update_attrs(server_data)
 
@@ -808,7 +810,7 @@ class ProjectNote(RESTObject):
 
 
 class ProjectNoteManager(RetrieveMixin, RESTManager):
-    _path ='/projects/%(project_id)s/notes'
+    _path = '/projects/%(project_id)s/notes'
     _obj_cls = ProjectNote
     _from_parent_attrs = {'project_id': 'id'}
     _create_attrs = (('body', ), tuple())
@@ -844,13 +846,13 @@ class ProjectTag(RESTObject):
             GitlabCreateError: If the server fails to create the release.
             GitlabUpdateError: If the server fails to update the release.
         """
-        _path = '%s/%s/release' % (self.manager.path, self.get_id())
+        path = '%s/%s/release' % (self.manager.path, self.get_id())
         data = {'description': description}
         if self.release is None:
-            result = self.manager.gitlab.http_post(url, post_data=data,
+            result = self.manager.gitlab.http_post(path, post_data=data,
                                                    **kwargs)
         else:
-            result = self.manager.gitlab.http_put(url, post_data=data,
+            result = self.manager.gitlab.http_put(path, post_data=data,
                                                   **kwargs)
         self.release = result.json()
 
@@ -1215,7 +1217,7 @@ class ProjectSnippet(SaveMixin, RESTObject):
         path = "%s/%s/raw" % (self.manager.path, self.get_id())
         result = self.manager.gitlab.http_get(path, streamed=streamed,
                                               **kwargs)
-        return utils.response_content(r, streamed, action, chunk_size)
+        return utils.response_content(result, streamed, action, chunk_size)
 
 
 class ProjectSnippetManager(CRUDMixin, RESTManager):
@@ -1382,7 +1384,6 @@ class ProjectRunnerManager(NoUpdateMixin, RESTManager):
     _create_attrs = (('runner_id', ), tuple())
 
 
-
 class Project(SaveMixin, RESTObject):
     _constructor_types = {'owner': 'User', 'namespace': 'Group'}
     _short_print_attr = 'path'
@@ -1459,7 +1460,7 @@ class Project(SaveMixin, RESTObject):
             GitlabGetError: If the server fails to perform the request.
         """
         path = '/projects/%s/repository/raw_blobs/%s' % (self.get_id(), sha)
-        result = self.gitlab._raw_get(url, streamed=streamed, **kwargs)
+        result = self.gitlab._raw_get(path, streamed=streamed, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
     def repository_compare(self, from_, to, **kwargs):
@@ -1598,7 +1599,7 @@ class Project(SaveMixin, RESTObject):
             GitlabConnectionError: If the server cannot be reached.
         """
         path = '/projects/%s/unarchive' % self.get_id()
-        server_data = self.manager.gitlab.http_post(url, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
     def share(self, group_id, group_access, expires_at=None, **kwargs):
@@ -1648,7 +1649,6 @@ class RunnerManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
     _obj_cls = Runner
     _update_attrs = (tuple(), ('description', 'active', 'tag_list'))
     _list_filters = ('scope', )
-
 
     def all(self, scope=None, **kwargs):
         """List all the runners.

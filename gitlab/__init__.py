@@ -197,10 +197,10 @@ class Gitlab(object):
             r = self._raw_post('/session', data,
                                content_type='application/json')
             raise_error_from_response(r, GitlabAuthenticationError, 201)
-            self.user = objects.CurrentUser(self, r.json())
+            self.user = self._objects.CurrentUser(self, r.json())
         else:
             manager = self._objects.CurrentUserManager()
-            self.user = credentials_auth(self.email, self.password)
+            self.user = manager.get(self.email, self.password)
 
         self._set_token(self.user.private_token)
 
@@ -211,7 +211,10 @@ class Gitlab(object):
         self._token_auth()
 
     def _token_auth(self):
-        self.user = self._objects.CurrentUserManager(self).get()
+        if self.api_version == '3':
+            self.user = self._objects.CurrentUser(self)
+        else:
+            self.user = self._objects.CurrentUserManager(self).get()
 
     def version(self):
         """Returns the version and revision of the gitlab server.
