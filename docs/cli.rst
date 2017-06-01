@@ -49,9 +49,9 @@ The configuration file uses the ``INI`` format. It contains at least a
    timeout = 1
 
 The ``default`` option of the ``[global]`` section defines the GitLab server to
-use if no server is explitly specified with the ``--gitlab`` CLI option.
+use if no server is explicitly specified with the ``--gitlab`` CLI option.
 
-The ``[global]`` section also defines the values for the default connexion
+The ``[global]`` section also defines the values for the default connection
 parameters. You can override the values in each GitLab server section.
 
 .. list-table:: Global options
