@@ -1,5 +1,5 @@
 # list
-users = gl.users.list()
+users = gl.users.list(all=True)
 # end list
 
 # search
