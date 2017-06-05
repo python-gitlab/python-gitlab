@@ -540,8 +540,8 @@ class RESTObject(object):
     another. This allows smart updates, if the object allows it.
 
     You can redefine ``_id_attr`` in child classes to specify which attribute
-    must be used as uniq ID. None means that the object can be updated without
-    ID in the url.
+    must be used as uniq ID. ``None`` means that the object can be updated
+    without ID in the url.
     """
     _id_attr = 'id'
 
@@ -594,8 +594,8 @@ class RESTObject(object):
             self.__dict__[attr] = manager
 
     def _update_attrs(self, new_attrs):
-        self._updated_attrs = {}
-        self._attrs.update(new_attrs)
+        self.__dict__['_updated_attrs'] = {}
+        self.__dict__['_attrs'].update(new_attrs)
 
     def get_id(self):
         if self._id_attr is None:
@@ -649,6 +649,13 @@ class RESTManager(object):
     _obj_cls = None
 
     def __init__(self, gl, parent=None):
+        """REST manager constructor.
+
+        Args:
+            gl (Gitlab): :class:`~gitlab.Gitlab` connection to use to make
+                         requests.
+            parent: REST object to which the manager is attached.
+        """
         self.gitlab = gl
         self._parent = parent  # for nested managers
         self._computed_path = self._compute_path()
