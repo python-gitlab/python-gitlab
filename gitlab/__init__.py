@@ -819,7 +819,7 @@ class GitlabList(object):
         return self
 
     def __len__(self):
-        return int(self._total_pages)
+        return int(self._total)
 
     def __next__(self):
         return self.next()
