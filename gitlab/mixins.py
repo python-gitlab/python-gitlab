@@ -17,6 +17,7 @@
 
 import gitlab
 from gitlab import base
+from gitlab import exceptions
 
 
 class GetMixin(object):
@@ -93,12 +94,14 @@ class GetFromListMixin(ListMixin):
             object: The generated RESTObject.
 
         Raises:
-            GitlabGetError: If the server cannot perform the request.
+            AttributeError: If the object could not be found in the list
         """
         gen = self.list()
         for obj in gen:
             if str(obj.get_id()) == str(id):
                 return obj
+
+        raise exceptions.GitlabHttpError(404, "Not found")
 
 
 class RetrieveMixin(ListMixin, GetMixin):
@@ -141,7 +144,7 @@ class CreateMixin(object):
         if hasattr(self, '_sanitize_data'):
             data = self._sanitize_data(data, 'create')
         # Handle specific URL for creation
-        path = kwargs.get('path', self.path)
+        path = kwargs.pop('path', self.path)
         server_data = self.gitlab.http_post(path, post_data=data, **kwargs)
         return self._obj_cls(self, server_data)
 
