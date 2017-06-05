@@ -32,6 +32,41 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+class TestObjectMixinsAttributes(unittest.TestCase):
+    def test_access_request_mixin(self):
+        class O(AccessRequestMixin):
+            pass
+
+        obj = O()
+        self.assertTrue(hasattr(obj, 'approve'))
+
+    def test_subscribable_mixin(self):
+        class O(SubscribableMixin):
+            pass
+
+        obj = O()
+        self.assertTrue(hasattr(obj, 'subscribe'))
+        self.assertTrue(hasattr(obj, 'unsubscribe'))
+
+    def test_todo_mixin(self):
+        class O(TodoMixin):
+            pass
+
+        obj = O()
+        self.assertTrue(hasattr(obj, 'todo'))
+
+    def test_time_tracking_mixin(self):
+        class O(TimeTrackingMixin):
+            pass
+
+        obj = O()
+        self.assertTrue(hasattr(obj, 'time_stats'))
+        self.assertTrue(hasattr(obj, 'time_estimate'))
+        self.assertTrue(hasattr(obj, 'reset_time_estimate'))
+        self.assertTrue(hasattr(obj, 'add_spent_time'))
+        self.assertTrue(hasattr(obj, 'reset_spent_time'))
+
+
 class TestMetaMixins(unittest.TestCase):
     def test_retrieve_mixin(self):
         class M(RetrieveMixin):
@@ -352,3 +387,25 @@ class TestMixinMethods(unittest.TestCase):
         with HTTMock(resp_cont):
             mgr = M(self.gl)
             mgr.delete(42)
+
+    def test_save_mixin(self):
+        class M(UpdateMixin, FakeManager):
+            pass
+
+        class O(SaveMixin, RESTObject):
+            pass
+
+        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/tests/42',
+                  method="put")
+        def resp_cont(url, request):
+            headers = {'Content-Type': 'application/json'}
+            content = '{"id": 42, "foo": "baz"}'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            mgr = M(self.gl)
+            obj = O(mgr, {'id': 42, 'foo': 'bar'})
+            obj.foo = 'baz'
+            obj.save()
+            self.assertEqual(obj._attrs['foo'], 'baz')
+            self.assertDictEqual(obj._updated_attrs, {})
