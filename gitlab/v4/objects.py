@@ -395,10 +395,6 @@ class Snippet(SaveMixin, RESTObject):
 
         Returns:
             str: The snippet content.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the server fails to perform the request.
         """
         path = '/snippets/%s/raw' % self.get_id()
         result = self.manager.gitlab.http_get(path, streamed=streamed,
@@ -522,10 +518,6 @@ class ProjectJob(RESTObject):
 
     def keep_artifacts(self, **kwargs):
         """Prevent artifacts from being delete when expiration is set.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabCreateError: If the request failed.
         """
         path = '%s/%s/artifacts/keep' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path)
@@ -544,10 +536,6 @@ class ProjectJob(RESTObject):
 
         Returns:
             str: The artifacts if `streamed` is False, None otherwise.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the artifacts are not available.
         """
         path = '%s/%s/artifacts' % (self.manager.path, self.get_id())
         result = self.manager.gitlab.get_http(path, streamed=streamed,
@@ -567,10 +555,6 @@ class ProjectJob(RESTObject):
 
         Returns:
             str: The trace.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the trace is not available.
         """
         path = '%s/%s/trace' % (self.manager.path, self.get_id())
         result = self.manager.gitlab.get_http(path, streamed=streamed,
@@ -643,9 +627,6 @@ class ProjectCommit(RESTObject):
 
         Args:
             branch (str): Name of target branch.
-
-        Raises:
-            GitlabCherryPickError: If the cherry pick could not be applied.
         """
         path = '%s/%s/cherry_pick' % (self.manager.path, self.get_id())
         post_data = {'branch': branch}
@@ -764,11 +745,7 @@ class ProjectIssue(SubscribableMixin, TodoMixin, TimeTrackingMixin, SaveMixin,
     _managers = (('notes', 'ProjectIssueNoteManager'), )
 
     def move(self, to_project_id, **kwargs):
-        """Move the issue to another project.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-        """
+        """Move the issue to another project."""
         path = '%s/%s/move' % (self.manager.path, self.get_id())
         data = {'to_project_id': to_project_id}
         server_data = self.manager.gitlab.http_post(path, post_data=data,
@@ -840,11 +817,6 @@ class ProjectTag(RESTObject):
 
         Args:
             description (str): Description of the release.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabCreateError: If the server fails to create the release.
-            GitlabUpdateError: If the server fails to update the release.
         """
         path = '%s/%s/release' % (self.manager.path, self.get_id())
         data = {'description': description}
@@ -1099,9 +1071,6 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
 
         Returns:
             object: The generated RESTObject.
-
-        Raises:
-            GitlabGetError: If the server cannot perform the request.
         """
         file_path = file_path.replace('/', '%2F')
         return GetMixin.get(self, file_path, **kwargs)
@@ -1122,10 +1091,6 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
 
         Returns:
             str: The file content
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the server fails to perform the request.
         """
         file_path = file_path.replace('/', '%2F')
         path = '%s/%s/raw' % (self.path, file_path)
@@ -1200,10 +1165,6 @@ class ProjectSnippet(SaveMixin, RESTObject):
 
         Returns:
             str: The snippet content
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the server fails to perform the request.
         """
         path = "%s/%s/raw" % (self.manager.path, self.get_id())
         result = self.manager.gitlab.http_get(path, streamed=streamed,
@@ -1222,12 +1183,7 @@ class ProjectSnippetManager(CRUDMixin, RESTManager):
 
 class ProjectTrigger(SaveMixin, RESTObject):
     def take_ownership(self, **kwargs):
-        """Update the owner of a trigger.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the server fails to perform the request.
-        """
+        """Update the owner of a trigger."""
         path = '%s/%s/take_ownership' % (self.manager.path, self.get_id())
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
@@ -1611,10 +1567,6 @@ class RunnerManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
 
         Returns:
             list(Runner): a list of runners matching the scope.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabListError: If the resource cannot be found
         """
         path = '/runners/all'
         query_data = {}
@@ -1645,10 +1597,6 @@ class TodoManager(GetFromListMixin, DeleteMixin, RESTManager):
 
         Returns:
             The number of todos maked done.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabDeleteError: If the resource cannot be found
         """
         self.gitlab.http_post('/todos/mark_as_done', **kwargs)
 
@@ -1708,11 +1656,6 @@ class Group(SaveMixin, RESTObject):
 
         Attrs:
             id (int): ID of the project to transfer.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabTransferProjectError: If the server fails to perform the
-                request.
         """
         path = '/groups/%d/projects/%d' % (self.id, id)
         self.manager.gitlab.http_post(path, **kwargs)
