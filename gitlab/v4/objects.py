@@ -62,7 +62,7 @@ class SidekiqManager(RESTManager):
         return self.gitlab.http_get('/sidekiq/compound_metrics', **kwargs)
 
 
-class UserEmail(RESTObject):
+class UserEmail(ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'email'
 
 
@@ -73,7 +73,7 @@ class UserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _create_attrs = (('email', ), tuple())
 
 
-class UserKey(RESTObject):
+class UserKey(ObjectDeleteMixin, RESTObject):
     pass
 
 
@@ -101,7 +101,7 @@ class UserProjectManager(CreateMixin, RESTManager):
     )
 
 
-class User(SaveMixin, RESTObject):
+class User(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'username'
     _managers = (
         ('emails', 'UserEmailManager'),
@@ -162,7 +162,7 @@ class UserManager(CRUDMixin, RESTManager):
         return new_data
 
 
-class CurrentUserEmail(RESTObject):
+class CurrentUserEmail(ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'email'
 
 
@@ -173,7 +173,7 @@ class CurrentUserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin,
     _create_attrs = (('email', ), tuple())
 
 
-class CurrentUserKey(RESTObject):
+class CurrentUserKey(ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'title'
 
 
@@ -231,7 +231,7 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         return new_data
 
 
-class BroadcastMessage(SaveMixin, RESTObject):
+class BroadcastMessage(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
@@ -308,12 +308,12 @@ class GroupIssueManager(GetFromListMixin, RESTManager):
     _list_filters = ('state', 'labels', 'milestone', 'order_by', 'sort')
 
 
-class GroupMember(SaveMixin, RESTObject):
+class GroupMember(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'username'
 
 
 class GroupMemberManager(GetFromListMixin, CreateMixin, UpdateMixin,
-                         RESTManager):
+                         DeleteMixin, RESTManager):
     _path = '/groups/%(group_id)s/members'
     _obj_cls = GroupMember
     _from_parent_attrs = {'group_id': 'id'}
@@ -331,7 +331,7 @@ class GroupNotificationSettingsManager(NotificationSettingsManager):
     _from_parent_attrs = {'group_id': 'id'}
 
 
-class GroupAccessRequest(AccessRequestMixin, RESTObject):
+class GroupAccessRequest(AccessRequestMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
@@ -342,7 +342,7 @@ class GroupAccessRequestManager(GetFromListMixin, CreateMixin, DeleteMixin,
     _from_parent_attrs = {'group_id': 'id'}
 
 
-class Hook(RESTObject):
+class Hook(ObjectDeleteMixin, RESTObject):
     _url = '/hooks'
     _short_print_attr = 'url'
 
@@ -378,7 +378,7 @@ class LicenseManager(RetrieveMixin, RESTManager):
     _optional_get_attrs = ('project', 'fullname')
 
 
-class Snippet(SaveMixin, RESTObject):
+class Snippet(SaveMixin, ObjectDeleteMixin, RESTObject):
     _constructor_types = {'author': 'User'}
     _short_print_attr = 'title'
 
@@ -433,7 +433,7 @@ class NamespaceManager(GetFromListMixin, RESTManager):
     _list_filters = ('search', )
 
 
-class ProjectBoardList(SaveMixin, RESTObject):
+class ProjectBoardList(SaveMixin, ObjectDeleteMixin, RESTObject):
     _constructor_types = {'label': 'ProjectLabel'}
 
 
@@ -457,7 +457,7 @@ class ProjectBoardManager(GetFromListMixin, RESTManager):
     _from_parent_attrs = {'project_id': 'id'}
 
 
-class ProjectBranch(RESTObject):
+class ProjectBranch(ObjectDeleteMixin, RESTObject):
     _constructor_types = {'author': 'User', "committer": "User"}
     _id_attr = 'name'
 
@@ -640,7 +640,7 @@ class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
                      ('author_email', 'author_name'))
 
 
-class ProjectEnvironment(SaveMixin, RESTObject):
+class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
@@ -653,7 +653,7 @@ class ProjectEnvironmentManager(GetFromListMixin, CreateMixin, UpdateMixin,
     _update_attrs = (tuple(), ('name', 'external_url'))
 
 
-class ProjectKey(RESTObject):
+class ProjectKey(ObjectDeleteMixin, RESTObject):
     pass
 
 
@@ -694,7 +694,7 @@ class ProjectForkManager(CreateMixin, RESTManager):
     _create_attrs = (tuple(), ('namespace', ))
 
 
-class ProjectHook(SaveMixin, RESTObject):
+class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['url']
     optionalCreateAttrs = ['push_events', 'issues_events', 'note_events',
@@ -722,12 +722,11 @@ class ProjectHookManager(CRUDMixin, RESTManager):
     )
 
 
-class ProjectIssueNote(SaveMixin, RESTObject):
+class ProjectIssueNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     _constructor_types = {'author': 'User'}
 
 
-class ProjectIssueNoteManager(RetrieveMixin, CreateMixin, UpdateMixin,
-                              RESTManager):
+class ProjectIssueNoteManager(CRUDMixin, RESTManager):
     _path = '/projects/%(project_id)s/issues/%(issue_iid)s/notes'
     _obj_cls = ProjectIssueNote
     _from_parent_attrs = {'project_id': 'project_id', 'issue_iid': 'iid'}
@@ -736,7 +735,7 @@ class ProjectIssueNoteManager(RetrieveMixin, CreateMixin, UpdateMixin,
 
 
 class ProjectIssue(SubscribableMixin, TodoMixin, TimeTrackingMixin, SaveMixin,
-                   RESTObject):
+                   ObjectDeleteMixin, RESTObject):
     _constructor_types = {'author': 'User', 'assignee': 'User', 'milestone':
                           'ProjectMilestone'}
     _short_print_attr = 'title'
@@ -765,7 +764,7 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
                                'updated_at', 'state_event', 'due_date'))
 
 
-class ProjectMember(SaveMixin, RESTObject):
+class ProjectMember(SaveMixin, ObjectDeleteMixin, RESTObject):
     requiredCreateAttrs = ['access_level', 'user_id']
     optionalCreateAttrs = ['expires_at']
     requiredUpdateAttrs = ['access_level']
@@ -802,7 +801,7 @@ class ProjectNotificationSettingsManager(NotificationSettingsManager):
     _from_parent_attrs = {'project_id': 'id'}
 
 
-class ProjectTag(RESTObject):
+class ProjectTag(ObjectDeleteMixin, RESTObject):
     _constructor_types = {'release': 'ProjectTagRelease',
                           'commit': 'ProjectCommit'}
     _id_attr = 'name'
@@ -846,7 +845,7 @@ class ProjectMergeRequestDiffManager(RetrieveMixin, RESTManager):
     _from_parent_attrs = {'project_id': 'project_id', 'mr_iid': 'iid'}
 
 
-class ProjectMergeRequestNote(SaveMixin, RESTObject):
+class ProjectMergeRequestNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     _constructor_types = {'author': 'User'}
 
 
@@ -859,7 +858,7 @@ class ProjectMergeRequestNoteManager(CRUDMixin, RESTManager):
 
 
 class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
-                          SaveMixin, RESTObject):
+                          SaveMixin, ObjectDeleteMixin, RESTObject):
     _constructor_types = {'author': 'User', 'assignee': 'User'}
     _id_attr = 'iid'
 
@@ -952,7 +951,7 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
     _list_filters = ('iids', 'state', 'order_by', 'sort')
 
 
-class ProjectMilestone(SaveMixin, RESTObject):
+class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'title'
 
     def issues(self, **kwargs):
@@ -995,7 +994,8 @@ class ProjectMilestoneManager(RetrieveMixin, CreateMixin, DeleteMixin,
     _list_filters = ('iids', 'state')
 
 
-class ProjectLabel(SubscribableMixin, SaveMixin, RESTObject):
+class ProjectLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin,
+                   RESTObject):
     _id_attr = 'name'
     requiredCreateAttrs = ['name', 'color']
     optionalCreateAttrs = ['description', 'priority']
@@ -1004,7 +1004,7 @@ class ProjectLabel(SubscribableMixin, SaveMixin, RESTObject):
 
 
 class ProjectLabelManager(GetFromListMixin, CreateMixin, UpdateMixin,
-                          RESTManager):
+                          DeleteMixin, RESTManager):
     _path = '/projects/%(project_id)s/labels'
     _obj_cls = ProjectLabel
     _from_parent_attrs = {'project_id': 'id'}
@@ -1038,7 +1038,7 @@ class ProjectLabelManager(GetFromListMixin, CreateMixin, UpdateMixin,
         self._update_attrs(server_data)
 
 
-class ProjectFile(SaveMixin, RESTObject):
+class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = 'file_path'
     _short_print_attr = 'file_path'
 
@@ -1145,7 +1145,7 @@ class ProjectSnippetNoteManager(RetrieveMixin, CreateMixin, RESTManager):
     _create_attrs = (('body', ), tuple())
 
 
-class ProjectSnippet(SaveMixin, RESTObject):
+class ProjectSnippet(SaveMixin, ObjectDeleteMixin, RESTObject):
     _url = '/projects/%(project_id)s/snippets'
     _constructor_types = {'author': 'User'}
     _short_print_attr = 'title'
@@ -1180,7 +1180,7 @@ class ProjectSnippetManager(CRUDMixin, RESTManager):
     _update_attrs = (tuple(), ('title', 'file_name', 'code', 'visibility'))
 
 
-class ProjectTrigger(SaveMixin, RESTObject):
+class ProjectTrigger(SaveMixin, ObjectDeleteMixin, RESTObject):
     def take_ownership(self, **kwargs):
         """Update the owner of a trigger."""
         path = '%s/%s/take_ownership' % (self.manager.path, self.get_id())
@@ -1196,7 +1196,7 @@ class ProjectTriggerManager(CRUDMixin, RESTManager):
     _update_attrs = (('description', ), tuple())
 
 
-class ProjectVariable(SaveMixin, RESTObject):
+class ProjectVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = 'key'
 
 
@@ -1297,7 +1297,7 @@ class ProjectServiceManager(BaseManager):
         return list(ProjectService._service_attrs.keys())
 
 
-class ProjectAccessRequest(AccessRequestMixin, RESTObject):
+class ProjectAccessRequest(AccessRequestMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
@@ -1318,7 +1318,7 @@ class ProjectDeploymentManager(RetrieveMixin, RESTManager):
     _from_parent_attrs = {'project_id': 'id'}
 
 
-class ProjectRunner(RESTObject):
+class ProjectRunner(ObjectDeleteMixin, RESTObject):
     canUpdate = False
     requiredCreateAttrs = ['runner_id']
 
@@ -1330,7 +1330,7 @@ class ProjectRunnerManager(NoUpdateMixin, RESTManager):
     _create_attrs = (('runner_id', ), tuple())
 
 
-class Project(SaveMixin, RESTObject):
+class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
     _constructor_types = {'owner': 'User', 'namespace': 'Group'}
     _short_print_attr = 'path'
     _managers = (
@@ -1547,7 +1547,7 @@ class Project(SaveMixin, RESTObject):
         self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
 
-class Runner(SaveMixin, RESTObject):
+class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
@@ -1574,7 +1574,7 @@ class RunnerManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
         return self.gitlab.http_list(path, query_data, **kwargs)
 
 
-class Todo(RESTObject):
+class Todo(ObjectDeleteMixin, RESTObject):
     def mark_as_done(self, **kwargs):
         """Mark the todo as done.
 
@@ -1640,7 +1640,7 @@ class GroupProjectManager(GetFromListMixin, RESTManager):
                      'ci_enabled_first')
 
 
-class Group(SaveMixin, RESTObject):
+class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'name'
     _managers = (
         ('accessrequests', 'GroupAccessRequestManager'),

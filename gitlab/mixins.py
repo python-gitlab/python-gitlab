@@ -250,6 +250,17 @@ class SaveMixin(object):
         self._update_attrs(server_data)
 
 
+class ObjectDeleteMixin(object):
+    """Mixin for RESTObject's that can be deleted."""
+    def delete(self, **kwargs):
+        """Delete the object from the server.
+
+        Args:
+            **kwargs: Extra option to send to the server (e.g. sudo)
+        """
+        self.manager.delete(self.get_id())
+
+
 class AccessRequestMixin(object):
     def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
         """Approve an access request.
