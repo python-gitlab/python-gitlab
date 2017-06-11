@@ -15,7 +15,6 @@ Contents:
    cli
    api-usage
    api-objects
-   upgrade-from-0.10
    api/modules
    release_notes
    changelog
