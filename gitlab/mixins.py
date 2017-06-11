@@ -21,11 +21,14 @@ from gitlab import exceptions
 
 
 class GetMixin(object):
-    def get(self, id, **kwargs):
+    def get(self, id, lazy=False, **kwargs):
         """Retrieve a single object.
 
         Args:
             id (int or str): ID of the object to retrieve
+            lazy (bool): If True, don't request the server, but create a
+                         shallow object giving access to the managers. This is
+                         useful if you want to avoid useless calls to the API.
             **kwargs: Extra data to send to the Gitlab server (e.g. sudo)
 
         Returns:
@@ -35,6 +38,9 @@ class GetMixin(object):
             GitlabGetError: If the server cannot perform the request.
         """
         path = '%s/%s' % (self.path, id)
+        if lazy is True:
+            return self._obj_cls(self, {self._obj_cls._id_attr: id})
+
         server_data = self.gitlab.http_get(path, **kwargs)
         return self._obj_cls(self, server_data)
 
