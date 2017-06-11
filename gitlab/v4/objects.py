@@ -906,44 +906,35 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
         self._update_attrs(server_data)
 
     def closes_issues(self, **kwargs):
-        """List issues closed by the MR.
+        """List issues that will close on merge."
 
         Returns:
-            list (ProjectIssue): List of closed issues
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the server fails to perform the request.
+            list (ProjectIssue): List of issues
         """
-        # FIXME(gpocentek)
-        url = ('/projects/%s/merge_requests/%s/closes_issues' %
-               (self.project_id, self.iid))
-        return self.gitlab._raw_list(url, ProjectIssue, **kwargs)
+        path = '%s/%s/closes_issues' % (self.manager.path, self.get_id())
+        data_list = self.manager.gitlab.http_list(path, **kwargs)
+        manager = ProjectIssueManager(self.manager.gitlab,
+                                      parent=self.manager._parent)
+        return RESTObjectList(manager, ProjectIssue, data_list)
 
     def commits(self, **kwargs):
         """List the merge request commits.
 
         Returns:
             list (ProjectCommit): List of commits
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabListError: If the server fails to perform the request.
         """
-        # FIXME(gpocentek)
-        url = ('/projects/%s/merge_requests/%s/commits' %
-               (self.project_id, self.iid))
-        return self.gitlab._raw_list(url, ProjectCommit, **kwargs)
+
+        path = '%s/%s/commits' % (self.manager.path, self.get_id())
+        data_list = self.manager.gitlab.http_list(path, **kwargs)
+        manager = ProjectCommitManager(self.manager.gitlab,
+                                       parent=self.manager._parent)
+        return RESTObjectList(manager, ProjectCommit, data_list)
 
     def changes(self, **kwargs):
         """List the merge request changes.
 
         Returns:
             list (dict): List of changes
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabListError: If the server fails to perform the request.
         """
         path = '%s/%s/changes' % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)
@@ -960,14 +951,6 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                                                 branch
             merged_when_build_succeeds (bool): Wait for the build to succeed,
                                                then merge
-
-        Returns:
-            ProjectMergeRequest: The updated MR
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabMRForbiddenError: If the user doesn't have permission to
-                                    close thr MR
-            GitlabMRClosedError: If the MR is already closed
         """
         path = '%s/%s/merge' % (self.manager.path, self.get_id())
         data = {}
@@ -1002,23 +985,31 @@ class ProjectMilestone(SaveMixin, RESTObject):
     _short_print_attr = 'title'
 
     def issues(self, **kwargs):
-        url = '/projects/%s/milestones/%s/issues' % (self.project_id, self.id)
-        return self.gitlab._raw_list(url, ProjectIssue, **kwargs)
+        """List issues related to this milestone
+
+        Returns:
+            list (ProjectIssue): The list of issues
+        """
+
+        path = '%s/%s/issues' % (self.manager.path, self.get_id())
+        data_list = self.manager.gitlab.http_list(path, **kwargs)
+        manager = ProjectCommitManager(self.manager.gitlab,
+                                       parent=self.manager._parent)
+        # FIXME(gpocentek): the computed manager path is not correct
+        return RESTObjectList(manager, ProjectIssue, data_list)
 
     def merge_requests(self, **kwargs):
         """List the merge requests related to this milestone
 
         Returns:
             list (ProjectMergeRequest): List of merge requests
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabListError: If the server fails to perform the request.
         """
-        # FIXME(gpocentek)
-        url = ('/projects/%s/milestones/%s/merge_requests' %
-               (self.project_id, self.id))
-        return self.gitlab._raw_list(url, ProjectMergeRequest, **kwargs)
+        path = '%s/%s/merge_requests' % (self.manager.path, self.get_id())
+        data_list = self.manager.gitlab.http_list(path, **kwargs)
+        manager = ProjectCommitManager(self.manager.gitlab,
+                                       parent=self.manager._parent)
+        # FIXME(gpocentek): the computed manager path is not correct
+        return RESTObjectList(manager, ProjectMergeRequest, data_list)
 
 
 class ProjectMilestoneManager(RetrieveMixin, CreateMixin, DeleteMixin,
@@ -1425,19 +1416,28 @@ class Project(SaveMixin, RESTObject):
 
         Returns:
             str: The json representation of the tree.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the server fails to perform the request.
         """
-        path = '/projects/%s/repository/tree' % self.get_id()
+        gl_path = '/projects/%s/repository/tree' % self.get_id()
         query_data = {}
         if path:
             query_data['path'] = path
         if ref:
             query_data['ref'] = ref
-        return self.manager.gitlab.http_get(path, query_data=query_data,
+        return self.manager.gitlab.http_get(gl_path, query_data=query_data,
                                             **kwargs)
+
+    def repository_blob(self, sha, **kwargs):
+        """Returns a blob by blob SHA.
+
+        Args:
+            sha(str): ID of the blob
+
+        Returns:
+            str: The blob as json
+        """
+
+        path = '/projects/%s/repository/blobs/%s' % (self.get_id(), sha)
+        return self.manager.gitlab.http_get(path, **kwargs)
 
     def repository_raw_blob(self, sha, streamed=False, action=None,
                             chunk_size=1024, **kwargs):
@@ -1454,13 +1454,9 @@ class Project(SaveMixin, RESTObject):
 
         Returns:
             str: The blob content
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the server fails to perform the request.
         """
-        path = '/projects/%s/repository/raw_blobs/%s' % (self.get_id(), sha)
-        result = self.gitlab._raw_get(path, streamed=streamed, **kwargs)
+        path = '/projects/%s/repository/blobs/%s/raw' % (self.get_id(), sha)
+        result = self.manager.gitlab.http_get(path, streamed=streamed, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
     def repository_compare(self, from_, to, **kwargs):
@@ -1472,10 +1468,6 @@ class Project(SaveMixin, RESTObject):
 
         Returns:
             str: The diff
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the server fails to perform the request.
         """
         path = '/projects/%s/repository/compare' % self.get_id()
         query_data = {'from': from_, 'to': to}
@@ -1486,11 +1478,7 @@ class Project(SaveMixin, RESTObject):
         """Returns a list of contributors for the project.
 
         Returns:
-            list: The contibutors
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the server fails to perform the request.
+            list: The contributors
         """
         path = '/projects/%s/repository/contributors' % self.get_id()
         return self.manager.gitlab.http_get(path, **kwargs)
@@ -1510,17 +1498,13 @@ class Project(SaveMixin, RESTObject):
 
         Returns:
             str: The binary data of the archive.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the server fails to perform the request.
         """
         path = '/projects/%s/repository/archive' % self.get_id()
         query_data = {}
         if sha:
             query_data['sha'] = sha
-        result = self.gitlab._raw_get(path, query_data=query_data,
-                                      streamed=streamed, **kwargs)
+        result = self.manager.gitlab.http_get(path, query_data=query_data,
+                                              streamed=streamed, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
     def create_fork_relation(self, forked_from_id, **kwargs):
@@ -1528,20 +1512,12 @@ class Project(SaveMixin, RESTObject):
 
         Args:
             forked_from_id (int): The ID of the project that was forked from
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabCreateError: If the server fails to perform the request.
         """
         path = '/projects/%s/fork/%s' % (self.get_id(), forked_from_id)
         self.manager.gitlab.http_post(path, **kwargs)
 
     def delete_fork_relation(self, **kwargs):
         """Delete a forked relation between existing projects.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabDeleteError: If the server fails to perform the request.
         """
         path = '/projects/%s/fork' % self.get_id()
         self.manager.gitlab.http_delete(path, **kwargs)
@@ -1551,10 +1527,6 @@ class Project(SaveMixin, RESTObject):
 
         Returns:
             Project: the updated Project
-
-        Raises:
-            GitlabCreateError: If the action cannot be done
-            GitlabConnectionError: If the server cannot be reached.
         """
         path = '/projects/%s/star' % self.get_id()
         server_data = self.manager.gitlab.http_post(path, **kwargs)
@@ -1565,10 +1537,6 @@ class Project(SaveMixin, RESTObject):
 
         Returns:
             Project: the updated Project
-
-        Raises:
-            GitlabDeleteError: If the action cannot be done
-            GitlabConnectionError: If the server cannot be reached.
         """
         path = '/projects/%s/unstar' % self.get_id()
         server_data = self.manager.gitlab.http_post(path, **kwargs)
@@ -1579,10 +1547,6 @@ class Project(SaveMixin, RESTObject):
 
         Returns:
             Project: the updated Project
-
-        Raises:
-            GitlabCreateError: If the action cannot be done
-            GitlabConnectionError: If the server cannot be reached.
         """
         path = '/projects/%s/archive' % self.get_id()
         server_data = self.manager.gitlab.http_post(path, **kwargs)
@@ -1593,10 +1557,6 @@ class Project(SaveMixin, RESTObject):
 
         Returns:
             Project: the updated Project
-
-        Raises:
-            GitlabDeleteError: If the action cannot be done
-            GitlabConnectionError: If the server cannot be reached.
         """
         path = '/projects/%s/unarchive' % self.get_id()
         server_data = self.manager.gitlab.http_post(path, **kwargs)
@@ -1608,10 +1568,6 @@ class Project(SaveMixin, RESTObject):
         Args:
             group_id (int): ID of the group.
             group_access (int): Access level for the group.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabCreateError: If the server fails to perform the request.
         """
         path = '/projects/%s/share' % self.get_id()
         data = {'group_id': group_id,
@@ -1628,10 +1584,6 @@ class Project(SaveMixin, RESTObject):
             ref (str): Commit to build; can be a commit SHA, a branch name, ...
             token (str): The trigger token
             variables (dict): Variables passed to the build script
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabCreateError: If the server fails to perform the request.
         """
         path = '/projects/%s/trigger/pipeline' % self.get_id()
         form = {r'variables[%s]' % k: v for k, v in six.iteritems(variables)}

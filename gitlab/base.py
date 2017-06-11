@@ -552,6 +552,7 @@ class RESTObject(object):
             '_updated_attrs': {},
             '_module': importlib.import_module(self.__module__)
         })
+        self.__dict__['_parent_attrs'] = self.manager.parent_attrs
 
         # TODO(gpocentek): manage the creation of new objects from the received
         # data (_constructor_types)
@@ -565,7 +566,10 @@ class RESTObject(object):
             try:
                 return self.__dict__['_attrs'][name]
             except KeyError:
-                raise AttributeError(name)
+                try:
+                    return self.__dict__['_parent_attrs'][name]
+                except:
+                    raise AttributeError(name)
 
     def __setattr__(self, name, value):
         self.__dict__['_updated_attrs'][name] = value
@@ -660,7 +664,12 @@ class RESTManager(object):
         self._parent = parent  # for nested managers
         self._computed_path = self._compute_path()
 
+    @property
+    def parent_attrs(self):
+        return self._parent_attrs
+
     def _compute_path(self, path=None):
+        self._parent_attrs = {}
         if path is None:
             path = self._path
         if self._parent is None or not hasattr(self, '_from_parent_attrs'):
@@ -668,6 +677,7 @@ class RESTManager(object):
 
         data = {self_attr: getattr(self._parent, parent_attr)
                 for self_attr, parent_attr in self._from_parent_attrs.items()}
+        self._parent_attrs = data
         return path % data
 
     @property
