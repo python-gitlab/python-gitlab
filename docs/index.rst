@@ -14,6 +14,7 @@ Contents:
    install
    cli
    api-usage
+   switching-to-v4
    api-objects
    api/modules
    release_notes
