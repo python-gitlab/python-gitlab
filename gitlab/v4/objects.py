@@ -517,8 +517,7 @@ class ProjectJob(RESTObject):
         self.manager.gitlab.http_post(path)
 
     def keep_artifacts(self, **kwargs):
-        """Prevent artifacts from being delete when expiration is set.
-        """
+        """Prevent artifacts from being delete when expiration is set."""
         path = '%s/%s/artifacts/keep' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path)
 
@@ -1412,7 +1411,8 @@ class Project(SaveMixin, RESTObject):
             str: The blob content
         """
         path = '/projects/%s/repository/blobs/%s/raw' % (self.get_id(), sha)
-        result = self.manager.gitlab.http_get(path, streamed=streamed, **kwargs)
+        result = self.manager.gitlab.http_get(path, streamed=streamed,
+                                              **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
     def repository_compare(self, from_, to, **kwargs):
@@ -1473,8 +1473,7 @@ class Project(SaveMixin, RESTObject):
         self.manager.gitlab.http_post(path, **kwargs)
 
     def delete_fork_relation(self, **kwargs):
-        """Delete a forked relation between existing projects.
-        """
+        """Delete a forked relation between existing projects."""
         path = '/projects/%s/fork' % self.get_id()
         self.manager.gitlab.http_delete(path, **kwargs)
 

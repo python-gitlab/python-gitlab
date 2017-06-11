@@ -568,7 +568,7 @@ class RESTObject(object):
             except KeyError:
                 try:
                     return self.__dict__['_parent_attrs'][name]
-                except:
+                except KeyError:
                     raise AttributeError(name)
 
     def __setattr__(self, name, value):
