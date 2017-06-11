@@ -1,6 +1,17 @@
 ChangeLog
 =========
 
+Version 0.21.2_ - 2017-06-11
+----------------------------
+
+* Install doc: use sudo for system commands
+* [v4] Make MR work properly
+* Remove extra_attrs argument from _raw_list
+* [v4] Make project issues work properly
+* Fix urlencode() usage (python 2/3) (#268)
+* Fixed spelling mistake (#269)
+* Add new event types to ProjectHook
+
 Version 0.21.1_ - 2017-05-25
 ----------------------------
 
@@ -423,6 +434,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
+.. _0.21.2: https://github.com/python-gitlab/python-gitlab/compare/0.21.1...0.21.2
 .. _0.21.1: https://github.com/python-gitlab/python-gitlab/compare/0.21...0.21.1
 .. _0.21: https://github.com/python-gitlab/python-gitlab/compare/0.20...0.21
 .. _0.20: https://github.com/python-gitlab/python-gitlab/compare/0.19...0.20
