@@ -602,6 +602,7 @@ class RESTObject(object):
         self.__dict__['_attrs'].update(new_attrs)
 
     def get_id(self):
+        """Returns the id of the resource."""
         if self._id_attr is None:
             return None
         return getattr(self, self._id_attr)
@@ -622,6 +623,16 @@ class RESTObjectList(object):
         _list: A GitlabList object
     """
     def __init__(self, manager, obj_cls, _list):
+        """Creates an objects list from a GitlabList.
+
+        You should not create objects of this type, but use managers list()
+        methods instead.
+
+        Args:
+            manager: the RESTManager to attach to the objects
+            obj_cls: the class of the created objects
+            _list: the GitlabList holding the data
+        """
         self.manager = manager
         self._obj_cls = obj_cls
         self._list = _list

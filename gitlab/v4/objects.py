@@ -1648,7 +1648,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     def transfer_project(self, id, **kwargs):
         """Transfers a project to this group.
 
-        Attrs:
+        Args:
             id (int): ID of the project to transfer.
         """
         path = '/groups/%d/projects/%d' % (self.id, id)
