@@ -16,7 +16,7 @@ Contents:
    api-usage
    switching-to-v4
    api-objects
-   api/modules
+   api/gitlab
    release_notes
    changelog
 

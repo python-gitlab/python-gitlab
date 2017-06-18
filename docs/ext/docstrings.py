@@ -10,6 +10,8 @@ from sphinx.ext.napoleon.docstring import GoogleDocstring
 
 
 def classref(value, short=True):
+    return value
+
     if not inspect.isclass(value):
         return ':class:%s' % value
     tilde = '~' if short else ''
@@ -46,8 +48,13 @@ class GitlabDocstring(GoogleDocstring):
 
         return output.split('\n')
 
-    def __init__(self, *args, **kwargs):
-        super(GitlabDocstring, self).__init__(*args, **kwargs)
+    def __init__(self, docstring, config=None, app=None, what='', name='',
+                 obj=None, options=None):
+        super(GitlabDocstring, self).__init__(docstring, config, app, what,
+                                              name, obj, options)
+
+        if name and name.startswith('gitlab.v4.objects'):
+            return
 
         if getattr(self._obj, '__name__', None) == 'Gitlab':
             mgrs = []
@@ -57,9 +64,12 @@ class GitlabDocstring(GoogleDocstring):
                     mgrs.append(item)
             self._parsed_lines.extend(self._build_doc('gl_tmpl.j2',
                                                       mgrs=sorted(mgrs)))
+
+        # BaseManager
         elif hasattr(self._obj, 'obj_cls') and self._obj.obj_cls is not None:
             self._parsed_lines.extend(self._build_doc('manager_tmpl.j2',
                                                       cls=self._obj.obj_cls))
+        # GitlabObject
         elif hasattr(self._obj, 'canUpdate') and self._obj.canUpdate:
             self._parsed_lines.extend(self._build_doc('object_tmpl.j2',
                                                       obj=self._obj))

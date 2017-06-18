@@ -996,10 +996,6 @@ class ProjectMilestoneManager(RetrieveMixin, CreateMixin, DeleteMixin,
 class ProjectLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin,
                    RESTObject):
     _id_attr = 'name'
-    requiredCreateAttrs = ['name', 'color']
-    optionalCreateAttrs = ['description', 'priority']
-    requiredUpdateAttrs = ['name']
-    optionalUpdateAttrs = ['new_name', 'color', 'description', 'priority']
 
 
 class ProjectLabelManager(GetFromListMixin, CreateMixin, UpdateMixin,
