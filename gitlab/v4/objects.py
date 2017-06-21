@@ -362,7 +362,7 @@ class GroupMember(GitlabObject):
     requiredCreateAttrs = ['access_level', 'user_id']
     optionalCreateAttrs = ['expires_at']
     requiredUpdateAttrs = ['access_level']
-    optionalCreateAttrs = ['expires_at']
+    optionalUpdateAttrs = ['expires_at']
     shortPrintAttr = 'username'
 
     def _update(self, **kwargs):
