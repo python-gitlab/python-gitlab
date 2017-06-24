@@ -118,21 +118,22 @@ class Gitlab(object):
         else:
             self.dockerfiles = objects.DockerfileManager(self)
 
-        # build the "submanagers"
-        for parent_cls in six.itervalues(vars(objects)):
-            if (not inspect.isclass(parent_cls)
-                or not issubclass(parent_cls, objects.GitlabObject)
-                    or parent_cls == objects.CurrentUser):
-                continue
+        if self._api_version == '3':
+            # build the "submanagers"
+            for parent_cls in six.itervalues(vars(objects)):
+                if (not inspect.isclass(parent_cls)
+                    or not issubclass(parent_cls, objects.GitlabObject)
+                        or parent_cls == objects.CurrentUser):
+                    continue
 
-            if not parent_cls.managers:
-                continue
+                if not parent_cls.managers:
+                    continue
 
-            for var, cls_name, attrs in parent_cls.managers:
-                var_name = '%s_%s' % (self._cls_to_manager_prefix(parent_cls),
-                                      var)
-                manager = getattr(objects, cls_name)(self)
-                setattr(self, var_name, manager)
+                for var, cls_name, attrs in parent_cls.managers:
+                    prefix = self._cls_to_manager_prefix(parent_cls)
+                    var_name = '%s_%s' % (perfix, var)
+                    manager = getattr(objects, cls_name)(self)
+                    setattr(self, var_name, manager)
 
     @property
     def api_version(self):
