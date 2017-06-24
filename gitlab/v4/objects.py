@@ -1622,9 +1622,8 @@ class ProjectManager(CRUDMixin, RESTManager):
                      'order_by', 'sort', 'simple', 'membership', 'statistics')
 
 
-class GroupProject(RESTObject):
-    def __init__(self, *args, **kwargs):
-        Project.__init__(self, *args, **kwargs)
+class GroupProject(Project):
+    pass
 
 
 class GroupProjectManager(GetFromListMixin, RESTManager):
