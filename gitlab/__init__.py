@@ -131,7 +131,7 @@ class Gitlab(object):
 
                 for var, cls_name, attrs in parent_cls.managers:
                     prefix = self._cls_to_manager_prefix(parent_cls)
-                    var_name = '%s_%s' % (perfix, var)
+                    var_name = '%s_%s' % (prefix, var)
                     manager = getattr(objects, cls_name)(self)
                     setattr(self, var_name, manager)
 
