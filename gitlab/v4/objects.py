@@ -694,12 +694,6 @@ class ProjectForkManager(CreateMixin, RESTManager):
 
 
 class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
-    requiredUrlAttrs = ['project_id']
-    requiredCreateAttrs = ['url']
-    optionalCreateAttrs = ['push_events', 'issues_events', 'note_events',
-                           'merge_requests_events', 'tag_push_events',
-                           'build_events', 'enable_ssl_verification', 'token',
-                           'pipeline_events', 'job_events', 'wiki_page_events']
     _short_print_attr = 'url'
 
 
@@ -764,10 +758,6 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
 
 
 class ProjectMember(SaveMixin, ObjectDeleteMixin, RESTObject):
-    requiredCreateAttrs = ['access_level', 'user_id']
-    optionalCreateAttrs = ['expires_at']
-    requiredUpdateAttrs = ['access_level']
-    optionalCreateAttrs = ['expires_at']
     _short_print_attr = 'username'
 
 
@@ -1314,8 +1304,7 @@ class ProjectDeploymentManager(RetrieveMixin, RESTManager):
 
 
 class ProjectRunner(ObjectDeleteMixin, RESTObject):
-    canUpdate = False
-    requiredCreateAttrs = ['runner_id']
+    pass
 
 
 class ProjectRunnerManager(NoUpdateMixin, RESTManager):
