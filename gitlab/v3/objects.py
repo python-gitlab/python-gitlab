@@ -1285,7 +1285,7 @@ class ProjectMergeRequest(GitlabObject):
 
     def merge(self, merge_commit_message=None,
               should_remove_source_branch=False,
-              merged_when_build_succeeds=False,
+              merge_when_build_succeeds=False,
               **kwargs):
         """Accept the merge request.
 
@@ -1293,8 +1293,8 @@ class ProjectMergeRequest(GitlabObject):
             merge_commit_message (bool): Commit message
             should_remove_source_branch (bool): If True, removes the source
                                                 branch
-            merged_when_build_succeeds (bool): Wait for the build to succeed,
-                                               then merge
+            merge_when_build_succeeds (bool): Wait for the build to succeed,
+                                              then merge
 
         Returns:
             ProjectMergeRequest: The updated MR
@@ -1311,8 +1311,8 @@ class ProjectMergeRequest(GitlabObject):
             data['merge_commit_message'] = merge_commit_message
         if should_remove_source_branch:
             data['should_remove_source_branch'] = True
-        if merged_when_build_succeeds:
-            data['merged_when_build_succeeds'] = True
+        if merge_when_build_succeeds:
+            data['merge_when_build_succeeds'] = True
 
         r = self.gitlab._raw_put(url, data=data, **kwargs)
         errors = {401: GitlabMRForbiddenError,
