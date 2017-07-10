@@ -53,7 +53,6 @@ class GitlabConfigParser(object):
 
         try:
             self.url = self._config.get(self.gitlab_id, 'url')
-            self.token = self._config.get(self.gitlab_id, 'private_token')
         except Exception:
             raise GitlabDataError("Impossible to get gitlab informations from "
                                   "configuration (%s)" % self.gitlab_id)
@@ -76,6 +75,12 @@ class GitlabConfigParser(object):
             pass
         try:
             self.timeout = self._config.getint(self.gitlab_id, 'timeout')
+        except Exception:
+            pass
+
+        self.token = None
+        try:
+            self.token = self._config.get(self.gitlab_id, 'private_token')
         except Exception:
             pass
 
