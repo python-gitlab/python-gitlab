@@ -44,20 +44,69 @@ class SidekiqManager(RESTManager):
     This manager doesn't actually manage objects but provides helper fonction
     for the sidekiq metrics API.
     """
+
+    @exc.on_http_error(exc.GitlabGetError)
     def queue_metrics(self, **kwargs):
-        """Returns the registred queues information."""
+        """Return the registred queues information.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the information couldn't be retrieved
+
+        Returns:
+            dict: Information about the Sidekiq queues
+        """
         return self.gitlab.http_get('/sidekiq/queue_metrics', **kwargs)
 
+    @exc.on_http_error(exc.GitlabGetError)
     def process_metrics(self, **kwargs):
-        """Returns the registred sidekiq workers."""
+        """Return the registred sidekiq workers.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the information couldn't be retrieved
+
+        Returns:
+            dict: Information about the register Sidekiq worker
+        """
         return self.gitlab.http_get('/sidekiq/process_metrics', **kwargs)
 
+    @exc.on_http_error(exc.GitlabGetError)
     def job_stats(self, **kwargs):
-        """Returns statistics about the jobs performed."""
+        """Return statistics about the jobs performed.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the information couldn't be retrieved
+
+        Returns:
+            dict: Statistics about the Sidekiq jobs performed
+        """
         return self.gitlab.http_get('/sidekiq/job_stats', **kwargs)
 
+    @exc.on_http_error(exc.GitlabGetError)
     def compound_metrics(self, **kwargs):
-        """Returns all available metrics and statistics."""
+        """Return all available metrics and statistics.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the information couldn't be retrieved
+
+        Returns:
+            dict: All available Sidekiq metrics and statistics
+        """
         return self.gitlab.http_get('/sidekiq/compound_metrics', **kwargs)
 
 
@@ -108,11 +157,19 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('projects', 'UserProjectManager'),
     )
 
+    @exc.on_http_error(exc.GitlabBlockError)
     def block(self, **kwargs):
-        """Blocks the user.
+        """Block the user.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabBlockError: If the user could not be blocked
 
         Returns:
-            bool: whether the user status has been changed.
+            bool: Whether the user status has been changed
         """
         path = '/users/%s/block' % self.id
         server_data = self.manager.gitlab.http_post(path, **kwargs)
@@ -120,11 +177,19 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             self._attrs['state'] = 'blocked'
         return server_data
 
+    @exc.on_http_error(exc.GitlabUnblockError)
     def unblock(self, **kwargs):
-        """Unblocks the user.
+        """Unblock the user.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUnblockError: If the user could not be unblocked
 
         Returns:
-            bool: whether the user status has been changed.
+            bool: Whether the user status has been changed
         """
         path = '/users/%s/unblock' % self.id
         server_data = self.manager.gitlab.http_post(path, **kwargs)
@@ -381,6 +446,7 @@ class Snippet(SaveMixin, ObjectDeleteMixin, RESTObject):
     _constructor_types = {'author': 'User'}
     _short_print_attr = 'title'
 
+    @exc.on_http_error(exc.GitlabGetError)
     def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Return the content of a snippet.
 
@@ -389,11 +455,16 @@ class Snippet(SaveMixin, ObjectDeleteMixin, RESTObject):
                 `chunk_size` and each chunk is passed to `action` for
                 treatment.
             action (callable): Callable responsible of dealing with chunk of
-                data.
-            chunk_size (int): Size of each chunk.
+                data
+            chunk_size (int): Size of each chunk
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the content could not be retrieved
 
         Returns:
-            str: The snippet content.
+            str: The snippet content
         """
         path = '/snippets/%s/raw' % self.get_id()
         result = self.manager.gitlab.http_get(path, streamed=streamed,
@@ -413,11 +484,14 @@ class SnippetManager(CRUDMixin, RESTManager):
         """List all the public snippets.
 
         Args:
-            all (bool): If True, return all the items, without pagination
-            **kwargs: Additional arguments to send to GitLab.
+            all (bool): If True the returned object will be a list
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabListError: If the list could not be retrieved
 
         Returns:
-            list(gitlab.Gitlab.Snippet): The list of snippets.
+            RESTObjectList: A generator for the snippets list
         """
         return self.list(path='/snippets/public', **kwargs)
 
@@ -460,15 +534,21 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
     _constructor_types = {'author': 'User', "committer": "User"}
     _id_attr = 'name'
 
+    @exc.on_http_error(exc.GitlabProtectError)
     def protect(self, developers_can_push=False, developers_can_merge=False,
                 **kwargs):
-        """Protects the branch.
+        """Protect the branch.
 
         Args:
             developers_can_push (bool): Set to True if developers are allowed
                                         to push to the branch
             developers_can_merge (bool): Set to True if developers are allowed
                                          to merge to the branch
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabProtectError: If the branch could not be protected
         """
         path = '%s/%s/protect' % (self.manager.path, self.get_id())
         post_data = {'developers_can_push': developers_can_push,
@@ -476,8 +556,17 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
         self.manager.gitlab.http_put(path, post_data=post_data, **kwargs)
         self._attrs['protected'] = True
 
+    @exc.on_http_error(exc.GitlabProtectError)
     def unprotect(self, **kwargs):
-        """Unprotects the branch."""
+        """Unprotect the branch.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabProtectError: If the branch could not be unprotected
+        """
         path = '%s/%s/protect' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_put(path, **kwargs)
         self._attrs['protected'] = False
@@ -495,31 +584,77 @@ class ProjectJob(RESTObject):
                           'commit': 'ProjectCommit',
                           'runner': 'Runner'}
 
+    @exc.on_http_error(exc.GitlabJobCancelError)
     def cancel(self, **kwargs):
-        """Cancel the job."""
+        """Cancel the job.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabJobCancelError: If the job could not be canceled
+        """
         path = '%s/%s/cancel' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path)
 
+    @exc.on_http_error(exc.GitlabJobRetryError)
     def retry(self, **kwargs):
-        """Retry the job."""
+        """Retry the job.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabJobRetryError: If the job could not be retried
+        """
         path = '%s/%s/retry' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path)
 
+    @exc.on_http_error(exc.GitlabJobPlayError)
     def play(self, **kwargs):
-        """Trigger a job explicitly."""
+        """Trigger a job explicitly.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabJobPlayError: If the job could not be triggered
+        """
         path = '%s/%s/play' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path)
 
+    @exc.on_http_error(exc.GitlabJobEraseError)
     def erase(self, **kwargs):
-        """Erase the job (remove job artifacts and trace)."""
+        """Erase the job (remove job artifacts and trace).
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabJobEraseError: If the job could not be erased
+        """
         path = '%s/%s/erase' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path)
 
+    @exc.on_http_error(exc.GitlabCreateError)
     def keep_artifacts(self, **kwargs):
-        """Prevent artifacts from being delete when expiration is set."""
+        """Prevent artifacts from being deleted when expiration is set.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the request could not be performed
+        """
         path = '%s/%s/artifacts/keep' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path)
 
+    @exc.on_http_error(exc.GitlabGetError)
     def artifacts(self, streamed=False, action=None, chunk_size=1024,
                   **kwargs):
         """Get the job artifacts.
@@ -527,10 +662,15 @@ class ProjectJob(RESTObject):
         Args:
             streamed (bool): If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
-                treatment.
+                treatment
             action (callable): Callable responsible of dealing with chunk of
-                data.
-            chunk_size (int): Size of each chunk.
+                data
+            chunk_size (int): Size of each chunk
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the artifacts could not be retrieved
 
         Returns:
             str: The artifacts if `streamed` is False, None otherwise.
@@ -540,19 +680,25 @@ class ProjectJob(RESTObject):
                                               **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
+    @exc.on_http_error(exc.GitlabGetError)
     def trace(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Get the job trace.
 
         Args:
             streamed (bool): If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
-                treatment.
+                treatment
             action (callable): Callable responsible of dealing with chunk of
-                data.
-            chunk_size (int): Size of each chunk.
+                data
+            chunk_size (int): Size of each chunk
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the artifacts could not be retrieved
 
         Returns:
-            str: The trace.
+            str: The trace
         """
         path = '%s/%s/trace' % (self.manager.path, self.get_id())
         result = self.manager.gitlab.get_http(path, streamed=streamed,
@@ -579,16 +725,20 @@ class ProjectCommitStatusManager(RetrieveMixin, CreateMixin, RESTManager):
                      ('description', 'name', 'context', 'ref', 'target_url'))
 
     def create(self, data, **kwargs):
-        """Creates a new object.
+        """Create a new object.
 
         Args:
-            data (dict): parameters to send to the server to create the
+            data (dict): Parameters to send to the server to create the
                          resource
             **kwargs: Extra data to send to the Gitlab server (e.g. sudo or
                       'ref_name', 'stage', 'name', 'all'.
 
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server cannot perform the request
+
         Returns:
-            RESTObject: a new instance of the manage object class build with
+            RESTObject: A new instance of the manage object class build with
                         the data sent by the server
         """
         path = '/projects/%(project_id)s/statuses/%(commit_id)s'
@@ -615,16 +765,34 @@ class ProjectCommit(RESTObject):
         ('statuses', 'ProjectCommitStatusManager'),
     )
 
+    @exc.on_http_error(exc.GitlabGetError)
     def diff(self, **kwargs):
-        """Generate the commit diff."""
+        """Generate the commit diff.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raise:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the diff could not be retrieved
+
+        Returns:
+            list: The changes done in this commit
+        """
         path = '%s/%s/diff' % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)
 
+    @exc.on_http_error(exc.GitlabCherryPickError)
     def cherry_pick(self, branch, **kwargs):
         """Cherry-pick a commit into a branch.
 
         Args:
-            branch (str): Name of target branch.
+            branch (str): Name of target branch
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raise:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCherryPickError: If the cherry-pick could not be performed
         """
         path = '%s/%s/cherry_pick' % (self.manager.path, self.get_id())
         post_data = {'branch': branch}
@@ -662,11 +830,17 @@ class ProjectKeyManager(NoUpdateMixin, RESTManager):
     _from_parent_attrs = {'project_id': 'id'}
     _create_attrs = (('title', 'key'), tuple())
 
+    @exc.on_http_error(exc.GitlabProjectDeployKeyError)
     def enable(self, key_id, **kwargs):
         """Enable a deploy key for a project.
 
         Args:
             key_id (int): The ID of the key to enable
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raise:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabProjectDeployKeyError: If the key could not be enabled
         """
         path = '%s/%s/enable' % (self.manager.path, key_id)
         self.manager.gitlab.http_post(path, **kwargs)
@@ -735,8 +909,18 @@ class ProjectIssue(SubscribableMixin, TodoMixin, TimeTrackingMixin, SaveMixin,
     _id_attr = 'iid'
     _managers = (('notes', 'ProjectIssueNoteManager'), )
 
+    @exc.on_http_error(exc.GitlabUpdateError)
     def move(self, to_project_id, **kwargs):
-        """Move the issue to another project."""
+        """Move the issue to another project.
+
+        Args:
+            to_project_id(int): ID of the target project
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUpdateError: If the issue could not be moved
+        """
         path = '%s/%s/move' % (self.manager.path, self.get_id())
         data = {'to_project_id': to_project_id}
         server_data = self.manager.gitlab.http_post(path, post_data=data,
@@ -804,15 +988,27 @@ class ProjectTag(ObjectDeleteMixin, RESTObject):
 
         Args:
             description (str): Description of the release.
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server fails to create the release
+            GitlabUpdateError: If the server fails to update the release
         """
         path = '%s/%s/release' % (self.manager.path, self.get_id())
         data = {'description': description}
         if self.release is None:
-            result = self.manager.gitlab.http_post(path, post_data=data,
-                                                   **kwargs)
+            try:
+                result = self.manager.gitlab.http_post(path, post_data=data,
+                                                       **kwargs)
+            except exc.GitlabHttpError as e:
+                raise exc.GitlabCreateError(e.response_code, e.error_message)
         else:
-            result = self.manager.gitlab.http_put(path, post_data=data,
-                                                  **kwargs)
+            try:
+                result = self.manager.gitlab.http_put(path, post_data=data,
+                                                      **kwargs)
+            except exc.GitlabHttpError as e:
+                raise exc.GitlabUpdateError(e.response_code, e.error_message)
         self.release = result.json()
 
 
@@ -856,19 +1052,37 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
         ('diffs', 'ProjectMergeRequestDiffManager')
     )
 
+    @exc.on_http_error(exc.GitlabMROnBuildSuccessError)
     def cancel_merge_when_pipeline_succeeds(self, **kwargs):
-        """Cancel merge when build succeeds."""
+        """Cancel merge when the pipeline succeeds.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabMROnBuildSuccessError: If the server could not handle the
+                request
+        """
 
         path = ('%s/%s/cancel_merge_when_pipeline_succeeds' %
                 (self.manager.path, self.get_id()))
         server_data = self.manager.gitlab.http_put(path, **kwargs)
         self._update_attrs(server_data)
 
+    @exc.on_http_error(exc.GitlabListError)
     def closes_issues(self, **kwargs):
         """List issues that will close on merge."
 
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
+
         Returns:
-            list (ProjectIssue): List of issues
+            RESTObjectList: List of issues
         """
         path = '%s/%s/closes_issues' % (self.manager.path, self.get_id())
         data_list = self.manager.gitlab.http_list(path, **kwargs)
@@ -876,11 +1090,19 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                                       parent=self.manager._parent)
         return RESTObjectList(manager, ProjectIssue, data_list)
 
+    @exc.on_http_error(exc.GitlabListError)
     def commits(self, **kwargs):
         """List the merge request commits.
 
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
+
         Returns:
-            list (ProjectCommit): List of commits
+            RESTObjectList: The list of commits
         """
 
         path = '%s/%s/commits' % (self.manager.path, self.get_id())
@@ -889,15 +1111,24 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                                        parent=self.manager._parent)
         return RESTObjectList(manager, ProjectCommit, data_list)
 
+    @exc.on_http_error(exc.GitlabListError)
     def changes(self, **kwargs):
         """List the merge request changes.
 
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
+
         Returns:
-            list (dict): List of changes
+            RESTObjectList: List of changes
         """
         path = '%s/%s/changes' % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)
 
+    @exc.on_http_error(exc.GitlabMRClosedError)
     def merge(self, merge_commit_message=None,
               should_remove_source_branch=False,
               merge_when_pipeline_succeeds=False,
@@ -910,6 +1141,11 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                                                 branch
             merge_when_pipeline_succeeds (bool): Wait for the build to succeed,
                                                  then merge
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabMRClosedError: If the merge failed
         """
         path = '%s/%s/merge' % (self.manager.path, self.get_id())
         data = {}
@@ -943,11 +1179,19 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
 class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'title'
 
+    @exc.on_http_error(exc.GitlabListError)
     def issues(self, **kwargs):
-        """List issues related to this milestone
+        """List issues related to this milestone.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
 
         Returns:
-            list (ProjectIssue): The list of issues
+            RESTObjectList: The list of issues
         """
 
         path = '%s/%s/issues' % (self.manager.path, self.get_id())
@@ -957,11 +1201,19 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, ProjectIssue, data_list)
 
+    @exc.on_http_error(exc.GitlabListError)
     def merge_requests(self, **kwargs):
-        """List the merge requests related to this milestone
+        """List the merge requests related to this milestone.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
 
         Returns:
-            list (ProjectMergeRequest): List of merge requests
+            RESTObjectList: The list of merge requests
         """
         path = '%s/%s/merge_requests' % (self.manager.path, self.get_id())
         data_list = self.manager.gitlab.http_list(path, **kwargs)
@@ -998,23 +1250,33 @@ class ProjectLabelManager(GetFromListMixin, CreateMixin, UpdateMixin,
                      ('new_name', 'color', 'description', 'priority'))
 
     # Delete without ID.
+    @exc.on_http_error(exc.GitlabDeleteError)
     def delete(self, name, **kwargs):
-        """Deletes a Label on the server.
+        """Delete a Label on the server.
 
         Args:
-            name: The name of the label.
-            **kwargs: Extra data to send to the Gitlab server (e.g. sudo)
+            name: The name of the label
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct.
+            GitlabDeleteError: If the server cannot perform the request.
         """
         self.gitlab.http_delete(path, query_data={'name': self.name}, **kwargs)
 
     # Update without ID, but we need an ID to get from list.
+    @exc.on_http_error(exc.GitlabUpdateError)
     def save(self, **kwargs):
         """Saves the changes made to the object to the server.
 
-        Args:
-            **kwargs: Extra option to send to the server (e.g. sudo)
-
         The object is updated to match what the server returns.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct.
+            GitlabUpdateError: If the server cannot perform the request.
         """
         updated_data = self._get_updated_data()
 
@@ -1047,18 +1309,23 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
                      ('encoding', 'author_email', 'author_name'))
 
     def get(self, file_path, **kwargs):
-        """Retrieve a single object.
+        """Retrieve a single file.
 
         Args:
             id (int or str): ID of the object to retrieve
-            **kwargs: Extra data to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the file could not be retrieved
 
         Returns:
-            object: The generated RESTObject.
+            object: The generated RESTObject
         """
         file_path = file_path.replace('/', '%2F')
         return GetMixin.get(self, file_path, **kwargs)
 
+    @exc.on_http_error(exc.GitlabGetError)
     def raw(self, file_path, ref, streamed=False, action=None, chunk_size=1024,
             **kwargs):
         """Return the content of a file for a commit.
@@ -1068,10 +1335,15 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
             filepath (str): Path of the file to return
             streamed (bool): If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
-                treatment.
+                treatment
             action (callable): Callable responsible of dealing with chunk of
-                data.
-            chunk_size (int): Size of each chunk.
+                data
+            chunk_size (int): Size of each chunk
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the file could not be retrieved
 
         Returns:
             str: The file content
@@ -1085,13 +1357,31 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
 
 
 class ProjectPipeline(RESTObject):
+    @exc.on_http_error(exc.GitlabPipelineCancelError)
     def cancel(self, **kwargs):
-        """Cancel the job."""
+        """Cancel the job.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabPipelineCancelError: If the request failed
+        """
         path = '%s/%s/cancel' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path)
 
+    @exc.on_http_error(exc.GitlabPipelineRetryError)
     def retry(self, **kwargs):
-        """Retry the job."""
+        """Retry the job.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabPipelineRetryError: If the request failed
+        """
         path = '%s/%s/retry' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path)
 
@@ -1106,13 +1396,17 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, RESTManager):
         """Creates a new object.
 
         Args:
-            data (dict): parameters to send to the server to create the
+            data (dict): Parameters to send to the server to create the
                          resource
-            **kwargs: Extra data to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server cannot perform the request
 
         Returns:
-            RESTObject: a new instance of the manage object class build with
-                        the data sent by the server
+            RESTObject: A new instance of the managed object class build with
+                the data sent by the server
         """
         path = self.path[:-1]  # drop the 's'
         return CreateMixin.create(self, data, path=path, **kwargs)
@@ -1136,16 +1430,22 @@ class ProjectSnippet(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'title'
     _managers = (('notes', 'ProjectSnippetNoteManager'), )
 
+    @exc.on_http_error(exc.GitlabGetError)
     def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
-        """Return the raw content of a snippet.
+        """Return the content of a snippet.
 
         Args:
             streamed (bool): If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment.
             action (callable): Callable responsible of dealing with chunk of
-                data.
-            chunk_size (int): Size of each chunk.
+                data
+            chunk_size (int): Size of each chunk
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the content could not be retrieved
 
         Returns:
             str: The snippet content
@@ -1346,15 +1646,21 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('variables', 'ProjectVariableManager'),
     )
 
+    @exc.on_http_error(exc.GitlabGetError)
     def repository_tree(self, path='', ref='', **kwargs):
         """Return a list of files in the repository.
 
         Args:
             path (str): Path of the top folder (/ by default)
             ref (str): Reference to a commit or branch
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the server failed to perform the request
 
         Returns:
-            str: The json representation of the tree.
+            list: The representation of the tree
         """
         gl_path = '/projects/%s/repository/tree' % self.get_id()
         query_data = {}
@@ -1365,46 +1671,64 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         return self.manager.gitlab.http_get(gl_path, query_data=query_data,
                                             **kwargs)
 
+    @exc.on_http_error(exc.GitlabGetError)
     def repository_blob(self, sha, **kwargs):
-        """Returns a blob by blob SHA.
+        """Return a blob by blob SHA.
 
         Args:
             sha(str): ID of the blob
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the server failed to perform the request
 
         Returns:
-            str: The blob as json
+            str: The blob metadata
         """
 
         path = '/projects/%s/repository/blobs/%s' % (self.get_id(), sha)
         return self.manager.gitlab.http_get(path, **kwargs)
 
+    @exc.on_http_error(exc.GitlabGetError)
     def repository_raw_blob(self, sha, streamed=False, action=None,
                             chunk_size=1024, **kwargs):
-        """Returns the raw file contents for a blob by blob SHA.
+        """Return the raw file contents for a blob.
 
         Args:
             sha(str): ID of the blob
             streamed (bool): If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
-                treatment.
+                treatment
             action (callable): Callable responsible of dealing with chunk of
-                data.
-            chunk_size (int): Size of each chunk.
+                data
+            chunk_size (int): Size of each chunk
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the server failed to perform the request
 
         Returns:
-            str: The blob content
+            str: The blob content if streamed is False, None otherwise
         """
         path = '/projects/%s/repository/blobs/%s/raw' % (self.get_id(), sha)
         result = self.manager.gitlab.http_get(path, streamed=streamed,
                                               **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
+    @exc.on_http_error(exc.GitlabGetError)
     def repository_compare(self, from_, to, **kwargs):
-        """Returns a diff between two branches/commits.
+        """Return a diff between two branches/commits.
 
         Args:
-            from_(str): orig branch/SHA
-            to(str): dest branch/SHA
+            from_(str): Source branch/SHA
+            to(str): Destination branch/SHA
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the server failed to perform the request
 
         Returns:
             str: The diff
@@ -1414,8 +1738,16 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         return self.manager.gitlab.http_get(path, query_data=query_data,
                                             **kwargs)
 
+    @exc.on_http_error(exc.GitlabGetError)
     def repository_contributors(self, **kwargs):
-        """Returns a list of contributors for the project.
+        """Return a list of contributors for the project.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the server failed to perform the request
 
         Returns:
             list: The contributors
@@ -1423,21 +1755,27 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = '/projects/%s/repository/contributors' % self.get_id()
         return self.manager.gitlab.http_get(path, **kwargs)
 
+    @exc.on_http_error(exc.GitlabListError)
     def repository_archive(self, sha=None, streamed=False, action=None,
                            chunk_size=1024, **kwargs):
         """Return a tarball of the repository.
 
         Args:
-            sha (str): ID of the commit (default branch by default).
+            sha (str): ID of the commit (default branch by default)
             streamed (bool): If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
-                treatment.
+                treatment
             action (callable): Callable responsible of dealing with chunk of
-                data.
-            chunk_size (int): Size of each chunk.
+                data
+            chunk_size (int): Size of each chunk
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the server failed to perform the request
 
         Returns:
-            str: The binary data of the archive.
+            str: The binary data of the archive
         """
         path = '/projects/%s/repository/archive' % self.get_id()
         query_data = {}
@@ -1447,66 +1785,107 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
                                               streamed=streamed, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
+    @exc.on_http_error(exc.GitlabCreateError)
     def create_fork_relation(self, forked_from_id, **kwargs):
         """Create a forked from/to relation between existing projects.
 
         Args:
             forked_from_id (int): The ID of the project that was forked from
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the relation could not be created
         """
         path = '/projects/%s/fork/%s' % (self.get_id(), forked_from_id)
         self.manager.gitlab.http_post(path, **kwargs)
 
+    @exc.on_http_error(exc.GitlabDeleteError)
     def delete_fork_relation(self, **kwargs):
-        """Delete a forked relation between existing projects."""
+        """Delete a forked relation between existing projects.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the server failed to perform the request
+        """
         path = '/projects/%s/fork' % self.get_id()
         self.manager.gitlab.http_delete(path, **kwargs)
 
+    @exc.on_http_error(exc.GitlabCreateError)
     def star(self, **kwargs):
         """Star a project.
 
-        Returns:
-            Project: the updated Project
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server failed to perform the request
         """
         path = '/projects/%s/star' % self.get_id()
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
+    @exc.on_http_error(exc.GitlabDeleteError)
     def unstar(self, **kwargs):
         """Unstar a project.
 
-        Returns:
-            Project: the updated Project
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the server failed to perform the request
         """
         path = '/projects/%s/unstar' % self.get_id()
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
+    @exc.on_http_error(exc.GitlabCreateError)
     def archive(self, **kwargs):
         """Archive a project.
 
-        Returns:
-            Project: the updated Project
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server failed to perform the request
         """
         path = '/projects/%s/archive' % self.get_id()
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
+    @exc.on_http_error(exc.GitlabDeleteError)
     def unarchive(self, **kwargs):
         """Unarchive a project.
 
-        Returns:
-            Project: the updated Project
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the server failed to perform the request
         """
         path = '/projects/%s/unarchive' % self.get_id()
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
+    @exc.on_http_error(exc.GitlabCreateError)
     def share(self, group_id, group_access, expires_at=None, **kwargs):
         """Share the project with a group.
 
         Args:
             group_id (int): ID of the group.
             group_access (int): Access level for the group.
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server failed to perform the request
         """
         path = '/projects/%s/share' % self.get_id()
         data = {'group_id': group_id,
@@ -1514,6 +1893,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
                 'expires_at': expires_at}
         self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
+    @exc.on_http_error(exc.GitlabCreateError)
     def trigger_pipeline(self, ref, token, variables={}, **kwargs):
         """Trigger a CI build.
 
@@ -1523,6 +1903,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             ref (str): Commit to build; can be a commit SHA, a branch name, ...
             token (str): The trigger token
             variables (dict): Variables passed to the build script
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server failed to perform the request
         """
         path = '/projects/%s/trigger/pipeline' % self.get_id()
         form = {r'variables[%s]' % k: v for k, v in six.iteritems(variables)}
@@ -1541,12 +1926,18 @@ class RunnerManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
     _update_attrs = (tuple(), ('description', 'active', 'tag_list'))
     _list_filters = ('scope', )
 
+    @exc.on_http_error(exc.GitlabListError)
     def all(self, scope=None, **kwargs):
         """List all the runners.
 
         Args:
             scope (str): The scope of runners to show, one of: specific,
                 shared, active, paused, online
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the server failed to perform the request
 
         Returns:
             list(Runner): a list of runners matching the scope.
@@ -1559,11 +1950,16 @@ class RunnerManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
 
 
 class Todo(ObjectDeleteMixin, RESTObject):
+    @exc.on_http_error(exc.GitlabTodoError)
     def mark_as_done(self, **kwargs):
         """Mark the todo as done.
 
         Args:
-            **kwargs: Additional data to send to the server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabTodoError: If the server failed to perform the request
         """
         path = '%s/%s/mark_as_done' % (self.manager.path, self.id)
         server_data = self.manager.gitlab.http_post(path, **kwargs)
@@ -1575,13 +1971,25 @@ class TodoManager(GetFromListMixin, DeleteMixin, RESTManager):
     _obj_cls = Todo
     _list_filters = ('action', 'author_id', 'project_id', 'state', 'type')
 
+    @exc.on_http_error(exc.GitlabTodoError)
     def mark_all_as_done(self, **kwargs):
         """Mark all the todos as done.
 
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabTodoError: If the server failed to perform the request
+
         Returns:
-            The number of todos maked done.
+            int: The number of todos maked done
         """
-        self.gitlab.http_post('/todos/mark_as_done', **kwargs)
+        result = self.gitlab.http_post('/todos/mark_as_done', **kwargs)
+        try:
+            return int(result)
+        except ValueError:
+            return 0
 
 
 class ProjectManager(CRUDMixin, RESTManager):
@@ -1633,11 +2041,17 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('issues', 'GroupIssueManager'),
     )
 
+    @exc.on_http_error(exc.GitlabTransferProjectError)
     def transfer_project(self, id, **kwargs):
-        """Transfers a project to this group.
+        """Transfer a project to this group.
 
         Args:
-            id (int): ID of the project to transfer.
+            id (int): ID of the project to transfer
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabTransferProjectError: If the project could not be transfered
         """
         path = '/groups/%d/projects/%d' % (self.id, id)
         self.manager.gitlab.http_post(path, **kwargs)

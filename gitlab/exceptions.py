@@ -210,3 +210,23 @@ def raise_error_from_response(response, error, expected_code=200):
     raise error(error_message=message,
                 response_code=response.status_code,
                 response_body=response.content)
+
+
+def on_http_error(error):
+    """Manage GitlabHttpError exceptions.
+
+    This decorator function can be used to catch GitlabHttpError exceptions
+    raise specialized exceptions instead.
+
+    Args:
+        error(Exception): The exception type to raise -- must inherit from
+            GitlabError
+    """
+    def wrap(f):
+        def wrapped_f(*args, **kwargs):
+            try:
+                return f(*args, **kwargs)
+            except GitlabHttpError as e:
+                raise error(e.response_code, e.error_message)
+        return wrapped_f
+    return wrap

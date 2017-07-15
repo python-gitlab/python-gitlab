@@ -230,7 +230,7 @@ class TestMixinMethods(unittest.TestCase):
             self.assertEqual(obj.foo, 'bar')
             self.assertEqual(obj.id, 42)
 
-            self.assertRaises(GitlabHttpError, mgr.get, 44)
+            self.assertRaises(GitlabGetError, mgr.get, 44)
 
     def test_create_mixin_get_attrs(self):
         class M1(CreateMixin, FakeManager):

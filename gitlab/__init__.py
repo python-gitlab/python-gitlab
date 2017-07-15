@@ -654,6 +654,10 @@ class Gitlab(object):
         if 200 <= result.status_code < 300:
             return result
 
+        if result.status_code == 401:
+            raise GitlabAuthenticationError(response_code=result.status_code,
+                                            error_message=result.content)
+
         raise GitlabHttpError(response_code=result.status_code,
                               error_message=result.content)
 
@@ -674,7 +678,7 @@ class Gitlab(object):
 
         Raises:
             GitlabHttpError: When the return code is not 2xx
-            GitlabParsingError: IF the json data could not be parsed
+            GitlabParsingError: If the json data could not be parsed
         """
         result = self.http_request('get', path, query_data=query_data,
                                    streamed=streamed, **kwargs)
@@ -706,7 +710,7 @@ class Gitlab(object):
 
         Raises:
             GitlabHttpError: When the return code is not 2xx
-            GitlabParsingError: IF the json data could not be parsed
+            GitlabParsingError: If the json data could not be parsed
         """
         url = self._build_url(path)
         get_all = kwargs.pop('all', False)
@@ -726,19 +730,21 @@ class Gitlab(object):
 
         Returns:
             The parsed json returned by the server if json is return, else the
-            raw content.
+            raw content
 
         Raises:
             GitlabHttpError: When the return code is not 2xx
-            GitlabParsingError: IF the json data could not be parsed
+            GitlabParsingError: If the json data could not be parsed
         """
         result = self.http_request('post', path, query_data=query_data,
                                    post_data=post_data, **kwargs)
         try:
-            return result.json()
+            if result.headers.get('Content-Type', None) == 'application/json':
+                return result.json()
         except Exception:
             raise GitlabParsingError(
                 error_message="Failed to parse the server message")
+        return result
 
     def http_put(self, path, query_data={}, post_data={}, **kwargs):
         """Make a PUT request to the Gitlab server.
@@ -756,7 +762,7 @@ class Gitlab(object):
 
         Raises:
             GitlabHttpError: When the return code is not 2xx
-            GitlabParsingError: IF the json data could not be parsed
+            GitlabParsingError: If the json data could not be parsed
         """
         result = self.http_request('put', path, query_data=query_data,
                                    post_data=post_data, **kwargs)
