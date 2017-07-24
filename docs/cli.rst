@@ -61,9 +61,10 @@ parameters. You can override the values in each GitLab server section.
      - Possible values
      - Description
    * - ``ssl_verify``
-     - ``True`` or ``False``
-     - Verify the SSL certificate. Set to ``False`` if your SSL certificate is
-       auto-signed.
+     - ``True``, ``False``, or a ``str``
+     - Verify the SSL certificate. Set to ``False`` to disable verification,
+       though this will create warnings. Any other value is interpreted as path
+       to a CA_BUNDLE file or directory with certificates of trusted CAs.
    * - ``timeout``
      - Integer
      - Number of seconds to wait for an answer before failing.

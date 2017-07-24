@@ -61,11 +61,28 @@ class GitlabConfigParser(object):
         self.ssl_verify = True
         try:
             self.ssl_verify = self._config.getboolean('global', 'ssl_verify')
+        except ValueError:
+            # Value Error means the option exists but isn't a boolean.
+            # Get as a string instead as it should then be a local path to a
+            # CA bundle.
+            try:
+                self.ssl_verify = self._config.get('global', 'ssl_verify')
+            except Exception:
+                pass
         except Exception:
             pass
         try:
             self.ssl_verify = self._config.getboolean(self.gitlab_id,
                                                       'ssl_verify')
+        except ValueError:
+            # Value Error means the option exists but isn't a boolean.
+            # Get as a string instead as it should then be a local path to a
+            # CA bundle.
+            try:
+                self.ssl_verify = self._config.get(self.gitlab_id,
+                                                   'ssl_verify')
+            except Exception:
+                pass
         except Exception:
             pass
 
