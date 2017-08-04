@@ -1087,7 +1087,8 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
             RESTObjectList: List of issues
         """
         path = '%s/%s/closes_issues' % (self.manager.path, self.get_id())
-        data_list = self.manager.gitlab.http_list(path, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, as_list=False,
+                                                  **kwargs)
         manager = ProjectIssueManager(self.manager.gitlab,
                                       parent=self.manager._parent)
         return RESTObjectList(manager, ProjectIssue, data_list)
@@ -1108,7 +1109,8 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
         """
 
         path = '%s/%s/commits' % (self.manager.path, self.get_id())
-        data_list = self.manager.gitlab.http_list(path, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, as_list=False,
+                                                  **kwargs)
         manager = ProjectCommitManager(self.manager.gitlab,
                                        parent=self.manager._parent)
         return RESTObjectList(manager, ProjectCommit, data_list)
@@ -1197,7 +1199,8 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
 
         path = '%s/%s/issues' % (self.manager.path, self.get_id())
-        data_list = self.manager.gitlab.http_list(path, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, as_list=False,
+                                                  **kwargs)
         manager = ProjectCommitManager(self.manager.gitlab,
                                        parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
@@ -1218,7 +1221,8 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
             RESTObjectList: The list of merge requests
         """
         path = '%s/%s/merge_requests' % (self.manager.path, self.get_id())
-        data_list = self.manager.gitlab.http_list(path, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, as_list=False,
+                                                  **kwargs)
         manager = ProjectCommitManager(self.manager.gitlab,
                                        parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
@@ -2009,6 +2013,11 @@ class RunnerManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
         Args:
             scope (str): The scope of runners to show, one of: specific,
                 shared, active, paused, online
+            all (bool): If True, return all the items, without pagination
+            per_page (int): Number of items to retrieve per request
+            page (int): ID of the page to return (starts with page 1)
+            as_list (bool): If set to False and no pagination option is
+                defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:

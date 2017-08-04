@@ -55,7 +55,7 @@ foobar_user = gl.users.create(
     {'email': 'foobar@example.com', 'username': 'foobar',
      'name': 'Foo Bar', 'password': 'foobar_password'})
 
-assert gl.users.list(search='foobar').next().id == foobar_user.id
+assert gl.users.list(search='foobar')[0].id == foobar_user.id
 usercmp = lambda x,y: cmp(x.id, y.id)
 expected = sorted([new_user, foobar_user], cmp=usercmp)
 actual = sorted(list(gl.users.list(search='foo')), cmp=usercmp)
@@ -92,7 +92,7 @@ user2 = gl.users.create({'email': 'user2@test.com', 'username': 'user2',
 group1 = gl.groups.create({'name': 'group1', 'path': 'group1'})
 group2 = gl.groups.create({'name': 'group2', 'path': 'group2'})
 
-p_id = gl.groups.list(search='group2').next().id
+p_id = gl.groups.list(search='group2')[0].id
 group3 = gl.groups.create({'name': 'group3', 'path': 'group3', 'parent_id': p_id})
 
 assert(len(gl.groups.list()) == 3)
@@ -139,12 +139,11 @@ assert(len(gl.projects.list(owned=True)) == 2)
 assert(len(gl.projects.list(search="admin")) == 1)
 
 # test pagination
-# FIXME => we should return lists, not RESTObjectList
-#l1 = gl.projects.list(per_page=1, page=1)
-#l2 = gl.projects.list(per_page=1, page=2)
-#assert(len(l1) == 1)
-#assert(len(l2) == 1)
-#assert(l1[0].id != l2[0].id)
+l1 = gl.projects.list(per_page=1, page=1)
+l2 = gl.projects.list(per_page=1, page=2)
+assert(len(l1) == 1)
+assert(len(l2) == 1)
+assert(l1[0].id != l2[0].id)
 
 # project content (files)
 admin_project.files.create({'file_path': 'README',

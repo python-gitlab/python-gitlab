@@ -71,15 +71,15 @@ class ListMixin(object):
         """Retrieve a list of objects.
 
         Args:
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo).
-                      If ``all`` is passed and set to True, the entire list of
-                      objects will be returned.
+            all (bool): If True, return all the items, without pagination
+            per_page (int): Number of items to retrieve per request
+            page (int): ID of the page to return (starts with page 1)
+            as_list (bool): If set to False and no pagination option is
+                defined, return a generator instead of a list
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
 
         Returns:
-            RESTObjectList: Generator going through the list of objects, making
-                            queries to the server when required.
-                            If ``all=True`` is passed as argument, returns
-                            list(RESTObjectList).
+            list: The list of objects, or a generator if `as_list` is False
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct

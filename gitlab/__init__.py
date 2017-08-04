@@ -712,7 +712,7 @@ class Gitlab(object):
         else:
             return result
 
-    def http_list(self, path, query_data={}, **kwargs):
+    def http_list(self, path, query_data={}, as_list=None, **kwargs):
         """Make a GET request to the Gitlab server for list-oriented queries.
 
         Args:
@@ -723,19 +723,33 @@ class Gitlab(object):
                       all)
 
         Returns:
-            GitlabList: A generator giving access to the objects. If an ``all``
-            kwarg is defined and True, returns a list of all the objects (will
-            possibly make numerous calls to the Gtilab server and eat a lot of
-            memory)
+            list: A list of the objects returned by the server. If `as_list` is
+            False and no pagination-related arguments (`page`, `per_page`,
+            `all`) are defined then a GitlabList object (generator) is returned
+            instead. This object will make API calls when needed to fetch the
+            next items from the server.
 
         Raises:
             GitlabHttpError: When the return code is not 2xx
             GitlabParsingError: If the json data could not be parsed
         """
+
+        # In case we want to change the default behavior at some point
+        as_list = True if as_list is None else as_list
+
+        get_all = kwargs.get('all', False)
         url = self._build_url(path)
-        get_all = kwargs.pop('all', False)
-        obj_gen = GitlabList(self, url, query_data, **kwargs)
-        return list(obj_gen) if get_all else obj_gen
+
+        if get_all is True:
+            return list(GitlabList(self, url, query_data, **kwargs))
+
+        if 'page' in kwargs or 'per_page' in kwargs or as_list is True:
+            # pagination requested, we return a list
+            return list(GitlabList(self, url, query_data, get_next=False,
+                                   **kwargs))
+
+        # No pagination, generator requested
+        return GitlabList(self, url, query_data, **kwargs)
 
     def http_post(self, path, query_data={}, post_data={}, **kwargs):
         """Make a POST request to the Gitlab server.
@@ -816,9 +830,10 @@ class GitlabList(object):
     the API again when needed.
     """
 
-    def __init__(self, gl, url, query_data, **kwargs):
+    def __init__(self, gl, url, query_data, get_next=True, **kwargs):
         self._gl = gl
         self._query(url, query_data, **kwargs)
+        self._get_next = get_next
 
     def _query(self, url, query_data={}, **kwargs):
         result = self._gl.http_request('get', url, query_data=query_data,
@@ -856,7 +871,7 @@ class GitlabList(object):
             self._current += 1
             return item
         except IndexError:
-            if self._next_url:
+            if self._next_url and self._get_next is True:
                 self._query(self._next_url)
                 return self.next()
 

@@ -63,15 +63,15 @@ following important changes in the python API:
      gl = gitlab.Gitlab(...)
      p = gl.projects.get(project_id)
 
-* Listing methods (``manager.list()`` for instance) now return generators
+* Listing methods (``manager.list()`` for instance) can now return generators
   (:class:`~gitlab.base.RESTObjectList`). They handle the calls to the API when
-  needed.
+  needed to fetch new items.
 
-  If you need to get all the items at once, use the ``all=True`` parameter:
+  By default you will still get lists. To get generators use ``as_list=False``:
 
   .. code-block:: python
 
-     all_projects = gl.projects.list(all=True)
+     all_projects_g = gl.projects.list(as_list=False)
 
 * The "nested" managers (for instance ``gl.project_issues`` or
   ``gl.group_members``) are not available anymore. Their goal was to provide a
@@ -114,18 +114,3 @@ following important changes in the python API:
   + :attr:`~gitlab.Gitlab.http_post`
   + :attr:`~gitlab.Gitlab.http_put`
   + :attr:`~gitlab.Gitlab.http_delete`
-
-* The users ``get_by_username`` method has been removed. It doesn't exist in
-  the GitLab API. You can use the ``username`` filter attribute when listing to
-  get a similar behavior:
-
-  .. code-block:: python
-
-     user = list(gl.users.list(username='jdoe'))[0]
-
-
-Undergoing work
-===============
-
-* The ``page`` and ``per_page`` arguments for listing don't behave as they used
-  to. Their behavior will be restored.
