@@ -205,7 +205,7 @@ class TestGitlabList(unittest.TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_1):
-            obj = self.gl.http_list('/tests')
+            obj = self.gl.http_list('/tests', as_list=False)
             self.assertEqual(len(obj), 2)
             self.assertEqual(obj._next_url,
                              'http://localhost/api/v4/tests?per_page=1&page=2')
@@ -311,7 +311,12 @@ class TestGitlabHttpMethods(unittest.TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
-            result = self.gl.http_list('/projects')
+            result = self.gl.http_list('/projects', as_list=True)
+            self.assertIsInstance(result, list)
+            self.assertEqual(len(result), 1)
+
+        with HTTMock(resp_cont):
+            result = self.gl.http_list('/projects', as_list=False)
             self.assertIsInstance(result, GitlabList)
             self.assertEqual(len(result), 1)
 
@@ -324,7 +329,7 @@ class TestGitlabHttpMethods(unittest.TestCase):
         @urlmatch(scheme="http", netloc="localhost",
                   path="/api/v4/not_there", method="get")
         def resp_cont(url, request):
-            content = {'Here is wh it failed'}
+            content = {'Here is why it failed'}
             return response(404, content, {}, None, 5, request)
 
         with HTTMock(resp_cont):

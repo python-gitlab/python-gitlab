@@ -178,7 +178,7 @@ class TestMixinMethods(unittest.TestCase):
         with HTTMock(resp_cont):
             # test RESTObjectList
             mgr = M(self.gl)
-            obj_list = mgr.list()
+            obj_list = mgr.list(as_list=False)
             self.assertIsInstance(obj_list, base.RESTObjectList)
             for obj in obj_list:
                 self.assertIsInstance(obj, FakeObject)
@@ -205,7 +205,7 @@ class TestMixinMethods(unittest.TestCase):
 
         with HTTMock(resp_cont):
             mgr = M(self.gl)
-            obj_list = mgr.list(path='/others')
+            obj_list = mgr.list(path='/others', as_list=False)
             self.assertIsInstance(obj_list, base.RESTObjectList)
             obj = obj_list.next()
             self.assertEqual(obj.id, 42)
