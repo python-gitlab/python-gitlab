@@ -14,9 +14,9 @@ Contents:
    install
    cli
    api-usage
+   switching-to-v4
    api-objects
-   upgrade-from-0.10
-   api/modules
+   api/gitlab
    release_notes
    changelog
 

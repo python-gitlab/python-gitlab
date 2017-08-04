@@ -1,60 +1,78 @@
 gitlab package
 ==============
 
-Module contents
----------------
-
-.. automodule:: gitlab
-    :members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members: Hook, UserProject, Group, Issue, Team, User,
-                      all_projects, owned_projects, search_projects
-
-gitlab.base
+Subpackages
 -----------
+
+.. toctree::
+
+    gitlab.v3
+    gitlab.v4
+
+Submodules
+----------
+
+gitlab.base module
+------------------
 
 .. automodule:: gitlab.base
     :members:
     :undoc-members:
     :show-inheritance:
 
-gitlab.v3.objects module
-------------------------
+gitlab.cli module
+-----------------
 
-.. automodule:: gitlab.v3.objects
+.. automodule:: gitlab.cli
     :members:
     :undoc-members:
     :show-inheritance:
-    :exclude-members: Branch, Commit, Content, Event, File, Hook, Issue, Key,
-                      Label, Member, MergeRequest, Milestone, Note, Snippet,
-                      Tag, canGet, canList, canUpdate, canCreate, canDelete,
-                      requiredUrlAttrs, requiredListAttrs, optionalListAttrs,
-                      optionalGetAttrs, requiredGetAttrs, requiredDeleteAttrs,
-                      requiredCreateAttrs, optionalCreateAttrs,
-                      requiredUpdateAttrs, optionalUpdateAttrs, getRequiresId,
-                      shortPrintAttr, idAttr
 
-gitlab.v4.objects module
-------------------------
+gitlab.config module
+--------------------
 
-.. automodule:: gitlab.v4.objects
+.. automodule:: gitlab.config
     :members:
     :undoc-members:
     :show-inheritance:
-    :exclude-members: Branch, Commit, Content, Event, File, Hook, Issue, Key,
-                      Label, Member, MergeRequest, Milestone, Note, Snippet,
-                      Tag, canGet, canList, canUpdate, canCreate, canDelete,
-                      requiredUrlAttrs, requiredListAttrs, optionalListAttrs,
-                      optionalGetAttrs, requiredGetAttrs, requiredDeleteAttrs,
-                      requiredCreateAttrs, optionalCreateAttrs,
-                      requiredUpdateAttrs, optionalUpdateAttrs, getRequiresId,
-                      shortPrintAttr, idAttr
+
+gitlab.const module
+-------------------
+
+.. automodule:: gitlab.const
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 gitlab.exceptions module
 ------------------------
 
 .. automodule:: gitlab.exceptions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+gitlab.mixins module
+--------------------
+
+.. automodule:: gitlab.mixins
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+gitlab.utils module
+-------------------
+
+.. automodule:: gitlab.utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: gitlab
     :members:
     :undoc-members:
     :show-inheritance:

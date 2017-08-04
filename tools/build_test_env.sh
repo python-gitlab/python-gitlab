@@ -154,6 +154,6 @@ log "Installing into virtualenv..."
 try pip install -e .
 
 log "Pausing to give GitLab some time to finish starting up..."
-sleep 20
+sleep 30
 
 log "Test environment initialized."

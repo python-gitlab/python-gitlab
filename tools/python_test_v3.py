@@ -55,15 +55,15 @@ foobar_user = gl.users.create(
     {'email': 'foobar@example.com', 'username': 'foobar',
      'name': 'Foo Bar', 'password': 'foobar_password'})
 
-assert gl.users.search('foobar') == [foobar_user]
+assert(gl.users.search('foobar')[0].id == foobar_user.id)
 usercmp = lambda x,y: cmp(x.id, y.id)
 expected = sorted([new_user, foobar_user], cmp=usercmp)
 actual = sorted(gl.users.search('foo'), cmp=usercmp)
-assert expected == actual
-assert gl.users.search('asdf') == []
+assert len(expected) == len(actual)
+assert len(gl.users.search('asdf')) == 0
 
-assert gl.users.get_by_username('foobar') == foobar_user
-assert gl.users.get_by_username('foo') == new_user
+assert gl.users.get_by_username('foobar').id == foobar_user.id
+assert gl.users.get_by_username('foo').id == new_user.id
 try:
     gl.users.get_by_username('asdf')
 except gitlab.GitlabGetError:
