@@ -80,12 +80,15 @@ section.
      - URL for the GitLab server
    * - ``private_token``
      - Your user token. Login/password is not supported.
+       Refer `the official documentation`__ to learn how to obtain a token.
    * - ``api_version``
      - API version to use (``3`` or ``4``), defaults to ``3``
    * - ``http_username``
      - Username for optional HTTP authentication
    * - ``http_password``
      - Password for optional HTTP authentication
+
+__ https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html
 
 CLI
 ===
