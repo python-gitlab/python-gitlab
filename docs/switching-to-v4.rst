@@ -115,11 +115,17 @@ following important changes in the python API:
   + :attr:`~gitlab.Gitlab.http_put`
   + :attr:`~gitlab.Gitlab.http_delete`
 
+* The users ``get_by_username`` method has been removed. It doesn't exist in
+  the GitLab API. You can use the ``username`` filter attribute when listing to
+  get a similar behavior:
+
+  .. code-block:: python
+
+     user = list(gl.users.list(username='jdoe'))[0]
+
 
 Undergoing work
 ===============
 
-* The ``delete()`` method for objects is not yet available. For now you need to
-  use ``manager.delete(obj.id)``.
 * The ``page`` and ``per_page`` arguments for listing don't behave as they used
   to. Their behavior will be restored.

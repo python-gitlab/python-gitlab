@@ -126,7 +126,7 @@ class UserKey(ObjectDeleteMixin, RESTObject):
 
 
 class UserKeyManager(GetFromListMixin, CreateMixin, DeleteMixin, RESTManager):
-    _path = '/users/%(user_id)s/emails'
+    _path = '/users/%(user_id)s/keys'
     _obj_cls = UserKey
     _from_parent_attrs = {'user_id': 'id'}
     _create_attrs = (('title', 'key'), tuple())
@@ -842,8 +842,8 @@ class ProjectKeyManager(NoUpdateMixin, RESTManager):
             GitlabAuthenticationError: If authentication is not correct
             GitlabProjectDeployKeyError: If the key could not be enabled
         """
-        path = '%s/%s/enable' % (self.manager.path, key_id)
-        self.manager.gitlab.http_post(path, **kwargs)
+        path = '%s/%s/enable' % (self.path, key_id)
+        self.gitlab.http_post(path, **kwargs)
 
 
 class ProjectEvent(RESTObject):
@@ -999,17 +999,19 @@ class ProjectTag(ObjectDeleteMixin, RESTObject):
         data = {'description': description}
         if self.release is None:
             try:
-                result = self.manager.gitlab.http_post(path, post_data=data,
-                                                       **kwargs)
+                server_data = self.manager.gitlab.http_post(path,
+                                                            post_data=data,
+                                                            **kwargs)
             except exc.GitlabHttpError as e:
                 raise exc.GitlabCreateError(e.response_code, e.error_message)
         else:
             try:
-                result = self.manager.gitlab.http_put(path, post_data=data,
-                                                      **kwargs)
+                server_data = self.manager.gitlab.http_put(path,
+                                                           post_data=data,
+                                                           **kwargs)
             except exc.GitlabHttpError as e:
                 raise exc.GitlabUpdateError(e.response_code, e.error_message)
-        self.release = result.json()
+        self.release = server_data
 
 
 class ProjectTagManager(GetFromListMixin, CreateMixin, DeleteMixin,
@@ -1223,8 +1225,7 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         return RESTObjectList(manager, ProjectMergeRequest, data_list)
 
 
-class ProjectMilestoneManager(RetrieveMixin, CreateMixin, DeleteMixin,
-                              RESTManager):
+class ProjectMilestoneManager(CRUDMixin, RESTManager):
     _path = '/projects/%(project_id)s/milestones'
     _obj_cls = ProjectMilestone
     _from_parent_attrs = {'project_id': 'id'}
@@ -1238,6 +1239,26 @@ class ProjectMilestoneManager(RetrieveMixin, CreateMixin, DeleteMixin,
 class ProjectLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin,
                    RESTObject):
     _id_attr = 'name'
+
+    # Update without ID, but we need an ID to get from list.
+    @exc.on_http_error(exc.GitlabUpdateError)
+    def save(self, **kwargs):
+        """Saves the changes made to the object to the server.
+
+        The object is updated to match what the server returns.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct.
+            GitlabUpdateError: If the server cannot perform the request.
+        """
+        updated_data = self._get_updated_data()
+
+        # call the manager
+        server_data = self.manager.update(None, updated_data, **kwargs)
+        self._update_attrs(server_data)
 
 
 class ProjectLabelManager(GetFromListMixin, CreateMixin, UpdateMixin,
@@ -1262,27 +1283,7 @@ class ProjectLabelManager(GetFromListMixin, CreateMixin, UpdateMixin,
             GitlabAuthenticationError: If authentication is not correct.
             GitlabDeleteError: If the server cannot perform the request.
         """
-        self.gitlab.http_delete(path, query_data={'name': self.name}, **kwargs)
-
-    # Update without ID, but we need an ID to get from list.
-    @exc.on_http_error(exc.GitlabUpdateError)
-    def save(self, **kwargs):
-        """Saves the changes made to the object to the server.
-
-        The object is updated to match what the server returns.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct.
-            GitlabUpdateError: If the server cannot perform the request.
-        """
-        updated_data = self._get_updated_data()
-
-        # call the manager
-        server_data = self.manager.update(None, updated_data, **kwargs)
-        self._update_attrs(server_data)
+        self.gitlab.http_delete(self.path, query_data={'name': name}, **kwargs)
 
 
 class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -1297,6 +1298,38 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         return base64.b64decode(self.content)
 
+    def save(self, branch, commit_message, **kwargs):
+        """Save the changes made to the file to the server.
+
+        The object is updated to match what the server returns.
+
+        Args:
+            branch (str): Branch in which the file will be updated
+            commit_message (str): Message to send with the commit
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raise:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUpdateError: If the server cannot perform the request
+        """
+        self.branch = branch
+        self.commit_message = commit_message
+        super(ProjectFile, self).save(**kwargs)
+
+    def delete(self, branch, commit_message, **kwargs):
+        """Delete the file from the server.
+
+        Args:
+            branch (str): Branch from which the file will be removed
+            commit_message (str): Commit message for the deletion
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the server cannot perform the request
+        """
+        self.manager.delete(self.get_id(), branch, commit_message, **kwargs)
+
 
 class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
                          RESTManager):
@@ -1308,11 +1341,12 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
     _update_attrs = (('file_path', 'branch', 'content', 'commit_message'),
                      ('encoding', 'author_email', 'author_name'))
 
-    def get(self, file_path, **kwargs):
+    def get(self, file_path, ref, **kwargs):
         """Retrieve a single file.
 
         Args:
-            id (int or str): ID of the object to retrieve
+            file_path (str): Path of the file to retrieve
+            ref (str): Name of the branch, tag or commit
             **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
 
         Raises:
@@ -1323,7 +1357,49 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
             object: The generated RESTObject
         """
         file_path = file_path.replace('/', '%2F')
-        return GetMixin.get(self, file_path, **kwargs)
+        return GetMixin.get(self, file_path, ref=ref, **kwargs)
+
+    @exc.on_http_error(exc.GitlabCreateError)
+    def create(self, data, **kwargs):
+        """Create a new object.
+
+        Args:
+            data (dict): parameters to send to the server to create the
+                         resource
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+
+        Returns:
+            RESTObject: a new instance of the managed object class built with
+                the data sent by the server
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server cannot perform the request
+        """
+
+        self._check_missing_create_attrs(data)
+        file_path = data.pop('file_path')
+        path = '%s/%s' % (self.path, file_path)
+        server_data = self.gitlab.http_post(path, post_data=data, **kwargs)
+        return self._obj_cls(self, server_data)
+
+    @exc.on_http_error(exc.GitlabDeleteError)
+    def delete(self, file_path, branch, commit_message, **kwargs):
+        """Delete a file on the server.
+
+        Args:
+            file_path (str): Path of the file to remove
+            branch (str): Branch from which the file will be removed
+            commit_message (str): Commit message for the deletion
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the server cannot perform the request
+        """
+        path = '%s/%s' % (self.path, file_path.replace('/', '%2F'))
+        data = {'branch': branch, 'commit_message': commit_message}
+        self.gitlab.http_delete(path, query_data=data, **kwargs)
 
     @exc.on_http_error(exc.GitlabGetError)
     def raw(self, file_path, ref, streamed=False, action=None, chunk_size=1024,
@@ -1348,7 +1424,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
         Returns:
             str: The file content
         """
-        file_path = file_path.replace('/', '%2F')
+        file_path = file_path.replace('/', '%2F').replace('.', '%2E')
         path = '%s/%s/raw' % (self.path, file_path)
         query_data = {'ref': ref}
         result = self.gitlab.http_get(path, query_data=query_data,
@@ -1489,8 +1565,8 @@ class ProjectVariableManager(CRUDMixin, RESTManager):
     _path = '/projects/%(project_id)s/variables'
     _obj_cls = ProjectVariable
     _from_parent_attrs = {'project_id': 'id'}
-    _create_attrs = (('key', 'vaule'), tuple())
-    _update_attrs = (('key', 'vaule'), tuple())
+    _create_attrs = (('key', 'value'), tuple())
+    _update_attrs = (('key', 'value'), tuple())
 
 
 class ProjectService(GitlabObject):
@@ -2016,7 +2092,8 @@ class ProjectManager(CRUDMixin, RESTManager):
          'request_access_enabled')
     )
     _list_filters = ('search', 'owned', 'starred', 'archived', 'visibility',
-                     'order_by', 'sort', 'simple', 'membership', 'statistics')
+                     'order_by', 'sort', 'simple', 'membership', 'statistics',
+                     'with_issues_enabled', 'with_merge_requests_enabled')
 
 
 class GroupProject(Project):

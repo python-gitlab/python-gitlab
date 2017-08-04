@@ -152,7 +152,7 @@ class CreateMixin(object):
             **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
 
         Returns:
-            RESTObject: a new instance of the managed object class build with
+            RESTObject: a new instance of the managed object class built with
                 the data sent by the server
 
         Raises:

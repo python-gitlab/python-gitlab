@@ -645,12 +645,32 @@ class Gitlab(object):
         Raises:
             GitlabHttpError: When the return code is not 2xx
         """
+
+        def sanitized_url(url):
+            parsed = six.moves.urllib.parse.urlparse(url)
+            new_path = parsed.path.replace('.', '%2E')
+            return parsed._replace(path=new_path).geturl()
+
         url = self._build_url(path)
         params = query_data.copy()
         params.update(kwargs)
         opts = self._get_session_opts(content_type='application/json')
-        result = self.session.request(verb, url, json=post_data,
-                                      params=params, stream=streamed, **opts)
+        verify = opts.pop('verify')
+        timeout = opts.pop('timeout')
+
+        # Requests assumes that `.` should not be encoded as %2E and will make
+        # changes to urls using this encoding. Using a prepped request we can
+        # get the desired behavior.
+        # The Requests behavior is right but it seems that web servers don't
+        # always agree with this decision (this is the case with a default
+        # gitlab installation)
+        req = requests.Request(verb, url, json=post_data, params=params,
+                               **opts)
+        prepped = self.session.prepare_request(req)
+        prepped.url = sanitized_url(prepped.url)
+        result = self.session.send(prepped, stream=streamed, verify=verify,
+                                   timeout=timeout)
+
         if 200 <= result.status_code < 300:
             return result
 
