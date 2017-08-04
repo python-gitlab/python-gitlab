@@ -18,7 +18,6 @@
 from __future__ import print_function
 from __future__ import absolute_import
 import base64
-import json
 
 import six
 
@@ -1573,14 +1572,14 @@ class ProjectVariableManager(CRUDMixin, RESTManager):
     _update_attrs = (('key', 'value'), tuple())
 
 
-class ProjectService(GitlabObject):
-    _url = '/projects/%(project_id)s/services/%(service_name)s'
-    canList = False
-    canCreate = False
-    _id_in_update_url = False
-    _id_in_delete_url = False
-    getRequiresId = False
-    requiredUrlAttrs = ['project_id', 'service_name']
+class ProjectService(SaveMixin, ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
+    _path = '/projects/%(project_id)s/services'
+    _from_parent_attrs = {'project_id': 'id'}
+    _obj_cls = ProjectService
 
     _service_attrs = {
         'asana': (('api_key', ), ('restrict_to_branch', )),
@@ -1606,16 +1605,10 @@ class ProjectService(GitlabObject):
                                   'server')),
         'irker': (('recipients', ), ('default_irc_uri', 'server_port',
                                      'server_host', 'colorize_messages')),
-        'jira': (tuple(), (
-                 # Required fields in GitLab >= 8.14
-                 'url', 'project_key',
-
-                 # Required fields in GitLab < 8.14
-                 'new_issue_url', 'project_url', 'issues_url', 'api_url',
-                 'description',
-
-                 # Optional fields
-                 'username', 'password', 'jira_issue_transition_id')),
+        'jira': (('url', 'project_key'),
+                 ('new_issue_url', 'project_url', 'issues_url', 'api_url',
+                  'description', 'username', 'password',
+                  'jira_issue_transition_id')),
         'pivotaltracker': (('token', ), tuple()),
         'pushover': (('api_key', 'user_key', 'priority'), ('device', 'sound')),
         'redmine': (('new_issue_url', 'project_url', 'issues_url'),
@@ -1625,33 +1618,44 @@ class ProjectService(GitlabObject):
                      tuple())
     }
 
-    def _data_for_gitlab(self, extra_parameters={}, update=False,
-                         as_json=True):
-        data = (super(ProjectService, self)
-                ._data_for_gitlab(extra_parameters, update=update,
-                                  as_json=False))
-        missing = []
-        # Mandatory args
-        for attr in self._service_attrs[self.service_name][0]:
-            if not hasattr(self, attr):
-                missing.append(attr)
-            else:
-                data[attr] = getattr(self, attr)
+    def get(self, id, **kwargs):
+        """Retrieve a single object.
 
-        if missing:
-            raise GitlabUpdateError('Missing attribute(s): %s' %
-                                    ", ".join(missing))
+        Args:
+            id (int or str): ID of the object to retrieve
+            lazy (bool): If True, don't request the server, but create a
+                         shallow object giving access to the managers. This is
+                         useful if you want to avoid useless calls to the API.
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
 
-        # Optional args
-        for attr in self._service_attrs[self.service_name][1]:
-            if hasattr(self, attr):
-                data[attr] = getattr(self, attr)
+        Returns:
+            object: The generated RESTObject.
 
-        return json.dumps(data)
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the server cannot perform the request
+        """
+        obj = super(ProjectServiceManager, self).get(id, **kwargs)
+        obj.id = id
+        return obj
 
+    def update(self, id=None, new_data={}, **kwargs):
+        """Update an object on the server.
 
-class ProjectServiceManager(BaseManager):
-    obj_cls = ProjectService
+        Args:
+            id: ID of the object to update (can be None if not required)
+            new_data: the update data for the object
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+
+        Returns:
+            dict: The new object data (*not* a RESTObject)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUpdateError: If the server cannot perform the request
+        """
+        super(ProjectServiceManager, self).update(id, new_data, **kwargs)
+        self.id = id
 
     def available(self, **kwargs):
         """List the services known by python-gitlab.
@@ -1659,7 +1663,7 @@ class ProjectServiceManager(BaseManager):
         Returns:
             list (str): The list of service code names.
         """
-        return list(ProjectService._service_attrs.keys())
+        return list(self._service_attrs.keys())
 
 
 class ProjectAccessRequest(AccessRequestMixin, ObjectDeleteMixin, RESTObject):

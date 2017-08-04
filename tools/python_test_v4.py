@@ -316,13 +316,14 @@ settings = gl.notificationsettings.get()
 assert(settings.level == gitlab.NOTIFICATION_LEVEL_WATCH)
 
 # services
-# NOT IMPLEMENTED YET
-#service = admin_project.services.get(service_name='asana')
-#service.active = True
-#service.api_key = 'whatever'
-#service.save()
-#service = admin_project.services.get(service_name='asana')
-#assert(service.active == True)
+service = admin_project.services.get('asana')
+service.api_key = 'whatever'
+service.save()
+service = admin_project.services.get('asana')
+assert(service.active == True)
+service.delete()
+service = admin_project.services.get('asana')
+assert(service.active == False)
 
 # snippets
 snippets = gl.snippets.list(all=True)
