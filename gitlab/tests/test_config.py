@@ -40,6 +40,11 @@ url = https://two.url
 private_token = GHIJKL
 ssl_verify = false
 timeout = 10
+
+[three]
+url = https://three.url
+private_token = MNOPQR
+ssl_verify = /path/to/CA/bundle.crt
 """
 
 no_default_config = u"""[global]
@@ -109,3 +114,13 @@ class TestConfigParser(unittest.TestCase):
         self.assertEqual("GHIJKL", cp.token)
         self.assertEqual(10, cp.timeout)
         self.assertEqual(False, cp.ssl_verify)
+
+        fd = six.StringIO(valid_config)
+        fd.close = mock.Mock(return_value=None)
+        m_open.return_value = fd
+        cp = config.GitlabConfigParser(gitlab_id="three")
+        self.assertEqual("three", cp.gitlab_id)
+        self.assertEqual("https://three.url", cp.url)
+        self.assertEqual("MNOPQR", cp.token)
+        self.assertEqual(2, cp.timeout)
+        self.assertEqual("/path/to/CA/bundle.crt", cp.ssl_verify)
