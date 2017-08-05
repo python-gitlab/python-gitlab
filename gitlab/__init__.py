@@ -73,6 +73,7 @@ class Gitlab(object):
                  timeout=None, api_version='3', session=None):
 
         self._api_version = str(api_version)
+        self._server_version = self._server_revision = None
         self._url = '%s/api/v%s' % (url, api_version)
         #: Timeout to use for requests to gitlab server
         self.timeout = timeout
@@ -227,15 +228,17 @@ class Gitlab(object):
                               ('unknown', 'unknwown') if the server doesn't
                               support this API call (gitlab < 8.13.0)
         """
-        r = self._raw_get('/version')
-        try:
-            raise_error_from_response(r, GitlabGetError, 200)
-            data = r.json()
-            self.version, self.revision = data['version'], data['revision']
-        except GitlabGetError:
-            self.version = self.revision = 'unknown'
+        if self._server_version is None:
+            r = self._raw_get('/version')
+            try:
+                raise_error_from_response(r, GitlabGetError, 200)
+                data = r.json()
+                self._server_version = data['version']
+                self._server_revision = data['revision']
+            except GitlabGetError:
+                self._server_version = self._server_revision = 'unknown'
 
-        return self.version, self.revision
+        return self._server_version, self._server_revision
 
     def set_url(self, url):
         """Updates the GitLab URL.
