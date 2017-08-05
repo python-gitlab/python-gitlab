@@ -2087,9 +2087,9 @@ class ProjectManager(CRUDMixin, RESTManager):
     _create_attrs = (
         ('name', ),
         ('path', 'namespace_id', 'description', 'issues_enabled',
-         'merge_requests_enabled', 'builds_enabled', 'wiki_enabled',
+         'merge_requests_enabled', 'jobs_enabled', 'wiki_enabled',
          'snippets_enabled', 'container_registry_enabled',
-         'shared_runners_enabled', 'visibility', 'import_url', 'public_builds',
+         'shared_runners_enabled', 'visibility', 'import_url', 'public_jobs',
          'only_allow_merge_if_build_succeeds',
          'only_allow_merge_if_all_discussions_are_resolved', 'lfs_enabled',
          'request_access_enabled')
@@ -2097,9 +2097,9 @@ class ProjectManager(CRUDMixin, RESTManager):
     _update_attrs = (
         tuple(),
         ('name', 'path', 'default_branch', 'description', 'issues_enabled',
-         'merge_requests_enabled', 'builds_enabled', 'wiki_enabled',
+         'merge_requests_enabled', 'jobs_enabled', 'wiki_enabled',
          'snippets_enabled', 'container_registry_enabled',
-         'shared_runners_enabled', 'visibility', 'import_url', 'public_builds',
+         'shared_runners_enabled', 'visibility', 'import_url', 'public_jobs',
          'only_allow_merge_if_build_succeeds',
          'only_allow_merge_if_all_discussions_are_resolved', 'lfs_enabled',
          'request_access_enabled')
