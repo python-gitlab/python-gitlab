@@ -39,6 +39,8 @@ class GetMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
+        if not isinstance(id, int):
+            id = id.replace('/', '%2F')
         path = '%s/%s' % (self.path, id)
         if lazy is True:
             return self._obj_cls(self, {self._obj_cls._id_attr: id})
