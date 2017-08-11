@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import functools
+
 
 class GitlabError(Exception):
     def __init__(self, error_message="", response_code=None,
@@ -223,6 +225,7 @@ def on_http_error(error):
             GitlabError
     """
     def wrap(f):
+        @functools.wraps(f)
         def wrapped_f(*args, **kwargs):
             try:
                 return f(*args, **kwargs)
