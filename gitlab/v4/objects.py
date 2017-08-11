@@ -771,7 +771,7 @@ class ProjectCommit(RESTObject):
         Args:
             **kwargs: Extra options to send to the server (e.g. sudo)
 
-        Raise:
+        Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the diff could not be retrieved
 
@@ -789,7 +789,7 @@ class ProjectCommit(RESTObject):
             branch (str): Name of target branch
             **kwargs: Extra options to send to the server (e.g. sudo)
 
-        Raise:
+        Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabCherryPickError: If the cherry-pick could not be performed
         """
@@ -837,7 +837,7 @@ class ProjectKeyManager(NoUpdateMixin, RESTManager):
             key_id (int): The ID of the key to enable
             **kwargs: Extra options to send to the server (e.g. sudo)
 
-        Raise:
+        Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabProjectDeployKeyError: If the key could not be enabled
         """
@@ -1311,7 +1311,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
             commit_message (str): Message to send with the commit
             **kwargs: Extra options to send to the server (e.g. sudo)
 
-        Raise:
+        Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabUpdateError: If the server cannot perform the request
         """
