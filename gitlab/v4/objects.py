@@ -566,7 +566,7 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabProtectError: If the branch could not be unprotected
         """
-        path = '%s/%s/protect' % (self.manager.path, self.get_id())
+        path = '%s/%s/unprotect' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_put(path, **kwargs)
         self._attrs['protected'] = False
 
