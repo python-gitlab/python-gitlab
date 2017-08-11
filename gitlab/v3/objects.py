@@ -423,7 +423,7 @@ class GroupAccessRequest(GitlabObject):
     def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
         """Approve an access request.
 
-        Attrs:
+        Args:
             access_level (int): The access level for the user.
 
         Raises:
@@ -1720,7 +1720,7 @@ class ProjectAccessRequest(GitlabObject):
     def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
         """Approve an access request.
 
-        Attrs:
+        Args:
             access_level (int): The access level for the user.
 
         Raises:
@@ -2278,7 +2278,7 @@ class Group(GitlabObject):
     def transfer_project(self, id, **kwargs):
         """Transfers a project to this new groups.
 
-        Attrs:
+        Args:
             id (int): ID of the project to transfer.
 
         Raises:

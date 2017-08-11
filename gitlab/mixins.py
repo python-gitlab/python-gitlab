@@ -300,7 +300,7 @@ class AccessRequestMixin(object):
     def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
         """Approve an access request.
 
-        Attrs:
+        Args:
             access_level (int): The access level for the user
             **kwargs: Extra options to send to the server (e.g. sudo)
 
