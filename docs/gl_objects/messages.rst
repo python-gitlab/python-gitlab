@@ -6,8 +6,22 @@ You can use broadcast messages to display information on all pages of the
 gitlab web UI. You must have administration permissions to manipulate broadcast
 messages.
 
-* Object class: :class:`gitlab.objects.BroadcastMessage`
-* Manager object: :attr:`gitlab.Gitlab.broadcastmessages`
+References
+----------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.BroadcastMessage`
+  + :class:`gitlab.v4.objects.BroadcastMessageManager`
+  + :attr:`gitlab.Gitlab.broadcastmessages`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.BroadcastMessage`
+  + :class:`gitlab.v3.objects.BroadcastMessageManager`
+  + :attr:`gitlab.Gitlab.broadcastmessages`
+
+* GitLab API: https://docs.gitlab.com/ce/api/broadcast_messages.html
 
 Examples
 --------

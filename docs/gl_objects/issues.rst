@@ -5,9 +5,22 @@ Issues
 Reported issues
 ===============
 
-Use :class:`~gitlab.objects.Issues` objects to manipulate issues the
-authenticated user reported. The :attr:`gitlab.Gitlab.issues` manager object
-provides helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.Issue`
+  + :class:`gitlab.v4.objects.IssueManager`
+  + :attr:`gitlab.Gitlab.issues`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.Issue`
+  + :class:`gitlab.v3.objects.IssueManager`
+  + :attr:`gitlab.Gitlab.issues`
+
+* GitLab API: https://docs.gitlab.com/ce/api/issues.html
 
 Examples
 --------
@@ -28,9 +41,23 @@ Use the ``state`` and ``label`` parameters to filter the results. Use the
 Group issues
 ============
 
-Use :class:`~gitlab.objects.GroupIssue` objects to manipulate issues. The
-:attr:`gitlab.Gitlab.project_issues` and :attr:`Group.issues
-<gitlab.objects.Group.issues>` manager objects provide helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.GroupIssue`
+  + :class:`gitlab.v4.objects.GroupIssueManager`
+  + :attr:`gitlab.v4.objects.Group.issues`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.GroupIssue`
+  + :class:`gitlab.v3.objects.GroupIssueManager`
+  + :attr:`gitlab.v3.objects.Group.issues`
+  + :attr:`gitlab.Gitlab.group_issues`
+
+* GitLab API: https://docs.gitlab.com/ce/api/issues.html
 
 Examples
 --------
@@ -44,9 +71,23 @@ List the group issues:
 Project issues
 ==============
 
-Use :class:`~gitlab.objects.ProjectIssue` objects to manipulate issues. The
-:attr:`gitlab.Gitlab.project_issues` and :attr:`Project.issues
-<gitlab.objects.Project.issues>` manager objects provide helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectIssue`
+  + :class:`gitlab.v4.objects.ProjectIssueManager`
+  + :attr:`gitlab.v4.objects.Project.issues`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectIssue`
+  + :class:`gitlab.v3.objects.ProjectIssueManager`
+  + :attr:`gitlab.v3.objects.Project.issues`
+  + :attr:`gitlab.Gitlab.project_issues`
+
+* GitLab API: https://docs.gitlab.com/ce/api/issues.html
 
 Examples
 --------

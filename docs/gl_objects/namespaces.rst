@@ -2,11 +2,25 @@
 Namespaces
 ##########
 
-Use :class:`~gitlab.objects.Namespace` objects to manipulate namespaces. The
-:attr:`gitlab.Gitlab.namespaces` manager objects provides helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.Namespace`
+  + :class:`gitlab.v4.objects.NamespaceManager`
+  + :attr:`gitlab.Gitlab.namespaces`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.Namespace`
+  + :class:`gitlab.v3.objects.NamespaceManager`
+  + :attr:`gitlab.Gitlab.namespaces`
+
+* GitLab API: https://docs.gitlab.com/ce/api/namespaces.html
 
 Examples
-========
+--------
 
 List namespaces:
 

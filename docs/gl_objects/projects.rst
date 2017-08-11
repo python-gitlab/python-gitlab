@@ -2,11 +2,28 @@
 Projects
 ########
 
-Use :class:`~gitlab.objects.Project` objects to manipulate projects. The
-:attr:`gitlab.Gitlab.projects` manager objects provides helper functions.
+Projects
+========
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.Project`
+  + :class:`gitlab.v4.objects.ProjectManager`
+  + :attr:`gitlab.Gitlab.projects`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.Project`
+  + :class:`gitlab.v3.objects.ProjectManager`
+  + :attr:`gitlab.Gitlab.projects`
+
+* GitLab API: https://docs.gitlab.com/ce/api/projects.html
 
 Examples
-========
+--------
 
 List projects:
 
@@ -97,11 +114,6 @@ Archive/unarchive a project:
    Previous versions used ``archive_`` and ``unarchive_`` due to a naming issue,
    they have been deprecated but not yet removed.
 
-Repository
-----------
-
-The following examples show how you can manipulate the project code repository.
-
 List the repository tree:
 
 .. literalinclude:: projects.py
@@ -148,10 +160,29 @@ Get a list of contributors for the repository:
    :start-after: # repository contributors
    :end-before: # end repository contributors
 
-Files
------
+Project files
+=============
 
-The following examples show how you can manipulate the project files.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectFile`
+  + :class:`gitlab.v4.objects.ProjectFileManager`
+  + :attr:`gitlab.v4.objects.Project.files`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectFile`
+  + :class:`gitlab.v3.objects.ProjectFileManager`
+  + :attr:`gitlab.v3.objects.Project.files`
+  + :attr:`gitlab.Gitlab.project_files`
+
+* GitLab API: https://docs.gitlab.com/ce/api/repository_files.html
+
+Examples
+--------
 
 Get a file:
 
@@ -178,12 +209,29 @@ Delete a file:
    :start-after: # files delete
    :end-before: # end files delete
 
-Tags
-----
+Project tags
+============
 
-Use :class:`~gitlab.objects.ProjectTag` objects to manipulate tags. The
-:attr:`gitlab.Gitlab.project_tags` and :attr:`Project.tags
-<gitlab.objects.Project.tags>` manager objects provide helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectTag`
+  + :class:`gitlab.v4.objects.ProjectTagManager`
+  + :attr:`gitlab.v4.objects.Project.tags`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectTag`
+  + :class:`gitlab.v3.objects.ProjectTagManager`
+  + :attr:`gitlab.v3.objects.Project.tags`
+  + :attr:`gitlab.Gitlab.project_tags`
+
+* GitLab API: https://docs.gitlab.com/ce/api/tags.html
+
+Examples
+--------
 
 List the project tags:
 
@@ -217,12 +265,35 @@ Delete a tag:
 
 .. _project_snippets:
 
-Snippets
---------
+Project snippets
+================
 
-Use :class:`~gitlab.objects.ProjectSnippet` objects to manipulate snippets. The
-:attr:`gitlab.Gitlab.project_snippets` and :attr:`Project.snippets
-<gitlab.objects.Project.snippets>` manager objects provide helper functions.
+The snippet visibility can be definied using the following constants:
+
+* ``gitlab.VISIBILITY_PRIVATE``
+* ``gitlab.VISIBILITY_INTERNAL``
+* ``gitlab.VISIBILITY_PUBLIC``
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectSnippet`
+  + :class:`gitlab.v4.objects.ProjectSnippetManager`
+  + :attr:`gitlab.v4.objects.Project.files`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectSnippet`
+  + :class:`gitlab.v3.objects.ProjectSnippetManager`
+  + :attr:`gitlab.v3.objects.Project.files`
+  + :attr:`gitlab.Gitlab.project_files`
+
+* GitLab API: https://docs.gitlab.com/ce/api/project_snippets.html
+
+Examples
+--------
 
 List the project snippets:
 
@@ -266,9 +337,9 @@ Delete a snippet:
    :end-before: # end snippets delete
 
 Notes
------
+=====
 
-You can manipulate notes (comments) on the following resources:
+You can manipulate notes (comments) on the issues, merge requests and snippets.
 
 * :class:`~gitlab.objects.ProjectIssue` with
   :class:`~gitlab.objects.ProjectIssueNote`
@@ -276,6 +347,60 @@ You can manipulate notes (comments) on the following resources:
   :class:`~gitlab.objects.ProjectMergeRequestNote`
 * :class:`~gitlab.objects.ProjectSnippet` with
   :class:`~gitlab.objects.ProjectSnippetNote`
+
+Reference
+---------
+
+* v4 API:
+
+  Issues:
+
+  + :class:`gitlab.v4.objects.ProjectIssueNote`
+  + :class:`gitlab.v4.objects.ProjectIssueNoteManager`
+  + :attr:`gitlab.v4.objects.ProjectIssue.notes`
+
+  MergeRequests:
+
+  + :class:`gitlab.v4.objects.ProjectMergeRequestNote`
+  + :class:`gitlab.v4.objects.ProjectMergeRequestNoteManager`
+  + :attr:`gitlab.v4.objects.ProjectMergeRequest.notes`
+
+  Snippets:
+
+  + :class:`gitlab.v4.objects.ProjectSnippetNote`
+  + :class:`gitlab.v4.objects.ProjectSnippetNoteManager`
+  + :attr:`gitlab.v4.objects.ProjectSnippet.notes`
+
+* v3 API:
+
+  Issues:
+
+  + :class:`gitlab.v3.objects.ProjectIssueNote`
+  + :class:`gitlab.v3.objects.ProjectIssueNoteManager`
+  + :attr:`gitlab.v3.objects.ProjectIssue.notes`
+  + :attr:`gitlab.v3.objects.Project.issue_notes`
+  + :attr:`gitlab.Gitlab.project_issue_notes`
+
+  MergeRequests:
+
+  + :class:`gitlab.v3.objects.ProjectMergeRequestNote`
+  + :class:`gitlab.v3.objects.ProjectMergeRequestNoteManager`
+  + :attr:`gitlab.v3.objects.ProjectMergeRequest.notes`
+  + :attr:`gitlab.v3.objects.Project.mergerequest_notes`
+  + :attr:`gitlab.Gitlab.project_mergerequest_notes`
+
+  Snippets:
+
+  + :class:`gitlab.v3.objects.ProjectSnippetNote`
+  + :class:`gitlab.v3.objects.ProjectSnippetNoteManager`
+  + :attr:`gitlab.v3.objects.ProjectSnippet.notes`
+  + :attr:`gitlab.v3.objects.Project.snippet_notes`
+  + :attr:`gitlab.Gitlab.project_snippet_notes`
+
+* GitLab API: https://docs.gitlab.com/ce/api/repository_files.html
+
+Examples
+--------
 
 List the notes for a resource:
 
@@ -307,12 +432,29 @@ Delete a note for a resource:
    :start-after: # notes delete
    :end-before: # end notes delete
 
-Events
-------
+Project events
+==============
 
-Use :class:`~gitlab.objects.ProjectEvent` objects to manipulate events. The
-:attr:`gitlab.Gitlab.project_events` and :attr:`Project.events
-<gitlab.objects.Project.events>` manager objects provide helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectEvent`
+  + :class:`gitlab.v4.objects.ProjectEventManager`
+  + :attr:`gitlab.v4.objects.Project.events`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectEvent`
+  + :class:`gitlab.v3.objects.ProjectEventManager`
+  + :attr:`gitlab.v3.objects.Project.events`
+  + :attr:`gitlab.Gitlab.project_events`
+
+* GitLab API: https://docs.gitlab.com/ce/api/repository_files.html
+
+Examples
+--------
 
 List the project events:
 
@@ -320,12 +462,29 @@ List the project events:
    :start-after: # events list
    :end-before: # end events list
 
-Team members
-------------
+Project members
+===============
 
-Use :class:`~gitlab.objects.ProjectMember` objects to manipulate projects
-members. The :attr:`gitlab.Gitlab.project_members` and :attr:`Project.members
-<gitlab.objects.Projects.members>` manager objects provide helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectMember`
+  + :class:`gitlab.v4.objects.ProjectMemberManager`
+  + :attr:`gitlab.v4.objects.Project.members`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectMember`
+  + :class:`gitlab.v3.objects.ProjectMemberManager`
+  + :attr:`gitlab.v3.objects.Project.members`
+  + :attr:`gitlab.Gitlab.project_members`
+
+* GitLab API: https://docs.gitlab.com/ce/api/members.html
+
+Examples
+--------
 
 List the project members:
 
@@ -369,12 +528,29 @@ Share the project with a group:
    :start-after: # share
    :end-before: # end share
 
-Hooks
------
+Project hooks
+=============
 
-Use :class:`~gitlab.objects.ProjectHook` objects to manipulate projects
-hooks. The :attr:`gitlab.Gitlab.project_hooks` and :attr:`Project.hooks
-<gitlab.objects.Projects.hooks>` manager objects provide helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectHook`
+  + :class:`gitlab.v4.objects.ProjectHookManager`
+  + :attr:`gitlab.v4.objects.Project.hooks`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectHook`
+  + :class:`gitlab.v3.objects.ProjectHookManager`
+  + :attr:`gitlab.v3.objects.Project.hooks`
+  + :attr:`gitlab.Gitlab.project_hooks`
+
+* GitLab API: https://docs.gitlab.com/ce/api/projects.html#hooks
+
+Examples
+--------
 
 List the project hooks:
 
@@ -406,13 +582,29 @@ Delete a project hook:
    :start-after: # hook delete
    :end-before: # end hook delete
 
-Pipelines
+Project pipelines
+=================
+
+Reference
 ---------
 
-Use :class:`~gitlab.objects.ProjectPipeline` objects to manipulate projects
-pipelines. The :attr:`gitlab.Gitlab.project_pipelines` and
-:attr:`Project.services <gitlab.objects.Projects.pipelines>` manager objects
-provide helper functions.
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectPipeline`
+  + :class:`gitlab.v4.objects.ProjectPipelineManager`
+  + :attr:`gitlab.v4.objects.Project.pipelines`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectPipeline`
+  + :class:`gitlab.v3.objects.ProjectPipelineManager`
+  + :attr:`gitlab.v3.objects.Project.pipelines`
+  + :attr:`gitlab.Gitlab.project_pipelines`
+
+* GitLab API: https://docs.gitlab.com/ce/api/pipelines.html
+
+Examples
+--------
 
 List pipelines for a project:
 
@@ -444,13 +636,29 @@ Create a pipeline for a particular reference:
    :start-after: # pipeline create
    :end-before: # end pipeline create
 
-Services
---------
+Project Services
+================
 
-Use :class:`~gitlab.objects.ProjectService` objects to manipulate projects
-services. The :attr:`gitlab.Gitlab.project_services` and
-:attr:`Project.services <gitlab.objects.Projects.services>` manager objects
-provide helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectService`
+  + :class:`gitlab.v4.objects.ProjectServiceManager`
+  + :attr:`gitlab.v4.objects.Project.services`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectService`
+  + :class:`gitlab.v3.objects.ProjectServiceManager`
+  + :attr:`gitlab.v3.objects.Project.services`
+  + :attr:`gitlab.Gitlab.project_services`
+
+* GitLab API: https://docs.gitlab.com/ce/api/services.html
+
+Exammples
+---------
 
 Get a service:
 
@@ -476,12 +684,33 @@ Disable a service:
    :start-after: # service delete
    :end-before: # end service delete
 
-Boards
-------
+Issue boards
+============
 
 Boards are a visual representation of existing issues for a project. Issues can
 be moved from one list to the other to track progress and help with
 priorities.
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectBoard`
+  + :class:`gitlab.v4.objects.ProjectBoardManager`
+  + :attr:`gitlab.v4.objects.Project.boards`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectBoard`
+  + :class:`gitlab.v3.objects.ProjectBoardManager`
+  + :attr:`gitlab.v3.objects.Project.boards`
+  + :attr:`gitlab.Gitlab.project_boards`
+
+* GitLab API: https://docs.gitlab.com/ce/api/boards.html
+
+Examples
+--------
 
 Get the list of existing boards for a project:
 
@@ -495,8 +724,30 @@ Get a single board for a project:
    :start-after: # boards get
    :end-before: # end boards get
 
-Boards have lists of issues. Each list is defined by a
-:class:`~gitlab.objects.ProjectLabel` and a position in the board.
+Board lists
+===========
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectBoardList`
+  + :class:`gitlab.v4.objects.ProjectBoardListManager`
+  + :attr:`gitlab.v4.objects.Project.board_lists`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectBoardList`
+  + :class:`gitlab.v3.objects.ProjectBoardListManager`
+  + :attr:`gitlab.v3.objects.ProjectBoard.lists`
+  + :attr:`gitlab.v3.objects.Project.board_lists`
+  + :attr:`gitlab.Gitlab.project_board_lists`
+
+* GitLab API: https://docs.gitlab.com/ce/api/boards.html
+
+Examples
+--------
 
 List the issue lists for a board:
 
@@ -510,15 +761,14 @@ Get a single list:
    :start-after: # board lists get
    :end-before: # end board lists get
 
-Create a new list. Note that getting the label ID is broken at the moment (see
-https://gitlab.com/gitlab-org/gitlab-ce/issues/23448):
+Create a new list:
 
 .. literalinclude:: projects.py
    :start-after: # board lists create
    :end-before: # end board lists create
 
 Change a list position. The first list is at position 0. Moving a list will
-insert it at the given position and move the following lists up a position:
+set it at the given position and move the following lists up a position:
 
 .. literalinclude:: projects.py
    :start-after: # board lists update

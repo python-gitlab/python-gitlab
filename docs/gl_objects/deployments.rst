@@ -2,10 +2,23 @@
 Deployments
 ###########
 
-Use :class:`~gitlab.objects.ProjectDeployment` objects to manipulate project
-deployments. The :attr:`gitlab.Gitlab.project_deployments`, and
-:attr:`Project.deployments <gitlab.objects.Project.deployments>` manager
-objects provide helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectDeployment`
+  + :class:`gitlab.v4.objects.ProjectDeploymentManager`
+  + :attr:`gitlab.v4.objects.Project.deployments`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectDeployment`
+  + :class:`gitlab.v3.objects.ProjectDeploymentManager`
+  + :attr:`gitlab.v3.objects.Project.deployments`
+  + :attr:`gitlab.Gitlab.project_deployments`
+
+* GitLab API: https://docs.gitlab.com/ce/api/deployments.html
 
 Examples
 --------

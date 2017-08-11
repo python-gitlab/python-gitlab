@@ -2,9 +2,23 @@
 Labels
 ######
 
-Use :class:`~gitlab.objects.ProjectLabel` objects to manipulate labels for
-projects. The :attr:`gitlab.Gitlab.project_labels` and :attr:`Project.labels
-<gitlab.objects.Project.labels>` manager objects provide helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectLabel`
+  + :class:`gitlab.v4.objects.ProjectLabelManager`
+  + :attr:`gitlab.v4.objects.Project.labels`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectLabel`
+  + :class:`gitlab.v3.objects.ProjectLabelManager`
+  + :attr:`gitlab.v3.objects.Project.labels`
+  + :attr:`gitlab.Gitlab.project_labels`
+
+* GitLab API: https://docs.gitlab.com/ce/api/labels.html
 
 Examples
 --------

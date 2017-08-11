@@ -5,9 +5,24 @@ Commits
 Commits
 =======
 
-* Object class: :class:`~gitlab.objects.ProjectCommit`
-* Manager objects: :attr:`gitlab.Gitlab.project_commits`,
-  :attr:`gitlab.objects.Project.commits`
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectCommit`
+  + :class:`gitlab.v4.objects.ProjectCommitManager`
+  + :attr:`gitlab.v4.objects.Project.commits`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectCommit`
+  + :class:`gitlab.v3.objects.ProjectCommitManager`
+  + :attr:`gitlab.v3.objects.Project.commits`
+  + :attr:`gitlab.Gitlab.project_commits`
+
+* GitLab API: https://docs.gitlab.com/ce/api/commits.html
+
 
 Examples
 --------
@@ -52,10 +67,24 @@ Cherry-pick a commit into another branch:
 Commit comments
 ===============
 
-* Object class: :class:`~gitlab.objects.ProjectCommiComment`
-* Manager objects: :attr:`gitlab.Gitlab.project_commit_comments`,
-  :attr:`gitlab.objects.Project.commit_comments`,
-  :attr:`gitlab.objects.ProjectCommit.comments`
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectCommitComment`
+  + :class:`gitlab.v4.objects.ProjectCommitCommentManager`
+  + :attr:`gitlab.v4.objects.Commit.comments`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectCommit`
+  + :class:`gitlab.v3.objects.ProjectCommitManager`
+  + :attr:`gitlab.v3.objects.Commit.comments`
+  + :attr:`gitlab.v3.objects.Project.commit_comments`
+  + :attr:`gitlab.Gitlab.project_commit_comments`
+
+* GitLab API: https://docs.gitlab.com/ce/api/commits.html
 
 Examples
 --------
@@ -75,10 +104,24 @@ Add a comment on a commit:
 Commit status
 =============
 
-* Object class: :class:`~gitlab.objects.ProjectCommitStatus`
-* Manager objects: :attr:`gitlab.Gitlab.project_commit_statuses`,
-  :attr:`gitlab.objects.Project.commit_statuses`,
-  :attr:`gitlab.objects.ProjectCommit.statuses`
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectCommitStatus`
+  + :class:`gitlab.v4.objects.ProjectCommitStatusManager`
+  + :attr:`gitlab.v4.objects.Commit.statuses`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectCommit`
+  + :class:`gitlab.v3.objects.ProjectCommitManager`
+  + :attr:`gitlab.v3.objects.Commit.statuses`
+  + :attr:`gitlab.v3.objects.Project.commit_statuses`
+  + :attr:`gitlab.Gitlab.project_commit_statuses`
+
+* GitLab API: https://docs.gitlab.com/ce/api/commits.html
 
 Examples
 --------
