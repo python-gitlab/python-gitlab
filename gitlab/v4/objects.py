@@ -2121,6 +2121,18 @@ class GroupProjectManager(GetFromListMixin, RESTManager):
                      'ci_enabled_first')
 
 
+class GroupVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _id_attr = 'key'
+
+
+class GroupVariableManager(CRUDMixin, RESTManager):
+    _path = '/groups/%(group_id)s/variables'
+    _obj_cls = GroupVariable
+    _from_parent_attrs = {'group_id': 'id'}
+    _create_attrs = (('key', 'value'), ('protected',))
+    _update_attrs = (('key', 'value'), ('protected',))
+
+
 class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'name'
     _managers = (
@@ -2129,6 +2141,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('notificationsettings', 'GroupNotificationSettingsManager'),
         ('projects', 'GroupProjectManager'),
         ('issues', 'GroupIssueManager'),
+        ('variables', 'GroupVariableManager'),
     )
 
     @exc.on_http_error(exc.GitlabTransferProjectError)

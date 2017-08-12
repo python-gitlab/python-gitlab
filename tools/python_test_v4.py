@@ -121,6 +121,18 @@ assert(member.access_level == gitlab.Group.OWNER_ACCESS)
 
 group2.members.delete(gl.user.id)
 
+# Group variables
+group1.variables.create({'key': 'foo', 'value': 'bar'})
+g_v = group1.variables.get('foo')
+assert(g_v.value == 'bar')
+g_v.value = 'baz'
+g_v.save()
+g_v = group1.variables.get('foo')
+assert(g_v.value == 'baz')
+assert(len(group1.variables.list()) == 1)
+g_v.delete()
+assert(len(group1.variables.list()) == 0)
+
 # hooks
 hook = gl.hooks.create({'url': 'http://whatever.com'})
 assert(len(gl.hooks.list()) == 1)

@@ -56,11 +56,11 @@ Remove a trigger:
    :start-after: # trigger delete
    :end-before: # end trigger delete
 
-Project variables
-=================
+Projects and groups variables
+=============================
 
-You can associate variables to projects to modify the build/job script
-behavior.
+You can associate variables to projects and groups to modify the build/job
+scripts behavior.
 
 Reference
 ---------
@@ -70,6 +70,9 @@ Reference
   + :class:`gitlab.v4.objects.ProjectVariable`
   + :class:`gitlab.v4.objects.ProjectVariableManager`
   + :attr:`gitlab.v4.objects.Project.variables`
+  + :class:`gitlab.v4.objects.GroupVariable`
+  + :class:`gitlab.v4.objects.GroupVariableManager`
+  + :attr:`gitlab.v4.objects.Group.variables`
 
 * v3 API
 
@@ -78,7 +81,10 @@ Reference
   + :attr:`gitlab.v3.objects.Project.variables`
   + :attr:`gitlab.Gitlab.project_variables`
 
-* GitLab API: https://docs.gitlab.com/ce/api/project_level_variables.html
+* GitLab API
+
+  + https://docs.gitlab.com/ce/api/project_level_variables.html
+  + https://docs.gitlab.com/ce/api/group_level_variables.html
 
 Examples
 --------
