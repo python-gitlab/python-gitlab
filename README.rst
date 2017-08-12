@@ -12,7 +12,7 @@ Python GitLab
 
 ``python-gitlab`` is a Python package providing access to the GitLab server API.
 
-It supports the v3 api of GitLab, and provides a CLI tool (``gitlab``).
+It supports the v3 and v4 APIs of GitLab, and provides a CLI tool (``gitlab``).
 
 Installation
 ============
