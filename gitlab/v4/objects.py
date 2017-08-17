@@ -260,11 +260,6 @@ class CurrentUserManager(GetWithoutIdMixin, RESTManager):
     _path = '/user'
     _obj_cls = CurrentUser
 
-    def credentials_auth(self, email, password):
-        data = {'email': email, 'password': password}
-        server_data = self.gitlab.http_post('/session', post_data=data)
-        return CurrentUser(self, server_data)
-
 
 class ApplicationSettings(SaveMixin, RESTObject):
     _id_attr = None
