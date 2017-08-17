@@ -17,8 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
-from __future__ import absolute_import
 import argparse
+import functools
 import importlib
 import re
 import sys
@@ -26,6 +26,36 @@ import sys
 import gitlab.config
 
 camel_re = re.compile('(.)([A-Z])')
+
+# custom_actions = {
+#    cls: {
+#        action: (mandatory_args, optional_args, in_obj),
+#    },
+# }
+custom_actions = {}
+
+
+def register_custom_action(cls_name, mandatory=tuple(), optional=tuple()):
+    def wrap(f):
+        @functools.wraps(f)
+        def wrapped_f(*args, **kwargs):
+            return f(*args, **kwargs)
+
+        # in_obj defines whether the method belongs to the obj or the manager
+        in_obj = True
+        final_name = cls_name
+        if cls_name.endswith('Manager'):
+            final_name = cls_name.replace('Manager', '')
+            in_obj = False
+        if final_name not in custom_actions:
+            custom_actions[final_name] = {}
+
+        action = f.__name__
+
+        custom_actions[final_name][action] = (mandatory, optional, in_obj)
+
+        return wrapped_f
+    return wrap
 
 
 def die(msg, e=None):
@@ -50,6 +80,9 @@ def _get_base_parser():
                         action="store_true")
     parser.add_argument("-v", "--verbose", "--fancy",
                         help="Verbose mode",
+                        action="store_true")
+    parser.add_argument("-d", "--debug",
+                        help="Debug mode (display HTTP requests",
                         action="store_true")
     parser.add_argument("-c", "--config-file", action='append',
                         help=("Configuration file to use. Can be used "
@@ -84,12 +117,13 @@ def main():
     config_files = args.config_file
     gitlab_id = args.gitlab
     verbose = args.verbose
+    debug = args.debug
     action = args.action
     what = args.what
 
     args = args.__dict__
     # Remove CLI behavior-related args
-    for item in ('gitlab', 'config_file', 'verbose', 'what', 'action',
+    for item in ('gitlab', 'config_file', 'verbose', 'debug', 'what', 'action',
                  'version'):
         args.pop(item)
     args = {k: v for k, v in args.items() if v is not None}
@@ -99,6 +133,9 @@ def main():
         gl.auth()
     except Exception as e:
         die(str(e))
+
+    if debug:
+        gl.enable_debug()
 
     cli_module.run(gl, what, action, args, verbose)
 

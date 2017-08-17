@@ -607,6 +607,13 @@ class RESTObject(object):
             return None
         return getattr(self, self._id_attr)
 
+    @property
+    def attributes(self):
+        d = self.__dict__['_updated_attrs'].copy()
+        d.update(self.__dict__['_attrs'])
+        d.update(self.__dict__['_parent_attrs'])
+        return d
+
 
 class RESTObjectList(object):
     """Generator object representing a list of RESTObject's.

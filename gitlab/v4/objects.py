@@ -22,6 +22,7 @@ import base64
 import six
 
 from gitlab.base import *  # noqa
+from gitlab import cli
 from gitlab.exceptions import *  # noqa
 from gitlab.mixins import *  # noqa
 from gitlab import utils
@@ -44,6 +45,7 @@ class SidekiqManager(RESTManager):
     for the sidekiq metrics API.
     """
 
+    @cli.register_custom_action('SidekiqManager')
     @exc.on_http_error(exc.GitlabGetError)
     def queue_metrics(self, **kwargs):
         """Return the registred queues information.
@@ -60,6 +62,7 @@ class SidekiqManager(RESTManager):
         """
         return self.gitlab.http_get('/sidekiq/queue_metrics', **kwargs)
 
+    @cli.register_custom_action('SidekiqManager')
     @exc.on_http_error(exc.GitlabGetError)
     def process_metrics(self, **kwargs):
         """Return the registred sidekiq workers.
@@ -76,6 +79,7 @@ class SidekiqManager(RESTManager):
         """
         return self.gitlab.http_get('/sidekiq/process_metrics', **kwargs)
 
+    @cli.register_custom_action('SidekiqManager')
     @exc.on_http_error(exc.GitlabGetError)
     def job_stats(self, **kwargs):
         """Return statistics about the jobs performed.
@@ -92,6 +96,7 @@ class SidekiqManager(RESTManager):
         """
         return self.gitlab.http_get('/sidekiq/job_stats', **kwargs)
 
+    @cli.register_custom_action('SidekiqManager')
     @exc.on_http_error(exc.GitlabGetError)
     def compound_metrics(self, **kwargs):
         """Return all available metrics and statistics.
@@ -156,6 +161,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('projects', 'UserProjectManager'),
     )
 
+    @cli.register_custom_action('User')
     @exc.on_http_error(exc.GitlabBlockError)
     def block(self, **kwargs):
         """Block the user.
@@ -176,6 +182,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             self._attrs['state'] = 'blocked'
         return server_data
 
+    @cli.register_custom_action('User')
     @exc.on_http_error(exc.GitlabUnblockError)
     def unblock(self, **kwargs):
         """Unblock the user.
@@ -440,6 +447,7 @@ class Snippet(SaveMixin, ObjectDeleteMixin, RESTObject):
     _constructor_types = {'author': 'User'}
     _short_print_attr = 'title'
 
+    @cli.register_custom_action('Snippet')
     @exc.on_http_error(exc.GitlabGetError)
     def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Return the content of a snippet.
@@ -474,6 +482,7 @@ class SnippetManager(CRUDMixin, RESTManager):
     _update_attrs = (tuple(),
                      ('title', 'file_name', 'content', 'visibility'))
 
+    @cli.register_custom_action('SnippetManager')
     def public(self, **kwargs):
         """List all the public snippets.
 
@@ -528,6 +537,9 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
     _constructor_types = {'author': 'User', "committer": "User"}
     _id_attr = 'name'
 
+    @cli.register_custom_action('ProjectBranch', tuple(),
+                                ('developers_can_push',
+                                 'developers_can_merge'))
     @exc.on_http_error(exc.GitlabProtectError)
     def protect(self, developers_can_push=False, developers_can_merge=False,
                 **kwargs):
@@ -550,6 +562,7 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
         self.manager.gitlab.http_put(path, post_data=post_data, **kwargs)
         self._attrs['protected'] = True
 
+    @cli.register_custom_action('ProjectBranch')
     @exc.on_http_error(exc.GitlabProtectError)
     def unprotect(self, **kwargs):
         """Unprotect the branch.
@@ -578,6 +591,7 @@ class ProjectJob(RESTObject):
                           'commit': 'ProjectCommit',
                           'runner': 'Runner'}
 
+    @cli.register_custom_action('ProjectJob')
     @exc.on_http_error(exc.GitlabJobCancelError)
     def cancel(self, **kwargs):
         """Cancel the job.
@@ -592,6 +606,7 @@ class ProjectJob(RESTObject):
         path = '%s/%s/cancel' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path)
 
+    @cli.register_custom_action('ProjectJob')
     @exc.on_http_error(exc.GitlabJobRetryError)
     def retry(self, **kwargs):
         """Retry the job.
@@ -606,6 +621,7 @@ class ProjectJob(RESTObject):
         path = '%s/%s/retry' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path)
 
+    @cli.register_custom_action('ProjectJob')
     @exc.on_http_error(exc.GitlabJobPlayError)
     def play(self, **kwargs):
         """Trigger a job explicitly.
@@ -620,6 +636,7 @@ class ProjectJob(RESTObject):
         path = '%s/%s/play' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path)
 
+    @cli.register_custom_action('ProjectJob')
     @exc.on_http_error(exc.GitlabJobEraseError)
     def erase(self, **kwargs):
         """Erase the job (remove job artifacts and trace).
@@ -634,6 +651,7 @@ class ProjectJob(RESTObject):
         path = '%s/%s/erase' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path)
 
+    @cli.register_custom_action('ProjectJob')
     @exc.on_http_error(exc.GitlabCreateError)
     def keep_artifacts(self, **kwargs):
         """Prevent artifacts from being deleted when expiration is set.
@@ -648,6 +666,7 @@ class ProjectJob(RESTObject):
         path = '%s/%s/artifacts/keep' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path)
 
+    @cli.register_custom_action('ProjectJob')
     @exc.on_http_error(exc.GitlabGetError)
     def artifacts(self, streamed=False, action=None, chunk_size=1024,
                   **kwargs):
@@ -674,6 +693,7 @@ class ProjectJob(RESTObject):
                                               **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
+    @cli.register_custom_action('ProjectJob')
     @exc.on_http_error(exc.GitlabGetError)
     def trace(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Get the job trace.
@@ -759,6 +779,7 @@ class ProjectCommit(RESTObject):
         ('statuses', 'ProjectCommitStatusManager'),
     )
 
+    @cli.register_custom_action('ProjectCommit')
     @exc.on_http_error(exc.GitlabGetError)
     def diff(self, **kwargs):
         """Generate the commit diff.
@@ -776,6 +797,7 @@ class ProjectCommit(RESTObject):
         path = '%s/%s/diff' % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)
 
+    @cli.register_custom_action('ProjectCommit', ('branch',))
     @exc.on_http_error(exc.GitlabCherryPickError)
     def cherry_pick(self, branch, **kwargs):
         """Cherry-pick a commit into a branch.
@@ -824,6 +846,7 @@ class ProjectKeyManager(NoUpdateMixin, RESTManager):
     _from_parent_attrs = {'project_id': 'id'}
     _create_attrs = (('title', 'key'), tuple())
 
+    @cli.register_custom_action('ProjectKeyManager', ('key_id',))
     @exc.on_http_error(exc.GitlabProjectDeployKeyError)
     def enable(self, key_id, **kwargs):
         """Enable a deploy key for a project.
@@ -891,7 +914,7 @@ class ProjectIssueNoteManager(CRUDMixin, RESTManager):
     _path = '/projects/%(project_id)s/issues/%(issue_iid)s/notes'
     _obj_cls = ProjectIssueNote
     _from_parent_attrs = {'project_id': 'project_id', 'issue_iid': 'iid'}
-    _create_attrs = (('body', ), ('created_at'))
+    _create_attrs = (('body', ), ('created_at', ))
     _update_attrs = (('body', ), tuple())
 
 
@@ -903,6 +926,7 @@ class ProjectIssue(SubscribableMixin, TodoMixin, TimeTrackingMixin, SaveMixin,
     _id_attr = 'iid'
     _managers = (('notes', 'ProjectIssueNoteManager'), )
 
+    @cli.register_custom_action('ProjectIssue', ('to_project_id',))
     @exc.on_http_error(exc.GitlabUpdateError)
     def move(self, to_project_id, **kwargs):
         """Move the issue to another project.
@@ -974,6 +998,7 @@ class ProjectTag(ObjectDeleteMixin, RESTObject):
     _id_attr = 'name'
     _short_print_attr = 'name'
 
+    @cli.register_custom_action('ProjectTag', ('description', ))
     def set_release_description(self, description, **kwargs):
         """Set the release notes on the tag.
 
@@ -1048,6 +1073,7 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
         ('diffs', 'ProjectMergeRequestDiffManager')
     )
 
+    @cli.register_custom_action('ProjectMergeRequest')
     @exc.on_http_error(exc.GitlabMROnBuildSuccessError)
     def cancel_merge_when_pipeline_succeeds(self, **kwargs):
         """Cancel merge when the pipeline succeeds.
@@ -1066,6 +1092,7 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
         server_data = self.manager.gitlab.http_put(path, **kwargs)
         self._update_attrs(server_data)
 
+    @cli.register_custom_action('ProjectMergeRequest')
     @exc.on_http_error(exc.GitlabListError)
     def closes_issues(self, **kwargs):
         """List issues that will close on merge."
@@ -1087,6 +1114,7 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                                       parent=self.manager._parent)
         return RESTObjectList(manager, ProjectIssue, data_list)
 
+    @cli.register_custom_action('ProjectMergeRequest')
     @exc.on_http_error(exc.GitlabListError)
     def commits(self, **kwargs):
         """List the merge request commits.
@@ -1109,6 +1137,7 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                                        parent=self.manager._parent)
         return RESTObjectList(manager, ProjectCommit, data_list)
 
+    @cli.register_custom_action('ProjectMergeRequest')
     @exc.on_http_error(exc.GitlabListError)
     def changes(self, **kwargs):
         """List the merge request changes.
@@ -1126,6 +1155,10 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
         path = '%s/%s/changes' % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)
 
+    @cli.register_custom_action('ProjectMergeRequest', tuple(),
+                                ('merge_commit_message',
+                                 'should_remove_source_branch',
+                                 'merge_when_pipeline_succeeds'))
     @exc.on_http_error(exc.GitlabMRClosedError)
     def merge(self, merge_commit_message=None,
               should_remove_source_branch=False,
@@ -1177,6 +1210,7 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
 class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'title'
 
+    @cli.register_custom_action('ProjectMilestone')
     @exc.on_http_error(exc.GitlabListError)
     def issues(self, **kwargs):
         """List issues related to this milestone.
@@ -1200,6 +1234,7 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, ProjectIssue, data_list)
 
+    @cli.register_custom_action('ProjectMilestone')
     @exc.on_http_error(exc.GitlabListError)
     def merge_requests(self, **kwargs):
         """List the merge requests related to this milestone.
@@ -1399,6 +1434,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
         data = {'branch': branch, 'commit_message': commit_message}
         self.gitlab.http_delete(path, query_data=data, **kwargs)
 
+    @cli.register_custom_action('ProjectFileManager', ('file_path', 'ref'))
     @exc.on_http_error(exc.GitlabGetError)
     def raw(self, file_path, ref, streamed=False, action=None, chunk_size=1024,
             **kwargs):
@@ -1431,6 +1467,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
 
 
 class ProjectPipeline(RESTObject):
+    @cli.register_custom_action('ProjectPipeline')
     @exc.on_http_error(exc.GitlabPipelineCancelError)
     def cancel(self, **kwargs):
         """Cancel the job.
@@ -1445,6 +1482,7 @@ class ProjectPipeline(RESTObject):
         path = '%s/%s/cancel' % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path)
 
+    @cli.register_custom_action('ProjectPipeline')
     @exc.on_http_error(exc.GitlabPipelineRetryError)
     def retry(self, **kwargs):
         """Retry the job.
@@ -1504,6 +1542,7 @@ class ProjectSnippet(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'title'
     _managers = (('notes', 'ProjectSnippetNoteManager'), )
 
+    @cli.register_custom_action('ProjectSnippet')
     @exc.on_http_error(exc.GitlabGetError)
     def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Return the content of a snippet.
@@ -1540,6 +1579,7 @@ class ProjectSnippetManager(CRUDMixin, RESTManager):
 
 
 class ProjectTrigger(SaveMixin, ObjectDeleteMixin, RESTObject):
+    @cli.register_custom_action('ProjectTrigger')
     def take_ownership(self, **kwargs):
         """Update the owner of a trigger."""
         path = '%s/%s/take_ownership' % (self.manager.path, self.get_id())
@@ -1652,6 +1692,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
         super(ProjectServiceManager, self).update(id, new_data, **kwargs)
         self.id = id
 
+    @cli.register_custom_action('ProjectServiceManager')
     def available(self, **kwargs):
         """List the services known by python-gitlab.
 
@@ -1725,6 +1766,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('variables', 'ProjectVariableManager'),
     )
 
+    @cli.register_custom_action('Project', tuple(), ('path', 'ref'))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_tree(self, path='', ref='', **kwargs):
         """Return a list of files in the repository.
@@ -1750,6 +1792,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         return self.manager.gitlab.http_get(gl_path, query_data=query_data,
                                             **kwargs)
 
+    @cli.register_custom_action('Project', ('sha', ))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_blob(self, sha, **kwargs):
         """Return a blob by blob SHA.
@@ -1769,6 +1812,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = '/projects/%s/repository/blobs/%s' % (self.get_id(), sha)
         return self.manager.gitlab.http_get(path, **kwargs)
 
+    @cli.register_custom_action('Project', ('sha', ))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_raw_blob(self, sha, streamed=False, action=None,
                             chunk_size=1024, **kwargs):
@@ -1796,6 +1840,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
                                               **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
+    @cli.register_custom_action('Project', ('from_', 'to'))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_compare(self, from_, to, **kwargs):
         """Return a diff between two branches/commits.
@@ -1817,6 +1862,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         return self.manager.gitlab.http_get(path, query_data=query_data,
                                             **kwargs)
 
+    @cli.register_custom_action('Project')
     @exc.on_http_error(exc.GitlabGetError)
     def repository_contributors(self, **kwargs):
         """Return a list of contributors for the project.
@@ -1834,6 +1880,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = '/projects/%s/repository/contributors' % self.get_id()
         return self.manager.gitlab.http_get(path, **kwargs)
 
+    @cli.register_custom_action('Project', tuple(), ('sha', ))
     @exc.on_http_error(exc.GitlabListError)
     def repository_archive(self, sha=None, streamed=False, action=None,
                            chunk_size=1024, **kwargs):
@@ -1864,6 +1911,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
                                               streamed=streamed, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
+    @cli.register_custom_action('Project', ('forked_from_id', ))
     @exc.on_http_error(exc.GitlabCreateError)
     def create_fork_relation(self, forked_from_id, **kwargs):
         """Create a forked from/to relation between existing projects.
@@ -1879,6 +1927,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = '/projects/%s/fork/%s' % (self.get_id(), forked_from_id)
         self.manager.gitlab.http_post(path, **kwargs)
 
+    @cli.register_custom_action('Project')
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete_fork_relation(self, **kwargs):
         """Delete a forked relation between existing projects.
@@ -1893,6 +1942,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = '/projects/%s/fork' % self.get_id()
         self.manager.gitlab.http_delete(path, **kwargs)
 
+    @cli.register_custom_action('Project')
     @exc.on_http_error(exc.GitlabCreateError)
     def star(self, **kwargs):
         """Star a project.
@@ -1908,6 +1958,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
+    @cli.register_custom_action('Project')
     @exc.on_http_error(exc.GitlabDeleteError)
     def unstar(self, **kwargs):
         """Unstar a project.
@@ -1923,6 +1974,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
+    @cli.register_custom_action('Project')
     @exc.on_http_error(exc.GitlabCreateError)
     def archive(self, **kwargs):
         """Archive a project.
@@ -1938,6 +1990,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
+    @cli.register_custom_action('Project')
     @exc.on_http_error(exc.GitlabDeleteError)
     def unarchive(self, **kwargs):
         """Unarchive a project.
@@ -1953,6 +2006,8 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
+    @cli.register_custom_action('Project', ('group_id', 'group_access'),
+                                ('expires_at', ))
     @exc.on_http_error(exc.GitlabCreateError)
     def share(self, group_id, group_access, expires_at=None, **kwargs):
         """Share the project with a group.
@@ -1972,6 +2027,8 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
                 'expires_at': expires_at}
         self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
+    # variables not supported in CLI
+    @cli.register_custom_action('Project', ('ref', 'token'))
     @exc.on_http_error(exc.GitlabCreateError)
     def trigger_pipeline(self, ref, token, variables={}, **kwargs):
         """Trigger a CI build.
@@ -2005,6 +2062,7 @@ class RunnerManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
     _update_attrs = (tuple(), ('description', 'active', 'tag_list'))
     _list_filters = ('scope', )
 
+    @cli.register_custom_action('RunnerManager', tuple(), ('scope', ))
     @exc.on_http_error(exc.GitlabListError)
     def all(self, scope=None, **kwargs):
         """List all the runners.
@@ -2034,6 +2092,7 @@ class RunnerManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
 
 
 class Todo(ObjectDeleteMixin, RESTObject):
+    @cli.register_custom_action('Todo')
     @exc.on_http_error(exc.GitlabTodoError)
     def mark_as_done(self, **kwargs):
         """Mark the todo as done.
@@ -2055,6 +2114,7 @@ class TodoManager(GetFromListMixin, DeleteMixin, RESTManager):
     _obj_cls = Todo
     _list_filters = ('action', 'author_id', 'project_id', 'state', 'type')
 
+    @cli.register_custom_action('TodoManager')
     @exc.on_http_error(exc.GitlabTodoError)
     def mark_all_as_done(self, **kwargs):
         """Mark all the todos as done.
@@ -2126,19 +2186,20 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('issues', 'GroupIssueManager'),
     )
 
+    @cli.register_custom_action('Group', ('to_project_id', ))
     @exc.on_http_error(exc.GitlabTransferProjectError)
-    def transfer_project(self, id, **kwargs):
+    def transfer_project(self, to_project_id, **kwargs):
         """Transfer a project to this group.
 
         Args:
-            id (int): ID of the project to transfer
+            to_project_id (int): ID of the project to transfer
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabTransferProjectError: If the project could not be transfered
         """
-        path = '/groups/%d/projects/%d' % (self.id, id)
+        path = '/groups/%d/projects/%d' % (self.id, project_id)
         self.manager.gitlab.http_post(path, **kwargs)
 
 
