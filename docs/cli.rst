@@ -80,10 +80,11 @@ section.
    * - ``url``
      - URL for the GitLab server
    * - ``private_token``
-     - Your user token. Login/password is not supported.
-       Refer `the official documentation`__ to learn how to obtain a token.
+     - Your user token. Login/password is not supported. Refer to `the official
+       documentation`__ to learn how to obtain a token.
    * - ``api_version``
-     - API version to use (``3`` or ``4``), defaults to ``3``
+     - GitLab API version to use (``3`` or ``4``). Defaults to ``3`` for now,
+       but will switch to ``4`` eventually.
    * - ``http_username``
      - Username for optional HTTP authentication
    * - ``http_password``
@@ -126,7 +127,8 @@ Use the following optional arguments to change the behavior of ``gitlab``.
 These options must be defined before the mandatory arguments.
 
 ``--verbose``, ``-v``
-    Outputs detail about retrieved objects.
+    Outputs detail about retrieved objects. Available for legacy (default)
+    output only.
 
 ``--config-file``, ``-c``
     Path to a configuration file.
@@ -134,11 +136,18 @@ These options must be defined before the mandatory arguments.
 ``--gitlab``, ``-g``
     ID of a GitLab server defined in the configuration file.
 
+``--output``, ``-o``
+    Output format. Defaults to a custom format. Can also be ``yaml`` or ``json``.
+
+``--fields``, ``-f``
+    Comma-separated list of fields to display (``yaml`` and ``json`` formats
+    only).  If not used, all the object fields are displayed.
+
 Example:
 
 .. code-block:: console
 
-   $ gitlab -v -g elsewhere -c /tmp/gl.cfg project list
+   $ gitlab -o yaml -f id,permissions -g elsewhere -c /tmp/gl.cfg project list
 
 
 Examples
@@ -168,12 +177,11 @@ Get a specific project (id 2):
 
    $ gitlab project get --id 2
 
-Get a specific user by id or by username:
+Get a specific user by id:
 
 .. code-block:: console
 
    $ gitlab user get --id 3
-   $ gitlab user get-by-username --query jdoe
 
 Get a list of snippets for this project:
 
@@ -200,7 +208,6 @@ Create a snippet:
 
    $ gitlab project-snippet create --project-id 2
    Impossible to create object (Missing attribute(s): title, file-name, code)
-
    $ # oops, let's add the attributes:
    $ gitlab project-snippet create --project-id 2 --title "the title" \
        --file-name "the name" --code "the code"

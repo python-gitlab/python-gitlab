@@ -245,30 +245,47 @@ def extend_parser(parser):
     return parser
 
 
+class JSONPrinter(object):
+    def display(self, d, **kwargs):
+        import json  # noqa
+
+        print(json.dumps(d))
+
+
+class YAMLPrinter(object):
+    def display(self, d, **kwargs):
+        import yaml  # noqa
+
+        print(yaml.safe_dump(d, default_flow_style=False))
+
+
 class LegacyPrinter(object):
-    def display(self, obj, verbose=False, padding=0):
-        def display_dict(d):
+    def display(self, d, **kwargs):
+        verbose = kwargs.get('verbose', False)
+        padding = kwargs.get('padding', 0)
+        obj = kwargs.get('obj')
+
+        def display_dict(d, padding):
             for k in sorted(d.keys()):
                 v = d[k]
                 if isinstance(v, dict):
                     print('%s%s:' % (' ' * padding, k))
                     new_padding = padding + 2
-                    self.display(v, True, new_padding)
+                    self.display(v, verbose=True, padding=new_padding, obj=v)
                     continue
                 print('%s%s: %s' % (' ' * padding, k, v))
 
         if verbose:
             if isinstance(obj, dict):
-                display_dict(obj)
+                display_dict(obj, padding)
                 return
 
             # not a dict, we assume it's a RESTObject
-            id = getattr(obj, obj._id_attr)
+            id = getattr(obj, obj._id_attr, None)
             print('%s: %s' % (obj._id_attr, id))
             attrs = obj.attributes
             attrs.pop(obj._id_attr)
-            display_dict(attrs)
-            print('')
+            display_dict(attrs, padding)
 
         else:
             id = getattr(obj, obj._id_attr)
@@ -278,19 +295,33 @@ class LegacyPrinter(object):
                 print('%s: %s' % (obj._short_print_attr, value))
 
 
-def run(gl, what, action, args, verbose):
+PRINTERS = {
+    'json': JSONPrinter,
+    'legacy': LegacyPrinter,
+    'yaml': YAMLPrinter,
+}
+
+
+def run(gl, what, action, args, verbose, output, fields):
     g_cli = GitlabCLI(gl, what, action, args)
     ret_val = g_cli()
 
-    printer = LegacyPrinter()
+    printer = PRINTERS[output]()
+
+    def get_dict(obj):
+        if fields:
+            return {k: v for k, v in obj.attributes.items()
+                    if k in fields}
+        return obj.attributes
 
     if isinstance(ret_val, list):
-        for o in ret_val:
-            if isinstance(o, gitlab.base.RESTObject):
-                printer.display(o, verbose)
+        for obj in ret_val:
+            if isinstance(obj, gitlab.base.RESTObject):
+                printer.display(get_dict(obj), verbose=verbose, obj=obj)
             else:
-                print(o)
+                print(obj)
+            print('')
     elif isinstance(ret_val, gitlab.base.RESTObject):
-        printer.display(ret_val, verbose)
+        printer.display(get_dict(ret_val), verbose=verbose, obj=ret_val)
     elif isinstance(ret_val, six.string_types):
         print(ret_val)

@@ -51,7 +51,6 @@ def register_custom_action(cls_name, mandatory=tuple(), optional=tuple()):
             custom_actions[final_name] = {}
 
         action = f.__name__
-
         custom_actions[final_name][action] = (mandatory, optional, in_obj)
 
         return wrapped_f
@@ -79,7 +78,7 @@ def _get_base_parser():
     parser.add_argument("--version", help="Display the version.",
                         action="store_true")
     parser.add_argument("-v", "--verbose", "--fancy",
-                        help="Verbose mode",
+                        help="Verbose mode (legacy format only)",
                         action="store_true")
     parser.add_argument("-d", "--debug",
                         help="Debug mode (display HTTP requests",
@@ -91,6 +90,15 @@ def _get_base_parser():
                         help=("Which configuration section should "
                               "be used. If not defined, the default selection "
                               "will be used."),
+                        required=False)
+    parser.add_argument("-o", "--output",
+                        help=("Output format (v4 only): json|legacy|yaml"),
+                        required=False,
+                        choices=['json', 'legacy', 'yaml'],
+                        default="legacy")
+    parser.add_argument("-f", "--fields",
+                        help=("Fields to display in the output (comma "
+                              "separated). Not used with legacy output"),
                         required=False)
 
     return parser
@@ -117,6 +125,10 @@ def main():
     config_files = args.config_file
     gitlab_id = args.gitlab
     verbose = args.verbose
+    output = args.output
+    fields = []
+    if args.fields:
+        fields = [x.strip() for x in args.fields.split(',')]
     debug = args.debug
     action = args.action
     what = args.what
@@ -124,7 +136,7 @@ def main():
     args = args.__dict__
     # Remove CLI behavior-related args
     for item in ('gitlab', 'config_file', 'verbose', 'debug', 'what', 'action',
-                 'version'):
+                 'version', 'output'):
         args.pop(item)
     args = {k: v for k, v in args.items() if v is not None}
 
@@ -137,6 +149,6 @@ def main():
     if debug:
         gl.enable_debug()
 
-    cli_module.run(gl, what, action, args, verbose)
+    cli_module.run(gl, what, action, args, verbose, output, fields)
 
     sys.exit(0)
