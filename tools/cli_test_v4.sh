@@ -60,11 +60,11 @@ testcase "issue creation" '
     OUTPUT=$(GITLAB project-issue create --project-id "$PROJECT_ID" \
         --title "my issue" --description "my issue description")
 '
-ISSUE_ID=$(pecho "${OUTPUT}" | grep ^id: | cut -d' ' -f2)
+ISSUE_ID=$(pecho "${OUTPUT}" | grep ^iid: | cut -d' ' -f2)
 
 testcase "note creation" '
     GITLAB project-issue-note create --project-id "$PROJECT_ID" \
-        --issue-id "$ISSUE_ID" --body "the body" >/dev/null 2>&1
+        --issue-iid "$ISSUE_ID" --body "the body" >/dev/null 2>&1
 '
 
 testcase "branch creation" '
@@ -82,11 +82,11 @@ testcase "merge request creation" '
         --source-branch branch1 --target-branch master \
         --title "Update README")
 '
-MR_ID=$(pecho "${OUTPUT}" | grep ^id: | cut -d' ' -f2)
+MR_ID=$(pecho "${OUTPUT}" | grep ^iid: | cut -d' ' -f2)
 
 testcase "merge request validation" '
     GITLAB project-merge-request merge --project-id "$PROJECT_ID" \
-        --id "$MR_ID" >/dev/null 2>&1
+        --iid "$MR_ID" >/dev/null 2>&1
 '
 
 testcase "branch deletion" '
