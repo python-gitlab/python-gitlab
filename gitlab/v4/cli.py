@@ -114,11 +114,11 @@ def _populate_sub_parser_by_class(cls, sub_parser):
             continue
 
         sub_parser_action = sub_parser.add_parser(action_name)
+        sub_parser_action.add_argument("--sudo", required=False)
         if hasattr(mgr_cls, '_from_parent_attrs'):
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                             required=True)
              for x in mgr_cls._from_parent_attrs]
-            sub_parser_action.add_argument("--sudo", required=False)
 
         if action_name == "list":
             if hasattr(mgr_cls, '_list_filters'):
