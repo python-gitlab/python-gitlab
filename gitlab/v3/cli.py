@@ -462,7 +462,7 @@ def extend_parser(parser):
     return parser
 
 
-def run(gl, what, action, args, verbose):
+def run(gl, what, action, args, verbose, *fargs, **kwargs):
     try:
         cls = gitlab.v3.objects.__dict__[cli.what_to_cls(what)]
     except ImportError:
