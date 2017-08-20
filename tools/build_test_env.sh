@@ -25,10 +25,12 @@ error() { log "ERROR: $@" >&2; }
 fatal() { error "$@"; exit 1; }
 try() { "$@" || fatal "'$@' failed"; }
 
+NOVENV=
 PY_VER=2
 API_VER=3
-while getopts :p:a: opt "$@"; do
+while getopts :np:a: opt "$@"; do
     case $opt in
+        n) NOVENV=1;;
         p) PY_VER=$OPTARG;;
         a) API_VER=$OPTARG;;
         :) fatal "Option -${OPTARG} requires a value";;
@@ -143,15 +145,17 @@ EOF
 log "Config file content ($CONFIG):"
 log <$CONFIG
 
-log "Creating Python virtualenv..."
-try "$VENV_CMD" "$VENV"
-. "$VENV"/bin/activate || fatal "failed to activate Python virtual environment"
+if [ -z "$NOVENV" ]; then
+    log "Creating Python virtualenv..."
+    try "$VENV_CMD" "$VENV"
+    . "$VENV"/bin/activate || fatal "failed to activate Python virtual environment"
 
-log "Installing dependencies into virtualenv..."
-try pip install -rrequirements.txt
+    log "Installing dependencies into virtualenv..."
+    try pip install -rrequirements.txt
 
-log "Installing into virtualenv..."
-try pip install -e .
+    log "Installing into virtualenv..."
+    try pip install -e .
+fi
 
 log "Pausing to give GitLab some time to finish starting up..."
 sleep 30
