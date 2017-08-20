@@ -1374,6 +1374,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
     _update_attrs = (('file_path', 'branch', 'content', 'commit_message'),
                      ('encoding', 'author_email', 'author_name'))
 
+    @cli.register_custom_action('ProjectFileManager', ('file_path', 'ref'))
     def get(self, file_path, ref, **kwargs):
         """Retrieve a single file.
 
@@ -1392,6 +1393,10 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
         file_path = file_path.replace('/', '%2F')
         return GetMixin.get(self, file_path, ref=ref, **kwargs)
 
+    @cli.register_custom_action('ProjectFileManager',
+                                ('file_path', 'branch', 'content',
+                                 'commit_message'),
+                                ('encoding', 'author_email', 'author_name'))
     @exc.on_http_error(exc.GitlabCreateError)
     def create(self, data, **kwargs):
         """Create a new object.
@@ -1416,6 +1421,8 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
         server_data = self.gitlab.http_post(path, post_data=data, **kwargs)
         return self._obj_cls(self, server_data)
 
+    @cli.register_custom_action('ProjectFileManager', ('file_path', 'branch',
+                                                       'commit_message'))
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete(self, file_path, branch, commit_message, **kwargs):
         """Delete a file on the server.
