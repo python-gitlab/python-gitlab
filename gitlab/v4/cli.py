@@ -269,11 +269,11 @@ class LegacyPrinter(object):
             for k in sorted(d.keys()):
                 v = d[k]
                 if isinstance(v, dict):
-                    print('%s%s:' % (' ' * padding, k))
+                    print('%s%s:' % (' ' * padding, k.replace('_', '-')))
                     new_padding = padding + 2
                     self.display(v, verbose=True, padding=new_padding, obj=v)
                     continue
-                print('%s%s: %s' % (' ' * padding, k, v))
+                print('%s%s: %s' % (' ' * padding, k.replace('_', '-'), v))
 
         if verbose:
             if isinstance(obj, dict):
@@ -289,7 +289,7 @@ class LegacyPrinter(object):
 
         else:
             id = getattr(obj, obj._id_attr)
-            print('%s: %s' % (obj._id_attr, id))
+            print('%s: %s' % (obj._id_attr.replace('_', '-'), id))
             if hasattr(obj, '_short_print_attr'):
                 value = getattr(obj, obj._short_print_attr)
                 print('%s: %s' % (obj._short_print_attr, value))
