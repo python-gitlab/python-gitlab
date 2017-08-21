@@ -31,6 +31,22 @@ assert(token_from_auth == gl.private_token)
 gl.auth()
 assert(isinstance(gl.user, gitlab.v4.objects.CurrentUser))
 
+# sidekiq
+out = gl.sidekiq.queue_metrics()
+assert(isinstance(out, dict))
+assert('pages' in out['queues'])
+out = gl.sidekiq.process_metrics()
+assert(isinstance(out, dict))
+assert('hostname' in out['processes'][0])
+out = gl.sidekiq.job_stats()
+assert(isinstance(out, dict))
+assert('processed' in out['jobs'])
+out = gl.sidekiq.compound_metrics()
+assert(isinstance(out, dict))
+assert('jobs' in out)
+assert('processes' in out)
+assert('queues' in out)
+
 # settings
 settings = gl.settings.get()
 settings.default_projects_limit = 42
@@ -38,7 +54,7 @@ settings.save()
 settings = gl.settings.get()
 assert(settings.default_projects_limit == 42)
 
-# user manipulations
+# users
 new_user = gl.users.create({'email': 'foo@bar.com', 'username': 'foo',
                             'name': 'foo', 'password': 'foo_password'})
 users_list = gl.users.list()
@@ -61,6 +77,8 @@ expected = sorted([new_user, foobar_user], cmp=usercmp)
 actual = sorted(list(gl.users.list(search='foo')), cmp=usercmp)
 assert len(expected) == len(actual)
 assert len(gl.users.list(search='asdf')) == 0
+foobar_user.bio = 'This is the user bio'
+foobar_user.save()
 
 # SSH keys
 key = new_user.keys.create({'title': 'testkey', 'key': SSH_KEY})
@@ -78,11 +96,35 @@ new_user.delete()
 foobar_user.delete()
 assert(len(gl.users.list()) == 3)
 
+# current user mail
+mail = gl.user.emails.create({'email': 'current@user.com'})
+assert(len(gl.user.emails.list()) == 1)
+mail.delete()
+assert(len(gl.user.emails.list()) == 0)
+
 # current user key
 key = gl.user.keys.create({'title': 'testkey', 'key': SSH_KEY})
 assert(len(gl.user.keys.list()) == 1)
 key.delete()
 assert(len(gl.user.keys.list()) == 0)
+
+# templates
+assert(gl.dockerfiles.list())
+dockerfile = gl.dockerfiles.get('Node')
+assert(dockerfile.content is not None)
+
+assert(gl.gitignores.list())
+gitignore = gl.gitignores.get('Node')
+assert(gitignore.content is not None)
+
+assert(gl.gitlabciymls.list())
+gitlabciyml = gl.gitlabciymls.get('Nodejs')
+assert(gitlabciyml.content is not None)
+
+assert(gl.licenses.list())
+license = gl.licenses.get('bsd-2-clause', project='mytestproject',
+                          fullname='mytestfullname')
+assert('mytestfullname' in license.content)
 
 # groups
 user1 = gl.users.create({'email': 'user1@test.com', 'username': 'user1',
@@ -120,6 +162,13 @@ member = group1.members.get(user2.id)
 assert(member.access_level == gitlab.Group.OWNER_ACCESS)
 
 group2.members.delete(gl.user.id)
+
+# group notification settings
+settings = group2.notificationsettings.get()
+settings.level = 'disabled'
+settings.save()
+settings = group2.notificationsettings.get()
+assert(settings.level == 'disabled')
 
 # hooks
 hook = gl.hooks.create({'url': 'http://whatever.com'})
@@ -175,9 +224,20 @@ data = {
     ]
 }
 admin_project.commits.create(data)
+assert('---' in admin_project.commits.list()[0].diff()[0]['diff'])
 
+# commit status
+commit = admin_project.commits.list()[0]
+status = commit.statuses.create({'state': 'success', 'sha': commit.id})
+assert(len(commit.statuses.list()) == 1)
+
+# commit comment
+commit.comments.create({'note': 'This is a commit comment'})
+assert(len(commit.comments.list()) == 1)
+
+# repository
 tree = admin_project.repository_tree()
-assert(len(tree) == 2)
+assert(len(tree) != 0)
 assert(tree[0]['name'] == 'README.rst')
 blob_id = tree[0]['id']
 blob = admin_project.repository_raw_blob(blob_id)
@@ -185,6 +245,36 @@ assert(blob == 'Initial content')
 archive1 = admin_project.repository_archive()
 archive2 = admin_project.repository_archive('master')
 assert(archive1 == archive2)
+
+# environments
+admin_project.environments.create({'name': 'env1', 'external_url':
+                                   'http://fake.env/whatever'})
+envs = admin_project.environments.list()
+assert(len(envs) == 1)
+env = admin_project.environments.get(envs[0].id)
+env.external_url = 'http://new.env/whatever'
+env.save()
+env = admin_project.environments.get(envs[0].id)
+assert(env.external_url == 'http://new.env/whatever')
+env.delete()
+assert(len(admin_project.environments.list()) == 0)
+
+# events
+admin_project.events.list()
+
+# forks
+fork = admin_project.forks.create({'namespace': user1.username})
+p = gl.projects.get(fork.id)
+assert(p.forked_from_project['id'] == admin_project.id)
+
+# project hooks
+hook = admin_project.hooks.create({'url': 'http://hook.url'})
+assert(len(admin_project.hooks.list()) == 1)
+hook.note_events = True
+hook.save()
+hook = admin_project.hooks.get(hook.id)
+assert(hook.note_events is True)
+hook.delete()
 
 # deploy keys
 deploy_key = admin_project.keys.create({'title': 'foo@bar', 'key': DEPLOY_KEY})
@@ -231,6 +321,10 @@ assert(len(admin_project.issues.list(state='closed')) == 1)
 assert(len(admin_project.issues.list(state='opened')) == 2)
 assert(len(admin_project.issues.list(milestone='milestone1')) == 1)
 assert(m1.issues().next().title == 'my issue 1')
+note = issue1.notes.create({'body': 'This is an issue note'})
+assert(len(issue1.notes.list()) == 1)
+note.delete()
+assert(len(issue1.notes.list()) == 0)
 
 # tags
 tag1 = admin_project.tags.create({'tag_name': 'v1.0', 'ref': 'master'})
@@ -239,6 +333,22 @@ tag1.set_release_description('Description 1')
 tag1.set_release_description('Description 2')
 assert(tag1.release['description'] == 'Description 2')
 tag1.delete()
+
+# project snippet
+admin_project.snippets_enabled = True
+admin_project.save()
+snippet = admin_project.snippets.create(
+    {'title': 'snip1', 'file_name': 'foo.py', 'code': 'initial content',
+     'visibility': gitlab.v4.objects.VISIBILITY_PRIVATE}
+)
+snippet.file_name = 'bar.py'
+snippet.save()
+snippet = admin_project.snippets.get(snippet.id)
+assert(snippet.content() == 'initial content')
+assert(snippet.file_name == 'bar.py')
+size = len(admin_project.snippets.list())
+snippet.delete()
+assert(len(admin_project.snippets.list()) == (size - 1))
 
 # triggers
 tr1 = admin_project.triggers.create({'description': 'trigger1'})
@@ -330,12 +440,11 @@ snippets = gl.snippets.list(all=True)
 assert(len(snippets) == 0)
 snippet = gl.snippets.create({'title': 'snippet1', 'file_name': 'snippet1.py',
                               'content': 'import gitlab'})
-snippet = gl.snippets.get(1)
+snippet = gl.snippets.get(snippet.id)
 snippet.title = 'updated_title'
 snippet.save()
-snippet = gl.snippets.get(1)
+snippet = gl.snippets.get(snippet.id)
 assert(snippet.title == 'updated_title')
 content = snippet.content()
 assert(content == 'import gitlab')
 snippet.delete()
-assert(len(gl.snippets.list()) == 0)

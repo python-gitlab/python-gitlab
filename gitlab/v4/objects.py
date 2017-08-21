@@ -209,13 +209,13 @@ class UserManager(CRUDMixin, RESTManager):
     _obj_cls = User
 
     _list_filters = ('active', 'blocked', 'username', 'extern_uid', 'provider',
-                     'external')
+                     'external', 'search')
     _create_attrs = (
-        ('email', 'username', 'name'),
-        ('password', 'reset_password', 'skype', 'linkedin', 'twitter',
-         'projects_limit', 'extern_uid', 'provider', 'bio', 'admin',
-         'can_create_group', 'website_url', 'skip_confirmation', 'external',
-         'organization', 'location')
+        tuple(),
+        ('email', 'username', 'name', 'password', 'reset_password', 'skype',
+         'linkedin', 'twitter', 'projects_limit', 'extern_uid', 'provider',
+         'bio', 'admin', 'can_create_group', 'website_url',
+         'skip_confirmation', 'external', 'organization', 'location')
     )
     _update_attrs = (
         ('email', 'username', 'name'),
@@ -730,13 +730,14 @@ class ProjectCommitStatus(RESTObject):
     pass
 
 
-class ProjectCommitStatusManager(RetrieveMixin, CreateMixin, RESTManager):
+class ProjectCommitStatusManager(GetFromListMixin, CreateMixin, RESTManager):
     _path = ('/projects/%(project_id)s/repository/commits/%(commit_id)s'
              '/statuses')
     _obj_cls = ProjectCommitStatus
     _from_parent_attrs = {'project_id': 'project_id', 'commit_id': 'id'}
-    _create_attrs = (('state', ),
-                     ('description', 'name', 'context', 'ref', 'target_url'))
+    _create_attrs = (('state', 'sha'),
+                     ('description', 'name', 'context', 'ref', 'target_url',
+                      'coverage'))
 
     def create(self, data, **kwargs):
         """Create a new object.
@@ -761,7 +762,7 @@ class ProjectCommitStatusManager(RetrieveMixin, CreateMixin, RESTManager):
 
 
 class ProjectCommitComment(RESTObject):
-    pass
+    _id_attr = None
 
 
 class ProjectCommitCommentManager(ListMixin, CreateMixin, RESTManager):
@@ -864,10 +865,11 @@ class ProjectKeyManager(NoUpdateMixin, RESTManager):
 
 
 class ProjectEvent(RESTObject):
+    _id_attr = None
     _short_print_attr = 'target_title'
 
 
-class ProjectEventManager(GetFromListMixin, RESTManager):
+class ProjectEventManager(ListMixin, RESTManager):
     _path = '/projects/%(project_id)s/events'
     _obj_cls = ProjectEvent
     _from_parent_attrs = {'project_id': 'id'}
