@@ -5,9 +5,26 @@ Merge requests
 You can use merge requests to notify a project that a branch is ready for
 merging. The owner of the target projet can accept the merge request.
 
-* Object class: :class:`~gitlab.objects.ProjectMergeRequest`
-* Manager objects: :attr:`gitlab.Gitlab.project_mergerequests`,
-  :attr:`Project.mergerequests <gitlab.objects.Project.mergerequests>`
+The v3 API uses the ``id`` attribute to identify a merge request, the v4 API
+uses the ``iid`` attribute.
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectMergeRequest`
+  + :class:`gitlab.v4.objects.ProjectMergeRequestManager`
+  + :attr:`gitlab.v4.objects.Project.mergerequests`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectMergeRequest`
+  + :class:`gitlab.v3.objects.ProjectMergeRequestManager`
+  + :attr:`gitlab.v3.objects.Project.mergerequests`
+  + :attr:`gitlab.Gitlab.project_mergerequests`
+
+* GitLab API: https://docs.gitlab.com/ce/api/merge_requests.html
 
 Examples
 --------
@@ -20,8 +37,8 @@ List MRs for a project:
 
 You can filter and sort the returned list with the following parameters:
 
-* ``iid``: iid (unique ID for the project) of the MR
-* ``state``: state of the MR. It can be one of ``all``, ``merged``, '``opened``
+* ``iid``: iid (unique ID for the project) of the MR (v3 API)
+* ``state``: state of the MR. It can be one of ``all``, ``merged``, ``opened``
   or ``closed``
 * ``order_by``: sort by ``created_at`` or ``updated_at``
 * ``sort``: sort order (``asc`` or ``desc``)

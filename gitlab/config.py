@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-2015 Gauvain Pocentek <gauvain@pocentek.net>
+# Copyright (C) 2013-2017 Gauvain Pocentek <gauvain@pocentek.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -61,11 +61,28 @@ class GitlabConfigParser(object):
         self.ssl_verify = True
         try:
             self.ssl_verify = self._config.getboolean('global', 'ssl_verify')
+        except ValueError:
+            # Value Error means the option exists but isn't a boolean.
+            # Get as a string instead as it should then be a local path to a
+            # CA bundle.
+            try:
+                self.ssl_verify = self._config.get('global', 'ssl_verify')
+            except Exception:
+                pass
         except Exception:
             pass
         try:
             self.ssl_verify = self._config.getboolean(self.gitlab_id,
                                                       'ssl_verify')
+        except ValueError:
+            # Value Error means the option exists but isn't a boolean.
+            # Get as a string instead as it should then be a local path to a
+            # CA bundle.
+            try:
+                self.ssl_verify = self._config.get(self.gitlab_id,
+                                                   'ssl_verify')
+            except Exception:
+                pass
         except Exception:
             pass
 
@@ -88,3 +105,12 @@ class GitlabConfigParser(object):
                                                   'http_password')
         except Exception:
             pass
+
+        self.api_version = '3'
+        try:
+            self.api_version = self._config.get(self.gitlab_id, 'api_version')
+        except Exception:
+            pass
+        if self.api_version not in ('3', '4'):
+            raise GitlabDataError("Unsupported API version: %s" %
+                                  self.api_version)

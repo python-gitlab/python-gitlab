@@ -40,6 +40,20 @@ You can also use configuration files to create ``gitlab.Gitlab`` objects:
 See the :ref:`cli_configuration` section for more information about
 configuration files.
 
+**GitLab v4 support**
+
+``python-gitlab`` uses the v3 GitLab API by default. Use the ``api_version``
+parameter to switch to v4:
+
+.. code-block:: python
+
+   import gitlab
+
+   gl = gitlab.Gitlab('http://10.0.0.1', 'JVNSESs8EwWRx5yDxM5q', api_version=4)
+
+.. warning::
+
+   The v4 support is experimental.
 
 Managers
 ========
@@ -139,10 +153,12 @@ parameter to get all the items when using listing methods:
 
 .. note::
 
-   python-gitlab will iterate over the list by calling the correspnding API
+   python-gitlab will iterate over the list by calling the corresponding API
    multiple times. This might take some time if you have a lot of items to
    retrieve. This might also consume a lot of memory as all the items will be
-   stored in RAM.
+   stored in RAM. If you're encountering the python recursion limit exception,
+   use ``safe_all=True`` instead to stop pagination automatically if the
+   recursion limit is hit.
 
 Sudo
 ====

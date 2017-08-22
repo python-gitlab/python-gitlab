@@ -24,3 +24,12 @@ gitlabciymls = gl.gitlabciymls.list()
 gitlabciyml = gl.gitlabciymls.get('Pelican')
 print(gitlabciyml.content)
 # end gitlabciyml get
+
+# dockerfile list
+dockerfiles = gl.dockerfiles.list()
+# end dockerfile list
+
+# dockerfile get
+dockerfile = gl.dockerfiles.get('Python')
+print(dockerfile.content)
+# end dockerfile get

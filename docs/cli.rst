@@ -36,10 +36,12 @@ The configuration file uses the ``INI`` format. It contains at least a
    default = somewhere
    ssl_verify = true
    timeout = 5
+   api_version = 3
 
    [somewhere]
    url = https://some.whe.re
    private_token = vTbFeqJYCY3sibBP7BZM
+   api_version = 4
 
    [elsewhere]
    url = http://else.whe.re:8080
@@ -47,9 +49,9 @@ The configuration file uses the ``INI`` format. It contains at least a
    timeout = 1
 
 The ``default`` option of the ``[global]`` section defines the GitLab server to
-use if no server is explitly specified with the ``--gitlab`` CLI option.
+use if no server is explicitly specified with the ``--gitlab`` CLI option.
 
-The ``[global]`` section also defines the values for the default connexion
+The ``[global]`` section also defines the values for the default connection
 parameters. You can override the values in each GitLab server section.
 
 .. list-table:: Global options
@@ -59,9 +61,10 @@ parameters. You can override the values in each GitLab server section.
      - Possible values
      - Description
    * - ``ssl_verify``
-     - ``True`` or ``False``
-     - Verify the SSL certificate. Set to ``False`` if your SSL certificate is
-       auto-signed.
+     - ``True``, ``False``, or a ``str``
+     - Verify the SSL certificate. Set to ``False`` to disable verification,
+       though this will create warnings. Any other value is interpreted as path
+       to a CA_BUNDLE file or directory with certificates of trusted CAs.
    * - ``timeout``
      - Integer
      - Number of seconds to wait for an answer before failing.
@@ -77,11 +80,17 @@ section.
    * - ``url``
      - URL for the GitLab server
    * - ``private_token``
-     - Your user token. Login/password is not supported.
+     - Your user token. Login/password is not supported. Refer to `the official
+       documentation`__ to learn how to obtain a token.
+   * - ``api_version``
+     - GitLab API version to use (``3`` or ``4``). Defaults to ``3`` for now,
+       but will switch to ``4`` eventually.
    * - ``http_username``
      - Username for optional HTTP authentication
    * - ``http_password``
      - Password for optional HTTP authentication
+
+__ https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html
 
 CLI
 ===
@@ -118,7 +127,8 @@ Use the following optional arguments to change the behavior of ``gitlab``.
 These options must be defined before the mandatory arguments.
 
 ``--verbose``, ``-v``
-    Outputs detail about retrieved objects.
+    Outputs detail about retrieved objects. Available for legacy (default)
+    output only.
 
 ``--config-file``, ``-c``
     Path to a configuration file.
@@ -126,11 +136,18 @@ These options must be defined before the mandatory arguments.
 ``--gitlab``, ``-g``
     ID of a GitLab server defined in the configuration file.
 
+``--output``, ``-o``
+    Output format. Defaults to a custom format. Can also be ``yaml`` or ``json``.
+
+``--fields``, ``-f``
+    Comma-separated list of fields to display (``yaml`` and ``json`` formats
+    only).  If not used, all the object fields are displayed.
+
 Example:
 
 .. code-block:: console
 
-   $ gitlab -v -g elsewhere -c /tmp/gl.cfg project list
+   $ gitlab -o yaml -f id,permissions -g elsewhere -c /tmp/gl.cfg project list
 
 
 Examples
@@ -160,12 +177,11 @@ Get a specific project (id 2):
 
    $ gitlab project get --id 2
 
-Get a specific user by id or by username:
+Get a specific user by id:
 
 .. code-block:: console
 
    $ gitlab user get --id 3
-   $ gitlab user get-by-username --query jdoe
 
 Get a list of snippets for this project:
 
@@ -192,7 +208,6 @@ Create a snippet:
 
    $ gitlab project-snippet create --project-id 2
    Impossible to create object (Missing attribute(s): title, file-name, code)
-
    $ # oops, let's add the attributes:
    $ gitlab project-snippet create --project-id 2 --title "the title" \
        --file-name "the name" --code "the code"

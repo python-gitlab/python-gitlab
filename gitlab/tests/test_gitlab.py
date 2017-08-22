@@ -26,6 +26,7 @@ except ImportError:
 from httmock import HTTMock  # noqa
 from httmock import response  # noqa
 from httmock import urlmatch  # noqa
+import six
 
 import gitlab
 from gitlab import *  # noqa
@@ -170,6 +171,277 @@ class TestGitlabRawMethods(unittest.TestCase):
             self.assertEqual(resp.status_code, 404)
 
 
+class TestGitlabList(unittest.TestCase):
+    def setUp(self):
+        self.gl = Gitlab("http://localhost", private_token="private_token",
+                         api_version=4)
+
+    def test_build_list(self):
+        @urlmatch(scheme='http', netloc="localhost", path="/api/v4/tests",
+                  method="get")
+        def resp_1(url, request):
+            headers = {'content-type': 'application/json',
+                       'X-Page': 1,
+                       'X-Next-Page': 2,
+                       'X-Per-Page': 1,
+                       'X-Total-Pages': 2,
+                       'X-Total': 2,
+                       'Link': (
+                           '<http://localhost/api/v4/tests?per_page=1&page=2>;'
+                           ' rel="next"')}
+            content = '[{"a": "b"}]'
+            return response(200, content, headers, None, 5, request)
+
+        @urlmatch(scheme='http', netloc="localhost", path="/api/v4/tests",
+                  method='get', query=r'.*page=2')
+        def resp_2(url, request):
+            headers = {'content-type': 'application/json',
+                       'X-Page': 2,
+                       'X-Next-Page': 2,
+                       'X-Per-Page': 1,
+                       'X-Total-Pages': 2,
+                       'X-Total': 2}
+            content = '[{"c": "d"}]'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_1):
+            obj = self.gl.http_list('/tests', as_list=False)
+            self.assertEqual(len(obj), 2)
+            self.assertEqual(obj._next_url,
+                             'http://localhost/api/v4/tests?per_page=1&page=2')
+
+            with HTTMock(resp_2):
+                l = list(obj)
+                self.assertEqual(len(l), 2)
+                self.assertEqual(l[0]['a'], 'b')
+                self.assertEqual(l[1]['c'], 'd')
+
+
+class TestGitlabHttpMethods(unittest.TestCase):
+    def setUp(self):
+        self.gl = Gitlab("http://localhost", private_token="private_token",
+                         api_version=4)
+
+    def test_build_url(self):
+        r = self.gl._build_url('http://localhost/api/v4')
+        self.assertEqual(r, 'http://localhost/api/v4')
+        r = self.gl._build_url('https://localhost/api/v4')
+        self.assertEqual(r, 'https://localhost/api/v4')
+        r = self.gl._build_url('/projects')
+        self.assertEqual(r, 'http://localhost/api/v4/projects')
+
+    def test_http_request(self):
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
+                  method="get")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '[{"name": "project1"}]'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            http_r = self.gl.http_request('get', '/projects')
+            http_r.json()
+            self.assertEqual(http_r.status_code, 200)
+
+    def test_http_request_404(self):
+        @urlmatch(scheme="http", netloc="localhost",
+                  path="/api/v4/not_there", method="get")
+        def resp_cont(url, request):
+            content = {'Here is wh it failed'}
+            return response(404, content, {}, None, 5, request)
+
+        with HTTMock(resp_cont):
+            self.assertRaises(GitlabHttpError,
+                              self.gl.http_request,
+                              'get', '/not_there')
+
+    def test_get_request(self):
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
+                  method="get")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '{"name": "project1"}'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            result = self.gl.http_get('/projects')
+            self.assertIsInstance(result, dict)
+            self.assertEqual(result['name'], 'project1')
+
+    def test_get_request_raw(self):
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
+                  method="get")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/octet-stream'}
+            content = 'content'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            result = self.gl.http_get('/projects')
+            self.assertEqual(result.content.decode('utf-8'), 'content')
+
+    def test_get_request_404(self):
+        @urlmatch(scheme="http", netloc="localhost",
+                  path="/api/v4/not_there", method="get")
+        def resp_cont(url, request):
+            content = {'Here is wh it failed'}
+            return response(404, content, {}, None, 5, request)
+
+        with HTTMock(resp_cont):
+            self.assertRaises(GitlabHttpError, self.gl.http_get, '/not_there')
+
+    def test_get_request_invalid_data(self):
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
+                  method="get")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '["name": "project1"]'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            self.assertRaises(GitlabParsingError, self.gl.http_get,
+                              '/projects')
+
+    def test_list_request(self):
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
+                  method="get")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json', 'X-Total': 1}
+            content = '[{"name": "project1"}]'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            result = self.gl.http_list('/projects', as_list=True)
+            self.assertIsInstance(result, list)
+            self.assertEqual(len(result), 1)
+
+        with HTTMock(resp_cont):
+            result = self.gl.http_list('/projects', as_list=False)
+            self.assertIsInstance(result, GitlabList)
+            self.assertEqual(len(result), 1)
+
+        with HTTMock(resp_cont):
+            result = self.gl.http_list('/projects', all=True)
+            self.assertIsInstance(result, list)
+            self.assertEqual(len(result), 1)
+
+    def test_list_request_404(self):
+        @urlmatch(scheme="http", netloc="localhost",
+                  path="/api/v4/not_there", method="get")
+        def resp_cont(url, request):
+            content = {'Here is why it failed'}
+            return response(404, content, {}, None, 5, request)
+
+        with HTTMock(resp_cont):
+            self.assertRaises(GitlabHttpError, self.gl.http_list, '/not_there')
+
+    def test_list_request_invalid_data(self):
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
+                  method="get")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '["name": "project1"]'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            self.assertRaises(GitlabParsingError, self.gl.http_list,
+                              '/projects')
+
+    def test_post_request(self):
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
+                  method="post")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '{"name": "project1"}'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            result = self.gl.http_post('/projects')
+            self.assertIsInstance(result, dict)
+            self.assertEqual(result['name'], 'project1')
+
+    def test_post_request_404(self):
+        @urlmatch(scheme="http", netloc="localhost",
+                  path="/api/v4/not_there", method="post")
+        def resp_cont(url, request):
+            content = {'Here is wh it failed'}
+            return response(404, content, {}, None, 5, request)
+
+        with HTTMock(resp_cont):
+            self.assertRaises(GitlabHttpError, self.gl.http_post, '/not_there')
+
+    def test_post_request_invalid_data(self):
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
+                  method="post")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '["name": "project1"]'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            self.assertRaises(GitlabParsingError, self.gl.http_post,
+                              '/projects')
+
+    def test_put_request(self):
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
+                  method="put")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '{"name": "project1"}'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            result = self.gl.http_put('/projects')
+            self.assertIsInstance(result, dict)
+            self.assertEqual(result['name'], 'project1')
+
+    def test_put_request_404(self):
+        @urlmatch(scheme="http", netloc="localhost",
+                  path="/api/v4/not_there", method="put")
+        def resp_cont(url, request):
+            content = {'Here is wh it failed'}
+            return response(404, content, {}, None, 5, request)
+
+        with HTTMock(resp_cont):
+            self.assertRaises(GitlabHttpError, self.gl.http_put, '/not_there')
+
+    def test_put_request_invalid_data(self):
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
+                  method="put")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '["name": "project1"]'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            self.assertRaises(GitlabParsingError, self.gl.http_put,
+                              '/projects')
+
+    def test_delete_request(self):
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
+                  method="delete")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = 'true'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            result = self.gl.http_delete('/projects')
+            self.assertIsInstance(result, requests.Response)
+            self.assertEqual(result.json(), True)
+
+    def test_delete_request_404(self):
+        @urlmatch(scheme="http", netloc="localhost",
+                  path="/api/v4/not_there", method="delete")
+        def resp_cont(url, request):
+            content = {'Here is wh it failed'}
+            return response(404, content, {}, None, 5, request)
+
+        with HTTMock(resp_cont):
+            self.assertRaises(GitlabHttpError, self.gl.http_delete,
+                              '/not_there')
+
+
 class TestGitlabMethods(unittest.TestCase):
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
@@ -243,6 +515,75 @@ class TestGitlabMethods(unittest.TestCase):
             self.assertEqual(data[0].ref, "b")
             self.assertEqual(len(data), 2)
 
+    def test_list_recursion_limit_caught(self):
+        @urlmatch(scheme="http", netloc="localhost",
+                  path='/api/v3/projects/1/repository/branches', method="get")
+        def resp_one(url, request):
+            """First request:
+
+            http://localhost/api/v3/projects/1/repository/branches?per_page=1
+            """
+            headers = {
+                'content-type': 'application/json',
+                'link': '<http://localhost/api/v3/projects/1/repository/branc'
+                'hes?page=2&per_page=0>; rel="next", <http://localhost/api/v3'
+                '/projects/1/repository/branches?page=2&per_page=0>; rel="las'
+                't", <http://localhost/api/v3/projects/1/repository/branches?'
+                'page=1&per_page=0>; rel="first"'
+            }
+            content = ('[{"branch_name": "otherbranch", '
+                       '"project_id": 1, "ref": "b"}]').encode("utf-8")
+            resp = response(200, content, headers, None, 5, request)
+            return resp
+
+        @urlmatch(scheme="http", netloc="localhost",
+                  path='/api/v3/projects/1/repository/branches', method="get",
+                  query=r'.*page=2.*')
+        def resp_two(url, request):
+            # Mock a runtime error
+            raise RuntimeError("maximum recursion depth exceeded")
+
+        with HTTMock(resp_two, resp_one):
+            data = self.gl.list(ProjectBranch, project_id=1, per_page=1,
+                                safe_all=True)
+            self.assertEqual(data[0].branch_name, "otherbranch")
+            self.assertEqual(data[0].project_id, 1)
+            self.assertEqual(data[0].ref, "b")
+            self.assertEqual(len(data), 1)
+
+    def test_list_recursion_limit_not_caught(self):
+        @urlmatch(scheme="http", netloc="localhost",
+                  path='/api/v3/projects/1/repository/branches', method="get")
+        def resp_one(url, request):
+            """First request:
+
+            http://localhost/api/v3/projects/1/repository/branches?per_page=1
+            """
+            headers = {
+                'content-type': 'application/json',
+                'link': '<http://localhost/api/v3/projects/1/repository/branc'
+                'hes?page=2&per_page=0>; rel="next", <http://localhost/api/v3'
+                '/projects/1/repository/branches?page=2&per_page=0>; rel="las'
+                't", <http://localhost/api/v3/projects/1/repository/branches?'
+                'page=1&per_page=0>; rel="first"'
+            }
+            content = ('[{"branch_name": "otherbranch", '
+                       '"project_id": 1, "ref": "b"}]').encode("utf-8")
+            resp = response(200, content, headers, None, 5, request)
+            return resp
+
+        @urlmatch(scheme="http", netloc="localhost",
+                  path='/api/v3/projects/1/repository/branches', method="get",
+                  query=r'.*page=2.*')
+        def resp_two(url, request):
+            # Mock a runtime error
+            raise RuntimeError("maximum recursion depth exceeded")
+
+        with HTTMock(resp_two, resp_one):
+            with six.assertRaisesRegex(self, GitlabError,
+                                       "(maximum recursion depth exceeded)"):
+                self.gl.list(ProjectBranch, project_id=1, per_page=1, all=True)
+
     def test_list_401(self):
         @urlmatch(scheme="http", netloc="localhost",
                   path="/api/v3/projects/1/repository/branches", method="get")
@@ -271,7 +612,7 @@ class TestGitlabMethods(unittest.TestCase):
         self.assertRaises(GitlabListError, self.gl.list, ProjectBranch)
 
     def test_list_no_connection(self):
-        self.gl.set_url('http://localhost:66000')
+        self.gl._url = 'http://localhost:66000/api/v3'
         self.assertRaises(GitlabConnectionError, self.gl.list, ProjectBranch,
                           project_id=1)
 
@@ -543,27 +884,10 @@ class TestGitlab(unittest.TestCase):
                          email="testuser@test.com", password="testpassword",
                          ssl_verify=True)
 
-    def test_set_url(self):
-        self.gl.set_url("http://new_url")
-        self.assertEqual(self.gl._url, "http://new_url/api/v3")
-
-    def test_set_token(self):
-        token = "newtoken"
-        expected = {"PRIVATE-TOKEN": token}
-        self.gl.set_token(token)
-        self.assertEqual(self.gl.private_token, token)
-        self.assertDictContainsSubset(expected, self.gl.headers)
-
-    def test_set_credentials(self):
-        email = "credentialuser@test.com"
-        password = "credentialpassword"
-        self.gl.set_credentials(email=email, password=password)
-        self.assertEqual(self.gl.email, email)
-        self.assertEqual(self.gl.password, password)
-
     def test_credentials_auth_nopassword(self):
-        self.gl.set_credentials(email=None, password=None)
-        self.assertRaises(GitlabAuthenticationError, self.gl.credentials_auth)
+        self.gl.email = None
+        self.gl.password = None
+        self.assertRaises(GitlabAuthenticationError, self.gl._credentials_auth)
 
     def test_credentials_auth_notok(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/session",
@@ -575,10 +899,10 @@ class TestGitlab(unittest.TestCase):
 
         with HTTMock(resp_cont):
             self.assertRaises(GitlabAuthenticationError,
-                              self.gl.credentials_auth)
+                              self.gl._credentials_auth)
 
     def test_auth_with_credentials(self):
-        self.gl.set_token(None)
+        self.gl.private_token = None
         self.test_credentials_auth(callback=self.gl.auth)
 
     def test_auth_with_token(self):
@@ -586,7 +910,7 @@ class TestGitlab(unittest.TestCase):
 
     def test_credentials_auth(self, callback=None):
         if callback is None:
-            callback = self.gl.credentials_auth
+            callback = self.gl._credentials_auth
         token = "credauthtoken"
         id_ = 1
         expected = {"PRIVATE-TOKEN": token}
@@ -607,7 +931,7 @@ class TestGitlab(unittest.TestCase):
 
     def test_token_auth(self, callback=None):
         if callback is None:
-            callback = self.gl.token_auth
+            callback = self.gl._token_auth
         name = "username"
         id_ = 1
 

@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/gpocentek/python-gitlab.svg?branch=master
-   :target: https://travis-ci.org/gpocentek/python-gitlab
+.. image:: https://travis-ci.org/python-gitlab/python-gitlab.svg?branch=master
+   :target: https://travis-ci.org/python-gitlab/python-gitlab
 
 .. image:: https://badge.fury.io/py/python-gitlab.svg
    :target: https://badge.fury.io/py/python-gitlab
@@ -12,7 +12,7 @@ Python GitLab
 
 ``python-gitlab`` is a Python package providing access to the GitLab server API.
 
-It supports the v3 api of GitLab, and provides a CLI tool (``gitlab``).
+It supports the v3 and v4 APIs of GitLab, and provides a CLI tool (``gitlab``).
 
 Installation
 ============
@@ -36,7 +36,7 @@ Bug reports
 ===========
 
 Please report bugs and feature requests at
-https://github.com/gpocentek/python-gitlab/issues.
+https://github.com/python-gitlab/python-gitlab/issues.
 
 
 Documentation

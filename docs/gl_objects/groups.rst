@@ -5,8 +5,22 @@ Groups
 Groups
 ======
 
-Use :class:`~gitlab.objects.Group` objects to manipulate groups. The
-:attr:`gitlab.Gitlab.groups` manager object provides helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.Group`
+  + :class:`gitlab.v4.objects.GroupManager`
+  + :attr:`gitlab.Gitlab.groups`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.Group`
+  + :class:`gitlab.v3.objects.GroupManager`
+  + :attr:`gitlab.Gitlab.groups`
+
+* GitLab API: https://docs.gitlab.com/ce/api/groups.html
 
 Examples
 --------
@@ -16,12 +30,6 @@ List the groups:
 .. literalinclude:: groups.py
    :start-after: # list
    :end-before: # end list
-
-Search groups:
-
-.. literalinclude:: groups.py
-   :start-after: # search
-   :end-before: # end search
 
 Get a group's detail:
 
@@ -67,18 +75,35 @@ Remove a group:
 Group members
 =============
 
-Use :class:`~gitlab.objects.GroupMember` objects to manipulate groups. The
-:attr:`gitlab.Gitlab.group_members` and :attr:`Group.members
-<gitlab.objects.Group.members>` manager objects provide helper functions.
+The following constants define the supported access levels:
 
-The following :class:`~gitlab.objects.Group` attributes define the supported
-access levels:
+* ``gitlab.GUEST_ACCESS = 10``
+* ``gitlab.REPORTER_ACCESS = 20``
+* ``gitlab.DEVELOPER_ACCESS = 30``
+* ``gitlab.MASTER_ACCESS = 40``
+* ``gitlab.OWNER_ACCESS = 50``
 
-* ``GUEST_ACCESS = 10``
-* ``REPORTER_ACCESS = 20``
-* ``DEVELOPER_ACCESS = 30``
-* ``MASTER_ACCESS = 40``
-* ``OWNER_ACCESS = 50``
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.GroupMember`
+  + :class:`gitlab.v4.objects.GroupMemberManager`
+  + :attr:`gitlab.v4.objects.Group.members`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.GroupMember`
+  + :class:`gitlab.v3.objects.GroupMemberManager`
+  + :attr:`gitlab.v3.objects.Group.members`
+  + :attr:`gitlab.Gitlab.group_members`
+
+* GitLab API: https://docs.gitlab.com/ce/api/groups.html
+
+
+Examples
+--------
 
 List group members:
 

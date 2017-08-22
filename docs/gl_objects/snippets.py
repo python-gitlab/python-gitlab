@@ -4,7 +4,7 @@ snippets = gl.snippets.list()
 
 # public list
 public_snippets = gl.snippets.public()
-# nd public list
+# end public list
 
 # get
 snippet = gl.snippets.get(snippet_id)

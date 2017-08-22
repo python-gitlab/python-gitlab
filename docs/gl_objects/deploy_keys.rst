@@ -5,8 +5,22 @@ Deploy keys
 Deploy keys
 ===========
 
-Use :class:`~gitlab.objects.Key` objects to manipulate deploy keys. The
-:attr:`gitlab.Gitlab.keys` manager object provides helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.DeployKey`
+  + :class:`gitlab.v4.objects.DeployKeyManager`
+  + :attr:`gitlab.Gitlab.deploykeys`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.Key`
+  + :class:`gitlab.v3.objects.KeyManager`
+  + :attr:`gitlab.Gitlab.deploykeys`
+
+* GitLab API: https://docs.gitlab.com/ce/api/deploy_keys.html
 
 Examples
 --------
@@ -26,9 +40,25 @@ Get a single deploy key:
 Deploy keys for projects
 ========================
 
-Use :class:`~gitlab.objects.ProjectKey` objects to manipulate deploy keys for
-projects. The :attr:`gitlab.Gitlab.project_keys` and :attr:`Project.keys
-<gitlab.objects.Project.keys>` manager objects provide helper functions.
+Deploy keys can be managed on a per-project basis.
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectKey`
+  + :class:`gitlab.v4.objects.ProjectKeyManager`
+  + :attr:`gitlab.v4.objects.Project.keys`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectKey`
+  + :class:`gitlab.v3.objects.ProjectKeyManager`
+  + :attr:`gitlab.v3.objects.Project.keys`
+  + :attr:`gitlab.Gitlab.project_keys`
+
+* GitLab API: https://docs.gitlab.com/ce/api/deploy_keys.html
 
 Examples
 --------

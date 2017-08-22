@@ -1,7 +1,60 @@
-python-gitlab Changelog
-=======================
+ChangeLog
+=========
 
-Version 0.19_: - 2017-02-21
+Version 0.21.2_ - 2017-06-11
+----------------------------
+
+* Install doc: use sudo for system commands
+* [v4] Make MR work properly
+* Remove extra_attrs argument from _raw_list
+* [v4] Make project issues work properly
+* Fix urlencode() usage (python 2/3) (#268)
+* Fixed spelling mistake (#269)
+* Add new event types to ProjectHook
+
+Version 0.21.1_ - 2017-05-25
+----------------------------
+
+* Fix the manager name for jobs in the Project class
+* Fix the docs
+
+Version 0.21_ - 2017-05-24
+--------------------------
+
+* Add time_stats to ProjectMergeRequest
+* Update User options for creation and update (#246)
+* Add milestone.merge_requests() API
+* Fix docs typo (s/correspnding/corresponding/)
+* Support milestone start date (#251)
+* Add support for priority attribute in labels (#256)
+* Add support for nested groups (#257)
+* Make GroupProjectManager a subclass of ProjectManager (#255)
+* Available services: return a list instead of JSON (#258)
+* MR: add support for time tracking features (#248)
+* Fixed repository_tree and repository_blob path encoding (#265)
+* Add 'search' attribute to projects.list()
+* Initial gitlab API v4 support
+* Reorganise the code to handle v3 and v4 objects
+* Allow 202 as delete return code
+* Deprecate parameter related methods in gitlab.Gitlab
+
+Version 0.20_ - 2017-03-25
+---------------------------
+
+* Add time tracking support (#222)
+* Improve changelog (#229, #230)
+* Make sure that manager objects are never overwritten (#209)
+* Include chanlog and release notes in docs
+* Add DeployKey{,Manager} classes (#212)
+* Add support for merge request notes deletion (#227)
+* Properly handle extra args when listing with all=True (#233)
+* Implement pipeline creation API (#237)
+* Fix spent_time methods
+* Add 'delete source branch' option when creating MR (#241)
+* Provide API wrapper for cherry picking commits (#236)
+* Stop listing if recursion limit is hit (#234)
+
+Version 0.19_ - 2017-02-21
 ---------------------------
 
 * Update project.archive() docs
@@ -17,7 +70,7 @@ Version 0.19_: - 2017-02-21
 * Handle settings.domain_whitelist, partly
 * {Project,Group}Member: support expires_at attribute
 
-Version 0.18_: - 2016-12-27
+Version 0.18_ - 2016-12-27
 ---------------------------
 
 * Fix JIRA service editing for GitLab 8.14+
@@ -32,7 +85,7 @@ Version 0.18_: - 2016-12-27
 * Update known attributes for projects
 * sudo: always use strings
 
-Version 0.17_: - 2016-12-02
+Version 0.17_ - 2016-12-02
 ---------------------------
 
 * README: add badges for pypi and RTD
@@ -67,7 +120,7 @@ Version 0.17_: - 2016-12-02
 * Rework requests arguments (support latest requests release)
 * Fix `should_remove_source_branch`
 
-Version 0.16_: - 2016-10-16
+Version 0.16_ - 2016-10-16
 ---------------------------
 
 * Add the ability to fork to a specific namespace
@@ -84,14 +137,14 @@ Version 0.16_: - 2016-10-16
 * Add ProjectBuild.erase()
 * Implement ProjectBuild.play()
 
-Version 0.15.1_: - 2016-10-16
+Version 0.15.1_ - 2016-10-16
 -----------------------------
 
 * docs: improve the pagination section
 * Fix and test pagination
 * 'path' is an existing gitlab attr, don't use it as method argument
 
-Version 0.15_: - 2016-08-28
+Version 0.15_ - 2016-08-28
 ---------------------------
 
 * Add a basic HTTP debug method
@@ -112,7 +165,7 @@ Version 0.15_: - 2016-08-28
 * Add support for access requests
 * Add support for project deployments
 
-Version 0.14_: - 2016-08-07
+Version 0.14_ - 2016-08-07
 ---------------------------
 
 * Remove 'next_url' from kwargs before passing it to the cls constructor.
@@ -164,7 +217,7 @@ Version 0.14_: - 2016-08-07
 * MR (un)subscribe: don't fail if state doesn't change
 * MR merge(): update the object
 
-Version 0.13_: - 2016-05-16
+Version 0.13_ - 2016-05-16
 ---------------------------
 
 * Add support for MergeRequest validation
@@ -191,7 +244,7 @@ Version 0.13_: - 2016-05-16
 * Implement list/get licenses
 * Manage optional parameters for list() and get()
 
-Version 0.12.2_: - 2016-03-19
+Version 0.12.2_ - 2016-03-19
 -----------------------------
 
 * Add new `ProjectHook` attributes
@@ -211,12 +264,12 @@ Version 0.12.2_: - 2016-03-19
 * Fix the 'invalid syntax' error on Python 3.2
 * Gitlab.update(): use the proper attributes if defined
 
-Version 0.12.1_: - 2016-02-03
+Version 0.12.1_ - 2016-02-03
 -----------------------------
 
 * Fix a broken upload to pypi
 
-Version 0.12_: - 2016-02-03
+Version 0.12_ - 2016-02-03
 ---------------------------
 
 * Improve documentation
@@ -240,7 +293,7 @@ Version 0.12_: - 2016-02-03
 * Fix Project.tree()
 * Add support for project builds
 
-Version 0.11.1_: - 2016-01-17
+Version 0.11.1_ - 2016-01-17
 -----------------------------
 
 * Fix discovery of parents object attrs for managers
@@ -248,7 +301,7 @@ Version 0.11.1_: - 2016-01-17
 * Support deletion without getting the object first
 * Improve the documentation
 
-Version 0.11_: - 2016-01-09
+Version 0.11_ - 2016-01-09
 ---------------------------
 
 * functional_tests.sh: support python 2 and 3
@@ -265,7 +318,7 @@ Version 0.11_: - 2016-01-09
 * Deprecate the "old" Gitlab methods
 * Add support for groups search
 
-Version 0.10_: - 2015-12-29
+Version 0.10_ - 2015-12-29
 ---------------------------
 
 * Implement pagination for list() (#63)
@@ -279,17 +332,17 @@ Version 0.10_: - 2015-12-29
 * Python 3 compatibility fixes
 * Add support for group members update (#73)
 
-Version 0.9.2_: - 2015-07-11
+Version 0.9.2_ - 2015-07-11
 ----------------------------
 
 * CLI: fix the update and delete subcommands (#62)
 
-Version 0.9.1_: - 2015-05-15
+Version 0.9.1_ - 2015-05-15
 ----------------------------
 
 * Fix the setup.py script
 
-Version 0.9_: - 2015-05-15
+Version 0.9_ - 2015-05-15
 --------------------------
 
 * Implement argparse libray for parsing argument on CLI
@@ -307,7 +360,7 @@ Version 0.9_: - 2015-05-15
      set_token
 * Sphinx: don't hardcode the version in conf.py
 
-Version 0.8_: - 2014-10-26
+Version 0.8_ - 2014-10-26
 --------------------------
 
 * Better python 2.6 and python 3 support
@@ -318,7 +371,7 @@ Version 0.8_: - 2014-10-26
 * Moved url attributes to separate list
 * Added list for delete attributes
 
-Version 0.7_: - 2014-08-21
+Version 0.7_ - 2014-08-21
 --------------------------
 
 * Fix license classifier in setup.py
@@ -330,7 +383,7 @@ Version 0.7_: - 2014-08-21
 * Support namespace/name for project id (#28)
 * Fix handling of boolean values (#22)
 
-Version 0.6_: - 2014-01-16
+Version 0.6_ - 2014-01-16
 --------------------------
 
 * IDs can be unicode (#15)
@@ -338,7 +391,7 @@ Version 0.6_: - 2014-01-16
 * Add support for extra parameters when listing all projects (#12)
 * Projects listing: explicitly define arguments for pagination
 
-Version 0.5_: - 2013-12-26
+Version 0.5_ - 2013-12-26
 --------------------------
 
 * Add SSH key for user
@@ -352,7 +405,7 @@ Version 0.5_: - 2013-12-26
 * Define new optional attributes for user creation
 * Provide constants for access permissions in groups
 
-Version 0.4_: - 2013-09-26
+Version 0.4_ - 2013-09-26
 --------------------------
 
 * Fix strings encoding (Closes #6)
@@ -361,7 +414,7 @@ Version 0.4_: - 2013-09-26
 * Gitlab 6.1 methods: diff, blob (commit), tree, blob (project)
 * Add support for Gitlab 6.1 group members
 
-Version 0.3_: - 2013-08-27
+Version 0.3_ - 2013-08-27
 --------------------------
 
 * Use PRIVATE-TOKEN header for passing the auth token
@@ -370,7 +423,7 @@ Version 0.3_: - 2013-08-27
 * Add ssl_verify option to Gitlab object. Defauls to True
 * Correct url for merge requests API.
 
-Version 0.2_: - 2013-08-08
+Version 0.2_ - 2013-08-08
 --------------------------
 
 * provide a pip requirements.txt
@@ -381,27 +434,31 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
-.. _0.19: https://github.com/gpocentek/python-gitlab/compare/0.18...0.19
-.. _0.18: https://github.com/gpocentek/python-gitlab/compare/0.17...0.18
-.. _0.17: https://github.com/gpocentek/python-gitlab/compare/0.16...0.17
-.. _0.16: https://github.com/gpocentek/python-gitlab/compare/0.15.1...0.16
-.. _0.15.1: https://github.com/gpocentek/python-gitlab/compare/0.15...0.15.1
-.. _0.15: https://github.com/gpocentek/python-gitlab/compare/0.14...0.15
-.. _0.14: https://github.com/gpocentek/python-gitlab/compare/0.13...0.14
-.. _0.13: https://github.com/gpocentek/python-gitlab/compare/0.12.2...0.13
-.. _0.12.2: https://github.com/gpocentek/python-gitlab/compare/0.12.1...0.12.2
-.. _0.12.1: https://github.com/gpocentek/python-gitlab/compare/0.12...0.12.1
-.. _0.12: https://github.com/gpocentek/python-gitlab/compare/0.11.1...0.12
-.. _0.11.1: https://github.com/gpocentek/python-gitlab/compare/0.11...0.11.1
-.. _0.11: https://github.com/gpocentek/python-gitlab/compare/0.10...0.11
-.. _0.10: https://github.com/gpocentek/python-gitlab/compare/0.9.2...0.10
-.. _0.9.2: https://github.com/gpocentek/python-gitlab/compare/0.9.1...0.9.2
-.. _0.9.1: https://github.com/gpocentek/python-gitlab/compare/0.9...0.9.1
-.. _0.9: https://github.com/gpocentek/python-gitlab/compare/0.8...0.9
-.. _0.8: https://github.com/gpocentek/python-gitlab/compare/0.7...0.8
-.. _0.7: https://github.com/gpocentek/python-gitlab/compare/0.6...0.7
-.. _0.6: https://github.com/gpocentek/python-gitlab/compare/0.5...0.6
-.. _0.5: https://github.com/gpocentek/python-gitlab/compare/0.4...0.5
-.. _0.4: https://github.com/gpocentek/python-gitlab/compare/0.3...0.4
-.. _0.3: https://github.com/gpocentek/python-gitlab/compare/0.2...0.3
-.. _0.2: https://github.com/gpocentek/python-gitlab/compare/0.1...0.2
+.. _0.21.2: https://github.com/python-gitlab/python-gitlab/compare/0.21.1...0.21.2
+.. _0.21.1: https://github.com/python-gitlab/python-gitlab/compare/0.21...0.21.1
+.. _0.21: https://github.com/python-gitlab/python-gitlab/compare/0.20...0.21
+.. _0.20: https://github.com/python-gitlab/python-gitlab/compare/0.19...0.20
+.. _0.19: https://github.com/python-gitlab/python-gitlab/compare/0.18...0.19
+.. _0.18: https://github.com/python-gitlab/python-gitlab/compare/0.17...0.18
+.. _0.17: https://github.com/python-gitlab/python-gitlab/compare/0.16...0.17
+.. _0.16: https://github.com/python-gitlab/python-gitlab/compare/0.15.1...0.16
+.. _0.15.1: https://github.com/python-gitlab/python-gitlab/compare/0.15...0.15.1
+.. _0.15: https://github.com/python-gitlab/python-gitlab/compare/0.14...0.15
+.. _0.14: https://github.com/python-gitlab/python-gitlab/compare/0.13...0.14
+.. _0.13: https://github.com/python-gitlab/python-gitlab/compare/0.12.2...0.13
+.. _0.12.2: https://github.com/python-gitlab/python-gitlab/compare/0.12.1...0.12.2
+.. _0.12.1: https://github.com/python-gitlab/python-gitlab/compare/0.12...0.12.1
+.. _0.12: https://github.com/python-gitlab/python-gitlab/compare/0.11.1...0.12
+.. _0.11.1: https://github.com/python-gitlab/python-gitlab/compare/0.11...0.11.1
+.. _0.11: https://github.com/python-gitlab/python-gitlab/compare/0.10...0.11
+.. _0.10: https://github.com/python-gitlab/python-gitlab/compare/0.9.2...0.10
+.. _0.9.2: https://github.com/python-gitlab/python-gitlab/compare/0.9.1...0.9.2
+.. _0.9.1: https://github.com/python-gitlab/python-gitlab/compare/0.9...0.9.1
+.. _0.9: https://github.com/python-gitlab/python-gitlab/compare/0.8...0.9
+.. _0.8: https://github.com/python-gitlab/python-gitlab/compare/0.7...0.8
+.. _0.7: https://github.com/python-gitlab/python-gitlab/compare/0.6...0.7
+.. _0.6: https://github.com/python-gitlab/python-gitlab/compare/0.5...0.6
+.. _0.5: https://github.com/python-gitlab/python-gitlab/compare/0.4...0.5
+.. _0.4: https://github.com/python-gitlab/python-gitlab/compare/0.3...0.4
+.. _0.3: https://github.com/python-gitlab/python-gitlab/compare/0.2...0.3
+.. _0.2: https://github.com/python-gitlab/python-gitlab/compare/0.1...0.2

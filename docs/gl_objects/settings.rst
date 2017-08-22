@@ -2,9 +2,22 @@
 Settings
 ########
 
-Use :class:`~gitlab.objects.ApplicationSettings` objects to manipulate Gitlab
-settings. The :attr:`gitlab.Gitlab.settings` manager object provides helper
-functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ApplicationSettings`
+  + :class:`gitlab.v4.objects.ApplicationSettingsManager`
+  + :attr:`gitlab.Gitlab.settings`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ApplicationSettings`
+  + :class:`gitlab.v3.objects.ApplicationSettingsManager`
+  + :attr:`gitlab.Gitlab.settings`
+
+* GitLab API: https://docs.gitlab.com/ce/api/commits.html
 
 Examples
 --------

@@ -2,8 +2,20 @@
 Sidekiq metrics
 ###############
 
-Use the :attr:`gitlab.Gitlab.sideqik` manager object to access Gitlab Sidekiq
-server metrics.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.SidekiqManager`
+  + :attr:`gitlab.Gitlab.sidekiq`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.SidekiqManager`
+  + :attr:`gitlab.Gitlab.sidekiq`
+
+* GitLab API: https://docs.gitlab.com/ce/api/sidekiq_metrics.html
 
 Examples
 --------

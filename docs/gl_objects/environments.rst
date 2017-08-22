@@ -2,10 +2,23 @@
 Environments
 ############
 
-Use :class:`~gitlab.objects.ProjectEnvironment` objects to manipulate
-environments for projects. The :attr:`gitlab.Gitlab.project_environments` and
-:attr:`Project.environments <gitlab.objects.Project.environments>` manager
-objects provide helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectEnvironment`
+  + :class:`gitlab.v4.objects.ProjectEnvironmentManager`
+  + :attr:`gitlab.v4.objects.Project.environments`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectEnvironment`
+  + :class:`gitlab.v3.objects.ProjectEnvironmentManager`
+  + :attr:`gitlab.v3.objects.Project.environments`
+  + :attr:`gitlab.Gitlab.project_environments`
+
+* GitLab API: https://docs.gitlab.com/ce/api/environments.html
 
 Examples
 --------

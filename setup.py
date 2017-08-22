@@ -19,7 +19,7 @@ setup(name='python-gitlab',
       author='Gauvain Pocentek',
       author_email='gauvain@pocentek.net',
       license='LGPLv3',
-      url='https://github.com/gpocentek/python-gitlab',
+      url='https://github.com/python-gitlab/python-gitlab',
       packages=find_packages(),
       install_requires=['requests>=1.0', 'six'],
       entry_points={

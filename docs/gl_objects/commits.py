@@ -1,6 +1,4 @@
 # list
-commits = gl.project_commits.list(project_id=1)
-# or
 commits = project.commits.list()
 # end list
 
@@ -13,7 +11,8 @@ commits = project.commits.list(since='2016-01-01T00:00:00Z')
 # See https://docs.gitlab.com/ce/api/commits.html#create-a-commit-with-multiple-files-and-actions
 # for actions detail
 data = {
-    'branch_name': 'master',
+    'branch_name': 'master',  # v3
+    'branch': 'master',  # v4
     'commit_message': 'blah blah blah',
     'actions': [
         {
@@ -24,14 +23,10 @@ data = {
     ]
 }
 
-commit = gl.project_commits.create(data, project_id=1)
-# or
 commit = project.commits.create(data)
-# end commit
+# end create
 
 # get
-commit = gl.project_commits.get('e3d5a71b', project_id=1)
-# or
 commit = project.commits.get('e3d5a71b')
 # end get
 
@@ -39,11 +34,11 @@ commit = project.commits.get('e3d5a71b')
 diff = commit.diff()
 # end diff
 
+# cherry
+commit.cherry_pick(branch='target_branch')
+# end cherry
+
 # comments list
-comments = gl.project_commit_comments.list(project_id=1, commit_id='master')
-# or
-comments = project.commit_comments.list(commit_id='a5fe4c8')
-# or
 comments = commit.comments.list()
 # end comments list
 
@@ -58,10 +53,6 @@ commit = commit.comments.create({'note': 'This is another comment',
 # end comments create
 
 # statuses list
-statuses = gl.project_commit_statuses.list(project_id=1, commit_id='master')
-# or
-statuses = project.commit_statuses.list(commit_id='a5fe4c8')
-# or
 statuses = commit.statuses.list()
 # end statuses list
 

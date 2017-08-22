@@ -2,9 +2,23 @@
 Milestones
 ##########
 
-Use :class:`~gitlab.objects.ProjectMilestone` objects to manipulate milestones.
-The :attr:`gitlab.Gitlab.project_milestones` and :attr:`Project.milestones
-<gitlab.objects.Project.milestones>` manager objects provide helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectMilestone`
+  + :class:`gitlab.v4.objects.ProjectMilestoneManager`
+  + :attr:`gitlab.v4.objects.Project.milestones`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectMilestone`
+  + :class:`gitlab.v3.objects.ProjectMilestoneManager`
+  + :attr:`gitlab.v3.objects.Project.milestones`
+  + :attr:`gitlab.Gitlab.project_milestones`
+
+* GitLab API: https://docs.gitlab.com/ce/api/milestones.html
 
 Examples
 --------
@@ -53,3 +67,9 @@ List the issues related to a milestone:
 .. literalinclude:: milestones.py
    :start-after: # issues
    :end-before: # end issues
+
+List the merge requests related to a milestone:
+
+.. literalinclude:: milestones.py
+   :start-after: # merge_requests
+   :end-before: # end merge_requests

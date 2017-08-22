@@ -1,15 +1,48 @@
 gitlab package
 ==============
 
-Module contents
----------------
+Subpackages
+-----------
 
-.. automodule:: gitlab
+.. toctree::
+
+    gitlab.v3
+    gitlab.v4
+
+Submodules
+----------
+
+gitlab.base module
+------------------
+
+.. automodule:: gitlab.base
     :members:
     :undoc-members:
     :show-inheritance:
-    :exclude-members: Hook, UserProject, Group, Issue, Team, User,
-                      all_projects, owned_projects, search_projects
+
+gitlab.cli module
+-----------------
+
+.. automodule:: gitlab.cli
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+gitlab.config module
+--------------------
+
+.. automodule:: gitlab.config
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+gitlab.const module
+-------------------
+
+.. automodule:: gitlab.const
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 gitlab.exceptions module
 ------------------------
@@ -19,18 +52,27 @@ gitlab.exceptions module
     :undoc-members:
     :show-inheritance:
 
-gitlab.objects module
----------------------
+gitlab.mixins module
+--------------------
 
-.. automodule:: gitlab.objects
+.. automodule:: gitlab.mixins
     :members:
     :undoc-members:
     :show-inheritance:
-    :exclude-members: Branch, Commit, Content, Event, File, Hook, Issue, Key,
-                      Label, Member, MergeRequest, Milestone, Note, Snippet,
-                      Tag, canGet, canList, canUpdate, canCreate, canDelete,
-                      requiredUrlAttrs, requiredListAttrs, optionalListAttrs,
-                      optionalGetAttrs, requiredGetAttrs, requiredDeleteAttrs,
-                      requiredCreateAttrs, optionalCreateAttrs,
-                      requiredUpdateAttrs, optionalUpdateAttrs, getRequiresId,
-                      shortPrintAttr, idAttr
+
+gitlab.utils module
+-------------------
+
+.. automodule:: gitlab.utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: gitlab
+    :members:
+    :undoc-members:
+    :show-inheritance:

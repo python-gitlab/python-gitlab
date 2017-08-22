@@ -29,7 +29,23 @@ token_from_auth = gl.private_token
 gl = gitlab.Gitlab.from_config(config_files=['/tmp/python-gitlab.cfg'])
 assert(token_from_auth == gl.private_token)
 gl.auth()
-assert(isinstance(gl.user, gitlab.objects.CurrentUser))
+assert(isinstance(gl.user, gitlab.v4.objects.CurrentUser))
+
+# sidekiq
+out = gl.sidekiq.queue_metrics()
+assert(isinstance(out, dict))
+assert('pages' in out['queues'])
+out = gl.sidekiq.process_metrics()
+assert(isinstance(out, dict))
+assert('hostname' in out['processes'][0])
+out = gl.sidekiq.job_stats()
+assert(isinstance(out, dict))
+assert('processed' in out['jobs'])
+out = gl.sidekiq.compound_metrics()
+assert(isinstance(out, dict))
+assert('jobs' in out)
+assert('processes' in out)
+assert('queues' in out)
 
 # settings
 settings = gl.settings.get()
@@ -38,7 +54,7 @@ settings.save()
 settings = gl.settings.get()
 assert(settings.default_projects_limit == 42)
 
-# user manipulations
+# users
 new_user = gl.users.create({'email': 'foo@bar.com', 'username': 'foo',
                             'name': 'foo', 'password': 'foo_password'})
 users_list = gl.users.list()
@@ -55,21 +71,14 @@ foobar_user = gl.users.create(
     {'email': 'foobar@example.com', 'username': 'foobar',
      'name': 'Foo Bar', 'password': 'foobar_password'})
 
-assert gl.users.search('foobar') == [foobar_user]
+assert gl.users.list(search='foobar')[0].id == foobar_user.id
 usercmp = lambda x,y: cmp(x.id, y.id)
 expected = sorted([new_user, foobar_user], cmp=usercmp)
-actual = sorted(gl.users.search('foo'), cmp=usercmp)
-assert expected == actual
-assert gl.users.search('asdf') == []
-
-assert gl.users.get_by_username('foobar') == foobar_user
-assert gl.users.get_by_username('foo') == new_user
-try:
-    gl.users.get_by_username('asdf')
-except gitlab.GitlabGetError:
-    pass
-else:
-    assert False
+actual = sorted(list(gl.users.list(search='foo')), cmp=usercmp)
+assert len(expected) == len(actual)
+assert len(gl.users.list(search='asdf')) == 0
+foobar_user.bio = 'This is the user bio'
+foobar_user.save()
 
 # SSH keys
 key = new_user.keys.create({'title': 'testkey', 'key': SSH_KEY})
@@ -85,12 +94,37 @@ assert(len(new_user.emails.list()) == 0)
 
 new_user.delete()
 foobar_user.delete()
-assert(len(gl.users.list()) == 1)
+assert(len(gl.users.list()) == 3)
+
+# current user mail
+mail = gl.user.emails.create({'email': 'current@user.com'})
+assert(len(gl.user.emails.list()) == 1)
+mail.delete()
+assert(len(gl.user.emails.list()) == 0)
 
 # current user key
 key = gl.user.keys.create({'title': 'testkey', 'key': SSH_KEY})
 assert(len(gl.user.keys.list()) == 1)
 key.delete()
+assert(len(gl.user.keys.list()) == 0)
+
+# templates
+assert(gl.dockerfiles.list())
+dockerfile = gl.dockerfiles.get('Node')
+assert(dockerfile.content is not None)
+
+assert(gl.gitignores.list())
+gitignore = gl.gitignores.get('Node')
+assert(gitignore.content is not None)
+
+assert(gl.gitlabciymls.list())
+gitlabciyml = gl.gitlabciymls.get('Nodejs')
+assert(gitlabciyml.content is not None)
+
+assert(gl.licenses.list())
+license = gl.licenses.get('bsd-2-clause', project='mytestproject',
+                          fullname='mytestfullname')
+assert('mytestfullname' in license.content)
 
 # groups
 user1 = gl.users.create({'email': 'user1@test.com', 'username': 'user1',
@@ -100,8 +134,12 @@ user2 = gl.users.create({'email': 'user2@test.com', 'username': 'user2',
 group1 = gl.groups.create({'name': 'group1', 'path': 'group1'})
 group2 = gl.groups.create({'name': 'group2', 'path': 'group2'})
 
-assert(len(gl.groups.list()) == 2)
-assert(len(gl.groups.search("1")) == 1)
+p_id = gl.groups.list(search='group2')[0].id
+group3 = gl.groups.create({'name': 'group3', 'path': 'group3', 'parent_id': p_id})
+
+assert(len(gl.groups.list()) == 3)
+assert(len(gl.groups.list(search='1')) == 1)
+assert(group3.parent_id == p_id)
 
 group1.members.create({'access_level': gitlab.Group.OWNER_ACCESS,
                        'user_id': user1.id})
@@ -125,6 +163,13 @@ assert(member.access_level == gitlab.Group.OWNER_ACCESS)
 
 group2.members.delete(gl.user.id)
 
+# group notification settings
+settings = group2.notificationsettings.get()
+settings.level = 'disabled'
+settings.save()
+settings = group2.notificationsettings.get()
+assert(settings.level == 'disabled')
+
 # hooks
 hook = gl.hooks.create({'url': 'http://whatever.com'})
 assert(len(gl.hooks.list()) == 1)
@@ -139,9 +184,8 @@ gr2_project = gl.projects.create({'name': 'gr2_project',
                                   'namespace_id': group2.id})
 sudo_project = gl.projects.create({'name': 'sudo_project'}, sudo=user1.name)
 
-assert(len(gl.projects.all()) == 4)
-assert(len(gl.projects.owned()) == 2)
-assert(len(gl.projects.search("admin")) == 1)
+assert(len(gl.projects.list(owned=True)) == 2)
+assert(len(gl.projects.list(search="admin")) == 1)
 
 # test pagination
 l1 = gl.projects.list(per_page=1, page=1)
@@ -152,24 +196,24 @@ assert(l1[0].id != l2[0].id)
 
 # project content (files)
 admin_project.files.create({'file_path': 'README',
-                            'branch_name': 'master',
+                            'branch': 'master',
                             'content': 'Initial content',
                             'commit_message': 'Initial commit'})
 readme = admin_project.files.get(file_path='README', ref='master')
 readme.content = base64.b64encode("Improved README")
 time.sleep(2)
-readme.save(branch_name="master", commit_message="new commit")
-readme.delete(commit_message="Removing README")
+readme.save(branch="master", commit_message="new commit")
+readme.delete(commit_message="Removing README", branch="master")
 
 admin_project.files.create({'file_path': 'README.rst',
-                            'branch_name': 'master',
+                            'branch': 'master',
                             'content': 'Initial content',
                             'commit_message': 'New commit'})
 readme = admin_project.files.get(file_path='README.rst', ref='master')
 assert(readme.decode() == 'Initial content')
 
 data = {
-    'branch_name': 'master',
+    'branch': 'master',
     'commit_message': 'blah blah blah',
     'actions': [
         {
@@ -180,23 +224,66 @@ data = {
     ]
 }
 admin_project.commits.create(data)
+assert('---' in admin_project.commits.list()[0].diff()[0]['diff'])
 
+# commit status
+commit = admin_project.commits.list()[0]
+status = commit.statuses.create({'state': 'success', 'sha': commit.id})
+assert(len(commit.statuses.list()) == 1)
+
+# commit comment
+commit.comments.create({'note': 'This is a commit comment'})
+assert(len(commit.comments.list()) == 1)
+
+# repository
 tree = admin_project.repository_tree()
-assert(len(tree) == 2)
+assert(len(tree) != 0)
 assert(tree[0]['name'] == 'README.rst')
-blob = admin_project.repository_blob('master', 'README.rst')
+blob_id = tree[0]['id']
+blob = admin_project.repository_raw_blob(blob_id)
 assert(blob == 'Initial content')
 archive1 = admin_project.repository_archive()
 archive2 = admin_project.repository_archive('master')
 assert(archive1 == archive2)
 
+# environments
+admin_project.environments.create({'name': 'env1', 'external_url':
+                                   'http://fake.env/whatever'})
+envs = admin_project.environments.list()
+assert(len(envs) == 1)
+env = admin_project.environments.get(envs[0].id)
+env.external_url = 'http://new.env/whatever'
+env.save()
+env = admin_project.environments.get(envs[0].id)
+assert(env.external_url == 'http://new.env/whatever')
+env.delete()
+assert(len(admin_project.environments.list()) == 0)
+
+# events
+admin_project.events.list()
+
+# forks
+fork = admin_project.forks.create({'namespace': user1.username})
+p = gl.projects.get(fork.id)
+assert(p.forked_from_project['id'] == admin_project.id)
+
+# project hooks
+hook = admin_project.hooks.create({'url': 'http://hook.url'})
+assert(len(admin_project.hooks.list()) == 1)
+hook.note_events = True
+hook.save()
+hook = admin_project.hooks.get(hook.id)
+assert(hook.note_events is True)
+hook.delete()
+
 # deploy keys
 deploy_key = admin_project.keys.create({'title': 'foo@bar', 'key': DEPLOY_KEY})
-project_keys = admin_project.keys.list()
+project_keys = list(admin_project.keys.list())
 assert(len(project_keys) == 1)
+
 sudo_project.keys.enable(deploy_key.id)
 assert(len(sudo_project.keys.list()) == 1)
-sudo_project.keys.disable(deploy_key.id)
+sudo_project.keys.delete(deploy_key.id)
 assert(len(sudo_project.keys.list()) == 0)
 
 # labels
@@ -233,20 +320,39 @@ issue3.save()
 assert(len(admin_project.issues.list(state='closed')) == 1)
 assert(len(admin_project.issues.list(state='opened')) == 2)
 assert(len(admin_project.issues.list(milestone='milestone1')) == 1)
-assert(m1.issues()[0].title == 'my issue 1')
+assert(m1.issues().next().title == 'my issue 1')
+note = issue1.notes.create({'body': 'This is an issue note'})
+assert(len(issue1.notes.list()) == 1)
+note.delete()
+assert(len(issue1.notes.list()) == 0)
 
 # tags
 tag1 = admin_project.tags.create({'tag_name': 'v1.0', 'ref': 'master'})
 assert(len(admin_project.tags.list()) == 1)
 tag1.set_release_description('Description 1')
 tag1.set_release_description('Description 2')
-assert(tag1.release.description == 'Description 2')
+assert(tag1.release['description'] == 'Description 2')
 tag1.delete()
 
+# project snippet
+admin_project.snippets_enabled = True
+admin_project.save()
+snippet = admin_project.snippets.create(
+    {'title': 'snip1', 'file_name': 'foo.py', 'code': 'initial content',
+     'visibility': gitlab.v4.objects.VISIBILITY_PRIVATE}
+)
+snippet.file_name = 'bar.py'
+snippet.save()
+snippet = admin_project.snippets.get(snippet.id)
+assert(snippet.content() == 'initial content')
+assert(snippet.file_name == 'bar.py')
+size = len(admin_project.snippets.list())
+snippet.delete()
+assert(len(admin_project.snippets.list()) == (size - 1))
+
 # triggers
-tr1 = admin_project.triggers.create({})
+tr1 = admin_project.triggers.create({'description': 'trigger1'})
 assert(len(admin_project.triggers.list()) == 1)
-tr1 = admin_project.triggers.get(tr1.token)
 tr1.delete()
 
 # variables
@@ -259,16 +365,16 @@ assert(v1.value == 'new_value1')
 v1.delete()
 
 # branches and merges
-to_merge = admin_project.branches.create({'branch_name': 'branch1',
+to_merge = admin_project.branches.create({'branch': 'branch1',
                                           'ref': 'master'})
 admin_project.files.create({'file_path': 'README2.rst',
-                            'branch_name': 'branch1',
+                            'branch': 'branch1',
                             'content': 'Initial content',
                             'commit_message': 'New commit in new branch'})
 mr = admin_project.mergerequests.create({'source_branch': 'branch1',
                                          'target_branch': 'master',
                                          'title': 'MR readme2'})
-ret = mr.merge()
+mr.merge()
 admin_project.branches.delete('branch1')
 
 try:
@@ -277,9 +383,9 @@ except gitlab.GitlabMRClosedError:
     pass
 
 # stars
-admin_project = admin_project.star()
+admin_project.star()
 assert(admin_project.star_count == 1)
-admin_project = admin_project.unstar()
+admin_project.unstar()
 assert(admin_project.star_count == 0)
 
 # project boards
@@ -296,16 +402,16 @@ assert(admin_project.star_count == 0)
 #assert(len(lists) == begin_size - 1)
 
 # namespaces
-ns = gl.namespaces.list()
+ns = gl.namespaces.list(all=True)
 assert(len(ns) != 0)
-ns = gl.namespaces.list(search='root')[0]
+ns = gl.namespaces.list(search='root', all=True)[0]
 assert(ns.kind == 'user')
 
 # broadcast messages
 msg = gl.broadcastmessages.create({'message': 'this is the message'})
 msg.color = '#444444'
 msg.save()
-msg = gl.broadcastmessages.list()[0]
+msg = gl.broadcastmessages.list(all=True)[0]
 assert(msg.color == '#444444')
 msg = gl.broadcastmessages.get(1)
 assert(msg.color == '#444444')
@@ -320,24 +426,25 @@ settings = gl.notificationsettings.get()
 assert(settings.level == gitlab.NOTIFICATION_LEVEL_WATCH)
 
 # services
-service = admin_project.services.get(service_name='asana')
-service.active = True
+service = admin_project.services.get('asana')
 service.api_key = 'whatever'
 service.save()
-service = admin_project.services.get(service_name='asana')
+service = admin_project.services.get('asana')
 assert(service.active == True)
+service.delete()
+service = admin_project.services.get('asana')
+assert(service.active == False)
 
 # snippets
-snippets = gl.snippets.list()
+snippets = gl.snippets.list(all=True)
 assert(len(snippets) == 0)
 snippet = gl.snippets.create({'title': 'snippet1', 'file_name': 'snippet1.py',
                               'content': 'import gitlab'})
-snippet = gl.snippets.get(1)
+snippet = gl.snippets.get(snippet.id)
 snippet.title = 'updated_title'
 snippet.save()
-snippet = gl.snippets.get(1)
+snippet = gl.snippets.get(snippet.id)
 assert(snippet.title == 'updated_title')
-content = snippet.raw()
+content = snippet.content()
 assert(content == 'import gitlab')
 snippet.delete()
-assert(len(gl.snippets.list()) == 0)

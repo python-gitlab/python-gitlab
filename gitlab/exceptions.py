@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-2015 Gauvain Pocentek <gauvain@pocentek.net>
+# Copyright (C) 2013-2017 Gauvain Pocentek <gauvain@pocentek.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import functools
 
 
 class GitlabError(Exception):
@@ -39,11 +41,19 @@ class GitlabAuthenticationError(GitlabError):
     pass
 
 
+class GitlabParsingError(GitlabError):
+    pass
+
+
 class GitlabConnectionError(GitlabError):
     pass
 
 
 class GitlabOperationError(GitlabError):
+    pass
+
+
+class GitlabHttpError(GitlabError):
     pass
 
 
@@ -83,15 +93,15 @@ class GitlabCancelError(GitlabOperationError):
     pass
 
 
-class GitlabBuildCancelError(GitlabCancelError):
-    pass
-
-
 class GitlabPipelineCancelError(GitlabCancelError):
     pass
 
 
 class GitlabRetryError(GitlabOperationError):
+    pass
+
+
+class GitlabBuildCancelError(GitlabCancelError):
     pass
 
 
@@ -104,6 +114,22 @@ class GitlabBuildPlayError(GitlabRetryError):
 
 
 class GitlabBuildEraseError(GitlabRetryError):
+    pass
+
+
+class GitlabJobCancelError(GitlabCancelError):
+    pass
+
+
+class GitlabJobRetryError(GitlabRetryError):
+    pass
+
+
+class GitlabJobPlayError(GitlabRetryError):
+    pass
+
+
+class GitlabJobEraseError(GitlabRetryError):
     pass
 
 
@@ -155,6 +181,10 @@ class GitlabAttachFileError(GitlabOperationError):
     pass
 
 
+class GitlabCherryPickError(GitlabOperationError):
+    pass
+
+
 def raise_error_from_response(response, error, expected_code=200):
     """Tries to parse gitlab error message from response and raises error.
 
@@ -190,3 +220,24 @@ def raise_error_from_response(response, error, expected_code=200):
     raise error(error_message=message,
                 response_code=response.status_code,
                 response_body=response.content)
+
+
+def on_http_error(error):
+    """Manage GitlabHttpError exceptions.
+
+    This decorator function can be used to catch GitlabHttpError exceptions
+    raise specialized exceptions instead.
+
+    Args:
+        error(Exception): The exception type to raise -- must inherit from
+            GitlabError
+    """
+    def wrap(f):
+        @functools.wraps(f)
+        def wrapped_f(*args, **kwargs):
+            try:
+                return f(*args, **kwargs)
+            except GitlabHttpError as e:
+                raise error(e.response_code, e.error_message)
+        return wrapped_f
+    return wrap

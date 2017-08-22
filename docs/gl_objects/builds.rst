@@ -1,16 +1,33 @@
-######
-Builds
-######
+###############################
+Jobs (v4 API) / Builds (v3 API)
+###############################
 
-Build triggers
-==============
+Build and job are two classes representing the same object. Builds are used in
+v3 API, jobs in v4 API.
 
-Build triggers provide a way to interact with the GitLab CI. Using a trigger a
-user or an application can run a new build for a specific commit.
+Triggers
+========
 
-* Object class: :class:`~gitlab.objects.ProjectTrigger`
-* Manager objects: :attr:`gitlab.Gitlab.project_triggers`,
-  :attr:`Project.triggers <gitlab.objects.Project.triggers>`
+Triggers provide a way to interact with the GitLab CI. Using a trigger a user
+or an application can run a new build/job for a specific commit.
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectTrigger`
+  + :class:`gitlab.v4.objects.ProjectTriggerManager`
+  + :attr:`gitlab.v4.objects.Project.triggers`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectTrigger`
+  + :class:`gitlab.v3.objects.ProjectTriggerManager`
+  + :attr:`gitlab.v3.objects.Project.triggers`
+  + :attr:`gitlab.Gitlab.project_triggers`
+
+* GitLab API: https://docs.gitlab.com/ce/api/pipeline_triggers.html
 
 Examples
 --------
@@ -39,14 +56,29 @@ Remove a trigger:
    :start-after: # trigger delete
    :end-before: # end trigger delete
 
-Build variables
-===============
+Project variables
+=================
 
-You can associate variables to builds to modify the build script behavior.
+You can associate variables to projects to modify the build/job script
+behavior.
 
-* Object class: :class:`~gitlab.objects.ProjectVariable`
-* Manager objects: :attr:`gitlab.Gitlab.project_variables`,
-  :attr:`gitlab.objects.Project.variables`
+Reference
+---------
+
+* v4 API
+
+  + :class:`gitlab.v4.objects.ProjectVariable`
+  + :class:`gitlab.v4.objects.ProjectVariableManager`
+  + :attr:`gitlab.v4.objects.Project.variables`
+
+* v3 API
+
+  + :class:`gitlab.v3.objects.ProjectVariable`
+  + :class:`gitlab.v3.objects.ProjectVariableManager`
+  + :attr:`gitlab.v3.objects.Project.variables`
+  + :attr:`gitlab.Gitlab.project_variables`
+
+* GitLab API: https://docs.gitlab.com/ce/api/project_level_variables.html
 
 Examples
 --------
@@ -81,49 +113,63 @@ Remove a variable:
    :start-after: # var delete
    :end-before: # end var delete
 
-Builds
-======
+Builds/Jobs
+===========
 
-Builds are associated to projects and commits. They provide information on the
-build that have been run, and methods to manipulate those builds.
+Builds/Jobs are associated to projects and commits. They provide information on
+the builds/jobs that have been run, and methods to manipulate them.
 
-* Object class: :class:`~gitlab.objects.ProjectBuild`
-* Manager objects: :attr:`gitlab.Gitlab.project_builds`,
-  :attr:`gitlab.objects.Project.builds`
+Reference
+---------
+
+* v4 API
+
+  + :class:`gitlab.v4.objects.ProjectJob`
+  + :class:`gitlab.v4.objects.ProjectJobManager`
+  + :attr:`gitlab.v4.objects.Project.jobs`
+
+* v3 API
+
+  + :class:`gitlab.v3.objects.ProjectJob`
+  + :class:`gitlab.v3.objects.ProjectJobManager`
+  + :attr:`gitlab.v3.objects.Project.jobs`
+  + :attr:`gitlab.Gitlab.project_jobs`
+
+* GitLab API: https://docs.gitlab.com/ce/api/jobs.html
 
 Examples
 --------
 
-Build are usually automatically triggered, but you can explicitly trigger a
-new build:
+Jobs are usually automatically triggered, but you can explicitly trigger a new
+job:
 
-Trigger a new build on a project:
+Trigger a new job on a project:
 
 .. literalinclude:: builds.py
    :start-after: # trigger run
    :end-before: # end trigger run
 
-List builds for the project:
+List jobs for the project:
 
 .. literalinclude:: builds.py
    :start-after: # list
    :end-before: # end list
 
 To list builds for a specific commit, create a
-:class:`~gitlab.objects.ProjectCommit` object and use its
-:attr:`~gitlab.objects.ProjectCommit.builds` method:
+:class:`~gitlab.v3.objects.ProjectCommit` object and use its
+:attr:`~gitlab.v3.objects.ProjectCommit.builds` method (v3 only):
 
 .. literalinclude:: builds.py
    :start-after: # commit list
    :end-before: # end commit list
 
-Get a build:
+Get a job:
 
 .. literalinclude:: builds.py
    :start-after: # get
    :end-before: # end get
 
-Get a build artifacts:
+Get a job artifact:
 
 .. literalinclude:: builds.py
    :start-after: # artifacts
@@ -142,13 +188,13 @@ stream:
    :start-after: # stream artifacts
    :end-before: # end stream artifacts
 
-Mark a build artifact as kept when expiration is set:
+Mark a job artifact as kept when expiration is set:
 
 .. literalinclude:: builds.py
    :start-after: # keep artifacts
    :end-before: # end keep artifacts
 
-Get a build trace:
+Get a job trace:
 
 .. literalinclude:: builds.py
    :start-after: # trace
@@ -159,19 +205,19 @@ Get a build trace:
    Traces are entirely stored in memory unless you use the streaming feature.
    See :ref:`the artifacts example <streaming_example>`.
 
-Cancel/retry a build:
+Cancel/retry a job:
 
 .. literalinclude:: builds.py
    :start-after: # retry
    :end-before: # end retry
 
-Play (trigger) a build:
+Play (trigger) a job:
 
 .. literalinclude:: builds.py
    :start-after: # play
    :end-before: # end play
 
-Erase a build (artifacts and trace):
+Erase a job (artifacts and trace):
 
 .. literalinclude:: builds.py
    :start-after: # erase

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2016 Gauvain Pocentek <gauvain@pocentek.net>
+# Copyright (C) 2016-2017 Gauvain Pocentek <gauvain@pocentek.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -25,7 +25,7 @@ from httmock import response  # noqa
 from httmock import urlmatch  # noqa
 
 from gitlab import *  # noqa
-from gitlab.objects import BaseManager  # noqa
+from gitlab.v3.objects import BaseManager  # noqa
 
 
 class FakeChildObject(GitlabObject):
@@ -215,8 +215,8 @@ class TestGitlabManager(unittest.TestCase):
     def test_project_manager_search(self):
         mgr = ProjectManager(self.gitlab)
 
-        @urlmatch(scheme="http", netloc="localhost",
-                  path="/api/v3/projects/search/foo", method="get")
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects",
+                  query="search=foo", method="get")
         def resp_get_all(url, request):
             headers = {'content-type': 'application/json'}
             content = ('[{"name": "foo1", "id": 1}, '
@@ -225,7 +225,7 @@ class TestGitlabManager(unittest.TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_get_all):
-            data = mgr.search('foo')
+            data = mgr.list(search='foo')
             self.assertEqual(type(data), list)
             self.assertEqual(2, len(data))
             self.assertEqual(type(data[0]), Project)

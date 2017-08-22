@@ -7,12 +7,27 @@ You can request templates for different type of files:
 * License files
 * .gitignore files
 * GitLab CI configuration files
+* Dockerfiles
 
 License templates
 =================
 
-* Object class: :class:`~gitlab.objects.License`
-* Manager object: :attr:`gitlab.Gitlab.licenses`
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.License`
+  + :class:`gitlab.v4.objects.LicenseManager`
+  + :attr:`gitlab.Gitlab.licenses`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.License`
+  + :class:`gitlab.v3.objects.LicenseManager`
+  + :attr:`gitlab.Gitlab.licenses`
+
+* GitLab API: https://docs.gitlab.com/ce/api/templates/licenses.html
 
 Examples
 --------
@@ -32,8 +47,22 @@ Generate a license content for a project:
 .gitignore templates
 ====================
 
-* Object class: :class:`~gitlab.objects.Gitignore`
-* Manager object: :attr:`gitlab.Gitlab.gitognores`
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.Gitignore`
+  + :class:`gitlab.v4.objects.GitignoreManager`
+  + :attr:`gitlab.Gitlab.gitignores`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.Gitignore`
+  + :class:`gitlab.v3.objects.GitignoreManager`
+  + :attr:`gitlab.Gitlab.gitignores`
+
+* GitLab API: https://docs.gitlab.com/ce/api/templates/gitignores.html
 
 Examples
 --------
@@ -53,8 +82,22 @@ Get a gitignore template:
 GitLab CI templates
 ===================
 
-* Object class: :class:`~gitlab.objects.Gitlabciyml`
-* Manager object: :attr:`gitlab.Gitlab.gitlabciymls`
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.Gitlabciyml`
+  + :class:`gitlab.v4.objects.GitlabciymlManager`
+  + :attr:`gitlab.Gitlab.gitlabciymls`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.Gitlabciyml`
+  + :class:`gitlab.v3.objects.GitlabciymlManager`
+  + :attr:`gitlab.Gitlab.gitlabciymls`
+
+* GitLab API: https://docs.gitlab.com/ce/api/templates/gitlab_ci_ymls.html
 
 Examples
 --------
@@ -70,3 +113,32 @@ Get a GitLab CI template:
 .. literalinclude:: templates.py
    :start-after: # gitlabciyml get
    :end-before: # end gitlabciyml get
+
+Dockerfile templates
+====================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.Dockerfile`
+  + :class:`gitlab.v4.objects.DockerfileManager`
+  + :attr:`gitlab.Gitlab.gitlabciymls`
+
+* GitLab API: Not documented.
+
+Examples
+--------
+
+List known Dockerfile templates:
+
+.. literalinclude:: templates.py
+   :start-after: # dockerfile list
+   :end-before: # end dockerfile list
+
+Get a Dockerfile template:
+
+.. literalinclude:: templates.py
+   :start-after: # dockerfile get
+   :end-before: # end dockerfile get

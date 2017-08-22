@@ -2,8 +2,22 @@
 System hooks
 ############
 
-Use :class:`~gitlab.objects.Hook` objects to manipulate system hooks. The
-:attr:`gitlab.Gitlab.hooks` manager object provides helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.Hook`
+  + :class:`gitlab.v4.objects.HookManager`
+  + :attr:`gitlab.Gitlab.hooks`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.Hook`
+  + :class:`gitlab.v3.objects.HookManager`
+  + :attr:`gitlab.Gitlab.hooks`
+
+* GitLab API: https://docs.gitlab.com/ce/api/system_hooks.html
 
 Examples
 --------
