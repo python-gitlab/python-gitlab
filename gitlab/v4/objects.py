@@ -1760,7 +1760,8 @@ class ProjectUpload(InformationalObject):
         Args:
             alt (str): The alt of the upload
             url (str): The url of to the uploaded file
-            markdown (str): The markdown text that creates a link to the uploaded file
+            markdown (str): The markdown text that creates a link to
+                the uploaded file
         """
         self.alt = alt
         self.url = url
@@ -2111,8 +2112,10 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         Raises:
             GitlabConnectionError: If the server cannot be reached
             GitlabUploadError: If the file upload fails
-            GitlabUploadError: If ``filedata`` and ``filepath`` are not specified
-            GitlabUploadError: If both ``filedata`` and ``filepath`` are specified
+            GitlabUploadError: If ``filedata`` and ``filepath`` are not
+                specified
+            GitlabUploadError: If both ``filedata`` and ``filepath`` are
+                specified
 
         Returns:
             ProjectUpload: A ``ProjectUpload`` instance containing
@@ -2137,9 +2140,9 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         data = self.manager.gitlab.http_post(url, files=file_info)
 
         return ProjectUpload(
-            alt      = data['alt'],
-            url      = data['url'],
-            markdown = data['markdown']
+            alt=data['alt'],
+            url=data['url'],
+            markdown=data['markdown']
         )
 
 

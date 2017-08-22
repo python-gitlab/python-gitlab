@@ -356,7 +356,8 @@ class GitlabCLI(object):
             cli.die("Could not load project '{!r}'".format(args["id"]), e)
 
         try:
-            res = project.upload(filename=args["filename"], filepath=args["filepath"])
+            res = project.upload(filename=args["filename"],
+                                 filepath=args["filepath"])
         except Exception as e:
             cli.die("Could not upload file into project", e)
 

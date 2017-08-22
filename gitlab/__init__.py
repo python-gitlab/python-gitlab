@@ -396,11 +396,13 @@ class Gitlab(object):
 
         return results
 
-    def _raw_post(self, path_, data=None, content_type=None, files=None, **kwargs):
+    def _raw_post(self, path_, data=None, content_type=None,
+                  files=None, **kwargs):
         url = '%s%s' % (self._url, path_)
         opts = self._get_session_opts(content_type)
         try:
-            return self.session.post(url, params=kwargs, data=data, files=files, **opts)
+            return self.session.post(url, params=kwargs, data=data,
+                                     files=files, **opts)
         except Exception as e:
             raise GitlabConnectionError(
                 "Can't connect to GitLab server (%s)" % e)
@@ -759,7 +761,8 @@ class Gitlab(object):
         # No pagination, generator requested
         return GitlabList(self, url, query_data, **kwargs)
 
-    def http_post(self, path, query_data={}, post_data={}, files=None, **kwargs):
+    def http_post(self, path, query_data={}, post_data={}, files=None,
+                  **kwargs):
         """Make a POST request to the Gitlab server.
 
         Args:
