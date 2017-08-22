@@ -1774,9 +1774,7 @@ class ProjectUpload(GitlabObject):
     shortPrintAttr = "url"
 
     def __init__(self, alt, url, markdown):
-        """Create a new ProfileFileUpload instance that
-        holds the ``alt`` (uploaded filename without the extension),
-        ``url``, and ``markdown`` data about the file upload.
+        """Create a new ProjectUpload instance.
 
         Args:
             alt (str): The alt of the upload
@@ -1792,9 +1790,7 @@ class ProjectUpload(GitlabObject):
         self.id = url.replace("/uploads/", "").split("/")[0]
 
     def __str__(self):
-        """Return the markdown representation of the uploaded
-        file.
-        """
+        """Return the markdown representation of the uploaded file."""
         return self.markdown
 
 

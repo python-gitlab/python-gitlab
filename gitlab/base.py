@@ -534,11 +534,10 @@ class GitlabObject(object):
 
 
 class InformationalObject(object):
-    """A basic object that holds values, more like a struct
-    than a class.
+    """A basic object that holds values, more like a struct than a class.
 
-    Inheriting classes should define which attributes are relevant/important
-    when defining the class. E.g.:
+    Inheriting classes should define which attributes are
+    relevant/important when defining the class. E.g.:
 
     .. code-block:: python
 
