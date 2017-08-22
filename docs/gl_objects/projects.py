@@ -368,3 +368,29 @@ b_list.save()
 # board lists delete
 b_list.delete()
 # end board lists delete
+
+# project file upload by path
+# Or provide a full path to the uploaded file
+project.upload("filename.txt", filepath="/some/path/filename.txt")
+# end project file upload by path
+
+# project file upload with data
+# Upload a file using its filename and filedata
+project.upload("filename.txt", filedata="Raw data")
+# end project file upload with data
+
+# project file upload markdown
+uploaded_file = project.upload_file("filename.txt", filedata="data")
+issue = project.issues.get(issue_id)
+issue.notes.create({
+    "body": "See the attached file: {}".format(uploaded_file)
+})
+# project file upload markdown
+
+# project file upload markdown custom
+uploaded_file = project.upload_file("filename.txt", filedata="data")
+issue = project.issues.get(issue_id)
+issue.notes.create({
+    "body": "See the [attached file]({})".format(uploaded_file.url)
+})
+# project file upload markdown

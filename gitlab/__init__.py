@@ -628,7 +628,7 @@ class Gitlab(object):
             return '%s%s' % (self._url, path)
 
     def http_request(self, verb, path, query_data={}, post_data={},
-                     streamed=False, **kwargs):
+                     streamed=False, files=None, **kwargs):
         """Make an HTTP request to the Gitlab server.
 
         Args:
@@ -658,6 +658,11 @@ class Gitlab(object):
         params = query_data.copy()
         params.update(kwargs)
         opts = self._get_session_opts(content_type='application/json')
+
+        # don't set the content-type header when uploading files
+        if files is not None:
+            del opts["headers"]["Content-type"]
+
         verify = opts.pop('verify')
         timeout = opts.pop('timeout')
 
@@ -668,7 +673,7 @@ class Gitlab(object):
         # always agree with this decision (this is the case with a default
         # gitlab installation)
         req = requests.Request(verb, url, json=post_data, params=params,
-                               **opts)
+                               files=files, **opts)
         prepped = self.session.prepare_request(req)
         prepped.url = sanitized_url(prepped.url)
         result = self.session.send(prepped, stream=streamed, verify=verify,
@@ -754,7 +759,7 @@ class Gitlab(object):
         # No pagination, generator requested
         return GitlabList(self, url, query_data, **kwargs)
 
-    def http_post(self, path, query_data={}, post_data={}, **kwargs):
+    def http_post(self, path, query_data={}, post_data={}, files=None, **kwargs):
         """Make a POST request to the Gitlab server.
 
         Args:
@@ -774,7 +779,7 @@ class Gitlab(object):
             GitlabParsingError: If the json data could not be parsed
         """
         result = self.http_request('post', path, query_data=query_data,
-                                   post_data=post_data, **kwargs)
+                                   post_data=post_data, files=files, **kwargs)
         try:
             if result.headers.get('Content-Type', None) == 'application/json':
                 return result.json()

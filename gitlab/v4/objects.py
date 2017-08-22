@@ -1743,6 +1743,39 @@ class ProjectRunnerManager(NoUpdateMixin, RESTManager):
     _create_attrs = (('runner_id', ), tuple())
 
 
+class ProjectUpload(InformationalObject):
+    _attr_names = [
+        "alt",
+        "url",
+        "markdown",
+        "id",
+    ]
+    _short_print_attr = "url"
+
+    def __init__(self, alt, url, markdown):
+        """Create a new ProfileFileUpload instance that
+        holds the ``alt`` (uploaded filename without the extension),
+        ``url``, and ``markdown`` data about the file upload.
+
+        Args:
+            alt (str): The alt of the upload
+            url (str): The url of to the uploaded file
+            markdown (str): The markdown text that creates a link to the uploaded file
+        """
+        self.alt = alt
+        self.url = url
+        self.markdown = markdown
+
+        # url should be in this form: /uploads/ID/filename.txt
+        self.id = url.replace("/uploads/", "").split("/")[0]
+
+    def __str__(self):
+        """Return the markdown representation of the uploaded
+        file.
+        """
+        return self.markdown
+
+
 class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
     _constructor_types = {'owner': 'User', 'namespace': 'Group'}
     _short_print_attr = 'path'
@@ -2059,6 +2092,55 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         post_data = {'ref': ref, 'token': token}
         post_data.update(form)
         self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+
+    # see #56 - add file attachment features
+    @cli.register_custom_action('Project', ('filename', 'filepath'))
+    @exc.on_http_error(exc.GitlabUploadError)
+    def upload(self, filename, filedata=None, filepath=None, **kwargs):
+        """Upload the specified file into the project.
+
+        .. note::
+
+            Either ``filedata`` or ``filepath`` *MUST* be specified.
+
+        Args:
+            filename (str): The name of the file being uploaded
+            filedata (bytes): The raw data of the file being uploaded
+            filepath (str): The path to a local file to upload (optional)
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached
+            GitlabUploadError: If the file upload fails
+            GitlabUploadError: If ``filedata`` and ``filepath`` are not specified
+            GitlabUploadError: If both ``filedata`` and ``filepath`` are specified
+
+        Returns:
+            ProjectUpload: A ``ProjectUpload`` instance containing
+                information about the uploaded file.
+        """
+        if filepath is None and filedata is None:
+            raise GitlabUploadError("No file contents or path specified")
+
+        if filedata is not None and filepath is not None:
+            raise GitlabUploadError("File contents and file path specified")
+
+        if filepath is not None:
+            with open(filepath, "rb") as f:
+                filedata = f.read()
+
+        url = ('/projects/%(id)s/uploads' % {
+            'id': self.id,
+        })
+        file_info = {
+            'file': (filename, filedata),
+        }
+        data = self.manager.gitlab.http_post(url, files=file_info)
+
+        return ProjectUpload(
+            alt      = data['alt'],
+            url      = data['url'],
+            markdown = data['markdown']
+        )
 
 
 class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):

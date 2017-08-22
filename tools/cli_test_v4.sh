@@ -94,6 +94,10 @@ testcase "branch deletion" '
         --name branch1 >/dev/null 2>&1
 '
 
+testcase "project upload" '
+    GITLAB project upload --id "$PROJECT_ID" --filename '$(basename $0)' --filepath '$0'
+'
+
 testcase "project deletion" '
     GITLAB project delete --id "$PROJECT_ID"
 '

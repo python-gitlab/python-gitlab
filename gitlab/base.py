@@ -533,10 +533,34 @@ class GitlabObject(object):
         return not self.__eq__(other)
 
 
-class RESTObject(object):
+class InformationalObject(object):
+    """A basic object that holds values, more like a struct
+    than a class.
+
+    Inheriting classes should define which attributes are relevant/important
+    when defining the class. E.g.:
+
+    .. code-block:: python
+
+        class ProjectUpload(InformationalObject):
+            _attr_names = ["alt", "markdown", "id", "url"]
+    """
+    _attr_names = []
+    _id_attr = "id"
+    _short_print_attr = "id"
+
+    @property
+    def attributes(self):
+        res = {}
+        for attr_name in self._attr_names:
+            res[attr_name] = getattr(self, attr_name)
+        return res
+
+
+class RESTObject(InformationalObject):
     """Represents an object built from server data.
 
-    It holds the attributes know from te server, and the updated attributes in
+    It holds the attributes know from the server, and the updated attributes in
     another. This allows smart updates, if the object allows it.
 
     You can redefine ``_id_attr`` in child classes to specify which attribute

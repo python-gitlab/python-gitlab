@@ -1,4 +1,5 @@
 import base64
+import re
 import time
 
 import gitlab
@@ -193,6 +194,21 @@ assert(blob == 'Initial content')
 archive1 = admin_project.repository_archive()
 archive2 = admin_project.repository_archive('master')
 assert(archive1 == archive2)
+
+# project file uploads
+filename = "test.txt"
+file_contents = "testing contents"
+uploaded_file = admin_project.upload(filename, file_contents)
+assert(uploaded_file.id in uploaded_file.url)
+assert(uploaded_file.alt == filename)
+assert(uploaded_file.url.startswith("/uploads/"))
+assert(uploaded_file.url.endswith("/" + filename))
+assert(uploaded_file.markdown == "[{}]({})".format(
+    uploaded_file.alt,
+    uploaded_file.url,
+))
+# should default to markdown when passed to str()
+assert(str(uploaded_file) == uploaded_file.markdown)
 
 # deploy keys
 deploy_key = admin_project.keys.create({'title': 'foo@bar', 'key': DEPLOY_KEY})

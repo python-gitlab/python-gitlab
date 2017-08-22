@@ -779,3 +779,51 @@ Delete a list:
 .. literalinclude:: projects.py
    :start-after: # board lists delete
    :end-before: # end board lists delete
+
+
+File Uploads
+============
+
+Reference
+---------
+
+* v4 API:
+
+  + :attr:`gitlab.v4.objects.Project.upload`
+  + :class:`gitlab.v4.objects.ProjectUpload`
+
+* v3 API:
+
+  + :attr:`gitlab.v3.objects.Project.upload`
+  + :class:`gitlab.v3.objects.ProjectUpload`
+
+* Gitlab API: https://docs.gitlab.com/ce/api/projects.html#upload-a-file
+
+Examples
+--------
+
+Upload a file into a project using a filesystem path:
+
+.. literalinclude:: projects.py
+   :start-after: # project file upload by path
+   :end-before: # end project file upload by path
+
+Upload a file into a project without a filesystem path:
+
+.. literalinclude:: projects.py
+   :start-after: # project file upload with data
+   :end-before: # end project file upload with data
+
+Upload a file and comment on an issue using the uploaded file's
+markdown:
+
+.. literalinclude:: projects.py
+   :start-after: # project file upload markdown
+   :end-before: # end project file upload markdown
+
+Upload a file and comment on an issue while using custom
+markdown to reference the uploaded file:
+
+.. literalinclude:: projects.py
+   :start-after: # project file upload markdown custom
+   :end-before: # end project file upload markdown custom
