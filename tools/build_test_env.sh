@@ -27,7 +27,7 @@ try() { "$@" || fatal "'$@' failed"; }
 
 NOVENV=
 PY_VER=2
-API_VER=3
+API_VER=4
 while getopts :np:a: opt "$@"; do
     case $opt in
         n) NOVENV=1;;
