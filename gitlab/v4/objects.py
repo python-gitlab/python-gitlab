@@ -1732,6 +1732,17 @@ class ProjectDeploymentManager(RetrieveMixin, RESTManager):
     _from_parent_attrs = {'project_id': 'id'}
 
 
+class ProjectProtectedBranch(ObjectDeleteMixin, RESTObject):
+    _id_attr = 'name'
+
+
+class ProjectProtectedBranchManager(NoUpdateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/protected_branches'
+    _obj_cls = ProjectProtectedBranch
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('name', ), ('push_access_level', 'merge_access_level'))
+
+
 class ProjectRunner(ObjectDeleteMixin, RESTObject):
     pass
 
@@ -1767,6 +1778,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('notes', 'ProjectNoteManager'),
         ('notificationsettings', 'ProjectNotificationSettingsManager'),
         ('pipelines', 'ProjectPipelineManager'),
+        ('protectedbranches', 'ProjectProtectedBranchManager'),
         ('runners', 'ProjectRunnerManager'),
         ('services', 'ProjectServiceManager'),
         ('snippets', 'ProjectSnippetManager'),

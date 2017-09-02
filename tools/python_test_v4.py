@@ -394,6 +394,16 @@ try:
 except gitlab.GitlabMRClosedError:
     pass
 
+# protected branches
+p_b = admin_project.protectedbranches.create({'name': '*-stable'})
+assert(p_b.name == '*-stable')
+p_b = admin_project.protectedbranches.get('*-stable')
+# master is protected by default
+assert(len(admin_project.protectedbranches.list()) == 2)
+admin_project.protectedbranches.delete('master')
+p_b.delete()
+assert(len(admin_project.protectedbranches.list()) == 0)
+
 # stars
 admin_project.star()
 assert(admin_project.star_count == 1)
