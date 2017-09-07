@@ -35,7 +35,7 @@ camel_re = re.compile('(.)([A-Z])')
 custom_actions = {}
 
 
-def register_custom_action(cls_name, mandatory=tuple(), optional=tuple()):
+def register_custom_action(cls_names, mandatory=tuple(), optional=tuple()):
     def wrap(f):
         @functools.wraps(f)
         def wrapped_f(*args, **kwargs):
@@ -43,15 +43,20 @@ def register_custom_action(cls_name, mandatory=tuple(), optional=tuple()):
 
         # in_obj defines whether the method belongs to the obj or the manager
         in_obj = True
-        final_name = cls_name
-        if cls_name.endswith('Manager'):
-            final_name = cls_name.replace('Manager', '')
-            in_obj = False
-        if final_name not in custom_actions:
-            custom_actions[final_name] = {}
+        classes = cls_names
+        if type(cls_names) != tuple:
+            classes = (cls_names, )
 
-        action = f.__name__
-        custom_actions[final_name][action] = (mandatory, optional, in_obj)
+        for cls_name in cls_names:
+            final_name = cls_name
+            if cls_name.endswith('Manager'):
+                final_name = cls_name.replace('Manager', '')
+                in_obj = False
+            if final_name not in custom_actions:
+                custom_actions[final_name] = {}
+
+            action = f.__name__.replace('_', '-')
+            custom_actions[final_name][action] = (mandatory, optional, in_obj)
 
         return wrapped_f
     return wrap

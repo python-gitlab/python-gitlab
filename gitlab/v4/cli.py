@@ -33,7 +33,7 @@ class GitlabCLI(object):
         self.cls_name = cli.what_to_cls(what)
         self.cls = gitlab.v4.objects.__dict__[self.cls_name]
         self.what = what.replace('-', '_')
-        self.action = action.lower().replace('-', '')
+        self.action = action.lower()
         self.gl = gl
         self.args = args
         self.mgr_cls = getattr(gitlab.v4.objects,
@@ -64,7 +64,8 @@ class GitlabCLI(object):
             if gitlab.mixins.GetWithoutIdMixin not in inspect.getmro(self.cls):
                 data[self.cls._id_attr] = self.args.pop(self.cls._id_attr)
             o = self.cls(self.mgr, data)
-            return getattr(o, self.action)(**self.args)
+            method_name = self.action.replace('-', '_')
+            return getattr(o, method_name)(**self.args)
         else:
             return getattr(self.mgr, self.action)(**self.args)
 
@@ -314,7 +315,9 @@ def run(gl, what, action, args, verbose, output, fields):
                     if k in fields}
         return obj.attributes
 
-    if isinstance(ret_val, list):
+    if isinstance(ret_val, dict):
+        printer.display(ret_val, verbose=True, obj=ret_val)
+    elif isinstance(ret_val, list):
         for obj in ret_val:
             if isinstance(obj, gitlab.base.RESTObject):
                 printer.display(get_dict(obj), verbose=verbose, obj=obj)

@@ -17,6 +17,7 @@
 
 import gitlab
 from gitlab import base
+from gitlab import cli
 from gitlab import exceptions as exc
 
 
@@ -296,6 +297,8 @@ class ObjectDeleteMixin(object):
 
 
 class AccessRequestMixin(object):
+    @cli.register_custom_action(('ProjectAccessRequest', 'GroupAccessRequest'),
+                                tuple(), ('access_level', ))
     @exc.on_http_error(exc.GitlabUpdateError)
     def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
         """Approve an access request.
@@ -317,6 +320,8 @@ class AccessRequestMixin(object):
 
 
 class SubscribableMixin(object):
+    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest',
+                                 'ProjectLabel'))
     @exc.on_http_error(exc.GitlabSubscribeError)
     def subscribe(self, **kwargs):
         """Subscribe to the object notifications.
@@ -332,6 +337,8 @@ class SubscribableMixin(object):
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
+    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest',
+                                 'ProjectLabel'))
     @exc.on_http_error(exc.GitlabUnsubscribeError)
     def unsubscribe(self, **kwargs):
         """Unsubscribe from the object notifications.
@@ -349,6 +356,7 @@ class SubscribableMixin(object):
 
 
 class TodoMixin(object):
+    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabHttpError)
     def todo(self, **kwargs):
         """Create a todo associated to the object.
@@ -365,6 +373,7 @@ class TodoMixin(object):
 
 
 class TimeTrackingMixin(object):
+    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def time_stats(self, **kwargs):
         """Get time stats for the object.
@@ -379,6 +388,8 @@ class TimeTrackingMixin(object):
         path = '%s/%s/time_stats' % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)
 
+    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'),
+                                ('duration', ))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def time_estimate(self, duration, **kwargs):
         """Set an estimated time of work for the object.
@@ -395,6 +406,7 @@ class TimeTrackingMixin(object):
         data = {'duration': duration}
         return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
+    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def reset_time_estimate(self, **kwargs):
         """Resets estimated time for the object to 0 seconds.
@@ -409,6 +421,8 @@ class TimeTrackingMixin(object):
         path = '%s/%s/rest_time_estimate' % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_post(path, **kwargs)
 
+    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'),
+                                ('duration', ))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def add_spent_time(self, duration, **kwargs):
         """Add time spent working on the object.
@@ -425,6 +439,7 @@ class TimeTrackingMixin(object):
         data = {'duration': duration}
         return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
+    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def reset_spent_time(self, **kwargs):
         """Resets the time spent working on the object.
