@@ -28,7 +28,8 @@ Content
 -------
 
 The configuration file uses the ``INI`` format. It contains at least a
-``[global]`` section, and a new section for each GitLab server. For example:
+``[global]`` section, and a specific section for each GitLab server. For
+example:
 
 .. code-block:: ini
 
@@ -98,7 +99,7 @@ CLI
 Objects and actions
 -------------------
 
-The ``gitlab`` command expects two mandatory arguments. This first one is the
+The ``gitlab`` command expects two mandatory arguments. The first one is the
 type of object that you want to manipulate. The second is the action that you
 want to perform. For example:
 
@@ -140,8 +141,8 @@ These options must be defined before the mandatory arguments.
     Output format. Defaults to a custom format. Can also be ``yaml`` or ``json``.
 
 ``--fields``, ``-f``
-    Comma-separated list of fields to display (``yaml`` and ``json`` formats
-    only).  If not used, all the object fields are displayed.
+    Comma-separated list of fields to display (``yaml`` and ``json`` output
+    formats only).  If not used, all the object fields are displayed.
 
 Example:
 

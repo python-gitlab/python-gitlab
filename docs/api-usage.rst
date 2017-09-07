@@ -2,15 +2,38 @@
 Getting started with the API
 ############################
 
-The ``gitlab`` package provides 3 base types:
+python-gitlab supports both GitLab v3 and v4 APIs.
+
+v3 being deprecated by GitLab, its support in python-gitlab will be minimal.
+The development team will focus on v4.
+
+v3 is still the default API used by python-gitlab, for compatibility reasons..
+
+
+Base types
+==========
+
+The ``gitlab`` package provides some base types.
 
 * ``gitlab.Gitlab`` is the primary class, handling the HTTP requests. It holds
   the GitLab URL and authentication information.
-* ``gitlab.GitlabObject`` is the base class for all the GitLab objects. These
-  objects provide an abstraction for GitLab resources (projects, groups, and so
-  on).
-* ``gitlab.BaseManager`` is the base class for objects managers, providing the
-  API to manipulate the resources and their attributes.
+
+For v4 the following types are defined:
+
+* ``gitlab.base.RESTObject`` is the base class for all the GitLab v4 objects.
+  These objects provide an abstraction for GitLab resources (projects, groups,
+  and so on).
+* ``gitlab.base.RESTManager`` is the base class for v4 objects managers,
+  providing the API to manipulate the resources and their attributes.
+
+For v3 the following types are defined:
+
+* ``gitlab.base.GitlabObject`` is the base class for all the GitLab v3 objects.
+  These objects provide an abstraction for GitLab resources (projects, groups,
+  and so on).
+* ``gitlab.base.BaseManager`` is the base class for v3 objects managers,
+  providing the API to manipulate the resources and their attributes.
+
 
 ``gitlab.Gitlab`` class
 =======================
@@ -40,7 +63,9 @@ You can also use configuration files to create ``gitlab.Gitlab`` objects:
 See the :ref:`cli_configuration` section for more information about
 configuration files.
 
-**GitLab v4 support**
+
+API version
+===========
 
 ``python-gitlab`` uses the v3 GitLab API by default. Use the ``api_version``
 parameter to switch to v4:
@@ -53,15 +78,17 @@ parameter to switch to v4:
 
 .. warning::
 
-   The v4 support is experimental.
+   The python-gitlab API is not the same for v3 and v4. Make sure to read
+   :ref:`switching_to_v4` before upgrading.
+
+   v4 will become the default in python-gitlab.
 
 Managers
 ========
 
 The ``gitlab.Gitlab`` class provides managers to access the GitLab resources.
 Each manager provides a set of methods to act on the resources. The available
-methods depend on the resource type. Resources are represented as
-``gitlab.GitlabObject``-derived objects.
+methods depend on the resource type.
 
 Examples:
 
@@ -84,17 +111,22 @@ Examples:
 
 The attributes of objects are defined upon object creation, and depend on the
 GitLab API itself. To list the available information associated with an object
-use the python introspection tools:
+use the python introspection tools for v3, or the ``attributes`` attribute for
+v4:
 
 .. code-block:: python
 
    project = gl.projects.get(1)
+
+   # v3
    print(vars(project))
    # or
    print(project.__dict__)
 
-Some ``gitlab.GitlabObject`` classes also provide managers to access related
-GitLab resources:
+   # v4
+   print(project.attributes)
+
+Some objects also provide managers to access related GitLab resources:
 
 .. code-block:: python
 
@@ -105,7 +137,7 @@ GitLab resources:
 Gitlab Objects
 ==============
 
-You can update or delete an object when it exists as a ``GitlabObject`` object:
+You can update or delete a remote object when it exists locally:
 
 .. code-block:: python
 
@@ -119,14 +151,30 @@ You can update or delete an object when it exists as a ``GitlabObject`` object:
    project.delete()
 
 
-Some ``GitlabObject``-derived classes provide additional methods, allowing more
-actions on the GitLab resources. For example:
+Some classes provide additional methods, allowing more actions on the GitLab
+resources. For example:
 
 .. code-block:: python
 
    # star a git repository
    project = gl.projects.get(1)
    project.star()
+
+Lazy objects (v4 only)
+======================
+
+To avoid useless calls to the server API, you can create lazy objects. These
+objects are created locally using a known ID, and give access to other managers
+and methods.
+
+The following exemple will only make one API call to the GitLab server to star
+a project:
+
+.. code-block:: python
+
+   # star a git repository
+   project = gl.projects.get(1, lazy=True)  # no API call
+   project.star()  # API call
 
 Pagination
 ==========
@@ -142,8 +190,7 @@ listing methods support the ``page`` and ``per_page`` parameters:
 
    The first page is page 1, not page 0.
 
-
-By default GitLab does not return the complete list of items.  Use the ``all``
+By default GitLab does not return the complete list of items. Use the ``all``
 parameter to get all the items when using listing methods:
 
 .. code-block:: python
@@ -151,7 +198,7 @@ parameter to get all the items when using listing methods:
    all_groups = gl.groups.list(all=True)
    all_owned_projects = gl.projects.owned(all=True)
 
-.. note::
+.. warning::
 
    python-gitlab will iterate over the list by calling the corresponding API
    multiple times. This might take some time if you have a lot of items to
@@ -159,6 +206,15 @@ parameter to get all the items when using listing methods:
    stored in RAM. If you're encountering the python recursion limit exception,
    use ``safe_all=True`` instead to stop pagination automatically if the
    recursion limit is hit.
+
+With v4, ``list()`` methods can also return a generator object which will
+handle the next calls to the API when required:
+
+.. code-block:: python
+
+   items = gl.groups.list(as_list=False)
+   for item in items:
+       print(item.attributes)
 
 Sudo
 ====

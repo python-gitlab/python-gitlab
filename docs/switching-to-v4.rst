@@ -1,3 +1,5 @@
+.. _switching_to_v4:
+
 ##########################
 Switching to GtiLab API v4
 ##########################
@@ -10,15 +12,12 @@ GitLab will stop supporting the v3 API soon, and you should consider switching
 to v4 if you use a recent version of GitLab (>= 9.0), or if you use
 http://gitlab.com.
 
-The new v4 API is available in the `rework_api branch on github
-<https://github.com/python-gitlab/python-gitlab/tree/rework_api>`_, and will be
-released soon.
-
 
 Using the v4 API
 ================
 
-To use the new v4 API, explicitly use it in the ``Gitlab`` constructor:
+To use the new v4 API, explicitly define ``api_version` `in the ``Gitlab``
+constructor:
 
 .. code-block:: python
 
@@ -79,7 +78,7 @@ following important changes in the python API:
   calls.
 
   To limit the number of API calls, you can now use ``get()`` methods with the
-  ``lazy=True`` parameter.  This creates shallow objects that provide usual
+  ``lazy=True`` parameter. This creates shallow objects that provide usual
   managers.
 
   The following v3 code:
