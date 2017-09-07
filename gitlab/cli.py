@@ -47,7 +47,7 @@ def register_custom_action(cls_names, mandatory=tuple(), optional=tuple()):
         if type(cls_names) != tuple:
             classes = (cls_names, )
 
-        for cls_name in cls_names:
+        for cls_name in classes:
             final_name = cls_name
             if cls_name.endswith('Manager'):
                 final_name = cls_name.replace('Manager', '')
