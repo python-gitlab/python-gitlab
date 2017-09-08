@@ -1,6 +1,19 @@
 ChangeLog
 =========
 
+Version 1.0.0_ - 2017-09-08
+---------------------------
+
+* Support for API v4. See
+  http://python-gitlab.readthedocs.io/en/master/switching-to-v4.html
+* Support SSL verification via internal CA bundle
+* Docs: Add link to gitlab docs on obtaining a token
+* Added dependency injection support for Session
+* Fixed repository_compare examples
+* Fix changelog and release notes inclusion in sdist
+* Missing expires_at in GroupMembers update
+* Add lower-level methods for Gitlab()
+
 Version 0.21.2_ - 2017-06-11
 ----------------------------
 
@@ -434,6 +447,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
+.. _1.0.0: https://github.com/python-gitlab/python-gitlab/compare/0.21.2...1.0.0
 .. _0.21.2: https://github.com/python-gitlab/python-gitlab/compare/0.21.1...0.21.2
 .. _0.21.1: https://github.com/python-gitlab/python-gitlab/compare/0.21...0.21.1
 .. _0.21: https://github.com/python-gitlab/python-gitlab/compare/0.20...0.21

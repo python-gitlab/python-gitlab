@@ -4,6 +4,19 @@ Release notes
 
 This page describes important changes between python-gitlab releases.
 
+Changes from 0.21 to 1.0.0
+==========================
+
+1.0.0 brings a stable python-gitlab API for the v4 Gitlab API. v3 is still used
+by default.
+
+v4 is mostly compatible with the v3, but some important changes have been
+introduced. Make sure to read `Switching to GtiLab API v4
+<http://python-gitlab.readthedocs.io/en/master/switching-to-v4.html>`_.
+
+The development focus will be v4 from now on. v3 has been deprecated by GitLab
+and will disappear from python-gitlab at some point.
+
 Changes from 0.20 to 0.21
 =========================
 
