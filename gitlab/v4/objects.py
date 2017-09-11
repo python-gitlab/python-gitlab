@@ -1035,7 +1035,7 @@ class ProjectTag(ObjectDeleteMixin, RESTObject):
         self.release = server_data
 
 
-class ProjectTagManager(GetFromListMixin, CreateMixin, DeleteMixin,
+class ProjectTagManager(GetMixin, CreateMixin, DeleteMixin,
                         RESTManager):
     _path = '/projects/%(project_id)s/repository/tags'
     _obj_cls = ProjectTag
