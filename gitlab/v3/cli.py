@@ -508,7 +508,7 @@ def run(gl, what, action, args, verbose, *fargs, **kwargs):
             else:
                 print(o)
     elif isinstance(ret_val, dict):
-        for k,v in six.iteritems(ret_val):
+        for k, v in six.iteritems(ret_val):
             print("{} = {}".format(k, v))
     elif isinstance(ret_val, gitlab.base.GitlabObject):
         ret_val.display(verbose)

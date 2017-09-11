@@ -255,8 +255,8 @@ assert(uploaded_file["alt"] == filename)
 assert(uploaded_file["url"].startswith("/uploads/"))
 assert(uploaded_file["url"].endswith("/" + filename))
 assert(uploaded_file["markdown"] == "[{}]({})".format(
-    uploaded_file.alt,
-    uploaded_file.url,
+    uploaded_file["alt"],
+    uploaded_file["url"],
 ))
 
 # environments
