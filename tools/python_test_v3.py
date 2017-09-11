@@ -199,7 +199,6 @@ assert(archive1 == archive2)
 filename = "test.txt"
 file_contents = "testing contents"
 uploaded_file = admin_project.upload(filename, file_contents)
-assert(uploaded_file["id"] in uploaded_file.url)
 assert(uploaded_file["alt"] == filename)
 assert(uploaded_file["url"].startswith("/uploads/"))
 assert(uploaded_file["url"].endswith("/" + filename))
