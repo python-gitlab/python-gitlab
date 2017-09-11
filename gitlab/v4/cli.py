@@ -321,7 +321,9 @@ def run(gl, what, action, args, verbose, output, fields):
             else:
                 print(obj)
             print('')
-    elif isinstance(ret_val, gitlab.base.InformationalObject):
+    elif isinstance(ret_val, dict):
+        printer.display(ret_val, verbose=verbose, obj=ret_val)
+    elif isinstance(ret_val, gitlab.base.RESTObject):
         printer.display(get_dict(ret_val), verbose=verbose, obj=ret_val)
     elif isinstance(ret_val, six.string_types):
         print(ret_val)

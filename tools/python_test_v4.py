@@ -250,16 +250,14 @@ assert(archive1 == archive2)
 filename = "test.txt"
 file_contents = "testing contents"
 uploaded_file = admin_project.upload(filename, file_contents)
-assert(uploaded_file.id in uploaded_file.url)
-assert(uploaded_file.alt == filename)
-assert(uploaded_file.url.startswith("/uploads/"))
-assert(uploaded_file.url.endswith("/" + filename))
-assert(uploaded_file.markdown == "[{}]({})".format(
+assert(uploaded_file["id"] in uploaded_file.url)
+assert(uploaded_file["alt"] == filename)
+assert(uploaded_file["url"].startswith("/uploads/"))
+assert(uploaded_file["url"].endswith("/" + filename))
+assert(uploaded_file["markdown"] == "[{}]({})".format(
     uploaded_file.alt,
     uploaded_file.url,
 ))
-# should default to markdown when passed to str()
-assert(str(uploaded_file) == uploaded_file.markdown)
 
 # environments
 admin_project.environments.create({'name': 'env1', 'external_url':

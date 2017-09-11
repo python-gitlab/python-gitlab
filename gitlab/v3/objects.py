@@ -1770,30 +1770,6 @@ class ProjectRunnerManager(BaseManager):
     obj_cls = ProjectRunner
 
 
-class ProjectUpload(GitlabObject):
-    shortPrintAttr = "url"
-
-    def __init__(self, alt, url, markdown):
-        """Create a new ProjectUpload instance.
-
-        Args:
-            alt (str): The alt of the upload
-            url (str): The url of to the uploaded file
-            markdown (str): The markdown text that creates a link to the
-                uploaded file
-        """
-        self.alt = alt
-        self.url = url
-        self.markdown = markdown
-
-        # url should be in this form: /uploads/ID/filename.txt
-        self.id = url.replace("/uploads/", "").split("/")[0]
-
-    def __str__(self):
-        """Return the markdown representation of the uploaded file."""
-        return self.markdown
-
-
 class Project(GitlabObject):
     _url = '/projects'
     _constructorTypes = {'owner': 'User', 'namespace': 'Group'}
@@ -2151,8 +2127,10 @@ class Project(GitlabObject):
                 specified
 
         Returns:
-            ProjectUpload: A ``ProjectUpload`` instance containing
-                information about the uploaded file.
+            dict: A ``dict`` with the keys:
+                * ``alt`` - The alternate text for the upload
+                * ``url`` - The direct url to the uploaded file
+                * ``markdown`` - Markdown for the uploaded file
         """
         if filepath is None and filedata is None:
             raise GitlabUploadError("No file contents or path specified")
@@ -2175,11 +2153,11 @@ class Project(GitlabObject):
         raise_error_from_response(r, GitlabUploadError, expected_code=201)
         data = r.json()
 
-        return ProjectUpload(
-            alt=data["alt"],
-            url=data["url"],
-            markdown=data["markdown"]
-        )
+        return {
+            "alt": data['alt'],
+            "url": data['url'],
+            "markdown": data['markdown']
+        }
 
 
 class Runner(GitlabObject):

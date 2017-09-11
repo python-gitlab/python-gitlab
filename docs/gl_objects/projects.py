@@ -383,7 +383,7 @@ project.upload("filename.txt", filedata="Raw data")
 uploaded_file = project.upload_file("filename.txt", filedata="data")
 issue = project.issues.get(issue_id)
 issue.notes.create({
-    "body": "See the attached file: {}".format(uploaded_file)
+    "body": "See the attached file: {}".format(uploaded_file["markdown"])
 })
 # project file upload markdown
 
@@ -391,6 +391,6 @@ issue.notes.create({
 uploaded_file = project.upload_file("filename.txt", filedata="data")
 issue = project.issues.get(issue_id)
 issue.notes.create({
-    "body": "See the [attached file]({})".format(uploaded_file.url)
+    "body": "See the [attached file]({})".format(uploaded_file["url"])
 })
 # project file upload markdown
