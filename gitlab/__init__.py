@@ -679,10 +679,12 @@ class Gitlab(object):
 
         if result.status_code == 401:
             raise GitlabAuthenticationError(response_code=result.status_code,
-                                            error_message=result.content)
+                                            error_message=result.content,
+                                            response_body=result.content)
 
         raise GitlabHttpError(response_code=result.status_code,
-                              error_message=result.content)
+                              error_message=result.content,
+                              response_body=result.content)
 
     def http_get(self, path, query_data={}, streamed=False, **kwargs):
         """Make a GET request to the Gitlab server.
