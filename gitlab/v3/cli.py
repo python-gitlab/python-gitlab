@@ -68,7 +68,8 @@ EXTRA_ACTIONS = {
         'unstar': {'required': ['id']},
         'archive': {'required': ['id']},
         'unarchive': {'required': ['id']},
-        'share': {'required': ['id', 'group-id', 'group-access']}},
+        'share': {'required': ['id', 'group-id', 'group-access']},
+        'upload': {'required': ['id', 'filename', 'filepath']}},
     gitlab.v3.objects.User: {
         'block': {'required': ['id']},
         'unblock': {'required': ['id']},
@@ -348,6 +349,20 @@ class GitlabCLI(object):
         except Exception as e:
             cli.die("Impossible to get user %s" % args['query'], e)
 
+    def do_project_upload(self, cls, gl, what, args):
+        try:
+            project = gl.projects.get(args["id"])
+        except Exception as e:
+            cli.die("Could not load project '{!r}'".format(args["id"]), e)
+
+        try:
+            res = project.upload(filename=args["filename"],
+                                 filepath=args["filepath"])
+        except Exception as e:
+            cli.die("Could not upload file into project", e)
+
+        return res
+
 
 def _populate_sub_parser_by_class(cls, sub_parser):
     for action_name in ['list', 'get', 'create', 'update', 'delete']:
@@ -469,6 +484,7 @@ def run(gl, what, action, args, verbose, *fargs, **kwargs):
         cli.die("Unknown object: %s" % what)
 
     g_cli = GitlabCLI()
+
     method = None
     what = what.replace('-', '_')
     action = action.lower().replace('-', '')
@@ -491,6 +507,9 @@ def run(gl, what, action, args, verbose, *fargs, **kwargs):
                 print("")
             else:
                 print(o)
+    elif isinstance(ret_val, dict):
+        for k, v in six.iteritems(ret_val):
+            print("{} = {}".format(k, v))
     elif isinstance(ret_val, gitlab.base.GitlabObject):
         ret_val.display(verbose)
     elif isinstance(ret_val, six.string_types):

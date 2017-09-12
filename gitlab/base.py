@@ -536,7 +536,7 @@ class GitlabObject(object):
 class RESTObject(object):
     """Represents an object built from server data.
 
-    It holds the attributes know from te server, and the updated attributes in
+    It holds the attributes know from the server, and the updated attributes in
     another. This allows smart updates, if the object allows it.
 
     You can redefine ``_id_attr`` in child classes to specify which attribute

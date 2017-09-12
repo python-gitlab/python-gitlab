@@ -173,6 +173,14 @@ class GitlabTimeTrackingError(GitlabOperationError):
     pass
 
 
+class GitlabUploadError(GitlabOperationError):
+    pass
+
+
+class GitlabAttachFileError(GitlabOperationError):
+    pass
+
+
 class GitlabCherryPickError(GitlabOperationError):
     pass
 

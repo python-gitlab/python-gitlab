@@ -909,6 +909,10 @@ class ProjectIssueNote(GitlabObject):
     requiredCreateAttrs = ['body']
     optionalCreateAttrs = ['created_at']
 
+    # file attachment settings (see #56)
+    description_attr = "body"
+    project_id_attr = "project_id"
+
 
 class ProjectIssueNoteManager(BaseManager):
     obj_cls = ProjectIssueNote
@@ -932,6 +936,10 @@ class ProjectIssue(GitlabObject):
         ('notes', 'ProjectIssueNoteManager',
             [('project_id', 'project_id'), ('issue_id', 'id')]),
     )
+
+    # file attachment settings (see #56)
+    description_attr = "description"
+    project_id_attr = "project_id"
 
     def subscribe(self, **kwargs):
         """Subscribe to an issue.
@@ -1057,6 +1065,7 @@ class ProjectIssueManager(BaseManager):
 
 class ProjectMember(GitlabObject):
     _url = '/projects/%(project_id)s/members'
+
     requiredUrlAttrs = ['project_id']
     requiredCreateAttrs = ['access_level', 'user_id']
     optionalCreateAttrs = ['expires_at']
@@ -2095,6 +2104,60 @@ class Project(GitlabObject):
         data.update(form)
         r = self.gitlab._raw_post(url, data=data, **kwargs)
         raise_error_from_response(r, GitlabCreateError, 201)
+
+    # see #56 - add file attachment features
+    def upload(self, filename, filedata=None, filepath=None, **kwargs):
+        """Upload the specified file into the project.
+
+        .. note::
+
+            Either ``filedata`` or ``filepath`` *MUST* be specified.
+
+        Args:
+            filename (str): The name of the file being uploaded
+            filedata (bytes): The raw data of the file being uploaded
+            filepath (str): The path to a local file to upload (optional)
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached
+            GitlabUploadError: If the file upload fails
+            GitlabUploadError: If ``filedata`` and ``filepath`` are not
+                specified
+            GitlabUploadError: If both ``filedata`` and ``filepath`` are
+                specified
+
+        Returns:
+            dict: A ``dict`` with the keys:
+                * ``alt`` - The alternate text for the upload
+                * ``url`` - The direct url to the uploaded file
+                * ``markdown`` - Markdown for the uploaded file
+        """
+        if filepath is None and filedata is None:
+            raise GitlabUploadError("No file contents or path specified")
+
+        if filedata is not None and filepath is not None:
+            raise GitlabUploadError("File contents and file path specified")
+
+        if filepath is not None:
+            with open(filepath, "rb") as f:
+                filedata = f.read()
+
+        url = ("/projects/%(id)s/uploads" % {
+            "id": self.id,
+        })
+        r = self.gitlab._raw_post(
+            url,
+            files={"file": (filename, filedata)},
+        )
+        # returns 201 status code (created)
+        raise_error_from_response(r, GitlabUploadError, expected_code=201)
+        data = r.json()
+
+        return {
+            "alt": data['alt'],
+            "url": data['url'],
+            "markdown": data['markdown']
+        }
 
 
 class Runner(GitlabObject):
