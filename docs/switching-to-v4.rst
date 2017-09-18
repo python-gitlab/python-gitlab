@@ -1,7 +1,7 @@
 .. _switching_to_v4:
 
 ##########################
-Switching to GtiLab API v4
+Switching to GitLab API v4
 ##########################
 
 GitLab provides a new API version (v4) since its 9.0 release. ``python-gitlab``
