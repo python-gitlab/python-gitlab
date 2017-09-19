@@ -685,13 +685,18 @@ class Gitlab(object):
         if 200 <= result.status_code < 300:
             return result
 
+        try:
+            error_message = result.json()['message']
+        except Exception as e:
+            error_message = result.content
+
         if result.status_code == 401:
             raise GitlabAuthenticationError(response_code=result.status_code,
-                                            error_message=result.content,
+                                            error_message=error_message,
                                             response_body=result.content)
 
         raise GitlabHttpError(response_code=result.status_code,
-                              error_message=result.content,
+                              error_message=error_message,
                               response_body=result.content)
 
     def http_get(self, path, query_data={}, streamed=False, **kwargs):
