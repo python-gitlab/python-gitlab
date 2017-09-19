@@ -687,7 +687,7 @@ class Gitlab(object):
 
         try:
             error_message = result.json()['message']
-        except Exception as e:
+        except (KeyError, ValueError, TypeError):
             error_message = result.content
 
         if result.status_code == 401:
