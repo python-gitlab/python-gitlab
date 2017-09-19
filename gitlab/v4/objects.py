@@ -960,6 +960,12 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
                                'milestone_id', 'labels', 'created_at',
                                'updated_at', 'state_event', 'due_date'))
 
+    def _sanitize_data(self, data, action):
+        new_data = data.copy()
+        if 'labels' in data:
+            new_data['labels'] = ','.join(data['labels'])
+        return new_data
+
 
 class ProjectMember(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'username'

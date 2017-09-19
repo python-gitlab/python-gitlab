@@ -564,7 +564,24 @@ class RESTObject(object):
             return self.__dict__['_updated_attrs'][name]
         except KeyError:
             try:
-                return self.__dict__['_attrs'][name]
+                value = self.__dict__['_attrs'][name]
+
+                # If the value is a list, we copy it in the _updated_attrs dict
+                # because we are not able to detect changes made on the object
+                # (append, insert, pop, ...). Without forcing the attr
+                # creation __setattr__ is never called, the list never ends up
+                # in the _updated_attrs dict, and the update() and save()
+                # method never push the new data to the server.
+                # See https://github.com/python-gitlab/python-gitlab/issues/306
+                #
+                # note: _parent_attrs will only store simple values (int) so we
+                # don't make this check in the next except block.
+                if isinstance(value, list):
+                    self.__dict__['_updated_attrs'][name] = value[:]
+                    return self.__dict__['_updated_attrs'][name]
+
+                return value
+
             except KeyError:
                 try:
                     return self.__dict__['_parent_attrs'][name]
