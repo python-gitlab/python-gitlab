@@ -193,15 +193,16 @@ class Gitlab(object):
         if not self.email or not self.password:
             raise GitlabAuthenticationError("Missing email/password")
 
+        data = {'email': self.email, 'password': self.password}
         if self.api_version == '3':
-            data = json.dumps({'email': self.email, 'password': self.password})
-            r = self._raw_post('/session', data,
+            r = self._raw_post('/session', json.dumps(data),
                                content_type='application/json')
             raise_error_from_response(r, GitlabAuthenticationError, 201)
             self.user = self._objects.CurrentUser(self, r.json())
         else:
-            manager = self._objects.CurrentUserManager()
-            self.user = manager.get(self.email, self.password)
+            r = self.http_post('/session', data)
+            manager = self._objects.CurrentUserManager(self)
+            self.user = self._objects.CurrentUser(manager, r)
 
         self._set_token(self.user.private_token)
 
