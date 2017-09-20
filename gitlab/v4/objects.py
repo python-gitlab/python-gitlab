@@ -689,7 +689,7 @@ class ProjectJob(RESTObject):
             str: The artifacts if `streamed` is False, None otherwise.
         """
         path = '%s/%s/artifacts' % (self.manager.path, self.get_id())
-        result = self.manager.gitlab.get_http(path, streamed=streamed,
+        result = self.manager.gitlab.http_get(path, streamed=streamed,
                                               **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
@@ -715,7 +715,7 @@ class ProjectJob(RESTObject):
             str: The trace
         """
         path = '%s/%s/trace' % (self.manager.path, self.get_id())
-        result = self.manager.gitlab.get_http(path, streamed=streamed,
+        result = self.manager.gitlab.http_get(path, streamed=streamed,
                                               **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
