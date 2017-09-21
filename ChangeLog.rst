@@ -1,6 +1,21 @@
 ChangeLog
 =========
 
+Version 1.0.1_ - 2017-09-21
+---------------------------
+
+* Tags can be retrieved by ID
+* Add the server response in GitlabError exceptions
+* Add support for project file upload
+* Minor typo fix in "Switching to v4" documentation
+* Fix password authentication for v4
+* Fix the labels attrs on MR and issues
+* Exceptions: use a proper error message
+* Fix http_get method in get artifacts and job trace
+* CommitStatus: `sha` is parent attribute
+* Fix a couple listing calls to allow proper pagination
+* Add missing doc file
+
 Version 1.0.0_ - 2017-09-08
 ---------------------------
 
@@ -447,6 +462,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
+.. _1.0.1: https://github.com/python-gitlab/python-gitlab/compare/1.0.0...1.0.1
 .. _1.0.0: https://github.com/python-gitlab/python-gitlab/compare/0.21.2...1.0.0
 .. _0.21.2: https://github.com/python-gitlab/python-gitlab/compare/0.21.1...0.21.2
 .. _0.21.1: https://github.com/python-gitlab/python-gitlab/compare/0.21...0.21.1
