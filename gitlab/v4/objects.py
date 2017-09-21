@@ -735,7 +735,7 @@ class ProjectCommitStatusManager(GetFromListMixin, CreateMixin, RESTManager):
              '/statuses')
     _obj_cls = ProjectCommitStatus
     _from_parent_attrs = {'project_id': 'project_id', 'commit_id': 'id'}
-    _create_attrs = (('state', 'sha'),
+    _create_attrs = (('state', ),
                      ('description', 'name', 'context', 'ref', 'target_url',
                       'coverage'))
 
