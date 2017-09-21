@@ -1815,8 +1815,8 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             query_data['path'] = path
         if ref:
             query_data['ref'] = ref
-        return self.manager.gitlab.http_get(gl_path, query_data=query_data,
-                                            **kwargs)
+        return self.manager.gitlab.http_list(gl_path, query_data=query_data,
+                                             **kwargs)
 
     @cli.register_custom_action('Project', ('sha', ))
     @exc.on_http_error(exc.GitlabGetError)
@@ -1904,7 +1904,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             list: The contributors
         """
         path = '/projects/%s/repository/contributors' % self.get_id()
-        return self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_list(path, **kwargs)
 
     @cli.register_custom_action('Project', tuple(), ('sha', ))
     @exc.on_http_error(exc.GitlabListError)
