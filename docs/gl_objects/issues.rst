@@ -104,6 +104,12 @@ Get a project issue:
    :start-after: # project issues get
    :end-before: # end project issues get
 
+Get a project issue from its `iid`:
+
+.. literalinclude:: issues.py
+   :start-after: # project issues get from iid
+   :end-before: # end project issues get from iid
+
 Create a new issue:
 
 .. literalinclude:: issues.py
