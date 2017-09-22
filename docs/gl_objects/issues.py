@@ -28,6 +28,10 @@ issues = project.issues.list(order_by='created_at', sort='desc')
 issue = project.issues.get(issue_id)
 # end project issues get
 
+# project issues get from iid
+issue = project.issues.list(iid=issue_iid)[0]
+# end project issues get from iid
+
 # project issues create
 issue = project.issues.create({'title': 'I have a bug',
                                'description': 'Something useful here.'})
