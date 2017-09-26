@@ -32,8 +32,7 @@ project = gl.projects.create({'name': 'project1'})
 
 # user create
 alice = gl.users.list(username='alice')[0]
-user_project = gl.user_projects.create({'name': 'project',
-                                        'user_id': alice.id})
+user_project = alice.projects.create({'name': 'project'})
 # end user create
 
 # update
@@ -51,7 +50,7 @@ project.delete()
 fork = project.forks.create({})
 
 # fork to a specific namespace
-fork = gl.project_forks.create({'namespace': 'myteam'}, project_id=1)
+fork = project.forks.create({'namespace': 'myteam'})
 # end fork
 
 # forkrelation
