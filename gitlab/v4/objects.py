@@ -1360,6 +1360,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         self.branch = branch
         self.commit_message = commit_message
+        self.file_path = self.file_path.replace('/', '%2F')
         super(ProjectFile, self).save(**kwargs)
 
     def delete(self, branch, commit_message, **kwargs):
@@ -1374,7 +1375,8 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
-        self.manager.delete(self.get_id(), branch, commit_message, **kwargs)
+        file_path = self.get_id().replace('/', '%2F')
+        self.manager.delete(file_path, branch, commit_message, **kwargs)
 
 
 class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
