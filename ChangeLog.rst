@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+Version 1.0.2_ - 2017-09-29
+---------------------------
+
+* [docs] remove example usage of submanagers
+* Properly handle the labels attribute in ProjectMergeRequest
+* ProjectFile: handle / in path for delete() and save()
+
 Version 1.0.1_ - 2017-09-21
 ---------------------------
 
@@ -462,6 +469,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
+.. _1.0.2: https://github.com/python-gitlab/python-gitlab/compare/1.0.1...1.0.2
 .. _1.0.1: https://github.com/python-gitlab/python-gitlab/compare/1.0.0...1.0.1
 .. _1.0.0: https://github.com/python-gitlab/python-gitlab/compare/0.21.2...1.0.0
 .. _0.21.2: https://github.com/python-gitlab/python-gitlab/compare/0.21.1...0.21.2
