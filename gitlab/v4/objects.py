@@ -1020,7 +1020,8 @@ class ProjectTag(ObjectDeleteMixin, RESTObject):
             GitlabCreateError: If the server fails to create the release
             GitlabUpdateError: If the server fails to update the release
         """
-        path = '%s/%s/release' % (self.manager.path, self.get_id())
+        id = self.get_id().replace('/', '%2F')
+        path = '%s/%s/release' % (self.manager.path, id)
         data = {'description': description}
         if self.release is None:
             try:
