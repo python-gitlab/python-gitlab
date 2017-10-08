@@ -781,7 +781,7 @@ Delete a list:
    :end-before: # end board lists delete
 
 
-File Uploads
+File uploads
 ============
 
 Reference
@@ -790,12 +790,10 @@ Reference
 * v4 API:
 
   + :attr:`gitlab.v4.objects.Project.upload`
-  + :class:`gitlab.v4.objects.ProjectUpload`
 
 * v3 API:
 
   + :attr:`gitlab.v3.objects.Project.upload`
-  + :class:`gitlab.v3.objects.ProjectUpload`
 
 * Gitlab API: https://docs.gitlab.com/ce/api/projects.html#upload-a-file
 
