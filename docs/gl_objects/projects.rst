@@ -160,6 +160,12 @@ Get a list of contributors for the repository:
    :start-after: # repository contributors
    :end-before: # end repository contributors
 
+Get a list of users for the repository:
+
+.. literalinclude:: projects.py
+   :start-after: # users list
+   :end-before: # end users list
+
 Project files
 =============
 

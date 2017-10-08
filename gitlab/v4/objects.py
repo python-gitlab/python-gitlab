@@ -1616,6 +1616,17 @@ class ProjectTriggerManager(CRUDMixin, RESTManager):
     _update_attrs = (('description', ), tuple())
 
 
+class ProjectUser(User):
+    pass
+
+
+class ProjectUserManager(ListMixin, RESTManager):
+    _path = '/projects/%(project_id)s/users'
+    _obj_cls = ProjectUser
+    _from_parent_attrs = {'project_id': 'id'}
+    _list_filters = ('search',)
+
+
 class ProjectVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = 'key'
 
@@ -1795,6 +1806,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('services', 'ProjectServiceManager'),
         ('snippets', 'ProjectSnippetManager'),
         ('tags', 'ProjectTagManager'),
+        ('users', 'ProjectUserManager'),
         ('triggers', 'ProjectTriggerManager'),
         ('variables', 'ProjectVariableManager'),
     )

@@ -393,3 +393,10 @@ issue.notes.create({
     "body": "See the [attached file]({})".format(uploaded_file["url"])
 })
 # end project file upload markdown custom
+
+# users list
+users = p.users.list()
+
+# search for users
+users = p.users.list(search='pattern')
+# end users list
