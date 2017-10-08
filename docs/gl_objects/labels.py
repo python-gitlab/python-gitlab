@@ -24,3 +24,13 @@ project.labels.delete(label_id)
 # or
 label.delete()
 # end delete
+
+# use
+# Labels are defined as lists in issues and merge requests. The labels must
+# exist.
+issue = p.issues.create({'title': 'issue title',
+                         'description': 'issue description',
+                         'labels': ['foo']})
+issue.labels.append('bar')
+issue.save()
+# end use

@@ -13,7 +13,8 @@ mr = project.mergerequests.get(mr_id)
 # create
 mr = project.mergerequests.create({'source_branch': 'cool_feature',
                                    'target_branch': 'master',
-                                   'title': 'merge cool feature'})
+                                   'title': 'merge cool feature',
+                                   'labels': ['label1', 'label2']})
 # end create
 
 # update

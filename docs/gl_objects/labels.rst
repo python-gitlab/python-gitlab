@@ -52,3 +52,9 @@ Delete a label for a project:
 .. literalinclude:: labels.py
    :start-after: # delete
    :end-before: # end delete
+
+Managing labels in issues and merge requests:
+
+.. literalinclude:: labels.py
+   :start-after: # use
+   :end-before: # end use
