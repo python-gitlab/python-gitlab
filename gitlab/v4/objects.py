@@ -19,8 +19,6 @@ from __future__ import print_function
 from __future__ import absolute_import
 import base64
 
-import six
-
 from gitlab.base import *  # noqa
 from gitlab import cli
 from gitlab.exceptions import *  # noqa
@@ -2080,9 +2078,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabCreateError: If the server failed to perform the request
         """
         path = '/projects/%s/trigger/pipeline' % self.get_id()
-        form = {r'variables[%s]' % k: v for k, v in six.iteritems(variables)}
-        post_data = {'ref': ref, 'token': token}
-        post_data.update(form)
+        post_data = {'ref': ref, 'token': token, 'variables': variables}
         self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
     # see #56 - add file attachment features
