@@ -19,8 +19,6 @@ from __future__ import print_function
 from __future__ import absolute_import
 import base64
 
-import six
-
 from gitlab.base import *  # noqa
 from gitlab import cli
 from gitlab.exceptions import *  # noqa
