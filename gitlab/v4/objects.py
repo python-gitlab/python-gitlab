@@ -1676,6 +1676,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
                  ('new_issue_url', 'project_url', 'issues_url', 'api_url',
                   'description', 'username', 'password',
                   'jira_issue_transition_id')),
+        'mattermost': (('webhook',), ('username', 'channel')),
         'pivotaltracker': (('token', ), tuple()),
         'pushover': (('api_key', 'user_key', 'priority'), ('device', 'sound')),
         'redmine': (('new_issue_url', 'project_url', 'issues_url'),
