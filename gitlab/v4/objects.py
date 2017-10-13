@@ -1952,6 +1952,18 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
         return utils.response_content(result, streamed, action, chunk_size)
 
 
+class ProjectPipelineJob(ProjectJob):
+    pass
+
+
+class ProjectPipelineJobsManager(ListMixin, RESTManager):
+    _path = '/projects/%(project_id)s/pipelines/%(pipeline_id)s/jobs'
+    _obj_cls = ProjectPipelineJob
+    _from_parent_attrs = {'project_id': 'project_id',
+                          'pipeline_id' : 'id'}
+    _list_filters = ('scope',)
+
+
 class ProjectPipeline(RESTObject):
     _managers = (('jobs', 'ProjectPipelineJobManager'), )
 
