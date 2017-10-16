@@ -18,6 +18,7 @@
 
 from __future__ import print_function
 
+import pickle
 try:
     import unittest
 except ImportError:
@@ -26,7 +27,6 @@ except ImportError:
 from httmock import HTTMock  # noqa
 from httmock import response  # noqa
 from httmock import urlmatch  # noqa
-import pickle
 import six
 
 import gitlab
