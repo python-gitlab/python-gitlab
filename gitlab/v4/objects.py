@@ -1545,16 +1545,17 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, RESTManager):
         return CreateMixin.create(self, data, path=path, **kwargs)
 
 
-class ProjectSnippetNote(RESTObject):
+class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     _constructor_types = {'author': 'User'}
 
 
-class ProjectSnippetNoteManager(RetrieveMixin, CreateMixin, RESTManager):
+class ProjectSnippetNoteManager(CRUDMixin, RESTManager):
     _path = '/projects/%(project_id)s/snippets/%(snippet_id)s/notes'
     _obj_cls = ProjectSnippetNote
     _from_parent_attrs = {'project_id': 'project_id',
                           'snippet_id': 'id'}
     _create_attrs = (('body', ), tuple())
+    _update_attrs = (('body', ), tuple())
 
 
 class ProjectSnippet(SaveMixin, ObjectDeleteMixin, RESTObject):
