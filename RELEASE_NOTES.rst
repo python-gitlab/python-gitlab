@@ -4,6 +4,25 @@ Release notes
 
 This page describes important changes between python-gitlab releases.
 
+Changes from 1.0.2 to 1.1
+=========================
+
+* The ``ProjectUser`` class doesn't inherit from ``User`` anymore, and the
+  ``GroupProject`` class doesn't inherit from ``Project`` anymore. The Gitlab
+  API doesn't provide the same set of features for these objects, so
+  python-gitlab objects shouldn't try to workaround that.
+
+  You can create ``User`` or ``Project`` objects from ``ProjectUser`` and
+  ``GroupProject`` objects using the ``id`` attribute:
+
+  .. code-block:: python
+
+     for gr_project in group.projects.list():
+         # lazy object creation doesn't need an Gitlab API request
+         project = gl.projects.get(gr_project.id, lazy=True)
+         project.default_branch = 'develop'
+         project.save()
+
 Changes from 0.21 to 1.0.0
 ==========================
 

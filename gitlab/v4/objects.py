@@ -1601,7 +1601,7 @@ class ProjectTriggerManager(CRUDMixin, RESTManager):
     _update_attrs = (('description', ), tuple())
 
 
-class ProjectUser(User):
+class ProjectUser(RESTObject):
     pass
 
 
@@ -2244,7 +2244,7 @@ class ProjectManager(CRUDMixin, RESTManager):
                      'with_issues_enabled', 'with_merge_requests_enabled')
 
 
-class GroupProject(Project):
+class GroupProject(RESTObject):
     pass
 
 
