@@ -234,3 +234,27 @@ user. For example:
 .. code-block:: python
 
    p = gl.projects.create({'name': 'awesome_project'}, sudo='user1')
+
+Advanced HTTP configuration
+===========================
+
+python-gitlab relies on ``requests`` ``Session`` objects to perform all the
+HTTP requests to the Gitlab servers.
+
+You can provide your own ``Session`` object with custom configuration when
+you create a ``Gitlab`` object.
+
+The following sample illustrates how to define a proxy configuration when using
+python-gitlab:
+
+.. code-block:: python
+
+   import gitlab
+   import requests
+
+   session = requests.Session()
+   session.proxies = {
+       'https': os.environ.get('https_proxy'),
+       'http': os.environ.get('http_proxy'),
+   }
+   gl = gitlab.gitlab(url, token, api_version=4, session=session)
