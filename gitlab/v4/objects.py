@@ -1420,6 +1420,30 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
         server_data = self.gitlab.http_post(path, post_data=data, **kwargs)
         return self._obj_cls(self, server_data)
 
+    @exc.on_http_error(exc.GitlabUpdateError)
+    def update(self, file_path, new_data={}, **kwargs):
+        """Update an object on the server.
+
+        Args:
+            id: ID of the object to update (can be None if not required)
+            new_data: the update data for the object
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+
+        Returns:
+            dict: The new object data (*not* a RESTObject)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUpdateError: If the server cannot perform the request
+        """
+
+        data = new_data.copy()
+        file_path = file_path.replace('/', '%2F')
+        data['file_path'] = file_path
+        path = '%s/%s' % (self.path, file_path)
+        self._check_missing_update_attrs(data)
+        return self.gitlab.http_put(path, post_data=data, **kwargs)
+
     @cli.register_custom_action('ProjectFileManager', ('file_path', 'branch',
                                                        'commit_message'))
     @exc.on_http_error(exc.GitlabDeleteError)
