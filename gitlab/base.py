@@ -553,10 +553,6 @@ class RESTObject(object):
             '_module': importlib.import_module(self.__module__)
         })
         self.__dict__['_parent_attrs'] = self.manager.parent_attrs
-
-        # TODO(gpocentek): manage the creation of new objects from the received
-        # data (_constructor_types)
-
         self._create_managers()
 
     def __getattr__(self, name):

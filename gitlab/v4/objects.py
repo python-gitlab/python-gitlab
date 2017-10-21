@@ -135,7 +135,7 @@ class UserKeyManager(GetFromListMixin, CreateMixin, DeleteMixin, RESTManager):
 
 
 class UserProject(RESTObject):
-    _constructor_types = {'owner': 'User', 'namespace': 'Group'}
+    pass
 
 
 class UserProjectManager(CreateMixin, RESTManager):
@@ -418,9 +418,6 @@ class HookManager(NoUpdateMixin, RESTManager):
 
 class Issue(RESTObject):
     _url = '/issues'
-    _constructor_types = {'author': 'User',
-                          'assignee': 'User',
-                          'milestone': 'ProjectMilestone'}
     _short_print_attr = 'title'
 
 
@@ -442,7 +439,6 @@ class LicenseManager(RetrieveMixin, RESTManager):
 
 
 class Snippet(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _constructor_types = {'author': 'User'}
     _short_print_attr = 'title'
 
     @cli.register_custom_action('Snippet')
@@ -508,7 +504,7 @@ class NamespaceManager(GetFromListMixin, RESTManager):
 
 
 class ProjectBoardList(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _constructor_types = {'label': 'ProjectLabel'}
+    pass
 
 
 class ProjectBoardListManager(CRUDMixin, RESTManager):
@@ -521,7 +517,6 @@ class ProjectBoardListManager(CRUDMixin, RESTManager):
 
 
 class ProjectBoard(RESTObject):
-    _constructor_types = {'labels': 'ProjectBoardList'}
     _managers = (('lists', 'ProjectBoardListManager'), )
 
 
@@ -532,7 +527,6 @@ class ProjectBoardManager(GetFromListMixin, RESTManager):
 
 
 class ProjectBranch(ObjectDeleteMixin, RESTObject):
-    _constructor_types = {'author': 'User', "committer": "User"}
     _id_attr = 'name'
 
     @cli.register_custom_action('ProjectBranch', tuple(),
@@ -585,10 +579,6 @@ class ProjectBranchManager(NoUpdateMixin, RESTManager):
 
 
 class ProjectJob(RESTObject):
-    _constructor_types = {'user': 'User',
-                          'commit': 'ProjectCommit',
-                          'runner': 'Runner'}
-
     @cli.register_custom_action('ProjectJob')
     @exc.on_http_error(exc.GitlabJobCancelError)
     def cancel(self, **kwargs):
@@ -907,7 +897,7 @@ class ProjectHookManager(CRUDMixin, RESTManager):
 
 
 class ProjectIssueNote(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _constructor_types = {'author': 'User'}
+    pass
 
 
 class ProjectIssueNoteManager(CRUDMixin, RESTManager):
@@ -920,8 +910,6 @@ class ProjectIssueNoteManager(CRUDMixin, RESTManager):
 
 class ProjectIssue(SubscribableMixin, TodoMixin, TimeTrackingMixin, SaveMixin,
                    ObjectDeleteMixin, RESTObject):
-    _constructor_types = {'author': 'User', 'assignee': 'User', 'milestone':
-                          'ProjectMilestone'}
     _short_print_attr = 'title'
     _id_attr = 'iid'
     _managers = (('notes', 'ProjectIssueNoteManager'), )
@@ -978,7 +966,7 @@ class ProjectMemberManager(CRUDMixin, RESTManager):
 
 
 class ProjectNote(RESTObject):
-    _constructor_types = {'author': 'User'}
+    pass
 
 
 class ProjectNoteManager(RetrieveMixin, RESTManager):
@@ -999,8 +987,6 @@ class ProjectNotificationSettingsManager(NotificationSettingsManager):
 
 
 class ProjectTag(ObjectDeleteMixin, RESTObject):
-    _constructor_types = {'release': 'ProjectTagRelease',
-                          'commit': 'ProjectCommit'}
     _id_attr = 'name'
     _short_print_attr = 'name'
 
@@ -1058,7 +1044,7 @@ class ProjectMergeRequestDiffManager(RetrieveMixin, RESTManager):
 
 
 class ProjectMergeRequestNote(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _constructor_types = {'author': 'User'}
+    pass
 
 
 class ProjectMergeRequestNoteManager(CRUDMixin, RESTManager):
@@ -1071,7 +1057,6 @@ class ProjectMergeRequestNoteManager(CRUDMixin, RESTManager):
 
 class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                           SaveMixin, ObjectDeleteMixin, RESTObject):
-    _constructor_types = {'author': 'User', 'assignee': 'User'}
     _id_attr = 'iid'
 
     _managers = (
@@ -1546,7 +1531,7 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, RESTManager):
 
 
 class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _constructor_types = {'author': 'User'}
+    pass
 
 
 class ProjectSnippetNoteManager(CRUDMixin, RESTManager):
@@ -1560,7 +1545,6 @@ class ProjectSnippetNoteManager(CRUDMixin, RESTManager):
 
 class ProjectSnippet(SaveMixin, ObjectDeleteMixin, RESTObject):
     _url = '/projects/%(project_id)s/snippets'
-    _constructor_types = {'author': 'User'}
     _short_print_attr = 'title'
     _managers = (('notes', 'ProjectSnippetNoteManager'), )
 
@@ -1779,7 +1763,6 @@ class ProjectRunnerManager(NoUpdateMixin, RESTManager):
 
 
 class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _constructor_types = {'owner': 'User', 'namespace': 'Group'}
     _short_print_attr = 'path'
     _managers = (
         ('accessrequests', 'ProjectAccessRequestManager'),
