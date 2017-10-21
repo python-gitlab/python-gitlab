@@ -7,32 +7,7 @@ python-gitlab supports both GitLab v3 and v4 APIs.
 v3 being deprecated by GitLab, its support in python-gitlab will be minimal.
 The development team will focus on v4.
 
-v3 is still the default API used by python-gitlab, for compatibility reasons..
-
-
-Base types
-==========
-
-The ``gitlab`` package provides some base types.
-
-* ``gitlab.Gitlab`` is the primary class, handling the HTTP requests. It holds
-  the GitLab URL and authentication information.
-
-For v4 the following types are defined:
-
-* ``gitlab.base.RESTObject`` is the base class for all the GitLab v4 objects.
-  These objects provide an abstraction for GitLab resources (projects, groups,
-  and so on).
-* ``gitlab.base.RESTManager`` is the base class for v4 objects managers,
-  providing the API to manipulate the resources and their attributes.
-
-For v3 the following types are defined:
-
-* ``gitlab.base.GitlabObject`` is the base class for all the GitLab v3 objects.
-  These objects provide an abstraction for GitLab resources (projects, groups,
-  and so on).
-* ``gitlab.base.BaseManager`` is the base class for v3 objects managers,
-  providing the API to manipulate the resources and their attributes.
+v3 is still the default API used by python-gitlab, for compatibility reasons.
 
 
 ``gitlab.Gitlab`` class
@@ -109,6 +84,17 @@ Examples:
    user = gl.users.create(user_data)
    print(user)
 
+You can list the mandatory and optional attributes for object creation
+with the manager's ``get_create_attrs()`` method. It returns 2 tuples, the
+first one is the list of mandatory attributes, the second one the list of
+optional attribute:
+
+.. code-block:: python
+
+   # v4 only
+   print(gl.projects.get_create_attrs())
+   (('name',), ('path', 'namespace_id', ...))
+
 The attributes of objects are defined upon object creation, and depend on the
 GitLab API itself. To list the available information associated with an object
 use the python introspection tools for v3, or the ``attributes`` attribute for
@@ -150,7 +136,6 @@ You can update or delete a remote object when it exists locally:
    # delete the resource
    project.delete()
 
-
 Some classes provide additional methods, allowing more actions on the GitLab
 resources. For example:
 
@@ -159,6 +144,30 @@ resources. For example:
    # star a git repository
    project = gl.projects.get(1)
    project.star()
+
+Base types
+==========
+
+The ``gitlab`` package provides some base types.
+
+* ``gitlab.Gitlab`` is the primary class, handling the HTTP requests. It holds
+  the GitLab URL and authentication information.
+
+For v4 the following types are defined:
+
+* ``gitlab.base.RESTObject`` is the base class for all the GitLab v4 objects.
+  These objects provide an abstraction for GitLab resources (projects, groups,
+  and so on).
+* ``gitlab.base.RESTManager`` is the base class for v4 objects managers,
+  providing the API to manipulate the resources and their attributes.
+
+For v3 the following types are defined:
+
+* ``gitlab.base.GitlabObject`` is the base class for all the GitLab v3 objects.
+  These objects provide an abstraction for GitLab resources (projects, groups,
+  and so on).
+* ``gitlab.base.BaseManager`` is the base class for v3 objects managers,
+  providing the API to manipulate the resources and their attributes.
 
 Lazy objects (v4 only)
 ======================
