@@ -2251,7 +2251,7 @@ class ProjectManager(CRUDMixin, RESTManager):
          'shared_runners_enabled', 'visibility', 'import_url', 'public_jobs',
          'only_allow_merge_if_build_succeeds',
          'only_allow_merge_if_all_discussions_are_resolved', 'lfs_enabled',
-         'request_access_enabled')
+         'request_access_enabled', 'printing_merge_request_link_enabled')
     )
     _update_attrs = (
         tuple(),
@@ -2261,7 +2261,7 @@ class ProjectManager(CRUDMixin, RESTManager):
          'shared_runners_enabled', 'visibility', 'import_url', 'public_jobs',
          'only_allow_merge_if_build_succeeds',
          'only_allow_merge_if_all_discussions_are_resolved', 'lfs_enabled',
-         'request_access_enabled')
+         'request_access_enabled', 'printing_merge_request_link_enabled')
     )
     _list_filters = ('search', 'owned', 'starred', 'archived', 'visibility',
                      'order_by', 'sort', 'simple', 'membership', 'statistics',
