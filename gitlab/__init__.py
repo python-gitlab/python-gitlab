@@ -61,7 +61,9 @@ class Gitlab(object):
         private_token (str): The user private token
         email (str): The user email or login.
         password (str): The user password (associated with email).
-        ssl_verify (bool): Whether SSL certificates should be validated.
+        ssl_verify (bool|str): Whether SSL certificates should be validated. If
+            the value is a string, it is the path to a CA file used for
+            certificate validation.
         timeout (float): Timeout to use for requests to the GitLab server.
         http_username (str): Username for HTTP authentication
         http_password (str): Password for HTTP authentication
