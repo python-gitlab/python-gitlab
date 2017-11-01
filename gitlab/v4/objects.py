@@ -2024,7 +2024,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action('Project', ('sha', ))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_blob(self, sha, **kwargs):
-        """Return a blob by blob SHA.
+        """Return a file by blob SHA.
 
         Args:
             sha(str): ID of the blob
@@ -2035,7 +2035,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabGetError: If the server failed to perform the request
 
         Returns:
-            str: The blob metadata
+            dict: The blob content and metadata
         """
 
         path = '/projects/%s/repository/blobs/%s' % (self.get_id(), sha)

@@ -142,7 +142,10 @@ items = project.repository_tree(path='docs', ref='branch1')
 # end repository tree
 
 # repository blob
-file_content = p.repository_blob('master', 'README.rst')
+items = project.repository_tree(path='docs', ref='branch1')
+file_info = p.repository_blob(items[0]['id'])
+content = base64.b64decode(file_info['content'])
+size = file_info['size']
 # end repository blob
 
 # repository raw_blob

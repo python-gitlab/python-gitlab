@@ -120,7 +120,7 @@ List the repository tree:
    :start-after: # repository tree
    :end-before: # end repository tree
 
-Get the content of a file for a commit:
+Get the content and metadata of a file for a commit, using a blob sha:
 
 .. literalinclude:: projects.py
    :start-after: # repository blob
