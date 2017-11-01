@@ -51,7 +51,7 @@ class GetMixin(object):
 
 class GetWithoutIdMixin(object):
     @exc.on_http_error(exc.GitlabGetError)
-    def get(self, **kwargs):
+    def get(self, id=None, **kwargs):
         """Retrieve a single object.
 
         Args:

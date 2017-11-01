@@ -95,9 +95,18 @@ testcase "branch deletion" '
 '
 
 testcase "project upload" '
-    GITLAB project upload --id "$PROJECT_ID" --filename '$(basename $0)' --filepath '$0'
+    GITLAB project upload --id "$PROJECT_ID" \
+        --filename '$(basename $0)' --filepath '$0' >/dev/null 2>&1
 '
 
 testcase "project deletion" '
     GITLAB project delete --id "$PROJECT_ID"
+'
+
+testcase "application settings get" '
+    GITLAB application-settings get >/dev/null 2>&1
+'
+
+testcase "application settings update" '
+    GITLAB application-settings update --signup-enabled false
 '

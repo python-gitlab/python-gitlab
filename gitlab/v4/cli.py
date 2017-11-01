@@ -83,7 +83,7 @@ class GitlabCLI(object):
 
     def do_get(self):
         id = None
-        if gitlab.mixins.GetWithoutIdMixin not in inspect.getmro(self.cls):
+        if gitlab.mixins.GetWithoutIdMixin not in inspect.getmro(self.mgr_cls):
             id = self.args.pop(self.cls._id_attr)
 
         try:
@@ -99,7 +99,9 @@ class GitlabCLI(object):
             cli.die("Impossible to destroy object", e)
 
     def do_update(self):
-        id = self.args.pop(self.cls._id_attr)
+        id = None
+        if gitlab.mixins.GetWithoutIdMixin not in inspect.getmro(self.mgr_cls):
+            id = self.args.pop(self.cls._id_attr)
         try:
             return self.mgr.update(id, self.args)
         except Exception as e:
@@ -282,15 +284,18 @@ class LegacyPrinter(object):
                 return
 
             # not a dict, we assume it's a RESTObject
-            id = getattr(obj, obj._id_attr, None)
-            print('%s: %s' % (obj._id_attr, id))
+            if obj._id_attr:
+                id = getattr(obj, obj._id_attr, None)
+                print('%s: %s' % (obj._id_attr, id))
             attrs = obj.attributes
-            attrs.pop(obj._id_attr)
+            if obj._id_attr:
+                attrs.pop(obj._id_attr)
             display_dict(attrs, padding)
 
         else:
-            id = getattr(obj, obj._id_attr)
-            print('%s: %s' % (obj._id_attr.replace('_', '-'), id))
+            if obj._id_attr:
+                id = getattr(obj, obj._id_attr)
+                print('%s: %s' % (obj._id_attr.replace('_', '-'), id))
             if hasattr(obj, '_short_print_attr'):
                 value = getattr(obj, obj._short_print_attr)
                 print('%s: %s' % (obj._short_print_attr, value))
