@@ -225,6 +225,15 @@ handle the next calls to the API when required:
    for item in items:
        print(item.attributes)
 
+The generator exposes extra listing information as received by the server:
+
+* ``current_page``: current page number (first page is 1)
+* ``prev_page``: if ``None`` the current page is the first one
+* ``next_page``: if ``None`` the current page is the last one
+* ``per_page``: number of items per page
+* ``total_pages``: total number of pages available
+* ``total``: total number of items in the list
+
 Sudo
 ====
 

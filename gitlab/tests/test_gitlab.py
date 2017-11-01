@@ -209,6 +209,12 @@ class TestGitlabList(unittest.TestCase):
             self.assertEqual(len(obj), 2)
             self.assertEqual(obj._next_url,
                              'http://localhost/api/v4/tests?per_page=1&page=2')
+            self.assertEqual(obj.current_page, 1)
+            self.assertEqual(obj.prev_page, None)
+            self.assertEqual(obj.next_page, 2)
+            self.assertEqual(obj.per_page, 1)
+            self.assertEqual(obj.total_pages, 2)
+            self.assertEqual(obj.total, 2)
 
             with HTTMock(resp_2):
                 l = list(obj)

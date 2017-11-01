@@ -864,6 +864,7 @@ class GitlabList(object):
         except KeyError:
             self._next_url = None
         self._current_page = result.headers.get('X-Page')
+        self._prev_page = result.headers.get('X-Prev-Page')
         self._next_page = result.headers.get('X-Next-Page')
         self._per_page = result.headers.get('X-Per-Page')
         self._total_pages = result.headers.get('X-Total-Pages')
@@ -876,6 +877,42 @@ class GitlabList(object):
                 error_message="Failed to parse the server message")
 
         self._current = 0
+
+    @property
+    def current_page(self):
+        """The current page number."""
+        return int(self._current_page)
+
+    @property
+    def prev_page(self):
+        """The next page number.
+
+        If None, the current page is the last.
+        """
+        return int(self._prev_page) if self._prev_page else None
+
+    @property
+    def next_page(self):
+        """The next page number.
+
+        If None, the current page is the last.
+        """
+        return int(self._next_page) if self._next_page else None
+
+    @property
+    def per_page(self):
+        """The number of items per page."""
+        return int(self._per_page)
+
+    @property
+    def total_pages(self):
+        """The total number of pages."""
+        return int(self._total_pages)
+
+    @property
+    def total(self):
+        """The total number of items."""
+        return int(self._total)
 
     def __iter__(self):
         return self

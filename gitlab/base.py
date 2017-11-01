@@ -670,6 +670,42 @@ class RESTObjectList(object):
         data = self._list.next()
         return self._obj_cls(self.manager, data)
 
+    @property
+    def current_page(self):
+        """The current page number."""
+        return self._list.current_page
+
+    @property
+    def prev_page(self):
+        """The next page number.
+
+        If None, the current page is the last.
+        """
+        return self._list.prev_page
+
+    @property
+    def next_page(self):
+        """The next page number.
+
+        If None, the current page is the last.
+        """
+        return self._list.next_page
+
+    @property
+    def per_page(self):
+        """The number of items per page."""
+        return self._list.per_page
+
+    @property
+    def total_pages(self):
+        """The total number of pages."""
+        return self._list.total_pages
+
+    @property
+    def total(self):
+        """The total number of items."""
+        return self._list.total
+
 
 class RESTManager(object):
     """Base class for CRUD operations on objects.
