@@ -2317,6 +2317,34 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         }
 
 
+class ProjectManager(CRUDMixin, RESTManager):
+    _path = '/projects'
+    _obj_cls = Project
+    _create_attrs = (
+        ('name', ),
+        ('path', 'namespace_id', 'description', 'issues_enabled',
+         'merge_requests_enabled', 'jobs_enabled', 'wiki_enabled',
+         'snippets_enabled', 'container_registry_enabled',
+         'shared_runners_enabled', 'visibility', 'import_url', 'public_jobs',
+         'only_allow_merge_if_build_succeeds',
+         'only_allow_merge_if_all_discussions_are_resolved', 'lfs_enabled',
+         'request_access_enabled', 'printing_merge_request_link_enabled')
+    )
+    _update_attrs = (
+        tuple(),
+        ('name', 'path', 'default_branch', 'description', 'issues_enabled',
+         'merge_requests_enabled', 'jobs_enabled', 'wiki_enabled',
+         'snippets_enabled', 'container_registry_enabled',
+         'shared_runners_enabled', 'visibility', 'import_url', 'public_jobs',
+         'only_allow_merge_if_build_succeeds',
+         'only_allow_merge_if_all_discussions_are_resolved', 'lfs_enabled',
+         'request_access_enabled', 'printing_merge_request_link_enabled')
+    )
+    _list_filters = ('search', 'owned', 'starred', 'archived', 'visibility',
+                     'order_by', 'sort', 'simple', 'membership', 'statistics',
+                     'with_issues_enabled', 'with_merge_requests_enabled')
+
+
 class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
@@ -2399,31 +2427,3 @@ class TodoManager(GetFromListMixin, DeleteMixin, RESTManager):
             return int(result)
         except ValueError:
             return 0
-
-
-class ProjectManager(CRUDMixin, RESTManager):
-    _path = '/projects'
-    _obj_cls = Project
-    _create_attrs = (
-        ('name', ),
-        ('path', 'namespace_id', 'description', 'issues_enabled',
-         'merge_requests_enabled', 'jobs_enabled', 'wiki_enabled',
-         'snippets_enabled', 'container_registry_enabled',
-         'shared_runners_enabled', 'visibility', 'import_url', 'public_jobs',
-         'only_allow_merge_if_build_succeeds',
-         'only_allow_merge_if_all_discussions_are_resolved', 'lfs_enabled',
-         'request_access_enabled', 'printing_merge_request_link_enabled')
-    )
-    _update_attrs = (
-        tuple(),
-        ('name', 'path', 'default_branch', 'description', 'issues_enabled',
-         'merge_requests_enabled', 'jobs_enabled', 'wiki_enabled',
-         'snippets_enabled', 'container_registry_enabled',
-         'shared_runners_enabled', 'visibility', 'import_url', 'public_jobs',
-         'only_allow_merge_if_build_succeeds',
-         'only_allow_merge_if_all_discussions_are_resolved', 'lfs_enabled',
-         'request_access_enabled', 'printing_merge_request_link_enabled')
-    )
-    _list_filters = ('search', 'owned', 'starred', 'archived', 'visibility',
-                     'order_by', 'sort', 'simple', 'membership', 'statistics',
-                     'with_issues_enabled', 'with_merge_requests_enabled')
