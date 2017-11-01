@@ -123,6 +123,17 @@ class UserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _create_attrs = (('email', ), tuple())
 
 
+class UserGPGKey(ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class UserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+    _path = '/users/%(user_id)s/gpg_keys'
+    _obj_cls = UserGPGKey
+    _from_parent_attrs = {'user_id': 'id'}
+    _create_attrs = (('key',), tuple())
+
+
 class UserKey(ObjectDeleteMixin, RESTObject):
     pass
 
@@ -155,6 +166,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'username'
     _managers = (
         ('emails', 'UserEmailManager'),
+        ('gpgkeys', 'UserGPGKeyManager'),
         ('keys', 'UserKeyManager'),
         ('projects', 'UserProjectManager'),
     )
@@ -241,6 +253,17 @@ class CurrentUserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin,
     _create_attrs = (('email', ), tuple())
 
 
+class CurrentUserGPGKey(ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class CurrentUserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin,
+                               RESTManager):
+    _path = '/user/gpg_keys'
+    _obj_cls = CurrentUserGPGKey
+    _create_attrs = (('key',), tuple())
+
+
 class CurrentUserKey(ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'title'
 
@@ -257,6 +280,7 @@ class CurrentUser(RESTObject):
     _short_print_attr = 'username'
     _managers = (
         ('emails', 'CurrentUserEmailManager'),
+        ('gpgkeys', 'CurrentUserGPGKeyManager'),
         ('keys', 'CurrentUserKeyManager'),
     )
 

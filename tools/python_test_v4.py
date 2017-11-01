@@ -20,6 +20,37 @@ DEPLOY_KEY = ("ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDFdRyjJQh+1niBpXqE2I8dzjG"
               "rke9IepE7SPBT41C+YtUX4dfDZDmczM1cE0YL/krdUCfuZHMa4ZS2YyNd6slufc"
               "vn bar@foo")
 
+GPG_KEY = '''-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mQENBFn5mzYBCADH6SDVPAp1zh/hxmTi0QplkOfExBACpuY6OhzNdIg+8/528b3g
+Y5YFR6T/HLv/PmeHskUj21end1C0PNG2T9dTx+2Vlh9ISsSG1kyF9T5fvMR3bE0x
+Dl6S489CXZrjPTS9SHk1kF+7dwjUxLJyxF9hPiSihFefDFu3NeOtG/u8vbC1mewQ
+ZyAYue+mqtqcCIFFoBz7wHKMWjIVSJSyTkXExu4OzpVvy3l2EikbvavI3qNz84b+
+Mgkv/kiBlNoCy3CVuPk99RYKZ3lX1vVtqQ0OgNGQvb4DjcpyjmbKyibuZwhDjIOh
+au6d1OyEbayTntd+dQ4j9EMSnEvm/0MJ4eXPABEBAAG0G0dpdGxhYlRlc3QxIDxm
+YWtlQGZha2UudGxkPokBNwQTAQgAIQUCWfmbNgIbAwULCQgHAgYVCAkKCwIEFgID
+AQIeAQIXgAAKCRBgxELHf8f3hF3yB/wNJlWPKY65UsB4Lo0hs1OxdxCDqXogSi0u
+6crDEIiyOte62pNZKzWy8TJcGZvznRTZ7t8hXgKFLz3PRMcl+vAiRC6quIDUj+2V
+eYfwaItd1lUfzvdCaC7Venf4TQ74f5vvNg/zoGwE6eRoSbjlLv9nqsxeA0rUBUQL
+LYikWhVMP3TrlfgfduYvh6mfgh57BDLJ9kJVpyfxxx9YLKZbaas9sPa6LgBtR555
+JziUxHmbEv8XCsUU8uoFeP1pImbNBplqE3wzJwzOMSmmch7iZzrAwfN7N2j3Wj0H
+B5kQddJ9dmB4BbU0IXGhWczvdpxboI2wdY8a1JypxOdePoph/43iuQENBFn5mzYB
+CADnTPY0Zf3d9zLjBNgIb3yDl94uOcKCq0twNmyjMhHzGqw+UMe9BScy34GL94Al
+xFRQoaL+7P8hGsnsNku29A/VDZivcI+uxTx4WQ7OLcn7V0bnHV4d76iky2ufbUt/
+GofthjDs1SonePO2N09sS4V4uK0d5N4BfCzzXgvg8etCLxNmC9BGt7AaKUUzKBO4
+2QvNNaC2C/8XEnOgNWYvR36ylAXAmo0sGFXUsBCTiq1fugS9pwtaS2JmaVpZZ3YT
+pMZlS0+SjC5BZYFqSmKCsA58oBRzCxQz57nR4h5VEflgD+Hy0HdW0UHETwz83E6/
+U0LL6YyvhwFr6KPq5GxinSvfABEBAAGJAR8EGAEIAAkFAln5mzYCGwwACgkQYMRC
+x3/H94SJgwgAlKQb10/xcL/epdDkR7vbiei7huGLBpRDb/L5fM8B5W77Qi8Xmuqj
+cCu1j99ZCA5hs/vwVn8j8iLSBGMC5gxcuaar/wtmiaEvT9fO/h6q4opG7NcuiJ8H
+wRj8ccJmRssNqDD913PLz7T40Ts62blhrEAlJozGVG/q7T3RAZcskOUHKeHfc2RI
+YzGsC/I9d7k6uxAv1L9Nm5F2HaAQDzhkdd16nKkGaPGR35cT1JLInkfl5cdm7ldN
+nxs4TLO3kZjUTgWKdhpgRNF5hwaz51ZjpebaRf/ZqRuNyX4lIRolDxzOn/+O1o8L
+qG2ZdhHHmSK2LaQLFiSprUkikStNU9BqSQ==
+=5OGa
+-----END PGP PUBLIC KEY BLOCK-----'''
+
+
 # login/password authentication
 gl = gitlab.Gitlab('http://localhost:8080', email=LOGIN, password=PASSWORD)
 gl.auth()
@@ -80,6 +111,14 @@ assert len(gl.users.list(search='asdf')) == 0
 foobar_user.bio = 'This is the user bio'
 foobar_user.save()
 
+# GPG keys
+gkey = new_user.gpgkeys.create({'key': GPG_KEY})
+assert(len(new_user.gpgkeys.list()) == 1)
+# Seems broken on the gitlab side
+# gkey = new_user.gpgkeys.get(gkey.id)
+gkey.delete()
+assert(len(new_user.gpgkeys.list()) == 0)
+
 # SSH keys
 key = new_user.keys.create({'title': 'testkey', 'key': SSH_KEY})
 assert(len(new_user.keys.list()) == 1)
@@ -101,6 +140,14 @@ mail = gl.user.emails.create({'email': 'current@user.com'})
 assert(len(gl.user.emails.list()) == 1)
 mail.delete()
 assert(len(gl.user.emails.list()) == 0)
+
+# current user GPG keys
+gkey = gl.user.gpgkeys.create({'key': GPG_KEY})
+assert(len(gl.user.gpgkeys.list()) == 1)
+# Seems broken on the gitlab side
+gkey = gl.user.gpgkeys.get(gkey.id)
+gkey.delete()
+assert(len(gl.user.gpgkeys.list()) == 0)
 
 # current user key
 key = gl.user.keys.create({'title': 'testkey', 'key': SSH_KEY})
