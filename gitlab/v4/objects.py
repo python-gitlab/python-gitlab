@@ -360,6 +360,17 @@ class GitlabciymlManager(RetrieveMixin, RESTManager):
     _obj_cls = Gitlabciyml
 
 
+class GroupAccessRequest(AccessRequestMixin, ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class GroupAccessRequestManager(GetFromListMixin, CreateMixin, DeleteMixin,
+                                RESTManager):
+    _path = '/groups/%(group_id)s/access_requests'
+    _obj_cls = GroupAccessRequest
+    _from_parent_attrs = {'group_id': 'id'}
+
+
 class GroupIssue(RESTObject):
     pass
 
@@ -394,15 +405,71 @@ class GroupNotificationSettingsManager(NotificationSettingsManager):
     _from_parent_attrs = {'group_id': 'id'}
 
 
-class GroupAccessRequest(AccessRequestMixin, ObjectDeleteMixin, RESTObject):
+class GroupProject(RESTObject):
     pass
 
 
-class GroupAccessRequestManager(GetFromListMixin, CreateMixin, DeleteMixin,
-                                RESTManager):
-    _path = '/groups/%(group_id)s/access_requests'
-    _obj_cls = GroupAccessRequest
+class GroupProjectManager(GetFromListMixin, RESTManager):
+    _path = '/groups/%(group_id)s/projects'
+    _obj_cls = GroupProject
     _from_parent_attrs = {'group_id': 'id'}
+    _list_filters = ('archived', 'visibility', 'order_by', 'sort', 'search',
+                     'ci_enabled_first')
+
+
+class GroupVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _id_attr = 'key'
+
+
+class GroupVariableManager(CRUDMixin, RESTManager):
+    _path = '/groups/%(group_id)s/variables'
+    _obj_cls = GroupVariable
+    _from_parent_attrs = {'group_id': 'id'}
+    _create_attrs = (('key', 'value'), ('protected',))
+    _update_attrs = (('key', 'value'), ('protected',))
+
+
+class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _short_print_attr = 'name'
+    _managers = (
+        ('accessrequests', 'GroupAccessRequestManager'),
+        ('members', 'GroupMemberManager'),
+        ('notificationsettings', 'GroupNotificationSettingsManager'),
+        ('projects', 'GroupProjectManager'),
+        ('issues', 'GroupIssueManager'),
+        ('variables', 'GroupVariableManager'),
+    )
+
+    @cli.register_custom_action('Group', ('to_project_id', ))
+    @exc.on_http_error(exc.GitlabTransferProjectError)
+    def transfer_project(self, to_project_id, **kwargs):
+        """Transfer a project to this group.
+
+        Args:
+            to_project_id (int): ID of the project to transfer
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabTransferProjectError: If the project could not be transfered
+        """
+        path = '/groups/%d/projects/%d' % (self.id, to_project_id)
+        self.manager.gitlab.http_post(path, **kwargs)
+
+
+class GroupManager(CRUDMixin, RESTManager):
+    _path = '/groups'
+    _obj_cls = Group
+    _create_attrs = (
+        ('name', 'path'),
+        ('description', 'visibility', 'parent_id', 'lfs_enabled',
+         'request_access_enabled')
+    )
+    _update_attrs = (
+        tuple(),
+        ('name', 'path', 'description', 'visibility', 'lfs_enabled',
+         'request_access_enabled')
+    )
 
 
 class Hook(ObjectDeleteMixin, RESTObject):
@@ -2266,70 +2333,3 @@ class ProjectManager(CRUDMixin, RESTManager):
     _list_filters = ('search', 'owned', 'starred', 'archived', 'visibility',
                      'order_by', 'sort', 'simple', 'membership', 'statistics',
                      'with_issues_enabled', 'with_merge_requests_enabled')
-
-
-class GroupProject(RESTObject):
-    pass
-
-
-class GroupProjectManager(GetFromListMixin, RESTManager):
-    _path = '/groups/%(group_id)s/projects'
-    _obj_cls = GroupProject
-    _from_parent_attrs = {'group_id': 'id'}
-    _list_filters = ('archived', 'visibility', 'order_by', 'sort', 'search',
-                     'ci_enabled_first')
-
-
-class GroupVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _id_attr = 'key'
-
-
-class GroupVariableManager(CRUDMixin, RESTManager):
-    _path = '/groups/%(group_id)s/variables'
-    _obj_cls = GroupVariable
-    _from_parent_attrs = {'group_id': 'id'}
-    _create_attrs = (('key', 'value'), ('protected',))
-    _update_attrs = (('key', 'value'), ('protected',))
-
-
-class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = 'name'
-    _managers = (
-        ('accessrequests', 'GroupAccessRequestManager'),
-        ('members', 'GroupMemberManager'),
-        ('notificationsettings', 'GroupNotificationSettingsManager'),
-        ('projects', 'GroupProjectManager'),
-        ('issues', 'GroupIssueManager'),
-        ('variables', 'GroupVariableManager'),
-    )
-
-    @cli.register_custom_action('Group', ('to_project_id', ))
-    @exc.on_http_error(exc.GitlabTransferProjectError)
-    def transfer_project(self, to_project_id, **kwargs):
-        """Transfer a project to this group.
-
-        Args:
-            to_project_id (int): ID of the project to transfer
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabTransferProjectError: If the project could not be transfered
-        """
-        path = '/groups/%d/projects/%d' % (self.id, to_project_id)
-        self.manager.gitlab.http_post(path, **kwargs)
-
-
-class GroupManager(CRUDMixin, RESTManager):
-    _path = '/groups'
-    _obj_cls = Group
-    _create_attrs = (
-        ('name', 'path'),
-        ('description', 'visibility', 'parent_id', 'lfs_enabled',
-         'request_access_enabled')
-    )
-    _update_attrs = (
-        tuple(),
-        ('name', 'path', 'description', 'visibility', 'lfs_enabled',
-         'request_access_enabled')
-    )
