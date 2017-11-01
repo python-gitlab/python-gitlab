@@ -1,13 +1,16 @@
 # list
-milestones = project.milestones.list()
+p_milestones = project.milestones.list()
+g_milestones = group.milestones.list()
 # end list
 
 # filter
-milestones = project.milestones.list(state='closed')
+p_milestones = project.milestones.list(state='closed')
+g_milestones = group.milestones.list(state='active')
 # end filter
 
 # get
-milestone = project.milestones.get(milestone_id)
+p_milestone = project.milestones.get(milestone_id)
+g_milestone = group.milestones.get(milestone_id)
 # end get
 
 # create
@@ -36,4 +39,3 @@ issues = milestone.issues()
 # merge_requests
 merge_requests = milestone.merge_requests()
 # end merge_requests
-

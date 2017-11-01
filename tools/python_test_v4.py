@@ -170,6 +170,18 @@ settings.save()
 settings = group2.notificationsettings.get()
 assert(settings.level == 'disabled')
 
+# group milestones
+gm1 = group1.milestones.create({'title': 'groupmilestone1'})
+assert(len(group1.milestones.list()) == 1)
+gm1.due_date = '2020-01-01T00:00:00Z'
+gm1.save()
+gm1.state_event = 'close'
+gm1.save()
+gm1 = group1.milestones.get(gm1.id)
+assert(gm1.state == 'closed')
+assert(len(gm1.issues()) == 0)
+assert(len(gm1.merge_requests()) == 0)
+
 # group variables
 group1.variables.create({'key': 'foo', 'value': 'bar'})
 g_v = group1.variables.get('foo')
@@ -330,8 +342,10 @@ m1.due_date = '2020-01-01T00:00:00Z'
 m1.save()
 m1.state_event = 'close'
 m1.save()
-m1 = admin_project.milestones.get(1)
+m1 = admin_project.milestones.get(m1.id)
 assert(m1.state == 'closed')
+assert(len(m1.issues()) == 0)
+assert(len(m1.merge_requests()) == 0)
 
 # issues
 issue1 = admin_project.issues.create({'title': 'my issue 1',

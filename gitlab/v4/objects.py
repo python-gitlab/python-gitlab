@@ -395,6 +395,75 @@ class GroupMemberManager(GetFromListMixin, CreateMixin, UpdateMixin,
     _update_attrs = (('access_level', ), ('expires_at', ))
 
 
+class GroupMergeRequest(RESTObject):
+    pass
+
+
+class GroupMergeRequestManager(RESTManager):
+    pass
+
+
+class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _short_print_attr = 'title'
+
+    @cli.register_custom_action('GroupMilestone')
+    @exc.on_http_error(exc.GitlabListError)
+    def issues(self, **kwargs):
+        """List issues related to this milestone.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
+
+        Returns:
+            RESTObjectList: The list of issues
+        """
+
+        path = '%s/%s/issues' % (self.manager.path, self.get_id())
+        data_list = self.manager.gitlab.http_list(path, as_list=False,
+                                                  **kwargs)
+        manager = GroupIssueManager(self.manager.gitlab,
+                                    parent=self.manager._parent)
+        # FIXME(gpocentek): the computed manager path is not correct
+        return RESTObjectList(manager, GroupIssue, data_list)
+
+    @cli.register_custom_action('GroupMilestone')
+    @exc.on_http_error(exc.GitlabListError)
+    def merge_requests(self, **kwargs):
+        """List the merge requests related to this milestone.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
+
+        Returns:
+            RESTObjectList: The list of merge requests
+        """
+        path = '%s/%s/merge_requests' % (self.manager.path, self.get_id())
+        data_list = self.manager.gitlab.http_list(path, as_list=False,
+                                                  **kwargs)
+        manager = GroupIssueManager(self.manager.gitlab,
+                                    parent=self.manager._parent)
+        # FIXME(gpocentek): the computed manager path is not correct
+        return RESTObjectList(manager, GroupMergeRequest, data_list)
+
+
+class GroupMilestoneManager(CRUDMixin, RESTManager):
+    _path = '/groups/%(group_id)s/milestones'
+    _obj_cls = GroupMilestone
+    _from_parent_attrs = {'group_id': 'id'}
+    _create_attrs = (('title', ), ('description', 'due_date', 'start_date'))
+    _update_attrs = (tuple(), ('title', 'description', 'due_date',
+                               'start_date', 'state_event'))
+    _list_filters = ('iids', 'state', 'search')
+
+
 class GroupNotificationSettings(NotificationSettings):
     pass
 
@@ -434,6 +503,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     _managers = (
         ('accessrequests', 'GroupAccessRequestManager'),
         ('members', 'GroupMemberManager'),
+        ('milestones', 'GroupMilestoneManager'),
         ('notificationsettings', 'GroupNotificationSettingsManager'),
         ('projects', 'GroupProjectManager'),
         ('issues', 'GroupIssueManager'),
@@ -1293,8 +1363,8 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = '%s/%s/issues' % (self.manager.path, self.get_id())
         data_list = self.manager.gitlab.http_list(path, as_list=False,
                                                   **kwargs)
-        manager = ProjectCommitManager(self.manager.gitlab,
-                                       parent=self.manager._parent)
+        manager = ProjectIssueManager(self.manager.gitlab,
+                                      parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, ProjectIssue, data_list)
 
@@ -1316,8 +1386,8 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = '%s/%s/merge_requests' % (self.manager.path, self.get_id())
         data_list = self.manager.gitlab.http_list(path, as_list=False,
                                                   **kwargs)
-        manager = ProjectCommitManager(self.manager.gitlab,
-                                       parent=self.manager._parent)
+        manager = ProjectMergeRequestManager(self.manager.gitlab,
+                                             parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, ProjectMergeRequest, data_list)
 
@@ -1330,7 +1400,7 @@ class ProjectMilestoneManager(CRUDMixin, RESTManager):
                                    'state_event'))
     _update_attrs = (tuple(), ('title', 'description', 'due_date',
                                'start_date', 'state_event'))
-    _list_filters = ('iids', 'state')
+    _list_filters = ('iids', 'state', 'search')
 
 
 class ProjectLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin,
