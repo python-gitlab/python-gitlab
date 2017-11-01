@@ -496,6 +496,18 @@ assert(admin_project.star_count == 0)
 #lists = board.lists.list()
 #assert(len(lists) == begin_size - 1)
 
+# project wiki
+wiki_content = 'Wiki page content'
+wp = admin_project.wikis.create({'title': 'wikipage', 'content': wiki_content})
+assert(len(admin_project.wikis.list()) == 1)
+wp = admin_project.wikis.get(wp.slug)
+assert(wp.content == wiki_content)
+# update and delete seem broken
+# wp.content = 'new content'
+# wp.save()
+# wp.delete()
+# assert(len(admin_project.wikis.list()) == 0)
+
 # namespaces
 ns = gl.namespaces.list(all=True)
 assert(len(ns) != 0)

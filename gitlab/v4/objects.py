@@ -1947,6 +1947,20 @@ class ProjectRunnerManager(NoUpdateMixin, RESTManager):
     _create_attrs = (('runner_id', ), tuple())
 
 
+class ProjectWiki(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _id_attr = 'slug'
+    _short_print_attr = 'slug'
+
+
+class ProjectWikiManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/wikis'
+    _obj_cls = ProjectWiki
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('title', 'content'), ('format', ))
+    _update_attrs = (tuple(), ('title', 'content', 'format'))
+    _list_filters = ('with_content', )
+
+
 class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'path'
     _managers = (
@@ -1978,6 +1992,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('users', 'ProjectUserManager'),
         ('triggers', 'ProjectTriggerManager'),
         ('variables', 'ProjectVariableManager'),
+        ('wikis', 'ProjectWikiManager'),
     )
 
     @cli.register_custom_action('Project', tuple(), ('path', 'ref'))

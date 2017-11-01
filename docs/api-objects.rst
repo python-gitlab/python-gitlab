@@ -30,3 +30,4 @@ API examples
    gl_objects/todos
    gl_objects/users
    gl_objects/sidekiq
+   gl_objects/wikis
