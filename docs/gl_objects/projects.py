@@ -181,6 +181,10 @@ contributors = project.repository_contributors()
 # end repository contributors
 
 # files get
+# v4
+f = project.files.get(id='README.rst', ref='master')
+
+# v3
 f = project.files.get(file_path='README.rst', ref='master')
 
 # get the base64 encoded content
