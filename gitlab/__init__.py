@@ -70,9 +70,10 @@ class Gitlab(object):
         api_version (str): Gitlab API version to use (3 or 4)
     """
 
-    def __init__(self, url, private_token=None, oauth_token=None, email=None, password=None,
-                 ssl_verify=True, http_username=None, http_password=None,
-                 timeout=None, api_version='3', session=None):
+    def __init__(self, url, private_token=None, oauth_token=None, email=None,
+                 password=None, ssl_verify=True, http_username=None,
+                 http_password=None,timeout=None, api_version='3',
+                 session=None):
 
         self._api_version = str(api_version)
         self._server_version = self._server_revision = None
