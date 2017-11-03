@@ -26,6 +26,7 @@ except ImportError:
 from httmock import HTTMock  # noqa
 from httmock import response  # noqa
 from httmock import urlmatch  # noqa
+import pickle
 import six
 
 import gitlab
@@ -889,6 +890,14 @@ class TestGitlab(unittest.TestCase):
         self.gl = Gitlab("http://localhost", private_token="private_token",
                          email="testuser@test.com", password="testpassword",
                          ssl_verify=True)
+
+    def test_pickability(self):
+        original_gl_objects = self.gl._objects
+        pickled = pickle.dumps(self.gl)
+        unpickled = pickle.loads(pickled)
+        self.assertIsInstance(unpickled, Gitlab)
+        self.assertTrue(hasattr(unpickled, '_objects'))
+        self.assertEqual(unpickled._objects, original_gl_objects)
 
     def test_credentials_auth_nopassword(self):
         self.gl.email = None
