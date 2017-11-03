@@ -253,6 +253,9 @@ HTTP requests to the Gitlab servers.
 You can provide your own ``Session`` object with custom configuration when
 you create a ``Gitlab`` object.
 
+Proxy configuration
+-------------------
+
 The following sample illustrates how to define a proxy configuration when using
 python-gitlab:
 
@@ -267,3 +270,23 @@ python-gitlab:
        'http': os.environ.get('http_proxy'),
    }
    gl = gitlab.gitlab(url, token, api_version=4, session=session)
+
+Reference:
+http://docs.python-requests.org/en/master/user/advanced/#proxies
+
+Client side certificate
+-----------------------
+
+The following sample illustrates how to use a client-side certificate:
+
+.. code-block:: python
+
+   import gitlab
+   import requests
+
+   session = requests.Session()
+   s.cert = ('/path/to/client.cert', '/path/to/client.key')
+   gl = gitlab.gitlab(url, token, api_version=4, session=session)
+
+Reference:
+http://docs.python-requests.org/en/master/user/advanced/#client-side-certificates
