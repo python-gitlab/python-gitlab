@@ -21,6 +21,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 import json
+import pickle
 try:
     import unittest
 except ImportError:
@@ -157,6 +158,15 @@ class TestGitlabObject(unittest.TestCase):
         self.assertIn("id", data)
         self.assertEqual(data["username"], "testname")
         self.assertEqual(data["gitlab"]["url"], "http://localhost/api/v3")
+
+    def test_pickability(self):
+        gl_object = CurrentUser(self.gl, data={"username": "testname"})
+        original_obj_module = gl_object._module
+        pickled = pickle.dumps(gl_object)
+        unpickled = pickle.loads(pickled)
+        self.assertIsInstance(unpickled, CurrentUser)
+        self.assertTrue(hasattr(unpickled, '_module'))
+        self.assertEqual(unpickled._module, original_obj_module)
 
     def test_data_for_gitlab(self):
         class FakeObj1(GitlabObject):

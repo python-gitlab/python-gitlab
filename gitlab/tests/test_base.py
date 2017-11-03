@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import pickle
 try:
     import unittest
 except ImportError:
@@ -85,6 +86,15 @@ class TestRESTObject(unittest.TestCase):
         self.assertEqual(None, obj._create_managers())
         self.assertEqual(self.manager, obj.manager)
         self.assertEqual(self.gitlab, obj.manager.gitlab)
+
+    def test_pickability(self):
+        obj = FakeObject(self.manager, {'foo': 'bar'})
+        original_obj_module = obj._module
+        pickled = pickle.dumps(obj)
+        unpickled = pickle.loads(pickled)
+        self.assertIsInstance(unpickled, FakeObject)
+        self.assertTrue(hasattr(unpickled, '_module'))
+        self.assertEqual(unpickled._module, original_obj_module)
 
     def test_attrs(self):
         obj = FakeObject(self.manager, {'foo': 'bar'})

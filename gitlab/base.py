@@ -416,6 +416,17 @@ class GitlabObject(object):
         if not hasattr(self, "id"):
             self.id = None
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        module = state.pop('_module')
+        state['_module_name'] = module.__name__
+        return state
+
+    def __setstate__(self, state):
+        module_name = state.pop('_module_name')
+        self.__dict__.update(state)
+        self._module = importlib.import_module(module_name)
+
     def _set_manager(self, var, cls, attrs):
         manager = cls(self.gitlab, self, attrs)
         setattr(self, var, manager)
@@ -554,6 +565,17 @@ class RESTObject(object):
         })
         self.__dict__['_parent_attrs'] = self.manager.parent_attrs
         self._create_managers()
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        module = state.pop('_module')
+        state['_module_name'] = module.__name__
+        return state
+
+    def __setstate__(self, state):
+        module_name = state.pop('_module_name')
+        self.__dict__.update(state)
+        self._module = importlib.import_module(module_name)
 
     def __getattr__(self, name):
         try:
