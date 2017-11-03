@@ -1,6 +1,32 @@
 ChangeLog
 =========
 
+Version 1.1.0_ - 2017-11-03
+---------------------------
+
+* Fix trigger variables in v4 API
+* Make the delete() method handle / in ids
+* [docs] update the file upload samples
+* Tags release description: support / in tag names
+* [docs] improve the labels usage documentation
+* Add support for listing project users
+* ProjectFileManager.create: handle / in file paths
+* Change ProjectUser and GroupProject base class
+* [docs] document `get_create_attrs` in the API tutorial
+* Document the Gitlab session parameter
+* ProjectFileManager: custom update() method
+* Project: add support for printing_merge_request_link_enabled attr
+* Update the ssl_verify docstring
+* Add support for group milestones
+* Add support for GPG keys
+* Add support for wiki pages
+* Update the repository_blob documentation
+* Fix the CLI for objects without ID (API v4)
+* Add a contributed Dockerfile
+* Pagination generators: expose more information
+* Module's base objects serialization
+* [doc] Add sample code for client-side certificates
+
 Version 1.0.2_ - 2017-09-29
 ---------------------------
 
@@ -469,6 +495,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
+.. _1.1.0: https://github.com/python-gitlab/python-gitlab/compare/1.0.2...1.1.0
 .. _1.0.2: https://github.com/python-gitlab/python-gitlab/compare/1.0.1...1.0.2
 .. _1.0.1: https://github.com/python-gitlab/python-gitlab/compare/1.0.0...1.0.1
 .. _1.0.0: https://github.com/python-gitlab/python-gitlab/compare/0.21.2...1.0.0
