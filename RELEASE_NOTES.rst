@@ -18,7 +18,7 @@ Changes from 1.0.2 to 1.1
   .. code-block:: python
 
      for gr_project in group.projects.list():
-         # lazy object creation doesn't need an Gitlab API request
+         # lazy object creation avoids a Gitlab API request
          project = gl.projects.get(gr_project.id, lazy=True)
          project.default_branch = 'develop'
          project.save()
