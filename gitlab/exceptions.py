@@ -77,6 +77,10 @@ class GitlabDeleteError(GitlabOperationError):
     pass
 
 
+class GitlabSetError(GitlabOperationError):
+    pass
+
+
 class GitlabProtectError(GitlabOperationError):
     pass
 

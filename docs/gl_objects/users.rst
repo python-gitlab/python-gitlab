@@ -70,6 +70,42 @@ Block/Unblock a user:
    :start-after: # block
    :end-before: # end block
 
+User custom attributes
+======================
+
+References
+----------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.UserCustomAttribute`
+  + :class:`gitlab.v4.objects.UserCustomAttributeManager`
+  + :attr:`gitlab.v4.objects.User.customattributes`
+
+List custom attributes for a user:
+
+.. literalinclude:: users.py
+   :start-after: # ca list
+   :end-before: # end ca list
+
+Get a custom attribute for a user:
+
+.. literalinclude:: users.py
+   :start-after: # ca get
+   :end-before: # end ca get
+
+Set (create or update) a custom attribute for a user:
+
+.. literalinclude:: users.py
+   :start-after: # ca set
+   :end-before: # end ca set
+
+Delete a custom attribute for a user:
+
+.. literalinclude:: users.py
+   :start-after: # ca list
+   :end-before: # end ca list
+
 Current User
 ============
 
