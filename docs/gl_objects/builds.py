@@ -34,7 +34,8 @@ trigger = project.triggers.get(trigger_token)
 # end trigger get
 
 # trigger create
-trigger = project.triggers.create({})
+trigger = project.triggers.create({}) # v3
+trigger = project.triggers.create({'description': 'mytrigger'}) # v4
 # end trigger create
 
 # trigger delete
