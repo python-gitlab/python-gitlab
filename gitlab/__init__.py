@@ -70,9 +70,10 @@ class Gitlab(object):
         api_version (str): Gitlab API version to use (3 or 4)
     """
 
-    def __init__(self, url, private_token=None, email=None, password=None,
-                 ssl_verify=True, http_username=None, http_password=None,
-                 timeout=None, api_version='3', session=None):
+    def __init__(self, url, private_token=None, oauth_token=None, email=None,
+                 password=None, ssl_verify=True, http_username=None,
+                 http_password=None, timeout=None, api_version='3',
+                 session=None):
 
         self._api_version = str(api_version)
         self._server_version = self._server_revision = None
@@ -81,7 +82,8 @@ class Gitlab(object):
         self.timeout = timeout
         #: Headers that will be used in request to GitLab
         self.headers = {}
-        self._set_token(private_token)
+        self._set_token(private_token, oauth_token)
+
         #: The user email
         self.email = email
         #: The user password (associated with email)
@@ -300,12 +302,18 @@ class Gitlab(object):
                       DeprecationWarning)
         self._set_token(token)
 
-    def _set_token(self, token):
-        self.private_token = token if token else None
-        if token:
-            self.headers["PRIVATE-TOKEN"] = token
-        elif "PRIVATE-TOKEN" in self.headers:
-            del self.headers["PRIVATE-TOKEN"]
+    def _set_token(self, private_token, oauth_token=None):
+        self.private_token = private_token if private_token else None
+        self.oauth_token = oauth_token if oauth_token else None
+
+        if private_token:
+            self.headers["PRIVATE-TOKEN"] = private_token
+            if 'Authorization' in self.headers:
+                del self.headers["Authorization"]
+        elif oauth_token:
+            self.headers['Authorization'] = "Bearer %s" % oauth_token
+            if "PRIVATE-TOKEN" in self.headers:
+                del self.headers["PRIVATE-TOKEN"]
 
     def set_credentials(self, email, password):
         """Sets the email/login and password for authentication.
