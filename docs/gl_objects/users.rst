@@ -116,7 +116,7 @@ References
 
   + :class:`gitlab.v4.objects.UserImpersonationToken`
   + :class:`gitlab.v4.objects.UserImpersonationTokenManager`
-  + :attr:`gitlab.v4.objects.User.impersontaiontokens`
+  + :attr:`gitlab.v4.objects.User.impersonationtokens`
 
 List impersonation tokens for a user:
 
