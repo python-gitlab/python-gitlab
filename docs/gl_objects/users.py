@@ -115,3 +115,22 @@ attr.delete()
 # or
 user.customeattributes.delete(attr_key)
 # end ca delete
+
+# it list
+i_t = user.impersonationtokens.list(state='active')
+i_t = user.impersonationtokens.list(state='inactive')
+# end it list
+
+# it get
+i_t = user.impersonationtokens.get(i_t_id)
+# end it get
+
+# it create
+i_t = user.impersonationtokens.create({'name': 'token1', 'scopes': ['api']})
+# use the token to create a new gitlab connection
+user_gl = gitlab.Gitlab(gitlab_url, private_token=i_t.token)
+# end it create
+
+# it delete
+i_t.delete()
+# end it delete

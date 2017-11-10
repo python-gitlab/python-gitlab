@@ -106,6 +106,42 @@ Delete a custom attribute for a user:
    :start-after: # ca list
    :end-before: # end ca list
 
+User impersonation tokens
+=========================
+
+References
+----------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.UserImpersonationToken`
+  + :class:`gitlab.v4.objects.UserImpersonationTokenManager`
+  + :attr:`gitlab.v4.objects.User.impersontaiontokens`
+
+List impersonation tokens for a user:
+
+.. literalinclude:: users.py
+   :start-after: # it list
+   :end-before: # end it list
+
+Get an impersonation token for a user:
+
+.. literalinclude:: users.py
+   :start-after: # it get
+   :end-before: # end it get
+
+Create and use an impersonation token for a user:
+
+.. literalinclude:: users.py
+   :start-after: # it create
+   :end-before: # end it create
+
+Revoke (delete) an impersonation token for a user:
+
+.. literalinclude:: users.py
+   :start-after: # it list
+   :end-before: # end it list
+
 Current User
 ============
 

@@ -145,6 +145,17 @@ assert(len(new_user.customattributes.list()) == 1)
 attr.delete()
 assert(len(new_user.customattributes.list()) == 0)
 
+# impersonation tokens
+user_token = new_user.impersonationtokens.create(
+    {'name': 'token1', 'scopes': ['api', 'read_user']})
+l = new_user.impersonationtokens.list(state='active')
+assert(len(l) == 1)
+user_token.delete()
+l = new_user.impersonationtokens.list(state='active')
+assert(len(l) == 0)
+l = new_user.impersonationtokens.list(state='inactive')
+assert(len(l) == 1)
+
 new_user.delete()
 foobar_user.delete()
 assert(len(gl.users.list()) == 3)
@@ -485,7 +496,7 @@ except gitlab.GitlabMRClosedError:
 p_b = admin_project.protectedbranches.create({'name': '*-stable'})
 assert(p_b.name == '*-stable')
 p_b = admin_project.protectedbranches.get('*-stable')
-# master is protected by default
+# master is protected by default when a branch has been created
 assert(len(admin_project.protectedbranches.list()) == 2)
 admin_project.protectedbranches.delete('master')
 p_b.delete()

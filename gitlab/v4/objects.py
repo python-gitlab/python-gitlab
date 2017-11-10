@@ -175,6 +175,18 @@ class UserKeyManager(GetFromListMixin, CreateMixin, DeleteMixin, RESTManager):
     _create_attrs = (('title', 'key'), tuple())
 
 
+class UserImpersonationToken(ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class UserImpersonationTokenManager(NoUpdateMixin, RESTManager):
+    _path = '/users/%(user_id)s/impersonation_tokens'
+    _obj_cls = UserImpersonationToken
+    _from_parent_attrs = {'user_id': 'id'}
+    _create_attrs = (('name', 'scopes'), ('expires_at',))
+    _list_filters = ('state',)
+
+
 class UserProject(RESTObject):
     pass
 
@@ -198,6 +210,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('customattributes', 'UserCustomAttributeManager'),
         ('emails', 'UserEmailManager'),
         ('gpgkeys', 'UserGPGKeyManager'),
+        ('impersonationtokens', 'UserImpersonationTokenManager'),
         ('keys', 'UserKeyManager'),
         ('projects', 'UserProjectManager'),
     )
