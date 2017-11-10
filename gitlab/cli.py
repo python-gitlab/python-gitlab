@@ -86,7 +86,7 @@ def _get_base_parser():
                         help="Verbose mode (legacy format only)",
                         action="store_true")
     parser.add_argument("-d", "--debug",
-                        help="Debug mode (display HTTP requests",
+                        help="Debug mode (display HTTP requests)",
                         action="store_true")
     parser.add_argument("-c", "--config-file", action='append',
                         help=("Configuration file to use. Can be used "
@@ -147,7 +147,8 @@ def main():
 
     try:
         gl = gitlab.Gitlab.from_config(gitlab_id, config_files)
-        gl.auth()
+        if gl.private_token or gl.oauth_token:
+            gl.auth()
     except Exception as e:
         die(str(e))
 

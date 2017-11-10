@@ -70,8 +70,11 @@ parameters. You can override the values in each GitLab server section.
      - Integer
      - Number of seconds to wait for an answer before failing.
 
-You must define the ``url`` and ``private_token`` in each GitLab server
-section.
+You must define the ``url`` in each GitLab server section.
+
+Only one of ``private_token`` or ``oauth_token`` should be defined. If neither
+are defined an anonymous request will be sent to the Gitlab server, with very
+limited permissions.
 
 .. list-table:: GitLab server options
    :header-rows: 1
@@ -83,6 +86,9 @@ section.
    * - ``private_token``
      - Your user token. Login/password is not supported. Refer to `the official
        documentation`__ to learn how to obtain a token.
+   * - ``oauth_token``
+     - An Oauth token for authentication. The Gitlab server must be configured
+       to support this authentication method.
    * - ``api_version``
      - GitLab API version to use (``3`` or ``4``). Defaults to ``3`` for now,
        but will switch to ``4`` eventually.

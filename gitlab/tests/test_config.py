@@ -45,6 +45,10 @@ timeout = 10
 url = https://three.url
 private_token = MNOPQR
 ssl_verify = /path/to/CA/bundle.crt
+
+[four]
+url = https://four.url
+oauth_token = STUV
 """
 
 no_default_config = u"""[global]
@@ -85,8 +89,7 @@ class TestConfigParser(unittest.TestCase):
         fd = six.StringIO(missing_attr_config)
         fd.close = mock.Mock(return_value=None)
         m_open.return_value = fd
-        self.assertRaises(config.GitlabDataError, config.GitlabConfigParser,
-                          gitlab_id='one')
+        config.GitlabConfigParser('one')
         self.assertRaises(config.GitlabDataError, config.GitlabConfigParser,
                           gitlab_id='two')
         self.assertRaises(config.GitlabDataError, config.GitlabConfigParser,
@@ -101,7 +104,8 @@ class TestConfigParser(unittest.TestCase):
         cp = config.GitlabConfigParser()
         self.assertEqual("one", cp.gitlab_id)
         self.assertEqual("http://one.url", cp.url)
-        self.assertEqual("ABCDEF", cp.token)
+        self.assertEqual("ABCDEF", cp.private_token)
+        self.assertEqual(None, cp.oauth_token)
         self.assertEqual(2, cp.timeout)
         self.assertEqual(True, cp.ssl_verify)
 
@@ -111,7 +115,8 @@ class TestConfigParser(unittest.TestCase):
         cp = config.GitlabConfigParser(gitlab_id="two")
         self.assertEqual("two", cp.gitlab_id)
         self.assertEqual("https://two.url", cp.url)
-        self.assertEqual("GHIJKL", cp.token)
+        self.assertEqual("GHIJKL", cp.private_token)
+        self.assertEqual(None, cp.oauth_token)
         self.assertEqual(10, cp.timeout)
         self.assertEqual(False, cp.ssl_verify)
 
@@ -121,6 +126,18 @@ class TestConfigParser(unittest.TestCase):
         cp = config.GitlabConfigParser(gitlab_id="three")
         self.assertEqual("three", cp.gitlab_id)
         self.assertEqual("https://three.url", cp.url)
-        self.assertEqual("MNOPQR", cp.token)
+        self.assertEqual("MNOPQR", cp.private_token)
+        self.assertEqual(None, cp.oauth_token)
         self.assertEqual(2, cp.timeout)
         self.assertEqual("/path/to/CA/bundle.crt", cp.ssl_verify)
+
+        fd = six.StringIO(valid_config)
+        fd.close = mock.Mock(return_value=None)
+        m_open.return_value = fd
+        cp = config.GitlabConfigParser(gitlab_id="four")
+        self.assertEqual("four", cp.gitlab_id)
+        self.assertEqual("https://four.url", cp.url)
+        self.assertEqual(None, cp.private_token)
+        self.assertEqual("STUV", cp.oauth_token)
+        self.assertEqual(2, cp.timeout)
+        self.assertEqual(True, cp.ssl_verify)

@@ -182,7 +182,8 @@ class Gitlab(object):
         """
         config = gitlab.config.GitlabConfigParser(gitlab_id=gitlab_id,
                                                   config_files=config_files)
-        return Gitlab(config.url, private_token=config.token,
+        return Gitlab(config.url, private_token=config.private_token,
+                      oauth_token=config.oauth_token,
                       ssl_verify=config.ssl_verify, timeout=config.timeout,
                       http_username=config.http_username,
                       http_password=config.http_password,
