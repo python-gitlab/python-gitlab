@@ -16,8 +16,8 @@ Reference
 
 * v3 API:
 
-  + :class:`gitlab.v3.objects.Key`
-  + :class:`gitlab.v3.objects.KeyManager`
+  + :class:`gitlab.v3.objects.DeployKey`
+  + :class:`gitlab.v3.objects.DeployKeyManager`
   + :attr:`gitlab.Gitlab.deploykeys`
 
 * GitLab API: https://docs.gitlab.com/ce/api/deploy_keys.html

@@ -4,6 +4,19 @@ Release notes
 
 This page describes important changes between python-gitlab releases.
 
+Changes from 1.1 to 1.2
+=======================
+
+* The following deprecated methods and objects have been removed:
+
+  * gitlab.v3.object ``Key`` and ``KeyManager`` objects: use ``DeployKey`` and
+    ``DeployKeyManager`` instead
+  * gitlab.v3.objects.Project ``archive_`` and ``unarchive_`` methods
+  * gitlab.Gitlab ``credentials_auth``, ``token_auth``, ``set_url``,
+    ``set_token`` and ``set_credentials`` methods. Once a Gitlab object has been
+    created its URL and authentication information cannot be updated: create a
+    new Gitlab object if you need to use new information
+
 Changes from 1.0.2 to 1.1
 =========================
 
