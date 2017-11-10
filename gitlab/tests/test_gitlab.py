@@ -951,7 +951,17 @@ class TestGitlab(unittest.TestCase):
     def test_credentials_auth_nopassword(self):
         self.gl.email = None
         self.gl.password = None
-        self.assertRaises(GitlabAuthenticationError, self.gl._credentials_auth)
+
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v3/session",
+                  method="post")
+        def resp_cont(url, request):
+            headers = {'content-type': 'application/json'}
+            content = '{"message": "message"}'.encode("utf-8")
+            return response(404, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            self.assertRaises(GitlabAuthenticationError,
+                              self.gl._credentials_auth)
 
     def test_credentials_auth_notok(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/session",
