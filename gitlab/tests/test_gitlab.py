@@ -27,6 +27,7 @@ except ImportError:
 from httmock import HTTMock  # noqa
 from httmock import response  # noqa
 from httmock import urlmatch  # noqa
+import requests
 import six
 
 import gitlab
@@ -882,6 +883,54 @@ class TestGitlabMethods(unittest.TestCase):
 
         with HTTMock(resp_cont):
             self.assertRaises(GitlabUpdateError, self.gl.update, obj)
+
+
+class TestGitlabAuth(unittest.TestCase):
+    def test_invalid_auth_args(self):
+        self.assertRaises(ValueError,
+                          Gitlab,
+                          "http://localhost", api_version='4',
+                          private_token='private_token', oauth_token='bearer')
+        self.assertRaises(ValueError,
+                          Gitlab,
+                          "http://localhost", api_version='4',
+                          oauth_token='bearer', http_username='foo',
+                          http_password='bar')
+        self.assertRaises(ValueError,
+                          Gitlab,
+                          "http://localhost", api_version='4',
+                          private_token='private_token', http_password='bar')
+        self.assertRaises(ValueError,
+                          Gitlab,
+                          "http://localhost", api_version='4',
+                          private_token='private_token', http_username='foo')
+
+    def test_private_token_auth(self):
+        gl = Gitlab('http://localhost', private_token='private_token',
+                    api_version='4')
+        self.assertEqual(gl.private_token, 'private_token')
+        self.assertEqual(gl.oauth_token, None)
+        self.assertEqual(gl._http_auth, None)
+        self.assertEqual(gl.headers['PRIVATE-TOKEN'], 'private_token')
+        self.assertNotIn('Authorization', gl.headers)
+
+    def test_oauth_token_auth(self):
+        gl = Gitlab('http://localhost', oauth_token='oauth_token',
+                    api_version='4')
+        self.assertEqual(gl.private_token, None)
+        self.assertEqual(gl.oauth_token, 'oauth_token')
+        self.assertEqual(gl._http_auth, None)
+        self.assertEqual(gl.headers['Authorization'], 'Bearer oauth_token')
+        self.assertNotIn('PRIVATE-TOKEN', gl.headers)
+
+    def test_http_auth(self):
+        gl = Gitlab('http://localhost', private_token='private_token',
+                    http_username='foo', http_password='bar', api_version='4')
+        self.assertEqual(gl.private_token, 'private_token')
+        self.assertEqual(gl.oauth_token, None)
+        self.assertIsInstance(gl._http_auth, requests.auth.HTTPBasicAuth)
+        self.assertEqual(gl.headers['PRIVATE-TOKEN'], 'private_token')
+        self.assertNotIn('Authorization', gl.headers)
 
 
 class TestGitlab(unittest.TestCase):
