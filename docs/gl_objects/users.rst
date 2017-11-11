@@ -25,6 +25,8 @@ References
   + :class:`gitlab.v3.objects.UserManager`
   + :attr:`gitlab.Gitlab.users`
 
+* GitLab API: https://docs.gitlab.com/ce/api/users.html
+
 Examples
 --------
 
@@ -82,6 +84,11 @@ References
   + :class:`gitlab.v4.objects.UserCustomAttributeManager`
   + :attr:`gitlab.v4.objects.User.customattributes`
 
+* GitLab API: https://docs.gitlab.com/ce/api/custom_attributes.html
+
+Examples
+--------
+
 List custom attributes for a user:
 
 .. literalinclude:: users.py
@@ -117,6 +124,8 @@ References
   + :class:`gitlab.v4.objects.UserImpersonationToken`
   + :class:`gitlab.v4.objects.UserImpersonationTokenManager`
   + :attr:`gitlab.v4.objects.User.impersonationtokens`
+
+* GitLab API: https://docs.gitlab.com/ce/api/users.html#get-all-impersonation-tokens-of-a-user
 
 List impersonation tokens for a user:
 
@@ -160,6 +169,8 @@ References
   + :class:`gitlab.v3.objects.CurrentUserManager`
   + :attr:`gitlab.Gitlab.user`
 
+* GitLab API: https://docs.gitlab.com/ce/api/users.html
+
 Examples
 --------
 
@@ -186,6 +197,8 @@ are admin.
   + :class:`gitlab.v4.objects.UserGPGKey`
   + :class:`gitlab.v4.objects.UserGPGKeyManager`
   + :attr:`gitlab.v4.objects.User.gpgkeys`
+
+* GitLab API: https://docs.gitlab.com/ce/api/users.html#list-all-gpg-keys
 
 Exemples
 --------
@@ -243,6 +256,8 @@ are admin.
   + :attr:`gitlab.v3.objects.User.keys`
   + :attr:`gitlab.Gitlab.user_keys`
 
+* GitLab API: https://docs.gitlab.com/ce/api/users.html#list-ssh-keys
+
 Exemples
 --------
 
@@ -299,6 +314,8 @@ are admin.
   + :attr:`gitlab.v3.objects.User.emails`
   + :attr:`gitlab.Gitlab.user_emails`
 
+* GitLab API: https://docs.gitlab.com/ce/api/users.html#list-emails
+
 Exemples
 --------
 
@@ -340,6 +357,8 @@ References
   + :class:`gitlab.v4.objects.UserActivities`
   + :class:`gitlab.v4.objects.UserActivitiesManager`
   + :attr:`gitlab.Gitlab.user_activities`
+
+* GitLab API: https://docs.gitlab.com/ce/api/users.html#get-user-activities-admin-only
 
 Examples
 --------
