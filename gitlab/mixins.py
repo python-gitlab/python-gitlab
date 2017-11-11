@@ -222,6 +222,29 @@ class UpdateMixin(object):
         return self.gitlab.http_put(path, post_data=data, **kwargs)
 
 
+class SetMixin(object):
+    @exc.on_http_error(exc.GitlabSetError)
+    def set(self, key, value, **kwargs):
+        """Create or update the object.
+
+        Args:
+            key (str): The key of the object to create/update
+            value (str): The value to set for the object
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabSetError: If an error occured
+
+        Returns:
+            UserCustomAttribute: The created/updated user attribute
+        """
+        path = '%s/%s' % (self.path, key.replace('/', '%2F'))
+        data = {'value': value}
+        server_data = self.gitlab.http_put(path, post_data=data, **kwargs)
+        return self._obj_cls(self, server_data)
+
+
 class DeleteMixin(object):
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete(self, id, **kwargs):

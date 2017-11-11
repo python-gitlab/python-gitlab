@@ -66,6 +66,13 @@ class TestObjectMixinsAttributes(unittest.TestCase):
         self.assertTrue(hasattr(obj, 'add_spent_time'))
         self.assertTrue(hasattr(obj, 'reset_spent_time'))
 
+    def test_set_mixin(self):
+        class O(SetMixin):
+            pass
+
+        obj = O()
+        self.assertTrue(hasattr(obj, 'set'))
+
 
 class TestMetaMixins(unittest.TestCase):
     def test_retrieve_mixin(self):
@@ -409,3 +416,21 @@ class TestMixinMethods(unittest.TestCase):
             obj.save()
             self.assertEqual(obj._attrs['foo'], 'baz')
             self.assertDictEqual(obj._updated_attrs, {})
+
+    def test_set_mixin(self):
+        class M(SetMixin, FakeManager):
+            pass
+
+        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/tests/foo',
+                  method="put")
+        def resp_cont(url, request):
+            headers = {'Content-Type': 'application/json'}
+            content = '{"key": "foo", "value": "bar"}'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            mgr = M(self.gl)
+            obj = mgr.set('foo', 'bar')
+            self.assertIsInstance(obj, FakeObject)
+            self.assertEqual(obj.key, 'foo')
+            self.assertEqual(obj.value, 'bar')

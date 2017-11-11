@@ -125,30 +125,11 @@ class UserCustomAttribute(ObjectDeleteMixin, RESTObject):
     _id_attr = 'key'
 
 
-class UserCustomAttributeManager(RetrieveMixin, DeleteMixin, RESTManager):
+class UserCustomAttributeManager(RetrieveMixin, SetMixin, DeleteMixin,
+                                 RESTManager):
     _path = '/users/%(user_id)s/custom_attributes'
     _obj_cls = UserCustomAttribute
     _from_parent_attrs = {'user_id': 'id'}
-
-    def set(self, key, value, **kwargs):
-        """Create or update a user attribute.
-
-        Args:
-            key (str): The attribute to update
-            value (str): The value to set
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabSetError: If an error occured
-
-        Returns:
-            UserCustomAttribute: The created/updated user attribute
-        """
-        path = '%s/%s' % (self.path, key.replace('/', '%2F'))
-        data = {'value': value}
-        server_data = self.gitlab.http_put(path, post_data=data, **kwargs)
-        return self._obj_cls(self, server_data)
 
 
 class UserEmail(ObjectDeleteMixin, RESTObject):
