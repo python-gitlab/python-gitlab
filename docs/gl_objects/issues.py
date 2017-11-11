@@ -85,3 +85,7 @@ issue.add_time_spent({'duration': '3h30m'})
 # project issue reset time spent
 issue.reset_time_spent()
 # end project issue reset time spent
+
+# project issue useragent
+detail = issue.user_agent_detail()
+# end project issue useragent

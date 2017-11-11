@@ -1128,6 +1128,21 @@ class ProjectIssue(SubscribableMixin, TodoMixin, TimeTrackingMixin, SaveMixin,
     _id_attr = 'iid'
     _managers = (('notes', 'ProjectIssueNoteManager'), )
 
+    @cli.register_custom_action('ProjectIssue')
+    @exc.on_http_error(exc.GitlabUpdateError)
+    def user_agent_detail(self, **kwargs):
+        """Get user agent detail.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the detail could not be retrieved
+        """
+        path = '%s/%s/user_agent_detail' % (self.manager.path, self.get_id())
+        return self.manager.gitlab.http_get(path, **kwargs)
+
     @cli.register_custom_action('ProjectIssue', ('to_project_id',))
     @exc.on_http_error(exc.GitlabUpdateError)
     def move(self, to_project_id, **kwargs):

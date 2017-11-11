@@ -176,3 +176,8 @@ Reset spent time for an issue:
    :start-after: # project issue reset time spent
    :end-before: # end project issue reset time spent
 
+Get user agent detail for the issue (admin only):
+
+.. literalinclude:: issues.py
+   :start-after: # project issue useragent
+   :end-before: # end project issue useragent

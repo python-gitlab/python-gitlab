@@ -435,6 +435,7 @@ note = issue1.notes.create({'body': 'This is an issue note'})
 assert(len(issue1.notes.list()) == 1)
 note.delete()
 assert(len(issue1.notes.list()) == 0)
+assert(isinstance(issue1.user_agent_detail(), dict))
 
 # tags
 tag1 = admin_project.tags.create({'tag_name': 'v1.0', 'ref': 'master'})
