@@ -145,6 +145,9 @@ Revoke (delete) an impersonation token for a user:
 Current User
 ============
 
+References
+----------
+
 * v4 API:
 
   + :class:`gitlab.v4.objects.CurrentUser`
@@ -168,6 +171,9 @@ Get the current user:
 
 GPG keys
 ========
+
+References
+----------
 
 You can manipulate GPG keys for the current user and for the other users if you
 are admin.
@@ -210,6 +216,9 @@ Delete an GPG gpgkey for a user:
 
 SSH keys
 ========
+
+References
+----------
 
 You can manipulate SSH keys for the current user and for the other users if you
 are admin.
@@ -264,6 +273,9 @@ Delete an SSH key for a user:
 Emails
 ======
 
+References
+----------
+
 You can manipulate emails for the current user and for the other users if you
 are admin.
 
@@ -313,3 +325,27 @@ Delete an email for a user:
 .. literalinclude:: users.py
    :start-after: # email delete
    :end-before: # end email delete
+
+Users activities
+================
+
+References
+----------
+
+* v4 only
+* admin only
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.UserActivities`
+  + :class:`gitlab.v4.objects.UserActivitiesManager`
+  + :attr:`gitlab.Gitlab.user_activities`
+
+Examples
+--------
+
+Get the users activities:
+
+.. code-block:: python
+
+   activities = gl.user_activities.list(all=True, as_list=False)

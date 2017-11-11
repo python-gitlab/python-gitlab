@@ -125,6 +125,7 @@ class Gitlab(object):
             self.teams = objects.TeamManager(self)
         else:
             self.dockerfiles = objects.DockerfileManager(self)
+            self.user_activities = objects.UserActivitiesManager(self)
 
         if self._api_version == '3':
             # build the "submanagers"

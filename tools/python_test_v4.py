@@ -580,3 +580,6 @@ assert(snippet.title == 'updated_title')
 content = snippet.content()
 assert(content == 'import gitlab')
 snippet.delete()
+
+# user activities
+gl.user_activities.list()

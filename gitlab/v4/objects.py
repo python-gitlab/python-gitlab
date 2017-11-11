@@ -112,6 +112,15 @@ class SidekiqManager(RESTManager):
         return self.gitlab.http_get('/sidekiq/compound_metrics', **kwargs)
 
 
+class UserActivities(RESTObject):
+    _id_attr = 'username'
+
+
+class UserActivitiesManager(ListMixin, RESTManager):
+    _path = '/user/activities'
+    _obj_cls = UserActivities
+
+
 class UserCustomAttribute(ObjectDeleteMixin, RESTObject):
     _id_attr = 'key'
 
