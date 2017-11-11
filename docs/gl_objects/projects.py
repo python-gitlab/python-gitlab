@@ -206,7 +206,7 @@ f = project.files.create({'file_path': 'testfile',
 
 # files update
 f.content = 'new content'
-f.save(branch'master', commit_message='Update testfile')  # v4
+f.save(branch='master', commit_message='Update testfile')  # v4
 f.save(branch_name='master', commit_message='Update testfile')  # v3
 
 # or for binary data
