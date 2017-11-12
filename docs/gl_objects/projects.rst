@@ -114,6 +114,12 @@ Archive/unarchive a project:
    Previous versions used ``archive_`` and ``unarchive_`` due to a naming issue,
    they have been deprecated but not yet removed.
 
+Start the housekeeping job:
+
+.. literalinclude:: projects.py
+   :start-after: # housekeeping
+   :end-before: # end housekeeping
+
 List the repository tree:
 
 .. literalinclude:: projects.py

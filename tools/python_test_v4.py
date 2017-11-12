@@ -331,6 +331,9 @@ assert(len(commit.statuses.list()) == 1)
 commit.comments.create({'note': 'This is a commit comment'})
 assert(len(commit.comments.list()) == 1)
 
+# housekeeping
+admin_project.housekeeping()
+
 # repository
 tree = admin_project.repository_tree()
 assert(len(tree) != 0)

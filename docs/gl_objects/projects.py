@@ -180,6 +180,10 @@ tgz = project.repository_archive(sha='4567abc')
 contributors = project.repository_contributors()
 # end repository contributors
 
+# housekeeping
+project.housekeeping()
+# end housekeeping
+
 # files get
 f = project.files.get(file_path='README.rst', ref='master')
 

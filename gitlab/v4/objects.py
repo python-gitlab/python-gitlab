@@ -2328,6 +2328,22 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         post_data = {'ref': ref, 'token': token, 'variables': variables}
         self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
+    @cli.register_custom_action('Project')
+    @exc.on_http_error(exc.GitlabHousekeepingError)
+    def housekeeping(self, **kwargs):
+        """Start the housekeeping task.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabHousekeepingError: If the server failed to perform the
+                                     request
+        """
+        path = '/projects/%s/housekeeping' % self.get_id()
+        self.manager.gitlab.http_post(path, **kwargs)
+
     # see #56 - add file attachment features
     @cli.register_custom_action('Project', ('filename', 'filepath'))
     @exc.on_http_error(exc.GitlabUploadError)
