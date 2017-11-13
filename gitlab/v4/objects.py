@@ -2012,6 +2012,69 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, RESTManager):
         return CreateMixin.create(self, data, path=path, **kwargs)
 
 
+class ProjectPipelineScheduleVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _id_attr = 'key'
+
+
+class ProjectPipelineScheduleVariableManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/pipeline_schedules/%(pipeline_schedule_id)s/variables'
+    _obj_cls = ProjectPipelineScheduleVariable
+    _from_parent_attrs = {'project_id': 'project_id',
+                          'pipeline_schedule_id' : 'id'}
+    _create_attrs = (('pipeline_schedule_id', 'key', 'value'), tuple())
+    _create_attrs = (('key', 'value'), tuple())
+
+    def list(self):
+        array = []
+        if 'variables' in self._parent._attrs:
+            for variable in self._parent._attrs['variables']:
+                schedule_variable = self._obj_cls(self, variable)
+                array.append(schedule_variable)
+        else:
+            obj = self._parent.manager.get(self._parent.id)
+            for variable in obj._attrs['variables']:
+                schedule_variable = self._obj_cls(self, variable)
+                array.append(schedule_variable)
+
+        return array
+
+
+class ProjectPipelineSchedule(RESTObject):
+    _managers = (
+        ('variables', 'ProjectPipelineScheduleVariableManager'),
+    )
+
+
+class ProjectPipelineSchedulesManager(RetrieveMixin, CreateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/pipeline_schedules'
+    _obj_cls = ProjectPipelineSchedule
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('description', 'ref', 'cron'),
+                     ('cron_timezone', 'active'))
+
+    def create(self, data, **kwargs):
+        """Creates a new object.
+
+        Args:
+            data (dict): Parameters to send to the server to create the
+                         resource
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server cannot perform the request
+
+        Returns:
+            RESTObject: A new instance of the managed object class build with
+                the data sent by the server
+        """
+        return CreateMixin.create(self, data, path=self.path, **kwargs)
+
+
+class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+    pass
+
+
 class ProjectPipelineJob(ProjectJob):
     pass
 
@@ -2323,6 +2386,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('pagesdomains', 'ProjectPagesDomainManager'),
         ('pipelines', 'ProjectPipelineManager'),
         ('protectedbranches', 'ProjectProtectedBranchManager'),
+        ('pipeline_schedules', 'ProjectPipelineSchedulesManager'),
         ('runners', 'ProjectRunnerManager'),
         ('services', 'ProjectServiceManager'),
         ('snippets', 'ProjectSnippetManager'),

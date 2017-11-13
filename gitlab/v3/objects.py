@@ -1496,6 +1496,18 @@ class ProjectFileManager(BaseManager):
     obj_cls = ProjectFile
 
 
+class ProjectPipelineSchedule(GitlabObject):
+    _url = '/projects/%(project_id)s/pipeline_schedules'
+    _create_url = '/projects/%(project_id)s/pipeline_schedules'
+
+    requiredUrlAttrs = ['project_id']
+    requiredCreateAttrs = ['description', 'ref', 'cron']
+
+
+class ProjectPipelineSchedulesManager(BaseManager):
+    obj_cls = ProjectPipelineSchedule
+
+
 class ProjectPipeline(GitlabObject):
     _url = '/projects/%(project_id)s/pipelines'
     _create_url = '/projects/%(project_id)s/pipeline'
@@ -1803,6 +1815,7 @@ class Project(GitlabObject):
         ('notificationsettings', 'ProjectNotificationSettingsManager',
          [('project_id', 'id')]),
         ('pipelines', 'ProjectPipelineManager', [('project_id', 'id')]),
+        ('pipeline_schedules', 'ProjectPipelineSchedulesManager', [('project_id', 'id')]),
         ('runners', 'ProjectRunnerManager', [('project_id', 'id')]),
         ('services', 'ProjectServiceManager', [('project_id', 'id')]),
         ('snippets', 'ProjectSnippetManager', [('project_id', 'id')]),
