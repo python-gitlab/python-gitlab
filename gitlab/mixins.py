@@ -113,12 +113,7 @@ class GetFromListMixin(ListMixin):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        try:
-            gen = self.list()
-        except exc.GitlabListError:
-            raise exc.GitlabGetError(response_code=404,
-                                     error_message="Not found")
-
+        gen = self.list()
         for obj in gen:
             if str(obj.get_id()) == str(id):
                 return obj
@@ -387,7 +382,7 @@ class SubscribableMixin(object):
 
 class TodoMixin(object):
     @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'))
-    @exc.on_http_error(exc.GitlabTodoError)
+    @exc.on_http_error(exc.GitlabHttpError)
     def todo(self, **kwargs):
         """Create a todo associated to the object.
 

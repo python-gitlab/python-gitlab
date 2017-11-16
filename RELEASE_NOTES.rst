@@ -16,7 +16,6 @@ Changes from 1.1 to 1.2
     ``set_token`` and ``set_credentials`` methods. Once a Gitlab object has been
     created its URL and authentication information cannot be updated: create a
     new Gitlab object if you need to use new information
-* The ``todo()`` method raises a ``GitlabTodoError`` exception on error
 
 Changes from 1.0.2 to 1.1
 =========================
