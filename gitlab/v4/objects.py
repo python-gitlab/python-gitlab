@@ -1707,6 +1707,10 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
 
 
 class ProjectPipeline(RESTObject):
+    _managers = (
+        ('jobs', 'PipelineJobManager'),
+    )
+
     @cli.register_custom_action('ProjectPipeline')
     @exc.on_http_error(exc.GitlabPipelineCancelError)
     def cancel(self, **kwargs):
@@ -1762,6 +1766,12 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, RESTManager):
         """
         path = self.path[:-1]  # drop the 's'
         return CreateMixin.create(self, data, path=path, **kwargs)
+
+
+class PipelineJobManager(ListMixin, RESTManager):
+    _path = '/projects/%(project_id)s/pipelines/%(pipeline_id)s/jobs'
+    _obj_cls = ProjectJob
+    _from_parent_attrs = {'project_id': 'project_id', 'pipeline_id': 'id'}
 
 
 class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
