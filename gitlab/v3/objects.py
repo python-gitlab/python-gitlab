@@ -934,7 +934,7 @@ class ProjectIssue(GitlabObject):
                {'project_id': self.project_id, 'issue_id': self.id})
 
         r = self.gitlab._raw_post(url, **kwargs)
-        raise_error_from_response(r, GitlabSubscribeError)
+        raise_error_from_response(r, GitlabSubscribeError, 201)
         self._set_from_dict(r.json())
 
     def unsubscribe(self, **kwargs):
