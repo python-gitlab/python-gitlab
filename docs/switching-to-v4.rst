@@ -36,7 +36,7 @@ If you use the configuration file, also explicitly define the version:
 Changes between v3 and v4 API
 =============================
 
-For a list of GtiLab (upstream) API changes, see
+For a list of GitLab (upstream) API changes, see
 https://docs.gitlab.com/ce/api/v3_to_v4.html.
 
 The ``python-gitlab`` API reflects these changes. But also consider the
@@ -95,7 +95,7 @@ following important changes in the python API:
 
   This will make only one API call, instead of two if ``lazy`` is not used.
 
-* The :class:`~gitlab.Gitlab` folowwing methods should not be used anymore for
+* The following :class:`~gitlab.Gitlab` methods should not be used anymore for
   v4:
 
   + ``list()``
