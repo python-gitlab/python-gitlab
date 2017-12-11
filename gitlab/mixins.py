@@ -298,8 +298,8 @@ class SaveMixin(object):
             GitlabUpdateError: If the server cannot perform the request
         """
         updated_data = self._get_updated_data()
-        # Nothing to update. Servers fails if sent an empty dict.
-        if len(updated_data.keys()) == 9:
+        # Nothing to update. Server fails if sent an empty dict.
+        if len(updated_data.keys()) == 0:
             return
 
         # call the manager
