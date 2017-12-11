@@ -203,7 +203,7 @@ listing methods support the ``page`` and ``per_page`` parameters:
 
 .. note::
 
-   The first page is page 1, not page 0.
+   The first page is page 1, not page 0, except for project commits in v3 API.
 
 By default GitLab does not return the complete list of items. Use the ``all``
 parameter to get all the items when using listing methods:

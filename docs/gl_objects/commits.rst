@@ -23,6 +23,11 @@ Reference
 
 * GitLab API: https://docs.gitlab.com/ce/api/commits.html
 
+.. warning::
+
+   Pagination starts at page 0 in v3, but starts at page 1 in v4 (like all the
+   v4 endpoints).
+
 
 Examples
 --------
