@@ -299,7 +299,7 @@ class SaveMixin(object):
         """
         updated_data = self._get_updated_data()
         # Nothing to update. Server fails if sent an empty dict.
-        if not updated_data.keys():
+        if not updated_data:
             return
 
         # call the manager
