@@ -1264,6 +1264,15 @@ class ProjectMergeRequestNoteManager(CRUDMixin, RESTManager):
     _create_attrs = (('body', ), tuple())
     _update_attrs = (('body', ), tuple())
 
+class ProjectMergeRequestAwardEmoji(SaveMixin, ObjectDeleteMixin, RESTObject):
+    pass
+
+class ProjectMergeRequestAwardEmojiManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/merge_requests/%(mr_iid)s/award_emoji'
+    _obj_cls = ProjectMergeRequestAwardEmoji
+    _from_parent_attrs = {'project_id': 'project_id', 'mr_iid': 'iid'}
+    _create_attrs = (('body', ), tuple())
+    _update_attrs = (('body', ), tuple())
 
 class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                           SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -1271,7 +1280,8 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
 
     _managers = (
         ('notes', 'ProjectMergeRequestNoteManager'),
-        ('diffs', 'ProjectMergeRequestDiffManager')
+        ('diffs', 'ProjectMergeRequestDiffManager'),
+        ('award_emojis', 'ProjectMergeRequestAwardEmojiManager')
     )
 
     @cli.register_custom_action('ProjectMergeRequest')
