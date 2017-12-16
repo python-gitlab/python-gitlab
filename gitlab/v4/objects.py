@@ -1091,8 +1091,33 @@ class ProjectHookManager(CRUDMixin, RESTManager):
     )
 
 
-class ProjectIssueNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectIssueAwardEmoji(ObjectDeleteMixin, RESTObject):
     pass
+
+
+class ProjectIssueAwardEmojiManager(NoUpdateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/issues/%(issue_iid)s/award_emoji'
+    _obj_cls = ProjectIssueAwardEmoji
+    _from_parent_attrs = {'project_id': 'project_id', 'issue_iid': 'iid'}
+    _create_attrs = (('name', ), tuple())
+
+
+class ProjectIssueNoteAwardEmoji(ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class ProjectIssueNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
+    _path = ('/projects/%(project_id)s/issues/%(issue_iid)s'
+             '/notes/%(note_id)s/award_emoji')
+    _obj_cls = ProjectIssueNoteAwardEmoji
+    _from_parent_attrs = {'project_id': 'project_id',
+                          'issue_iid': 'issue_iid',
+                          'note_id': 'id'}
+    _create_attrs = (('name', ), tuple())
+
+
+class ProjectIssueNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _managers = (('awardemojis', 'ProjectIssueNoteAwardEmojiManager'),)
 
 
 class ProjectIssueNoteManager(CRUDMixin, RESTManager):
@@ -1107,7 +1132,10 @@ class ProjectIssue(SubscribableMixin, TodoMixin, TimeTrackingMixin, SaveMixin,
                    ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'title'
     _id_attr = 'iid'
-    _managers = (('notes', 'ProjectIssueNoteManager'), )
+    _managers = (
+        ('notes', 'ProjectIssueNoteManager'),
+        ('awardemojis', 'ProjectIssueAwardEmojiManager'),
+    )
 
     @cli.register_custom_action('ProjectIssue')
     @exc.on_http_error(exc.GitlabUpdateError)
@@ -1243,6 +1271,17 @@ class ProjectTagManager(NoUpdateMixin, RESTManager):
     _create_attrs = (('tag_name', 'ref'), ('message',))
 
 
+class ProjectMergeRequestAwardEmoji(ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class ProjectMergeRequestAwardEmojiManager(NoUpdateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/merge_requests/%(mr_iid)s/award_emoji'
+    _obj_cls = ProjectMergeRequestAwardEmoji
+    _from_parent_attrs = {'project_id': 'project_id', 'mr_iid': 'iid'}
+    _create_attrs = (('name', ), tuple())
+
+
 class ProjectMergeRequestDiff(RESTObject):
     pass
 
@@ -1253,8 +1292,22 @@ class ProjectMergeRequestDiffManager(RetrieveMixin, RESTManager):
     _from_parent_attrs = {'project_id': 'project_id', 'mr_iid': 'iid'}
 
 
-class ProjectMergeRequestNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectMergeRequestNoteAwardEmoji(ObjectDeleteMixin, RESTObject):
     pass
+
+
+class ProjectMergeRequestNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
+    _path = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s'
+             '/notes/%(note_id)s/award_emoji')
+    _obj_cls = ProjectMergeRequestNoteAwardEmoji
+    _from_parent_attrs = {'project_id': 'project_id',
+                          'mr_iid': 'issue_iid',
+                          'note_id': 'id'}
+    _create_attrs = (('name', ), tuple())
+
+
+class ProjectMergeRequestNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _managers = (('awardemojis', 'ProjectMergeRequestNoteAwardEmojiManager'),)
 
 
 class ProjectMergeRequestNoteManager(CRUDMixin, RESTManager):
@@ -1270,8 +1323,9 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
     _id_attr = 'iid'
 
     _managers = (
+        ('awardemojis', 'ProjectMergeRequestAwardEmojiManager'),
+        ('diffs', 'ProjectMergeRequestDiffManager'),
         ('notes', 'ProjectMergeRequestNoteManager'),
-        ('diffs', 'ProjectMergeRequestDiffManager')
     )
 
     @cli.register_custom_action('ProjectMergeRequest')
@@ -1764,8 +1818,22 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, RESTManager):
         return CreateMixin.create(self, data, path=path, **kwargs)
 
 
-class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectSnippetNoteAwardEmoji(ObjectDeleteMixin, RESTObject):
     pass
+
+
+class ProjectSnippetNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
+    _path = ('/projects/%(project_id)s/snippets/%(snippet_id)s'
+             '/notes/%(note_id)s/award_emoji')
+    _obj_cls = ProjectSnippetNoteAwardEmoji
+    _from_parent_attrs = {'project_id': 'project_id',
+                          'snippet_id': 'snippet_id',
+                          'note_id': 'id'}
+    _create_attrs = (('name', ), tuple())
+
+
+class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _managers = (('awardemojis', 'ProjectSnippetNoteAwardEmojiManager'),)
 
 
 class ProjectSnippetNoteManager(CRUDMixin, RESTManager):
@@ -1777,10 +1845,24 @@ class ProjectSnippetNoteManager(CRUDMixin, RESTManager):
     _update_attrs = (('body', ), tuple())
 
 
+class ProjectSnippetAwardEmoji(ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class ProjectSnippetAwardEmojiManager(NoUpdateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/snippets/%(snippet_id)s/award_emoji'
+    _obj_cls = ProjectSnippetAwardEmoji
+    _from_parent_attrs = {'project_id': 'project_id', 'snippet_id': 'id'}
+    _create_attrs = (('name', ), tuple())
+
+
 class ProjectSnippet(SaveMixin, ObjectDeleteMixin, RESTObject):
     _url = '/projects/%(project_id)s/snippets'
     _short_print_attr = 'title'
-    _managers = (('notes', 'ProjectSnippetNoteManager'), )
+    _managers = (
+        ('awardemojis', 'ProjectSnippetAwardEmojiManager'),
+        ('notes', 'ProjectSnippetNoteManager'),
+    )
 
     @cli.register_custom_action('ProjectSnippet')
     @exc.on_http_error(exc.GitlabGetError)
