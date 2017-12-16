@@ -19,13 +19,13 @@ To connect to a GitLab server, create a ``gitlab.Gitlab`` object:
 
    import gitlab
 
-   # private token authentication
+   # private token or personal token authentication
    gl = gitlab.Gitlab('http://10.0.0.1', private_token='JVNSESs8EwWRx5yDxM5q')
 
    # oauth token authentication
    gl = gitlab.Gitlab('http://10.0.0.1', oauth_token='my_long_token_here')
 
-   # username/password authentication
+   # username/password authentication (for GitLab << 10.2)
    gl = gitlab.Gitlab('http://10.0.0.1', email='jdoe', password='s3cr3t')
 
    # anonymous gitlab instance, read-only for public resources
@@ -44,6 +44,21 @@ You can also use configuration files to create ``gitlab.Gitlab`` objects:
 See the :ref:`cli_configuration` section for more information about
 configuration files.
 
+Note on password authentication
+-------------------------------
+
+The ``/session`` API endpoint used for username/password authentication has
+been removed from GitLab in version 10.2, and is not available on gitlab.com
+anymore. Personal token authentication is the prefered authentication method.
+
+If you need username/password authentication, you can use cookie-based
+authentication. You can use the web UI form to authenticate, retrieve cookies,
+and then use a custom ``requests.Session`` object to connect to the GitLab API.
+The following code snippet demonstrates how to automate this:
+https://gist.github.com/gpocentek/bd4c3fbf8a6ce226ebddc4aad6b46c0a.
+
+See `issue 380 <https://github.com/python-gitlab/python-gitlab/issues/380>`_
+for a detailed discussion.
 
 API version
 ===========
