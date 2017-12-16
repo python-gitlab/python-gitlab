@@ -1709,9 +1709,10 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
         """
 
         self._check_missing_create_attrs(data)
-        file_path = data.pop('file_path').replace('/', '%2F')
+        new_data = data.copy()
+        file_path = new_data.pop('file_path').replace('/', '%2F')
         path = '%s/%s' % (self.path, file_path)
-        server_data = self.gitlab.http_post(path, post_data=data, **kwargs)
+        server_data = self.gitlab.http_post(path, post_data=new_data, **kwargs)
         return self._obj_cls(self, server_data)
 
     @exc.on_http_error(exc.GitlabUpdateError)
