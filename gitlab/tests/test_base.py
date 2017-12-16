@@ -61,9 +61,6 @@ class TestRESTManager(unittest.TestCase):
         mgr = MGR(FakeGitlab(), parent=Parent())
         self.assertEqual(mgr._computed_path, '/tests/42/cases')
 
-        self.assertRaises(AttributeError, MGR, FakeGitlab(),
-                          parent=BrokenParent())
-
     def test_path_property(self):
         class MGR(base.RESTManager):
             _path = '/tests'
