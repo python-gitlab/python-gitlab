@@ -764,7 +764,7 @@ class RESTManager(object):
         if self._parent is None or not hasattr(self, '_from_parent_attrs'):
             return path
 
-        data = {self_attr: getattr(self._parent, parent_attr)
+        data = {self_attr: getattr(self._parent, parent_attr, None)
                 for self_attr, parent_attr in self._from_parent_attrs.items()}
         self._parent_attrs = data
         return path % data
