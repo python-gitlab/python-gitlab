@@ -305,8 +305,11 @@ note.delete()
 # end notes delete
 
 # service get
+# For v3
 service = project.services.get(service_name='asana', project_id=1)
-# display it's status (enabled/disabled)
+# For v4
+service = project.services.get('asana')
+# display its status (enabled/disabled)
 print(service.active)
 # end service get
 
