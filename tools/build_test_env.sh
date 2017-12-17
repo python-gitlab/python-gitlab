@@ -94,6 +94,21 @@ testcase() {
     OK
 }
 
+if [ -z "$NOVENV" ]; then
+    log "Creating Python virtualenv..."
+    try "$VENV_CMD" "$VENV"
+    . "$VENV"/bin/activate || fatal "failed to activate Python virtual environment"
+
+    log "Installing dependencies into virtualenv..."
+    try pip install -rrequirements.txt
+
+    log "Installing into virtualenv..."
+    try pip install -e .
+
+    # to run generate_token.py
+    pip install bs4 lxml
+fi
+
 log "Waiting for gitlab to come online... "
 I=0
 while :; do
@@ -107,23 +122,7 @@ while :; do
 done
 
 # Get the token
-log "Getting GitLab token..."
-I=0
-while :; do
-    sleep 1
-    TOKEN_JSON=$(
-        try curl -s http://localhost:8080/api/v3/session \
-            -X POST \
-            --data "login=$LOGIN&password=$PASSWORD"
-    ) >/dev/null 2>&1 || true
-    TOKEN=$(
-        pecho "${TOKEN_JSON}" |
-        try python -c \
-            'import sys, json; print(json.load(sys.stdin)["private_token"])'
-    ) >/dev/null 2>&1 && break
-    I=$((I+1))
-    [ "$I" -lt 20 ] || fatal "timed out"
-done
+TOKEN=$($(dirname $0)/generate_token.py)
 
 cat > $CONFIG << EOF
 [global]
@@ -138,18 +137,6 @@ EOF
 
 log "Config file content ($CONFIG):"
 log <$CONFIG
-
-if [ -z "$NOVENV" ]; then
-    log "Creating Python virtualenv..."
-    try "$VENV_CMD" "$VENV"
-    . "$VENV"/bin/activate || fatal "failed to activate Python virtual environment"
-
-    log "Installing dependencies into virtualenv..."
-    try pip install -rrequirements.txt
-
-    log "Installing into virtualenv..."
-    try pip install -e .
-fi
 
 log "Pausing to give GitLab some time to finish starting up..."
 sleep 30

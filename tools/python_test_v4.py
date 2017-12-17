@@ -51,14 +51,8 @@ qG2ZdhHHmSK2LaQLFiSprUkikStNU9BqSQ==
 -----END PGP PUBLIC KEY BLOCK-----'''
 
 
-# login/password authentication
-gl = gitlab.Gitlab('http://localhost:8080', email=LOGIN, password=PASSWORD)
-gl.auth()
-token_from_auth = gl.private_token
-
 # token authentication from config file
 gl = gitlab.Gitlab.from_config(config_files=['/tmp/python-gitlab.cfg'])
-assert(token_from_auth == gl.private_token)
 gl.auth()
 assert(isinstance(gl.user, gitlab.v4.objects.CurrentUser))
 

@@ -21,14 +21,8 @@ DEPLOY_KEY = ("ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDFdRyjJQh+1niBpXqE2I8dzjG"
               "rke9IepE7SPBT41C+YtUX4dfDZDmczM1cE0YL/krdUCfuZHMa4ZS2YyNd6slufc"
               "vn bar@foo")
 
-# login/password authentication
-gl = gitlab.Gitlab('http://localhost:8080', email=LOGIN, password=PASSWORD)
-gl.auth()
-token_from_auth = gl.private_token
-
 # token authentication from config file
 gl = gitlab.Gitlab.from_config(config_files=['/tmp/python-gitlab.cfg'])
-assert(token_from_auth == gl.private_token)
 gl.auth()
 assert(isinstance(gl.user, gitlab.v3.objects.CurrentUser))
 
