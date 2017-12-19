@@ -4,8 +4,8 @@ g_variables = group.variables.list()
 # end var list
 
 # var get
-p_var = project.variables.get(var_key)
-g_var = group.variables.get(var_key)
+p_var = project.variables.get('key_name')
+g_var = group.variables.get('key_name')
 # end var get
 
 # var create
@@ -19,8 +19,8 @@ var.save()
 # end var update
 
 # var delete
-project.variables.delete(var_key)
-group.variables.delete(var_key)
+project.variables.delete('key_name')
+group.variables.delete('key_name')
 # or
 var.delete()
 # end var delete
