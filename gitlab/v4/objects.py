@@ -181,6 +181,12 @@ class UserProject(RESTObject):
     pass
 
 
+class UserProjectsManager(GetFromListMixin, RESTManager):
+    _path = '/users/%(user_id)s/projects'
+    _obj_cls = UserProject
+    _from_parent_attrs = {'user_id': 'id'}
+
+
 class UserProjectManager(CreateMixin, RESTManager):
     _path = '/projects/user/%(user_id)s'
     _obj_cls = UserProject
@@ -202,7 +208,8 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('gpgkeys', 'UserGPGKeyManager'),
         ('impersonationtokens', 'UserImpersonationTokenManager'),
         ('keys', 'UserKeyManager'),
-        ('projects', 'UserProjectManager'),
+        ('project', 'UserProjectManager'),
+        ('projects', 'UserProjectsManager'),
     )
 
     @cli.register_custom_action('User')
