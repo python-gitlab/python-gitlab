@@ -743,7 +743,7 @@ class Gitlab(object):
         if get_all is True:
             return list(GitlabList(self, url, query_data, **kwargs))
 
-        if 'page' in kwargs or 'per_page' in kwargs or as_list is True:
+        if 'page' in kwargs or as_list is True:
             # pagination requested, we return a list
             return list(GitlabList(self, url, query_data, get_next=False,
                                    **kwargs))
