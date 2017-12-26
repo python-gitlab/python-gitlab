@@ -204,7 +204,7 @@ p_id = gl.groups.list(search='group2')[0].id
 group3 = gl.groups.create({'name': 'group3', 'path': 'group3', 'parent_id': p_id})
 
 assert(len(gl.groups.list()) == 3)
-assert(len(gl.groups.list(search='1')) == 1)
+assert(len(gl.groups.list(search='oup1')) == 1)
 assert(group3.parent_id == p_id)
 
 group1.members.create({'access_level': gitlab.Group.OWNER_ACCESS,
