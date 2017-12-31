@@ -598,6 +598,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
 class GroupManager(CRUDMixin, RESTManager):
     _path = '/groups'
     _obj_cls = Group
+    _list_filters = ('skip_groups', 'all_available', 'search', 'order_by',
+                     'sort', 'statistics', 'owned')
     _create_attrs = (
         ('name', 'path'),
         ('description', 'visibility', 'parent_id', 'lfs_enabled',
