@@ -22,6 +22,7 @@ API examples
    gl_objects/mrs
    gl_objects/namespaces
    gl_objects/milestones
+   gl_objects/pagesdomains
    gl_objects/projects
    gl_objects/runners
    gl_objects/settings

@@ -723,6 +723,15 @@ class NamespaceManager(GetFromListMixin, RESTManager):
     _list_filters = ('search', )
 
 
+class PagesDomain(RESTObject):
+    _id_attr = 'domain'
+
+
+class PagesDomainManager(ListMixin, RESTManager):
+    _path = '/pages/domains'
+    _obj_cls = PagesDomain
+
+
 class ProjectBoardList(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
@@ -1247,6 +1256,18 @@ class ProjectNotificationSettingsManager(NotificationSettingsManager):
     _path = '/projects/%(project_id)s/notification_settings'
     _obj_cls = ProjectNotificationSettings
     _from_parent_attrs = {'project_id': 'id'}
+
+
+class ProjectPagesDomain(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _id_attr = 'domain'
+
+
+class ProjectPagesDomainManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/pages/domains'
+    _obj_cls = ProjectPagesDomain
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('domain', ), ('certificate', 'key'))
+    _update_attrs = (tuple(), ('certificate', 'key'))
 
 
 class ProjectTag(ObjectDeleteMixin, RESTObject):
@@ -2161,6 +2182,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('milestones', 'ProjectMilestoneManager'),
         ('notes', 'ProjectNoteManager'),
         ('notificationsettings', 'ProjectNotificationSettingsManager'),
+        ('pagesdomains', 'ProjectPagesDomainManager'),
         ('pipelines', 'ProjectPipelineManager'),
         ('protectedbranches', 'ProjectProtectedBranchManager'),
         ('runners', 'ProjectRunnerManager'),

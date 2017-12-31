@@ -285,6 +285,15 @@ assert(len(l1) == 1)
 assert(len(l2) == 1)
 assert(l1[0].id != l2[0].id)
 
+# project pages domains
+domain = admin_project.pagesdomains.create({'domain': 'foo.domain.com'})
+assert(len(admin_project.pagesdomains.list()) == 1)
+assert(len(gl.pagesdomains.list()) == 1)
+domain = admin_project.pagesdomains.get('foo.domain.com')
+assert(domain.domain == 'foo.domain.com')
+domain.delete()
+assert(len(admin_project.pagesdomains.list()) == 0)
+
 # project content (files)
 admin_project.files.create({'file_path': 'README',
                             'branch': 'master',
