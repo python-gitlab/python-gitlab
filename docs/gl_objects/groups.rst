@@ -72,6 +72,25 @@ Remove a group:
    :start-after: # delete
    :end-before: # end delete
 
+Subgroups
+=========
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.GroupSubgroup`
+  + :class:`gitlab.v4.objects.GroupSubgroupManager`
+  + :attr:`gitlab.v4.objects.Group.subgroups`
+
+Examples
+--------
+
+List the subgroups for a group::
+
+    subgroups = group.subgroups.list()
+
 Group members
 =============
 

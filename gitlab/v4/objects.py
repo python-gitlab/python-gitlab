@@ -554,6 +554,18 @@ class GroupProjectManager(GetFromListMixin, RESTManager):
                      'ci_enabled_first')
 
 
+class GroupSubgroup(RESTObject):
+    pass
+
+
+class GroupSubgroupManager(GetFromListMixin, RESTManager):
+    _path = '/groups/%(group_id)s/subgroups'
+    _obj_cls = GroupSubgroup
+    _from_parent_attrs = {'group_id': 'id'}
+    _list_filters = ('skip_groups', 'all_available', 'search', 'order_by',
+                     'sort', 'statistics', 'owned')
+
+
 class GroupVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = 'key'
 
@@ -570,11 +582,12 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'name'
     _managers = (
         ('accessrequests', 'GroupAccessRequestManager'),
+        ('issues', 'GroupIssueManager'),
         ('members', 'GroupMemberManager'),
         ('milestones', 'GroupMilestoneManager'),
         ('notificationsettings', 'GroupNotificationSettingsManager'),
         ('projects', 'GroupProjectManager'),
-        ('issues', 'GroupIssueManager'),
+        ('subgroups', 'GroupSubgroupManager'),
         ('variables', 'GroupVariableManager'),
     )
 
