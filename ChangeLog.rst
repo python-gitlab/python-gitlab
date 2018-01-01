@@ -1,6 +1,46 @@
 ChangeLog
 =========
 
+Version 1.2.0_ - 2018-01-01
+---------------------------
+
+* Add mattermost service support
+* Add users custom attributes support
+* [doc] Fix project.triggers.create example with v4 API
+* Oauth token support
+* Remove deprecated objects/methods
+* Rework authentication args handling
+* Add support for oauth and anonymous auth in config/CLI
+* Add support for impersonation tokens API
+* Add support for user activities
+* Update user docs with gitlab URLs
+* [docs] Bad arguments in projetcs file documentation
+* Add support for user_agent_detail (issues)
+* Add a SetMixin
+* Add support for project housekeeping
+* Expected HTTP response for subscribe is 201
+* Update pagination docs for ProjectCommit
+* Add doc to get issue from iid
+* Make todo() raise GitlabTodoError on error
+* Add support for award emojis
+* Update project services docs for v4
+* Avoid sending empty update data to issue.save
+* [docstrings] Explicitly document pagination arguments
+* [docs] Add a note about password auth being removed from GitLab
+* Submanagers: allow having undefined parameters
+* ProjectFile.create(): don't modify the input data
+* Update testing tools for /session removal
+* Update groups tests
+* Allow per_page to be used with generators
+* Add groups listing attributes
+* Add support for subgroups listing
+* Add supported python versions in setup.py
+* Add support for pagesdomains
+* Add support for features flags
+* Add support for project and group custom variables
+* Add support for user/group/project filter by custom attribute
+* Respect content of REQUESTS_CA_BUNDLE and *_proxy envvars
+
 Version 1.1.0_ - 2017-11-03
 ---------------------------
 
@@ -495,6 +535,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
+.. _1.2.0: https://github.com/python-gitlab/python-gitlab/compare/1.1.0...1.2.0
 .. _1.1.0: https://github.com/python-gitlab/python-gitlab/compare/1.0.2...1.1.0
 .. _1.0.2: https://github.com/python-gitlab/python-gitlab/compare/1.0.1...1.0.2
 .. _1.0.1: https://github.com/python-gitlab/python-gitlab/compare/1.0.0...1.0.1
