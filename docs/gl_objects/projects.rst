@@ -172,6 +172,41 @@ Get a list of users for the repository:
    :start-after: # users list
    :end-before: # end users list
 
+Project custom attributes
+=========================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectCustomAttribute`
+  + :class:`gitlab.v4.objects.ProjectCustomAttributeManager`
+  + :attr:`gitlab.v4.objects.Project.customattributes`
+
+* GitLab API: https://docs.gitlab.com/ce/api/custom_attributes.html
+
+Examples
+--------
+
+List custom attributes for a project::
+
+    attrs = project.customattributes.list()
+
+Get a custom attribute for a project::
+
+    attr = project.customattributes.get(attr_key)
+
+Set (create or update) a custom attribute for a project::
+
+    attr = project.customattributes.set(attr_key, attr_value)
+
+Delete a custom attribute for a project::
+
+    attr.delete()
+    # or
+    project.customattributes.delete(attr_key)
+
 Project files
 =============
 

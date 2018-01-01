@@ -89,29 +89,23 @@ References
 Examples
 --------
 
-List custom attributes for a user:
+List custom attributes for a user::
 
-.. literalinclude:: users.py
-   :start-after: # ca list
-   :end-before: # end ca list
+    attrs = user.customattributes.list()
 
-Get a custom attribute for a user:
+Get a custom attribute for a user::
 
-.. literalinclude:: users.py
-   :start-after: # ca get
-   :end-before: # end ca get
+    attr = user.customattributes.get(attr_key)
 
-Set (create or update) a custom attribute for a user:
+Set (create or update) a custom attribute for a user::
 
-.. literalinclude:: users.py
-   :start-after: # ca set
-   :end-before: # end ca set
+    attr = user.customattributes.set(attr_key, attr_value)
 
-Delete a custom attribute for a user:
+Delete a custom attribute for a user::
 
-.. literalinclude:: users.py
-   :start-after: # ca list
-   :end-before: # end ca list
+    attr.delete()
+    # or
+    user.customattributes.delete(attr_key)
 
 User impersonation tokens
 =========================

@@ -98,24 +98,6 @@ gl.auth()
 current_user = gl.user
 # end currentuser get
 
-# ca list
-attrs = user.customeattributes.list()
-# end ca list
-
-# ca get
-attr = user.customeattributes.get(attr_key)
-# end ca get
-
-# ca set
-attr = user.customeattributes.set(attr_key, attr_value)
-# end ca set
-
-# ca delete
-attr.delete()
-# or
-user.customeattributes.delete(attr_key)
-# end ca delete
-
 # it list
 i_t = user.impersonationtokens.list(state='active')
 i_t = user.impersonationtokens.list(state='inactive')

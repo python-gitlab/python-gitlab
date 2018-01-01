@@ -91,6 +91,41 @@ List the subgroups for a group::
 
     subgroups = group.subgroups.list()
 
+Group custom attributes
+=======================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.GroupCustomAttribute`
+  + :class:`gitlab.v4.objects.GroupCustomAttributeManager`
+  + :attr:`gitlab.v4.objects.Group.customattributes`
+
+* GitLab API: https://docs.gitlab.com/ce/api/custom_attributes.html
+
+Examples
+--------
+
+List custom attributes for a group::
+
+    attrs = group.customattributes.list()
+
+Get a custom attribute for a group::
+
+    attr = group.customattributes.get(attr_key)
+
+Set (create or update) a custom attribute for a group::
+
+    attr = group.customattributes.set(attr_key, attr_value)
+
+Delete a custom attribute for a group::
+
+    attr.delete()
+    # or
+    group.customattributes.delete(attr_key)
+
 Group members
 =============
 

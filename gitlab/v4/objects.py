@@ -461,6 +461,17 @@ class GroupAccessRequestManager(GetFromListMixin, CreateMixin, DeleteMixin,
     _from_parent_attrs = {'group_id': 'id'}
 
 
+class GroupCustomAttribute(ObjectDeleteMixin, RESTObject):
+    _id_attr = 'key'
+
+
+class GroupCustomAttributeManager(RetrieveMixin, SetMixin, DeleteMixin,
+                                  RESTManager):
+    _path = '/groups/%(group_id)s/custom_attributes'
+    _obj_cls = GroupCustomAttribute
+    _from_parent_attrs = {'group_id': 'id'}
+
+
 class GroupIssue(RESTObject):
     pass
 
@@ -614,6 +625,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'name'
     _managers = (
         ('accessrequests', 'GroupAccessRequestManager'),
+        ('customattributes', 'GroupCustomAttributeManager'),
         ('issues', 'GroupIssueManager'),
         ('members', 'GroupMemberManager'),
         ('milestones', 'GroupMilestoneManager'),
@@ -837,6 +849,17 @@ class ProjectBranchManager(NoUpdateMixin, RESTManager):
     _obj_cls = ProjectBranch
     _from_parent_attrs = {'project_id': 'id'}
     _create_attrs = (('branch', 'ref'), tuple())
+
+
+class ProjectCustomAttribute(ObjectDeleteMixin, RESTObject):
+    _id_attr = 'key'
+
+
+class ProjectCustomAttributeManager(RetrieveMixin, SetMixin, DeleteMixin,
+                                    RESTManager):
+    _path = '/projects/%(project_id)s/custom_attributes'
+    _obj_cls = ProjectCustomAttribute
+    _from_parent_attrs = {'project_id': 'id'}
 
 
 class ProjectJob(RESTObject):
@@ -2200,6 +2223,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('branches', 'ProjectBranchManager'),
         ('jobs', 'ProjectJobManager'),
         ('commits', 'ProjectCommitManager'),
+        ('customattributes', 'ProjectCustomAttributeManager'),
         ('deployments', 'ProjectDeploymentManager'),
         ('environments', 'ProjectEnvironmentManager'),
         ('events', 'ProjectEventManager'),

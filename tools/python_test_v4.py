@@ -230,6 +230,20 @@ assert(member.access_level == gitlab.Group.OWNER_ACCESS)
 
 group2.members.delete(gl.user.id)
 
+# group custom attributes
+attrs = group2.customattributes.list()
+assert(len(attrs) == 0)
+attr = group2.customattributes.set('key', 'value1')
+assert(attr.key == 'key')
+assert(attr.value == 'value1')
+assert(len(group2.customattributes.list()) == 1)
+attr = group2.customattributes.set('key', 'value2')
+attr = group2.customattributes.get('key')
+assert(attr.value == 'value2')
+assert(len(group2.customattributes.list()) == 1)
+attr.delete()
+assert(len(group2.customattributes.list()) == 0)
+
 # group notification settings
 settings = group2.notificationsettings.get()
 settings.level = 'disabled'
@@ -284,6 +298,20 @@ l2 = gl.projects.list(per_page=1, page=2)
 assert(len(l1) == 1)
 assert(len(l2) == 1)
 assert(l1[0].id != l2[0].id)
+
+# group custom attributes
+attrs = admin_project.customattributes.list()
+assert(len(attrs) == 0)
+attr = admin_project.customattributes.set('key', 'value1')
+assert(attr.key == 'key')
+assert(attr.value == 'value1')
+assert(len(admin_project.customattributes.list()) == 1)
+attr = admin_project.customattributes.set('key', 'value2')
+attr = admin_project.customattributes.get('key')
+assert(attr.value == 'value2')
+assert(len(admin_project.customattributes.list()) == 1)
+attr.delete()
+assert(len(admin_project.customattributes.list()) == 0)
 
 # project pages domains
 domain = admin_project.pagesdomains.create({'domain': 'foo.domain.com'})
