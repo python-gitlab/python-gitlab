@@ -7,6 +7,8 @@ This page describes important changes between python-gitlab releases.
 Changes from 1.1 to 1.2
 =======================
 
+* python-gitlab now respects the ``*_proxy``, ``REQUESTS_CA_BUNDLE`` and
+  ``CURL_CA_BUNDLE`` environment variables (#352)
 * The following deprecated methods and objects have been removed:
 
   * gitlab.v3.object ``Key`` and ``KeyManager`` objects: use ``DeployKey`` and

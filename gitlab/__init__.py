@@ -677,8 +677,9 @@ class Gitlab(object):
                                files=files, **opts)
         prepped = self.session.prepare_request(req)
         prepped.url = sanitized_url(prepped.url)
-        result = self.session.send(prepped, stream=streamed, verify=verify,
-                                   timeout=timeout)
+        settings = self.session.merge_environment_settings(
+            prepped.url, {}, streamed, verify, None)
+        result = self.session.send(prepped, timeout=timeout, **settings)
 
         if 200 <= result.status_code < 300:
             return result
