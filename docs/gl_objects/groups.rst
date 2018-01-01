@@ -126,6 +126,11 @@ Delete a custom attribute for a group::
     # or
     group.customattributes.delete(attr_key)
 
+Search groups by custom attribute::
+
+    group.customattributes.set('role': 'admin')
+    gl.groups.list(custom_attributes={'role': 'admin'})
+
 Group members
 =============
 

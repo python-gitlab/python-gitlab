@@ -107,6 +107,11 @@ Delete a custom attribute for a user::
     # or
     user.customattributes.delete(attr_key)
 
+Search users by custom attribute::
+
+    user.customattributes.set('role': 'QA')
+    gl.users.list(custom_attributes={'role': 'QA'})
+
 User impersonation tokens
 =========================
 

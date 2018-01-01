@@ -207,6 +207,11 @@ Delete a custom attribute for a project::
     # or
     project.customattributes.delete(attr_key)
 
+Search projects by custom attribute::
+
+    project.customattributes.set('type': 'internal')
+    gl.projects.list(custom_attributes={'type': 'internal'})
+
 Project files
 =============
 
