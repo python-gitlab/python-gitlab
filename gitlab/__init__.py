@@ -642,8 +642,22 @@ class Gitlab(object):
             return parsed._replace(path=new_path).geturl()
 
         url = self._build_url(path)
-        params = query_data.copy()
-        params.update(kwargs)
+
+        def copy_dict(dest, src):
+            for k, v in src.items():
+                if isinstance(v, dict):
+                    # Transform dict values in new attributes. For example:
+                    # custom_attributes: {'foo', 'bar'} =>
+                    #   custom_attributes['foo']: 'bar'
+                    for dict_k, dict_v in v.items():
+                        dest['%s[%s]' % (k, dict_k)] = dict_v
+                else:
+                    dest[k] = v
+
+        params = {}
+        copy_dict(params, query_data)
+        copy_dict(params, kwargs)
+
         opts = self._get_session_opts(content_type='application/json')
 
         # don't set the content-type header when uploading files

@@ -253,7 +253,7 @@ class UserManager(CRUDMixin, RESTManager):
     _obj_cls = User
 
     _list_filters = ('active', 'blocked', 'username', 'extern_uid', 'provider',
-                     'external', 'search')
+                     'external', 'search', 'custom_attributes')
     _create_attrs = (
         tuple(),
         ('email', 'username', 'name', 'password', 'reset_password', 'skype',
@@ -656,7 +656,7 @@ class GroupManager(CRUDMixin, RESTManager):
     _path = '/groups'
     _obj_cls = Group
     _list_filters = ('skip_groups', 'all_available', 'search', 'order_by',
-                     'sort', 'statistics', 'owned')
+                     'sort', 'statistics', 'owned', 'custom_attributes')
     _create_attrs = (
         ('name', 'path'),
         ('description', 'visibility', 'parent_id', 'lfs_enabled',
@@ -2639,7 +2639,8 @@ class ProjectManager(CRUDMixin, RESTManager):
     )
     _list_filters = ('search', 'owned', 'starred', 'archived', 'visibility',
                      'order_by', 'sort', 'simple', 'membership', 'statistics',
-                     'with_issues_enabled', 'with_merge_requests_enabled')
+                     'with_issues_enabled', 'with_merge_requests_enabled',
+                     'custom_attributes')
 
 
 class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):
