@@ -15,6 +15,7 @@ API examples
    gl_objects/deploy_keys
    gl_objects/deployments
    gl_objects/environments
+   gl_objects/features
    gl_objects/groups
    gl_objects/issues
    gl_objects/labels

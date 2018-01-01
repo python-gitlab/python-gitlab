@@ -242,7 +242,7 @@ class SetMixin(object):
             GitlabSetError: If an error occured
 
         Returns:
-            UserCustomAttribute: The created/updated user attribute
+            obj: The created/updated attribute
         """
         path = '%s/%s' % (self.path, key.replace('/', '%2F'))
         data = {'value': value}

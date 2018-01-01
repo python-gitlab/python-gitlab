@@ -551,6 +551,11 @@ assert(len(ns) != 0)
 ns = gl.namespaces.list(search='root', all=True)[0]
 assert(ns.kind == 'user')
 
+# features
+feat = gl.features.set('foo', 30)
+assert(feat.name == 'foo')
+assert(len(gl.features.list()) == 1)
+
 # broadcast messages
 msg = gl.broadcastmessages.create({'message': 'this is the message'})
 msg.color = '#444444'
