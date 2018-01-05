@@ -7,6 +7,9 @@
 .. image:: https://readthedocs.org/projects/python-gitlab/badge/?version=latest
    :target: https://python-gitlab.readthedocs.org/en/latest/?badge=latest
 
+.. image:: https://img.shields.io/pypi/pyversions/python-gitlab.svg
+   :target: https://pypi.python.org/pypi/python-gitlab
+
 Python GitLab
 =============
 
