@@ -1942,9 +1942,13 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, RESTManager):
         return CreateMixin.create(self, data, path=path, **kwargs)
 
 
-class ProjectPipelineJobManager(RetrieveMixin, RESTManager):
+class ProjectPipelineJob(ProjectJob):
+    pass
+
+
+class ProjectPipelineJobManager(GetFromListMixin, RESTManager):
     _path = '/projects/%(project_id)s/pipelines/%(pipeline_id)s/jobs'
-    _obj_cls = ProjectJob
+    _obj_cls = ProjectPipelineJob
     _from_parent_attrs = {'project_id': 'project_id', 'pipeline_id': 'id'}
 
 
