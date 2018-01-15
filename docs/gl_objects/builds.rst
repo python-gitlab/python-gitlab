@@ -122,8 +122,9 @@ Remove a variable:
 Builds/Jobs
 ===========
 
-Builds/Jobs are associated to projects and commits. They provide information on
-the builds/jobs that have been run, and methods to manipulate them.
+Builds/Jobs are associated to projects, pipelines and commits. They provide
+information on the builds/jobs that have been run, and methods to manipulate
+them.
 
 Reference
 ---------
@@ -169,11 +170,20 @@ To list builds for a specific commit, create a
    :start-after: # commit list
    :end-before: # end commit list
 
+To list builds for a specific pipeline or get a single job within a specific
+pipeline, create a
+:class:`~gitlab.v4.objects.ProjectPipeline` object and use its
+:attr:`~gitlab.v4.objects.ProjectPipeline.jobs` method (v4 only):
+
+.. literalinclude:: builds.py
+    :start-after: # pipeline list get
+    :end-before: # end pipeline list get
+
 Get a job:
 
 .. literalinclude:: builds.py
-   :start-after: # get
-   :end-before: # end get
+   :start-after: # get job
+   :end-before: # end get job
 
 Get a job artifact:
 
