@@ -55,10 +55,18 @@ commit = gl.project_commits.get(commit_sha, project_id=1)
 builds = commit.builds()
 # end commit list
 
-# get
+# pipeline list get
+# v4 only
+project = gl.projects.get(project_id)
+pipeline = project.pipelines.get(pipeline_id)
+jobs = pipeline.jobs.list()  # gets all jobs in pipeline
+job = pipeline.jobs.get(job_id)  # gets one job from pipeline
+# end pipeline list get
+
+# get job
 project.builds.get(build_id)  # v3
 project.jobs.get(job_id)  # v4
-# end get
+# end get job
 
 # artifacts
 build_or_job.artifacts()
