@@ -25,23 +25,17 @@ Reference
 Examples
 --------
 
-List the groups:
+List the groups::
 
-.. literalinclude:: groups.py
-   :start-after: # list
-   :end-before: # end list
+    groups = gl.groups.list()
 
-Get a group's detail:
+Get a group's detail::
 
-.. literalinclude:: groups.py
-   :start-after: # get
-   :end-before: # end get
+    group = gl.groups.get(group_id)
 
-List a group's projects:
+List a group's projects::
 
-.. literalinclude:: groups.py
-   :start-after: # projects list
-   :end-before: # end projects list
+    projects = group.projects.list()
 
 You can filter and sort the result using the following parameters:
 
@@ -54,23 +48,20 @@ You can filter and sort the result using the following parameters:
 * ``sort``: sort order: ``asc`` or ``desc``
 * ``ci_enabled_first``: return CI enabled groups first
 
-Create a group:
+Create a group::
 
-.. literalinclude:: groups.py
-   :start-after: # create
-   :end-before: # end create
+    group = gl.groups.create({'name': 'group1', 'path': 'group1'})
 
-Update a group:
+Update a group::
 
-.. literalinclude:: groups.py
-   :start-after: # update
-   :end-before: # end update
+    group.description = 'My awesome group'
+    group.save()
 
-Remove a group:
+Remove a group::
 
-.. literalinclude:: groups.py
-   :start-after: # delete
-   :end-before: # end delete
+    gl.group.delete(group_id)
+    # or
+    group.delete()
 
 Subgroups
 =========
@@ -90,6 +81,12 @@ Examples
 List the subgroups for a group::
 
     subgroups = group.subgroups.list()
+
+    # The GroupSubgroup objects don't expose the same API as the Group
+    # objects. If you need to manipulate a subgroup as a group, create a new
+    # Group object:
+    real_group = gl.groups.get(subgroup_id, lazy=True)
+    real_group.issues.list()
 
 Group custom attributes
 =======================
@@ -164,32 +161,26 @@ Reference
 Examples
 --------
 
-List group members:
+List group members::
 
-.. literalinclude:: groups.py
-   :start-after: # member list
-   :end-before: # end member list
+    members = group.members.list()
 
-Get a group member:
+Get a group member::
 
-.. literalinclude:: groups.py
-   :start-after: # member get
-   :end-before: # end member get
+    members = group.members.get(member_id)
 
-Add a member to the group:
+Add a member to the group::
 
-.. literalinclude:: groups.py
-   :start-after: # member create
-   :end-before: # end member create
+    member = group.members.create({'user_id': user_id,
+                                   'access_level': gitlab.GUEST_ACCESS})
 
-Update a member (change the access level):
+Update a member (change the access level)::
 
-.. literalinclude:: groups.py
-   :start-after: # member update
-   :end-before: # end member update
+    member.access_level = gitlab.DEVELOPER_ACCESS
+    member.save()
 
-Remove a member from the group:
+Remove a member from the group::
 
-.. literalinclude:: groups.py
-   :start-after: # member delete
-   :end-before: # end member delete
+    group.members.delete(member_id)
+    # or
+    member.delete()
