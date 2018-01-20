@@ -1557,6 +1557,30 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                                                    **kwargs)
         self._update_attrs(server_data)
 
+    @cli.register_custom_action('ProjectMergeRequest')
+    @exc.on_http_error(exc.GitlabListError)
+    def participants(self, **kwargs):
+        """List the merge request participants.
+
+        Args:
+            all (bool): If True, return all the items, without pagination
+            per_page (int): Number of items to retrieve per request
+            page (int): ID of the page to return (starts with page 1)
+            as_list (bool): If set to False and no pagination option is
+                defined, return a generator instead of a list
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
+
+        Returns:
+            RESTObjectList: The list of participants
+        """
+
+        path = '%s/%s/participants' % (self.manager.path, self.get_id())
+        return self.manager.gitlab.http_get(path, **kwargs)
+
 
 class ProjectMergeRequestManager(CRUDMixin, RESTManager):
     _path = '/projects/%(project_id)s/merge_requests'

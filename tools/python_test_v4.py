@@ -527,6 +527,12 @@ admin_project.files.create({'file_path': 'README2.rst',
 mr = admin_project.mergerequests.create({'source_branch': 'branch1',
                                          'target_branch': 'master',
                                          'title': 'MR readme2'})
+
+# basic testing: only make sure that the methods exist
+mr.commits()
+mr.changes()
+#mr.participants()  # not yet available
+
 mr.merge()
 admin_project.branches.delete('branch1')
 
