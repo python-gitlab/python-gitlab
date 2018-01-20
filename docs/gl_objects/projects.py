@@ -229,7 +229,7 @@ tags = project.tags.list()
 # end tags list
 
 # tags get
-tags = project.tags.list('1.0')
+tag = project.tags.get('1.0')
 # end tags get
 
 # tags create
