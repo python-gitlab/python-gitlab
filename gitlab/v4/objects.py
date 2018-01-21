@@ -181,7 +181,7 @@ class UserProject(RESTObject):
     pass
 
 
-class UserProjectManager(CreateMixin, RESTManager):
+class UserProjectManager(ListMixin, CreateMixin, RESTManager):
     _path = '/projects/user/%(user_id)s'
     _obj_cls = UserProject
     _from_parent_attrs = {'user_id': 'id'}
@@ -192,6 +192,31 @@ class UserProjectManager(CreateMixin, RESTManager):
          'public', 'visibility', 'description', 'builds_enabled',
          'public_builds', 'import_url', 'only_allow_merge_if_build_succeeds')
     )
+    _list_filters = ('archived', 'visibility', 'order_by', 'sort', 'search',
+                     'simple', 'owned', 'membership', 'starred', 'statistics',
+                     'with_issues_enabled', 'with_merge_requests_enabled')
+
+    def list(self, **kwargs):
+        """Retrieve a list of objects.
+
+        Args:
+            all (bool): If True, return all the items, without pagination
+            per_page (int): Number of items to retrieve per request
+            page (int): ID of the page to return (starts with page 1)
+            as_list (bool): If set to False and no pagination option is
+                defined, return a generator instead of a list
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+
+        Returns:
+            list: The list of objects, or a generator if `as_list` is False
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the server cannot perform the request
+        """
+
+        path = '/users/%s/projects' % self._parent.id
+        return ListMixin.list(self, path=path, **kwargs)
 
 
 class User(SaveMixin, ObjectDeleteMixin, RESTObject):

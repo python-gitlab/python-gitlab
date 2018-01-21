@@ -92,6 +92,9 @@ assert(new_user.email == user.email)
 new_user.block()
 new_user.unblock()
 
+# user projects list
+assert(len(new_user.projects.list()) == 0)
+
 foobar_user = gl.users.create(
     {'email': 'foobar@example.com', 'username': 'foobar',
      'name': 'Foo Bar', 'password': 'foobar_password'})
