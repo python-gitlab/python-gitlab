@@ -95,6 +95,9 @@ new_user.unblock()
 # user projects list
 assert(len(new_user.projects.list()) == 0)
 
+# events list
+new_user.events.list()
+
 foobar_user = gl.users.create(
     {'email': 'foobar@example.com', 'username': 'foobar',
      'name': 'Foo Bar', 'password': 'foobar_password'})
@@ -408,7 +411,7 @@ assert(env.external_url == 'http://new.env/whatever')
 env.delete()
 assert(len(admin_project.environments.list()) == 0)
 
-# events
+# project events
 admin_project.events.list()
 
 # forks
@@ -640,3 +643,6 @@ snippet.delete()
 
 # user activities
 gl.user_activities.list()
+
+# events
+gl.events.list()

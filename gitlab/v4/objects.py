@@ -112,6 +112,17 @@ class SidekiqManager(RESTManager):
         return self.gitlab.http_get('/sidekiq/compound_metrics', **kwargs)
 
 
+class Event(RESTObject):
+    _id_attr = None
+    _short_print_attr = 'target_title'
+
+
+class EventManager(ListMixin, RESTManager):
+    _path = '/events'
+    _obj_cls = Event
+    _list_filters = ('action', 'target_type', 'before', 'after', 'sort')
+
+
 class UserActivities(RESTObject):
     _id_attr = 'username'
 
@@ -141,6 +152,16 @@ class UserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _obj_cls = UserEmail
     _from_parent_attrs = {'user_id': 'id'}
     _create_attrs = (('email', ), tuple())
+
+
+class UserEvent(Event):
+    pass
+
+
+class UserEventManager(EventManager):
+    _path = '/users/%(user_id)s/events'
+    _obj_cls = UserEvent
+    _from_parent_attrs = {'user_id': 'id'}
 
 
 class UserGPGKey(ObjectDeleteMixin, RESTObject):
@@ -224,6 +245,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
     _managers = (
         ('customattributes', 'UserCustomAttributeManager'),
         ('emails', 'UserEmailManager'),
+        ('events', 'UserEventManager'),
         ('gpgkeys', 'UserGPGKeyManager'),
         ('impersonationtokens', 'UserImpersonationTokenManager'),
         ('keys', 'UserKeyManager'),
@@ -1161,12 +1183,11 @@ class ProjectKeyManager(NoUpdateMixin, RESTManager):
         self.gitlab.http_post(path, **kwargs)
 
 
-class ProjectEvent(RESTObject):
-    _id_attr = None
-    _short_print_attr = 'target_title'
+class ProjectEvent(Event):
+    pass
 
 
-class ProjectEventManager(ListMixin, RESTManager):
+class ProjectEventManager(EventManager):
     _path = '/projects/%(project_id)s/events'
     _obj_cls = ProjectEvent
     _from_parent_attrs = {'project_id': 'id'}

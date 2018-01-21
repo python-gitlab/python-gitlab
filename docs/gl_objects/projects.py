@@ -69,12 +69,6 @@ project.archive()
 project.unarchive()
 # end archive
 
-# events list
-gl.project_events.list(project_id=1)
-# or
-project.events.list()
-# end events list
-
 # members list
 members = project.members.list()
 # end members list

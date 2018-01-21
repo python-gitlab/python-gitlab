@@ -484,36 +484,6 @@ Delete a note for a resource:
    :start-after: # notes delete
    :end-before: # end notes delete
 
-Project events
-==============
-
-Reference
----------
-
-* v4 API:
-
-  + :class:`gitlab.v4.objects.ProjectEvent`
-  + :class:`gitlab.v4.objects.ProjectEventManager`
-  + :attr:`gitlab.v4.objects.Project.events`
-
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectEvent`
-  + :class:`gitlab.v3.objects.ProjectEventManager`
-  + :attr:`gitlab.v3.objects.Project.events`
-  + :attr:`gitlab.Gitlab.project_events`
-
-* GitLab API: https://docs.gitlab.com/ce/api/repository_files.html
-
-Examples
---------
-
-List the project events:
-
-.. literalinclude:: projects.py
-   :start-after: # events list
-   :end-before: # end events list
-
 Project members
 ===============
 

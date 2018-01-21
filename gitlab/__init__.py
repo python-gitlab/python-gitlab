@@ -125,6 +125,7 @@ class Gitlab(object):
             self.teams = objects.TeamManager(self)
         else:
             self.dockerfiles = objects.DockerfileManager(self)
+            self.events = objects.EventManager(self)
             self.features = objects.FeatureManager(self)
             self.pagesdomains = objects.PagesDomainManager(self)
             self.user_activities = objects.UserActivitiesManager(self)
