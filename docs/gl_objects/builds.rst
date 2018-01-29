@@ -201,8 +201,14 @@ You can download artifacts as a stream. Provide a callable to handle the
 stream:
 
 .. literalinclude:: builds.py
-   :start-after: # stream artifacts
-   :end-before: # end stream artifacts
+   :start-after: # stream artifacts with class
+   :end-before: # end stream artifacts with class
+
+In this second example, you can directly stream the output into a file, and unzip it afterwards:
+
+.. literalinclude:: builds.py
+   :start-after: # stream artifacts with unzip
+   :end-before: # end stream artifacts with unzip
 
 Mark a job artifact as kept when expiration is set:
 
