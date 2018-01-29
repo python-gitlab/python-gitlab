@@ -2624,7 +2624,8 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = '/projects/%s/trigger/pipeline' % self.get_id()
         post_data = {'ref': ref, 'token': token, 'variables': variables}
-        self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        attrs = self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        return ProjectPipeline(project.pipelines, attrs)
 
     @cli.register_custom_action('Project')
     @exc.on_http_error(exc.GitlabHousekeepingError)
