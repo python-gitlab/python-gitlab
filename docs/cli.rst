@@ -37,7 +37,6 @@ example:
    default = somewhere
    ssl_verify = true
    timeout = 5
-   api_version = 3
 
    [somewhere]
    url = https://some.whe.re
@@ -69,6 +68,9 @@ parameters. You can override the values in each GitLab server section.
    * - ``timeout``
      - Integer
      - Number of seconds to wait for an answer before failing.
+   * - ``api_version``
+     - ``3`` ou ``4``
+     - The API version to use to make queries. Requires python-gitlab >= 1.3.0.
 
 You must define the ``url`` in each GitLab server section.
 
