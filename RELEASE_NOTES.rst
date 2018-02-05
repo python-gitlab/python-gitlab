@@ -4,6 +4,12 @@ Release notes
 
 This page describes important changes between python-gitlab releases.
 
+Changes from 1.2 to 1.3
+=======================
+
+* ``gitlab.Gitlab`` objects can be used as context managers in a ``with``
+  block.
+
 Changes from 1.1 to 1.2
 =======================
 

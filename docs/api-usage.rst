@@ -274,6 +274,23 @@ HTTP requests to the Gitlab servers.
 You can provide your own ``Session`` object with custom configuration when
 you create a ``Gitlab`` object.
 
+Context manager
+---------------
+
+You can use ``Gitlab`` objects as context managers. This makes sure that the
+``requests.Session`` object associated with a ``Gitlab`` instance is always
+properly closed when you exit a ``with`` block:
+
+.. code-block:: python
+
+   with gitlab.Gitlab(host, token) as gl:
+       gl.projects.list()
+
+.. warning::
+
+   The context manager will also close the custom ``Session`` object you might
+   have used to build a ``Gitlab`` instance.
+
 Proxy configuration
 -------------------
 

@@ -147,6 +147,12 @@ class Gitlab(object):
                     manager = getattr(objects, cls_name)(self)
                     setattr(self, var_name, manager)
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.session.close()
+
     def __getstate__(self):
         state = self.__dict__.copy()
         state.pop('_objects')
