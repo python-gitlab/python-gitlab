@@ -2012,6 +2012,55 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, RESTManager):
         return CreateMixin.create(self, data, path=path, **kwargs)
 
 
+class ProjectPipelineScheduleVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _id_attr = 'key'
+
+
+class ProjectPipelineScheduleVariableManager(CreateMixin, UpdateMixin,
+                                             DeleteMixin, RESTManager):
+    _path = ('/projects/%(project_id)s/pipeline_schedules/'
+             '%(pipeline_schedule_id)s/variables')
+    _obj_cls = ProjectPipelineScheduleVariable
+    _from_parent_attrs = {'project_id': 'project_id',
+                          'pipeline_schedule_id' : 'id'}
+    _create_attrs = (('key', 'value'), tuple())
+    _update_attrs = (('key', 'value'), tuple())
+
+
+class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _managers = (('variables', 'ProjectPipelineScheduleVariableManager'),)
+
+    @cli.register_custom_action('ProjectPipelineSchedule')
+    @exc.on_http_error(exc.GitlabOwnershipError)
+    def take_ownership(self, **kwargs):
+        """Update the owner of a pipeline schedule.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabOwnershipError: If the request failed
+        """
+        path = '%s/%s/take_ownership' % (self.manager.path, self.get_id())
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        self._update_attrs(server_data)
+
+
+class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/pipeline_schedules'
+    _obj_cls = ProjectPipelineSchedule
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('description', 'ref', 'cron'),
+                     ('cron_timezone', 'active'))
+    _update_attrs = (tuple(),
+                     ('description', 'ref', 'cron', 'cron_timezone', 'active'))
+
+
+class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+    pass
+
+
 class ProjectPipelineJob(ProjectJob):
     pass
 
@@ -2106,8 +2155,17 @@ class ProjectSnippetManager(CRUDMixin, RESTManager):
 
 class ProjectTrigger(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action('ProjectTrigger')
+    @exc.on_http_error(exc.GitlabOwnershipError)
     def take_ownership(self, **kwargs):
-        """Update the owner of a trigger."""
+        """Update the owner of a trigger.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabOwnershipError: If the request failed
+        """
         path = '%s/%s/take_ownership' % (self.manager.path, self.get_id())
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
@@ -2323,6 +2381,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('pagesdomains', 'ProjectPagesDomainManager'),
         ('pipelines', 'ProjectPipelineManager'),
         ('protectedbranches', 'ProjectProtectedBranchManager'),
+        ('pipelineschedules', 'ProjectPipelineScheduleManager'),
         ('runners', 'ProjectRunnerManager'),
         ('services', 'ProjectServiceManager'),
         ('snippets', 'ProjectSnippetManager'),
