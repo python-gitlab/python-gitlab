@@ -68,6 +68,25 @@ class GetWithoutIdMixin(object):
         return self._obj_cls(self, server_data)
 
 
+class RefreshMixin(object):
+    @exc.on_http_error(exc.GitlabGetError)
+    def refresh(self, **kwargs):
+        """Refresh a single object from server.
+
+        Args:
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+
+        Returns None (updates the object)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the server cannot perform the request
+        """
+        path = '%s/%s' % (self.manager.path, self.id)
+        server_data = self.manager.gitlab.http_get(path, **kwargs)
+        self._update_attrs(server_data)
+
+
 class ListMixin(object):
     @exc.on_http_error(exc.GitlabListError)
     def list(self, **kwargs):

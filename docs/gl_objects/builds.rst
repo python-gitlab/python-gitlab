@@ -102,6 +102,12 @@ Remove a trigger:
    :start-after: # trigger delete
    :end-before: # end trigger delete
 
+Full example with wait for finish:
+
+.. literalinclude:: builds.py
+   :start-after: # pipeline trigger
+   :end-before: # end pipeline trigger
+
 Pipeline schedule
 =================
 
