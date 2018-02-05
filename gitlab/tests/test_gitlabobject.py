@@ -34,7 +34,7 @@ from httmock import urlmatch  # noqa
 from gitlab import *  # noqa
 
 
-@urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects/1",
+@urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects/1",
           method="get")
 def resp_get_project(url, request):
     headers = {'content-type': 'application/json'}
@@ -42,7 +42,7 @@ def resp_get_project(url, request):
     return response(200, content, headers, None, 5, request)
 
 
-@urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects",
+@urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
           method="get")
 def resp_list_project(url, request):
     headers = {'content-type': 'application/json'}
@@ -50,7 +50,7 @@ def resp_list_project(url, request):
     return response(200, content, headers, None, 5, request)
 
 
-@urlmatch(scheme="http", netloc="localhost", path="/api/v3/issues/1",
+@urlmatch(scheme="http", netloc="localhost", path="/api/v4/issues/1",
           method="get")
 def resp_get_issue(url, request):
     headers = {'content-type': 'application/json'}
@@ -58,7 +58,7 @@ def resp_get_issue(url, request):
     return response(200, content, headers, None, 5, request)
 
 
-@urlmatch(scheme="http", netloc="localhost", path="/api/v3/users/1",
+@urlmatch(scheme="http", netloc="localhost", path="/api/v4/users/1",
           method="put")
 def resp_update_user(url, request):
     headers = {'content-type': 'application/json'}
@@ -67,7 +67,7 @@ def resp_update_user(url, request):
     return response(200, content, headers, None, 5, request)
 
 
-@urlmatch(scheme="http", netloc="localhost", path="/api/v3/projects",
+@urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
           method="post")
 def resp_create_project(url, request):
     headers = {'content-type': 'application/json'}
@@ -75,7 +75,7 @@ def resp_create_project(url, request):
     return response(201, content, headers, None, 5, request)
 
 
-@urlmatch(scheme="http", netloc="localhost", path="/api/v3/groups/2/members",
+@urlmatch(scheme="http", netloc="localhost", path="/api/v4/groups/2/members",
           method="post")
 def resp_create_groupmember(url, request):
     headers = {'content-type': 'application/json'}
@@ -84,14 +84,14 @@ def resp_create_groupmember(url, request):
 
 
 @urlmatch(scheme="http", netloc="localhost",
-          path="/api/v3/projects/2/snippets/3", method="get")
+          path="/api/v4/projects/2/snippets/3", method="get")
 def resp_get_projectsnippet(url, request):
     headers = {'content-type': 'application/json'}
     content = '{"title": "test", "id": 3}'.encode("utf-8")
     return response(200, content, headers, None, 5, request)
 
 
-@urlmatch(scheme="http", netloc="localhost", path="/api/v3/groups/1",
+@urlmatch(scheme="http", netloc="localhost", path="/api/v4/groups/1",
           method="delete")
 def resp_delete_group(url, request):
     headers = {'content-type': 'application/json'}
@@ -100,7 +100,7 @@ def resp_delete_group(url, request):
 
 
 @urlmatch(scheme="http", netloc="localhost",
-          path="/api/v3/groups/2/projects/3",
+          path="/api/v4/groups/2/projects/3",
           method="post")
 def resp_transfer_project(url, request):
     headers = {'content-type': 'application/json'}
@@ -109,7 +109,7 @@ def resp_transfer_project(url, request):
 
 
 @urlmatch(scheme="http", netloc="localhost",
-          path="/api/v3/groups/2/projects/3",
+          path="/api/v4/groups/2/projects/3",
           method="post")
 def resp_transfer_project_fail(url, request):
     headers = {'content-type': 'application/json'}
@@ -118,7 +118,7 @@ def resp_transfer_project_fail(url, request):
 
 
 @urlmatch(scheme="http", netloc="localhost",
-          path="/api/v3/projects/2/repository/branches/branchname/protect",
+          path="/api/v4/projects/2/repository/branches/branchname/protect",
           method="put")
 def resp_protect_branch(url, request):
     headers = {'content-type': 'application/json'}
@@ -127,7 +127,7 @@ def resp_protect_branch(url, request):
 
 
 @urlmatch(scheme="http", netloc="localhost",
-          path="/api/v3/projects/2/repository/branches/branchname/unprotect",
+          path="/api/v4/projects/2/repository/branches/branchname/unprotect",
           method="put")
 def resp_unprotect_branch(url, request):
     headers = {'content-type': 'application/json'}
@@ -136,7 +136,7 @@ def resp_unprotect_branch(url, request):
 
 
 @urlmatch(scheme="http", netloc="localhost",
-          path="/api/v3/projects/2/repository/branches/branchname/protect",
+          path="/api/v4/projects/2/repository/branches/branchname/protect",
           method="put")
 def resp_protect_branch_fail(url, request):
     headers = {'content-type': 'application/json'}
@@ -157,7 +157,7 @@ class TestGitlabObject(unittest.TestCase):
         data = json.loads(json_str)
         self.assertIn("id", data)
         self.assertEqual(data["username"], "testname")
-        self.assertEqual(data["gitlab"]["url"], "http://localhost/api/v3")
+        self.assertEqual(data["gitlab"]["url"], "http://localhost/api/v4")
 
     def test_pickability(self):
         gl_object = CurrentUser(self.gl, data={"username": "testname"})
@@ -381,7 +381,7 @@ class TestProjectCommit(unittest.TestCase):
         self.obj = ProjectCommit(self.gl, data={"id": 3, "project_id": 2})
 
     @urlmatch(scheme="http", netloc="localhost",
-              path="/api/v3/projects/2/repository/commits/3/diff",
+              path="/api/v4/projects/2/repository/commits/3/diff",
               method="get")
     def resp_diff(self, url, request):
         headers = {'content-type': 'application/json'}
@@ -389,7 +389,7 @@ class TestProjectCommit(unittest.TestCase):
         return response(200, content, headers, None, 5, request)
 
     @urlmatch(scheme="http", netloc="localhost",
-              path="/api/v3/projects/2/repository/commits/3/diff",
+              path="/api/v4/projects/2/repository/commits/3/diff",
               method="get")
     def resp_diff_fail(self, url, request):
         headers = {'content-type': 'application/json'}
@@ -397,7 +397,7 @@ class TestProjectCommit(unittest.TestCase):
         return response(400, content, headers, None, 5, request)
 
     @urlmatch(scheme="http", netloc="localhost",
-              path="/api/v3/projects/2/repository/blobs/3",
+              path="/api/v4/projects/2/repository/blobs/3",
               method="get")
     def resp_blob(self, url, request):
         headers = {'content-type': 'application/json'}
@@ -405,7 +405,7 @@ class TestProjectCommit(unittest.TestCase):
         return response(200, content, headers, None, 5, request)
 
     @urlmatch(scheme="http", netloc="localhost",
-              path="/api/v3/projects/2/repository/blobs/3",
+              path="/api/v4/projects/2/repository/blobs/3",
               method="get")
     def resp_blob_fail(self, url, request):
         headers = {'content-type': 'application/json'}
@@ -440,7 +440,7 @@ class TestProjectSnippet(unittest.TestCase):
         self.obj = ProjectSnippet(self.gl, data={"id": 3, "project_id": 2})
 
     @urlmatch(scheme="http", netloc="localhost",
-              path="/api/v3/projects/2/snippets/3/raw",
+              path="/api/v4/projects/2/snippets/3/raw",
               method="get")
     def resp_content(self, url, request):
         headers = {'content-type': 'application/json'}
@@ -448,7 +448,7 @@ class TestProjectSnippet(unittest.TestCase):
         return response(200, content, headers, None, 5, request)
 
     @urlmatch(scheme="http", netloc="localhost",
-              path="/api/v3/projects/2/snippets/3/raw",
+              path="/api/v4/projects/2/snippets/3/raw",
               method="get")
     def resp_content_fail(self, url, request):
         headers = {'content-type': 'application/json'}
@@ -474,7 +474,7 @@ class TestSnippet(unittest.TestCase):
         self.obj = Snippet(self.gl, data={"id": 3})
 
     @urlmatch(scheme="http", netloc="localhost",
-              path="/api/v3/snippets/3/raw",
+              path="/api/v4/snippets/3/raw",
               method="get")
     def resp_content(self, url, request):
         headers = {'content-type': 'application/json'}
@@ -482,7 +482,7 @@ class TestSnippet(unittest.TestCase):
         return response(200, content, headers, None, 5, request)
 
     @urlmatch(scheme="http", netloc="localhost",
-              path="/api/v3/snippets/3/raw",
+              path="/api/v4/snippets/3/raw",
               method="get")
     def resp_content_fail(self, url, request):
         headers = {'content-type': 'application/json'}

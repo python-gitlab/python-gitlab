@@ -52,7 +52,8 @@ class TestGitlabManager(unittest.TestCase):
     def setUp(self):
         self.gitlab = Gitlab("http://localhost", private_token="private_token",
                              email="testuser@test.com",
-                             password="testpassword", ssl_verify=True)
+                             password="testpassword", ssl_verify=True,
+                             api_version=3)
 
     def test_set_parent_args(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v3/fake",

@@ -53,7 +53,7 @@ class TestGitlabRawMethods(unittest.TestCase):
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
                          email="testuser@test.com", password="testpassword",
-                         ssl_verify=True)
+                         ssl_verify=True, api_version=3)
 
     @urlmatch(scheme="http", netloc="localhost", path="/api/v3/known_path",
               method="get")
@@ -454,7 +454,7 @@ class TestGitlabMethods(unittest.TestCase):
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
                          email="testuser@test.com", password="testpassword",
-                         ssl_verify=True)
+                         ssl_verify=True, api_version=3)
 
     def test_list(self):
         @urlmatch(scheme="http", netloc="localhost",
@@ -938,7 +938,7 @@ class TestGitlab(unittest.TestCase):
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
                          email="testuser@test.com", password="testpassword",
-                         ssl_verify=True)
+                         ssl_verify=True, api_version=3)
 
     def test_pickability(self):
         original_gl_objects = self.gl._objects

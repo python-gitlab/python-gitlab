@@ -128,7 +128,7 @@ class GitlabConfigParser(object):
         except Exception:
             pass
 
-        self.api_version = '3'
+        self.api_version = '4'
         try:
             self.api_version = self._config.get('global', 'api_version')
         except Exception:

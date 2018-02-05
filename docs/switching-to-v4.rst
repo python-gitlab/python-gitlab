@@ -16,12 +16,12 @@ http://gitlab.com.
 Using the v4 API
 ================
 
-To use the new v4 API, explicitly define ``api_version` `in the ``Gitlab``
-constructor:
+python-gitlab uses the v4 API by default since the 1.3.0 release. To use the
+old v3 API, explicitly define ``api_version`` in the ``Gitlab`` constructor:
 
 .. code-block:: python
 
-   gl = gitlab.Gitlab(..., api_version=4)
+   gl = gitlab.Gitlab(..., api_version=3)
 
 
 If you use the configuration file, also explicitly define the version:
@@ -30,7 +30,7 @@ If you use the configuration file, also explicitly define the version:
 
    [my_gitlab]
    ...
-   api_version = 4
+   api_version = 3
 
 
 Changes between v3 and v4 API

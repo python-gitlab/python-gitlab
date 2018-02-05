@@ -41,7 +41,7 @@ example:
    [somewhere]
    url = https://some.whe.re
    private_token = vTbFeqJYCY3sibBP7BZM
-   api_version = 4
+   api_version = 3
 
    [elsewhere]
    url = http://else.whe.re:8080
@@ -92,8 +92,8 @@ limited permissions.
      - An Oauth token for authentication. The Gitlab server must be configured
        to support this authentication method.
    * - ``api_version``
-     - GitLab API version to use (``3`` or ``4``). Defaults to ``3`` for now,
-       but will switch to ``4`` eventually.
+     - GitLab API version to use (``3`` or ``4``). Defaults to ``4`` since
+       version 1.3.0.
    * - ``http_username``
      - Username for optional HTTP authentication
    * - ``http_password``

@@ -7,7 +7,7 @@ python-gitlab supports both GitLab v3 and v4 APIs.
 v3 being deprecated by GitLab, its support in python-gitlab will be minimal.
 The development team will focus on v4.
 
-v3 is still the default API used by python-gitlab, for compatibility reasons.
+v4 is the default API used by python-gitlab since version 1.3.0.
 
 
 ``gitlab.Gitlab`` class
@@ -63,21 +63,19 @@ for a detailed discussion.
 API version
 ===========
 
-``python-gitlab`` uses the v3 GitLab API by default. Use the ``api_version``
-parameter to switch to v4:
+``python-gitlab`` uses the v4 GitLab API by default. Use the ``api_version``
+parameter to switch to v3:
 
 .. code-block:: python
 
    import gitlab
 
-   gl = gitlab.Gitlab('http://10.0.0.1', 'JVNSESs8EwWRx5yDxM5q', api_version=4)
+   gl = gitlab.Gitlab('http://10.0.0.1', 'JVNSESs8EwWRx5yDxM5q', api_version=3)
 
 .. warning::
 
    The python-gitlab API is not the same for v3 and v4. Make sure to read
-   :ref:`switching_to_v4` before upgrading.
-
-   v4 will become the default in python-gitlab.
+   :ref:`switching_to_v4` if you are upgrading from v3.
 
 Managers
 ========

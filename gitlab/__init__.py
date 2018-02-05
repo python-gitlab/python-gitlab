@@ -73,7 +73,7 @@ class Gitlab(object):
 
     def __init__(self, url, private_token=None, oauth_token=None, email=None,
                  password=None, ssl_verify=True, http_username=None,
-                 http_password=None, timeout=None, api_version='3',
+                 http_password=None, timeout=None, api_version='4',
                  session=None):
 
         self._api_version = str(api_version)
