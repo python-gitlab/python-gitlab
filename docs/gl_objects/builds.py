@@ -72,7 +72,7 @@ project.jobs.get(job_id)  # v4
 build_or_job.artifacts()
 # end artifacts
 
-# stream artifacts
+# stream artifacts with class
 class Foo(object):
     def __init__(self):
         self._fd = open('artifacts.zip', 'wb')
@@ -83,7 +83,15 @@ class Foo(object):
 target = Foo()
 build_or_job.artifacts(streamed=True, action=target)
 del(target)  # flushes data on disk
-# end stream artifacts
+# end stream artifacts with class
+
+# stream artifacts with unzip
+zipfn = "___artifacts.zip"
+with open(zipfn, "wb") as f:
+    build_or_job.artifacts(streamed=True, action=f.write)
+subprocess.run(["unzip", "-bo", zipfn])
+os.unlink(zipfn)
+# end stream artifacts with unzip
 
 # keep artifacts
 build_or_job.keep_artifacts()
