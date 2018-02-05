@@ -1960,7 +1960,7 @@ class ProjectPipelineJobsManager(ListMixin, RESTManager):
     _path = '/projects/%(project_id)s/pipelines/%(pipeline_id)s/jobs'
     _obj_cls = ProjectPipelineJob
     _from_parent_attrs = {'project_id': 'project_id',
-                          'pipeline_id' : 'id'}
+                          'pipeline_id': 'id'}
     _list_filters = ('scope',)
 
 
@@ -2024,7 +2024,8 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, RESTManager):
         return CreateMixin.create(self, data, path=path, **kwargs)
 
 
-class ProjectPipelineScheduleVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectPipelineScheduleVariable(SaveMixin, ObjectDeleteMixin,
+                                      RESTObject):
     _id_attr = 'key'
 
 
@@ -2034,7 +2035,7 @@ class ProjectPipelineScheduleVariableManager(CreateMixin, UpdateMixin,
              '%(pipeline_schedule_id)s/variables')
     _obj_cls = ProjectPipelineScheduleVariable
     _from_parent_attrs = {'project_id': 'project_id',
-                          'pipeline_schedule_id' : 'id'}
+                          'pipeline_schedule_id': 'id'}
     _create_attrs = (('key', 'value'), tuple())
     _update_attrs = (('key', 'value'), tuple())
 
@@ -2067,10 +2068,6 @@ class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
                      ('cron_timezone', 'active'))
     _update_attrs = (tuple(),
                      ('description', 'ref', 'cron', 'cron_timezone', 'active'))
-
-
-class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
-    pass
 
 
 class ProjectPipelineJob(ProjectJob):
