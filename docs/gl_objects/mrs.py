@@ -19,6 +19,7 @@ mr = project.mergerequests.create({'source_branch': 'cool_feature',
 
 # update
 mr.description = 'New description'
+mr.labels = ['foo', 'bar']
 mr.save()
 # end update
 
