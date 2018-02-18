@@ -102,6 +102,66 @@ Remove a trigger:
    :start-after: # trigger delete
    :end-before: # end trigger delete
 
+Pipeline schedule
+=================
+
+You can schedule pipeline runs using a cron-like syntax. Variables can be
+associated with the scheduled pipelines.
+
+Reference
+---------
+
+* v4 API
+
+  + :class:`gitlab.v4.objects.ProjectPipelineSchedule`
+  + :class:`gitlab.v4.objects.ProjectPipelineScheduleManager`
+  + :attr:`gitlab.v4.objects.Project.pipelineschedules`
+  + :class:`gitlab.v4.objects.ProjectPipelineScheduleVariable`
+  + :class:`gitlab.v4.objects.ProjectPipelineScheduleVariableManager`
+  + :attr:`gitlab.v4.objects.Project.pipelineschedules`
+
+* GitLab API: https://docs.gitlab.com/ce/api/pipeline_schedules.html
+
+Examples
+--------
+
+List pipeline schedules::
+
+    scheds = project.pipelineschedules.list()
+
+Get a single schedule::
+
+    sched = projects.pipelineschedules.get(schedule_id)
+
+Create a new schedule::
+
+    sched = project.pipelineschedules.create({
+        'ref': 'master',
+        'description': 'Daily test',
+        'cron': '0 1 * * *'})
+
+Update a schedule::
+
+    sched.cron = '1 2 * * *'
+    sched.save()
+
+Delete a schedule::
+
+    sched.delete()
+
+Create a schedule variable::
+
+    var = sched.variables.create({'key': 'foo', 'value': 'bar'})
+
+Edit a schedule variable::
+
+    var.value = 'new_value'
+    var.save()
+
+Delete a schedule variable::
+
+    var.delete()
+
 Projects and groups variables
 =============================
 
