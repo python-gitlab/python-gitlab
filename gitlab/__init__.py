@@ -34,11 +34,11 @@ from gitlab.exceptions import *  # noqa
 from gitlab.v3.objects import *  # noqa
 
 __title__ = 'python-gitlab'
-__version__ = '1.2.0'
+__version__ = '1.3.0'
 __author__ = 'Gauvain Pocentek'
 __email__ = 'gauvain@pocentek.net'
 __license__ = 'LGPL3'
-__copyright__ = 'Copyright 2013-2017 Gauvain Pocentek'
+__copyright__ = 'Copyright 2013-2018 Gauvain Pocentek'
 
 warnings.filterwarnings('default', category=DeprecationWarning,
                         module='^gitlab')

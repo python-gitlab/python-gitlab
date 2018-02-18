@@ -1,6 +1,24 @@
 ChangeLog
 =========
 
+Version 1.3.0_ - 2018-02-18
+---------------------------
+
+* Add support for pipeline schedules and schedule variables
+* Clarify information about supported python version
+* Add manager for jobs within a pipeline
+* Fix wrong tag example
+* Update the groups documentation
+* Add support for MR participants API
+* Add support for getting list of user projects
+* Add Gitlab and User events support
+* Make trigger_pipeline return the pipeline
+* Config: support api_version in the global section
+* Gitlab can be used as context manager
+* Default to API v4
+* Add a simplified example for streamed artifacts
+* Add documentation about labels update
+
 Version 1.2.0_ - 2018-01-01
 ---------------------------
 
@@ -535,6 +553,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
+.. _1.3.0: https://github.com/python-gitlab/python-gitlab/compare/1.2.0...1.3.0
 .. _1.2.0: https://github.com/python-gitlab/python-gitlab/compare/1.1.0...1.2.0
 .. _1.1.0: https://github.com/python-gitlab/python-gitlab/compare/1.0.2...1.1.0
 .. _1.0.2: https://github.com/python-gitlab/python-gitlab/compare/1.0.1...1.0.2
