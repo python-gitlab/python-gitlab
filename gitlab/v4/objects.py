@@ -2681,7 +2681,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         See https://gitlab.com/help/ci/triggers/README.md#trigger-a-build
 
         Args:
-            ref (str): Commit to build; can be a commit SHA, a branch name, ...
+            ref (str): Commit to build; can be a branch name or a tag
             token (str): The trigger token
             variables (dict): Variables passed to the build script
             **kwargs: Extra options to send to the server (e.g. sudo)
