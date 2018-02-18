@@ -1,9 +1,55 @@
-###############################
-Jobs (v4 API) / Builds (v3 API)
-###############################
+##########################
+Pipelines, Builds and Jobs
+##########################
 
 Build and job are two classes representing the same object. Builds are used in
 v3 API, jobs in v4 API.
+
+Project pipelines
+=================
+
+A pipeline is a group of jobs executed by GitLab CI.
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectPipeline`
+  + :class:`gitlab.v4.objects.ProjectPipelineManager`
+  + :attr:`gitlab.v4.objects.Project.pipelines`
+
+* v3 API:
+
+  + :class:`gitlab.v3.objects.ProjectPipeline`
+  + :class:`gitlab.v3.objects.ProjectPipelineManager`
+  + :attr:`gitlab.v3.objects.Project.pipelines`
+  + :attr:`gitlab.Gitlab.project_pipelines`
+
+* GitLab API: https://docs.gitlab.com/ce/api/pipelines.html
+
+Examples
+--------
+
+List pipelines for a project::
+
+    pipelines = project.pipelines.list()
+
+Get a pipeline for a project::
+
+    pipeline = project.pipelines.get(pipeline_id)
+
+Create a pipeline for a particular reference::
+
+    pipeline = project.pipelines.create({'ref': 'master'})
+
+Retry the failed builds for a pipeline::
+
+    pipeline.retry()
+
+Cancel builds in a pipeline::
+
+    pipeline.cancel()
 
 Triggers
 ========

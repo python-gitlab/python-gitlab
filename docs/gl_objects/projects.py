@@ -321,26 +321,6 @@ service.save()
 service.delete()
 # end service delete
 
-# pipeline list
-pipelines = project.pipelines.list()
-# end pipeline list
-
-# pipeline get
-pipeline = project.pipelines.get(pipeline_id)
-# end pipeline get
-
-# pipeline create
-pipeline = project.pipelines.create({'ref': 'master'})
-# end pipeline create
-
-# pipeline retry
-pipeline.retry()
-# end pipeline retry
-
-# pipeline cancel
-pipeline.cancel()
-# end pipeline cancel
-
 # boards list
 boards = project.boards.list()
 # end boards list

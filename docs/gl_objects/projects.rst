@@ -604,60 +604,6 @@ Delete a project hook:
    :start-after: # hook delete
    :end-before: # end hook delete
 
-Project pipelines
-=================
-
-Reference
----------
-
-* v4 API:
-
-  + :class:`gitlab.v4.objects.ProjectPipeline`
-  + :class:`gitlab.v4.objects.ProjectPipelineManager`
-  + :attr:`gitlab.v4.objects.Project.pipelines`
-
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectPipeline`
-  + :class:`gitlab.v3.objects.ProjectPipelineManager`
-  + :attr:`gitlab.v3.objects.Project.pipelines`
-  + :attr:`gitlab.Gitlab.project_pipelines`
-
-* GitLab API: https://docs.gitlab.com/ce/api/pipelines.html
-
-Examples
---------
-
-List pipelines for a project:
-
-.. literalinclude:: projects.py
-   :start-after: # pipeline list
-   :end-before: # end pipeline list
-
-Get a pipeline for a project:
-
-.. literalinclude:: projects.py
-   :start-after: # pipeline get
-   :end-before: # end pipeline get
-
-Retry the failed builds for a pipeline:
-
-.. literalinclude:: projects.py
-   :start-after: # pipeline retry
-   :end-before: # end pipeline retry
-
-Cancel builds in a pipeline:
-
-.. literalinclude:: projects.py
-   :start-after: # pipeline cancel
-   :end-before: # end pipeline cancel
-
-Create a pipeline for a particular reference:
-
-.. literalinclude:: projects.py
-   :start-after: # pipeline create
-   :end-before: # end pipeline create
-
 Project Services
 ================
 
