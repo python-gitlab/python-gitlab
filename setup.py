@@ -21,7 +21,7 @@ setup(name='python-gitlab',
       license='LGPLv3',
       url='https://github.com/python-gitlab/python-gitlab',
       packages=find_packages(),
-      install_requires=['requests>=1.0', 'six'],
+      install_requires=['requests>=2.4.2', 'six'],
       entry_points={
           'console_scripts': [
               'gitlab = gitlab.cli:main'
