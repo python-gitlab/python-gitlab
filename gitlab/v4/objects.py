@@ -1156,11 +1156,11 @@ class ProjectEnvironmentManager(GetFromListMixin, CreateMixin, UpdateMixin,
     _update_attrs = (tuple(), ('name', 'external_url'))
 
 
-class ProjectKey(ObjectDeleteMixin, RESTObject):
+class ProjectKey(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectKeyManager(NoUpdateMixin, RESTManager):
+class ProjectKeyManager(CRUDMixin, RESTManager):
     _path = '/projects/%(project_id)s/deploy_keys'
     _obj_cls = ProjectKey
     _from_parent_attrs = {'project_id': 'id'}
