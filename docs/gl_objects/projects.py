@@ -101,6 +101,10 @@ member.delete()
 project.share(group.id, gitlab.DEVELOPER_ACCESS)
 # end share
 
+# unshare
+project.unshare(group.id)
+# end unshare
+
 # hook list
 hooks = project.hooks.list()
 # end hook list
