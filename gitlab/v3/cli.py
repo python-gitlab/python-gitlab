@@ -69,6 +69,7 @@ EXTRA_ACTIONS = {
         'archive': {'required': ['id']},
         'unarchive': {'required': ['id']},
         'share': {'required': ['id', 'group-id', 'group-access']},
+        'unshare': {'required': ['id', 'group-id']},
         'upload': {'required': ['id', 'filename', 'filepath']}},
     gitlab.v3.objects.User: {
         'block': {'required': ['id']},
@@ -212,6 +213,13 @@ class GitlabCLI(object):
             o.share(args['group_id'], args['group_access'])
         except Exception as e:
             cli.die("Impossible to share project", e)
+
+    def do_project_unshare(self, cls, gl, what, args):
+        try:
+            o = self.do_get(cls, gl, what, args)
+            o.unshare(args['group_id'])
+        except Exception as e:
+            cli.die("Impossible to unshare project", e)
 
     def do_user_block(self, cls, gl, what, args):
         try:
