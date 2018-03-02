@@ -2672,6 +2672,22 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
                 'expires_at': expires_at}
         self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
+    @cli.register_custom_action('Project', ('group_id', ))
+    @exc.on_http_error(exc.GitlabDeleteError)
+    def unshare(self, group_id, **kwargs):
+        """Delete a shared project link within a group.
+
+        Args:
+            group_id (int): ID of the group.
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the server failed to perform the request
+        """
+        path = '/projects/%s/share/%s' % (self.get_id(), group_id)
+        self.manager.gitlab.http_delete(path, **kwargs)
+
     # variables not supported in CLI
     @cli.register_custom_action('Project', ('ref', 'token'))
     @exc.on_http_error(exc.GitlabCreateError)

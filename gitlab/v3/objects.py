@@ -2056,6 +2056,20 @@ class Project(GitlabObject):
         r = self.gitlab._raw_post(url, data=data, **kwargs)
         raise_error_from_response(r, GitlabCreateError, 201)
 
+    def unshare(self, group_id, **kwargs):
+        """Delete a shared project link within a group.
+
+        Args:
+            group_id (int): ID of the group.
+
+        Raises:
+            GitlabConnectionError: If the server cannot be reached.
+            GitlabDeleteError: If the server fails to perform the request.
+        """
+        url = "/projects/%s/share/%s" % (self.id, group_id)
+        r = self.gitlab._raw_delete(url, **kwargs)
+        raise_error_from_response(r, GitlabDeleteError, 204)
+
     def trigger_build(self, ref, token, variables={}, **kwargs):
         """Trigger a CI build.
 
