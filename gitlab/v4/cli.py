@@ -260,7 +260,7 @@ class JSONPrinter(object):
         import json  # noqa
         print(json.dumps(d))
 
-    def display_list(self, data, fields):
+    def display_list(self, data, fields, **kwargs):
         import json  # noqa
         print(json.dumps([get_dict(obj, fields) for obj in data]))
 
@@ -270,7 +270,7 @@ class YAMLPrinter(object):
         import yaml  # noqa
         print(yaml.safe_dump(d, default_flow_style=False))
 
-    def display_list(self, data, fields):
+    def display_list(self, data, fields, **kwargs):
         import yaml  # noqa
         print(yaml.safe_dump(
             [get_dict(obj, fields) for obj in data],
