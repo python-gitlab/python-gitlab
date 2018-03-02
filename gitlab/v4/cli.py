@@ -154,11 +154,11 @@ def _populate_sub_parser_by_class(cls, sub_parser):
             if hasattr(mgr_cls, '_create_attrs'):
                 [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                                 required=True)
-                 for x in mgr_cls._create_attrs[0] if x != cls._id_attr]
+                 for x in mgr_cls._create_attrs[0]]
 
                 [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                                 required=False)
-                 for x in mgr_cls._create_attrs[1] if x != cls._id_attr]
+                 for x in mgr_cls._create_attrs[1]]
 
         if action_name == "update":
             if cls._id_attr is not None:
