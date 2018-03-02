@@ -32,7 +32,7 @@ Version 1.2.0_ - 2018-01-01
 * Add support for impersonation tokens API
 * Add support for user activities
 * Update user docs with gitlab URLs
-* [docs] Bad arguments in projetcs file documentation
+* [docs] Bad arguments in projects file documentation
 * Add support for user_agent_detail (issues)
 * Add a SetMixin
 * Add support for project housekeeping
@@ -464,7 +464,7 @@ Version 0.9.1_ - 2015-05-15
 Version 0.9_ - 2015-05-15
 --------------------------
 
-* Implement argparse libray for parsing argument on CLI
+* Implement argparse library for parsing argument on CLI
 * Provide unit tests and (a few) functional tests
 * Provide PEP8 tests
 * Use tox to run the tests
@@ -537,9 +537,9 @@ Version 0.3_ - 2013-08-27
 --------------------------
 
 * Use PRIVATE-TOKEN header for passing the auth token
-* provide a AUTHORS file
+* provide an AUTHORS file
 * cli: support ssl_verify config option
-* Add ssl_verify option to Gitlab object. Defauls to True
+* Add ssl_verify option to Gitlab object. Defaults to True
 * Correct url for merge requests API.
 
 Version 0.2_ - 2013-08-08

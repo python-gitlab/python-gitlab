@@ -52,7 +52,7 @@ Changes from 0.21 to 1.0.0
 by default.
 
 v4 is mostly compatible with the v3, but some important changes have been
-introduced. Make sure to read `Switching to GtiLab API v4
+introduced. Make sure to read `Switching to GitLab API v4
 <http://python-gitlab.readthedocs.io/en/master/switching-to-v4.html>`_.
 
 The development focus will be v4 from now on. v3 has been deprecated by GitLab

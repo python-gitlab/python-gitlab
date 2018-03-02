@@ -49,7 +49,7 @@ Note on password authentication
 
 The ``/session`` API endpoint used for username/password authentication has
 been removed from GitLab in version 10.2, and is not available on gitlab.com
-anymore. Personal token authentication is the prefered authentication method.
+anymore. Personal token authentication is the preferred authentication method.
 
 If you need username/password authentication, you can use cookie-based
 authentication. You can use the web UI form to authenticate, retrieve cookies,
@@ -195,7 +195,7 @@ To avoid useless calls to the server API, you can create lazy objects. These
 objects are created locally using a known ID, and give access to other managers
 and methods.
 
-The following exemple will only make one API call to the GitLab server to star
+The following example will only make one API call to the GitLab server to star
 a project:
 
 .. code-block:: python

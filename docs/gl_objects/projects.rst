@@ -320,7 +320,7 @@ Delete a tag:
 Project snippets
 ================
 
-The snippet visibility can be definied using the following constants:
+The snippet visibility can be defined using the following constants:
 
 * ``gitlab.VISIBILITY_PRIVATE``
 * ``gitlab.VISIBILITY_INTERNAL``
