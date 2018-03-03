@@ -31,7 +31,7 @@ Examples
 
 You can list events for an entire Gitlab instance (admin), users and projects.
 You can filter you events you want to retrieve using the ``action`` and
-``target_type`` attributes. The possibole values for these attributes are
+``target_type`` attributes. The possible values for these attributes are
 available on `the gitlab documentation
 <https://docs.gitlab.com/ce/api/events.html>`_.
 
