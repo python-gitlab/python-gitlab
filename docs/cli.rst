@@ -158,7 +158,6 @@ Example:
 
    $ gitlab -o yaml -f id,permissions -g elsewhere -c /tmp/gl.cfg project list
 
-
 Examples
 ========
 
@@ -235,3 +234,18 @@ Use sudo to act as another user (admin only):
 .. code-block:: console
 
    $ gitlab project create --name user_project1 --sudo username
+
+Reading values from files
+-------------------------
+
+You can make ``gitlab`` read values from files instead of providing them on the
+command line. This is handy for values containing new lines for instance:
+
+.. code-block:: console
+
+   $ cat > /tmp/description << EOF
+   This is the description of my project.
+
+   It is obviously the best project around
+   EOF
+   $ gitlab project create --name SuperProject --description @/tmp/description

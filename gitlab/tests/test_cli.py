@@ -20,6 +20,8 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 import argparse
+import os
+import tempfile
 
 import six
 try:
@@ -51,6 +53,29 @@ class TestCLI(unittest.TestCase):
             cli.die("foobar")
 
         self.assertEqual(test.exception.code, 1)
+
+    def test_parse_value(self):
+        ret = cli._parse_value('foobar')
+        self.assertEqual(ret, 'foobar')
+
+        ret = cli._parse_value(True)
+        self.assertEqual(ret, True)
+
+        ret = cli._parse_value(1)
+        self.assertEqual(ret, 1)
+
+        ret = cli._parse_value(None)
+        self.assertEqual(ret, None)
+
+        fd, temp_path = tempfile.mkstemp()
+        os.write(fd, b'content')
+        os.close(fd)
+        ret = cli._parse_value('@%s' % temp_path)
+        self.assertEqual(ret, 'content')
+        os.unlink(temp_path)
+
+        with self.assertRaises(SystemExit):
+            cli._parse_value('@/thisfileprobablydoesntexist')
 
     def test_base_parser(self):
         parser = cli._get_base_parser()

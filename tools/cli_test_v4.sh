@@ -108,5 +108,16 @@ testcase "application settings get" '
 '
 
 testcase "application settings update" '
-    GITLAB application-settings update --signup-enabled false
+    GITLAB application-settings update --signup-enabled false >/dev/null 2>&1
+'
+
+cat > /tmp/gitlab-project-description << EOF
+Multi line
+
+Data
+EOF
+testcase "values from files" '
+    OUTPUT=$(GITLAB -v project create --name fromfile \
+            --description @/tmp/gitlab-project-description)
+    echo $OUTPUT | grep -q "Multi line"
 '

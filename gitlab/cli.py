@@ -114,6 +114,19 @@ def _get_parser(cli_module):
     return cli_module.extend_parser(parser)
 
 
+def _parse_value(v):
+    if isinstance(v, str) and v.startswith('@'):
+        # If the user-provided value starts with @, we try to read the file
+        # path provided after @ as the real value. Exit on any error.
+        try:
+            return open(v[1:]).read()
+        except Exception as e:
+            sys.stderr.write("%s\n" % e)
+            sys.exit(1)
+
+    return v
+
+
 def main():
     if "--version" in sys.argv:
         print(gitlab.__version__)
@@ -143,7 +156,7 @@ def main():
     for item in ('gitlab', 'config_file', 'verbose', 'debug', 'what', 'action',
                  'version', 'output'):
         args.pop(item)
-    args = {k: v for k, v in args.items() if v is not None}
+    args = {k: _parse_value(v) for k, v in args.items() if v is not None}
 
     try:
         gl = gitlab.Gitlab.from_config(gitlab_id, config_files)
