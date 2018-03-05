@@ -139,6 +139,6 @@ log "Config file content ($CONFIG):"
 log <$CONFIG
 
 log "Pausing to give GitLab some time to finish starting up..."
-sleep 30
+sleep 60
 
 log "Test environment initialized."
