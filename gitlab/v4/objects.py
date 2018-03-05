@@ -909,7 +909,7 @@ class ProjectCustomAttributeManager(RetrieveMixin, SetMixin, DeleteMixin,
     _from_parent_attrs = {'project_id': 'id'}
 
 
-class ProjectJob(RESTObject):
+class ProjectJob(RESTObject, RefreshMixin):
     @cli.register_custom_action('ProjectJob')
     @exc.on_http_error(exc.GitlabJobCancelError)
     def cancel(self, **kwargs):
@@ -1045,7 +1045,7 @@ class ProjectJobManager(RetrieveMixin, RESTManager):
     _from_parent_attrs = {'project_id': 'id'}
 
 
-class ProjectCommitStatus(RESTObject):
+class ProjectCommitStatus(RESTObject, RefreshMixin):
     pass
 
 
@@ -1964,7 +1964,7 @@ class ProjectPipelineJobsManager(ListMixin, RESTManager):
     _list_filters = ('scope',)
 
 
-class ProjectPipeline(RESTObject):
+class ProjectPipeline(RESTObject, RefreshMixin):
     _managers = (('jobs', 'ProjectPipelineJobManager'), )
 
     @cli.register_custom_action('ProjectPipeline')

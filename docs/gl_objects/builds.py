@@ -44,6 +44,22 @@ project.triggers.delete(trigger_token)
 trigger.delete()
 # end trigger delete
 
+# pipeline trigger
+def get_or_create_trigger(project):
+    trigger_decription = 'my_trigger_id'
+    for t in project.triggers.list():
+        if t.description == trigger_decription:
+            return t
+    return project.triggers.create({'description': trigger_decription})
+
+trigger = get_or_create_trigger(project)
+pipeline = project.trigger_pipeline('master', trigger.token, variables={"DEPLOY_ZONE": "us-west1"})
+while pipeline.finished_at is None:
+    pipeline.refresh()
+    os.sleep(1)
+
+# end pipeline trigger
+
 # list
 builds = project.builds.list()  # v3
 jobs = project.jobs.list()  # v4

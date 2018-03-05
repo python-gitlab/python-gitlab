@@ -153,6 +153,25 @@ class TestMixinMethods(unittest.TestCase):
             self.assertEqual(obj.foo, 'bar')
             self.assertEqual(obj.id, 42)
 
+    def test_refresh_mixin(self):
+        class O(RefreshMixin, FakeObject):
+            pass
+
+        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/tests/42',
+                  method="get")
+        def resp_cont(url, request):
+            headers = {'Content-Type': 'application/json'}
+            content = '{"id": 42, "foo": "bar"}'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_cont):
+            mgr = FakeManager(self.gl)
+            obj = O(mgr, {'id': 42})
+            res = obj.refresh()
+            self.assertIsNone(res)
+            self.assertEqual(obj.foo, 'bar')
+            self.assertEqual(obj.id, 42)
+
     def test_get_without_id_mixin(self):
         class M(GetWithoutIdMixin, FakeManager):
             pass
