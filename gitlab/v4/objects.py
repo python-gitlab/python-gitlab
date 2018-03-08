@@ -2403,12 +2403,13 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action('Project', tuple(), ('path', 'ref'))
     @exc.on_http_error(exc.GitlabGetError)
-    def repository_tree(self, path='', ref='', **kwargs):
+    def repository_tree(self, path='', ref='', recursive=False, **kwargs):
         """Return a list of files in the repository.
 
         Args:
             path (str): Path of the top folder (/ by default)
             ref (str): Reference to a commit or branch
+            recursive (bool): Whether to get the tree recursively
             all (bool): If True, return all the items, without pagination
             per_page (int): Number of items to retrieve per request
             page (int): ID of the page to return (starts with page 1)
@@ -2424,7 +2425,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             list: The representation of the tree
         """
         gl_path = '/projects/%s/repository/tree' % self.get_id()
-        query_data = {}
+        query_data = {'recursive': recursive}
         if path:
             query_data['path'] = path
         if ref:
