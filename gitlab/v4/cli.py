@@ -249,6 +249,9 @@ def extend_parser(parser):
 
 
 def get_dict(obj, fields):
+    if isinstance(obj, six.string_types):
+        return obj
+
     if fields:
         return {k: v for k, v in obj.attributes.items()
                 if k in fields}
