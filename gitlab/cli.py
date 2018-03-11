@@ -78,7 +78,8 @@ def cls_to_what(cls):
 
 
 def _get_base_parser(add_help=True):
-    parser = argparse.ArgumentParser(add_help=add_help,
+    parser = argparse.ArgumentParser(
+        add_help=add_help,
         description="GitLab API Command Line Interface")
     parser.add_argument("--version", help="Display the version.",
                         action="store_true")

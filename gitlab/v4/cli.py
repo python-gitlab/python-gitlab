@@ -240,7 +240,8 @@ def extend_parser(parser):
         arg_name = cli.cls_to_what(cls)
         object_group = subparsers.add_parser(arg_name)
 
-        object_subparsers = object_group.add_subparsers(title='action',
+        object_subparsers = object_group.add_subparsers(
+            title='action',
             dest='action', help="Action to execute.")
         _populate_sub_parser_by_class(cls, object_subparsers)
         object_subparsers.required = True
