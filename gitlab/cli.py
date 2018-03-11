@@ -77,8 +77,8 @@ def cls_to_what(cls):
     return camel_re.sub(r'\1-\2', cls.__name__).lower()
 
 
-def _get_base_parser():
-    parser = argparse.ArgumentParser(
+def _get_base_parser(add_help=True):
+    parser = argparse.ArgumentParser(add_help=add_help,
         description="GitLab API Command Line Interface")
     parser.add_argument("--version", help="Display the version.",
                         action="store_true")
@@ -132,14 +132,20 @@ def main():
         print(gitlab.__version__)
         exit(0)
 
-    parser = _get_base_parser()
+    parser = _get_base_parser(add_help=False)
+    # This first parsing step is used to find the gitlab config to use, and
+    # load the propermodule (v3 or v4) accordingly. At that point we don't have
+    # any subparser setup
     (options, args) = parser.parse_known_args(sys.argv)
 
     config = gitlab.config.GitlabConfigParser(options.gitlab,
                                               options.config_file)
     cli_module = importlib.import_module('gitlab.v%s.cli' % config.api_version)
+
+    # Now we build the entire set of subcommands and do the complete parsing
     parser = _get_parser(cli_module)
     args = parser.parse_args(sys.argv[1:])
+
     config_files = args.config_file
     gitlab_id = args.gitlab
     verbose = args.verbose
