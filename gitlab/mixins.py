@@ -200,10 +200,6 @@ class CreateMixin(object):
         """
         self._check_missing_create_attrs(data)
 
-        # special handling of the object if needed
-        if hasattr(self, '_sanitize_data'):
-            data = self._sanitize_data(data, 'create')
-
         # We get the attributes that need some special transformation
         types = getattr(self, '_types', {})
 
@@ -265,20 +261,14 @@ class UpdateMixin(object):
 
         self._check_missing_update_attrs(new_data)
 
-        # special handling of the object if needed
-        if hasattr(self, '_sanitize_data'):
-            data = self._sanitize_data(new_data, 'update')
-        else:
-            data = new_data
-
         # We get the attributes that need some special transformation
         types = getattr(self, '_types', {})
         for attr_name, type_cls in types.items():
-            if attr_name in data.keys():
-                type_obj = type_cls(data[attr_name])
-                data[attr_name] = type_obj.get_for_api()
+            if attr_name in new_data.keys():
+                type_obj = type_cls(new_data[attr_name])
+                new_data[attr_name] = type_obj.get_for_api()
 
-        return self.gitlab.http_put(path, post_data=data, **kwargs)
+        return self.gitlab.http_put(path, post_data=new_data, **kwargs)
 
 
 class SetMixin(object):

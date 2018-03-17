@@ -388,11 +388,27 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
          'user_oauth_applications')
     )
 
-    def _sanitize_data(self, data, action):
-        new_data = data.copy()
+    @exc.on_http_error(exc.GitlabUpdateError)
+    def update(self, id=None, new_data={}, **kwargs):
+        """Update an object on the server.
+
+        Args:
+            id: ID of the object to update (can be None if not required)
+            new_data: the update data for the object
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+
+        Returns:
+            dict: The new object data (*not* a RESTObject)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUpdateError: If the server cannot perform the request
+        """
+
+        data = new_data.copy()
         if 'domain_whitelist' in data and data['domain_whitelist'] is None:
-            new_data.pop('domain_whitelist')
-        return new_data
+            data.pop('domain_whitelist')
+        super(ApplicationSettingsManager, self).update(id, data, **kwargs)
 
 
 class BroadcastMessage(SaveMixin, ObjectDeleteMixin, RESTObject):
