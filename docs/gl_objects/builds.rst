@@ -78,35 +78,39 @@ Reference
 Examples
 --------
 
-List triggers:
+List triggers::
 
-.. literalinclude:: builds.py
-   :start-after: # trigger list
-   :end-before: # end trigger list
+    triggers = project.triggers.list()
 
-Get a trigger:
+Get a trigger::
 
-.. literalinclude:: builds.py
-   :start-after: # trigger get
-   :end-before: # end trigger get
+    trigger = project.triggers.get(trigger_token)
 
-Create a trigger:
+Create a trigger::
 
-.. literalinclude:: builds.py
-   :start-after: # trigger create
-   :end-before: # end trigger create
+    trigger = project.triggers.create({}) # v3
+    trigger = project.triggers.create({'description': 'mytrigger'}) # v4
 
-Remove a trigger:
+Remove a trigger::
 
-.. literalinclude:: builds.py
-   :start-after: # trigger delete
-   :end-before: # end trigger delete
+    project.triggers.delete(trigger_token)
+    # or
+    trigger.delete()
 
-Full example with wait for finish:
+Full example with wait for finish::
 
-.. literalinclude:: builds.py
-   :start-after: # pipeline trigger
-   :end-before: # end pipeline trigger
+    def get_or_create_trigger(project):
+        trigger_decription = 'my_trigger_id'
+        for t in project.triggers.list():
+            if t.description == trigger_decription:
+                return t
+        return project.triggers.create({'description': trigger_decription})
+
+    trigger = get_or_create_trigger(project)
+    pipeline = project.trigger_pipeline('master', trigger.token, variables={"DEPLOY_ZONE": "us-west1"})
+    while pipeline.finished_at is None:
+        pipeline.refresh()
+        os.sleep(1)
 
 Pipeline schedule
 =================
@@ -201,35 +205,32 @@ Reference
 Examples
 --------
 
-List variables:
+List variables::
 
-.. literalinclude:: builds.py
-   :start-after: # var list
-   :end-before: # end var list
+    p_variables = project.variables.list()
+    g_variables = group.variables.list()
 
-Get a variable:
+Get a variable::
 
-.. literalinclude:: builds.py
-   :start-after: # var get
-   :end-before: # end var get
+    p_var = project.variables.get('key_name')
+    g_var = group.variables.get('key_name')
 
-Create a variable:
+Create a variable::
 
-.. literalinclude:: builds.py
-   :start-after: # var create
-   :end-before: # end var create
+    var = project.variables.create({'key': 'key1', 'value': 'value1'})
+    var = group.variables.create({'key': 'key1', 'value': 'value1'})
 
-Update a variable value:
+Update a variable value::
 
-.. literalinclude:: builds.py
-   :start-after: # var update
-   :end-before: # end var update
+    var.value = 'new_value'
+    var.save()
 
-Remove a variable:
+Remove a variable::
 
-.. literalinclude:: builds.py
-   :start-after: # var delete
-   :end-before: # end var delete
+    project.variables.delete('key_name')
+    group.variables.delete('key_name')
+    # or
+    var.delete()
 
 Builds/Jobs
 ===========
@@ -260,48 +261,43 @@ Examples
 --------
 
 Jobs are usually automatically triggered, but you can explicitly trigger a new
-job:
+job::
 
-Trigger a new job on a project:
+    project.trigger_build('master', trigger_token,
+                          {'extra_var1': 'foo', 'extra_var2': 'bar'})
 
-.. literalinclude:: builds.py
-   :start-after: # trigger run
-   :end-before: # end trigger run
+List jobs for the project::
 
-List jobs for the project:
-
-.. literalinclude:: builds.py
-   :start-after: # list
-   :end-before: # end list
+    builds = project.builds.list()  # v3
+    jobs = project.jobs.list()  # v4
 
 To list builds for a specific commit, create a
 :class:`~gitlab.v3.objects.ProjectCommit` object and use its
-:attr:`~gitlab.v3.objects.ProjectCommit.builds` method (v3 only):
+:attr:`~gitlab.v3.objects.ProjectCommit.builds` method (v3 only)::
 
-.. literalinclude:: builds.py
-   :start-after: # commit list
-   :end-before: # end commit list
+    # v3 only
+    commit = gl.project_commits.get(commit_sha, project_id=1)
+    builds = commit.builds()
 
 To list builds for a specific pipeline or get a single job within a specific
 pipeline, create a
 :class:`~gitlab.v4.objects.ProjectPipeline` object and use its
-:attr:`~gitlab.v4.objects.ProjectPipeline.jobs` method (v4 only):
+:attr:`~gitlab.v4.objects.ProjectPipeline.jobs` method (v4 only)::
 
-.. literalinclude:: builds.py
-    :start-after: # pipeline list get
-    :end-before: # end pipeline list get
+    # v4 only
+    project = gl.projects.get(project_id)
+    pipeline = project.pipelines.get(pipeline_id)
+    jobs = pipeline.jobs.list()  # gets all jobs in pipeline
+    job = pipeline.jobs.get(job_id)  # gets one job from pipeline
 
-Get a job:
+Get a job::
 
-.. literalinclude:: builds.py
-   :start-after: # get job
-   :end-before: # end get job
+    project.builds.get(build_id)  # v3
+    project.jobs.get(job_id)  # v4
 
-Get the artifacts of a job:
+Get the artifacts of a job::
 
-.. literalinclude:: builds.py
-   :start-after: # artifacts
-   :end-before: # end artifacts
+    build_or_job.artifacts()
 
 .. warning::
 
@@ -310,54 +306,53 @@ Get the artifacts of a job:
 .. _streaming_example:
 
 You can download artifacts as a stream. Provide a callable to handle the
-stream:
+stream::
 
-.. literalinclude:: builds.py
-   :start-after: # stream artifacts with class
-   :end-before: # end stream artifacts with class
+    class Foo(object):
+        def __init__(self):
+            self._fd = open('artifacts.zip', 'wb')
 
-In this second example, you can directly stream the output into a file, and
-unzip it afterwards:
+        def __call__(self, chunk):
+            self._fd.write(chunk)
 
-.. literalinclude:: builds.py
-   :start-after: # stream artifacts with unzip
-   :end-before: # end stream artifacts with unzip
+    target = Foo()
+    build_or_job.artifacts(streamed=True, action=target)
+    del(target)  # flushes data on disk
+
+You can also directly stream the output into a file, and unzip it afterwards::
+
+    zipfn = "___artifacts.zip"
+    with open(zipfn, "wb") as f:
+        build_or_job.artifacts(streamed=True, action=f.write)
+    subprocess.run(["unzip", "-bo", zipfn])
+    os.unlink(zipfn)
 
 Get a single artifact file::
 
     build_or_job.artifact('path/to/file')
 
-Mark a job artifact as kept when expiration is set:
+Mark a job artifact as kept when expiration is set::
 
-.. literalinclude:: builds.py
-   :start-after: # keep artifacts
-   :end-before: # end keep artifacts
+    build_or_job.keep_artifacts()
 
-Get a job trace:
+Get a job trace::
 
-.. literalinclude:: builds.py
-   :start-after: # trace
-   :end-before: # end trace
+    build_or_job.trace()
 
 .. warning::
 
    Traces are entirely stored in memory unless you use the streaming feature.
    See :ref:`the artifacts example <streaming_example>`.
 
-Cancel/retry a job:
+Cancel/retry a job::
 
-.. literalinclude:: builds.py
-   :start-after: # retry
-   :end-before: # end retry
+    build_or_job.cancel()
+    build_or_job.retry()
 
-Play (trigger) a job:
+Play (trigger) a job::
 
-.. literalinclude:: builds.py
-   :start-after: # play
-   :end-before: # end play
+    build_or_job.play()
 
-Erase a job (artifacts and trace):
+Erase a job (artifacts and trace)::
 
-.. literalinclude:: builds.py
-   :start-after: # erase
-   :end-before: # end erase
+    build_or_job.erase()
