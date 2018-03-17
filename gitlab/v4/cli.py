@@ -45,6 +45,14 @@ class GitlabCLI(object):
         self.mgr_cls._path = self.mgr_cls._path % self.args
         self.mgr = self.mgr_cls(gl)
 
+        types = getattr(self.mgr_cls, '_types', {})
+        if types:
+            for attr_name, type_cls in types.items():
+                if attr_name in self.args.keys():
+                    obj = type_cls()
+                    obj.set_from_cli(self.args[attr_name])
+                    self.args[attr_name] = obj.get()
+
     def __call__(self):
         method = 'do_%s' % self.action
         if hasattr(self, method):

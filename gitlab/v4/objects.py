@@ -23,6 +23,7 @@ from gitlab.base import *  # noqa
 from gitlab import cli
 from gitlab.exceptions import *  # noqa
 from gitlab.mixins import *  # noqa
+from gitlab import types
 from gitlab import utils
 
 VISIBILITY_PRIVATE = 'private'
@@ -315,12 +316,7 @@ class UserManager(CRUDMixin, RESTManager):
          'website_url', 'skip_confirmation', 'external', 'organization',
          'location')
     )
-
-    def _sanitize_data(self, data, action):
-        new_data = data.copy()
-        if 'confirm' in data:
-            new_data['confirm'] = str(new_data['confirm']).lower()
-        return new_data
+    _types = {'confirm': types.LowercaseStringAttribute}
 
 
 class CurrentUserEmail(ObjectDeleteMixin, RESTObject):
@@ -528,6 +524,7 @@ class GroupIssueManager(GetFromListMixin, RESTManager):
     _obj_cls = GroupIssue
     _from_parent_attrs = {'group_id': 'id'}
     _list_filters = ('state', 'labels', 'milestone', 'order_by', 'sort')
+    _types = {'labels': types.ListAttribute}
 
 
 class GroupMember(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -736,6 +733,7 @@ class IssueManager(GetFromListMixin, RESTManager):
     _path = '/issues'
     _obj_cls = Issue
     _list_filters = ('state', 'labels', 'order_by', 'sort')
+    _types = {'labels': types.ListAttribute}
 
 
 class License(RESTObject):
@@ -1346,12 +1344,7 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
     _update_attrs = (tuple(), ('title', 'description', 'assignee_id',
                                'milestone_id', 'labels', 'created_at',
                                'updated_at', 'state_event', 'due_date'))
-
-    def _sanitize_data(self, data, action):
-        new_data = data.copy()
-        if 'labels' in data:
-            new_data['labels'] = ','.join(data['labels'])
-        return new_data
+    _types = {'labels': types.ListAttribute}
 
 
 class ProjectMember(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -1669,12 +1662,7 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
                                'description', 'state_event', 'labels',
                                'milestone_id'))
     _list_filters = ('iids', 'state', 'order_by', 'sort')
-
-    def _sanitize_data(self, data, action):
-        new_data = data.copy()
-        if 'labels' in data:
-            new_data['labels'] = ','.join(data['labels'])
-        return new_data
+    _types = {'labels': types.ListAttribute}
 
 
 class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):

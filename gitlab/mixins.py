@@ -108,9 +108,21 @@ class ListMixin(object):
             GitlabListError: If the server cannot perform the request
         """
 
+        # Duplicate data to avoid messing with what the user sent us
+        data = kwargs.copy()
+
+        # We get the attributes that need some special transformation
+        types = getattr(self, '_types', {})
+        if types:
+            for attr_name, type_cls in types.items():
+                if attr_name in data.keys():
+                    type_obj = type_cls(data[attr_name])
+                    data[attr_name] = type_obj.get_for_api()
+
         # Allow to overwrite the path, handy for custom listings
-        path = kwargs.pop('path', self.path)
-        obj = self.gitlab.http_list(path, **kwargs)
+        path = data.pop('path', self.path)
+
+        obj = self.gitlab.http_list(path, **data)
         if isinstance(obj, list):
             return [self._obj_cls(self, item) for item in obj]
         else:
@@ -187,8 +199,22 @@ class CreateMixin(object):
             GitlabCreateError: If the server cannot perform the request
         """
         self._check_missing_create_attrs(data)
+
+        # special handling of the object if needed
         if hasattr(self, '_sanitize_data'):
             data = self._sanitize_data(data, 'create')
+
+        # We get the attributes that need some special transformation
+        types = getattr(self, '_types', {})
+
+        if types:
+            # Duplicate data to avoid messing with what the user sent us
+            data = data.copy()
+            for attr_name, type_cls in types.items():
+                if attr_name in data.keys():
+                    type_obj = type_cls(data[attr_name])
+                    data[attr_name] = type_obj.get_for_api()
+
         # Handle specific URL for creation
         path = kwargs.pop('path', self.path)
         server_data = self.gitlab.http_post(path, post_data=data, **kwargs)
@@ -238,10 +264,19 @@ class UpdateMixin(object):
             path = '%s/%s' % (self.path, id)
 
         self._check_missing_update_attrs(new_data)
+
+        # special handling of the object if needed
         if hasattr(self, '_sanitize_data'):
             data = self._sanitize_data(new_data, 'update')
         else:
             data = new_data
+
+        # We get the attributes that need some special transformation
+        types = getattr(self, '_types', {})
+        for attr_name, type_cls in types.items():
+            if attr_name in data.keys():
+                type_obj = type_cls(data[attr_name])
+                data[attr_name] = type_obj.get_for_api()
 
         return self.gitlab.http_put(path, post_data=data, **kwargs)
 

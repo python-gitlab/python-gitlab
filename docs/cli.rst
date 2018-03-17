@@ -235,6 +235,12 @@ Use sudo to act as another user (admin only):
 
    $ gitlab project create --name user_project1 --sudo username
 
+List values are comma-separated:
+
+.. code-block:: console
+
+   $ gitlab issue list --labels foo,bar
+
 Reading values from files
 -------------------------
 
