@@ -297,7 +297,7 @@ Get a job:
    :start-after: # get job
    :end-before: # end get job
 
-Get a job artifact:
+Get the artifacts of a job:
 
 .. literalinclude:: builds.py
    :start-after: # artifacts
@@ -316,11 +316,16 @@ stream:
    :start-after: # stream artifacts with class
    :end-before: # end stream artifacts with class
 
-In this second example, you can directly stream the output into a file, and unzip it afterwards:
+In this second example, you can directly stream the output into a file, and
+unzip it afterwards:
 
 .. literalinclude:: builds.py
    :start-after: # stream artifacts with unzip
    :end-before: # end stream artifacts with unzip
+
+Get a single artifact file::
+
+    build_or_job.artifact('path/to/file')
 
 Mark a job artifact as kept when expiration is set:
 
