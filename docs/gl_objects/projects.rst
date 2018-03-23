@@ -449,7 +449,7 @@ Reference
   + :attr:`gitlab.v3.objects.Project.snippet_notes`
   + :attr:`gitlab.Gitlab.project_snippet_notes`
 
-* GitLab API: https://docs.gitlab.com/ce/api/repository_files.html
+* GitLab API: https://docs.gitlab.com/ce/api/notes.html
 
 Examples
 --------
