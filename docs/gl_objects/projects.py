@@ -276,33 +276,6 @@ project.snippets.delete(snippet_id)
 snippet.delete()
 # end snippets delete
 
-# notes list
-i_notes = issue.notes.list()
-mr_notes = mr.notes.list()
-s_notes = snippet.notes.list()
-# end notes list
-
-# notes get
-i_note = issue.notes.get(note_id)
-mr_note = mr.notes.get(note_id)
-s_note = snippet.notes.get(note_id)
-# end notes get
-
-# notes create
-i_note = issue.notes.create({'body': 'note content'})
-mr_note = mr.notes.create({'body': 'note content'})
-s_note = snippet.notes.create({'body': 'note content'})
-# end notes create
-
-# notes update
-note.body = 'updated note content'
-note.save()
-# end notes update
-
-# notes delete
-note.delete()
-# end notes delete
-
 # service get
 # For v3
 service = project.services.get(service_name='asana', project_id=1)
