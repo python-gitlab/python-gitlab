@@ -78,6 +78,7 @@ class Gitlab(object):
 
         self._api_version = str(api_version)
         self._server_version = self._server_revision = None
+        self._base_url = url
         self._url = '%s/api/v%s' % (url, api_version)
         #: Timeout to use for requests to gitlab server
         self.timeout = timeout
@@ -165,7 +166,18 @@ class Gitlab(object):
         self._objects = objects
 
     @property
+    def url(self):
+        """The user-provided server URL."""
+        return self._base_url
+
+    @property
+    def api_url(self):
+        """The computed API base URL."""
+        return self._url
+
+    @property
     def api_version(self):
+        """The API version used (3 or 4)."""
         return self._api_version
 
     def _cls_to_manager_prefix(self, cls):
