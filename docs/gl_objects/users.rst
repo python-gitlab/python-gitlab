@@ -147,8 +147,8 @@ Create and use an impersonation token for a user:
 Revoke (delete) an impersonation token for a user:
 
 .. literalinclude:: users.py
-   :start-after: # it list
-   :end-before: # end it list
+   :start-after: # it delete
+   :end-before: # end it delete
 
 Current User
 ============
