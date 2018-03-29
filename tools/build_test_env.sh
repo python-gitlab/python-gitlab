@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Copyright (C) 2016 Gauvain Pocentek <gauvain@pocentek.net>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -28,6 +28,8 @@ try() { "$@" || fatal "'$@' failed"; }
 NOVENV=
 PY_VER=2
 API_VER=4
+MAX_RETRIES=120
+
 while getopts :np:a: opt "$@"; do
     case $opt in
         n) NOVENV=1;;
@@ -138,7 +140,16 @@ EOF
 log "Config file content ($CONFIG):"
 log <$CONFIG
 
-log "Pausing to give GitLab some time to finish starting up..."
-sleep 60
+log "Wait for GitLab to finish starting up..."
+retries=0
+while ! curl -sf -o /dev/null\
+        -H "PRIVATE-TOKEN: $TOKEN" \
+        "http://localhost:8080/api/v$API_VER/version"; do
+    let retries++
+    if (( retries > MAX_RETRIES )); then
+        fatal "Gave up waiting for gitlab."
+    fi
+    sleep 1
+done
 
 log "Test environment initialized."
