@@ -534,7 +534,7 @@ Reference
 
 * GitLab API: https://docs.gitlab.com/ce/api/services.html
 
-Exammples
+Examples
 ---------
 
 Get a service:
