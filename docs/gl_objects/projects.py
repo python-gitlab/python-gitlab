@@ -195,11 +195,13 @@ print(f.decode())
 
 # files create
 # v4
-f = project.files.create({'file_path': 'testfile',
+f = project.files.create({'file_path': 'testfile.txt',
                           'branch': 'master',
                           'content': file_content,
+                          'author_email': 'test@example.com',
+                          'author_name': 'yourname',
+                          'encoding': 'text',
                           'commit_message': 'Create testfile'})
-
 # v3
 f = project.files.create({'file_path': 'testfile',
                           'branch_name': 'master',
