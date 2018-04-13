@@ -9,7 +9,7 @@ public_snippets = gl.snippets.public()
 # get
 snippet = gl.snippets.get(snippet_id)
 # get the content
-content = snippet.raw()
+content = snippet.content()
 # end get
 
 # create
