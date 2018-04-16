@@ -326,3 +326,26 @@ The following sample illustrates how to use a client-side certificate:
 
 Reference:
 http://docs.python-requests.org/en/master/user/advanced/#client-side-certificates
+
+Rate limits
+-----------
+
+python-gitlab will obey the rate limit of the GitLab server by default.
+On receiving a 429 response (Too Many Requests), python-gitlab will sleep for the amount of time
+in the Retry-After header, that GitLab sends back.
+
+If you don't want to wait, you can disable the rate-limiting feature, by supplying the
+``obey_rate_limit`` argument.
+
+.. code-block:: python
+
+   import gitlab
+   import requests
+
+   gl = gitlab.gitlab(url, token, api_version=4)
+   gl.projects.list(all=True, obey_rate_limit=False)
+
+
+.. warning::
+
+   You will get an Exception, if you then go over the rate limit of your GitLab instance.
