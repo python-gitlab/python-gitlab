@@ -23,6 +23,7 @@ import inspect
 import itertools
 import json
 import re
+import time
 import warnings
 
 import requests
@@ -698,24 +699,35 @@ class Gitlab(object):
         prepped.url = sanitized_url(prepped.url)
         settings = self.session.merge_environment_settings(
             prepped.url, {}, streamed, verify, None)
-        result = self.session.send(prepped, timeout=timeout, **settings)
 
-        if 200 <= result.status_code < 300:
-            return result
+        # obey the rate limit by default
+        obey_rate_limit = kwargs.get("obey_rate_limit", True)
 
-        try:
-            error_message = result.json()['message']
-        except (KeyError, ValueError, TypeError):
-            error_message = result.content
+        while True:
+            result = self.session.send(prepped, timeout=timeout, **settings)
 
-        if result.status_code == 401:
-            raise GitlabAuthenticationError(response_code=result.status_code,
-                                            error_message=error_message,
-                                            response_body=result.content)
+            if 200 <= result.status_code < 300:
+                return result
 
-        raise GitlabHttpError(response_code=result.status_code,
-                              error_message=error_message,
-                              response_body=result.content)
+            if 429 == result.status_code and obey_rate_limit:
+                wait_time = int(result.headers["Retry-After"])
+                time.sleep(wait_time)
+                continue
+
+            try:
+                error_message = result.json()['message']
+            except (KeyError, ValueError, TypeError):
+                error_message = result.content
+
+            if result.status_code == 401:
+                raise GitlabAuthenticationError(
+                    response_code=result.status_code,
+                    error_message=error_message,
+                    response_body=result.content)
+
+            raise GitlabHttpError(response_code=result.status_code,
+                                  error_message=error_message,
+                                  response_body=result.content)
 
     def http_get(self, path, query_data={}, streamed=False, **kwargs):
         """Make a GET request to the Gitlab server.
