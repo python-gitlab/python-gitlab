@@ -646,3 +646,28 @@ gl.user_activities.list()
 
 # events
 gl.events.list()
+
+# rate limit
+settings = gl.settings.get()
+settings.throttle_authenticated_api_enabled = True
+settings.throttle_authenticated_api_requests_per_period = 1
+settings.throttle_authenticated_api_period_in_seconds = 3
+settings.save()
+projects = list()
+for i in range(0, 20):
+    projects.append(gl.projects.create(
+        {'name': str(i) + "ok"}))
+
+error_message = None
+for i in range(20, 40):
+    try:
+        projects.append(
+            gl.projects.create(
+                {'name': str(i) + 'shouldfail'}, obey_rate_limit=False))
+    except gitlab.GitlabCreateError as e:
+        error_message = e.error_message
+        break
+assert 'Retry later' in error_message
+[current_project.delete() for current_project in projects]
+settings.throttle_authenticated_api_enabled = False
+settings.save()
