@@ -8,7 +8,10 @@ public_snippets = gl.snippets.public()
 
 # get
 snippet = gl.snippets.get(snippet_id)
-# get the content
+# get the content - API v4
+content = snippet.content()
+
+# get the content - API v3
 content = snippet.raw()
 # end get
 
