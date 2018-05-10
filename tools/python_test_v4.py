@@ -103,9 +103,8 @@ foobar_user = gl.users.create(
      'name': 'Foo Bar', 'password': 'foobar_password'})
 
 assert gl.users.list(search='foobar')[0].id == foobar_user.id
-usercmp = lambda x,y: cmp(x.id, y.id)
-expected = sorted([new_user, foobar_user], cmp=usercmp)
-actual = sorted(list(gl.users.list(search='foo')), cmp=usercmp)
+expected = [new_user, foobar_user]
+actual = list(gl.users.list(search='foo'))
 assert len(expected) == len(actual)
 assert len(gl.users.list(search='asdf')) == 0
 foobar_user.bio = 'This is the user bio'
@@ -337,7 +336,7 @@ admin_project.files.create({'file_path': 'README',
                             'content': 'Initial content',
                             'commit_message': 'Initial commit'})
 readme = admin_project.files.get(file_path='README', ref='master')
-readme.content = base64.b64encode("Improved README")
+readme.content = base64.b64encode(b"Improved README")
 time.sleep(2)
 readme.save(branch="master", commit_message="new commit")
 readme.delete(commit_message="Removing README", branch="master")
