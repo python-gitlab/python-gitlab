@@ -82,6 +82,10 @@ Cancel a MR when the build succeeds::
     mr.cancel_merge_when_build_succeeds()  # v3
     mr.cancel_merge_when_pipeline_succeeds()  # v4
 
+List commits of a MR::
+
+    commits = mr.commits()
+
 List issues that will close on merge::
 
     mr.closes_issues()
