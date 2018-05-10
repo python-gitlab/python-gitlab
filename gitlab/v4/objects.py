@@ -882,7 +882,8 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabProtectError: If the branch could not be protected
         """
-        path = '%s/%s/protect' % (self.manager.path, self.get_id())
+        id = self.get_id().replace('/', '%2F')
+        path = '%s/%s/protect' % (self.manager.path, id)
         post_data = {'developers_can_push': developers_can_push,
                      'developers_can_merge': developers_can_merge}
         self.manager.gitlab.http_put(path, post_data=post_data, **kwargs)
@@ -900,7 +901,8 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabProtectError: If the branch could not be unprotected
         """
-        path = '%s/%s/unprotect' % (self.manager.path, self.get_id())
+        id = self.get_id().replace('/', '%2F')
+        path = '%s/%s/unprotect' % (self.manager.path, id)
         self.manager.gitlab.http_put(path, **kwargs)
         self._attrs['protected'] = False
 
