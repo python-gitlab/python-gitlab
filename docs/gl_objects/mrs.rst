@@ -29,11 +29,9 @@ Reference
 Examples
 --------
 
-List MRs for a project:
+List MRs for a project::
 
-.. literalinclude:: mrs.py
-   :start-after: # list
-   :end-before: # end list
+    mrs = project.mergerequests.list()
 
 You can filter and sort the returned list with the following parameters:
 
@@ -43,80 +41,64 @@ You can filter and sort the returned list with the following parameters:
 * ``order_by``: sort by ``created_at`` or ``updated_at``
 * ``sort``: sort order (``asc`` or ``desc``)
 
-For example:
+For example::
 
-.. literalinclude:: mrs.py
-   :start-after: # list
-   :end-before: # end list
+    mrs = project.mergerequests.list(state='merged', order_by='updated_at')
 
-Get a single MR:
+Get a single MR::
 
-.. literalinclude:: mrs.py
-   :start-after: # get
-   :end-before: # end get
+    mr = project.mergerequests.get(mr_id)
 
-Create a MR:
+Create a MR::
 
-.. literalinclude:: mrs.py
-   :start-after: # create
-   :end-before: # end create
+    mr = project.mergerequests.create({'source_branch': 'cool_feature',
+                                       'target_branch': 'master',
+                                       'title': 'merge cool feature',
+                                       'labels': ['label1', 'label2']})
 
-Update a MR:
+Update a MR::
 
-.. literalinclude:: mrs.py
-   :start-after: # update
-   :end-before: # end update
+    mr.description = 'New description'
+    mr.labels = ['foo', 'bar']
+    mr.save()
 
-Change the state of a MR (close or reopen):
+Change the state of a MR (close or reopen)::
 
-.. literalinclude:: mrs.py
-   :start-after: # state
-   :end-before: # end state
+    mr.state_event = 'close'  # or 'reopen'
+    mr.save()
 
-Delete a MR:
+Delete a MR::
 
-.. literalinclude:: mrs.py
-   :start-after: # delete
-   :end-before: # end delete
+    project.mergerequests.delete(mr_id)
+    # or
+    mr.delete()
 
-Accept a MR:
+Accept a MR::
 
-.. literalinclude:: mrs.py
-   :start-after: # merge
-   :end-before: # end merge
+    mr.merge()
 
-Cancel a MR when the build succeeds:
+Cancel a MR when the build succeeds::
 
-.. literalinclude:: mrs.py
-   :start-after: # cancel
-   :end-before: # end cancel
+    mr.cancel_merge_when_build_succeeds()  # v3
+    mr.cancel_merge_when_pipeline_succeeds()  # v4
 
-List issues that will close on merge:
+List issues that will close on merge::
 
-.. literalinclude:: mrs.py
-   :start-after: # issues
-   :end-before: # end issues
+    mr.closes_issues()
 
-Subscribe/unsubscribe a MR:
+Subscribe to / unsubscribe from a MR::
 
-.. literalinclude:: mrs.py
-   :start-after: # subscribe
-   :end-before: # end subscribe
+    mr.subscribe()
+    mr.unsubscribe()
 
-Mark a MR as todo:
+Mark a MR as todo::
 
-.. literalinclude:: mrs.py
-   :start-after: # todo
-   :end-before: # end todo
+    mr.todo()
 
-List the diffs for a merge request:
+List the diffs for a merge request::
 
-.. literalinclude:: mrs.py
-   :start-after: # diff list
-   :end-before: # end diff list
+    diffs = mr.diffs.list()
 
-Get a diff for a merge request:
+Get a diff for a merge request::
 
-.. literalinclude:: mrs.py
-   :start-after: # diff get
-   :end-before: # end diff get
+    diff = mr.diffs.get(diff_id)
