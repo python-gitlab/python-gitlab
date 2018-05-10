@@ -288,7 +288,8 @@ print(service.active)
 # end service get
 
 # service list
-services = gl.project_services.available()
+services = gl.project_services.available()  # API v3
+services = project.services.available()  # API v4
 # end service list
 
 # service update
