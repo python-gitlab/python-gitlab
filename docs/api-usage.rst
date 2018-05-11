@@ -228,15 +228,16 @@ parameter to get all the items when using listing methods:
 
 .. warning::
 
-   python-gitlab will iterate over the list by calling the corresponding API
-   multiple times. This might take some time if you have a lot of items to
-   retrieve. This might also consume a lot of memory as all the items will be
-   stored in RAM. If you're encountering the python recursion limit exception,
-   use ``safe_all=True`` instead to stop pagination automatically if the
-   recursion limit is hit.
+   With API v3 python-gitlab will iterate over the list by calling the
+   corresponding API multiple times. This might take some time if you have a
+   lot of items to retrieve. This might also consume a lot of memory as all the
+   items will be stored in RAM. If you're encountering the python recursion
+   limit exception, use ``safe_all=True`` to stop pagination automatically if
+   the recursion limit is hit.
 
-With v4, ``list()`` methods can also return a generator object which will
-handle the next calls to the API when required:
+With API v4, ``list()`` methods can also return a generator object which will
+handle the next calls to the API when required. This is the recommended way to
+iterate through a large number of items:
 
 .. code-block:: python
 
