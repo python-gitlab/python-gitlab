@@ -647,6 +647,7 @@ class Gitlab(object):
             post_data (dict): Data to send in the body (will be converted to
                               json)
             streamed (bool): Whether the data should be streamed
+            files (dict): The files to send to the server
             **kwargs: Extra data to make the query (e.g. sudo, per_page, page)
 
         Returns:
@@ -809,6 +810,7 @@ class Gitlab(object):
             query_data (dict): Data to send as query parameters
             post_data (dict): Data to send in the body (will be converted to
                               json)
+            files (dict): The files to send to the server
             **kwargs: Extra data to make the query (e.g. sudo, per_page, page)
 
         Returns:
