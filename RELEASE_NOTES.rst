@@ -4,6 +4,25 @@ Release notes
 
 This page describes important changes between python-gitlab releases.
 
+Changes from 1.3 to 1.4
+=======================
+
+* 1.4 is the last release supporting the v3 API, and the related code will be
+  removed in the 1.5 version.
+
+  If you are using a Gitlab server version that does not support the v4 API you
+  can:
+
+  * upgrade the server (recommended)
+  * make sure to use version 1.4 of python-gitlab (``pip install
+    python-gitlab==1.4``)
+
+  See also the `Switching to GitLab API v4 documentation
+  <http://python-gitlab.readthedocs.io/en/master/switching-to-v4.html>`__.
+* python-gitlab now handles the server rate limiting feature. It will pause for
+  the required time when reaching the limit (`documentation
+  <http://python-gitlab.readthedocs.io/en/master/api-usage.html#rate-limits>`__)
+
 Changes from 1.2 to 1.3
 =======================
 
