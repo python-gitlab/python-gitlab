@@ -152,7 +152,7 @@ class GetFromListMixin(ListMixin):
         """
         warnings.warn('The get() method for this object is deprecated '
                       'and will be removed in a future version.',
-                       DeprecationWarning)
+                      DeprecationWarning)
         try:
             gen = self.list()
         except exc.GitlabListError:
