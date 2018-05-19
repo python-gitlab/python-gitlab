@@ -547,7 +547,7 @@ class GroupMember(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'username'
 
 
-class GroupMemberManager(GetFromListMixin, CreateMixin, UpdateMixin,
+class GroupMemberManager(ListMixin, GetMixin, CreateMixin, UpdateMixin,
                          DeleteMixin, RESTManager):
     _path = '/groups/%(group_id)s/members'
     _obj_cls = GroupMember
