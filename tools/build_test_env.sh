@@ -46,8 +46,8 @@ case $PY_VER in
 esac
 
 case $API_VER in
-    3|4) ;;
-    *) fatal "Wrong API version (3 or 4)";;
+    4) ;;
+    *) fatal "Wrong API version (4 only)";;
 esac
 
 for req in \

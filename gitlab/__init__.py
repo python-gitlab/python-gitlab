@@ -19,10 +19,6 @@
 from __future__ import print_function
 from __future__ import absolute_import
 import importlib
-import inspect
-import itertools
-import json
-import re
 import time
 import warnings
 
@@ -32,7 +28,6 @@ import six
 import gitlab.config
 from gitlab.const import *  # noqa
 from gitlab.exceptions import *  # noqa
-from gitlab.v3.objects import *  # noqa
 
 __title__ = 'python-gitlab'
 __version__ = '1.4.0'
@@ -69,7 +64,7 @@ class Gitlab(object):
         timeout (float): Timeout to use for requests to the GitLab server.
         http_username (str): Username for HTTP authentication
         http_password (str): Password for HTTP authentication
-        api_version (str): Gitlab API version to use (3 or 4)
+        api_version (str): Gitlab API version to use (support for 4 only)
     """
 
     def __init__(self, url, private_token=None, oauth_token=None, email=None,
@@ -123,31 +118,11 @@ class Gitlab(object):
         self.snippets = objects.SnippetManager(self)
         self.users = objects.UserManager(self)
         self.todos = objects.TodoManager(self)
-        if self._api_version == '3':
-            self.teams = objects.TeamManager(self)
-        else:
-            self.dockerfiles = objects.DockerfileManager(self)
-            self.events = objects.EventManager(self)
-            self.features = objects.FeatureManager(self)
-            self.pagesdomains = objects.PagesDomainManager(self)
-            self.user_activities = objects.UserActivitiesManager(self)
-
-        if self._api_version == '3':
-            # build the "submanagers"
-            for parent_cls in six.itervalues(vars(objects)):
-                if (not inspect.isclass(parent_cls)
-                    or not issubclass(parent_cls, objects.GitlabObject)
-                        or parent_cls == objects.CurrentUser):
-                    continue
-
-                if not parent_cls.managers:
-                    continue
-
-                for var, cls_name, attrs in parent_cls.managers:
-                    prefix = self._cls_to_manager_prefix(parent_cls)
-                    var_name = '%s_%s' % (prefix, var)
-                    manager = getattr(objects, cls_name)(self)
-                    setattr(self, var_name, manager)
+        self.dockerfiles = objects.DockerfileManager(self)
+        self.events = objects.EventManager(self)
+        self.features = objects.FeatureManager(self)
+        self.pagesdomains = objects.PagesDomainManager(self)
+        self.user_activities = objects.UserActivitiesManager(self)
 
     def __enter__(self):
         return self
@@ -178,16 +153,8 @@ class Gitlab(object):
 
     @property
     def api_version(self):
-        """The API version used (3 or 4)."""
+        """The API version used (4 only)."""
         return self._api_version
-
-    def _cls_to_manager_prefix(self, cls):
-        # Manage bad naming decisions
-        camel_case = (cls.__name__
-                      .replace('NotificationSettings', 'Notificationsettings')
-                      .replace('MergeRequest', 'Mergerequest')
-                      .replace('AccessRequest', 'Accessrequest'))
-        return re.sub(r'(.)([A-Z])', r'\1_\2', camel_case).lower()
 
     @staticmethod
     def from_config(gitlab_id=None, config_files=None):
@@ -227,23 +194,14 @@ class Gitlab(object):
 
     def _credentials_auth(self):
         data = {'email': self.email, 'password': self.password}
-        if self.api_version == '3':
-            r = self._raw_post('/session', json.dumps(data),
-                               content_type='application/json')
-            raise_error_from_response(r, GitlabAuthenticationError, 201)
-            self.user = self._objects.CurrentUser(self, r.json())
-        else:
-            r = self.http_post('/session', data)
-            manager = self._objects.CurrentUserManager(self)
-            self.user = self._objects.CurrentUser(manager, r)
+        r = self.http_post('/session', data)
+        manager = self._objects.CurrentUserManager(self)
+        self.user = self._objects.CurrentUser(manager, r)
         self.private_token = self.user.private_token
         self._set_auth_info()
 
     def _token_auth(self):
-        if self.api_version == '3':
-            self.user = self._objects.CurrentUser(self)
-        else:
-            self.user = self._objects.CurrentUserManager(self).get()
+        self.user = self._objects.CurrentUserManager(self).get()
 
     def version(self):
         """Returns the version and revision of the gitlab server.
@@ -252,18 +210,16 @@ class Gitlab(object):
         object.
 
         Returns:
-            tuple (str, str): The server version and server revision, or
+            tuple (str, str): The server version and server revision.
                               ('unknown', 'unknwown') if the server doesn't
-                              support this API call (gitlab < 8.13.0)
+                              perform as expected.
         """
         if self._server_version is None:
-            r = self._raw_get('/version')
             try:
-                raise_error_from_response(r, GitlabGetError, 200)
-                data = r.json()
+                data = self.http_get('/version')
                 self._server_version = data['version']
                 self._server_revision = data['revision']
-            except GitlabGetError:
+            except Exception:
                 self._server_version = self._server_revision = 'unknown'
 
         return self._server_version, self._server_revision
@@ -279,13 +235,7 @@ class Gitlab(object):
             if hasattr(obj, attr):
                 url_attr = attr
         obj_url = getattr(obj, url_attr)
-
-        # TODO(gpocentek): the following will need an update when we have
-        # object with both urlPlural and _ACTION_url attributes
-        if id_ is None and obj._urlPlural is not None:
-            url = obj._urlPlural % args
-        else:
-            url = obj_url % args
+        url = obj_url % args
 
         if id_ is not None:
             return '%s/%s' % (url, str(id_))
@@ -345,286 +295,11 @@ class Gitlab(object):
             'verify': self.ssl_verify
         }
 
-    def _raw_get(self, path_, content_type=None, streamed=False, **kwargs):
-        if path_.startswith('http://') or path_.startswith('https://'):
-            url = path_
-        else:
-            url = '%s%s' % (self._url, path_)
-
-        opts = self._get_session_opts(content_type)
-        try:
-            return self.session.get(url, params=kwargs, stream=streamed,
-                                    **opts)
-        except Exception as e:
-            raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % e)
-
-    def _raw_list(self, path_, cls, **kwargs):
-        params = kwargs.copy()
-
-        catch_recursion_limit = kwargs.get('safe_all', False)
-        get_all_results = (kwargs.get('all', False) is True
-                           or catch_recursion_limit)
-
-        # Remove these keys to avoid breaking the listing (urls will get too
-        # long otherwise)
-        for key in ['all', 'next_url', 'safe_all']:
-            if key in params:
-                del params[key]
-
-        r = self._raw_get(path_, **params)
-        raise_error_from_response(r, GitlabListError)
-
-        # These attributes are not needed in the object
-        for key in ['page', 'per_page', 'sudo']:
-            if key in params:
-                del params[key]
-
-        # Add _from_api manually, because we are not creating objects
-        # through normal path_
-        params['_from_api'] = True
-
-        results = [cls(self, item, **params) for item in r.json()
-                   if item is not None]
-        try:
-            if ('next' in r.links and 'url' in r.links['next']
-                    and get_all_results):
-                args = kwargs.copy()
-                args['next_url'] = r.links['next']['url']
-                results.extend(self.list(cls, **args))
-        except Exception as e:
-            # Catch the recursion limit exception if the 'safe_all'
-            # kwarg was provided
-            if not (catch_recursion_limit and
-                    "maximum recursion depth exceeded" in str(e)):
-                raise e
-
-        return results
-
-    def _raw_post(self, path_, data=None, content_type=None,
-                  files=None, **kwargs):
-        url = '%s%s' % (self._url, path_)
-        opts = self._get_session_opts(content_type)
-        try:
-            return self.session.post(url, params=kwargs, data=data,
-                                     files=files, **opts)
-        except Exception as e:
-            raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % e)
-
-    def _raw_put(self, path_, data=None, content_type=None, **kwargs):
-        url = '%s%s' % (self._url, path_)
-        opts = self._get_session_opts(content_type)
-        try:
-            return self.session.put(url, data=data, params=kwargs, **opts)
-        except Exception as e:
-            raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % e)
-
-    def _raw_delete(self, path_, content_type=None, **kwargs):
-        url = '%s%s' % (self._url, path_)
-        opts = self._get_session_opts(content_type)
-        try:
-            return self.session.delete(url, params=kwargs, **opts)
-        except Exception as e:
-            raise GitlabConnectionError(
-                "Can't connect to GitLab server (%s)" % e)
-
-    def list(self, obj_class, **kwargs):
-        """Request the listing of GitLab resources.
-
-        Args:
-            obj_class (object): The class of resource to request.
-            **kwargs: Additional arguments to send to GitLab.
-
-        Returns:
-            list(obj_class): A list of objects of class `obj_class`.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabListError: If the server fails to perform the request.
-        """
-        missing = []
-        for k in itertools.chain(obj_class.requiredUrlAttrs,
-                                 obj_class.requiredListAttrs):
-            if k not in kwargs:
-                missing.append(k)
-        if missing:
-            raise GitlabListError('Missing attribute(s): %s' %
-                                  ", ".join(missing))
-
-        url = self._construct_url(id_=None, obj=obj_class, parameters=kwargs)
-
-        return self._raw_list(url, obj_class, **kwargs)
-
-    def get(self, obj_class, id=None, **kwargs):
-        """Request a GitLab resources.
-
-        Args:
-            obj_class (object): The class of resource to request.
-            id: The object ID.
-            **kwargs: Additional arguments to send to GitLab.
-
-        Returns:
-            obj_class: An object of class `obj_class`.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabGetError: If the server fails to perform the request.
-        """
-        missing = []
-        for k in itertools.chain(obj_class.requiredUrlAttrs,
-                                 obj_class.requiredGetAttrs):
-            if k not in kwargs:
-                missing.append(k)
-        if missing:
-            raise GitlabGetError('Missing attribute(s): %s' %
-                                 ", ".join(missing))
-
-        url = self._construct_url(id_=_sanitize(id), obj=obj_class,
-                                  parameters=kwargs)
-
-        r = self._raw_get(url, **kwargs)
-        raise_error_from_response(r, GitlabGetError)
-        return r.json()
-
-    def delete(self, obj, id=None, **kwargs):
-        """Delete an object on the GitLab server.
-
-        Args:
-            obj (object or id): The object, or the class of the object to
-                delete. If it is the class, the id of the object must be
-                specified as the `id` arguments.
-            id: ID of the object to remove. Required if `obj` is a class.
-            **kwargs: Additional arguments to send to GitLab.
-
-        Returns:
-            bool: True if the operation succeeds.
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabDeleteError: If the server fails to perform the request.
-        """
-        if inspect.isclass(obj):
-            if not issubclass(obj, GitlabObject):
-                raise GitlabError("Invalid class: %s" % obj)
-
-        params = {obj.idAttr: id if id else getattr(obj, obj.idAttr)}
-        params.update(kwargs)
-
-        missing = []
-        for k in itertools.chain(obj.requiredUrlAttrs,
-                                 obj.requiredDeleteAttrs):
-            if k not in params:
-                try:
-                    params[k] = getattr(obj, k)
-                except KeyError:
-                    missing.append(k)
-        if missing:
-            raise GitlabDeleteError('Missing attribute(s): %s' %
-                                    ", ".join(missing))
-
-        obj_id = params[obj.idAttr] if obj._id_in_delete_url else None
-        url = self._construct_url(id_=obj_id, obj=obj, parameters=params)
-
-        if obj._id_in_delete_url:
-            # The ID is already built, no need to add it as extra key in query
-            # string
-            params.pop(obj.idAttr)
-
-        r = self._raw_delete(url, **params)
-        raise_error_from_response(r, GitlabDeleteError,
-                                  expected_code=[200, 202, 204])
-        return True
-
-    def create(self, obj, **kwargs):
-        """Create an object on the GitLab server.
-
-        The object class and attributes define the request to be made on the
-        GitLab server.
-
-        Args:
-            obj (object): The object to create.
-            **kwargs: Additional arguments to send to GitLab.
-
-        Returns:
-            str: A json representation of the object as returned by the GitLab
-                server
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabCreateError: If the server fails to perform the request.
-        """
-        params = obj.__dict__.copy()
-        params.update(kwargs)
-        missing = []
-        for k in itertools.chain(obj.requiredUrlAttrs,
-                                 obj.requiredCreateAttrs):
-            if k not in params:
-                missing.append(k)
-        if missing:
-            raise GitlabCreateError('Missing attribute(s): %s' %
-                                    ", ".join(missing))
-
-        url = self._construct_url(id_=None, obj=obj, parameters=params,
-                                  action='create')
-
-        # build data that can really be sent to server
-        data = obj._data_for_gitlab(extra_parameters=kwargs)
-
-        r = self._raw_post(url, data=data, content_type='application/json')
-        raise_error_from_response(r, GitlabCreateError, 201)
-        return r.json()
-
-    def update(self, obj, **kwargs):
-        """Update an object on the GitLab server.
-
-        The object class and attributes define the request to be made on the
-        GitLab server.
-
-        Args:
-            obj (object): The object to create.
-            **kwargs: Additional arguments to send to GitLab.
-
-        Returns:
-            str: A json representation of the object as returned by the GitLab
-                server
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached.
-            GitlabUpdateError: If the server fails to perform the request.
-        """
-        params = obj.__dict__.copy()
-        params.update(kwargs)
-        missing = []
-        if obj.requiredUpdateAttrs or obj.optionalUpdateAttrs:
-            required_attrs = obj.requiredUpdateAttrs
-        else:
-            required_attrs = obj.requiredCreateAttrs
-        for k in itertools.chain(obj.requiredUrlAttrs, required_attrs):
-            if k not in params:
-                missing.append(k)
-        if missing:
-            raise GitlabUpdateError('Missing attribute(s): %s' %
-                                    ", ".join(missing))
-        obj_id = params[obj.idAttr] if obj._id_in_update_url else None
-        url = self._construct_url(id_=obj_id, obj=obj, parameters=params)
-
-        # build data that can really be sent to server
-        data = obj._data_for_gitlab(extra_parameters=kwargs, update=True)
-
-        r = self._raw_put(url, data=data, content_type='application/json')
-        raise_error_from_response(r, GitlabUpdateError)
-        return r.json()
-
     def _build_url(self, path):
         """Returns the full url from path.
 
         If path is already a url, return it unchanged. If it's a path, append
         it to the stored url.
-
-        This is a low-level method, different from _construct_url _build_url
-        have no knowledge of GitlabObject's.
 
         Returns:
             str: The full URL

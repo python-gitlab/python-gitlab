@@ -197,43 +197,6 @@ class GitlabOwnershipError(GitlabOperationError):
     pass
 
 
-def raise_error_from_response(response, error, expected_code=200):
-    """Tries to parse gitlab error message from response and raises error.
-
-    Do nothing if the response status is the expected one.
-
-    If response status code is 401, raises instead GitlabAuthenticationError.
-
-    Args:
-        response: requests response object
-        error: Error-class or dict {return-code => class} of possible error
-               class to raise. Should be inherited from GitLabError
-    """
-
-    if isinstance(expected_code, int):
-        expected_codes = [expected_code]
-    else:
-        expected_codes = expected_code
-
-    if response.status_code in expected_codes:
-        return
-
-    try:
-        message = response.json()['message']
-    except (KeyError, ValueError, TypeError):
-        message = response.content
-
-    if isinstance(error, dict):
-        error = error.get(response.status_code, GitlabOperationError)
-    else:
-        if response.status_code == 401:
-            error = GitlabAuthenticationError
-
-    raise error(error_message=message,
-                response_code=response.status_code,
-                response_body=response.content)
-
-
 def on_http_error(error):
     """Manage GitlabHttpError exceptions.
 

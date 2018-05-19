@@ -6,7 +6,6 @@ Subpackages
 
 .. toctree::
 
-    gitlab.v3
     gitlab.v4
 
 Submodules

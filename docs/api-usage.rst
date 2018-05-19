@@ -2,13 +2,12 @@
 Getting started with the API
 ############################
 
-python-gitlab supports both GitLab v3 and v4 APIs.
+python-gitlab supports both GitLab v3 and v4 APIs. To use the v3 make sure to
 
-v3 being deprecated by GitLab, its support in python-gitlab will be minimal.
-The development team will focus on v4.
+.. note::
 
-v4 is the default API used by python-gitlab since version 1.3.0.
-
+   To use the v3 make sure to install python-gitlab 1.4. Only the v4 API is
+   documented here. See the documentation of earlier version for the v3 API.
 
 ``gitlab.Gitlab`` class
 =======================
@@ -60,23 +59,6 @@ https://gist.github.com/gpocentek/bd4c3fbf8a6ce226ebddc4aad6b46c0a.
 See `issue 380 <https://github.com/python-gitlab/python-gitlab/issues/380>`_
 for a detailed discussion.
 
-API version
-===========
-
-``python-gitlab`` uses the v4 GitLab API by default. Use the ``api_version``
-parameter to switch to v3:
-
-.. code-block:: python
-
-   import gitlab
-
-   gl = gitlab.Gitlab('http://10.0.0.1', 'JVNSESs8EwWRx5yDxM5q', api_version=3)
-
-.. warning::
-
-   The python-gitlab API is not the same for v3 and v4. Make sure to read
-   :ref:`switching_to_v4` if you are upgrading from v3.
-
 Managers
 ========
 
@@ -103,10 +85,10 @@ Examples:
    user = gl.users.create(user_data)
    print(user)
 
-You can list the mandatory and optional attributes for object creation
-with the manager's ``get_create_attrs()`` method. It returns 2 tuples, the
-first one is the list of mandatory attributes, the second one the list of
-optional attribute:
+You can list the mandatory and optional attributes for object creation and
+update with the manager's ``get_create_attrs()`` and ``get_update_attrs()``
+methods. They return 2 tuples, the first one is the list of mandatory
+attributes, the second one the list of optional attribute:
 
 .. code-block:: python
 
@@ -116,19 +98,11 @@ optional attribute:
 
 The attributes of objects are defined upon object creation, and depend on the
 GitLab API itself. To list the available information associated with an object
-use the python introspection tools for v3, or the ``attributes`` attribute for
-v4:
+use the ``attributes`` attribute:
 
 .. code-block:: python
 
    project = gl.projects.get(1)
-
-   # v3
-   print(vars(project))
-   # or
-   print(project.__dict__)
-
-   # v4
    print(project.attributes)
 
 Some objects also provide managers to access related GitLab resources:
@@ -171,32 +145,21 @@ The ``gitlab`` package provides some base types.
 
 * ``gitlab.Gitlab`` is the primary class, handling the HTTP requests. It holds
   the GitLab URL and authentication information.
-
-For v4 the following types are defined:
-
 * ``gitlab.base.RESTObject`` is the base class for all the GitLab v4 objects.
   These objects provide an abstraction for GitLab resources (projects, groups,
   and so on).
 * ``gitlab.base.RESTManager`` is the base class for v4 objects managers,
   providing the API to manipulate the resources and their attributes.
 
-For v3 the following types are defined:
+Lazy objects
+============
 
-* ``gitlab.base.GitlabObject`` is the base class for all the GitLab v3 objects.
-  These objects provide an abstraction for GitLab resources (projects, groups,
-  and so on).
-* ``gitlab.base.BaseManager`` is the base class for v3 objects managers,
-  providing the API to manipulate the resources and their attributes.
-
-Lazy objects (v4 only)
-======================
-
-To avoid useless calls to the server API, you can create lazy objects. These
+To avoid useless API calls to the server you can create lazy objects. These
 objects are created locally using a known ID, and give access to other managers
 and methods.
 
 The following example will only make one API call to the GitLab server to star
-a project:
+a project (the previous example used 2 API calls):
 
 .. code-block:: python
 
@@ -214,9 +177,9 @@ listing methods support the ``page`` and ``per_page`` parameters:
 
    ten_first_groups = gl.groups.list(page=1, per_page=10)
 
-.. note::
+.. warning::
 
-   The first page is page 1, not page 0, except for project commits in v3 API.
+   The first page is page 1, not page 0.
 
 By default GitLab does not return the complete list of items. Use the ``all``
 parameter to get all the items when using listing methods:
@@ -226,18 +189,9 @@ parameter to get all the items when using listing methods:
    all_groups = gl.groups.list(all=True)
    all_owned_projects = gl.projects.owned(all=True)
 
-.. warning::
-
-   With API v3 python-gitlab will iterate over the list by calling the
-   corresponding API multiple times. This might take some time if you have a
-   lot of items to retrieve. This might also consume a lot of memory as all the
-   items will be stored in RAM. If you're encountering the python recursion
-   limit exception, use ``safe_all=True`` to stop pagination automatically if
-   the recursion limit is hit.
-
-With API v4, ``list()`` methods can also return a generator object which will
-handle the next calls to the API when required. This is the recommended way to
-iterate through a large number of items:
+``list()`` methods can also return a generator object which will handle the
+next calls to the API when required. This is the recommended way to iterate
+through a large number of items:
 
 .. code-block:: python
 
@@ -331,12 +285,12 @@ http://docs.python-requests.org/en/master/user/advanced/#client-side-certificate
 Rate limits
 -----------
 
-python-gitlab will obey the rate limit of the GitLab server by default.
-On receiving a 429 response (Too Many Requests), python-gitlab will sleep for the amount of time
-in the Retry-After header, that GitLab sends back.
+python-gitlab obeys the rate limit of the GitLab server by default.  On
+receiving a 429 response (Too Many Requests), python-gitlab sleeps for the
+amount of time in the Retry-After header that GitLab sends back.
 
-If you don't want to wait, you can disable the rate-limiting feature, by supplying the
-``obey_rate_limit`` argument.
+If you don't want to wait, you can disable the rate-limiting feature, by
+supplying the ``obey_rate_limit`` argument.
 
 .. code-block:: python
 

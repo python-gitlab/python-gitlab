@@ -214,12 +214,12 @@ assert(len(gl.groups.list(search='oup1')) == 1)
 assert(group3.parent_id == p_id)
 assert(group2.subgroups.list()[0].id == group3.id)
 
-group1.members.create({'access_level': gitlab.Group.OWNER_ACCESS,
+group1.members.create({'access_level': gitlab.const.OWNER_ACCESS,
                        'user_id': user1.id})
-group1.members.create({'access_level': gitlab.Group.GUEST_ACCESS,
+group1.members.create({'access_level': gitlab.const.GUEST_ACCESS,
                        'user_id': user2.id})
 
-group2.members.create({'access_level': gitlab.Group.OWNER_ACCESS,
+group2.members.create({'access_level': gitlab.const.OWNER_ACCESS,
                        'user_id': user2.id})
 
 # Administrator belongs to the groups
@@ -229,10 +229,10 @@ assert(len(group2.members.list()) == 2)
 group1.members.delete(user1.id)
 assert(len(group1.members.list()) == 2)
 member = group1.members.get(user2.id)
-member.access_level = gitlab.Group.OWNER_ACCESS
+member.access_level = gitlab.const.OWNER_ACCESS
 member.save()
 member = group1.members.get(user2.id)
-assert(member.access_level == gitlab.Group.OWNER_ACCESS)
+assert(member.access_level == gitlab.const.OWNER_ACCESS)
 
 group2.members.delete(gl.user.id)
 

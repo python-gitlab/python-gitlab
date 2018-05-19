@@ -137,6 +137,6 @@ class GitlabConfigParser(object):
             self.api_version = self._config.get(self.gitlab_id, 'api_version')
         except Exception:
             pass
-        if self.api_version not in ('3', '4'):
+        if self.api_version not in ('4',):
             raise GitlabDataError("Unsupported API version: %s" %
                                   self.api_version)
