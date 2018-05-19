@@ -585,7 +585,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
-.. _1.3.0: https://github.com/python-gitlab/python-gitlab/compare/1.3.0...1.4.0
+.. _1.4.0: https://github.com/python-gitlab/python-gitlab/compare/1.3.0...1.4.0
 .. _1.3.0: https://github.com/python-gitlab/python-gitlab/compare/1.2.0...1.3.0
 .. _1.2.0: https://github.com/python-gitlab/python-gitlab/compare/1.1.0...1.2.0
 .. _1.1.0: https://github.com/python-gitlab/python-gitlab/compare/1.0.2...1.1.0
