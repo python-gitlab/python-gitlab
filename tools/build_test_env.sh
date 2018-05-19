@@ -118,7 +118,7 @@ while :; do
     curl -s http://localhost:8080/users/sign_in 2>/dev/null \
         | grep -q "GitLab Community Edition" && break
     I=$((I+5))
-    [ "$I" -lt 120 ] || fatal "timed out"
+    [ "$I" -lt 180 ] || fatal "timed out"
 done
 
 # Get the token
