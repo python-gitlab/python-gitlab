@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import warnings
-
 import gitlab
 from gitlab import base
 from gitlab import cli
@@ -129,41 +127,6 @@ class ListMixin(object):
             return [self._obj_cls(self, item) for item in obj]
         else:
             return base.RESTObjectList(self, self._obj_cls, obj)
-
-
-class GetFromListMixin(ListMixin):
-    """This mixin is deprecated."""
-
-    def get(self, id, **kwargs):
-        """Retrieve a single object.
-
-        This Method is deprecated.
-
-        Args:
-            id (int or str): ID of the object to retrieve
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
-
-        Returns:
-            object: The generated RESTObject
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabGetError: If the server cannot perform the request
-        """
-        warnings.warn('The get() method for this object is deprecated '
-                      'and will be removed in a future version.',
-                      DeprecationWarning)
-        try:
-            gen = self.list()
-        except exc.GitlabListError:
-            raise exc.GitlabGetError(response_code=404,
-                                     error_message="Not found")
-
-        for obj in gen:
-            if str(obj.get_id()) == str(id):
-                return obj
-
-        raise exc.GitlabGetError(response_code=404, error_message="Not found")
 
 
 class RetrieveMixin(ListMixin, GetMixin):

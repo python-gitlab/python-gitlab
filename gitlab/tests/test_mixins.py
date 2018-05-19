@@ -238,26 +238,6 @@ class TestMixinMethods(unittest.TestCase):
             self.assertEqual(obj.foo, 'bar')
             self.assertRaises(StopIteration, obj_list.next)
 
-    def test_get_from_list_mixin(self):
-        class M(GetFromListMixin, FakeManager):
-            pass
-
-        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/tests',
-                  method="get")
-        def resp_cont(url, request):
-            headers = {'Content-Type': 'application/json'}
-            content = '[{"id": 42, "foo": "bar"},{"id": 43, "foo": "baz"}]'
-            return response(200, content, headers, None, 5, request)
-
-        with HTTMock(resp_cont):
-            mgr = M(self.gl)
-            obj = mgr.get(42)
-            self.assertIsInstance(obj, FakeObject)
-            self.assertEqual(obj.foo, 'bar')
-            self.assertEqual(obj.id, 42)
-
-            self.assertRaises(GitlabGetError, mgr.get, 44)
-
     def test_create_mixin_get_attrs(self):
         class M1(CreateMixin, FakeManager):
             pass

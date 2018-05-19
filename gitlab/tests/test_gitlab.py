@@ -517,9 +517,9 @@ class TestGitlab(unittest.TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_get_issue):
-            data = self.gl.issues.get(2)
-            self.assertEqual(data.id, 2)
-            self.assertEqual(data.name, 'other_name')
+            data = self.gl.issues.list()
+            self.assertEqual(data[1].id, 2)
+            self.assertEqual(data[1].name, 'other_name')
 
     def test_users(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/users/1",

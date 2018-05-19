@@ -402,10 +402,10 @@ admin_project.environments.create({'name': 'env1', 'external_url':
                                    'http://fake.env/whatever'})
 envs = admin_project.environments.list()
 assert(len(envs) == 1)
-env = admin_project.environments.get(envs[0].id)
+env = envs[0]
 env.external_url = 'http://new.env/whatever'
 env.save()
-env = admin_project.environments.get(envs[0].id)
+env = admin_project.environments.list()[0]
 assert(env.external_url == 'http://new.env/whatever')
 env.delete()
 assert(len(admin_project.environments.list()) == 0)
@@ -439,7 +439,7 @@ assert(len(sudo_project.keys.list()) == 0)
 
 # labels
 label1 = admin_project.labels.create({'name': 'label1', 'color': '#778899'})
-label1 = admin_project.labels.get('label1')
+label1 = admin_project.labels.list()[0]
 assert(len(admin_project.labels.list()) == 1)
 label1.new_name = 'label1updated'
 label1.save()

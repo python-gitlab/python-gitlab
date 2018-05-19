@@ -180,7 +180,7 @@ class UserKey(ObjectDeleteMixin, RESTObject):
     pass
 
 
-class UserKeyManager(GetFromListMixin, CreateMixin, DeleteMixin, RESTManager):
+class UserKeyManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = '/users/%(user_id)s/keys'
     _obj_cls = UserKey
     _from_parent_attrs = {'user_id': 'id'}
@@ -428,7 +428,7 @@ class DeployKey(RESTObject):
     pass
 
 
-class DeployKeyManager(GetFromListMixin, RESTManager):
+class DeployKeyManager(ListMixin, RESTManager):
     _path = '/deploy_keys'
     _obj_cls = DeployKey
 
@@ -513,7 +513,7 @@ class GroupAccessRequest(AccessRequestMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class GroupAccessRequestManager(GetFromListMixin, CreateMixin, DeleteMixin,
+class GroupAccessRequestManager(ListMixin, CreateMixin, DeleteMixin,
                                 RESTManager):
     _path = '/groups/%(group_id)s/access_requests'
     _obj_cls = GroupAccessRequest
@@ -535,7 +535,7 @@ class GroupIssue(RESTObject):
     pass
 
 
-class GroupIssueManager(GetFromListMixin, RESTManager):
+class GroupIssueManager(ListMixin, RESTManager):
     _path = '/groups/%(group_id)s/issues'
     _obj_cls = GroupIssue
     _from_parent_attrs = {'group_id': 'id'}
@@ -648,7 +648,7 @@ class GroupProject(RESTObject):
     pass
 
 
-class GroupProjectManager(GetFromListMixin, RESTManager):
+class GroupProjectManager(ListMixin, RESTManager):
     _path = '/groups/%(group_id)s/projects'
     _obj_cls = GroupProject
     _from_parent_attrs = {'group_id': 'id'}
@@ -660,7 +660,7 @@ class GroupSubgroup(RESTObject):
     pass
 
 
-class GroupSubgroupManager(GetFromListMixin, RESTManager):
+class GroupSubgroupManager(ListMixin, RESTManager):
     _path = '/groups/%(group_id)s/subgroups'
     _obj_cls = GroupSubgroup
     _from_parent_attrs = {'group_id': 'id'}
@@ -744,7 +744,7 @@ class Issue(RESTObject):
     _short_print_attr = 'title'
 
 
-class IssueManager(GetFromListMixin, RESTManager):
+class IssueManager(ListMixin, RESTManager):
     _path = '/issues'
     _obj_cls = Issue
     _list_filters = ('state', 'labels', 'order_by', 'sort')
@@ -1092,7 +1092,7 @@ class ProjectCommitStatus(RESTObject, RefreshMixin):
     pass
 
 
-class ProjectCommitStatusManager(GetFromListMixin, CreateMixin, RESTManager):
+class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
     _path = ('/projects/%(project_id)s/repository/commits/%(commit_id)s'
              '/statuses')
     _obj_cls = ProjectCommitStatus
@@ -1190,7 +1190,7 @@ class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectEnvironmentManager(GetFromListMixin, CreateMixin, UpdateMixin,
+class ProjectEnvironmentManager(ListMixin, CreateMixin, UpdateMixin,
                                 DeleteMixin, RESTManager):
     _path = '/projects/%(project_id)s/environments'
     _obj_cls = ProjectEnvironment
@@ -1779,8 +1779,8 @@ class ProjectLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin,
         self._update_attrs(server_data)
 
 
-class ProjectLabelManager(GetFromListMixin, CreateMixin, UpdateMixin,
-                          DeleteMixin, RESTManager):
+class ProjectLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin,
+                          RESTManager):
     _path = '/projects/%(project_id)s/labels'
     _obj_cls = ProjectLabel
     _from_parent_attrs = {'project_id': 'id'}
@@ -2107,7 +2107,7 @@ class ProjectPipelineJob(ProjectJob):
     pass
 
 
-class ProjectPipelineJobManager(GetFromListMixin, RESTManager):
+class ProjectPipelineJobManager(ListMixin, RESTManager):
     _path = '/projects/%(project_id)s/pipelines/%(pipeline_id)s/jobs'
     _obj_cls = ProjectPipelineJob
     _from_parent_attrs = {'project_id': 'project_id', 'pipeline_id': 'id'}
@@ -2344,7 +2344,7 @@ class ProjectAccessRequest(AccessRequestMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectAccessRequestManager(GetFromListMixin, CreateMixin, DeleteMixin,
+class ProjectAccessRequestManager(ListMixin, CreateMixin, DeleteMixin,
                                   RESTManager):
     _path = '/projects/%(project_id)s/access_requests'
     _obj_cls = ProjectAccessRequest
@@ -2902,7 +2902,7 @@ class Todo(ObjectDeleteMixin, RESTObject):
         self._update_attrs(server_data)
 
 
-class TodoManager(GetFromListMixin, DeleteMixin, RESTManager):
+class TodoManager(ListMixin, DeleteMixin, RESTManager):
     _path = '/todos'
     _obj_cls = Todo
     _list_filters = ('action', 'author_id', 'project_id', 'state', 'type')
