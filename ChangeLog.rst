@@ -1,6 +1,38 @@
 ChangeLog
 =========
 
+Version 1.4.0_ - 2018-05-19
+---------------------------
+
+* Require requests>=2.4.2
+* ProjectKeys can be updated
+* Add support for unsharing projects (v3/v4)
+* [cli] fix listing for json and yaml output
+* Fix typos in documentation
+* Introduce RefreshMixin
+* [docs] Fix the time tracking examples
+* [docs] Commits: add an example of binary file creation
+* [cli] Allow to read args from files
+* Add support for recursive tree listing
+* [cli] Restore the --help option behavior
+* Add basic unit tests for v4 CLI
+* [cli] Fix listing of strings
+* Support downloading a single artifact file
+* Update docs copyright years
+* Implement attribute types to handle special cases
+* [docs] fix GitLab reference for notes
+* Expose additional properties for Gitlab objects
+* Fix the impersonation token deletion example
+* feat: obey the rate limit
+* Fix URL encoding on branch methods
+* [docs] add a code example for listing commits of a MR
+* [docs] update service.available() example for API v4
+* [tests] fix functional tests for python3
+* api-usage: bit more detail for listing with `all`
+* More efficient .get() for group members
+* Add docs for the `files` arg in http_*
+* Deprecate GetFromListMixin
+
 Version 1.3.0_ - 2018-02-18
 ---------------------------
 
@@ -553,6 +585,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
+.. _1.3.0: https://github.com/python-gitlab/python-gitlab/compare/1.3.0...1.4.0
 .. _1.3.0: https://github.com/python-gitlab/python-gitlab/compare/1.2.0...1.3.0
 .. _1.2.0: https://github.com/python-gitlab/python-gitlab/compare/1.1.0...1.2.0
 .. _1.1.0: https://github.com/python-gitlab/python-gitlab/compare/1.0.2...1.1.0
