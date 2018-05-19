@@ -4,6 +4,27 @@ Release notes
 
 This page describes important changes between python-gitlab releases.
 
+Changes from 1.4 to 1.5
+=======================
+
+* APIv3 support has been removed. Use the 1.4 release/branch if you need v3
+  support.
+* The ``GetFromListMixin`` class has been removed. The ``get()`` method is not
+  available anymore for the following managers:
+  - UserKeyManager
+  - DeployKeyManager
+  - GroupAccessRequestManager
+  - GroupIssueManager
+  - GroupProjectManager
+  - GroupSubgroupManager
+  - IssueManager
+  - ProjectCommitStatusManager
+  - ProjectEnvironmentManager
+  - ProjectLabelManager
+  - ProjectPipelineJobManager
+  - ProjectAccessRequestManager
+  - TodoManager
+
 Changes from 1.3 to 1.4
 =======================
 
