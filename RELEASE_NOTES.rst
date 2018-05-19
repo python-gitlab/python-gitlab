@@ -22,6 +22,26 @@ Changes from 1.3 to 1.4
 * python-gitlab now handles the server rate limiting feature. It will pause for
   the required time when reaching the limit (`documentation
   <http://python-gitlab.readthedocs.io/en/master/api-usage.html#rate-limits>`__)
+* The ``GetFromListMixin.get()`` method is deprecated and will be removed in
+  the next python-gitlab version. The goal of this mixin/method is to provide a
+  way to get an object by looping through a list for GitLab objects that don't
+  support the GET method. The method `is broken
+  <https://github.com/python-gitlab/python-gitlab/issues/499>`__ and conflicts
+  with the GET method now supported by some GitLab objects.
+
+  You can implement your own method with something like:
+
+  .. code-block:: python
+
+     def get_from_list(self, id):
+         for obj in self.list(as_list=False):
+             if obj.get_id() == id:
+                 return obj
+
+* The ``GroupMemberManager``, ``NamespaceManager`` and ``ProjectBoardManager``
+  managers now use the GET API from GitLab instead of the
+  ``GetFromListMixin.get()`` method.
+
 
 Changes from 1.2 to 1.3
 =======================

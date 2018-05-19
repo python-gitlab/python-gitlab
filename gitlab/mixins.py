@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import warnings
+
 import gitlab
 from gitlab import base
 from gitlab import cli
@@ -130,8 +132,12 @@ class ListMixin(object):
 
 
 class GetFromListMixin(ListMixin):
+    """This mixin is deprecated."""
+
     def get(self, id, **kwargs):
         """Retrieve a single object.
+
+        This Method is deprecated.
 
         Args:
             id (int or str): ID of the object to retrieve
@@ -144,6 +150,9 @@ class GetFromListMixin(ListMixin):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
+        warnings.warn('The get() method for this object is deprecated '
+                      'and will be removed in a future version.',
+                       DeprecationWarning)
         try:
             gen = self.list()
         except exc.GitlabListError:

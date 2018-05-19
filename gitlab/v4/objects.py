@@ -547,8 +547,7 @@ class GroupMember(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'username'
 
 
-class GroupMemberManager(ListMixin, GetMixin, CreateMixin, UpdateMixin,
-                         DeleteMixin, RESTManager):
+class GroupMemberManager(CRUDMixin, RESTManager):
     _path = '/groups/%(group_id)s/members'
     _obj_cls = GroupMember
     _from_parent_attrs = {'group_id': 'id'}
@@ -822,7 +821,7 @@ class Namespace(RESTObject):
     pass
 
 
-class NamespaceManager(GetFromListMixin, RESTManager):
+class NamespaceManager(RetrieveMixin, RESTManager):
     _path = '/namespaces'
     _obj_cls = Namespace
     _list_filters = ('search', )
@@ -854,7 +853,7 @@ class ProjectBoard(RESTObject):
     _managers = (('lists', 'ProjectBoardListManager'), )
 
 
-class ProjectBoardManager(GetFromListMixin, RESTManager):
+class ProjectBoardManager(RetrieveMixin, RESTManager):
     _path = '/projects/%(project_id)s/boards'
     _obj_cls = ProjectBoard
     _from_parent_attrs = {'project_id': 'id'}
