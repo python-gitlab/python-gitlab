@@ -1,84 +1,38 @@
-Manager for {{ cls | classref() }} objects.
-
-{% if cls.canUpdate %}
-{{ cls | classref() }} objects can be updated.
-{% else %}
-{{ cls | classref() }} objects **cannot** be updated.
+{% if cls._list_filters %}
+**Object listing filters**
+{% for item in cls._list_filters %}
+- ``{{ item }}``
+{% endfor %}
 {% endif %}
 
-{% if cls.canList %}
-.. method:: list(**kwargs)
-
-   Returns a list of objects of type {{ cls | classref() }}.
-
-   Available keys for ``kwargs`` are:
-
-   {% for k in cls.requiredListAttrs %}
-   * ``{{ k }}`` (required)
-   {% endfor %}
-   {% for k in cls.optionalListAttrs %}
-   * ``{{ k }}`` (optional)
-   {% endfor %}
-   * ``per_page`` (int): number of item per page. May be limited  by the server.
-   * ``page`` (int): page to retrieve
-   * ``all`` (bool): iterate over all the pages and return all the entries
-   * ``sudo`` (string or int): run the request as another user (requires admin
-     permissions)
+{% if cls._create_attrs %}
+**Object Creation**
+{% if cls._create_attrs[0] %}
+Mandatory attributes:
+{% for item in cls._create_attrs[0] %}
+- ``{{ item }}``
+{% endfor %}
+{% endif %}
+{% if cls._create_attrs[1] %}
+Optional attributes:
+{% for item in cls._create_attrs[1] %}
+- ``{{ item }}``
+{% endfor %}
+{% endif %}
 {% endif %}
 
-{% if cls.canGet %}
-{% if cls.getRequiresId %}
-.. method:: get(id, **kwargs)
-
-   Get a single object of type {{ cls | classref() }} using its ``id``.
-{% else %}
-.. method:: get(**kwargs)
-
-   Get a single object of type {{ cls | classref() }}.
+{% if cls._update_attrs %}
+**Object update**
+{% if cls._update_attrs[0] %}
+Mandatory attributes for object update:
+{% for item in cls._update_attrs[0] %}
+- ``{{ item }}``
+{% endfor %}
 {% endif %}
-
-   Available keys for ``kwargs`` are:
-
-   {% for k in cls.requiredGetAttrs %}
-   * ``{{ k }}`` (required)
-   {% endfor %}
-   {% for k in cls.optionalGetAttrs %}
-   * ``{{ k }}`` (optional)
-   {% endfor %}
-   * ``sudo`` (string or int): run the request as another user (requires admin
-     permissions)
+{% if cls._update_attrs[1] %}
+Optional attributes for object update:
+{% for item in cls._update_attrs[1] %}
+- ``{{ item }}``
+{% endfor %}
 {% endif %}
-
-{% if cls.canCreate %}
-.. method:: create(data, **kwargs)
-
-   Create an object of type {{ cls | classref() }}.
-
-   ``data`` is a dict defining the object attributes. Available attributes are:
-
-   {% for a in cls.requiredUrlAttrs %}
-   * ``{{ a }}`` (required if not discovered on the parent objects)
-   {% endfor %}
-   {% for a in cls.requiredCreateAttrs %}
-   * ``{{ a }}`` (required)
-   {% endfor %}
-   {% for a in cls.optionalCreateAttrs %}
-   * ``{{ a }}`` (optional)
-   {% endfor %}
-
-   Available keys for ``kwargs`` are:
-
-   * ``sudo`` (string or int): run the request as another user (requires admin
-     permissions)
-{% endif %}
-
-{% if cls.canDelete %}
-.. method:: delete(id, **kwargs)
-
-   Delete the object with ID ``id``.
-
-   Available keys for ``kwargs`` are:
-
-   * ``sudo`` (string or int): run the request as another user (requires admin
-     permissions)
 {% endif %}

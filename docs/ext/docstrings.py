@@ -53,23 +53,6 @@ class GitlabDocstring(GoogleDocstring):
         super(GitlabDocstring, self).__init__(docstring, config, app, what,
                                               name, obj, options)
 
-        if name and name.startswith('gitlab.v4.objects'):
-            return
-
-        if getattr(self._obj, '__name__', None) == 'Gitlab':
-            mgrs = []
-            gl = self._obj('http://dummy', private_token='dummy')
-            for item in vars(gl).items():
-                if hasattr(item[1], 'obj_cls'):
-                    mgrs.append(item)
-            self._parsed_lines.extend(self._build_doc('gl_tmpl.j2',
-                                                      mgrs=sorted(mgrs)))
-
-        # BaseManager
-        elif hasattr(self._obj, 'obj_cls') and self._obj.obj_cls is not None:
+        if name.startswith('gitlab.v4.objects') and name.endswith('Manager'):
             self._parsed_lines.extend(self._build_doc('manager_tmpl.j2',
-                                                      cls=self._obj.obj_cls))
-        # GitlabObject
-        elif hasattr(self._obj, 'canUpdate') and self._obj.canUpdate:
-            self._parsed_lines.extend(self._build_doc('object_tmpl.j2',
-                                                      obj=self._obj))
+                                                      cls=self._obj))
