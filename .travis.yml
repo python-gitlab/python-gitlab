@@ -15,9 +15,7 @@ env:
   - TOX_ENV=py27
   - TOX_ENV=pep8
   - TOX_ENV=docs
-  - TOX_ENV=py_func_v3
   - TOX_ENV=py_func_v4
-  - TOX_ENV=cli_func_v3
   - TOX_ENV=cli_func_v4
 install:
   - pip install tox
