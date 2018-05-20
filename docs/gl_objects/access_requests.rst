@@ -25,48 +25,29 @@ References
   + :class:`gitlab.v4.objects.GroupAccessRequestManager`
   + :attr:`gitlab.v4.objects.Group.accessrequests`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectAccessRequest`
-  + :class:`gitlab.v3.objects.ProjectAccessRequestManager`
-  + :attr:`gitlab.v3.objects.Project.accessrequests`
-  + :attr:`gitlab.Gitlab.project_accessrequests`
-  + :class:`gitlab.v3.objects.GroupAccessRequest`
-  + :class:`gitlab.v3.objects.GroupAccessRequestManager`
-  + :attr:`gitlab.v3.objects.Group.accessrequests`
-  + :attr:`gitlab.Gitlab.group_accessrequests`
-
 * GitLab API: https://docs.gitlab.com/ce/api/access_requests.html
 
 Examples
 --------
 
-List access requests from projects and groups:
+List access requests from projects and groups::
 
-.. literalinclude:: access_requests.py
-   :start-after: # list
-   :end-before: # end list
+    p_ars = project.accessrequests.list()
+    g_ars = group.accessrequests.list()
 
-Get a single request:
+Create an access request::
 
-.. literalinclude:: access_requests.py
-   :start-after: # get
-   :end-before: # end get
+    p_ar = project.accessrequests.create({})
+    g_ar = group.accessrequests.create({})
 
-Create an access request:
+Approve an access request::
 
-.. literalinclude:: access_requests.py
-   :start-after: # create
-   :end-before: # end create
+    ar.approve()  # defaults to DEVELOPER level
+    ar.approve(access_level=gitlab.MASTER_ACCESS)  # explicitly set access level
 
-Approve an access request:
+Deny (delete) an access request::
 
-.. literalinclude:: access_requests.py
-   :start-after: # approve
-   :end-before: # end approve
-
-Deny (delete) an access request:
-
-.. literalinclude:: access_requests.py
-   :start-after: # delete
-   :end-before: # end delete
+    project.accessrequests.delete(user_id)
+    group.accessrequests.delete(user_id)
+    # or
+    ar.delete()

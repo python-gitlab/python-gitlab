@@ -5,9 +5,6 @@ Merge requests
 You can use merge requests to notify a project that a branch is ready for
 merging. The owner of the target projet can accept the merge request.
 
-The v3 API uses the ``id`` attribute to identify a merge request, the v4 API
-uses the ``iid`` attribute.
-
 Reference
 ---------
 
@@ -16,13 +13,6 @@ Reference
   + :class:`gitlab.v4.objects.ProjectMergeRequest`
   + :class:`gitlab.v4.objects.ProjectMergeRequestManager`
   + :attr:`gitlab.v4.objects.Project.mergerequests`
-
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectMergeRequest`
-  + :class:`gitlab.v3.objects.ProjectMergeRequestManager`
-  + :attr:`gitlab.v3.objects.Project.mergerequests`
-  + :attr:`gitlab.Gitlab.project_mergerequests`
 
 * GitLab API: https://docs.gitlab.com/ce/api/merge_requests.html
 
@@ -35,7 +25,6 @@ List MRs for a project::
 
 You can filter and sort the returned list with the following parameters:
 
-* ``iid``: iid (unique ID for the project) of the MR (v3 API)
 * ``state``: state of the MR. It can be one of ``all``, ``merged``, ``opened``
   or ``closed``
 * ``order_by``: sort by ``created_at`` or ``updated_at``
@@ -79,8 +68,7 @@ Accept a MR::
 
 Cancel a MR when the build succeeds::
 
-    mr.cancel_merge_when_build_succeeds()  # v3
-    mr.cancel_merge_when_pipeline_succeeds()  # v4
+    mr.cancel_merge_when_pipeline_succeeds()
 
 List commits of a MR::
 

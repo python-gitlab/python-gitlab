@@ -11,37 +11,25 @@ Reference
   + :class:`gitlab.v4.objects.HookManager`
   + :attr:`gitlab.Gitlab.hooks`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.Hook`
-  + :class:`gitlab.v3.objects.HookManager`
-  + :attr:`gitlab.Gitlab.hooks`
-
 * GitLab API: https://docs.gitlab.com/ce/api/system_hooks.html
 
 Examples
 --------
 
-List the system hooks:
+List the system hooks::
 
-.. literalinclude:: system_hooks.py
-   :start-after: # list
-   :end-before: # end list
+    hooks = gl.hooks.list()
 
-Create a system hook:
+Create a system hook::
 
-.. literalinclude:: system_hooks.py
-   :start-after: # create
-   :end-before: # end create
+    gl.hooks.get(hook_id)
 
-Test a system hook. The returned object is not usable (it misses the hook ID):
+Test a system hook. The returned object is not usable (it misses the hook ID)::
 
-.. literalinclude:: system_hooks.py
-   :start-after: # test
-   :end-before: # end test
+    hook = gl.hooks.create({'url': 'http://your.target.url'})
 
-Delete a system hook:
+Delete a system hook::
 
-.. literalinclude:: system_hooks.py
-   :start-after: # delete
-   :end-before: # end delete
+    gl.hooks.delete(hook_id)
+    # or
+    hook.delete()

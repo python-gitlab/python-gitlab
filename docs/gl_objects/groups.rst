@@ -14,12 +14,6 @@ Reference
   + :class:`gitlab.v4.objects.GroupManager`
   + :attr:`gitlab.Gitlab.groups`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.Group`
-  + :class:`gitlab.v3.objects.GroupManager`
-  + :attr:`gitlab.Gitlab.groups`
-
 * GitLab API: https://docs.gitlab.com/ce/api/groups.html
 
 Examples
@@ -147,13 +141,6 @@ Reference
   + :class:`gitlab.v4.objects.GroupMember`
   + :class:`gitlab.v4.objects.GroupMemberManager`
   + :attr:`gitlab.v4.objects.Group.members`
-
-* v3 API:
-
-  + :class:`gitlab.v3.objects.GroupMember`
-  + :class:`gitlab.v3.objects.GroupMemberManager`
-  + :attr:`gitlab.v3.objects.Group.members`
-  + :attr:`gitlab.Gitlab.group_members`
 
 * GitLab API: https://docs.gitlab.com/ce/api/groups.html
 

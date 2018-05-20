@@ -19,26 +19,20 @@ References
 Examples
 --------
 
-Get the list of protected branches for a project:
+Get the list of protected branches for a project::
 
-.. literalinclude:: branches.py
-   :start-after: # p_branch list
-   :end-before: # end p_branch list
+    p_branches = project.protectedbranches.list()
 
-Get a single protected branch:
+Get a single protected branch::
 
-.. literalinclude:: branches.py
-   :start-after: # p_branch get
-   :end-before: # end p_branch get
+    p_branch = project.protectedbranches.get('master')
 
-Create a protected branch:
+Create a protected branch::
 
-.. literalinclude:: branches.py
-   :start-after: # p_branch create
-   :end-before: # end p_branch create
+    p_branch = project.protectedbranches.create({'name': '*-stable'})
 
-Delete a protected branch:
+Delete a protected branch::
 
-.. literalinclude:: branches.py
-   :start-after: # p_branch delete
-   :end-before: # end p_branch delete
+    project.protectedbranches.delete('*-stable')
+    # or
+    p_branch.delete()

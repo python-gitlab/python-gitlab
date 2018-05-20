@@ -10,11 +10,6 @@ Reference
   + :class:`gitlab.v4.objects.SidekiqManager`
   + :attr:`gitlab.Gitlab.sidekiq`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.SidekiqManager`
-  + :attr:`gitlab.Gitlab.sidekiq`
-
 * GitLab API: https://docs.gitlab.com/ce/api/sidekiq_metrics.html
 
 Examples

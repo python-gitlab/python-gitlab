@@ -14,18 +14,14 @@ Reference
   + :class:`gitlab.v4.objects.ProjectManager`
   + :attr:`gitlab.Gitlab.projects`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.Project`
-  + :class:`gitlab.v3.objects.ProjectManager`
-  + :attr:`gitlab.Gitlab.projects`
-
 * GitLab API: https://docs.gitlab.com/ce/api/projects.html
 
 Examples
 --------
 
-List projects:
+List projects::
+
+    projects = gl.projects.list()
 
 The API provides several filtering parameters for the listing methods:
 
@@ -41,136 +37,148 @@ Results can also be sorted using the following parameters:
   The default is to sort by ``created_at``
 * ``sort``: sort order (``asc`` or ``desc``)
 
-.. literalinclude:: projects.py
-   :start-after: # list
-   :end-before: # end list
+::
 
-Get a single project:
+    # Archived projects
+    projects = gl.projects.list(archived=1)
+    # Limit to projects with a defined visibility
+    projects = gl.projects.list(visibility='public')
 
-.. literalinclude:: projects.py
-   :start-after: # get
-   :end-before: # end get
+    # List owned projects
+    projects = gl.projects.owned()
 
-Create a project:
+    # List starred projects
+    projects = gl.projects.starred()
 
-.. literalinclude:: projects.py
-   :start-after: # create
-   :end-before: # end create
+    # List all the projects
+    projects = gl.projects.all()
 
-Create a project for a user (admin only):
+    # Search projects
+    projects = gl.projects.list(search='keyword')
 
-.. literalinclude:: projects.py
-   :start-after: # user create
-   :end-before: # end user create
+Get a single project::
 
-Create a project in a group:
+    # Get a project by ID
+    project = gl.projects.get(10)
+    # Get a project by userspace/name
+    project = gl.projects.get('myteam/myproject')
 
-You need to get the id of the group, then use the namespace_id attribute to create the group:
+Create a project::
 
-.. code:: python
+    project = gl.projects.create({'name': 'project1'})
 
-  group_id = gl.groups.search('my-group')[0].id
-  project = gl.projects.create({'name': 'myrepo', 'namespace_id': group_id})
+Create a project for a user (admin only)::
 
+    alice = gl.users.list(username='alice')[0]
+    user_project = alice.projects.create({'name': 'project'})
+    user_projects = alice.projects.list()
 
-Update a project:
+Create a project in a group::
 
-.. literalinclude:: projects.py
-   :start-after: # update
-   :end-before: # end update
+    # You need to get the id of the group, then use the namespace_id attribute
+    # to create the group
+    group_id = gl.groups.search('my-group')[0].id
+    project = gl.projects.create({'name': 'myrepo', 'namespace_id': group_id})
 
-Delete a project:
+Update a project::
 
-.. literalinclude:: projects.py
-   :start-after: # delete
-   :end-before: # end delete
+    project.snippets_enabled = 1
+    project.save()
 
-Fork a project:
+Delete a project::
 
-.. literalinclude:: projects.py
-   :start-after: # fork
-   :end-before: # end fork
+    gl.projects.delete(1)
+    # or
+    project.delete()
 
-Create/delete a fork relation between projects (requires admin permissions):
+Fork a project::
 
-.. literalinclude:: projects.py
-   :start-after: # forkrelation
-   :end-before: # end forkrelation
+    fork = project.forks.create({})
 
-Star/unstar a project:
+    # fork to a specific namespace
+    fork = project.forks.create({'namespace': 'myteam'})
 
-.. literalinclude:: projects.py
-   :start-after: # star
-   :end-before: # end star
+Create/delete a fork relation between projects (requires admin permissions)::
 
-Archive/unarchive a project:
+    project.create_fork_relation(source_project.id)
+    project.delete_fork_relation()
 
-.. literalinclude:: projects.py
-   :start-after: # archive
-   :end-before: # end archive
+Star/unstar a project::
 
-.. note::
+    project.star()
+    project.unstar()
 
-   Previous versions used ``archive_`` and ``unarchive_`` due to a naming issue,
-   they have been deprecated but not yet removed.
+Archive/unarchive a project::
 
-Start the housekeeping job:
+    project.archive()
+    project.unarchive()
 
-.. literalinclude:: projects.py
-   :start-after: # housekeeping
-   :end-before: # end housekeeping
+Start the housekeeping job::
 
-List the repository tree:
+    project.housekeeping()
 
-.. literalinclude:: projects.py
-   :start-after: # repository tree
-   :end-before: # end repository tree
+List the repository tree::
 
-Get the content and metadata of a file for a commit, using a blob sha:
+    # list the content of the root directory for the default branch
+    items = project.repository_tree()
 
-.. literalinclude:: projects.py
-   :start-after: # repository blob
-   :end-before: # end repository blob
+    # list the content of a subdirectory on a specific branch
+    items = project.repository_tree(path='docs', ref='branch1')
 
-Get the repository archive:
+Get the content and metadata of a file for a commit, using a blob sha::
 
-.. literalinclude:: projects.py
-   :start-after: # repository archive
-   :end-before: # end repository archive
+    items = project.repository_tree(path='docs', ref='branch1')
+    file_info = p.repository_blob(items[0]['id'])
+    content = base64.b64decode(file_info['content'])
+    size = file_info['size']
+
+Get the repository archive::
+
+    tgz = project.repository_archive()
+
+    # get the archive for a branch/tag/commit
+    tgz = project.repository_archive(sha='4567abc')
 
 .. warning::
 
    Archives are entirely stored in memory unless you use the streaming feature.
    See :ref:`the artifacts example <streaming_example>`.
 
-Get the content of a file using the blob id:
+Get the content of a file using the blob id::
 
-.. literalinclude:: projects.py
-   :start-after: # repository raw_blob
-   :end-before: # end repository raw_blob
+    # find the id for the blob (simple search)
+    id = [d['id'] for d in p.repository_tree() if d['name'] == 'README.rst'][0]
+
+    # get the content
+    file_content = p.repository_raw_blob(id)
 
 .. warning::
 
    Blobs are entirely stored in memory unless you use the streaming feature.
    See :ref:`the artifacts example <streaming_example>`.
 
-Compare two branches, tags or commits:
+Compare two branches, tags or commits::
 
-.. literalinclude:: projects.py
-   :start-after: # repository compare
-   :end-before: # end repository compare
+    result = project.repository_compare('master', 'branch1')
 
-Get a list of contributors for the repository:
+    # get the commits
+    for commit in result['commits']:
+        print(commit)
 
-.. literalinclude:: projects.py
-   :start-after: # repository contributors
-   :end-before: # end repository contributors
+    # get the diffs
+    for file_diff in result['diffs']:
+        print(file_diff)
 
-Get a list of users for the repository:
+Get a list of contributors for the repository::
 
-.. literalinclude:: projects.py
-   :start-after: # users list
-   :end-before: # end users list
+    contributors = project.repository_contributors()
+
+Get a list of users for the repository::
+
+    users = p.users.list()
+
+    # search for users
+    users = p.users.list(search='pattern')
 
 Project custom attributes
 =========================
@@ -224,42 +232,46 @@ Reference
   + :class:`gitlab.v4.objects.ProjectFileManager`
   + :attr:`gitlab.v4.objects.Project.files`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectFile`
-  + :class:`gitlab.v3.objects.ProjectFileManager`
-  + :attr:`gitlab.v3.objects.Project.files`
-  + :attr:`gitlab.Gitlab.project_files`
-
 * GitLab API: https://docs.gitlab.com/ce/api/repository_files.html
 
 Examples
 --------
 
-Get a file:
+Get a file::
 
-.. literalinclude:: projects.py
-   :start-after: # files get
-   :end-before: # end files get
+    f = project.files.get(file_path='README.rst', ref='master')
 
-Create a new file:
+    # get the base64 encoded content
+    print(f.content)
 
-.. literalinclude:: projects.py
-   :start-after: # files create
-   :end-before: # end files create
+    # get the decoded content
+    print(f.decode())
+
+Create a new file::
+
+    f = project.files.create({'file_path': 'testfile.txt',
+                              'branch': 'master',
+                              'content': file_content,
+                              'author_email': 'test@example.com',
+                              'author_name': 'yourname',
+                              'encoding': 'text',
+                              'commit_message': 'Create testfile'})
 
 Update a file. The entire content must be uploaded, as plain text or as base64
-encoded text:
+encoded text::
 
-.. literalinclude:: projects.py
-   :start-after: # files update
-   :end-before: # end files update
+    f.content = 'new content'
+    f.save(branch='master', commit_message='Update testfile') 
 
-Delete a file:
+    # or for binary data
+    # Note: decode() is required with python 3 for data serialization. You can omit
+    # it with python 2
+    f.content = base64.b64encode(open('image.png').read()).decode()
+    f.save(branch='master', commit_message='Update testfile', encoding='base64')
 
-.. literalinclude:: projects.py
-   :start-after: # files delete
-   :end-before: # end files delete
+Delete a file::
+
+    f.delete(commit_message='Delete testfile')
 
 Project tags
 ============
@@ -273,47 +285,32 @@ Reference
   + :class:`gitlab.v4.objects.ProjectTagManager`
   + :attr:`gitlab.v4.objects.Project.tags`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectTag`
-  + :class:`gitlab.v3.objects.ProjectTagManager`
-  + :attr:`gitlab.v3.objects.Project.tags`
-  + :attr:`gitlab.Gitlab.project_tags`
-
 * GitLab API: https://docs.gitlab.com/ce/api/tags.html
 
 Examples
 --------
 
-List the project tags:
+List the project tags::
 
-.. literalinclude:: projects.py
-   :start-after: # tags list
-   :end-before: # end tags list
+    tags = project.tags.list()
 
-Get a tag:
+Get a tag::
 
-.. literalinclude:: projects.py
-   :start-after: # tags get
-   :end-before: # end tags get
+    tag = project.tags.get('1.0')
 
-Create a tag:
+Create a tag::
 
-.. literalinclude:: projects.py
-   :start-after: # tags create
-   :end-before: # end tags create
+    tag = project.tags.create({'tag_name': '1.0', 'ref': 'master'})
 
-Set or update the release note for a tag:
+Set or update the release note for a tag::
 
-.. literalinclude:: projects.py
-   :start-after: # tags release
-   :end-before: # end tags release
+    tag.set_release_description('awesome v1.0 release')
 
-Delete a tag:
+Delete a tag::
 
-.. literalinclude:: projects.py
-   :start-after: # tags delete
-   :end-before: # end tags delete
+    project.tags.delete('1.0')
+    # or
+    tag.delete()
 
 .. _project_snippets:
 
@@ -335,58 +332,46 @@ Reference
   + :class:`gitlab.v4.objects.ProjectSnippetManager`
   + :attr:`gitlab.v4.objects.Project.files`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectSnippet`
-  + :class:`gitlab.v3.objects.ProjectSnippetManager`
-  + :attr:`gitlab.v3.objects.Project.files`
-  + :attr:`gitlab.Gitlab.project_files`
-
 * GitLab API: https://docs.gitlab.com/ce/api/project_snippets.html
 
 Examples
 --------
 
-List the project snippets:
+List the project snippets::
 
-.. literalinclude:: projects.py
-   :start-after: # snippets list
-   :end-before: # end snippets list
+    snippets = project.snippets.list()
 
-Get a snippet:
+Get a snippet::
 
-.. literalinclude:: projects.py
-   :start-after: # snippets get
-   :end-before: # end snippets get
+    snippets = project.snippets.list(snippet_id)
 
-Get the content of a snippet:
+Get the content of a snippet::
 
-.. literalinclude:: projects.py
-   :start-after: # snippets content
-   :end-before: # end snippets content
+    print(snippet.content())
 
 .. warning::
 
    The snippet content is entirely stored in memory unless you use the
    streaming feature. See :ref:`the artifacts example <streaming_example>`.
 
-Create a snippet:
+Create a snippet::
 
-.. literalinclude:: projects.py
-   :start-after: # snippets create
-   :end-before: # end snippets create
+    snippet = project.snippets.create({'title': 'sample 1',
+                                       'file_name': 'foo.py',
+                                       'code': 'import gitlab',
+                                       'visibility_level':
+                                       gitlab.VISIBILITY_PRIVATE})
 
-Update a snippet:
+Update a snippet::
 
-.. literalinclude:: projects.py
-   :start-after: # snippets update
-   :end-before: # end snippets update
+    snippet.code = 'import gitlab\nimport whatever'
+    snippet.save
 
-Delete a snippet:
+Delete a snippet::
 
-.. literalinclude:: projects.py
-   :start-after: # snippets delete
-   :end-before: # end snippets delete
+    project.snippets.delete(snippet_id)
+    # or
+    snippet.delete()
 
 Notes
 =====
@@ -405,59 +390,43 @@ Reference
   + :class:`gitlab.v4.objects.ProjectMemberManager`
   + :attr:`gitlab.v4.objects.Project.members`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectMember`
-  + :class:`gitlab.v3.objects.ProjectMemberManager`
-  + :attr:`gitlab.v3.objects.Project.members`
-  + :attr:`gitlab.Gitlab.project_members`
-
 * GitLab API: https://docs.gitlab.com/ce/api/members.html
 
 Examples
 --------
 
-List the project members:
+List the project members::
 
-.. literalinclude:: projects.py
-   :start-after: # members list
-   :end-before: # end members list
+    members = project.members.list()
 
-Search project members matching a query string:
+Search project members matching a query string::
 
-.. literalinclude:: projects.py
-   :start-after: # members search
-   :end-before: # end members search
+    members = project.members.list(query='bar')
 
-Get a single project member:
+Get a single project member::
 
-.. literalinclude:: projects.py
-   :start-after: # members get
-   :end-before: # end members get
+    member = project.members.get(1)
 
-Add a project member:
+Add a project member::
 
-.. literalinclude:: projects.py
-   :start-after: # members add
-   :end-before: # end members add
+    member = project.members.create({'user_id': user.id, 'access_level':
+                                     gitlab.DEVELOPER_ACCESS})
 
-Modify a project member (change the access level):
+Modify a project member (change the access level)::
 
-.. literalinclude:: projects.py
-   :start-after: # members update
-   :end-before: # end members update
+    member.access_level = gitlab.MASTER_ACCESS
+    member.save()
 
-Remove a member from the project team:
+Remove a member from the project team::
 
-.. literalinclude:: projects.py
-   :start-after: # members delete
-   :end-before: # end members delete
+    project.members.delete(user.id)
+    # or
+    member.delete()
 
-Share the project with a group:
+Share/unshare the project with a group::
 
-.. literalinclude:: projects.py
-   :start-after: # share
-   :end-before: # end share
+    project.share(group.id, gitlab.DEVELOPER_ACCESS)
+    project.unshare(group.id)
 
 Project hooks
 =============
@@ -471,47 +440,33 @@ Reference
   + :class:`gitlab.v4.objects.ProjectHookManager`
   + :attr:`gitlab.v4.objects.Project.hooks`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectHook`
-  + :class:`gitlab.v3.objects.ProjectHookManager`
-  + :attr:`gitlab.v3.objects.Project.hooks`
-  + :attr:`gitlab.Gitlab.project_hooks`
-
 * GitLab API: https://docs.gitlab.com/ce/api/projects.html#hooks
 
 Examples
 --------
 
-List the project hooks:
+List the project hooks::
 
-.. literalinclude:: projects.py
-   :start-after: # hook list
-   :end-before: # end hook list
+    hooks = project.hooks.list()
 
-Get a project hook:
+Get a project hook::
 
-.. literalinclude:: projects.py
-   :start-after: # hook get
-   :end-before: # end hook get
+    hook = project.hooks.get(1)
 
-Create a project hook:
+Create a project hook::
 
-.. literalinclude:: projects.py
-   :start-after: # hook create
-   :end-before: # end hook create
+    hook = project.hooks.create({'url': 'http://my/action/url', 'push_events': 1})
 
-Update a project hook:
+Update a project hook::
 
-.. literalinclude:: projects.py
-   :start-after: # hook update
-   :end-before: # end hook update
+    hook.push_events = 0
+    hook.save()
 
-Delete a project hook:
+Delete a project hook::
 
-.. literalinclude:: projects.py
-   :start-after: # hook delete
-   :end-before: # end hook delete
+    project.hooks.delete(1)
+    # or
+    hook.delete()
 
 Project Services
 ================
@@ -525,41 +480,29 @@ Reference
   + :class:`gitlab.v4.objects.ProjectServiceManager`
   + :attr:`gitlab.v4.objects.Project.services`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectService`
-  + :class:`gitlab.v3.objects.ProjectServiceManager`
-  + :attr:`gitlab.v3.objects.Project.services`
-  + :attr:`gitlab.Gitlab.project_services`
-
 * GitLab API: https://docs.gitlab.com/ce/api/services.html
 
 Examples
 ---------
 
-Get a service:
+Get a service::
 
-.. literalinclude:: projects.py
-   :start-after: # service get
-   :end-before: # end service get
+    service = project.services.get('asana')
+    # display its status (enabled/disabled)
+    print(service.active)
 
-List the code names of available services (doesn't return objects):
+List the code names of available services (doesn't return objects)::
 
-.. literalinclude:: projects.py
-   :start-after: # service list
-   :end-before: # end service list
+    services = project.services.available()
 
-Configure and enable a service:
+Configure and enable a service::
 
-.. literalinclude:: projects.py
-   :start-after: # service update
-   :end-before: # end service update
+    service.api_key = 'randomkey'
+    service.save()
 
-Disable a service:
+Disable a service::
 
-.. literalinclude:: projects.py
-   :start-after: # service delete
-   :end-before: # end service delete
+    service.delete()
 
 Issue boards
 ============
@@ -577,29 +520,18 @@ Reference
   + :class:`gitlab.v4.objects.ProjectBoardManager`
   + :attr:`gitlab.v4.objects.Project.boards`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectBoard`
-  + :class:`gitlab.v3.objects.ProjectBoardManager`
-  + :attr:`gitlab.v3.objects.Project.boards`
-  + :attr:`gitlab.Gitlab.project_boards`
-
 * GitLab API: https://docs.gitlab.com/ce/api/boards.html
 
 Examples
 --------
 
-Get the list of existing boards for a project:
+Get the list of existing boards for a project::
 
-.. literalinclude:: projects.py
-   :start-after: # boards list
-   :end-before: # end boards list
+    boards = project.boards.list()
 
-Get a single board for a project:
+Get a single board for a project::
 
-.. literalinclude:: projects.py
-   :start-after: # boards get
-   :end-before: # end boards get
+    board = project.boards.get(board_id)
 
 Board lists
 ===========
@@ -613,49 +545,35 @@ Reference
   + :class:`gitlab.v4.objects.ProjectBoardListManager`
   + :attr:`gitlab.v4.objects.Project.board_lists`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectBoardList`
-  + :class:`gitlab.v3.objects.ProjectBoardListManager`
-  + :attr:`gitlab.v3.objects.ProjectBoard.lists`
-  + :attr:`gitlab.v3.objects.Project.board_lists`
-  + :attr:`gitlab.Gitlab.project_board_lists`
-
 * GitLab API: https://docs.gitlab.com/ce/api/boards.html
 
 Examples
 --------
 
-List the issue lists for a board:
+List the issue lists for a board::
 
-.. literalinclude:: projects.py
-   :start-after: # board lists list
-   :end-before: # end board lists list
+    b_lists = board.lists.list()
 
-Get a single list:
+Get a single list::
 
-.. literalinclude:: projects.py
-   :start-after: # board lists get
-   :end-before: # end board lists get
+    b_list = board.lists.get(list_id)
 
-Create a new list:
+Create a new list::
 
-.. literalinclude:: projects.py
-   :start-after: # board lists create
-   :end-before: # end board lists create
+    # First get a ProjectLabel
+    label = get_or_create_label()
+    # Then use its ID to create the new board list
+    b_list = board.lists.create({'label_id': label.id})
 
 Change a list position. The first list is at position 0. Moving a list will
-set it at the given position and move the following lists up a position:
+set it at the given position and move the following lists up a position::
 
-.. literalinclude:: projects.py
-   :start-after: # board lists update
-   :end-before: # end board lists update
+    b_list.position = 2
+    b_list.save()
 
-Delete a list:
+Delete a list::
 
-.. literalinclude:: projects.py
-   :start-after: # board lists delete
-   :end-before: # end board lists delete
+    b_list.delete()
 
 
 File uploads
@@ -668,37 +586,33 @@ Reference
 
   + :attr:`gitlab.v4.objects.Project.upload`
 
-* v3 API:
-
-  + :attr:`gitlab.v3.objects.Project.upload`
-
 * Gitlab API: https://docs.gitlab.com/ce/api/projects.html#upload-a-file
 
 Examples
 --------
 
-Upload a file into a project using a filesystem path:
+Upload a file into a project using a filesystem path::
 
-.. literalinclude:: projects.py
-   :start-after: # project file upload by path
-   :end-before: # end project file upload by path
+    project.upload("filename.txt", filepath="/some/path/filename.txt")
 
-Upload a file into a project without a filesystem path:
+Upload a file into a project without a filesystem path::
 
-.. literalinclude:: projects.py
-   :start-after: # project file upload with data
-   :end-before: # end project file upload with data
+    project.upload("filename.txt", filedata="Raw data")
 
 Upload a file and comment on an issue using the uploaded file's
-markdown:
+markdown::
 
-.. literalinclude:: projects.py
-   :start-after: # project file upload markdown
-   :end-before: # end project file upload markdown
+    uploaded_file = project.upload("filename.txt", filedata="data")
+    issue = project.issues.get(issue_id)
+    issue.notes.create({
+        "body": "See the attached file: {}".format(uploaded_file["markdown"])
+    })
 
 Upload a file and comment on an issue while using custom
-markdown to reference the uploaded file:
+markdown to reference the uploaded file::
 
-.. literalinclude:: projects.py
-   :start-after: # project file upload markdown custom
-   :end-before: # end project file upload markdown custom
+    uploaded_file = project.upload("filename.txt", filedata="data")
+    issue = project.issues.get(issue_id)
+    issue.notes.create({
+        "body": "See the [attached file]({})".format(uploaded_file["url"])
+    })

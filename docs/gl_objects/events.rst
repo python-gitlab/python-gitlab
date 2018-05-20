@@ -17,13 +17,6 @@ Reference
   + :class:`gitlab.v4.objects.UserEventManager`
   + :attr:`gitlab.v4.objects.User.events`
 
-* v3 API (projects events only):
-
-  + :class:`gitlab.v3.objects.ProjectEvent`
-  + :class:`gitlab.v3.objects.ProjectEventManager`
-  + :attr:`gitlab.v3.objects.Project.events`
-  + :attr:`gitlab.Gitlab.project_events`
-
 * GitLab API: https://docs.gitlab.com/ce/api/events.html
 
 Examples

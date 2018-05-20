@@ -21,28 +21,19 @@ Reference
   + :class:`gitlab.v4.objects.LicenseManager`
   + :attr:`gitlab.Gitlab.licenses`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.License`
-  + :class:`gitlab.v3.objects.LicenseManager`
-  + :attr:`gitlab.Gitlab.licenses`
-
 * GitLab API: https://docs.gitlab.com/ce/api/templates/licenses.html
 
 Examples
 --------
 
-List known license templates:
+List known license templates::
 
-.. literalinclude:: templates.py
-   :start-after: # license list
-   :end-before: # end license list
+    licenses = gl.licenses.list()
 
-Generate a license content for a project:
+Generate a license content for a project::
 
-.. literalinclude:: templates.py
-   :start-after: # license get
-   :end-before: # end license get
+    license = gl.licenses.get('apache-2.0', project='foobar', fullname='John Doe')
+    print(license.content)
 
 .gitignore templates
 ====================
@@ -56,28 +47,19 @@ Reference
   + :class:`gitlab.v4.objects.GitignoreManager`
   + :attr:`gitlab.Gitlab.gitignores`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.Gitignore`
-  + :class:`gitlab.v3.objects.GitignoreManager`
-  + :attr:`gitlab.Gitlab.gitignores`
-
 * GitLab API: https://docs.gitlab.com/ce/api/templates/gitignores.html
 
 Examples
 --------
 
-List known gitignore templates:
+List known gitignore templates::
 
-.. literalinclude:: templates.py
-   :start-after: # gitignore list
-   :end-before: # end gitignore list
+    gitignores = gl.gitignores.list()
 
-Get a gitignore template:
+Get a gitignore template::
 
-.. literalinclude:: templates.py
-   :start-after: # gitignore get
-   :end-before: # end gitignore get
+    gitignore = gl.gitignores.get('Python')
+    print(gitignore.content)
 
 GitLab CI templates
 ===================
@@ -91,28 +73,19 @@ Reference
   + :class:`gitlab.v4.objects.GitlabciymlManager`
   + :attr:`gitlab.Gitlab.gitlabciymls`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.Gitlabciyml`
-  + :class:`gitlab.v3.objects.GitlabciymlManager`
-  + :attr:`gitlab.Gitlab.gitlabciymls`
-
 * GitLab API: https://docs.gitlab.com/ce/api/templates/gitlab_ci_ymls.html
 
 Examples
 --------
 
-List known GitLab CI templates:
+List known GitLab CI templates::
 
-.. literalinclude:: templates.py
-   :start-after: # gitlabciyml list
-   :end-before: # end gitlabciyml list
+    gitlabciymls = gl.gitlabciymls.list()
 
-Get a GitLab CI template:
+Get a GitLab CI template::
 
-.. literalinclude:: templates.py
-   :start-after: # gitlabciyml get
-   :end-before: # end gitlabciyml get
+    gitlabciyml = gl.gitlabciymls.get('Pelican')
+    print(gitlabciyml.content)
 
 Dockerfile templates
 ====================
@@ -131,14 +104,11 @@ Reference
 Examples
 --------
 
-List known Dockerfile templates:
+List known Dockerfile templates::
 
-.. literalinclude:: templates.py
-   :start-after: # dockerfile list
-   :end-before: # end dockerfile list
+    dockerfiles = gl.dockerfiles.list()
 
-Get a Dockerfile template:
+Get a Dockerfile template::
 
-.. literalinclude:: templates.py
-   :start-after: # dockerfile get
-   :end-before: # end dockerfile get
+    dockerfile = gl.dockerfiles.get('Python')
+    print(dockerfile.content)

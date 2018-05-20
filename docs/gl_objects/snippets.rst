@@ -2,32 +2,33 @@
 Snippets
 ########
 
-You can store code snippets in Gitlab. Snippets can be attached to projects
-(see :ref:`project_snippets`), but can also be detached.
+Reference
+=========
 
-* Object class: :class:`gitlab.objects.Namespace`
-* Manager object: :attr:`gitlab.Gitlab.snippets`
+* v4 API:
+
+  + :class:`gitlab.v4.objects.Snippet`
+  + :class:`gitlab.v4.objects.SnipptManager`
+  + :attr:`gilab.Gitlab.snippets`
+
+* GitLab API: https://docs.gitlab.com/ce/api/snippets.html
 
 Examples
 ========
 
-List snippets woned by the current user:
+List snippets owned by the current user::
 
-.. literalinclude:: snippets.py
-   :start-after: # list
-   :end-before: # end list
+    snippets = gl.snippets.list()
 
-List the public snippets:
+List the public snippets::
 
-.. literalinclude:: snippets.py
-   :start-after: # public list
-   :end-before: # end public list
+    public_snippets = gl.snippets.public()
 
-Get a snippet:
+Get a snippet::
 
-.. literalinclude:: snippets.py
-   :start-after: # get
-   :end-before: # end get
+    snippet = gl.snippets.get(snippet_id)
+    # get the content
+    content = snippet.content()
 
 .. warning::
 
@@ -35,20 +36,19 @@ Get a snippet:
    See :ref:`the artifacts example <streaming_example>`.
 
 
-Create a snippet:
+Create a snippet::
 
-.. literalinclude:: snippets.py
-   :start-after: # create
-   :end-before: # end create
+    snippet = gl.snippets.create({'title': 'snippet1',
+                                  'file_name': 'snippet1.py',
+                                  'content': open('snippet1.py').read()})
 
-Update a snippet:
+Update a snippet::
 
-.. literalinclude:: snippets.py
-   :start-after: # update
-   :end-before: # end update
+    snippet.visibility_level = gitlab.Project.VISIBILITY_PUBLIC
+    snippet.save()
 
-Delete a snippet:
+Delete a snippet::
 
-.. literalinclude:: snippets.py
-   :start-after: # delete
-   :end-before: # end delete
+    gl.snippets.delete(snippet_id)
+    # or
+    snippet.delete()

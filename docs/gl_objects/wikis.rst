@@ -12,35 +12,29 @@ References
   + :class:`gitlab.v4.objects.ProjectWikiManager`
   + :attr:`gitlab.v4.objects.Project.wikis`
 
+* GitLab API: https://docs.gitlab.com/ce/api/wikis.html
+
 Examples
 --------
 
-Get the list of wiki pages for a project:
+Get the list of wiki pages for a project::
 
-.. literalinclude:: wikis.py
-   :start-after: # list
-   :end-before: # end list
+    pages = project.wikis.list()
 
-Get a single wiki page:
+Get a single wiki page::
 
-.. literalinclude:: wikis.py
-   :start-after: # get
-   :end-before: # end get
+    page = project.wikis.get(page_slug)
 
-Create a wiki page:
+Create a wiki page::
 
-.. literalinclude:: wikis.py
-   :start-after: # create
-   :end-before: # end create
+    page = project.wikis.create({'title': 'Wiki Page 1',
+                                 'content': open(a_file).read()})
 
-Update a wiki page:
+Update a wiki page::
 
-.. literalinclude:: wikis.py
-   :start-after: # update
-   :end-before: # end update
+    page.content = 'My new content'
+    page.save()
 
-Delete a wiki page:
+Delete a wiki page::
 
-.. literalinclude:: wikis.py
-   :start-after: # delete
-   :end-before: # end delete
+    page.delete()

@@ -14,29 +14,21 @@ Reference
   + :class:`gitlab.v4.objects.IssueManager`
   + :attr:`gitlab.Gitlab.issues`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.Issue`
-  + :class:`gitlab.v3.objects.IssueManager`
-  + :attr:`gitlab.Gitlab.issues`
-
 * GitLab API: https://docs.gitlab.com/ce/api/issues.html
 
 Examples
 --------
 
-List the issues:
+List the issues::
 
-.. literalinclude:: issues.py
-   :start-after: # list
-   :end-before: # end list
+    issues = gl.issues.list()
 
 Use the ``state`` and ``label`` parameters to filter the results. Use the
-``order_by`` and ``sort`` attributes to sort the results:
+``order_by`` and ``sort`` attributes to sort the results::
 
-.. literalinclude:: issues.py
-   :start-after: # filtered list
-   :end-before: # end filtered list
+    open_issues = gl.issues.list(state='opened')
+    closed_issues = gl.issues.list(state='closed')
+    tagged_issues = gl.issues.list(labels=['foo', 'bar'])
 
 Group issues
 ============
@@ -50,23 +42,18 @@ Reference
   + :class:`gitlab.v4.objects.GroupIssueManager`
   + :attr:`gitlab.v4.objects.Group.issues`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.GroupIssue`
-  + :class:`gitlab.v3.objects.GroupIssueManager`
-  + :attr:`gitlab.v3.objects.Group.issues`
-  + :attr:`gitlab.Gitlab.group_issues`
-
 * GitLab API: https://docs.gitlab.com/ce/api/issues.html
 
 Examples
 --------
 
-List the group issues:
+List the group issues::
 
-.. literalinclude:: issues.py
-   :start-after: # group issues list
-   :end-before: # end group issues list
+    issues = group.issues.list()
+    # Filter using the state, labels and milestone parameters
+    issues = group.issues.list(milestone='1.0', state='opened')
+    # Order using the order_by and sort parameters
+    issues = group.issues.list(order_by='created_at', sort='desc')
 
 Project issues
 ==============
@@ -80,110 +67,81 @@ Reference
   + :class:`gitlab.v4.objects.ProjectIssueManager`
   + :attr:`gitlab.v4.objects.Project.issues`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectIssue`
-  + :class:`gitlab.v3.objects.ProjectIssueManager`
-  + :attr:`gitlab.v3.objects.Project.issues`
-  + :attr:`gitlab.Gitlab.project_issues`
-
 * GitLab API: https://docs.gitlab.com/ce/api/issues.html
 
 Examples
 --------
 
-List the project issues:
+List the project issues::
 
-.. literalinclude:: issues.py
-   :start-after: # project issues list
-   :end-before: # end project issues list
+    issues = project.issues.list()
+    # Filter using the state, labels and milestone parameters
+    issues = project.issues.list(milestone='1.0', state='opened')
+    # Order using the order_by and sort parameters
+    issues = project.issues.list(order_by='created_at', sort='desc')
 
-Get a project issue:
+Get a project issue::
 
-.. literalinclude:: issues.py
-   :start-after: # project issues get
-   :end-before: # end project issues get
+    issue = project.issues.get(issue_iid)
 
-Get a project issue from its `iid` (v3 only. Issues are retrieved by iid in V4 by default):
+Create a new issue::
 
-.. literalinclude:: issues.py
-   :start-after: # project issues get from iid
-   :end-before: # end project issues get from iid
+    issue = project.issues.create({'title': 'I have a bug',
+                                   'description': 'Something useful here.'})
 
-Create a new issue:
+Update an issue::
 
-.. literalinclude:: issues.py
-   :start-after: # project issues create
-   :end-before: # end project issues create
+    issue.labels = ['foo', 'bar']
+    issue.save()
 
-Update an issue:
+Close / reopen an issue::
 
-.. literalinclude:: issues.py
-   :start-after: # project issue update
-   :end-before: # end project issue update
+    # close an issue
+    issue.state_event = 'close'
+    issue.save()
+    # reopen it
+    issue.state_event = 'reopen'
+    issue.save()
 
-Close / reopen an issue:
+Delete an issue::
 
-.. literalinclude:: issues.py
-   :start-after: # project issue open_close
-   :end-before: # end project issue open_close
+    project.issues.delete(issue_id)
+    # pr
+    issue.delete()
 
-Delete an issue:
+Subscribe / unsubscribe from an issue::
 
-.. literalinclude:: issues.py
-   :start-after: # project issue delete
-   :end-before: # end project issue delete
+    issue.subscribe()
+    issue.unsubscribe()
 
-Subscribe / unsubscribe from an issue:
+Move an issue to another project::
 
-.. literalinclude:: issues.py
-   :start-after: # project issue subscribe
-   :end-before: # end project issue subscribe
+    issue.move(other_project_id)
 
-Move an issue to another project:
+Make an issue as todo::
 
-.. literalinclude:: issues.py
-   :start-after: # project issue move
-   :end-before: # end project issue move
+    issue.todo()
 
-Make an issue as todo:
+Get time tracking stats::
 
-.. literalinclude:: issues.py
-   :start-after: # project issue todo
-   :end-before: # end project issue todo
+    issue.time_stats()
 
-Get time tracking stats:
+Set a time estimate for an issue::
 
-.. literalinclude:: issues.py
-   :start-after: # project issue time tracking stats
-   :end-before: # end project issue time tracking stats
+    issue.time_estimate('3h30m')
 
-Set a time estimate for an issue:
+Reset a time estimate for an issue::
 
-.. literalinclude:: issues.py
-   :start-after: # project issue set time estimate
-   :end-before: # end project issue set time estimate
+    issue.reset_time_estimate()
 
-Reset a time estimate for an issue:
+Add spent time for an issue::
 
-.. literalinclude:: issues.py
-   :start-after: # project issue reset time estimate
-   :end-before: # end project issue reset time estimate
+    issue.add_spent_time('3h30m')
 
-Add spent time for an issue:
+Reset spent time for an issue::
 
-.. literalinclude:: issues.py
-   :start-after: # project issue set time spent
-   :end-before: # end project issue set time spent
+    issue.reset_spent_time()
 
-Reset spent time for an issue:
+Get user agent detail for the issue (admin only)::
 
-.. literalinclude:: issues.py
-   :start-after: # project issue reset time spent
-   :end-before: # end project issue reset time spent
-
-Get user agent detail for the issue (admin only):
-
-.. literalinclude:: issues.py
-   :start-after: # project issue useragent
-   :end-before: # end project issue useragent
+    detail = issue.user_agent_detail()

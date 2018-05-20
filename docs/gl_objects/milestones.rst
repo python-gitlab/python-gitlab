@@ -15,13 +15,6 @@ Reference
   + :class:`gitlab.v4.objects.GroupMilestoneManager`
   + :attr:`gitlab.v4.objects.Group.milestones`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectMilestone`
-  + :class:`gitlab.v3.objects.ProjectMilestoneManager`
-  + :attr:`gitlab.v3.objects.Project.milestones`
-  + :attr:`gitlab.Gitlab.project_milestones`
-
 * GitLab API:
 
   + https://docs.gitlab.com/ce/api/milestones.html
@@ -30,11 +23,10 @@ Reference
 Examples
 --------
 
-List the milestones for a project or a group:
+List the milestones for a project or a group::
 
-.. literalinclude:: milestones.py
-   :start-after: # list
-   :end-before: # end list
+    p_milestones = project.milestones.list()
+    g_milestones = group.milestones.list()
 
 You can filter the list using the following parameters:
 
@@ -42,42 +34,39 @@ You can filter the list using the following parameters:
 * ``state``: either ``active`` or ``closed``
 * ``search``: to search using a string
 
-.. literalinclude:: milestones.py
-   :start-after: # filter
-   :end-before: # end filter
+::
 
-Get a single milestone:
+    p_milestones = project.milestones.list(state='closed')
+    g_milestones = group.milestones.list(state='active')
 
-.. literalinclude:: milestones.py
-   :start-after: # get
-   :end-before: # end get
+Get a single milestone::
 
-Create a milestone:
+    p_milestone = project.milestones.get(milestone_id)
+    g_milestone = group.milestones.get(milestone_id)
 
-.. literalinclude:: milestones.py
-   :start-after: # create
-   :end-before: # end create
+Create a milestone::
 
-Edit a milestone:
+    milestone = project.milestones.create({'title': '1.0'})
 
-.. literalinclude:: milestones.py
-   :start-after: # update
-   :end-before: # end update
+Edit a milestone::
 
-Change the state of a milestone (activate / close):
+    milestone.description = 'v 1.0 release'
+    milestone.save()
 
-.. literalinclude:: milestones.py
-   :start-after: # state
-   :end-before: # end state
+Change the state of a milestone (activate / close)::
 
-List the issues related to a milestone:
+    # close a milestone
+    milestone.state_event = 'close'
+    milestone.save()
 
-.. literalinclude:: milestones.py
-   :start-after: # issues
-   :end-before: # end issues
+    # activate a milestone
+    milestone.state_event = 'activate'
+    milestone.save()
 
-List the merge requests related to a milestone:
+List the issues related to a milestone::
 
-.. literalinclude:: milestones.py
-   :start-after: # merge_requests
-   :end-before: # end merge_requests
+    issues = milestone.issues()
+
+List the merge requests related to a milestone::
+
+    merge_requests = milestone.merge_requests()

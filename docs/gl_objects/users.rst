@@ -19,58 +19,47 @@ References
   + :class:`gitlab.v4.objects.UserManager`
   + :attr:`gitlab.Gitlab.users`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.User`
-  + :class:`gitlab.v3.objects.UserManager`
-  + :attr:`gitlab.Gitlab.users`
-
 * GitLab API: https://docs.gitlab.com/ce/api/users.html
 
 Examples
 --------
 
-Get the list of users:
+Get the list of users::
 
-.. literalinclude:: users.py
-   :start-after: # list
-   :end-before: # end list
+    users = gl.users.list()
 
-Search users whose username match the given string:
+Search users whose username match a given string::
 
-.. literalinclude:: users.py
-   :start-after: # search
-   :end-before: # end search
+    users = gl.users.list(search='foo')
 
-Get a single user:
+Get a single user::
 
-.. literalinclude:: users.py
-   :start-after: # get
-   :end-before: # end get
+    # by ID
+    user = gl.users.get(2)
+    # by username
+    user = gl.users.list(username='root')[0]
 
-Create a user:
+Create a user::
 
-.. literalinclude:: users.py
-   :start-after: # create
-   :end-before: # end create
+    user = gl.users.create({'email': 'john@doe.com',
+                            'password': 's3cur3s3cr3T',
+                            'username': 'jdoe',
+                            'name': 'John Doe'})
 
-Update a user:
+Update a user::
 
-.. literalinclude:: users.py
-   :start-after: # update
-   :end-before: # end update
+    user.name = 'Real Name'
+    user.save()
 
-Delete a user:
+Delete a user::
 
-.. literalinclude:: users.py
-   :start-after: # delete
-   :end-before: # end delete
+    gl.users.delete(2)
+    user.delete()
 
-Block/Unblock a user:
+Block/Unblock a user::
 
-.. literalinclude:: users.py
-   :start-after: # block
-   :end-before: # end block
+    user.block()
+    user.unblock()
 
 User custom attributes
 ======================
@@ -126,29 +115,24 @@ References
 
 * GitLab API: https://docs.gitlab.com/ce/api/users.html#get-all-impersonation-tokens-of-a-user
 
-List impersonation tokens for a user:
+List impersonation tokens for a user::
 
-.. literalinclude:: users.py
-   :start-after: # it list
-   :end-before: # end it list
+    i_t = user.impersonationtokens.list(state='active')
+    i_t = user.impersonationtokens.list(state='inactive')
 
-Get an impersonation token for a user:
+Get an impersonation token for a user::
 
-.. literalinclude:: users.py
-   :start-after: # it get
-   :end-before: # end it get
+    i_t = user.impersonationtokens.get(i_t_id)
 
-Create and use an impersonation token for a user:
+Create and use an impersonation token for a user::
 
-.. literalinclude:: users.py
-   :start-after: # it create
-   :end-before: # end it create
+    i_t = user.impersonationtokens.create({'name': 'token1', 'scopes': ['api']})
+    # use the token to create a new gitlab connection
+    user_gl = gitlab.Gitlab(gitlab_url, private_token=i_t.token)
 
-Revoke (delete) an impersonation token for a user:
+Revoke (delete) an impersonation token for a user::
 
-.. literalinclude:: users.py
-   :start-after: # it delete
-   :end-before: # end it delete
+    i_t.delete()
 
 Current User
 ============
@@ -162,22 +146,15 @@ References
   + :class:`gitlab.v4.objects.CurrentUserManager`
   + :attr:`gitlab.Gitlab.user`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.CurrentUser`
-  + :class:`gitlab.v3.objects.CurrentUserManager`
-  + :attr:`gitlab.Gitlab.user`
-
 * GitLab API: https://docs.gitlab.com/ce/api/users.html
 
 Examples
 --------
 
-Get the current user:
+Get the current user::
 
-.. literalinclude:: users.py
-   :start-after: # currentuser get
-   :end-before: # end currentuser get
+    gl.auth()
+    current_user = gl.user
 
 GPG keys
 ========
@@ -202,29 +179,24 @@ are admin.
 Exemples
 --------
 
-List GPG keys for a user:
+List GPG keys for a user::
 
-.. literalinclude:: users.py
-   :start-after: # gpgkey list
-   :end-before: # end gpgkey list
+    gpgkeys = user.gpgkeys.list()
 
-Get a GPG gpgkey for a user:
+Get a GPG gpgkey for a user::
 
-.. literalinclude:: users.py
-   :start-after: # gpgkey get
-   :end-before: # end gpgkey get
+    gpgkey = user.gpgkeys.get(1)
 
-Create a GPG gpgkey for a user:
+Create a GPG gpgkey for a user::
 
-.. literalinclude:: users.py
-   :start-after: # gpgkey create
-   :end-before: # end gpgkey create
+    # get the key with `gpg --export -a GPG_KEY_ID`
+    k = user.gpgkeys.create({'key': public_key_content})
 
-Delete a GPG gpgkey for a user:
+Delete a GPG gpgkey for a user::
 
-.. literalinclude:: users.py
-   :start-after: # gpgkey delete
-   :end-before: # end gpgkey delete
+    user.gpgkeys.delete(1)
+    # or
+    gpgkey.delete()
 
 SSH keys
 ========
@@ -244,45 +216,25 @@ are admin.
   + :class:`gitlab.v4.objects.UserKeyManager`
   + :attr:`gitlab.v4.objects.User.keys`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.CurrentUserKey`
-  + :class:`gitlab.v3.objects.CurrentUserKeyManager`
-  + :attr:`gitlab.v3.objects.CurrentUser.keys`
-  + :attr:`gitlab.Gitlab.user.keys`
-  + :class:`gitlab.v3.objects.UserKey`
-  + :class:`gitlab.v3.objects.UserKeyManager`
-  + :attr:`gitlab.v3.objects.User.keys`
-  + :attr:`gitlab.Gitlab.user_keys`
-
 * GitLab API: https://docs.gitlab.com/ce/api/users.html#list-ssh-keys
 
 Exemples
 --------
 
-List SSH keys for a user:
+List SSH keys for a user::
 
-.. literalinclude:: users.py
-   :start-after: # key list
-   :end-before: # end key list
+    keys = user.keys.list()
 
-Get an SSH key for a user:
+Create an SSH key for a user::
 
-.. literalinclude:: users.py
-   :start-after: # key get
-   :end-before: # end key get
+    k = user.keys.create({'title': 'my_key',
+                          'key': open('/home/me/.ssh/id_rsa.pub').read()})
 
-Create an SSH key for a user:
+Delete an SSH key for a user::
 
-.. literalinclude:: users.py
-   :start-after: # key create
-   :end-before: # end key create
-
-Delete an SSH key for a user:
-
-.. literalinclude:: users.py
-   :start-after: # key delete
-   :end-before: # end key delete
+    user.keys.delete(1)
+    # or
+    key.delete()
 
 Emails
 ======
@@ -302,45 +254,30 @@ are admin.
   + :class:`gitlab.v4.objects.UserEmailManager`
   + :attr:`gitlab.v4.objects.User.emails`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.CurrentUserEmail`
-  + :class:`gitlab.v3.objects.CurrentUserEmailManager`
-  + :attr:`gitlab.v3.objects.CurrentUser.emails`
-  + :attr:`gitlab.Gitlab.user.emails`
-  + :class:`gitlab.v3.objects.UserEmail`
-  + :class:`gitlab.v3.objects.UserEmailManager`
-  + :attr:`gitlab.v3.objects.User.emails`
-  + :attr:`gitlab.Gitlab.user_emails`
-
 * GitLab API: https://docs.gitlab.com/ce/api/users.html#list-emails
 
 Exemples
 --------
 
-List emails for a user:
+List emails for a user::
 
-.. literalinclude:: users.py
-   :start-after: # email list
-   :end-before: # end email list
+    emails = user.emails.list()
 
-Get an email for a user:
+Get an email for a user::
 
-.. literalinclude:: users.py
-   :start-after: # email get
-   :end-before: # end email get
+    email = gl.user_emails.list(1, user_id=1)
+    # or
+    email = user.emails.get(1)
 
-Create an email for a user:
+Create an email for a user::
 
-.. literalinclude:: users.py
-   :start-after: # email create
-   :end-before: # end email create
+    k = user.emails.create({'email': 'foo@bar.com'})
 
-Delete an email for a user:
+Delete an email for a user::
 
-.. literalinclude:: users.py
-   :start-after: # email delete
-   :end-before: # end email delete
+    user.emails.delete(1)
+    # or
+    email.delete()
 
 Users activities
 ================
@@ -348,7 +285,6 @@ Users activities
 References
 ----------
 
-* v4 only
 * admin only
 
 * v4 API:
@@ -362,8 +298,6 @@ References
 Examples
 --------
 
-Get the users activities:
+Get the users activities::
 
-.. code-block:: python
-
-   activities = gl.user_activities.list(all=True, as_list=False)
+    activities = gl.user_activities.list(all=True, as_list=False)

@@ -1,9 +1,6 @@
-##########################
-Pipelines, Builds and Jobs
-##########################
-
-Build and job are two classes representing the same object. Builds are used in
-v3 API, jobs in v4 API.
+##################
+Pipelines and Jobs
+##################
 
 Project pipelines
 =================
@@ -18,13 +15,6 @@ Reference
   + :class:`gitlab.v4.objects.ProjectPipeline`
   + :class:`gitlab.v4.objects.ProjectPipelineManager`
   + :attr:`gitlab.v4.objects.Project.pipelines`
-
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectPipeline`
-  + :class:`gitlab.v3.objects.ProjectPipelineManager`
-  + :attr:`gitlab.v3.objects.Project.pipelines`
-  + :attr:`gitlab.Gitlab.project_pipelines`
 
 * GitLab API: https://docs.gitlab.com/ce/api/pipelines.html
 
@@ -66,13 +56,6 @@ Reference
   + :class:`gitlab.v4.objects.ProjectTriggerManager`
   + :attr:`gitlab.v4.objects.Project.triggers`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectTrigger`
-  + :class:`gitlab.v3.objects.ProjectTriggerManager`
-  + :attr:`gitlab.v3.objects.Project.triggers`
-  + :attr:`gitlab.Gitlab.project_triggers`
-
 * GitLab API: https://docs.gitlab.com/ce/api/pipeline_triggers.html
 
 Examples
@@ -88,8 +71,7 @@ Get a trigger::
 
 Create a trigger::
 
-    trigger = project.triggers.create({}) # v3
-    trigger = project.triggers.create({'description': 'mytrigger'}) # v4
+    trigger = project.triggers.create({'description': 'mytrigger'})
 
 Remove a trigger::
 
@@ -190,13 +172,6 @@ Reference
   + :class:`gitlab.v4.objects.GroupVariableManager`
   + :attr:`gitlab.v4.objects.Group.variables`
 
-* v3 API
-
-  + :class:`gitlab.v3.objects.ProjectVariable`
-  + :class:`gitlab.v3.objects.ProjectVariableManager`
-  + :attr:`gitlab.v3.objects.Project.variables`
-  + :attr:`gitlab.Gitlab.project_variables`
-
 * GitLab API
 
   + https://docs.gitlab.com/ce/api/project_level_variables.html
@@ -232,11 +207,11 @@ Remove a variable::
     # or
     var.delete()
 
-Builds/Jobs
-===========
+Jobs
+====
 
-Builds/Jobs are associated to projects, pipelines and commits. They provide
-information on the builds/jobs that have been run, and methods to manipulate
+Jobs are associated to projects, pipelines and commits. They provide
+information on the jobs that have been run, and methods to manipulate
 them.
 
 Reference
@@ -247,13 +222,6 @@ Reference
   + :class:`gitlab.v4.objects.ProjectJob`
   + :class:`gitlab.v4.objects.ProjectJobManager`
   + :attr:`gitlab.v4.objects.Project.jobs`
-
-* v3 API
-
-  + :class:`gitlab.v3.objects.ProjectJob`
-  + :class:`gitlab.v3.objects.ProjectJobManager`
-  + :attr:`gitlab.v3.objects.Project.jobs`
-  + :attr:`gitlab.Gitlab.project_jobs`
 
 * GitLab API: https://docs.gitlab.com/ce/api/jobs.html
 
@@ -268,23 +236,13 @@ job::
 
 List jobs for the project::
 
-    builds = project.builds.list()  # v3
-    jobs = project.jobs.list()  # v4
-
-To list builds for a specific commit, create a
-:class:`~gitlab.v3.objects.ProjectCommit` object and use its
-:attr:`~gitlab.v3.objects.ProjectCommit.builds` method (v3 only)::
-
-    # v3 only
-    commit = gl.project_commits.get(commit_sha, project_id=1)
-    builds = commit.builds()
+    jobs = project.jobs.list()
 
 To list builds for a specific pipeline or get a single job within a specific
 pipeline, create a
 :class:`~gitlab.v4.objects.ProjectPipeline` object and use its
-:attr:`~gitlab.v4.objects.ProjectPipeline.jobs` method (v4 only)::
+:attr:`~gitlab.v4.objects.ProjectPipeline.jobs` method::
 
-    # v4 only
     project = gl.projects.get(project_id)
     pipeline = project.pipelines.get(pipeline_id)
     jobs = pipeline.jobs.list()  # gets all jobs in pipeline
@@ -292,8 +250,7 @@ pipeline, create a
 
 Get a job::
 
-    project.builds.get(build_id)  # v3
-    project.jobs.get(job_id)  # v4
+    project.jobs.get(job_id)
 
 Get the artifacts of a job::
 

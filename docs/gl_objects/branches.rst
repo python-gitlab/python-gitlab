@@ -11,46 +11,34 @@ References
   + :class:`gitlab.v4.objects.ProjectBranchManager`
   + :attr:`gitlab.v4.objects.Project.branches`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectBranch`
-  + :class:`gitlab.v3.objects.ProjectBranchManager`
-  + :attr:`gitlab.v3.objects.Project.branches`
-
 * GitLab API: https://docs.gitlab.com/ce/api/branches.html
 
 Examples
 --------
 
-Get the list of branches for a repository:
+Get the list of branches for a repository::
 
-.. literalinclude:: branches.py
-   :start-after: # list
-   :end-before: # end list
+    branches = project.branches.list()
 
-Get a single repository branch:
+Get a single repository branch::
 
-.. literalinclude:: branches.py
-   :start-after: # get
-   :end-before: # end get
+    branch = project.branches.get('master')
 
-Create a repository branch:
+Create a repository branch::
 
-.. literalinclude:: branches.py
-   :start-after: # create
-   :end-before: # end create
+    branch = project.branches.create({'branch': 'feature1',
+                                      'ref': 'master'})
 
-Delete a repository branch:
+Delete a repository branch::
 
-.. literalinclude:: branches.py
-   :start-after: # delete
-   :end-before: # end delete
+    project.branches.delete('feature1')
+    # or
+    branch.delete()
 
-Protect/unprotect a repository branch:
+Protect/unprotect a repository branch::
 
-.. literalinclude:: branches.py
-   :start-after: # protect
-   :end-before: # end protect
+    branch.protect()
+    branch.unprotect()
 
 .. note::
 

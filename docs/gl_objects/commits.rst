@@ -14,60 +14,56 @@ Reference
   + :class:`gitlab.v4.objects.ProjectCommitManager`
   + :attr:`gitlab.v4.objects.Project.commits`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectCommit`
-  + :class:`gitlab.v3.objects.ProjectCommitManager`
-  + :attr:`gitlab.v3.objects.Project.commits`
-  + :attr:`gitlab.Gitlab.project_commits`
-
-* GitLab API: https://docs.gitlab.com/ce/api/commits.html
-
-.. warning::
-
-   Pagination starts at page 0 in v3, but starts at page 1 in v4 (like all the
-   v4 endpoints).
-
-
 Examples
 --------
 
-List the commits for a project:
+List the commits for a project::
 
-.. literalinclude:: commits.py
-   :start-after: # list
-   :end-before: # end list
+    commits = project.commits.list()
 
 You can use the ``ref_name``, ``since`` and ``until`` filters to limit the
-results:
+results::
 
-.. literalinclude:: commits.py
-   :start-after: # filter list
-   :end-before: # end filter list
+    commits = project.commits.list(ref_name='my_branch')
+    commits = project.commits.list(since='2016-01-01T00:00:00Z')
 
-Create a commit:
+Create a commit::
 
-.. literalinclude:: commits.py
-   :start-after: # create
-   :end-before: # end create
+    # See https://docs.gitlab.com/ce/api/commits.html#create-a-commit-with-multiple-files-and-actions
+    # for actions detail
+    data = {
+        'branch_name': 'master',  # v3
+        'branch': 'master',  # v4
+        'commit_message': 'blah blah blah',
+        'actions': [
+            {
+                'action': 'create',
+                'file_path': 'README.rst',
+                'content': open('path/to/file.rst').read(),
+            },
+            {
+                # Binary files need to be base64 encoded
+                'action': 'create',
+                'file_path': 'logo.png',
+                'content': base64.b64encode(open('logo.png').read()),
+                'encoding': 'base64',
+            }
+        ]
+    }
 
-Get a commit detail:
+    commit = project.commits.create(data)
 
-.. literalinclude:: commits.py
-   :start-after: # get
-   :end-before: # end get
+Get a commit detail::
 
-Get the diff for a commit:
+    commit = project.commits.get('e3d5a71b')
 
-.. literalinclude:: commits.py
-   :start-after: # diff
-   :end-before: # end diff
+Get the diff for a commit::
 
-Cherry-pick a commit into another branch:
+    diff = commit.diff()
 
-.. literalinclude:: commits.py
-   :start-after: # cherry
-   :end-before: # end cherry
+Cherry-pick a commit into another branch::
+
+    commit.cherry_pick(branch='target_branch')
 
 Commit comments
 ===============
@@ -81,30 +77,24 @@ Reference
   + :class:`gitlab.v4.objects.ProjectCommitCommentManager`
   + :attr:`gitlab.v4.objects.Commit.comments`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectCommit`
-  + :class:`gitlab.v3.objects.ProjectCommitManager`
-  + :attr:`gitlab.v3.objects.Commit.comments`
-  + :attr:`gitlab.v3.objects.Project.commit_comments`
-  + :attr:`gitlab.Gitlab.project_commit_comments`
-
 * GitLab API: https://docs.gitlab.com/ce/api/commits.html
 
 Examples
 --------
 
-Get the comments for a commit:
+Get the comments for a commit::
 
-.. literalinclude:: commits.py
-   :start-after: # comments list
-   :end-before: # end comments list
+    comments = commit.comments.list()
 
-Add a comment on a commit:
+Add a comment on a commit::
 
-.. literalinclude:: commits.py
-   :start-after: # comments create
-   :end-before: # end comments create
+    # Global comment
+    commit = commit.comments.create({'note': 'This is a nice comment'})
+    # Comment on a line in a file (on the new version of the file)
+    commit = commit.comments.create({'note': 'This is another comment',
+                                     'line': 12,
+                                     'line_type': 'new',
+                                     'path': 'README.rst'})
 
 Commit status
 =============
@@ -118,27 +108,15 @@ Reference
   + :class:`gitlab.v4.objects.ProjectCommitStatusManager`
   + :attr:`gitlab.v4.objects.Commit.statuses`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectCommit`
-  + :class:`gitlab.v3.objects.ProjectCommitManager`
-  + :attr:`gitlab.v3.objects.Commit.statuses`
-  + :attr:`gitlab.v3.objects.Project.commit_statuses`
-  + :attr:`gitlab.Gitlab.project_commit_statuses`
-
 * GitLab API: https://docs.gitlab.com/ce/api/commits.html
 
 Examples
 --------
 
-Get the statuses for a commit:
+List the statuses for a commit::
 
-.. literalinclude:: commits.py
-   :start-after: # statuses list
-   :end-before: # end statuses list
+    statuses = commit.statuses.list()
 
-Change the status of a commit:
+Change the status of a commit::
 
-.. literalinclude:: commits.py
-   :start-after: # statuses set
-   :end-before: # end statuses set
+    commit.statuses.create({'state': 'success'})

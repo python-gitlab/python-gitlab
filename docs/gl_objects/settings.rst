@@ -11,25 +11,16 @@ Reference
   + :class:`gitlab.v4.objects.ApplicationSettingsManager`
   + :attr:`gitlab.Gitlab.settings`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ApplicationSettings`
-  + :class:`gitlab.v3.objects.ApplicationSettingsManager`
-  + :attr:`gitlab.Gitlab.settings`
-
 * GitLab API: https://docs.gitlab.com/ce/api/settings.html
 
 Examples
 --------
 
-Get the settings:
+Get the settings::
 
-.. literalinclude:: settings.py
-   :start-after: # get
-   :end-before: # end get
+    settings = gl.settings.get()
 
-Update the settings:
+Update the settings::
 
-.. literalinclude:: settings.py
-   :start-after: # update
-   :end-before: # end update
+    settings.signin_enabled = False
+    settings.save()

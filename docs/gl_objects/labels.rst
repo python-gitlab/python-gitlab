@@ -11,50 +11,40 @@ Reference
   + :class:`gitlab.v4.objects.ProjectLabelManager`
   + :attr:`gitlab.v4.objects.Project.labels`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectLabel`
-  + :class:`gitlab.v3.objects.ProjectLabelManager`
-  + :attr:`gitlab.v3.objects.Project.labels`
-  + :attr:`gitlab.Gitlab.project_labels`
-
 * GitLab API: https://docs.gitlab.com/ce/api/labels.html
 
 Examples
 --------
 
-List labels for a project:
+List labels for a project::
 
-.. literalinclude:: labels.py
-   :start-after: # list
-   :end-before: # end list
+    labels = project.labels.list()
 
-Get a single label:
+Create a label for a project::
 
-.. literalinclude:: labels.py
-   :start-after: # get
-   :end-before: # end get
+    label = project.labels.create({'name': 'foo', 'color': '#8899aa'})
 
-Create a label for a project:
+Update a label for a project::
 
-.. literalinclude:: labels.py
-   :start-after: # create
-   :end-before: # end create
+    # change the name of the label:
+    label.new_name = 'bar'
+    label.save()
+    # change its color:
+    label.color = '#112233'
+    label.save()
 
-Update a label for a project:
+Delete a label for a project::
 
-.. literalinclude:: labels.py
-   :start-after: # update
-   :end-before: # end update
+    project.labels.delete(label_id)
+    # or
+    label.delete()
 
-Delete a label for a project:
+Manage labels in issues and merge requests::
 
-.. literalinclude:: labels.py
-   :start-after: # delete
-   :end-before: # end delete
-
-Managing labels in issues and merge requests:
-
-.. literalinclude:: labels.py
-   :start-after: # use
-   :end-before: # end use
+    # Labels are defined as lists in issues and merge requests. The labels must
+    # exist.
+    issue = p.issues.create({'title': 'issue title',
+                             'description': 'issue description',
+                             'labels': ['foo']})
+    issue.labels.append('bar')
+    issue.save()

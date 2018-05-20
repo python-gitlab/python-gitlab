@@ -15,46 +15,34 @@ References
   + :class:`gitlab.v4.objects.BroadcastMessageManager`
   + :attr:`gitlab.Gitlab.broadcastmessages`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.BroadcastMessage`
-  + :class:`gitlab.v3.objects.BroadcastMessageManager`
-  + :attr:`gitlab.Gitlab.broadcastmessages`
-
 * GitLab API: https://docs.gitlab.com/ce/api/broadcast_messages.html
 
 Examples
 --------
 
-List the messages:
+List the messages::
 
-.. literalinclude:: messages.py
-   :start-after: # list
-   :end-before: # end list
+    msgs = gl.broadcastmessages.list()
 
-Get a single message:
+Get a single message::
 
-.. literalinclude:: messages.py
-   :start-after: # get
-   :end-before: # end get
+    msg = gl.broadcastmessages.get(msg_id)
 
-Create a message:
+Create a message::
 
-.. literalinclude:: messages.py
-   :start-after: # create
-   :end-before: # end create
+    msg = gl.broadcastmessages.create({'message': 'Important information'})
 
-The date format for ``starts_at`` and ``ends_at`` parameters is
+The date format for the ``starts_at`` and ``ends_at`` parameters is
 ``YYYY-MM-ddThh:mm:ssZ``.
 
-Update a message:
+Update a message::
 
-.. literalinclude:: messages.py
-   :start-after: # update
-   :end-before: # end update
+    msg.font = '#444444'
+    msg.color = '#999999'
+    msg.save()
 
-Delete a message:
+Delete a message::
 
-.. literalinclude:: messages.py
-   :start-after: # delete
-   :end-before: # end delete
+    gl.broadcastmessages.delete(msg_id)
+    # or
+    msg.delete()

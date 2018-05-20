@@ -20,12 +20,6 @@ Reference
   + :class:`gitlab.v4.objects.RunnerManager`
   + :attr:`gitlab.Gitlab.runners`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.Runner`
-  + :class:`gitlab.v3.objects.RunnerManager`
-  + :attr:`gitlab.Gitlab.runners`
-
 * GitLab API: https://docs.gitlab.com/ce/api/runners.html
 
 Examples
@@ -47,27 +41,30 @@ for this parameter are:
    The returned objects hold minimal information about the runners. Use the
    ``get()`` method to retrieve detail about a runner.
 
-.. literalinclude:: runners.py
-   :start-after: # list
-   :end-before: # end list
+::
 
-Get a runner's detail:
+    # List owned runners
+    runners = gl.runners.list()
+    # With a filter
+    runners = gl.runners.list(scope='active')
+    # List all runners, using a filter
+    runners = gl.runners.all(scope='paused')
 
-.. literalinclude:: runners.py
-   :start-after: # get
-   :end-before: # end get
+Get a runner's detail::
 
-Update a runner:
+    runner = gl.runners.get(runner_id)
 
-.. literalinclude:: runners.py
-   :start-after: # update
-   :end-before: # end update
+Update a runner::
 
-Remove a runner:
+    runner = gl.runners.get(runner_id)
+    runner.tag_list.append('new_tag')
+    runner.save()
 
-.. literalinclude:: runners.py
-   :start-after: # delete
-   :end-before: # end delete
+Remove a runner::
+
+    gl.runners.delete(runner_id)
+    # or
+    runner.delete()
 
 Project runners
 ===============
@@ -81,32 +78,19 @@ Reference
   + :class:`gitlab.v4.objects.ProjectRunnerManager`
   + :attr:`gitlab.v4.objects.Project.runners`
 
-* v3 API:
-
-  + :class:`gitlab.v3.objects.ProjectRunner`
-  + :class:`gitlab.v3.objects.ProjectRunnerManager`
-  + :attr:`gitlab.v3.objects.Project.runners`
-  + :attr:`gitlab.Gitlab.project_runners`
-
 * GitLab API: https://docs.gitlab.com/ce/api/runners.html
 
 Examples
 --------
 
-List the runners for a project:
+List the runners for a project::
 
-.. literalinclude:: runners.py
-   :start-after: # project list
-   :end-before: # end project list
+    runners = project.runners.list()
 
-Enable a specific runner for a project:
+Enable a specific runner for a project::
 
-.. literalinclude:: runners.py
-   :start-after: # project enable
-   :end-before: # end project enable
+    p_runner = project.runners.create({'runner_id': runner.id})
 
-Disable a specific runner for a project:
+Disable a specific runner for a project::
 
-.. literalinclude:: runners.py
-   :start-after: # project disable
-   :end-before: # end project disable
+    project.runners.delete(runner.id)

@@ -2,17 +2,23 @@
 Todos
 #####
 
-Use :class:`~gitlab.objects.Todo` objects to manipulate todos. The
-:attr:`gitlab.Gitlab.todos` manager object provides helper functions.
+Reference
+---------
+
+* v4 API:
+
+  + :class:`~gitlab.objects.Todo`
+  + :class:`~gitlab.objects.TodoManager`
+  + :attr:`gitlab.Gitlab.todos`
+
+* GitLab API: https://docs.gitlab.com/ce/api/todos.html
 
 Examples
 --------
 
-List active todos:
+List active todos::
 
-.. literalinclude:: todos.py
-   :start-after: # list
-   :end-before: # end list
+    todos = gl.todos.list()
 
 You can filter the list using the following parameters:
 
@@ -23,26 +29,17 @@ You can filter the list using the following parameters:
 * ``state``: can be ``pending`` or ``done``
 * ``type``: can be ``Issue`` or ``MergeRequest``
 
-For example:
+For example::
 
-.. literalinclude:: todos.py
-   :start-after: # filter
-   :end-before: # end filter
+    todos = gl.todos.list(project_id=1)
+    todos = gl.todos.list(state='done', type='Issue')
 
-Get a single todo:
+Mark a todo as done::
 
-.. literalinclude:: todos.py
-   :start-after: # get
-   :end-before: # end get
+    gl.todos.delete(todo_id)
+    # or
+    todo.delete()
 
-Mark a todo as done:
+Mark all the todos as done::
 
-.. literalinclude:: todos.py
-   :start-after: # delete
-   :end-before: # end delete
-
-Mark all the todos as done:
-
-.. literalinclude:: todos.py
-   :start-after: # all_delete
-   :end-before: # end all_delete
+    nb_of_closed_todos = gl.todos.delete_all()

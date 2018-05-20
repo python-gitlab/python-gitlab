@@ -30,32 +30,6 @@ Reference
   + :class:`gitlab.v4.objects.ProjectSnippetNoteManager`
   + :attr:`gitlab.v4.objects.ProjectSnippet.notes`
 
-* v3 API:
-
-  Issues:
-
-  + :class:`gitlab.v3.objects.ProjectIssueNote`
-  + :class:`gitlab.v3.objects.ProjectIssueNoteManager`
-  + :attr:`gitlab.v3.objects.ProjectIssue.notes`
-  + :attr:`gitlab.v3.objects.Project.issue_notes`
-  + :attr:`gitlab.Gitlab.project_issue_notes`
-
-  MergeRequests:
-
-  + :class:`gitlab.v3.objects.ProjectMergeRequestNote`
-  + :class:`gitlab.v3.objects.ProjectMergeRequestNoteManager`
-  + :attr:`gitlab.v3.objects.ProjectMergeRequest.notes`
-  + :attr:`gitlab.v3.objects.Project.mergerequest_notes`
-  + :attr:`gitlab.Gitlab.project_mergerequest_notes`
-
-  Snippets:
-
-  + :class:`gitlab.v3.objects.ProjectSnippetNote`
-  + :class:`gitlab.v3.objects.ProjectSnippetNoteManager`
-  + :attr:`gitlab.v3.objects.ProjectSnippet.notes`
-  + :attr:`gitlab.v3.objects.Project.snippet_notes`
-  + :attr:`gitlab.Gitlab.project_snippet_notes`
-
 * GitLab API: https://docs.gitlab.com/ce/api/notes.html
 
 Examples
