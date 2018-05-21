@@ -28,6 +28,7 @@ API examples
    gl_objects/pagesdomains
    gl_objects/projects
    gl_objects/runners
+   gl_objects/search
    gl_objects/settings
    gl_objects/snippets
    gl_objects/system_hooks

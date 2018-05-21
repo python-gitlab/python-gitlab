@@ -713,6 +713,27 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = '/groups/%d/projects/%d' % (self.id, to_project_id)
         self.manager.gitlab.http_post(path, **kwargs)
 
+    @cli.register_custom_action('Group', ('scope', 'search'))
+    @exc.on_http_error(exc.GitlabSearchError)
+    def search(self, scope, search, **kwargs):
+        """Search the group resources matching the provided string.'
+
+        Args:
+            scope (str): Scope of the search
+            search (str): Search string
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabSearchError: If the server failed to perform the request
+
+        Returns:
+            GitlabList: A list of dicts describing the resources found.
+        """
+        data = {'scope': scope, 'search': search}
+        path = '/groups/%d/search' % self.get_id()
+        return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
+
 
 class GroupManager(CRUDMixin, RESTManager):
     _path = '/groups'
@@ -2866,6 +2887,27 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             "url": data['url'],
             "markdown": data['markdown']
         }
+
+    @cli.register_custom_action('Project', ('scope', 'search'))
+    @exc.on_http_error(exc.GitlabSearchError)
+    def search(self, scope, search, **kwargs):
+        """Search the project resources matching the provided string.'
+
+        Args:
+            scope (str): Scope of the search
+            search (str): Search string
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabSearchError: If the server failed to perform the request
+
+        Returns:
+            GitlabList: A list of dicts describing the resources found.
+        """
+        data = {'scope': scope, 'search': search}
+        path = '/projects/%d/search' % self.get_id()
+        return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
 
 
 class ProjectManager(CRUDMixin, RESTManager):

@@ -197,6 +197,10 @@ class GitlabOwnershipError(GitlabOperationError):
     pass
 
 
+class GitlabSearchError(GitlabOperationError):
+    pass
+
+
 def on_http_error(error):
     """Manage GitlabHttpError exceptions.
 

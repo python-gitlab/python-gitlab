@@ -555,6 +555,25 @@ class Gitlab(object):
         """
         return self.http_request('delete', path, **kwargs)
 
+    @on_http_error(GitlabSearchError)
+    def search(self, scope, search, **kwargs):
+        """Search GitLab resources matching the provided string.'
+
+        Args:
+            scope (str): Scope of the search
+            search (str): Search string
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabSearchError: If the server failed to perform the request
+
+        Returns:
+            GitlabList: A list of dicts describing the resources found.
+        """
+        data = {'scope': scope, 'search': search}
+        return self.http_list('/search', query_data=data, **kwargs)
+
 
 class GitlabList(object):
     """Generator representing a list of remote objects.
