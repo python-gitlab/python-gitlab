@@ -678,3 +678,27 @@ assert 'Retry later' in error_message
 [current_project.delete() for current_project in projects]
 settings.throttle_authenticated_api_enabled = False
 settings.save()
+
+# project import/export
+ex = admin_project.exports.create({})
+ex.refresh()
+count = 0
+while ex.export_status != 'finished':
+    time.sleep(1)
+    ex.refresh()
+    count += 1
+    if count == 10:
+        raise Exception('Project export taking too much time')
+with open('/tmp/gitlab-export.tgz', 'wb') as f:
+    ex.download(streamed=True, action=f.write)
+
+output = gl.projects.import_project(open('/tmp/gitlab-export.tgz', 'rb'),
+                               'imported_project')
+project_import = gl.projects.get(output['id'], lazy=True).imports.get()
+count = 0
+while project_import.import_status != 'finished':
+    time.sleep(1)
+    project_import.refresh()
+    count += 1
+    if count == 10:
+        raise Exception('Project import taking too much time')

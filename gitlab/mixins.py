@@ -83,7 +83,10 @@ class RefreshMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        path = '%s/%s' % (self.manager.path, self.id)
+        if self._id_attr:
+            path = '%s/%s' % (self.manager.path, self.id)
+        else:
+            path = self.manager.path
         server_data = self.manager.gitlab.http_get(path, **kwargs)
         self._update_attrs(server_data)
 

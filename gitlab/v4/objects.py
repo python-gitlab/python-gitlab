@@ -2400,6 +2400,53 @@ class ProjectWikiManager(CRUDMixin, RESTManager):
     _list_filters = ('with_content', )
 
 
+class ProjectExport(RefreshMixin, RESTObject):
+    _id_attr = None
+
+    @cli.register_custom_action('ProjectExport')
+    @exc.on_http_error(exc.GitlabGetError)
+    def download(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+        """Download the archive of a project export.
+
+        Args:
+            streamed (bool): If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                reatment
+            action (callable): Callable responsible of dealing with chunk of
+                data
+            chunk_size (int): Size of each chunk
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the server failed to perform the request
+
+        Returns:
+            str: The blob content if streamed is False, None otherwise
+        """
+        path = '/projects/%d/export/download' % self.project_id
+        result = self.manager.gitlab.http_get(path, streamed=streamed,
+                                              **kwargs)
+        return utils.response_content(result, streamed, action, chunk_size)
+
+
+class ProjectExportManager(GetWithoutIdMixin, CreateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/export'
+    _obj_cls = ProjectExport
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (tuple(), ('description',))
+
+
+class ProjectImport(RefreshMixin, RESTObject):
+    _id_attr = None
+
+
+class ProjectImportManager(GetWithoutIdMixin, RESTManager):
+    _path = '/projects/%(project_id)s/import'
+    _obj_cls = ProjectImport
+    _from_parent_attrs = {'project_id': 'id'}
+
+
 class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'path'
     _managers = (
@@ -2412,10 +2459,12 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('deployments', 'ProjectDeploymentManager'),
         ('environments', 'ProjectEnvironmentManager'),
         ('events', 'ProjectEventManager'),
+        ('exports', 'ProjectExportManager'),
         ('files', 'ProjectFileManager'),
         ('forks', 'ProjectForkManager'),
         ('hooks', 'ProjectHookManager'),
         ('keys', 'ProjectKeyManager'),
+        ('imports', 'ProjectImportManager'),
         ('issues', 'ProjectIssueManager'),
         ('labels', 'ProjectLabelManager'),
         ('members', 'ProjectMemberManager'),
@@ -2846,6 +2895,41 @@ class ProjectManager(CRUDMixin, RESTManager):
                      'order_by', 'sort', 'simple', 'membership', 'statistics',
                      'with_issues_enabled', 'with_merge_requests_enabled',
                      'custom_attributes')
+
+    def import_project(self, file, path, namespace=None, overwrite=False,
+                       override_params=None, **kwargs):
+        """Import a project from an archive file.
+
+        Args:
+            file: Data or file object containing the project
+            path (str): Name and path for the new project
+            namespace (str): The ID or path of the namespace that the project
+                will be imported to
+            overwrite (bool): If True overwrite an existing project with the
+                same path
+            override_params (dict): Set the specific settings for the project
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the server failed to perform the request
+
+        Returns:
+            dict: A representation of the import status.
+        """
+        files = {
+            'file': ('file.tar.gz', file)
+        }
+        data = {
+            'path': path,
+            'overwrite': overwrite
+        }
+        if override_params:
+            data['override_params'] = override_params
+        if namespace:
+            data['namespace'] = namespace
+        return self.gitlab.http_post('/projects/import', post_data=data,
+                                     files=files, **kwargs)
 
 
 class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):
