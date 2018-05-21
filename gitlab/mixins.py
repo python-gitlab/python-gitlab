@@ -18,6 +18,7 @@
 import gitlab
 from gitlab import base
 from gitlab import cli
+from gitlab import types as g_types
 from gitlab import exceptions as exc
 
 
@@ -171,21 +172,29 @@ class CreateMixin(object):
             GitlabCreateError: If the server cannot perform the request
         """
         self._check_missing_create_attrs(data)
+        files = {}
 
         # We get the attributes that need some special transformation
         types = getattr(self, '_types', {})
-
         if types:
             # Duplicate data to avoid messing with what the user sent us
             data = data.copy()
             for attr_name, type_cls in types.items():
                 if attr_name in data.keys():
                     type_obj = type_cls(data[attr_name])
-                    data[attr_name] = type_obj.get_for_api()
+
+                    # if the type if FileAttribute we need to pass the data as
+                    # file
+                    if issubclass(type_cls, g_types.FileAttribute):
+                        k = type_obj.get_file_name(attr_name)
+                        files[attr_name] = (k, data.pop(attr_name))
+                    else:
+                        data[attr_name] = type_obj.get_for_api()
 
         # Handle specific URL for creation
         path = kwargs.pop('path', self.path)
-        server_data = self.gitlab.http_post(path, post_data=data, **kwargs)
+        server_data = self.gitlab.http_post(path, post_data=data, files=files,
+                                            **kwargs)
         return self._obj_cls(self, server_data)
 
 
@@ -232,15 +241,27 @@ class UpdateMixin(object):
             path = '%s/%s' % (self.path, id)
 
         self._check_missing_update_attrs(new_data)
+        files = {}
 
         # We get the attributes that need some special transformation
         types = getattr(self, '_types', {})
-        for attr_name, type_cls in types.items():
-            if attr_name in new_data.keys():
-                type_obj = type_cls(new_data[attr_name])
-                new_data[attr_name] = type_obj.get_for_api()
+        if types:
+            # Duplicate data to avoid messing with what the user sent us
+            new_data = new_data.copy()
+            for attr_name, type_cls in types.items():
+                if attr_name in new_data.keys():
+                    type_obj = type_cls(new_data[attr_name])
 
-        return self.gitlab.http_put(path, post_data=new_data, **kwargs)
+                    # if the type if FileAttribute we need to pass the data as
+                    # file
+                    if issubclass(type_cls, g_types.FileAttribute):
+                        k = type_obj.get_file_name(attr_name)
+                        files[attr_name] = (k, new_data.pop(attr_name))
+                    else:
+                        new_data[attr_name] = type_obj.get_for_api()
+
+        return self.gitlab.http_put(path, post_data=new_data, files=files,
+                                    **kwargs)
 
 
 class SetMixin(object):

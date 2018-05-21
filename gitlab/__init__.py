@@ -356,12 +356,17 @@ class Gitlab(object):
 
         opts = self._get_session_opts(content_type='application/json')
 
-        # don't set the content-type header when uploading files
-        if files is not None:
-            del opts["headers"]["Content-type"]
-
         verify = opts.pop('verify')
         timeout = opts.pop('timeout')
+
+        # We need to deal with json vs. data when uploading files
+        if files:
+            data = post_data
+            json = None
+            del opts["headers"]["Content-type"]
+        else:
+            json = post_data
+            data = None
 
         # Requests assumes that `.` should not be encoded as %2E and will make
         # changes to urls using this encoding. Using a prepped request we can
@@ -369,7 +374,7 @@ class Gitlab(object):
         # The Requests behavior is right but it seems that web servers don't
         # always agree with this decision (this is the case with a default
         # gitlab installation)
-        req = requests.Request(verb, url, json=post_data, params=params,
+        req = requests.Request(verb, url, json=json, data=data, params=params,
                                files=files, **opts)
         prepped = self.session.prepare_request(req)
         prepped.url = sanitized_url(prepped.url)
@@ -506,7 +511,8 @@ class Gitlab(object):
                 error_message="Failed to parse the server message")
         return result
 
-    def http_put(self, path, query_data={}, post_data={}, **kwargs):
+    def http_put(self, path, query_data={}, post_data={}, files=None,
+                 **kwargs):
         """Make a PUT request to the Gitlab server.
 
         Args:
@@ -515,6 +521,7 @@ class Gitlab(object):
             query_data (dict): Data to send as query parameters
             post_data (dict): Data to send in the body (will be converted to
                               json)
+            files (dict): The files to send to the server
             **kwargs: Extra data to make the query (e.g. sudo, per_page, page)
 
         Returns:
@@ -525,7 +532,7 @@ class Gitlab(object):
             GitlabParsingError: If the json data could not be parsed
         """
         result = self.http_request('put', path, query_data=query_data,
-                                   post_data=post_data, **kwargs)
+                                   post_data=post_data, files=files, **kwargs)
         try:
             return result.json()
         except Exception:

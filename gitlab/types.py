@@ -44,3 +44,13 @@ class ListAttribute(GitlabAttribute):
 class LowercaseStringAttribute(GitlabAttribute):
     def get_for_api(self):
         return str(self._value).lower()
+
+
+class FileAttribute(GitlabAttribute):
+    def get_file_name(self, attr_name=None):
+        return attr_name
+
+
+class ImageAttribute(FileAttribute):
+    def get_file_name(self, attr_name=None):
+        return '%s.png' % attr_name if attr_name else 'image.png'

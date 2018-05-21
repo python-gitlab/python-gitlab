@@ -1,5 +1,8 @@
 import base64
+import os
 import time
+
+import requests
 
 import gitlab
 
@@ -49,6 +52,7 @@ nxs4TLO3kZjUTgWKdhpgRNF5hwaz51ZjpebaRf/ZqRuNyX4lIRolDxzOn/+O1o8L
 qG2ZdhHHmSK2LaQLFiSprUkikStNU9BqSQ==
 =5OGa
 -----END PGP PUBLIC KEY BLOCK-----'''
+AVATAR_PATH = os.path.join(os.path.dirname(__file__), 'avatar.png')
 
 
 # token authentication from config file
@@ -81,7 +85,11 @@ assert(settings.default_projects_limit == 42)
 
 # users
 new_user = gl.users.create({'email': 'foo@bar.com', 'username': 'foo',
-                            'name': 'foo', 'password': 'foo_password'})
+                            'name': 'foo', 'password': 'foo_password',
+                            'avatar': open(AVATAR_PATH, 'rb')})
+avatar_url = new_user.avatar_url.replace('gitlab.test', 'localhost:8080')
+uploaded_avatar = requests.get(avatar_url).content
+assert(uploaded_avatar == open(AVATAR_PATH, 'rb').read())
 users_list = gl.users.list()
 for user in users_list:
     if user.username == 'foo':

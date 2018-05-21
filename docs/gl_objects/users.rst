@@ -61,6 +61,13 @@ Block/Unblock a user::
     user.block()
     user.unblock()
 
+Set the avatar image for a user::
+
+    # the avatar image can be passed as data (content of the file) or as a file
+    # object opened in binary mode
+    user.avatar = open('path/to/file.png', 'rb')
+    user.save()
+
 User custom attributes
 ======================
 

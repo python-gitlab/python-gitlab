@@ -307,16 +307,19 @@ class UserManager(CRUDMixin, RESTManager):
         ('email', 'username', 'name', 'password', 'reset_password', 'skype',
          'linkedin', 'twitter', 'projects_limit', 'extern_uid', 'provider',
          'bio', 'admin', 'can_create_group', 'website_url',
-         'skip_confirmation', 'external', 'organization', 'location')
+         'skip_confirmation', 'external', 'organization', 'location', 'avatar')
     )
     _update_attrs = (
         ('email', 'username', 'name'),
         ('password', 'skype', 'linkedin', 'twitter', 'projects_limit',
          'extern_uid', 'provider', 'bio', 'admin', 'can_create_group',
          'website_url', 'skip_confirmation', 'external', 'organization',
-         'location')
+         'location', 'avatar')
     )
-    _types = {'confirm': types.LowercaseStringAttribute}
+    _types = {
+        'confirm': types.LowercaseStringAttribute,
+        'avatar': types.ImageAttribute,
+    }
 
 
 class CurrentUserEmail(ObjectDeleteMixin, RESTObject):
