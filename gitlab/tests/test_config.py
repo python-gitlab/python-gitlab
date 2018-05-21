@@ -45,6 +45,7 @@ timeout = 10
 url = https://three.url
 private_token = MNOPQR
 ssl_verify = /path/to/CA/bundle.crt
+per_page = 50
 
 [four]
 url = https://four.url
@@ -66,6 +67,11 @@ private_token = ABCDEF
 
 [three]
 meh = hem
+
+[four]
+url = http://four.url
+private_token = ABCDEF
+per_page = 200
 """
 
 
@@ -87,13 +93,19 @@ class TestConfigParser(unittest.TestCase):
     @mock.patch('six.moves.builtins.open')
     def test_invalid_data(self, m_open):
         fd = six.StringIO(missing_attr_config)
-        fd.close = mock.Mock(return_value=None)
+        fd.close = mock.Mock(return_value=None,
+                             side_effect=lambda: fd.seek(0))
         m_open.return_value = fd
+        config.GitlabConfigParser('one')
         config.GitlabConfigParser('one')
         self.assertRaises(config.GitlabDataError, config.GitlabConfigParser,
                           gitlab_id='two')
         self.assertRaises(config.GitlabDataError, config.GitlabConfigParser,
                           gitlab_id='three')
+        with self.assertRaises(config.GitlabDataError) as emgr:
+            config.GitlabConfigParser('four')
+        self.assertEqual('Unsupported per_page number: 200',
+                         emgr.exception.args[0])
 
     @mock.patch('six.moves.builtins.open')
     def test_valid_data(self, m_open):
@@ -108,6 +120,7 @@ class TestConfigParser(unittest.TestCase):
         self.assertEqual(None, cp.oauth_token)
         self.assertEqual(2, cp.timeout)
         self.assertEqual(True, cp.ssl_verify)
+        self.assertIsNone(cp.per_page)
 
         fd = six.StringIO(valid_config)
         fd.close = mock.Mock(return_value=None)
@@ -130,6 +143,7 @@ class TestConfigParser(unittest.TestCase):
         self.assertEqual(None, cp.oauth_token)
         self.assertEqual(2, cp.timeout)
         self.assertEqual("/path/to/CA/bundle.crt", cp.ssl_verify)
+        self.assertEqual(50, cp.per_page)
 
         fd = six.StringIO(valid_config)
         fd.close = mock.Mock(return_value=None)
