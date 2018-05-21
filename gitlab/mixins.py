@@ -18,8 +18,8 @@
 import gitlab
 from gitlab import base
 from gitlab import cli
-from gitlab import types as g_types
 from gitlab import exceptions as exc
+from gitlab import types as g_types
 
 
 class GetMixin(object):
