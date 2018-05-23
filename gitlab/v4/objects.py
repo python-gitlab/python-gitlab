@@ -1250,6 +1250,18 @@ class ProjectKeyManager(CRUDMixin, RESTManager):
         self.gitlab.http_post(path, **kwargs)
 
 
+class ProjectBadge(SaveMixin, ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class ProjectBadgeManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/badges'
+    _obj_cls = ProjectBadge
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('link_url', 'image_url'), tuple())
+    _update_attrs = (('link_url', 'image_url'), tuple())
+
+
 class ProjectEvent(Event):
     pass
 
@@ -2472,6 +2484,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'path'
     _managers = (
         ('accessrequests', 'ProjectAccessRequestManager'),
+        ('badges', 'ProjectBadgeManager'),
         ('boards', 'ProjectBoardManager'),
         ('branches', 'ProjectBranchManager'),
         ('jobs', 'ProjectJobManager'),
