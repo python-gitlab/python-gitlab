@@ -189,6 +189,13 @@ parameter to get all the items when using listing methods:
    all_groups = gl.groups.list(all=True)
    all_owned_projects = gl.projects.owned(all=True)
 
+You can define the ``per_page`` value globally to avoid passing it to every
+``list()`` method call:
+
+.. code-block:: python
+
+   gl = gitlab.Gitlab(url, token, per_page=50)
+
 ``list()`` methods can also return a generator object which will handle the
 next calls to the API when required. This is the recommended way to iterate
 through a large number of items:

@@ -71,6 +71,10 @@ parameters. You can override the values in each GitLab server section.
    * - ``api_version``
      - ``3`` ou ``4``
      - The API version to use to make queries. Requires python-gitlab >= 1.3.0.
+   * - ``per_page``
+     - Integer between 1 and 100
+     - The number of items to return in listing queries. GitLab limits the
+       value at 100.
 
 You must define the ``url`` in each GitLab server section.
 
