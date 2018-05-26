@@ -114,6 +114,8 @@ class ListMixin(object):
 
         # Duplicate data to avoid messing with what the user sent us
         data = kwargs.copy()
+        if self.gitlab.per_page:
+            data.setdefault('per_page', self.gitlab.per_page)
 
         # We get the attributes that need some special transformation
         types = getattr(self, '_types', {})

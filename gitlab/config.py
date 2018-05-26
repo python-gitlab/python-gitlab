@@ -140,3 +140,13 @@ class GitlabConfigParser(object):
         if self.api_version not in ('4',):
             raise GitlabDataError("Unsupported API version: %s" %
                                   self.api_version)
+
+        self.per_page = None
+        for section in ['global', self.gitlab_id]:
+            try:
+                self.per_page = self._config.getint(section, 'per_page')
+            except Exception:
+                pass
+        if self.per_page is not None and not 0 <= self.per_page <= 100:
+            raise GitlabDataError("Unsupported per_page number: %s" %
+                                  self.per_page)
