@@ -2812,6 +2812,21 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.manager.gitlab.http_delete(path, **kwargs)
 
     @cli.register_custom_action('Project')
+    @exc.on_http_error(exc.GitlabDeleteError)
+    def delete_merged_branches(self, **kwargs):
+        """Delete merged branches.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the server failed to perform the request
+        """
+        path = '/projects/%s/repository/merged_branches' % self.get_id()
+        self.manager.gitlab.http_delete(path, **kwargs)
+
+    @cli.register_custom_action('Project')
     @exc.on_http_error(exc.GitlabCreateError)
     def star(self, **kwargs):
         """Star a project.

@@ -49,3 +49,7 @@ Protect/unprotect a repository branch::
    .. code-block:: python
 
       branch.protect(developers_can_push=True, developers_can_merge=True)
+
+Delete the merged branches for a project::
+
+    project.delete_merged_branches()
