@@ -379,6 +379,20 @@ assert(len(commit.statuses.list()) == 1)
 commit.comments.create({'note': 'This is a commit comment'})
 assert(len(commit.comments.list()) == 1)
 
+# commit discussion
+count = len(commit.discussions.list())
+discussion = commit.discussions.create({'body': 'Discussion body'})
+assert(len(commit.discussions.list()) == (count + 1))
+d_note = discussion.notes.create({'body': 'first note'})
+d_note_from_get = discussion.notes.get(d_note.id)
+d_note_from_get.body = 'updated body'
+d_note_from_get.save()
+discussion = commit.discussions.get(discussion.id)
+assert(discussion.attributes['notes'][-1]['body'] == 'updated body')
+d_note_from_get.delete()
+discussion = commit.discussions.get(discussion.id)
+assert(len(discussion.attributes['notes']) == 1)
+
 # housekeeping
 admin_project.housekeeping()
 
@@ -492,6 +506,18 @@ note.delete()
 assert(len(issue1.notes.list()) == 0)
 assert(isinstance(issue1.user_agent_detail(), dict))
 
+discussion = issue1.discussions.create({'body': 'Discussion body'})
+assert(len(issue1.discussions.list()) == 1)
+d_note = discussion.notes.create({'body': 'first note'})
+d_note_from_get = discussion.notes.get(d_note.id)
+d_note_from_get.body = 'updated body'
+d_note_from_get.save()
+discussion = issue1.discussions.get(discussion.id)
+assert(discussion.attributes['notes'][-1]['body'] == 'updated body')
+d_note_from_get.delete()
+discussion = issue1.discussions.get(discussion.id)
+assert(len(discussion.attributes['notes']) == 1)
+
 # tags
 tag1 = admin_project.tags.create({'tag_name': 'v1.0', 'ref': 'master'})
 assert(len(admin_project.tags.list()) == 1)
@@ -507,6 +533,19 @@ snippet = admin_project.snippets.create(
     {'title': 'snip1', 'file_name': 'foo.py', 'code': 'initial content',
      'visibility': gitlab.v4.objects.VISIBILITY_PRIVATE}
 )
+
+discussion = snippet.discussions.create({'body': 'Discussion body'})
+assert(len(snippet.discussions.list()) == 1)
+d_note = discussion.notes.create({'body': 'first note'})
+d_note_from_get = discussion.notes.get(d_note.id)
+d_note_from_get.body = 'updated body'
+d_note_from_get.save()
+discussion = snippet.discussions.get(discussion.id)
+assert(discussion.attributes['notes'][-1]['body'] == 'updated body')
+d_note_from_get.delete()
+discussion = snippet.discussions.get(discussion.id)
+assert(len(discussion.attributes['notes']) == 1)
+
 snippet.file_name = 'bar.py'
 snippet.save()
 snippet = admin_project.snippets.get(snippet.id)
@@ -540,6 +579,19 @@ admin_project.files.create({'file_path': 'README2.rst',
 mr = admin_project.mergerequests.create({'source_branch': 'branch1',
                                          'target_branch': 'master',
                                          'title': 'MR readme2'})
+
+# discussion
+discussion = mr.discussions.create({'body': 'Discussion body'})
+assert(len(mr.discussions.list()) == 1)
+d_note = discussion.notes.create({'body': 'first note'})
+d_note_from_get = discussion.notes.get(d_note.id)
+d_note_from_get.body = 'updated body'
+d_note_from_get.save()
+discussion = mr.discussions.get(discussion.id)
+assert(discussion.attributes['notes'][-1]['body'] == 'updated body')
+d_note_from_get.delete()
+discussion = mr.discussions.get(discussion.id)
+assert(len(discussion.attributes['notes']) == 1)
 
 # basic testing: only make sure that the methods exist
 mr.commits()
@@ -646,7 +698,10 @@ snippet = gl.snippets.get(snippet.id)
 assert(snippet.title == 'updated_title')
 content = snippet.content()
 assert(content == 'import gitlab')
+
 snippet.delete()
+snippets = gl.snippets.list(all=True)
+assert(len(snippets) == 0)
 
 # user activities
 gl.user_activities.list()

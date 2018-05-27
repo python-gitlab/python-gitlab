@@ -14,6 +14,7 @@ API examples
    gl_objects/commits
    gl_objects/deploy_keys
    gl_objects/deployments
+   gl_objects/discussions
    gl_objects/environments
    gl_objects/events
    gl_objects/features

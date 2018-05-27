@@ -1159,10 +1159,39 @@ class ProjectCommitCommentManager(ListMixin, CreateMixin, RESTManager):
     _create_attrs = (('note', ), ('path', 'line', 'line_type'))
 
 
+class ProjectCommitDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class ProjectCommitDiscussionNoteManager(GetMixin, CreateMixin, UpdateMixin,
+                                         DeleteMixin, RESTManager):
+    _path = ('/projects/%(project_id)s/repository/commits/%(commit_id)s/'
+             'discussions/%(discussion_id)s/notes')
+    _obj_cls = ProjectCommitDiscussionNote
+    _from_parent_attrs = {'project_id': 'project_id',
+                          'commit_id': 'commit_id',
+                          'discussion_id': 'id'}
+    _create_attrs = (('body',), ('created_at', 'position'))
+    _update_attrs = (('body',), tuple())
+
+
+class ProjectCommitDiscussion(RESTObject):
+    _managers = (('notes', 'ProjectCommitDiscussionNoteManager'),)
+
+
+class ProjectCommitDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
+    _path = ('/projects/%(project_id)s/repository/commits/%(commit_id)s/'
+             'discussions')
+    _obj_cls = ProjectCommitDiscussion
+    _from_parent_attrs = {'project_id': 'project_id', 'commit_id': 'id'}
+    _create_attrs = (('body',), ('created_at',))
+
+
 class ProjectCommit(RESTObject):
     _short_print_attr = 'title'
     _managers = (
         ('comments', 'ProjectCommitCommentManager'),
+        ('discussions', 'ProjectCommitDiscussionManager'),
         ('statuses', 'ProjectCommitStatusManager'),
     )
 
@@ -1330,13 +1359,41 @@ class ProjectIssueNoteManager(CRUDMixin, RESTManager):
     _update_attrs = (('body', ), tuple())
 
 
+class ProjectIssueDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class ProjectIssueDiscussionNoteManager(GetMixin, CreateMixin, UpdateMixin,
+                                        DeleteMixin, RESTManager):
+    _path = ('/projects/%(project_id)s/issues/%(issue_iid)s/'
+             'discussions/%(discussion_id)s/notes')
+    _obj_cls = ProjectIssueDiscussionNote
+    _from_parent_attrs = {'project_id': 'project_id',
+                          'issue_iid': 'issue_iid',
+                          'discussion_id': 'id'}
+    _create_attrs = (('body',), ('created_at',))
+    _update_attrs = (('body',), tuple())
+
+
+class ProjectIssueDiscussion(RESTObject):
+    _managers = (('notes', 'ProjectIssueDiscussionNoteManager'),)
+
+
+class ProjectIssueDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/issues/%(issue_iid)s/discussions'
+    _obj_cls = ProjectIssueDiscussion
+    _from_parent_attrs = {'project_id': 'project_id', 'issue_iid': 'iid'}
+    _create_attrs = (('body',), ('created_at',))
+
+
 class ProjectIssue(SubscribableMixin, TodoMixin, TimeTrackingMixin, SaveMixin,
                    ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'title'
     _id_attr = 'iid'
     _managers = (
-        ('notes', 'ProjectIssueNoteManager'),
         ('awardemojis', 'ProjectIssueAwardEmojiManager'),
+        ('discussions', 'ProjectIssueDiscussionManager'),
+        ('notes', 'ProjectIssueNoteManager'),
     )
 
     @cli.register_custom_action('ProjectIssue')
@@ -1510,7 +1567,7 @@ class ProjectMergeRequestNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
              '/notes/%(note_id)s/award_emoji')
     _obj_cls = ProjectMergeRequestNoteAwardEmoji
     _from_parent_attrs = {'project_id': 'project_id',
-                          'mr_iid': 'issue_iid',
+                          'mr_iid': 'mr_iid',
                           'note_id': 'id'}
     _create_attrs = (('name', ), tuple())
 
@@ -1527,6 +1584,37 @@ class ProjectMergeRequestNoteManager(CRUDMixin, RESTManager):
     _update_attrs = (('body', ), tuple())
 
 
+class ProjectMergeRequestDiscussionNote(SaveMixin, ObjectDeleteMixin,
+                                        RESTObject):
+    pass
+
+
+class ProjectMergeRequestDiscussionNoteManager(GetMixin, CreateMixin,
+                                               UpdateMixin, DeleteMixin,
+                                               RESTManager):
+    _path = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s/'
+             'discussions/%(discussion_id)s/notes')
+    _obj_cls = ProjectMergeRequestDiscussionNote
+    _from_parent_attrs = {'project_id': 'project_id',
+                          'mr_iid': 'mr_iid',
+                          'discussion_id': 'id'}
+    _create_attrs = (('body',), ('created_at',))
+    _update_attrs = (('body',), tuple())
+
+
+class ProjectMergeRequestDiscussion(SaveMixin, RESTObject):
+    _managers = (('notes', 'ProjectMergeRequestDiscussionNoteManager'),)
+
+
+class ProjectMergeRequestDiscussionManager(RetrieveMixin, CreateMixin,
+                                           UpdateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/merge_requests/%(mr_iid)s/discussions'
+    _obj_cls = ProjectMergeRequestDiscussion
+    _from_parent_attrs = {'project_id': 'project_id', 'mr_iid': 'iid'}
+    _create_attrs = (('body',), ('created_at', 'position'))
+    _update_attrs = (('resolved',), tuple())
+
+
 class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                           SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = 'iid'
@@ -1534,6 +1622,7 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
     _managers = (
         ('awardemojis', 'ProjectMergeRequestAwardEmojiManager'),
         ('diffs', 'ProjectMergeRequestDiffManager'),
+        ('discussions', 'ProjectMergeRequestDiscussionManager'),
         ('notes', 'ProjectMergeRequestNoteManager'),
     )
 
@@ -2175,11 +2264,39 @@ class ProjectSnippetAwardEmojiManager(NoUpdateMixin, RESTManager):
     _create_attrs = (('name', ), tuple())
 
 
+class ProjectSnippetDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class ProjectSnippetDiscussionNoteManager(GetMixin, CreateMixin, UpdateMixin,
+                                          DeleteMixin, RESTManager):
+    _path = ('/projects/%(project_id)s/snippets/%(snippet_id)s/'
+             'discussions/%(discussion_id)s/notes')
+    _obj_cls = ProjectSnippetDiscussionNote
+    _from_parent_attrs = {'project_id': 'project_id',
+                          'snippet_id': 'snippet_id',
+                          'discussion_id': 'id'}
+    _create_attrs = (('body',), ('created_at',))
+    _update_attrs = (('body',), tuple())
+
+
+class ProjectSnippetDiscussion(RESTObject):
+    _managers = (('notes', 'ProjectSnippetDiscussionNoteManager'),)
+
+
+class ProjectSnippetDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/snippets/%(snippet_id)s/discussions'
+    _obj_cls = ProjectSnippetDiscussion
+    _from_parent_attrs = {'project_id': 'project_id', 'snippet_id': 'id'}
+    _create_attrs = (('body',), ('created_at',))
+
+
 class ProjectSnippet(SaveMixin, ObjectDeleteMixin, RESTObject):
     _url = '/projects/%(project_id)s/snippets'
     _short_print_attr = 'title'
     _managers = (
         ('awardemojis', 'ProjectSnippetAwardEmojiManager'),
+        ('discussions', 'ProjectSnippetDiscussionManager'),
         ('notes', 'ProjectSnippetNoteManager'),
     )
 
