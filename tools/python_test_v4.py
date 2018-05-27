@@ -506,6 +506,8 @@ note.delete()
 assert(len(issue1.notes.list()) == 0)
 assert(isinstance(issue1.user_agent_detail(), dict))
 
+assert(issue1.user_agent_detail()['user_agent'])
+
 discussion = issue1.discussions.create({'body': 'Discussion body'})
 assert(len(issue1.discussions.list()) == 1)
 d_note = discussion.notes.create({'body': 'first note'})
@@ -533,6 +535,8 @@ snippet = admin_project.snippets.create(
     {'title': 'snip1', 'file_name': 'foo.py', 'code': 'initial content',
      'visibility': gitlab.v4.objects.VISIBILITY_PRIVATE}
 )
+
+assert(snippet.user_agent_detail()['user_agent'])
 
 discussion = snippet.discussions.create({'body': 'Discussion body'})
 assert(len(snippet.discussions.list()) == 1)
@@ -698,6 +702,8 @@ snippet = gl.snippets.get(snippet.id)
 assert(snippet.title == 'updated_title')
 content = snippet.content()
 assert(content == 'import gitlab')
+
+assert(snippet.user_agent_detail()['user_agent'])
 
 snippet.delete()
 snippets = gl.snippets.list(all=True)

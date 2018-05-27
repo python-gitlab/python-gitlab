@@ -73,6 +73,13 @@ class TestObjectMixinsAttributes(unittest.TestCase):
         obj = O()
         self.assertTrue(hasattr(obj, 'set'))
 
+    def test_user_agent_detail_mixin(self):
+        class O(UserAgentDetailMixin):
+            pass
+
+        obj = O()
+        self.assertTrue(hasattr(obj, 'user_agent_detail'))
+
 
 class TestMetaMixins(unittest.TestCase):
     def test_retrieve_mixin(self):

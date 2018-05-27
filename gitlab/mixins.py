@@ -371,6 +371,23 @@ class ObjectDeleteMixin(object):
         self.manager.delete(self.get_id())
 
 
+class UserAgentDetailMixin(object):
+    @cli.register_custom_action(('Snippet', 'ProjectSnippet', 'ProjectIssue'))
+    @exc.on_http_error(exc.GitlabGetError)
+    def user_agent_detail(self, **kwargs):
+        """Get the user agent detail.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the server cannot perform the request
+        """
+        path = '%s/%s/user_agent_detail' % (self.manager.path, self.get_id())
+        return self.manager.gitlab.http_get(path, **kwargs)
+
+
 class AccessRequestMixin(object):
     @cli.register_custom_action(('ProjectAccessRequest', 'GroupAccessRequest'),
                                 tuple(), ('access_level', ))

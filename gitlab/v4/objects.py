@@ -786,7 +786,7 @@ class LicenseManager(RetrieveMixin, RESTManager):
     _optional_get_attrs = ('project', 'fullname')
 
 
-class Snippet(SaveMixin, ObjectDeleteMixin, RESTObject):
+class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'title'
 
     @cli.register_custom_action('Snippet')
@@ -1386,8 +1386,9 @@ class ProjectIssueDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
     _create_attrs = (('body',), ('created_at',))
 
 
-class ProjectIssue(SubscribableMixin, TodoMixin, TimeTrackingMixin, SaveMixin,
-                   ObjectDeleteMixin, RESTObject):
+class ProjectIssue(UserAgentDetailMixin, SubscribableMixin, TodoMixin,
+                   TimeTrackingMixin, SaveMixin, ObjectDeleteMixin,
+                   RESTObject):
     _short_print_attr = 'title'
     _id_attr = 'iid'
     _managers = (
@@ -1395,21 +1396,6 @@ class ProjectIssue(SubscribableMixin, TodoMixin, TimeTrackingMixin, SaveMixin,
         ('discussions', 'ProjectIssueDiscussionManager'),
         ('notes', 'ProjectIssueNoteManager'),
     )
-
-    @cli.register_custom_action('ProjectIssue')
-    @exc.on_http_error(exc.GitlabUpdateError)
-    def user_agent_detail(self, **kwargs):
-        """Get user agent detail.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabGetError: If the detail could not be retrieved
-        """
-        path = '%s/%s/user_agent_detail' % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action('ProjectIssue', ('to_project_id',))
     @exc.on_http_error(exc.GitlabUpdateError)
@@ -2291,7 +2277,8 @@ class ProjectSnippetDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
     _create_attrs = (('body',), ('created_at',))
 
 
-class ProjectSnippet(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin,
+                     RESTObject):
     _url = '/projects/%(project_id)s/snippets'
     _short_print_attr = 'title'
     _managers = (

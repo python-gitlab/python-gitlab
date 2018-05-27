@@ -52,3 +52,7 @@ Delete a snippet::
     gl.snippets.delete(snippet_id)
     # or
     snippet.delete()
+
+Get user agent detail (admin only)::
+
+    detail = snippet.user_agent_detail()
