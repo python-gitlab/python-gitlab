@@ -602,7 +602,7 @@ assert(len(discussion.attributes['notes']) == 1)
 # basic testing: only make sure that the methods exist
 mr.commits()
 mr.changes()
-#mr.participants()  # not yet available
+mr.participants()  # not yet available
 
 mr.merge()
 admin_project.branches.delete('branch1')
