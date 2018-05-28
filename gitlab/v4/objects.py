@@ -656,7 +656,8 @@ class GroupProjectManager(ListMixin, RESTManager):
     _obj_cls = GroupProject
     _from_parent_attrs = {'group_id': 'id'}
     _list_filters = ('archived', 'visibility', 'order_by', 'sort', 'search',
-                     'ci_enabled_first')
+                     'ci_enabled_first', 'simple', 'owned', 'starred',
+                     'with_custom_attributes')
 
 
 class GroupSubgroup(RESTObject):
@@ -668,7 +669,7 @@ class GroupSubgroupManager(ListMixin, RESTManager):
     _obj_cls = GroupSubgroup
     _from_parent_attrs = {'group_id': 'id'}
     _list_filters = ('skip_groups', 'all_available', 'search', 'order_by',
-                     'sort', 'statistics', 'owned')
+                     'sort', 'statistics', 'owned', 'with_custom_attributes')
 
 
 class GroupVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -739,7 +740,7 @@ class GroupManager(CRUDMixin, RESTManager):
     _path = '/groups'
     _obj_cls = Group
     _list_filters = ('skip_groups', 'all_available', 'search', 'order_by',
-                     'sort', 'statistics', 'owned', 'custom_attributes')
+                     'sort', 'statistics', 'owned', 'with_custom_attributes')
     _create_attrs = (
         ('name', 'path'),
         ('description', 'visibility', 'parent_id', 'lfs_enabled',
