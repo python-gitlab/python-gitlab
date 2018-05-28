@@ -432,6 +432,7 @@ env.external_url = 'http://new.env/whatever'
 env.save()
 env = admin_project.environments.list()[0]
 assert(env.external_url == 'http://new.env/whatever')
+env.stop()
 env.delete()
 assert(len(admin_project.environments.list()) == 0)
 

@@ -1278,7 +1278,20 @@ class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
 
 
 class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
-    pass
+    @cli.register_custom_action('ProjectEnvironment')
+    @exc.on_http_error(exc.GitlabStopError)
+    def stop(self, **kwargs):
+        """Stop the environment.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabStopError: If the operation failed
+        """
+        path = '%s/%s/stop' % (self.manager.path, self.get_id())
+        self.manager.gitlab.http_post(path, **kwargs)
 
 
 class ProjectEnvironmentManager(ListMixin, CreateMixin, UpdateMixin,

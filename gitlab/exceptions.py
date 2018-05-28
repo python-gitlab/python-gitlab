@@ -201,6 +201,10 @@ class GitlabSearchError(GitlabOperationError):
     pass
 
 
+class GitlabStopError(GitlabOperationError):
+    pass
+
+
 def on_http_error(error):
     """Manage GitlabHttpError exceptions.
 

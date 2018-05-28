@@ -34,3 +34,7 @@ Delete an environment for a project::
     environment = project.environments.delete(environment_id)
     # or
     environment.delete()
+
+Stop an environments::
+
+    environment.stop()
