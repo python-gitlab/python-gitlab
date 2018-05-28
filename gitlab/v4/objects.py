@@ -1298,7 +1298,8 @@ class ProjectKeyManager(CRUDMixin, RESTManager):
     _path = '/projects/%(project_id)s/deploy_keys'
     _obj_cls = ProjectKey
     _from_parent_attrs = {'project_id': 'id'}
-    _create_attrs = (('title', 'key'), tuple())
+    _create_attrs = (('title', 'key'), ('can_push',))
+    _update_attrs = (tuple(), ('title', 'can_push'))
 
     @cli.register_custom_action('ProjectKeyManager', ('key_id',))
     @exc.on_http_error(exc.GitlabProjectDeployKeyError)
