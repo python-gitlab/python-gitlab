@@ -462,11 +462,11 @@ class DockerfileManager(RetrieveMixin, RESTManager):
     _obj_cls = Dockerfile
 
 
-class Feature(RESTObject):
+class Feature(ObjectDeleteMixin, RESTObject):
     _id_attr = 'name'
 
 
-class FeatureManager(ListMixin, RESTManager):
+class FeatureManager(ListMixin, DeleteMixin, RESTManager):
     _path = '/features/'
     _obj_cls = Feature
 

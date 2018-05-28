@@ -665,6 +665,8 @@ assert(ns.kind == 'user')
 feat = gl.features.set('foo', 30)
 assert(feat.name == 'foo')
 assert(len(gl.features.list()) == 1)
+feat.delete()
+assert(len(gl.features.list()) == 0)
 
 # broadcast messages
 msg = gl.broadcastmessages.create({'message': 'this is the message'})
