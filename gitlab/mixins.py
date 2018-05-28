@@ -548,7 +548,7 @@ class TimeTrackingMixin(object):
 
 
 class ParticipantsMixin(object):
-    @cli.register_custom_action('ProjectMergeRequest', 'ProjectIssue')
+    @cli.register_custom_action(('ProjectMergeRequest', 'ProjectIssue'))
     @exc.on_http_error(exc.GitlabListError)
     def participants(self, **kwargs):
         """List the participants.

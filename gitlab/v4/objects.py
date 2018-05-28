@@ -1505,7 +1505,7 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
     _create_attrs = (('title', ),
                      ('description', 'confidential', 'assignee_id',
                       'assignee_idss' 'milestone_id', 'labels', 'created_at',
-                      'due_date', 'merge_request_to_resolve_discussions_of' ,
+                      'due_date', 'merge_request_to_resolve_discussions_of',
                       'discussion_to_resolve'))
     _update_attrs = (tuple(), ('title', 'description', 'confidential',
                                'assignee_ids', 'assignee_id', 'milestone_id',
