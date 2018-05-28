@@ -2525,6 +2525,7 @@ class ProjectDeploymentManager(RetrieveMixin, RESTManager):
     _path = '/projects/%(project_id)s/deployments'
     _obj_cls = ProjectDeployment
     _from_parent_attrs = {'project_id': 'id'}
+    _list_filters = ('order_by', 'sort')
 
 
 class ProjectProtectedBranch(ObjectDeleteMixin, RESTObject):
