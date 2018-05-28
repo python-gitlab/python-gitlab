@@ -71,6 +71,10 @@ Get the references the commit has been pushed to (branches and tags)::
     commit.refs('tag')  # only tags
     commit.refs('branch')  # only branches
 
+List the merge requests related to a commit::
+
+    commit.merge_requests()
+
 Commit comments
 ===============
 

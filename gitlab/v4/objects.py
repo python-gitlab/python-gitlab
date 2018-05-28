@@ -1250,6 +1250,24 @@ class ProjectCommit(RESTObject):
         data = {'type': type}
         return self.manager.gitlab.http_get(path, query_data=data, **kwargs)
 
+    @cli.register_custom_action('ProjectCommit')
+    @exc.on_http_error(exc.GitlabGetError)
+    def merge_requests(self, **kwargs):
+        """List the merge requests related to the commit.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the references could not be retrieved
+
+        Returns:
+            list: The merge requests related to the commit.
+        """
+        path = '%s/%s/merge_requests' % (self.manager.path, self.get_id())
+        return self.manager.gitlab.http_get(path, **kwargs)
+
 
 class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
     _path = '/projects/%(project_id)s/repository/commits'

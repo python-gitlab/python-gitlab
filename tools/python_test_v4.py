@@ -376,6 +376,7 @@ status = commit.statuses.create({'state': 'success', 'sha': commit.id})
 assert(len(commit.statuses.list()) == 1)
 
 assert(commit.refs())
+assert(commit.merge_requests() is not None)
 
 # commit comment
 commit.comments.create({'note': 'This is a commit comment'})
