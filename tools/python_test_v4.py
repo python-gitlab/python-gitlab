@@ -511,6 +511,7 @@ assert(len(issue1.notes.list()) == 0)
 assert(isinstance(issue1.user_agent_detail(), dict))
 
 assert(issue1.user_agent_detail()['user_agent'])
+assert(issue1.participants())
 
 discussion = issue1.discussions.create({'body': 'Discussion body'})
 assert(len(issue1.discussions.list()) == 1)
@@ -604,7 +605,7 @@ assert(len(discussion.attributes['notes']) == 1)
 # basic testing: only make sure that the methods exist
 mr.commits()
 mr.changes()
-mr.participants()  # not yet available
+assert(mr.participants())
 
 mr.merge()
 admin_project.branches.delete('branch1')

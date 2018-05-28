@@ -145,3 +145,11 @@ Reset spent time for an issue::
 Get user agent detail for the issue (admin only)::
 
     detail = issue.user_agent_detail()
+
+Get the list of merge requests that will close an issue when merged::
+
+    mrs = issue.closed_by()
+
+Get the list of participants::
+
+    users = issue.participants()

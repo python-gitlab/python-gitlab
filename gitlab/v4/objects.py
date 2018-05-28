@@ -542,7 +542,10 @@ class GroupIssueManager(ListMixin, RESTManager):
     _path = '/groups/%(group_id)s/issues'
     _obj_cls = GroupIssue
     _from_parent_attrs = {'group_id': 'id'}
-    _list_filters = ('state', 'labels', 'milestone', 'order_by', 'sort')
+    _list_filters = ('state', 'labels', 'milestone', 'order_by', 'sort',
+                     'iids', 'author_id', 'assignee_id', 'my_reaction_emoji',
+                     'search', 'created_after', 'created_before',
+                     'updated_after', 'updated_before')
     _types = {'labels': types.ListAttribute}
 
 
@@ -772,7 +775,10 @@ class Issue(RESTObject):
 class IssueManager(ListMixin, RESTManager):
     _path = '/issues'
     _obj_cls = Issue
-    _list_filters = ('state', 'labels', 'order_by', 'sort')
+    _list_filters = ('state', 'labels', 'milestone', 'scope', 'author_id',
+                     'assignee_id', 'my_reaction_emoji', 'iids', 'order_by',
+                     'sort', 'search', 'created_after', 'created_before',
+                     'updated_after', 'updated_before')
     _types = {'labels': types.ListAttribute}
 
 
@@ -1440,8 +1446,8 @@ class ProjectIssueDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
 
 
 class ProjectIssue(UserAgentDetailMixin, SubscribableMixin, TodoMixin,
-                   TimeTrackingMixin, SaveMixin, ObjectDeleteMixin,
-                   RESTObject):
+                   TimeTrackingMixin, ParticipantsMixin, SaveMixin,
+                   ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'title'
     _id_attr = 'iid'
     _managers = (
@@ -1469,18 +1475,42 @@ class ProjectIssue(UserAgentDetailMixin, SubscribableMixin, TodoMixin,
                                                     **kwargs)
         self._update_attrs(server_data)
 
+    @cli.register_custom_action('ProjectIssue')
+    @exc.on_http_error(exc.GitlabGetError)
+    def closed_by(self, **kwargs):
+        """List merge requests that will close the issue when merged.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetErrot: If the merge requests could not be retrieved
+
+        Returns:
+            list: The list of merge requests.
+        """
+        path = '%s/%s/closed_by' % (self.manager.path, self.get_id())
+        return self.manager.gitlab.http_get(path, **kwargs)
+
 
 class ProjectIssueManager(CRUDMixin, RESTManager):
     _path = '/projects/%(project_id)s/issues/'
     _obj_cls = ProjectIssue
     _from_parent_attrs = {'project_id': 'id'}
-    _list_filters = ('state', 'labels', 'milestone', 'order_by', 'sort')
+    _list_filters = ('iids', 'state', 'labels', 'milestone', 'scope',
+                     'author_id', 'assignee_id', 'my_reaction_emoji',
+                     'order_by', 'sort', 'search', 'created_after',
+                     'created_before', 'updated_after', 'updated_before')
     _create_attrs = (('title', ),
-                     ('description', 'assignee_id', 'milestone_id', 'labels',
-                      'created_at', 'due_date'))
-    _update_attrs = (tuple(), ('title', 'description', 'assignee_id',
-                               'milestone_id', 'labels', 'created_at',
-                               'updated_at', 'state_event', 'due_date'))
+                     ('description', 'confidential', 'assignee_id',
+                      'assignee_idss' 'milestone_id', 'labels', 'created_at',
+                      'due_date', 'merge_request_to_resolve_discussions_of' ,
+                      'discussion_to_resolve'))
+    _update_attrs = (tuple(), ('title', 'description', 'confidential',
+                               'assignee_ids', 'assignee_id', 'milestone_id',
+                               'labels', 'state_event', 'updated_at',
+                               'due_date', 'discussion_locked'))
     _types = {'labels': types.ListAttribute}
 
 
@@ -1655,7 +1685,8 @@ class ProjectMergeRequestDiscussionManager(RetrieveMixin, CreateMixin,
 
 
 class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
-                          SaveMixin, ObjectDeleteMixin, RESTObject):
+                          ParticipantsMixin, SaveMixin, ObjectDeleteMixin,
+                          RESTObject):
     _id_attr = 'iid'
 
     _managers = (
@@ -1792,30 +1823,6 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
         server_data = self.manager.gitlab.http_put(path, post_data=data,
                                                    **kwargs)
         self._update_attrs(server_data)
-
-    @cli.register_custom_action('ProjectMergeRequest')
-    @exc.on_http_error(exc.GitlabListError)
-    def participants(self, **kwargs):
-        """List the merge request participants.
-
-        Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
-                defined, return a generator instead of a list
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabListError: If the list could not be retrieved
-
-        Returns:
-            RESTObjectList: The list of participants
-        """
-
-        path = '%s/%s/participants' % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_get(path, **kwargs)
 
 
 class ProjectMergeRequestManager(CRUDMixin, RESTManager):
