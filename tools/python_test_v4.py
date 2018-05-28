@@ -375,6 +375,8 @@ commit = admin_project.commits.list()[0]
 status = commit.statuses.create({'state': 'success', 'sha': commit.id})
 assert(len(commit.statuses.list()) == 1)
 
+assert(commit.refs())
+
 # commit comment
 commit.comments.create({'note': 'This is a commit comment'})
 assert(len(commit.comments.list()) == 1)

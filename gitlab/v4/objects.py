@@ -1230,6 +1230,26 @@ class ProjectCommit(RESTObject):
         post_data = {'branch': branch}
         self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
+    @cli.register_custom_action('ProjectCommit', optional=('type',))
+    @exc.on_http_error(exc.GitlabGetError)
+    def refs(self, type='all', **kwargs):
+        """List the references the commit is pushed to.
+
+        Args:
+            type (str): The scope of references ('branch', 'tag' or 'all')
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the references could not be retrieved
+
+        Returns:
+            list: The references the commit is pushed to.
+        """
+        path = '%s/%s/refs' % (self.manager.path, self.get_id())
+        data = {'type': type}
+        return self.manager.gitlab.http_get(path, query_data=data, **kwargs)
+
 
 class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
     _path = '/projects/%(project_id)s/repository/commits'

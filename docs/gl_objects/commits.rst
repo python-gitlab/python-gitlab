@@ -65,6 +65,12 @@ Cherry-pick a commit into another branch::
 
     commit.cherry_pick(branch='target_branch')
 
+Get the references the commit has been pushed to (branches and tags)::
+
+    commit.refs()  # all references
+    commit.refs('tag')  # only tags
+    commit.refs('branch')  # only branches
+
 Commit comments
 ===============
 
