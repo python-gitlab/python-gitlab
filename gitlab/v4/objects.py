@@ -2224,6 +2224,8 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, RESTManager):
     _path = '/projects/%(project_id)s/pipelines'
     _obj_cls = ProjectPipeline
     _from_parent_attrs = {'project_id': 'id'}
+    _list_filters = ('scope', 'status', 'ref', 'sha', 'yaml_errors', 'name',
+                     'username', 'order_by', 'sort')
     _create_attrs = (('ref', ), tuple())
 
     def create(self, data, **kwargs):
