@@ -227,6 +227,29 @@ class Gitlab(object):
 
         return self._server_version, self._server_revision
 
+    def lint(self, content, **kwargs):
+        """Validate a gitlab CI configuration.
+
+        Args:
+            content (txt): The .gitlab-ci.yml content
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabVerifyError: If the validation could not be done
+
+        Returns:
+            tuple: (True, []) if the file is valid, (False, errors(list))
+                otherwise
+        """
+        post_data = {'content': content}
+        try:
+            data = self.http_post('/ci/lint', post_data=post_data, **kwargs)
+        except Exception:
+            raise GitlabVerifyError
+
+        return (data['status'] == 'valid', data['errors'])
+
     def markdown(self, text, gfm=False, project=None, **kwargs):
         """Render an arbitrary Markdown document.
 

@@ -64,6 +64,10 @@ assert(isinstance(gl.user, gitlab.v4.objects.CurrentUser))
 # html = gl.markdown('foo')
 # assert('foo' in html)
 
+success, errors = gl.lint('Invalid')
+assert(success is False)
+assert(errors)
+
 # sidekiq
 out = gl.sidekiq.queue_metrics()
 assert(isinstance(out, dict))
