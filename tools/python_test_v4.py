@@ -60,6 +60,10 @@ gl = gitlab.Gitlab.from_config(config_files=['/tmp/python-gitlab.cfg'])
 gl.auth()
 assert(isinstance(gl.user, gitlab.v4.objects.CurrentUser))
 
+# markdown (need to wait for gitlab 11 to enable the test)
+# html = gl.markdown('foo')
+# assert('foo' in html)
+
 # sidekiq
 out = gl.sidekiq.queue_metrics()
 assert(isinstance(out, dict))

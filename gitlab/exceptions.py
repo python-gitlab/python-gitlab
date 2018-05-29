@@ -205,6 +205,10 @@ class GitlabStopError(GitlabOperationError):
     pass
 
 
+class GitlabMarkdownError(GitlabOperationError):
+    pass
+
+
 def on_http_error(error):
     """Manage GitlabHttpError exceptions.
 

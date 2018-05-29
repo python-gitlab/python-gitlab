@@ -1981,8 +1981,8 @@ class ProjectLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin,
             **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
 
         Raises:
-            GitlabAuthenticationError: If authentication is not correct.
-            GitlabDeleteError: If the server cannot perform the request.
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the server cannot perform the request
         """
         self.gitlab.http_delete(self.path, query_data={'name': name}, **kwargs)
 

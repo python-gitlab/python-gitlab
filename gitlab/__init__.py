@@ -227,6 +227,33 @@ class Gitlab(object):
 
         return self._server_version, self._server_revision
 
+    def markdown(self, text, gfm=False, project=None, **kwargs):
+        """Render an arbitrary Markdown document.
+
+        Args:
+            text (str): The markdown text to render
+            gfm (bool): Render text using GitLab Flavored Markdown. Default is
+                False
+            project (str): Full path of a project used a context when `gfm` is
+                True
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabMarkdownError: If the server cannot perform the request
+
+        Returns:
+            str: The HTML rendering of the markdown text.
+        """
+        post_data = {'text': text, 'gfm': gfm}
+        if project is not None:
+            post_data['project'] = project
+        try:
+            data = self.http_post('/markdown', post_data=post_data, **kwargs)
+        except Exception:
+            raise GitlabMarkdownError
+        return data['html']
+
     def _construct_url(self, id_, obj, parameters, action=None):
         if 'next_url' in parameters:
             return parameters['next_url']
