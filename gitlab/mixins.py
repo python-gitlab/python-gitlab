@@ -571,3 +571,27 @@ class ParticipantsMixin(object):
 
         path = '%s/%s/participants' % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)
+
+
+class BadgeRenderMixin(object):
+    @cli.register_custom_action(('GroupBadgeManager', 'ProjectBadgeManager'),
+                                ('link_url', 'image_url'))
+    @exc.on_http_error(exc.GitlabRenderError)
+    def render(self, link_url, image_url, **kwargs):
+        """Preview link_url and image_url after interpolation.
+
+        Args:
+            link_url (str): URL of the badge link
+            image_url (str): URL of the badge image
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabRenderError: If the rendering failed
+
+        Returns:
+            dict: The rendering properties
+        """
+        path = '%s/render' % self.path
+        data = {'link_url': link_url, 'image_url': image_url}
+        return self.gitlab.http_get(path, data, **kwargs)

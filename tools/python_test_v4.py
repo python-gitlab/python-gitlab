@@ -274,6 +274,18 @@ settings.save()
 settings = group2.notificationsettings.get()
 assert(settings.level == 'disabled')
 
+# group badges
+badge_image = 'http://example.com'
+badge_link = 'http://example/img.svg'
+badge = group2.badges.create({'link_url': badge_link, 'image_url': badge_image})
+assert(len(group2.badges.list()) == 1)
+badge.image_url = 'http://another.example.com'
+badge.save()
+badge = group2.badges.get(badge.id)
+assert(badge.image_url == 'http://another.example.com')
+badge.delete()
+assert(len(group2.badges.list()) == 0)
+
 # group milestones
 gm1 = group1.milestones.create({'title': 'groupmilestone1'})
 assert(len(group1.milestones.list()) == 1)
@@ -656,8 +668,14 @@ assert(admin_project.star_count == 0)
 # project badges
 badge_image = 'http://example.com'
 badge_link = 'http://example/img.svg'
-bp = admin_project.badges.create({'link_url': badge_link, 'image_url': badge_image})
+badge = admin_project.badges.create({'link_url': badge_link, 'image_url': badge_image})
 assert(len(admin_project.badges.list()) == 1)
+badge.image_url = 'http://another.example.com'
+badge.save()
+badge = admin_project.badges.get(badge.id)
+assert(badge.image_url == 'http://another.example.com')
+badge.delete()
+assert(len(admin_project.badges.list()) == 0)
 
 # project wiki
 wiki_content = 'Wiki page content'

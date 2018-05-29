@@ -555,6 +555,18 @@ class GroupAccessRequestManager(ListMixin, CreateMixin, DeleteMixin,
     _from_parent_attrs = {'group_id': 'id'}
 
 
+class GroupBadge(SaveMixin, ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class GroupBadgeManager(BadgeRenderMixin, CRUDMixin, RESTManager):
+    _path = '/groups/%(group_id)s/badges'
+    _obj_cls = GroupBadge
+    _from_parent_attrs = {'group_id': 'id'}
+    _create_attrs = (('link_url', 'image_url'), tuple())
+    _update_attrs = (tuple(), ('link_url', 'image_url'))
+
+
 class GroupBoardList(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
@@ -746,6 +758,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'name'
     _managers = (
         ('accessrequests', 'GroupAccessRequestManager'),
+        ('badges', 'GroupBadgeManager'),
         ('boards', 'GroupBoardManager'),
         ('customattributes', 'GroupCustomAttributeManager'),
         ('issues', 'GroupIssueManager'),
@@ -1398,12 +1411,12 @@ class ProjectBadge(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectBadgeManager(CRUDMixin, RESTManager):
+class ProjectBadgeManager(BadgeRenderMixin, CRUDMixin, RESTManager):
     _path = '/projects/%(project_id)s/badges'
     _obj_cls = ProjectBadge
     _from_parent_attrs = {'project_id': 'id'}
     _create_attrs = (('link_url', 'image_url'), tuple())
-    _update_attrs = (('link_url', 'image_url'), tuple())
+    _update_attrs = (tuple(), ('link_url', 'image_url'))
 
 
 class ProjectEvent(Event):

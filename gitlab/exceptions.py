@@ -213,6 +213,10 @@ class GitlabVerifyError(GitlabOperationError):
     pass
 
 
+class GitlabRenderError(GitlabOperationError):
+    pass
+
+
 def on_http_error(error):
     """Manage GitlabHttpError exceptions.
 

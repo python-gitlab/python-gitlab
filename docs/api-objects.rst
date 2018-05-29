@@ -7,6 +7,7 @@ API examples
 
    gl_objects/access_requests
    gl_objects/emojis
+   gl_objects/badges
    gl_objects/branches
    gl_objects/protected_branches
    gl_objects/messages
