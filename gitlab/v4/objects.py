@@ -3237,14 +3237,27 @@ class ProjectManager(CRUDMixin, RESTManager):
                                      files=files, **kwargs)
 
 
-class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):
+class RunnerJob(RESTObject):
     pass
+
+
+class RunnerJobManager(ListMixin, RESTManager):
+    _path = '/runners/%(runner_id)s/jobs'
+    _obj_cls = RunnerJob
+    _from_parent_attrs = {'runner_id': 'id'}
+    _list_filters = ('status',)
+
+
+class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _managers = (('jobs', 'RunnerJobManager'),)
 
 
 class RunnerManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
     _path = '/runners'
     _obj_cls = Runner
-    _update_attrs = (tuple(), ('description', 'active', 'tag_list'))
+    _update_attrs = (tuple(), ('description', 'active', 'tag_list',
+                               'run_untagged', 'locked', 'access_level',
+                               'maximum_timeout'))
     _list_filters = ('scope', )
 
     @cli.register_custom_action('RunnerManager', tuple(), ('scope', ))

@@ -94,3 +94,29 @@ Enable a specific runner for a project::
 Disable a specific runner for a project::
 
     project.runners.delete(runner.id)
+
+Runner jobs
+===========
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.RunnerJob`
+  + :class:`gitlab.v4.objects.RunnerJobManager`
+  + :attr:`gitlab.v4.objects.Runner.jobs`
+
+* GitLab API: https://docs.gitlab.com/ce/api/runners.html
+
+Examples
+--------
+
+List for jobs for a runner::
+
+    jobs = runner.jobs.list()
+
+Filter the list using the jobs status::
+
+    # status can be 'running', 'success', 'failed' or 'canceled'
+    active_jobs = runner.jobs.list(status='running')
