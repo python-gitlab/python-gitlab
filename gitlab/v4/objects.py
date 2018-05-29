@@ -523,6 +523,29 @@ class GroupAccessRequestManager(ListMixin, CreateMixin, DeleteMixin,
     _from_parent_attrs = {'group_id': 'id'}
 
 
+class GroupBoardList(SaveMixin, ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class GroupBoardListManager(CRUDMixin, RESTManager):
+    _path = '/groups/%(group_id)s/boards/%(board_id)s/lists'
+    _obj_cls = GroupBoardList
+    _from_parent_attrs = {'group_id': 'group_id',
+                          'board_id': 'id'}
+    _create_attrs = (('label_id', ), tuple())
+    _update_attrs = (('position', ), tuple())
+
+
+class GroupBoard(RESTObject):
+    _managers = (('lists', 'GroupBoardListManager'), )
+
+
+class GroupBoardManager(RetrieveMixin, RESTManager):
+    _path = '/groups/%(group_id)s/boards'
+    _obj_cls = GroupBoard
+    _from_parent_attrs = {'group_id': 'id'}
+
+
 class GroupCustomAttribute(ObjectDeleteMixin, RESTObject):
     _id_attr = 'key'
 
@@ -691,6 +714,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'name'
     _managers = (
         ('accessrequests', 'GroupAccessRequestManager'),
+        ('boards', 'GroupBoardManager'),
         ('customattributes', 'GroupCustomAttributeManager'),
         ('issues', 'GroupIssueManager'),
         ('members', 'GroupMemberManager'),

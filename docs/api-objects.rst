@@ -20,6 +20,7 @@ API examples
    gl_objects/features
    gl_objects/groups
    gl_objects/issues
+   gl_objects/boards
    gl_objects/labels
    gl_objects/notifications
    gl_objects/mrs
