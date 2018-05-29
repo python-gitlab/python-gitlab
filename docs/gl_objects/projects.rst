@@ -103,6 +103,10 @@ Create/delete a fork relation between projects (requires admin permissions)::
     project.create_fork_relation(source_project.id)
     project.delete_fork_relation()
 
+Get languages used in the project with percentage value::
+
+    languages = project.languages()
+
 Star/unstar a project::
 
     project.star()
@@ -156,6 +160,15 @@ Get the content of a file using the blob id::
 
    Blobs are entirely stored in memory unless you use the streaming feature.
    See :ref:`the artifacts example <streaming_example>`.
+
+Get a snapshot of the repository::
+
+    tar_file = project.snapshot()
+
+.. warning::
+
+   Snapshots are entirely stored in memory unless you use the streaming
+   feature.  See :ref:`the artifacts example <streaming_example>`.
 
 Compare two branches, tags or commits::
 

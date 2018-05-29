@@ -1380,6 +1380,10 @@ class ProjectForkManager(CreateMixin, RESTManager):
     _path = '/projects/%(project_id)s/fork'
     _obj_cls = ProjectFork
     _from_parent_attrs = {'project_id': 'id'}
+    _list_filters = ('archived', 'visibility', 'order_by', 'sort', 'search',
+                     'simple', 'owned', 'membership', 'starred', 'statistics',
+                     'with_custom_attributes', 'with_issues_enabled',
+                     'with_merge_requests_enabled')
     _create_attrs = (tuple(), ('namespace', ))
 
 
@@ -1393,15 +1397,17 @@ class ProjectHookManager(CRUDMixin, RESTManager):
     _from_parent_attrs = {'project_id': 'id'}
     _create_attrs = (
         ('url', ),
-        ('push_events', 'issues_events', 'note_events',
-         'merge_requests_events', 'tag_push_events', 'build_events',
-         'enable_ssl_verification', 'token', 'pipeline_events')
+        ('push_events', 'issues_events', 'confidential_issues_events',
+         'merge_requests_events', 'tag_push_events', 'note_events',
+         'job_events', 'pipeline_events', 'wiki_page_events',
+         'enable_ssl_verification', 'token')
     )
     _update_attrs = (
         ('url', ),
-        ('push_events', 'issues_events', 'note_events',
-         'merge_requests_events', 'tag_push_events', 'build_events',
-         'enable_ssl_verification', 'token', 'pipeline_events')
+        ('push_events', 'issues_events', 'confidential_issues_events',
+         'merge_requests_events', 'tag_push_events', 'note_events',
+         'job_events', 'pipeline_events', 'wiki_events',
+         'enable_ssl_verification', 'token')
     )
 
 
@@ -2907,6 +2913,21 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.manager.gitlab.http_delete(path, **kwargs)
 
     @cli.register_custom_action('Project')
+    @exc.on_http_error(exc.GitlabGetError)
+    def languages(self, **kwargs):
+        """Get languages used in the project with percentage value.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the server failed to perform the request
+        """
+        path = '/projects/%s/languages' % self.get_id()
+        return self.manager.gitlab.http_get(path, **kwargs)
+
+    @cli.register_custom_action('Project')
     @exc.on_http_error(exc.GitlabCreateError)
     def star(self, **kwargs):
         """Star a project.
@@ -3100,6 +3121,34 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             "markdown": data['markdown']
         }
 
+    @cli.register_custom_action('Project', optional=('wiki',))
+    @exc.on_http_error(exc.GitlabGetError)
+    def snapshot(self, wiki=False, streamed=False, action=None,
+                 chunk_size=1024, **kwargs):
+        """Return a snapshot of the repository.
+
+        Args:
+            wiki (bool): If True return the wiki repository
+            streamed (bool): If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment.
+            action (callable): Callable responsible of dealing with chunk of
+                data
+            chunk_size (int): Size of each chunk
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the content could not be retrieved
+
+        Returns:
+            str: The uncompressed tar archive of the repository
+        """
+        path = '/projects/%d/snapshot' % self.get_id()
+        result = self.manager.gitlab.http_get(path, streamed=streamed,
+                                              **kwargs)
+        return utils.response_content(result, streamed, action, chunk_size)
+
     @cli.register_custom_action('Project', ('scope', 'search'))
     @exc.on_http_error(exc.GitlabSearchError)
     def search(self, scope, search, **kwargs):
@@ -3126,29 +3175,31 @@ class ProjectManager(CRUDMixin, RESTManager):
     _path = '/projects'
     _obj_cls = Project
     _create_attrs = (
-        ('name', ),
-        ('path', 'namespace_id', 'description', 'issues_enabled',
+        tuple(),
+        ('name', 'path', 'namespace_id', 'description', 'issues_enabled',
          'merge_requests_enabled', 'jobs_enabled', 'wiki_enabled',
-         'snippets_enabled', 'container_registry_enabled',
-         'shared_runners_enabled', 'visibility', 'import_url', 'public_jobs',
-         'only_allow_merge_if_build_succeeds',
-         'only_allow_merge_if_all_discussions_are_resolved', 'lfs_enabled',
-         'request_access_enabled', 'printing_merge_request_link_enabled')
+         'snippets_enabled', 'resolve_outdated_diff_discussions',
+         'container_registry_enabled', 'shared_runners_enabled', 'visibility',
+         'import_url', 'public_jobs', 'only_allow_merge_if_pipeline_succeeds',
+         'only_allow_merge_if_all_discussions_are_resolved', 'merge_method',
+         'lfs_enabled', 'request_access_enabled', 'tag_list', 'avatar',
+         'printing_merge_request_link_enabled', 'ci_config_path')
     )
     _update_attrs = (
         tuple(),
         ('name', 'path', 'default_branch', 'description', 'issues_enabled',
          'merge_requests_enabled', 'jobs_enabled', 'wiki_enabled',
-         'snippets_enabled', 'container_registry_enabled',
-         'shared_runners_enabled', 'visibility', 'import_url', 'public_jobs',
-         'only_allow_merge_if_build_succeeds',
-         'only_allow_merge_if_all_discussions_are_resolved', 'lfs_enabled',
-         'request_access_enabled', 'printing_merge_request_link_enabled')
+         'snippets_enabled', 'resolve_outdated_diff_discussions',
+         'container_registry_enabled', 'shared_runners_enabled', 'visibility',
+         'import_url', 'public_jobs', 'only_allow_merge_if_pipeline_succeeds',
+         'only_allow_merge_if_all_discussions_are_resolved', 'merge_method',
+         'lfs_enabled', 'request_access_enabled', 'tag_list', 'avatar',
+         'ci_config_path')
     )
     _list_filters = ('search', 'owned', 'starred', 'archived', 'visibility',
                      'order_by', 'sort', 'simple', 'membership', 'statistics',
                      'with_issues_enabled', 'with_merge_requests_enabled',
-                     'custom_attributes')
+                     'with_custom_attributes')
 
     def import_project(self, file, path, namespace=None, overwrite=False,
                        override_params=None, **kwargs):

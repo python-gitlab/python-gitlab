@@ -413,6 +413,7 @@ assert(blob == 'Initial content')
 archive1 = admin_project.repository_archive()
 archive2 = admin_project.repository_archive('master')
 assert(archive1 == archive2)
+snapshot = admin_project.snapshot()
 
 # project file uploads
 filename = "test.txt"

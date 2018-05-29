@@ -118,4 +118,11 @@ class TestV4CLI(unittest.TestCase):
 
         actions = user_subparsers.choices['create']._option_string_actions
         self.assertFalse(actions['--description'].required)
+
+        user_subparsers = None
+        for action in subparsers.choices['group']._actions:
+            if type(action) == argparse._SubParsersAction:
+                user_subparsers = action
+                break
+        actions = user_subparsers.choices['create']._option_string_actions
         self.assertTrue(actions['--name'].required)
