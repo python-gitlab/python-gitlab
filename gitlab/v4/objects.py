@@ -3252,13 +3252,16 @@ class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):
     _managers = (('jobs', 'RunnerJobManager'),)
 
 
-class RunnerManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
+class RunnerManager(CRUDMixin, RESTManager):
     _path = '/runners'
     _obj_cls = Runner
+    _list_filters = ('scope', )
+    _create_attrs = (('token',), ('description', 'info', 'active', 'locked',
+                                  'run_untagged', 'tag_list',
+                                  'maximum_timeout'))
     _update_attrs = (tuple(), ('description', 'active', 'tag_list',
                                'run_untagged', 'locked', 'access_level',
                                'maximum_timeout'))
-    _list_filters = ('scope', )
 
     @cli.register_custom_action('RunnerManager', tuple(), ('scope', ))
     @exc.on_http_error(exc.GitlabListError)

@@ -54,6 +54,10 @@ Get a runner's detail::
 
     runner = gl.runners.get(runner_id)
 
+Register a new runner::
+
+    runner = gl.runners.create({'token': secret_token})
+
 Update a runner::
 
     runner = gl.runners.get(runner_id)
