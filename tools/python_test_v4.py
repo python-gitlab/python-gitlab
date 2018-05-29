@@ -653,6 +653,12 @@ assert(admin_project.star_count == 0)
 #lists = board.lists.list()
 #assert(len(lists) == begin_size - 1)
 
+# project badges
+badge_image = 'http://example.com'
+badge_link = 'http://example/img.svg'
+bp = admin_project.badges.create({'link_url': badge_link, 'image_url': badge_image})
+assert(len(admin_project.badges.list()) == 1)
+
 # project wiki
 wiki_content = 'Wiki page content'
 wp = admin_project.wikis.create({'title': 'wikipage', 'content': wiki_content})
