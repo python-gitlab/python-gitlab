@@ -70,6 +70,14 @@ Remove a runner::
     # or
     runner.delete()
 
+Verify a registered runner token::
+
+    try:
+        gl.runners.verify(runner_token)
+        print("Valid token")
+    except GitlabVerifyError:
+        print("Invalid token")
+
 Project runners
 ===============
 

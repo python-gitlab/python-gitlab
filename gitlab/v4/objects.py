@@ -3291,6 +3291,23 @@ class RunnerManager(CRUDMixin, RESTManager):
             query_data['scope'] = scope
         return self.gitlab.http_list(path, query_data, **kwargs)
 
+    @cli.register_custom_action('RunnerManager', ('token',))
+    @exc.on_http_error(exc.GitlabVerifyError)
+    def verify(self, token, **kwargs):
+        """Validates authentication credentials for a registered Runner.
+
+        Args:
+            token (str): The runner's authentication token
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabVerifyError: If the server failed to verify the token
+        """
+        path = '/runners/verify'
+        post_data = {'token': token}
+        self.gitlab.http_post(path, post_data=post_data, **kwargs)
+
 
 class Todo(ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action('Todo')
