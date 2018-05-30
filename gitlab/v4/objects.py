@@ -1582,7 +1582,7 @@ class ProjectIssue(UserAgentDetailMixin, SubscribableMixin, TodoMixin,
 
 
 class ProjectIssueManager(CRUDMixin, RESTManager):
-    _path = '/projects/%(project_id)s/issues/'
+    _path = '/projects/%(project_id)s/issues'
     _obj_cls = ProjectIssue
     _from_parent_attrs = {'project_id': 'id'}
     _list_filters = ('iids', 'state', 'labels', 'milestone', 'scope',
