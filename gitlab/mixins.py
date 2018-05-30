@@ -477,6 +477,11 @@ class TimeTrackingMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
+        # Use the existing time_stats attribute if it exist, otherwise make an
+        # API call
+        if 'time_stats' in self.attributes:
+            return self.attributes['time_stats']
+
         path = '%s/%s/time_stats' % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)
 
