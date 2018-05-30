@@ -94,3 +94,33 @@ List the diffs for a merge request::
 Get a diff for a merge request::
 
     diff = mr.diffs.get(diff_id)
+
+Get time tracking stats::
+
+    merge request.time_stats()
+
+On recent versions of Gitlab the time stats are also returned as a merge
+request object attribute::
+
+    mr = project.mergerequests.get(id)
+    print(mr.attributes['time_stats'])
+
+Set a time estimate for a merge request::
+
+    mr.time_estimate('3h30m')
+
+Reset a time estimate for a merge request::
+
+    mr.reset_time_estimate()
+
+Add spent time for a merge request::
+
+    mr.add_spent_time('3h30m')
+
+Reset spent time for a merge request::
+
+    mr.reset_spent_time()
+
+Get user agent detail for the issue (admin only)::
+
+    detail = issue.user_agent_detail()

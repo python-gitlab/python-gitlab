@@ -126,6 +126,12 @@ Get time tracking stats::
 
     issue.time_stats()
 
+On recent versions of Gitlab the time stats are also returned as an issue
+object attribute::
+
+    issue = project.issue.get(iid)
+    print(issue.attributes['time_stats'])
+
 Set a time estimate for an issue::
 
     issue.time_estimate('3h30m')
