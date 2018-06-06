@@ -278,8 +278,7 @@ class UpdateMixin(object):
                         new_data[attr_name] = type_obj.get_for_api()
 
         http_method = self.get_update_method()
-        return http_method(path, post_data=new_data, files=files,
-                                    **kwargs)
+        return http_method(path, post_data=new_data, files=files, **kwargs)
 
 
 class SetMixin(object):

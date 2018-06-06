@@ -2635,11 +2635,13 @@ class ProjectMergeRequestApproval(SaveMixin, RESTObject):
 
 
 class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin,
-                                  RESTManager):
+                                         RESTManager):
     _path = '/projects/%(project_id)s/approvals'
     _obj_cls = ProjectMergeRequestApproval
     _from_parent_attrs = {'project_id': 'id'}
-    _update_attrs = (tuple(), ('approvals_before_merge', 'reset_approvals_on_push', 'disable_overriding_approvers_per_merge_request'))
+    _update_attrs = (tuple(),
+                     ('approvals_before_merge', 'reset_approvals_on_push',
+                      'disable_overriding_approvers_per_merge_request'))
     _update_post = True
 
 
