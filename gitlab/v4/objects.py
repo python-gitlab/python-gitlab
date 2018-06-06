@@ -2357,10 +2357,6 @@ class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
                      ('description', 'ref', 'cron', 'cron_timezone', 'active'))
 
 
-class ProjectPipelineJob(ProjectJob):
-    pass
-
-
 class ProjectPipelineJobManager(ListMixin, RESTManager):
     _path = '/projects/%(project_id)s/pipelines/%(pipeline_id)s/jobs'
     _obj_cls = ProjectPipelineJob
