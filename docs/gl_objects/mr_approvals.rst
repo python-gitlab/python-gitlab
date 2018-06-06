@@ -20,7 +20,7 @@ Get project-level MR approvals configuration::
 
     mrac = project.approvals.get()
 
-Save project-level MR approvals configuration::
+Change project-level MR approvals configuration::
 
     mrac.approvals_before_merge = 2
     mrac.save()
