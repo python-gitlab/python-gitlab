@@ -506,8 +506,7 @@ class Gitlab(object):
 
         Returns:
             list: A list of the objects returned by the server. If `as_list` is
-            False and no pagination-related arguments (`page`, `per_page`,
-            `all`) are defined then a GitlabList object (generator) is returned
+            False then a GitlabList object (generator) is returned
             instead. This object will make API calls when needed to fetch the
             next items from the server.
 
@@ -517,21 +516,16 @@ class Gitlab(object):
         """
 
         # In case we want to change the default behavior at some point
-        as_list = True if as_list is None else as_list
+        as_list = as_list is None or as_list
 
         get_all = kwargs.get('all', False)
         url = self._build_url(path)
 
-        if get_all is True:
-            return list(GitlabList(self, url, query_data, **kwargs))
-
-        if 'page' in kwargs or as_list is True:
-            # pagination requested, we return a list
-            return list(GitlabList(self, url, query_data, get_next=False,
-                                   **kwargs))
-
-        # No pagination, generator requested
-        return GitlabList(self, url, query_data, **kwargs)
+        glist = GitlabList(self, url, query_data,
+                           get_next='page' not in kwargs and get_all, **kwargs)
+        if as_list:
+            glist = list(glist)
+        return glist
 
     def http_post(self, path, query_data={}, post_data={}, files=None,
                   **kwargs):
