@@ -2644,6 +2644,28 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin,
                       'disable_overriding_approvers_per_merge_request'))
     _update_post = True
 
+    @exc.on_http_error(exc.GitlabUpdateError)
+    def change_approvers(self, approver_ids=[], approver_group_ids=[],
+                         **kwargs):
+        """Change project-level allowed approvers and approver groups.
+
+        Args:
+            approver_ids (list): User IDs that can approve MRs.
+            approver_group_ids (list): Group IDs whose members can approve MRs.
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUpdateError: If the server failed to perform the request
+        """
+
+        path = '/projects/%s/approvers' % self._parent.get_id()
+        data = {'approver_ids': approver_ids,
+                'approver_group_ids': approver_group_ids}
+        try:
+            self.gitlab.http_put(path, post_data=data, **kwargs)
+        except exc.GitlabHttpError as e:
+                raise exc.GitlabUpdateError(e.response_code, e.error_message)
+
 
 class ProjectDeployment(RESTObject):
     pass

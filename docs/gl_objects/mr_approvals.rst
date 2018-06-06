@@ -24,3 +24,7 @@ Change project-level MR approvals configuration::
 
     mrac.approvals_before_merge = 2
     mrac.save()
+
+Change project-level MR allowed approvers::
+
+	project.approvals.change_approvers(approver_ids = [105], approver_group_ids=[653, 654])
