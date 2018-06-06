@@ -1201,6 +1201,7 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
                      ('description', 'name', 'context', 'ref', 'target_url',
                       'coverage'))
 
+    @exc.on_http_error(exc.GitlabCreateError)
     def create(self, data, **kwargs):
         """Create a new object.
 
@@ -1218,9 +1219,15 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
             RESTObject: A new instance of the manage object class build with
                         the data sent by the server
         """
-        path = '/projects/%(project_id)s/statuses/%(commit_id)s'
-        computed_path = self._compute_path(path)
-        return CreateMixin.create(self, data, path=computed_path, **kwargs)
+        # project_id and commit_id are in the data dict when using the CLI, but
+        # they are missing when using only the API
+        # See #511
+        base_path = '/projects/%(project_id)s/statuses/%(commit_id)s'
+        if 'project_id' in data and 'commit_id' in data:
+            path = base_path % data
+        else:
+            path = self._compute_path(base_path)
+        return CreateMixin.create(self, data, path=path, **kwargs)
 
 
 class ProjectCommitComment(RESTObject):
