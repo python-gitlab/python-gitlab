@@ -26,7 +26,7 @@ fatal() { error "$@"; exit 1; }
 try() { "$@" || fatal "'$@' failed"; }
 
 NOVENV=
-PY_VER=2
+PY_VER=3
 API_VER=4
 while getopts :np:a: opt "$@"; do
     case $opt in
@@ -41,7 +41,7 @@ done
 
 case $PY_VER in
     2) VENV_CMD=virtualenv;;
-    3) VENV_CMD=pyvenv;;
+    3) VENV_CMD="python3 -m venv";;
     *) fatal "Wrong python version (2 or 3)";;
 esac
 
@@ -53,7 +53,6 @@ esac
 for req in \
     curl \
     docker \
-    "${VENV_CMD}" \
     ;
 do
     command -v "${req}" >/dev/null 2>&1 || fatal "${req} is required"
@@ -96,7 +95,7 @@ testcase() {
 
 if [ -z "$NOVENV" ]; then
     log "Creating Python virtualenv..."
-    try "$VENV_CMD" "$VENV"
+    try $VENV_CMD "$VENV"
     . "$VENV"/bin/activate || fatal "failed to activate Python virtual environment"
 
     log "Installing dependencies into virtualenv..."

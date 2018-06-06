@@ -364,7 +364,7 @@ admin_project.files.create({'file_path': 'README',
                             'content': 'Initial content',
                             'commit_message': 'Initial commit'})
 readme = admin_project.files.get(file_path='README', ref='master')
-readme.content = base64.b64encode(b"Improved README")
+readme.content = base64.b64encode(b"Improved README").decode()
 time.sleep(2)
 readme.save(branch="master", commit_message="new commit")
 readme.delete(commit_message="Removing README", branch="master")
@@ -374,7 +374,9 @@ admin_project.files.create({'file_path': 'README.rst',
                             'content': 'Initial content',
                             'commit_message': 'New commit'})
 readme = admin_project.files.get(file_path='README.rst', ref='master')
-assert(readme.decode() == 'Initial content')
+# The first decode() is the ProjectFile method, the second one is the bytes
+# object method
+assert(readme.decode().decode() == 'Initial content')
 
 data = {
     'branch': 'master',
@@ -425,7 +427,7 @@ assert(len(tree) != 0)
 assert(tree[0]['name'] == 'README.rst')
 blob_id = tree[0]['id']
 blob = admin_project.repository_raw_blob(blob_id)
-assert(blob == 'Initial content')
+assert(blob.decode() == 'Initial content')
 archive1 = admin_project.repository_archive()
 archive2 = admin_project.repository_archive('master')
 assert(archive1 == archive2)
@@ -579,7 +581,7 @@ assert(len(discussion.attributes['notes']) == 1)
 snippet.file_name = 'bar.py'
 snippet.save()
 snippet = admin_project.snippets.get(snippet.id)
-assert(snippet.content() == 'initial content')
+assert(snippet.content().decode() == 'initial content')
 assert(snippet.file_name == 'bar.py')
 size = len(admin_project.snippets.list())
 snippet.delete()
@@ -741,7 +743,7 @@ snippet.save()
 snippet = gl.snippets.get(snippet.id)
 assert(snippet.title == 'updated_title')
 content = snippet.content()
-assert(content == 'import gitlab')
+assert(content.decode() == 'import gitlab')
 
 assert(snippet.user_agent_detail()['user_agent'])
 
@@ -775,7 +777,7 @@ for i in range(20, 40):
     except gitlab.GitlabCreateError as e:
         error_message = e.error_message
         break
-assert 'Retry later' in error_message
+assert 'Retry later' in error_message.decode()
 [current_project.delete() for current_project in projects]
 settings.throttle_authenticated_api_enabled = False
 settings.save()
