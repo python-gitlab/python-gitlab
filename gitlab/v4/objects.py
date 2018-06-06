@@ -2248,7 +2248,7 @@ class ProjectPipelineJob(ProjectJob):
     pass
 
 
-class ProjectPipelineJobsManager(ListMixin, RESTManager):
+class ProjectPipelineJobManager(ListMixin, RESTManager):
     _path = '/projects/%(project_id)s/pipelines/%(pipeline_id)s/jobs'
     _obj_cls = ProjectPipelineJob
     _from_parent_attrs = {'project_id': 'project_id',
@@ -2362,16 +2362,6 @@ class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
                      ('cron_timezone', 'active'))
     _update_attrs = (tuple(),
                      ('description', 'ref', 'cron', 'cron_timezone', 'active'))
-
-
-class ProjectPipelineJob(ProjectJob):
-    pass
-
-
-class ProjectPipelineJobManager(ListMixin, RESTManager):
-    _path = '/projects/%(project_id)s/pipelines/%(pipeline_id)s/jobs'
-    _obj_cls = ProjectPipelineJob
-    _from_parent_attrs = {'project_id': 'project_id', 'pipeline_id': 'id'}
 
 
 class ProjectSnippetNoteAwardEmoji(ObjectDeleteMixin, RESTObject):
