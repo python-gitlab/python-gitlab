@@ -22,11 +22,24 @@ from __future__ import absolute_import
 import argparse
 import os
 import tempfile
+try:
+    from contextlib import redirect_stderr  # noqa: H302
+except ImportError:
+    from contextlib import contextmanager  # noqa: H302
+    import sys
+
+    @contextmanager
+    def redirect_stderr(new_target):
+        old_target, sys.stderr = sys.stderr, new_target
+        yield
+        sys.stderr = old_target
 
 try:
     import unittest
 except ImportError:
     import unittest2 as unittest
+
+import six
 
 from gitlab import cli
 import gitlab.v4.cli
@@ -48,9 +61,11 @@ class TestCLI(unittest.TestCase):
         self.assertEqual("class", cli.cls_to_what(Class))
 
     def test_die(self):
-        with self.assertRaises(SystemExit) as test:
-            cli.die("foobar")
-
+        fl = six.StringIO()
+        with redirect_stderr(fl):
+            with self.assertRaises(SystemExit) as test:
+                cli.die("foobar")
+        self.assertEqual(fl.getvalue(), "foobar\n")
         self.assertEqual(test.exception.code, 1)
 
     def test_parse_value(self):
@@ -73,8 +88,14 @@ class TestCLI(unittest.TestCase):
         self.assertEqual(ret, 'content')
         os.unlink(temp_path)
 
-        with self.assertRaises(SystemExit):
-            cli._parse_value('@/thisfileprobablydoesntexist')
+        fl = six.StringIO()
+        with redirect_stderr(fl):
+            with self.assertRaises(SystemExit) as exc:
+                cli._parse_value('@/thisfileprobablydoesntexist')
+            self.assertEqual(fl.getvalue(),
+                             "[Errno 2] No such file or directory:"
+                             " '/thisfileprobablydoesntexist'\n")
+            self.assertEqual(exc.exception.code, 1)
 
     def test_base_parser(self):
         parser = cli._get_base_parser()

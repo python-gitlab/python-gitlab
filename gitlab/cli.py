@@ -120,7 +120,8 @@ def _parse_value(v):
         # If the user-provided value starts with @, we try to read the file
         # path provided after @ as the real value. Exit on any error.
         try:
-            return open(v[1:]).read()
+            with open(v[1:]) as fl:
+                return fl.read()
         except Exception as e:
             sys.stderr.write("%s\n" % e)
             sys.exit(1)

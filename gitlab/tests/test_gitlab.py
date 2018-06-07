@@ -439,7 +439,7 @@ class TestGitlab(unittest.TestCase):
         with HTTMock(resp_cont):
             callback()
         self.assertEqual(self.gl.private_token, token)
-        self.assertDictContainsSubset(expected, self.gl.headers)
+        self.assertDictEqual(expected, self.gl.headers)
         self.assertEqual(self.gl.user.id, id_)
 
     def test_token_auth(self, callback=None):
