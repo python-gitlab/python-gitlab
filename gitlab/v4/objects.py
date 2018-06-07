@@ -2631,22 +2631,22 @@ class ProjectAccessRequestManager(ListMixin, CreateMixin, DeleteMixin,
     _from_parent_attrs = {'project_id': 'id'}
 
 
-class ProjectMergeRequestApproval(SaveMixin, RESTObject):
+class ProjectMergeRequestApprovalSettings(SaveMixin, RESTObject):
     _id_attr = None
 
 
-class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin,
+class ProjectMergeRequestApprovalSettingsManager(GetWithoutIdMixin, UpdateMixin,
                                          RESTManager):
     _path = '/projects/%(project_id)s/approvals'
-    _obj_cls = ProjectMergeRequestApproval
+    _obj_cls = ProjectMergeRequestApprovalSettings
     _from_parent_attrs = {'project_id': 'id'}
     _update_attrs = (tuple(),
                      ('approvals_before_merge', 'reset_approvals_on_push',
                       'disable_overriding_approvers_per_merge_request'))
-    _update_post = True
+    _update_uses_post = True
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def change_approvers(self, approver_ids=[], approver_group_ids=[],
+    def set_approvers(self, approver_ids=[], approver_group_ids=[],
                          **kwargs):
         """Change project-level allowed approvers and approver groups.
 
@@ -2766,7 +2766,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'path'
     _managers = (
         ('accessrequests', 'ProjectAccessRequestManager'),
-        ('approvals', 'ProjectMergeRequestApprovalManager'),
+        ('approvalsettings', 'ProjectMergeRequestApprovalSettingsManager'),
         ('badges', 'ProjectBadgeManager'),
         ('boards', 'ProjectBoardManager'),
         ('branches', 'ProjectBranchManager'),
