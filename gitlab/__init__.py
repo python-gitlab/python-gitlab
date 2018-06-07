@@ -56,21 +56,16 @@ class Gitlab(object):
         url (str): The URL of the GitLab server.
         private_token (str): The user private token
         oauth_token (str): An oauth token
-        email (str): The user email or login.
-        password (str): The user password (associated with email).
         ssl_verify (bool|str): Whether SSL certificates should be validated. If
             the value is a string, it is the path to a CA file used for
             certificate validation.
         timeout (float): Timeout to use for requests to the GitLab server.
-        http_username (str): Username for HTTP authentication
-        http_password (str): Password for HTTP authentication
         api_version (str): Gitlab API version to use (support for 4 only)
     """
 
-    def __init__(self, url, private_token=None, oauth_token=None, email=None,
-                 password=None, ssl_verify=True, http_username=None,
-                 http_password=None, timeout=None, api_version='4',
-                 session=None, per_page=None):
+    def __init__(self, url, private_token=None, oauth_token=None,
+                 ssl_verify=True, timeout=None, api_version='4', session=None,
+                 per_page=None):
 
         self._api_version = str(api_version)
         self._server_version = self._server_revision = None
@@ -81,16 +76,10 @@ class Gitlab(object):
         #: Headers that will be used in request to GitLab
         self.headers = {}
 
-        #: The user email
-        self.email = email
-        #: The user password (associated with email)
-        self.password = password
         #: Whether SSL certificates should be validated
         self.ssl_verify = ssl_verify
 
         self.private_token = private_token
-        self.http_username = http_username
-        self.http_password = http_password
         self.oauth_token = oauth_token
         self._set_auth_info()
 
@@ -177,33 +166,17 @@ class Gitlab(object):
         return Gitlab(config.url, private_token=config.private_token,
                       oauth_token=config.oauth_token,
                       ssl_verify=config.ssl_verify, timeout=config.timeout,
-                      http_username=config.http_username,
-                      http_password=config.http_password,
                       api_version=config.api_version,
                       per_page=config.per_page)
 
     def auth(self):
         """Performs an authentication.
 
-        Uses either the private token, or the email/password pair.
+        Uses either the private token, or the oauth token.
 
         The `user` attribute will hold a `gitlab.objects.CurrentUser` object on
         success.
         """
-        if self.private_token or self.oauth_token:
-            self._token_auth()
-        else:
-            self._credentials_auth()
-
-    def _credentials_auth(self):
-        data = {'email': self.email, 'password': self.password}
-        r = self.http_post('/session', data)
-        manager = self._objects.CurrentUserManager(self)
-        self.user = self._objects.CurrentUser(manager, r)
-        self.private_token = self.user.private_token
-        self._set_auth_info()
-
-    def _token_auth(self):
         self.user = self._objects.CurrentUserManager(self).get()
 
     def version(self):
@@ -299,13 +272,6 @@ class Gitlab(object):
         if self.private_token and self.oauth_token:
             raise ValueError("Only one of private_token or oauth_token should "
                              "be defined")
-        if ((self.http_username and not self.http_password)
-           or (not self.http_username and self.http_password)):
-            raise ValueError("Both http_username and http_password should "
-                             "be defined")
-        if self.oauth_token and self.http_username:
-            raise ValueError("Only one of oauth authentication or http "
-                             "authentication should be defined")
 
         self._http_auth = None
         if self.private_token:
@@ -315,10 +281,6 @@ class Gitlab(object):
         if self.oauth_token:
             self.headers['Authorization'] = "Bearer %s" % self.oauth_token
             self.headers.pop('PRIVATE-TOKEN', None)
-
-        if self.http_username:
-            self._http_auth = requests.auth.HTTPBasicAuth(self.http_username,
-                                                          self.http_password)
 
     def enable_debug(self):
         import logging
