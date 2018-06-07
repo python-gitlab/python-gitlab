@@ -18,6 +18,7 @@
 
 from __future__ import print_function
 
+import json
 import pickle
 try:
     import unittest
@@ -57,7 +58,7 @@ class TestGitlabList(unittest.TestCase):
     def test_build_list(self):
         @urlmatch(scheme='http', netloc="localhost", path="/api/v4/tests",
                   method="get")
-        def resp_1(url, request):
+        def resp_1(_url, request):
             headers = {'content-type': 'application/json',
                        'X-Page': 1,
                        'X-Next-Page': 2,
@@ -67,19 +68,19 @@ class TestGitlabList(unittest.TestCase):
                        'Link': (
                            '<http://localhost/api/v4/tests?per_page=1&page=2>;'
                            ' rel="next"')}
-            content = '[{"a": "b"}]'
+            content = json.dumps([{"a": "b"}])
             return response(200, content, headers, None, 5, request)
 
         @urlmatch(scheme='http', netloc="localhost", path="/api/v4/tests",
                   method='get', query=r'.*page=2')
-        def resp_2(url, request):
+        def resp_2(_url, request):
             headers = {'content-type': 'application/json',
                        'X-Page': 2,
                        'X-Next-Page': 2,
                        'X-Per-Page': 1,
                        'X-Total-Pages': 2,
                        'X-Total': 2}
-            content = '[{"c": "d"}]'
+            content = json.dumps([{"c": "d"}])
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_1):
@@ -117,9 +118,9 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_http_request(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
                   method="get")
-        def resp_cont(url, request):
+        def resp_cont(_url, request):
             headers = {'content-type': 'application/json'}
-            content = '[{"name": "project1"}]'
+            content = json.dumps([{"name": "project1"}])
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
@@ -130,8 +131,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_http_request_404(self):
         @urlmatch(scheme="http", netloc="localhost",
                   path="/api/v4/not_there", method="get")
-        def resp_cont(url, request):
-            content = {'Here is wh it failed'}
+        def resp_cont(_url, request):
+            content = json.dumps('Here is wh it failed')
             return response(404, content, {}, None, 5, request)
 
         with HTTMock(resp_cont):
@@ -142,9 +143,9 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_get_request(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
                   method="get")
-        def resp_cont(url, request):
+        def resp_cont(_url, request):
             headers = {'content-type': 'application/json'}
-            content = '{"name": "project1"}'
+            content = json.dumps({"name": "project1"})
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
@@ -155,7 +156,7 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_get_request_raw(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
                   method="get")
-        def resp_cont(url, request):
+        def resp_cont(_url, request):
             headers = {'content-type': 'application/octet-stream'}
             content = 'content'
             return response(200, content, headers, None, 5, request)
@@ -167,8 +168,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_get_request_404(self):
         @urlmatch(scheme="http", netloc="localhost",
                   path="/api/v4/not_there", method="get")
-        def resp_cont(url, request):
-            content = {'Here is wh it failed'}
+        def resp_cont(_url, request):
+            content = json.dumps('Here is wh it failed')
             return response(404, content, {}, None, 5, request)
 
         with HTTMock(resp_cont):
@@ -177,7 +178,7 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_get_request_invalid_data(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
                   method="get")
-        def resp_cont(url, request):
+        def resp_cont(_url, request):
             headers = {'content-type': 'application/json'}
             content = '["name": "project1"]'
             return response(200, content, headers, None, 5, request)
@@ -189,9 +190,9 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_list_request(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
                   method="get")
-        def resp_cont(url, request):
+        def resp_cont(_url, request):
             headers = {'content-type': 'application/json', 'X-Total': 1}
-            content = '[{"name": "project1"}]'
+            content = json.dumps([{"name": "project1"}])
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
@@ -212,8 +213,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_list_request_404(self):
         @urlmatch(scheme="http", netloc="localhost",
                   path="/api/v4/not_there", method="get")
-        def resp_cont(url, request):
-            content = {'Here is why it failed'}
+        def resp_cont(_url, request):
+            content = json.dumps('Here is why it failed')
             return response(404, content, {}, None, 5, request)
 
         with HTTMock(resp_cont):
@@ -222,7 +223,7 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_list_request_invalid_data(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
                   method="get")
-        def resp_cont(url, request):
+        def resp_cont(_url, request):
             headers = {'content-type': 'application/json'}
             content = '["name": "project1"]'
             return response(200, content, headers, None, 5, request)
@@ -234,7 +235,7 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_post_request(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
                   method="post")
-        def resp_cont(url, request):
+        def resp_cont(_url, request):
             headers = {'content-type': 'application/json'}
             content = '{"name": "project1"}'
             return response(200, content, headers, None, 5, request)
@@ -247,8 +248,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_post_request_404(self):
         @urlmatch(scheme="http", netloc="localhost",
                   path="/api/v4/not_there", method="post")
-        def resp_cont(url, request):
-            content = {'Here is wh it failed'}
+        def resp_cont(_url, request):
+            content = json.dumps('Here is wh it failed')
             return response(404, content, {}, None, 5, request)
 
         with HTTMock(resp_cont):
@@ -257,7 +258,7 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_post_request_invalid_data(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
                   method="post")
-        def resp_cont(url, request):
+        def resp_cont(_url, request):
             headers = {'content-type': 'application/json'}
             content = '["name": "project1"]'
             return response(200, content, headers, None, 5, request)
@@ -269,7 +270,7 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_put_request(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
                   method="put")
-        def resp_cont(url, request):
+        def resp_cont(_url, request):
             headers = {'content-type': 'application/json'}
             content = '{"name": "project1"}'
             return response(200, content, headers, None, 5, request)
@@ -282,8 +283,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_put_request_404(self):
         @urlmatch(scheme="http", netloc="localhost",
                   path="/api/v4/not_there", method="put")
-        def resp_cont(url, request):
-            content = {'Here is wh it failed'}
+        def resp_cont(_url, request):
+            content = json.dumps('Here is wh it failed')
             return response(404, content, {}, None, 5, request)
 
         with HTTMock(resp_cont):
@@ -292,7 +293,7 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_put_request_invalid_data(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
                   method="put")
-        def resp_cont(url, request):
+        def resp_cont(_url, request):
             headers = {'content-type': 'application/json'}
             content = '["name": "project1"]'
             return response(200, content, headers, None, 5, request)
@@ -304,7 +305,7 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_delete_request(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects",
                   method="delete")
-        def resp_cont(url, request):
+        def resp_cont(_url, request):
             headers = {'content-type': 'application/json'}
             content = 'true'
             return response(200, content, headers, None, 5, request)
@@ -317,8 +318,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
     def test_delete_request_404(self):
         @urlmatch(scheme="http", netloc="localhost",
                   path="/api/v4/not_there", method="delete")
-        def resp_cont(url, request):
-            content = {'Here is wh it failed'}
+        def resp_cont(_url, request):
+            content = json.dumps('Here is wh it failed')
             return response(404, content, {}, None, 5, request)
 
         with HTTMock(resp_cont):
@@ -332,19 +333,6 @@ class TestGitlabAuth(unittest.TestCase):
                           Gitlab,
                           "http://localhost", api_version='4',
                           private_token='private_token', oauth_token='bearer')
-        self.assertRaises(ValueError,
-                          Gitlab,
-                          "http://localhost", api_version='4',
-                          oauth_token='bearer', http_username='foo',
-                          http_password='bar')
-        self.assertRaises(ValueError,
-                          Gitlab,
-                          "http://localhost", api_version='4',
-                          private_token='private_token', http_password='bar')
-        self.assertRaises(ValueError,
-                          Gitlab,
-                          "http://localhost", api_version='4',
-                          private_token='private_token', http_username='foo')
 
     def test_private_token_auth(self):
         gl = Gitlab('http://localhost', private_token='private_token',
@@ -364,21 +352,11 @@ class TestGitlabAuth(unittest.TestCase):
         self.assertEqual(gl.headers['Authorization'], 'Bearer oauth_token')
         self.assertNotIn('PRIVATE-TOKEN', gl.headers)
 
-    def test_http_auth(self):
-        gl = Gitlab('http://localhost', private_token='private_token',
-                    http_username='foo', http_password='bar', api_version='4')
-        self.assertEqual(gl.private_token, 'private_token')
-        self.assertEqual(gl.oauth_token, None)
-        self.assertIsInstance(gl._http_auth, requests.auth.HTTPBasicAuth)
-        self.assertEqual(gl.headers['PRIVATE-TOKEN'], 'private_token')
-        self.assertNotIn('Authorization', gl.headers)
-
 
 class TestGitlab(unittest.TestCase):
 
     def setUp(self):
         self.gl = Gitlab("http://localhost", private_token="private_token",
-                         email="testuser@test.com", password="testpassword",
                          ssl_verify=True, api_version=4)
 
     def test_pickability(self):
@@ -389,75 +367,21 @@ class TestGitlab(unittest.TestCase):
         self.assertTrue(hasattr(unpickled, '_objects'))
         self.assertEqual(unpickled._objects, original_gl_objects)
 
-    def test_credentials_auth_nopassword(self):
-        self.gl.email = None
-        self.gl.password = None
-
-        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/session",
-                  method="post")
-        def resp_cont(url, request):
-            headers = {'content-type': 'application/json'}
-            content = '{"message": "message"}'.encode("utf-8")
-            return response(404, content, headers, None, 5, request)
-
-        with HTTMock(resp_cont):
-            self.assertRaises(GitlabHttpError, self.gl._credentials_auth)
-
-    def test_credentials_auth_notok(self):
-        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/session",
-                  method="post")
-        def resp_cont(url, request):
-            headers = {'content-type': 'application/json'}
-            content = '{"message": "message"}'.encode("utf-8")
-            return response(404, content, headers, None, 5, request)
-
-        with HTTMock(resp_cont):
-            self.assertRaises(GitlabHttpError, self.gl._credentials_auth)
-
-    def test_auth_with_credentials(self):
-        self.gl.private_token = None
-        self.test_credentials_auth(callback=self.gl.auth)
-
-    def test_auth_with_token(self):
-        self.test_token_auth(callback=self.gl.auth)
-
-    def test_credentials_auth(self, callback=None):
-        if callback is None:
-            callback = self.gl._credentials_auth
-        token = "credauthtoken"
-        id_ = 1
-        expected = {"PRIVATE-TOKEN": token}
-
-        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/session",
-                  method="post")
-        def resp_cont(url, request):
-            headers = {'content-type': 'application/json'}
-            content = '{{"id": {0:d}, "private_token": "{1:s}"}}'.format(
-                id_, token).encode("utf-8")
-            return response(201, content, headers, None, 5, request)
-
-        with HTTMock(resp_cont):
-            callback()
-        self.assertEqual(self.gl.private_token, token)
-        self.assertDictContainsSubset(expected, self.gl.headers)
-        self.assertEqual(self.gl.user.id, id_)
-
-    def test_token_auth(self, callback=None):
-        if callback is None:
-            callback = self.gl._token_auth
+    def test_token_auth(self):
         name = "username"
         id_ = 1
 
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/user",
                   method="get")
-        def resp_cont(url, request):
+        def resp_cont(_url, request):
             headers = {'content-type': 'application/json'}
-            content = '{{"id": {0:d}, "username": "{1:s}"}}'.format(
-                id_, name).encode("utf-8")
+            content = json.dumps({"id": id_,
+                                  "username": name
+            })
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
-            callback()
+            self.gl.auth()
         self.assertEqual(self.gl.user.username, name)
         self.assertEqual(self.gl.user.id, id_)
         self.assertEqual(type(self.gl.user), CurrentUser)
@@ -465,9 +389,9 @@ class TestGitlab(unittest.TestCase):
     def test_hooks(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/hooks/1",
                   method="get")
-        def resp_get_hook(url, request):
+        def resp_get_hook(_url, request):
             headers = {'content-type': 'application/json'}
-            content = '{"url": "testurl", "id": 1}'.encode("utf-8")
+            content = json.dumps({"url": "testurl", "id": 1})
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_get_hook):
@@ -479,9 +403,9 @@ class TestGitlab(unittest.TestCase):
     def test_projects(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects/1",
                   method="get")
-        def resp_get_project(url, request):
+        def resp_get_project(_url, request):
             headers = {'content-type': 'application/json'}
-            content = '{"name": "name", "id": 1}'.encode("utf-8")
+            content = json.dumps({"name": "name", "id": 1})
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_get_project):
@@ -493,9 +417,9 @@ class TestGitlab(unittest.TestCase):
     def test_groups(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/groups/1",
                   method="get")
-        def resp_get_group(url, request):
+        def resp_get_group(_url, request):
             headers = {'content-type': 'application/json'}
-            content = '{"name": "name", "id": 1, "path": "path"}'
+            content = json.dumps({"name": "name", "id": 1, "path": "path"})
             content = content.encode('utf-8')
             return response(200, content, headers, None, 5, request)
 
@@ -509,7 +433,7 @@ class TestGitlab(unittest.TestCase):
     def test_issues(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/issues",
                   method="get")
-        def resp_get_issue(url, request):
+        def resp_get_issue(_url, request):
             headers = {'content-type': 'application/json'}
             content = ('[{"name": "name", "id": 1}, '
                        '{"name": "other_name", "id": 2}]')
@@ -524,11 +448,10 @@ class TestGitlab(unittest.TestCase):
     def test_users(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/users/1",
                   method="get")
-        def resp_get_user(url, request):
+        def resp_get_user(_url, request):
             headers = {'content-type': 'application/json'}
-            content = ('{"name": "name", "id": 1, "password": "password", '
-                       '"username": "username", "email": "email"}')
-            content = content.encode("utf-8")
+            content = json.dumps({"name": "name", "id": 1, "password": "password",
+                       "username": "username", "email": "email"})
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_get_user):
