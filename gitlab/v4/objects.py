@@ -2635,8 +2635,8 @@ class ProjectMergeRequestApprovalSettings(SaveMixin, RESTObject):
     _id_attr = None
 
 
-class ProjectMergeRequestApprovalSettingsManager(GetWithoutIdMixin, UpdateMixin,
-                                         RESTManager):
+class ProjectMergeRequestApprovalSettingsManager(GetWithoutIdMixin,
+                                                 UpdateMixin, RESTManager):
     _path = '/projects/%(project_id)s/approvals'
     _obj_cls = ProjectMergeRequestApprovalSettings
     _from_parent_attrs = {'project_id': 'id'}
@@ -2647,7 +2647,7 @@ class ProjectMergeRequestApprovalSettingsManager(GetWithoutIdMixin, UpdateMixin,
 
     @exc.on_http_error(exc.GitlabUpdateError)
     def set_approvers(self, approver_ids=[], approver_group_ids=[],
-                         **kwargs):
+                      **kwargs):
         """Change project-level allowed approvers and approver groups.
 
         Args:
