@@ -618,3 +618,29 @@ markdown to reference the uploaded file::
     issue.notes.create({
         "body": "See the [attached file]({})".format(uploaded_file["url"])
     })
+
+Project push rules
+==================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectPushRules`
+  + :class:`gitlab.v4.objects.ProjectPushRulesManager`
+  + :attr:`gitlab.v4.objects.Project.pushrules`
+
+* GitLab API: https://docs.gitlab.com/ee/api/projects.html#push-rules
+
+Examples
+---------
+
+Get project push rules::
+
+    pr = project.pushrules.get()
+
+Edit project push rules::
+
+    pr.branch_name_regex = '^(master|develop|support-\d+|release-\d+\..+|hotfix-.+|feature-.+)$'
+	pr.save()
