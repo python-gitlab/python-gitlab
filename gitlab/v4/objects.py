@@ -2364,11 +2364,11 @@ class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
                      ('description', 'ref', 'cron', 'cron_timezone', 'active'))
 
 
-class ProjectPushRules(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectPushRules(SaveMixin, RESTObject):
     _id_attr = None
 
 
-class ProjectPushRulesManager(GetWithoutIdMixin, CRUDMixin, RESTManager):
+class ProjectPushRulesManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _path = '/projects/%(project_id)s/push_rule'
     _obj_cls = ProjectPushRules
     _from_parent_attrs = {'project_id': 'id'}
