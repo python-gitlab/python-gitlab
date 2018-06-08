@@ -2631,14 +2631,13 @@ class ProjectAccessRequestManager(ListMixin, CreateMixin, DeleteMixin,
     _from_parent_attrs = {'project_id': 'id'}
 
 
-class ProjectMergeRequestApprovalSettings(SaveMixin, RESTObject):
+class ProjectApproval(SaveMixin, RESTObject):
     _id_attr = None
 
 
-class ProjectMergeRequestApprovalSettingsManager(GetWithoutIdMixin,
-                                                 UpdateMixin, RESTManager):
+class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _path = '/projects/%(project_id)s/approvals'
-    _obj_cls = ProjectMergeRequestApprovalSettings
+    _obj_cls = ProjectApproval
     _from_parent_attrs = {'project_id': 'id'}
     _update_attrs = (tuple(),
                      ('approvals_before_merge', 'reset_approvals_on_push',
@@ -2766,7 +2765,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'path'
     _managers = (
         ('accessrequests', 'ProjectAccessRequestManager'),
-        ('approvalsettings', 'ProjectMergeRequestApprovalSettingsManager'),
+        ('approvals', 'ProjectApprovalManager'),
         ('badges', 'ProjectBadgeManager'),
         ('boards', 'ProjectBoardManager'),
         ('branches', 'ProjectBranchManager'),

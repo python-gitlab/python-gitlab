@@ -7,9 +7,9 @@ References
 
 * v4 API:
 
-  + :class:`gitlab.v4.objects.ProjectMergeRequestApprovalSettings`
-  + :class:`gitlab.v4.objects.ProjectMergeRequestApprovalSettingsManager`
-  + :attr:`gitlab.v4.objects.Project.approvalsettings`
+  + :class:`gitlab.v4.objects.ProjectApproval`
+  + :class:`gitlab.v4.objects.ProjectApprovalManager`
+  + :attr:`gitlab.v4.objects.Project.approvals`
 
 * GitLab API: https://docs.gitlab.com/ee/api/merge_request_approvals.html#project-level-mr-approvals
 
@@ -18,7 +18,7 @@ Examples
 
 Get project-level MR approvals settings::
 
-    mras = project.approvalsettings.get()
+    mras = project.approvals.get()
 
 Change project-level MR approvals settings::
 
@@ -27,4 +27,4 @@ Change project-level MR approvals settings::
 
 Change project-level MR allowed approvers::
 
-	project.approvalsettings.set_approvers(approver_ids = [105], approver_group_ids=[653, 654])
+	project.approvals.set_approvers(approver_ids = [105], approver_group_ids=[653, 654])
