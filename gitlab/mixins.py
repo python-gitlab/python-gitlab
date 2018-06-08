@@ -223,6 +223,18 @@ class UpdateMixin(object):
         """
         return getattr(self, '_update_attrs', (tuple(), tuple()))
 
+    def _get_update_method(self):
+        """Return the HTTP method to use.
+
+        Returns:
+            object: http_put (default) or http_post
+        """
+        if getattr(self, '_update_uses_post', False):
+            http_method = self.gitlab.http_post
+        else:
+            http_method = self.gitlab.http_put
+        return http_method
+
     @exc.on_http_error(exc.GitlabUpdateError)
     def update(self, id=None, new_data={}, **kwargs):
         """Update an object on the server.
@@ -265,8 +277,8 @@ class UpdateMixin(object):
                     else:
                         new_data[attr_name] = type_obj.get_for_api()
 
-        return self.gitlab.http_put(path, post_data=new_data, files=files,
-                                    **kwargs)
+        http_method = self._get_update_method()
+        return http_method(path, post_data=new_data, files=files, **kwargs)
 
 
 class SetMixin(object):
