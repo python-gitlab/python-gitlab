@@ -19,6 +19,7 @@ API examples
    gl_objects/environments
    gl_objects/events
    gl_objects/features
+   gl_objects/geo_nodes
    gl_objects/groups
    gl_objects/issues
    gl_objects/boards

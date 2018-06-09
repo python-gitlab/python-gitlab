@@ -27,3 +27,9 @@ project.approvals.set_approvers([1], [])
 approval = project.approvals.get()
 assert(approval.approvers[0]['user']['id'] == 1)
 end_log()
+
+start_log('geo nodes')
+# very basic tests because we only have 1 node...
+nodes = gl.geonodes.list()
+status = gl.geonodes.status()
+end_log()
