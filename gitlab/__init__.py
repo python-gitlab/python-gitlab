@@ -362,7 +362,7 @@ class Gitlab(object):
         else:
             return '%s%s' % (self._url, path)
 
-    def http_request(self, verb, path, query_data={}, post_data={},
+    def http_request(self, verb, path, query_data={}, post_data=None,
                      streamed=False, files=None, **kwargs):
         """Make an HTTP request to the Gitlab server.
 
