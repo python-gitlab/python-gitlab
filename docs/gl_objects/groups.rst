@@ -171,3 +171,18 @@ Remove a member from the group::
     group.members.delete(member_id)
     # or
     member.delete()
+
+LDAP group links
+================
+
+Add an LDAP group link to an existing GitLab group::
+
+    group.add_ldap_group_link(ldap_group_cn, gitlab.DEVELOPER_ACCESS, 'main')
+
+Remove a link::
+
+    group.delete_ldap_group_link(ldap_group_cn, 'main')
+
+Sync the LDAP groups::
+
+    group.ldap_sync()

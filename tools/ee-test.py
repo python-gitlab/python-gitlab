@@ -7,6 +7,9 @@ P1 = 'root/project1'
 P2 = 'root/project2'
 I_P1 = 1
 I_P2 = 1
+G1 = 'group1'
+LDAP_CN = 'app1'
+LDAP_PROVIDER = 'ldapmain'
 
 
 def start_log(message):
@@ -22,6 +25,7 @@ project1 = gl.projects.get(P1)
 project2 = gl.projects.get(P2)
 issue_p1 = project1.issues.get(I_P1)
 issue_p2 = project2.issues.get(I_P2)
+group1 = gl.groups.get(G1)
 
 start_log('MR approvals')
 approval = project1.approvals.get()
@@ -51,4 +55,14 @@ src, dst = issue_p1.links.create({'target_project_id': P2,
 links = issue_p1.links.list()
 link_id = links[0].issue_link_id
 issue_p1.links.delete(link_id)
+end_log()
+
+start_log('LDAP links')
+# bit of cleanup just in case
+if hasattr(group1, 'ldap_group_links'):
+    for link in group1.ldap_group_links:
+        group1.delete_ldap_group_link(link['cn'], link['provider'])
+group1.add_ldap_group_link(LDAP_CN, 30, LDAP_PROVIDER)
+group1.ldap_sync()
+group1.delete_ldap_group_link(LDAP_CN)
 end_log()

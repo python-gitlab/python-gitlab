@@ -807,6 +807,61 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = '/groups/%d/search' % self.get_id()
         return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
 
+    @cli.register_custom_action('Group', ('cn', 'group_access', 'provider'))
+    @exc.on_http_error(exc.GitlabCreateError)
+    def add_ldap_group_link(self, cn, group_access, provider, **kwargs):
+        """Add an LDAP group link.
+
+        Args:
+            cn (str): CN of the LDAP group
+            group_access (int): Minimum access level for members of the LDAP
+                group
+            provider (str): LDAP provider for the LDAP group
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server cannot perform the request
+        """
+        path = '/groups/%d/ldap_group_links' % self.get_id()
+        data = {'cn': cn, 'group_access': group_access, 'provider': provider}
+        self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+
+    @cli.register_custom_action('Group', ('cn',), ('provider',))
+    @exc.on_http_error(exc.GitlabDeleteError)
+    def delete_ldap_group_link(self, cn, provider=None, **kwargs):
+        """Delete an LDAP group link.
+
+        Args:
+            cn (str): CN of the LDAP group
+            provider (str): LDAP provider for the LDAP group
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the server cannot perform the request
+        """
+        path = '/groups/%d/ldap_group_links' % self.get_id()
+        if provider is not None:
+            path += '/%s' % provider
+        path += '/%s' % cn
+        self.manager.gitlab.http_delete(path)
+
+    @cli.register_custom_action('Group')
+    @exc.on_http_error(exc.GitlabCreateError)
+    def ldap_sync(self, **kwargs):
+        """Sync LDAP groups.
+
+        Args:
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server cannot perform the request
+        """
+        path = '/groups/%d/ldap_sync' % self.get_id()
+        self.manager.gitlab.http_post(path, **kwargs)
+
 
 class GroupManager(CRUDMixin, RESTManager):
     _path = '/groups'
