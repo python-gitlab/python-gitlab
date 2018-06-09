@@ -26,7 +26,7 @@ except ImportError:
 
 from httmock import HTTMock  # noqa
 from httmock import response  # noqa
-from httmock import urlmatch  # noqa
+from httmock import remember_called, urlmatch  # noqa
 import requests
 
 import gitlab
@@ -57,6 +57,7 @@ class TestGitlabList(unittest.TestCase):
     def test_build_list(self):
         @urlmatch(scheme='http', netloc="localhost", path="/api/v4/tests",
                   method="get")
+        @remember_called
         def resp_1(url, request):
             headers = {'content-type': 'application/json',
                        'X-Page': 1,
@@ -72,6 +73,7 @@ class TestGitlabList(unittest.TestCase):
 
         @urlmatch(scheme='http', netloc="localhost", path="/api/v4/tests",
                   method='get', query=r'.*page=2')
+        @remember_called
         def resp_2(url, request):
             headers = {'content-type': 'application/json',
                        'X-Page': 2,
@@ -82,7 +84,7 @@ class TestGitlabList(unittest.TestCase):
             content = '[{"c": "d"}]'
             return response(200, content, headers, None, 5, request)
 
-        with HTTMock(resp_1):
+        with HTTMock(resp_2, resp_1):
             obj = self.gl.http_list('/tests', as_list=False)
             self.assertEqual(len(obj), 2)
             self.assertEqual(obj._next_url,
@@ -94,11 +96,62 @@ class TestGitlabList(unittest.TestCase):
             self.assertEqual(obj.total_pages, 2)
             self.assertEqual(obj.total, 2)
 
-            with HTTMock(resp_2):
-                l = list(obj)
-                self.assertEqual(len(l), 2)
-                self.assertEqual(l[0]['a'], 'b')
-                self.assertEqual(l[1]['c'], 'd')
+            l = list(obj)
+            self.assertListEqual(l, [{"a": "b"}])
+            self.assertEqual(resp_1.call['count'], 1)
+            self.assertFalse(resp_2.call['called'])
+
+    def test_build_list_all(self):
+        @urlmatch(scheme='http', netloc="localhost", path="/api/v4/tests",
+                  method="get")
+        @remember_called
+        def resp_1(url, request):
+            headers = {'content-type': 'application/json',
+                       'X-Page': 1,
+                       'X-Next-Page': 2,
+                       'X-Per-Page': 1,
+                       'X-Total-Pages': 2,
+                       'X-Total': 2,
+                       'Link': (
+                           '<http://localhost/api/v4/tests?per_page=1&page=2>;'
+                           ' rel="next"')}
+            content = '[{"a": "b"}]'
+            return response(200, content, headers, None, 5, request)
+
+        @urlmatch(scheme='http', netloc="localhost", path="/api/v4/tests",
+                  method='get', query=r'.*page=2')
+        @remember_called
+        def resp_2(url, request):
+            headers = {'content-type': 'application/json',
+                       'X-Page': 2,
+                       'X-Next-Page': 2,
+                       'X-Per-Page': 1,
+                       'X-Total-Pages': 2,
+                       'X-Total': 2}
+            content = '[{"c": "d"}]'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_2, resp_1):
+            obj = self.gl.http_list('/tests', as_list=False, all=True)
+            self.assertEqual(len(obj), 2)
+            self.assertEqual(obj._next_url,
+                             'http://localhost/api/v4/tests?per_page=1&page=2')
+            self.assertEqual(obj.current_page, 1)
+            self.assertEqual(obj.prev_page, None)
+            self.assertEqual(obj.next_page, 2)
+            self.assertEqual(obj.per_page, 1)
+            self.assertEqual(obj.total_pages, 2)
+            self.assertEqual(obj.total, 2)
+            self.assertEqual(resp_1.call['count'], 1)
+            self.assertFalse(resp_2.call['called'])
+            self.assertDictEqual(next(obj), {"a": "b"})
+            self.assertEqual(resp_1.call['count'], 1)
+            self.assertFalse(resp_2.call['called'])
+            self.assertDictEqual(next(obj), {"c": "d"})
+            self.assertEqual(resp_1.call['count'], 1)
+            self.assertEqual(resp_2.call['count'], 1)
+            with self.assertRaises(StopIteration):
+                next(obj)
 
 
 class TestGitlabHttpMethods(unittest.TestCase):
