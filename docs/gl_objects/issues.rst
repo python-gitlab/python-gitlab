@@ -159,3 +159,41 @@ Get the list of merge requests that will close an issue when merged::
 Get the list of participants::
 
     users = issue.participants()
+
+Issue links
+===========
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectIssueLink`
+  + :class:`gitlab.v4.objects.ProjectIssueLinkManager`
+  + :attr:`gitlab.v4.objects.ProjectIssue.links`
+
+* GitLab API: https://docs.gitlab.com/ee/api/issue_links.html (EE feature)
+
+Examples
+--------
+
+List the issues linked to ``i1``::
+
+    links = i1.links.list()
+
+Link issue ``i1`` to issue ``i2``::
+
+    data = {
+        'target_project_id': i2.project_id,
+        'target_issue_iid': i2.iid
+    }
+    src_issue, dest_issue = i1.links.create(data)
+
+.. note::
+
+   The ``create()`` method returns the source and destination ``ProjectIssue``
+   objects, not a ``ProjectIssueLink`` object.
+
+Delete a link::
+
+    i1.links.delete(issue_link_id)

@@ -1539,6 +1539,43 @@ class ProjectIssueDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
     _create_attrs = (('body',), ('created_at',))
 
 
+class ProjectIssueLink(ObjectDeleteMixin, RESTObject):
+    _id_attr = 'issue_link_id'
+
+
+class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin,
+                              RESTManager):
+    _path = '/projects/%(project_id)s/issues/%(issue_iid)s/links'
+    _obj_cls = ProjectIssueLink
+    _from_parent_attrs = {'project_id': 'project_id', 'issue_iid': 'iid'}
+    _create_attrs = (('target_project_id', 'target_issue_iid'), tuple())
+
+    @exc.on_http_error(exc.GitlabCreateError)
+    def create(self, data, **kwargs):
+        """Create a new object.
+
+        Args:
+            data (dict): parameters to send to the server to create the
+                         resource
+            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+
+        Returns:
+            RESTObject, RESTObject: The source and target issues
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server cannot perform the request
+        """
+        self._check_missing_create_attrs(data)
+        server_data = self.gitlab.http_post(self.path, post_data=data,
+                                            **kwargs)
+        source_issue = ProjectIssue(self._parent.manager,
+                                    server_data['source_issue'])
+        target_issue = ProjectIssue(self._parent.manager,
+                                    server_data['target_issue'])
+        return source_issue, target_issue
+
+
 class ProjectIssue(UserAgentDetailMixin, SubscribableMixin, TodoMixin,
                    TimeTrackingMixin, ParticipantsMixin, SaveMixin,
                    ObjectDeleteMixin, RESTObject):
@@ -1547,6 +1584,7 @@ class ProjectIssue(UserAgentDetailMixin, SubscribableMixin, TodoMixin,
     _managers = (
         ('awardemojis', 'ProjectIssueAwardEmojiManager'),
         ('discussions', 'ProjectIssueDiscussionManager'),
+        ('links', 'ProjectIssueLinkManager'),
         ('notes', 'ProjectIssueNoteManager'),
     )
 
