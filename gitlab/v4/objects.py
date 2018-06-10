@@ -3370,7 +3370,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabCreateError: If the server failed to perform the request
         """
         path = '/projects/%d/mirror/pull' % self.get_id()
-        return self.manager.gitlab.http_post(path, **kwargs)
+        self.manager.gitlab.http_post(path, **kwargs)
 
 
 class ProjectManager(CRUDMixin, RESTManager):
