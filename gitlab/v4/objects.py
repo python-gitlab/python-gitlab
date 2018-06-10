@@ -3357,6 +3357,21 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = '/projects/%d/search' % self.get_id()
         return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
 
+    @cli.register_custom_action('Project')
+    @exc.on_http_error(exc.GitlabCreateError)
+    def mirror_pull(self, **kwargs):
+        """Start the pull mirroring process for the project.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server failed to perform the request
+        """
+        path = '/projects/%d/mirror/pull' % self.get_id()
+        return self.manager.gitlab.http_post(path, **kwargs)
+
 
 class ProjectManager(CRUDMixin, RESTManager):
     _path = '/projects'

@@ -193,6 +193,10 @@ Get a list of users for the repository::
     # search for users
     users = p.users.list(search='pattern')
 
+Start the pull mirroring process (EE edition)::
+
+    project.mirror_pull()
+
 Import / Export
 ===============
 
@@ -331,7 +335,7 @@ Update a file. The entire content must be uploaded, as plain text or as base64
 encoded text::
 
     f.content = 'new content'
-    f.save(branch='master', commit_message='Update testfile') 
+    f.save(branch='master', commit_message='Update testfile')
 
     # or for binary data
     # Note: decode() is required with python 3 for data serialization. You can omit
