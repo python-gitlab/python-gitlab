@@ -66,3 +66,20 @@ group1.add_ldap_group_link(LDAP_CN, 30, LDAP_PROVIDER)
 group1.ldap_sync()
 group1.delete_ldap_group_link(LDAP_CN)
 end_log()
+
+start_log('Boards')
+# bit of cleanup just in case
+for board in project1.boards.list():
+    if board.name == 'testboard':
+        board.delete()
+board = project1.boards.create({'name': 'testboard'})
+board = project1.boards.get(board.id)
+project1.boards.delete(board.id)
+
+for board in group1.boards.list():
+    if board.name == 'testboard':
+        board.delete()
+board = group1.boards.create({'name': 'testboard'})
+board = group1.boards.get(board.id)
+group1.boards.delete(board.id)
+end_log()

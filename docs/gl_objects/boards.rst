@@ -32,16 +32,25 @@ Examples
 Get the list of existing boards for a project or a group::
 
     # item is a Project or a Group
-    boards = item.boards.list()
+    boards = project_or_group.boards.list()
 
 Get a single board for a project or a group::
 
-    board = group.boards.get(board_id)
+    board = project_or_group.boards.get(board_id)
 
-.. note::
+Create a board::
 
-   Boards cannot be created using the API, they need to be created using the
-   UI.
+    board = project_or_group.boards.create({'name': 'new-board'})
+
+.. note:: Board creation is not supported in the GitLab CE edition.
+
+Delete a board::
+
+    board.delete()
+    # or
+    project_or_group.boards.delete(board_id)
+
+.. note:: Board deletion is not supported in the GitLab CE edition.
 
 Board lists
 ===========

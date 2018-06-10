@@ -580,14 +580,15 @@ class GroupBoardListManager(CRUDMixin, RESTManager):
     _update_attrs = (('position', ), tuple())
 
 
-class GroupBoard(RESTObject):
+class GroupBoard(ObjectDeleteMixin, RESTObject):
     _managers = (('lists', 'GroupBoardListManager'), )
 
 
-class GroupBoardManager(RetrieveMixin, RESTManager):
+class GroupBoardManager(NoUpdateMixin, RESTManager):
     _path = '/groups/%(group_id)s/boards'
     _obj_cls = GroupBoard
     _from_parent_attrs = {'group_id': 'id'}
+    _create_attrs = (('name', ), tuple())
 
 
 class GroupCustomAttribute(ObjectDeleteMixin, RESTObject):
@@ -1004,14 +1005,15 @@ class ProjectBoardListManager(CRUDMixin, RESTManager):
     _update_attrs = (('position', ), tuple())
 
 
-class ProjectBoard(RESTObject):
+class ProjectBoard(ObjectDeleteMixin, RESTObject):
     _managers = (('lists', 'ProjectBoardListManager'), )
 
 
-class ProjectBoardManager(RetrieveMixin, RESTManager):
+class ProjectBoardManager(NoUpdateMixin, RESTManager):
     _path = '/projects/%(project_id)s/boards'
     _obj_cls = ProjectBoard
     _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('name', ), tuple())
 
 
 class ProjectBranch(ObjectDeleteMixin, RESTObject):
