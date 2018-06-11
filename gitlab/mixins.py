@@ -66,6 +66,8 @@ class GetWithoutIdMixin(object):
             GitlabGetError: If the server cannot perform the request
         """
         server_data = self.gitlab.http_get(self.path, **kwargs)
+        if server_data is None:
+            return None
         return self._obj_cls(self, server_data)
 
 
@@ -317,9 +319,12 @@ class DeleteMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
-        if not isinstance(id, int):
-            id = id.replace('/', '%2F')
-        path = '%s/%s' % (self.path, id)
+        if id is None:
+            path = self.path
+        else:
+            if not isinstance(id, int):
+                id = id.replace('/', '%2F')
+            path = '%s/%s' % (self.path, id)
         self.gitlab.http_delete(path, **kwargs)
 
 
