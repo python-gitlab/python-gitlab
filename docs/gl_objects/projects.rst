@@ -636,11 +636,19 @@ Reference
 Examples
 ---------
 
-Get project push rules::
+Create project push rules (at least one rule is necessary)::
+
+    project.pushrules.create({'deny_delete_tag': True})
+
+Get project push rules (returns None is there are no push rules)::
 
     pr = project.pushrules.get()
 
 Edit project push rules::
 
     pr.branch_name_regex = '^(master|develop|support-\d+|release-\d+\..+|hotfix-.+|feature-.+)$'
-	pr.save()
+    pr.save()
+
+Delete project push rules::
+
+	pr.delete()
