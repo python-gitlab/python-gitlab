@@ -50,9 +50,6 @@ Results can also be sorted using the following parameters:
     # List starred projects
     projects = gl.projects.starred()
 
-    # List all the projects
-    projects = gl.projects.all()
-
     # Search projects
     projects = gl.projects.list(search='keyword')
 
