@@ -651,4 +651,4 @@ Edit project push rules::
 
 Delete project push rules::
 
-	pr.delete()
+    pr.delete()
