@@ -1795,6 +1795,37 @@ class ProjectTagManager(NoUpdateMixin, RESTManager):
     _create_attrs = (('tag_name', 'ref'), ('message',))
 
 
+class ProjectMergeRequestApproval(SaveMixin, RESTObject):
+    _id_attr = None
+
+
+class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin,
+                                         RESTManager):
+    _path = '/projects/%(project_id)s/merge_requests/%(mr_iid)s/approvals'
+    _obj_cls = ProjectMergeRequestApproval
+    _from_parent_attrs = {'project_id': 'project_id', 'mr_iid': 'iid'}
+    _update_attrs = (('approvals_required',), tuple())
+    _update_uses_post = True
+
+    @exc.on_http_error(exc.GitlabUpdateError)
+    def set_approvers(self, approver_ids=[], approver_group_ids=[], **kwargs):
+        """Change MR-level allowed approvers and approver groups.
+
+        Args:
+            approver_ids (list): User IDs that can approve MRs
+            approver_group_ids (list): Group IDs whose members can approve MRs
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUpdateError: If the server failed to perform the request
+        """
+        path = '%s/%s/approvers' % (self._parent.manager.path,
+                                    self._parent.get_id())
+        data = {'approver_ids': approver_ids,
+                'approver_group_ids': approver_group_ids}
+        self.gitlab.http_put(path, post_data=data, **kwargs)
+
+
 class ProjectMergeRequestAwardEmoji(ObjectDeleteMixin, RESTObject):
     pass
 
@@ -1879,6 +1910,7 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
     _id_attr = 'iid'
 
     _managers = (
+        ('approvals', 'ProjectMergeRequestApprovalManager'),
         ('awardemojis', 'ProjectMergeRequestAwardEmojiManager'),
         ('diffs', 'ProjectMergeRequestDiffManager'),
         ('discussions', 'ProjectMergeRequestDiscussionManager'),
@@ -2761,13 +2793,12 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _update_uses_post = True
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def set_approvers(self, approver_ids=[], approver_group_ids=[],
-                      **kwargs):
+    def set_approvers(self, approver_ids=[], approver_group_ids=[], **kwargs):
         """Change project-level allowed approvers and approver groups.
 
         Args:
-            approver_ids (list): User IDs that can approve MRs.
-            approver_group_ids (list): Group IDs whose members can approve MRs.
+            approver_ids (list): User IDs that can approve MRs
+            approver_group_ids (list): Group IDs whose members can approve MRs
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -2777,10 +2808,7 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         path = '/projects/%s/approvers' % self._parent.get_id()
         data = {'approver_ids': approver_ids,
                 'approver_group_ids': approver_group_ids}
-        try:
-            self.gitlab.http_put(path, post_data=data, **kwargs)
-        except exc.GitlabHttpError as e:
-                raise exc.GitlabUpdateError(e.response_code, e.error_message)
+        self.gitlab.http_put(path, post_data=data, **kwargs)
 
 
 class ProjectDeployment(RESTObject):

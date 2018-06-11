@@ -1,6 +1,9 @@
-##############################################
-Project-level merge request approvals settings
-##############################################
+################################
+Merge request approvals settings
+################################
+
+Merge request approvals can be defined at the project level or at the merge
+request level.
 
 References
 ----------
@@ -10,21 +13,33 @@ References
   + :class:`gitlab.v4.objects.ProjectApproval`
   + :class:`gitlab.v4.objects.ProjectApprovalManager`
   + :attr:`gitlab.v4.objects.Project.approvals`
+  + :class:`gitlab.v4.objects.ProjectMergeRequestApproval`
+  + :class:`gitlab.v4.objects.ProjectMergeRequestApprovalManager`
+  + :attr:`gitlab.v4.objects.ProjectMergeRequest.approvals`
 
-* GitLab API: https://docs.gitlab.com/ee/api/merge_request_approvals.html#project-level-mr-approvals
+* GitLab API: https://docs.gitlab.com/ee/api/merge_request_approvals.html
 
 Examples
 --------
 
-Get project-level MR approvals settings::
+Get project-level or MR-level MR approvals settings::
 
-    mras = project.approvals.get()
+    p_mras = project.approvals.get()
 
-Change project-level MR approvals settings::
+    mr_mras = mr.approvals.get()
 
-    mras.approvals_before_merge = 2
-    mras.save()
+Change project-level or MR-level MR approvals settings::
 
-Change project-level MR allowed approvers::
+    p_mras.approvals_before_merge = 2
+    p_mras.save()
 
-	project.approvals.set_approvers(approver_ids = [105], approver_group_ids=[653, 654])
+    mr_mras.approvals_before_merge = 2
+    mr_mras.save()
+
+Change project-level or MR-level MR allowed approvers::
+
+	project.approvals.set_approvers(approver_ids=[105],
+                                    approver_group_ids=[653, 654])
+
+	mr.approvals.set_approvers(approver_ids=[105],
+                               approver_group_ids=[653, 654])

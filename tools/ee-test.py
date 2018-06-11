@@ -5,6 +5,7 @@ import gitlab
 
 P1 = 'root/project1'
 P2 = 'root/project2'
+MR_P1 = 1
 I_P1 = 1
 I_P2 = 1
 G1 = 'group1'
@@ -26,6 +27,7 @@ project2 = gl.projects.get(P2)
 issue_p1 = project1.issues.get(I_P1)
 issue_p2 = project2.issues.get(I_P2)
 group1 = gl.groups.get(G1)
+mr = project1.mergerequests.get(1)
 
 start_log('MR approvals')
 approval = project1.approvals.get()
@@ -36,6 +38,19 @@ approval = project1.approvals.get()
 assert(v != approval.reset_approvals_on_push)
 project1.approvals.set_approvers([1], [])
 approval = project1.approvals.get()
+assert(approval.approvers[0]['user']['id'] == 1)
+
+approval = mr.approvals.get()
+approval.approvals_required = 2
+approval.save()
+approval = mr.approvals.get()
+assert(approval.approvals_required == 2)
+approval.approvals_required = 3
+approval.save()
+approval = mr.approvals.get()
+assert(approval.approvals_required == 3)
+mr.approvals.set_approvers([1], [])
+approval = mr.approvals.get()
 assert(approval.approvers[0]['user']['id'] == 1)
 end_log()
 
