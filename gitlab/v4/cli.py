@@ -143,8 +143,9 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                                            action='store_true')
 
         if action_name == 'delete':
-            id_attr = cls._id_attr.replace('_', '-')
-            sub_parser_action.add_argument("--%s" % id_attr, required=True)
+            if cls._id_attr is not None:
+                id_attr = cls._id_attr.replace('_', '-')
+                sub_parser_action.add_argument("--%s" % id_attr, required=True)
 
         if action_name == "get":
             if gitlab.mixins.GetWithoutIdMixin not in inspect.getmro(cls):
