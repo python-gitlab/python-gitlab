@@ -83,3 +83,16 @@ board = group1.boards.create({'name': 'testboard'})
 board = group1.boards.get(board.id)
 group1.boards.delete(board.id)
 end_log()
+
+start_log('push rules')
+pr = project1.pushrules.get()
+if pr:
+    pr.delete()
+pr = project1.pushrules.create({'deny_delete_tag': True})
+pr.deny_delete_tag = False
+pr.save()
+pr = project1.pushrules.get()
+assert(pr is not None)
+assert(pr.deny_delete_tag == False)
+pr.delete()
+end_log()
