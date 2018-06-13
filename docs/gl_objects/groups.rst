@@ -177,12 +177,23 @@ LDAP group links
 
 Add an LDAP group link to an existing GitLab group::
 
-    group.add_ldap_group_link(ldap_group_cn, gitlab.DEVELOPER_ACCESS, 'main')
+    group.add_ldap_group_link(ldap_group_cn, gitlab.DEVELOPER_ACCESS, 'ldapmain')
 
 Remove a link::
 
-    group.delete_ldap_group_link(ldap_group_cn, 'main')
+    group.delete_ldap_group_link(ldap_group_cn, 'ldapmain')
 
 Sync the LDAP groups::
 
     group.ldap_sync()
+
+You can use the ``ldapgroups`` manager to list available LDAP groups::
+
+    # listing (supports pagination)
+    ldap_groups = gl.ldapgroups.list()
+
+    # filter using a group name
+    ldap_groups = gl.ldapgroups.list(search='foo')
+
+    # list the groups for a specific LDAP provider
+    ldap_groups = gl.ldapgroups.list(search='foo', provider='ldapmain')

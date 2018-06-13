@@ -77,6 +77,7 @@ start_log('LDAP links')
 if hasattr(group1, 'ldap_group_links'):
     for link in group1.ldap_group_links:
         group1.delete_ldap_group_link(link['cn'], link['provider'])
+assert(gl.ldapgroups.list())
 group1.add_ldap_group_link(LDAP_CN, 30, LDAP_PROVIDER)
 group1.ldap_sync()
 group1.delete_ldap_group_link(LDAP_CN)
