@@ -283,7 +283,7 @@ The following sample illustrates how to use a client-side certificate:
    import requests
 
    session = requests.Session()
-   s.cert = ('/path/to/client.cert', '/path/to/client.key')
+   session.cert = ('/path/to/client.cert', '/path/to/client.key')
    gl = gitlab.gitlab(url, token, api_version=4, session=session)
 
 Reference:
