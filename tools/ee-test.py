@@ -111,3 +111,12 @@ assert(pr is not None)
 assert(pr.deny_delete_tag == False)
 pr.delete()
 end_log()
+
+start_log('license')
+l = gl.get_license()
+assert('user_limit' in l)
+try:
+    gl.set_license('dummykey')
+except Exception as e:
+    assert('The license key is invalid.' in e.error_message)
+end_log()

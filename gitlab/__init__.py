@@ -228,6 +228,7 @@ class Gitlab(object):
 
         return self._server_version, self._server_revision
 
+    @on_http_error(GitlabVerifyError)
     def lint(self, content, **kwargs):
         """Validate a gitlab CI configuration.
 
@@ -244,13 +245,10 @@ class Gitlab(object):
                 otherwise
         """
         post_data = {'content': content}
-        try:
-            data = self.http_post('/ci/lint', post_data=post_data, **kwargs)
-        except Exception:
-            raise GitlabVerifyError
-
+        data = self.http_post('/ci/lint', post_data=post_data, **kwargs)
         return (data['status'] == 'valid', data['errors'])
 
+    @on_http_error(GitlabMarkdownError)
     def markdown(self, text, gfm=False, project=None, **kwargs):
         """Render an arbitrary Markdown document.
 
@@ -272,11 +270,42 @@ class Gitlab(object):
         post_data = {'text': text, 'gfm': gfm}
         if project is not None:
             post_data['project'] = project
-        try:
-            data = self.http_post('/markdown', post_data=post_data, **kwargs)
-        except Exception:
-            raise GitlabMarkdownError
+        data = self.http_post('/markdown', post_data=post_data, **kwargs)
         return data['html']
+
+    @on_http_error(GitlabLicenseError)
+    def get_license(self, **kwargs):
+        """Retrieve information about the current license.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the server cannot perform the request
+
+        Returns:
+            dict: The current license information
+        """
+        return self.http_get('/license', **kwargs)
+
+    @on_http_error(GitlabLicenseError)
+    def set_license(self, license, **kwargs):
+        """Add a new license.
+
+        Args:
+            license (str): The license string
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabPostError: If the server cannot perform the request
+
+        Returns:
+            dict: The new license information
+        """
+        data = {'license': license}
+        return self.http_post('/license', post_data=data, **kwargs)
 
     def _construct_url(self, id_, obj, parameters, action=None):
         if 'next_url' in parameters:

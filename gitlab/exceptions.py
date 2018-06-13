@@ -221,6 +221,10 @@ class GitlabRepairError(GitlabOperationError):
     pass
 
 
+class GitlabLicenseError(GitlabOperationError):
+    pass
+
+
 def on_http_error(error):
     """Manage GitlabHttpError exceptions.
 
