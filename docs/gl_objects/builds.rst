@@ -238,19 +238,25 @@ List jobs for the project::
 
     jobs = project.jobs.list()
 
-To list builds for a specific pipeline or get a single job within a specific
-pipeline, create a
-:class:`~gitlab.v4.objects.ProjectPipeline` object and use its
-:attr:`~gitlab.v4.objects.ProjectPipeline.jobs` method::
+Get a single job::
+
+    project.jobs.get(job_id)
+
+List the jobs of a pipeline::
 
     project = gl.projects.get(project_id)
     pipeline = project.pipelines.get(pipeline_id)
-    jobs = pipeline.jobs.list()  # gets all jobs in pipeline
-    job = pipeline.jobs.get(job_id)  # gets one job from pipeline
+    jobs = pipeline.jobs.list()
 
-Get a job::
+.. note::
 
-    project.jobs.get(job_id)
+   Job methods (play, cancel, and so on) are not available on
+   ``ProjectPipelineJob`` objects. To use these methods create a ``ProjectJob``
+   object::
+
+       pipeline_job = pipeline.jobs.list()[0]
+       job = project.jobs.get(pipeline_job.id, lazy=True)
+       job.retry()
 
 Get the artifacts of a job::
 
