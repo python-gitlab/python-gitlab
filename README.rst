@@ -15,7 +15,7 @@ Python GitLab
 
 ``python-gitlab`` is a Python package providing access to the GitLab server API.
 
-It supports the v3 and v4 APIs of GitLab, and provides a CLI tool (``gitlab``).
+It supports the v4 API of GitLab, and provides a CLI tool (``gitlab``).
 
 Installation
 ============
@@ -66,10 +66,10 @@ Running unit tests
 ------------------
 
 Before submitting a pull request make sure that the tests still succeed with
-your change. Unit tests will run using the travis service and passing tests are
-mandatory.
+your change. Unit tests and functional tests run using the travis service and
+passing tests are mandatory to get merge requests accepted.
 
-You need to install ``tox`` to run unit tests and documentation builds:
+You need to install ``tox`` to run unit tests and documentation builds locally:
 
 .. code-block:: bash
 
