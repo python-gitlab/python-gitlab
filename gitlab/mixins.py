@@ -32,7 +32,7 @@ class GetMixin(object):
             lazy (bool): If True, don't request the server, but create a
                          shallow object giving access to the managers. This is
                          useful if you want to avoid useless calls to the API.
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             object: The generated RESTObject.
@@ -56,7 +56,7 @@ class GetWithoutIdMixin(object):
         """Retrieve a single object.
 
         Args:
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             object: The generated RESTObject
@@ -77,7 +77,7 @@ class RefreshMixin(object):
         """Refresh a single object from server.
 
         Args:
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns None (updates the object)
 
@@ -104,7 +104,7 @@ class ListMixin(object):
             page (int): ID of the page to return (starts with page 1)
             as_list (bool): If set to False and no pagination option is
                 defined, return a generator instead of a list
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             list: The list of objects, or a generator if `as_list` is False
@@ -168,7 +168,7 @@ class CreateMixin(object):
         Args:
             data (dict): parameters to send to the server to create the
                          resource
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             RESTObject: a new instance of the managed object class built with
@@ -244,7 +244,7 @@ class UpdateMixin(object):
         Args:
             id: ID of the object to update (can be None if not required)
             new_data: the update data for the object
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             dict: The new object data (*not* a RESTObject)
@@ -313,7 +313,7 @@ class DeleteMixin(object):
 
         Args:
             id: ID of the object to delete
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct

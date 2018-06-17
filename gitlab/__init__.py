@@ -407,7 +407,7 @@ class Gitlab(object):
                               json)
             streamed (bool): Whether the data should be streamed
             files (dict): The files to send to the server
-            **kwargs: Extra data to make the query (e.g. sudo, per_page, page)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             A requests result object.
@@ -502,7 +502,7 @@ class Gitlab(object):
                         'http://whatever/v4/api/projecs')
             query_data (dict): Data to send as query parameters
             streamed (bool): Whether the data should be streamed
-            **kwargs: Extra data to make the query (e.g. sudo, per_page, page)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             A requests result object is streamed is True or the content type is
@@ -532,8 +532,8 @@ class Gitlab(object):
             path (str): Path or full URL to query ('/projects' or
                         'http://whatever/v4/api/projecs')
             query_data (dict): Data to send as query parameters
-            **kwargs: Extra data to make the query (e.g. sudo, per_page, page,
-                      all)
+            **kwargs: Extra options to send to the server (e.g. sudo, page,
+                      per_page)
 
         Returns:
             list: A list of the objects returned by the server. If `as_list` is
@@ -575,7 +575,7 @@ class Gitlab(object):
             post_data (dict): Data to send in the body (will be converted to
                               json)
             files (dict): The files to send to the server
-            **kwargs: Extra data to make the query (e.g. sudo, per_page, page)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             The parsed json returned by the server if json is return, else the
@@ -606,7 +606,7 @@ class Gitlab(object):
             post_data (dict): Data to send in the body (will be converted to
                               json)
             files (dict): The files to send to the server
-            **kwargs: Extra data to make the query (e.g. sudo, per_page, page)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             The parsed json returned by the server.
@@ -629,7 +629,7 @@ class Gitlab(object):
         Args:
             path (str): Path or full URL to query ('/projects' or
                         'http://whatever/v4/api/projecs')
-            **kwargs: Extra data to make the query (e.g. sudo, per_page, page)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             The requests object.

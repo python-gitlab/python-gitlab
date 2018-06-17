@@ -227,7 +227,7 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
             page (int): ID of the page to return (starts with page 1)
             as_list (bool): If set to False and no pagination option is
                 defined, return a generator instead of a list
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             list: The list of objects, or a generator if `as_list` is False
@@ -430,7 +430,7 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         Args:
             id: ID of the object to update (can be None if not required)
             new_data: the update data for the object
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             dict: The new object data (*not* a RESTObject)
@@ -642,7 +642,7 @@ class GroupEpicIssueManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin,
         Args:
             data (dict): Parameters to send to the server to create the
                          resource
-            **kwargs: Extra data to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -896,7 +896,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             group_access (int): Minimum access level for members of the LDAP
                 group
             provider (str): LDAP provider for the LDAP group
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -914,7 +914,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         Args:
             cn (str): CN of the LDAP group
             provider (str): LDAP provider for the LDAP group
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -932,7 +932,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         """Sync LDAP groups.
 
         Args:
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -1004,7 +1004,7 @@ class LDAPGroupManager(RESTManager):
             page (int): ID of the page to return (starts with page 1)
             as_list (bool): If set to False and no pagination option is
                 defined, return a generator instead of a list
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             list: The list of objects, or a generator if `as_list` is False
@@ -1387,8 +1387,8 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
         Args:
             data (dict): Parameters to send to the server to create the
                          resource
-            **kwargs: Extra data to send to the Gitlab server (e.g. sudo or
-                      'ref_name', 'stage', 'name', 'all'.
+            **kwargs: Extra options to send to the server (e.g. sudo or
+                      'ref_name', 'stage', 'name', 'all')
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -1736,7 +1736,7 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin,
         Args:
             data (dict): parameters to send to the server to create the
                          resource
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             RESTObject, RESTObject: The source and target issues
@@ -2303,7 +2303,7 @@ class ProjectLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin,
 
         Args:
             name: The name of the label
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -2376,7 +2376,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
         Args:
             file_path (str): Path of the file to retrieve
             ref (str): Name of the branch, tag or commit
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -2399,7 +2399,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
         Args:
             data (dict): parameters to send to the server to create the
                          resource
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             RESTObject: a new instance of the managed object class built with
@@ -2424,7 +2424,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
         Args:
             id: ID of the object to update (can be None if not required)
             new_data: the update data for the object
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             dict: The new object data (*not* a RESTObject)
@@ -2451,7 +2451,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
             file_path (str): Path of the file to remove
             branch (str): Branch from which the file will be removed
             commit_message (str): Commit message for the deletion
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -2476,7 +2476,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
             action (callable): Callable responsible of dealing with chunk of
                 data
             chunk_size (int): Size of each chunk
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -2849,7 +2849,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
             lazy (bool): If True, don't request the server, but create a
                          shallow object giving access to the managers. This is
                          useful if you want to avoid useless calls to the API.
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             object: The generated RESTObject.
@@ -2868,7 +2868,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
         Args:
             id: ID of the object to update (can be None if not required)
             new_data: the update data for the object
-            **kwargs: Extra options to send to the Gitlab server (e.g. sudo)
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
             dict: The new object data (*not* a RESTObject)
