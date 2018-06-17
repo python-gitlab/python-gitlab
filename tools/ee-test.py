@@ -8,6 +8,7 @@ P2 = 'root/project2'
 MR_P1 = 1
 I_P1 = 1
 I_P2 = 1
+EPIC_ISSUES = [4, 5]
 G1 = 'group1'
 LDAP_CN = 'app1'
 LDAP_PROVIDER = 'ldapmain'
@@ -83,7 +84,7 @@ group1.ldap_sync()
 group1.delete_ldap_group_link(LDAP_CN)
 end_log()
 
-start_log('Boards')
+start_log('boards')
 # bit of cleanup just in case
 for board in project1.boards.list():
     if board.name == 'testboard':
@@ -120,4 +121,24 @@ try:
     gl.set_license('dummykey')
 except Exception as e:
     assert('The license key is invalid.' in e.error_message)
+end_log()
+
+start_log('epics')
+epic = group1.epics.create({'title': 'Test epic'})
+epic.title = 'Fixed title'
+epic.labels = ['label1', 'label2']
+epic.save()
+epic = group1.epics.get(epic.iid)
+assert(epic.title == 'Fixed title')
+assert(len(group1.epics.list()))
+
+# issues
+assert(not epic.issues.list())
+for i in EPIC_ISSUES:
+    epic.issues.create({'issue_id': i})
+assert(len(EPIC_ISSUES) == len(epic.issues.list()))
+for ei in epic.issues.list():
+    ei.delete()
+
+epic.delete()
 end_log()
