@@ -30,7 +30,7 @@ from gitlab.const import *  # noqa
 from gitlab.exceptions import *  # noqa
 
 __title__ = 'python-gitlab'
-__version__ = '1.4.0'
+__version__ = '1.5.0'
 __author__ = 'Gauvain Pocentek'
 __email__ = 'gauvain@pocentek.net'
 __license__ = 'LGPL3'

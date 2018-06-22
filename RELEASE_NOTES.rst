@@ -9,6 +9,9 @@ Changes from 1.4 to 1.5
 
 * APIv3 support has been removed. Use the 1.4 release/branch if you need v3
   support.
+* GitLab EE features are now supported: Geo nodes, issue links, LDAP groups,
+  project/group boards, project mirror pulling, project push rules, EE license
+  configuration, epics.
 * The ``GetFromListMixin`` class has been removed. The ``get()`` method is not
   available anymore for the following managers:
   - UserKeyManager
@@ -24,6 +27,8 @@ Changes from 1.4 to 1.5
   - ProjectPipelineJobManager
   - ProjectAccessRequestManager
   - TodoManager
+* ``ProjectPipelineJob`` do not heritate from ``ProjectJob`` anymore and thus
+  can only be listed.
 
 Changes from 1.3 to 1.4
 =======================

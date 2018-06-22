@@ -1,6 +1,59 @@
 ChangeLog
 =========
 
+Version 1.5.0_ - 2018-06-22
+---------------------------
+
+* Drop API v3 support
+* Drop GetFromListMixin
+* Update the sphinx extension for v4 objects
+* Add support for user avatar upload
+* Add support for project import/export
+* Add support for the search API
+* Add a global per_page config option
+* Add support for the discussions API
+* Add support for merged branches deletion
+* Add support for Project badges
+* Implement user_agent_detail for snippets
+* Implement commit.refs()
+* Add commit.merge_requests() support
+* Deployment: add list filters
+* Deploy key: add missing attributes
+* Add support for environment stop()
+* Add feature flags deletion support
+* Update some group attributes
+* Issues: add missing attributes and methods
+* Fix the participants() decorator
+* Add support for group boards
+* Implement the markdown rendering API
+* Update MR attributes
+* Add pipeline listing filters
+* Add missing project attributes
+* Implement runner jobs listing
+* Runners can be created (registered)
+* Implement runner token validation
+* Update the settings attributes
+* Add support for the gitlab CI lint API
+* Add support for group badges
+* Fix the IssueManager path to avoid redirections
+* time_stats(): use an existing attribute if available
+* Make ProjectCommitStatus.create work with CLI
+* Tests: default to python 3
+* ProjectPipelineJob was defined twice
+* Silence logs/warnings in unittests
+* Add support for MR approval configuration (EE)
+* Change post_data default value to None
+* Add geo nodes API support (EE)
+* Add support for issue links (EE)
+* Add support for LDAP groups (EE)
+* Add support for board creation/deletion (EE)
+* Add support for Project.pull_mirror (EE)
+* Add project push rules configuration (EE)
+* Add support for the EE license API
+* Add support for the LDAP groups API (EE)
+* Add support for epics API (EE)
+* Fix the non-verbose output of ProjectCommitComment
+
 Version 1.4.0_ - 2018-05-19
 ---------------------------
 
@@ -585,6 +638,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
+.. _1.5.0: https://github.com/python-gitlab/python-gitlab/compare/1.4.0...1.5.0
 .. _1.4.0: https://github.com/python-gitlab/python-gitlab/compare/1.3.0...1.4.0
 .. _1.3.0: https://github.com/python-gitlab/python-gitlab/compare/1.2.0...1.3.0
 .. _1.2.0: https://github.com/python-gitlab/python-gitlab/compare/1.1.0...1.2.0
