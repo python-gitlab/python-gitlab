@@ -1411,6 +1411,7 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
 
 class ProjectCommitComment(RESTObject):
     _id_attr = None
+    _short_print_attr = 'note'
 
 
 class ProjectCommitCommentManager(ListMixin, CreateMixin, RESTManager):

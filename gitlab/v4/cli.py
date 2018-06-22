@@ -326,7 +326,14 @@ class LegacyPrinter(object):
                 print('%s: %s' % (obj._id_attr.replace('_', '-'), id))
             if hasattr(obj, '_short_print_attr'):
                 value = getattr(obj, obj._short_print_attr)
-                print('%s: %s' % (obj._short_print_attr, value))
+                value = value.replace('\r', '').replace('\n', ' ')
+                # If the attribute is a note (ProjectCommitComment) then we do
+                # some modifications to fit everything on one line
+                line = '%s: %s' % (obj._short_print_attr, value)
+                # ellipsize long lines (comments)
+                if len(line) > 79:
+                    line = line[:76] + '...'
+                print(line)
 
     def display_list(self, data, fields, **kwargs):
         verbose = kwargs.get('verbose', False)
