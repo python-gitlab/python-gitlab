@@ -2494,7 +2494,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
         return utils.response_content(result, streamed, action, chunk_size)
 
 
-class ProjectPipelineJob(RESTManager):
+class ProjectPipelineJob(RESTObject):
     pass
 
 
