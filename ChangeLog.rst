@@ -1,6 +1,11 @@
 ChangeLog
 =========
 
+Version 1.5.1_ - 2018-06-23
+---------------------------
+
+* Fix the ProjectPipelineJob base class (regression)
+
 Version 1.5.0_ - 2018-06-22
 ---------------------------
 
@@ -638,6 +643,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
+.. _1.5.1: https://github.com/python-gitlab/python-gitlab/compare/1.4.0...1.5.1
 .. _1.5.0: https://github.com/python-gitlab/python-gitlab/compare/1.4.0...1.5.0
 .. _1.4.0: https://github.com/python-gitlab/python-gitlab/compare/1.3.0...1.4.0
 .. _1.3.0: https://github.com/python-gitlab/python-gitlab/compare/1.2.0...1.3.0
