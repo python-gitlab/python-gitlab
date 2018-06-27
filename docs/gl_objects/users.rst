@@ -35,7 +35,7 @@ Search users whose username match a given string::
 Get a single user::
 
     # by ID
-    user = gl.users.get(2)
+    user = gl.users.get(user_id)
     # by username
     user = gl.users.list(username='root')[0]
 
@@ -53,7 +53,8 @@ Update a user::
 
 Delete a user::
 
-    gl.users.delete(2)
+    gl.users.delete(user_id)
+    # or
     user.delete()
 
 Block/Unblock a user::
@@ -198,7 +199,7 @@ List GPG keys for a user::
 
 Get a GPG gpgkey for a user::
 
-    gpgkey = user.gpgkeys.get(1)
+    gpgkey = user.gpgkeys.get(key_id)
 
 Create a GPG gpgkey for a user::
 
@@ -207,7 +208,7 @@ Create a GPG gpgkey for a user::
 
 Delete a GPG gpgkey for a user::
 
-    user.gpgkeys.delete(1)
+    user.gpgkeys.delete(key_id)
     # or
     gpgkey.delete()
 
@@ -245,7 +246,7 @@ Create an SSH key for a user::
 
 Delete an SSH key for a user::
 
-    user.keys.delete(1)
+    user.keys.delete(key_id)
     # or
     key.delete()
 
@@ -278,9 +279,7 @@ List emails for a user::
 
 Get an email for a user::
 
-    email = gl.user_emails.list(1, user_id=1)
-    # or
-    email = user.emails.get(1)
+    email = user.emails.get(email_id)
 
 Create an email for a user::
 
@@ -288,7 +287,7 @@ Create an email for a user::
 
 Delete an email for a user::
 
-    user.emails.delete(1)
+    user.emails.delete(email_id)
     # or
     email.delete()
 

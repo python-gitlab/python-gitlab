@@ -56,7 +56,7 @@ Results can also be sorted using the following parameters:
 Get a single project::
 
     # Get a project by ID
-    project = gl.projects.get(10)
+    project = gl.projects.get(project_id)
     # Get a project by userspace/name
     project = gl.projects.get('myteam/myproject')
 
@@ -84,7 +84,7 @@ Update a project::
 
 Delete a project::
 
-    gl.projects.delete(1)
+    gl.projects.delete(project_id)
     # or
     project.delete()
 
@@ -480,7 +480,7 @@ Search project members matching a query string::
 
 Get a single project member::
 
-    member = project.members.get(1)
+    member = project.members.get(user_id)
 
 Add a project member::
 
@@ -526,7 +526,7 @@ List the project hooks::
 
 Get a project hook::
 
-    hook = project.hooks.get(1)
+    hook = project.hooks.get(hook_id)
 
 Create a project hook::
 
@@ -539,7 +539,7 @@ Update a project hook::
 
 Delete a project hook::
 
-    project.hooks.delete(1)
+    project.hooks.delete(hook_id)
     # or
     hook.delete()
 

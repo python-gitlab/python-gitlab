@@ -92,7 +92,7 @@ Full example with wait for finish::
     pipeline = project.trigger_pipeline('master', trigger.token, variables={"DEPLOY_ZONE": "us-west1"})
     while pipeline.finished_at is None:
         pipeline.refresh()
-        os.sleep(1)
+        time.sleep(1)
 
 Pipeline schedule
 =================
