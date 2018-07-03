@@ -72,7 +72,7 @@ Set the avatar image for a user::
 Set an external identity for a user::
 
     user.provider = 'oauth2_generic'
-    user..extern_uid = '3'
+    user.extern_uid = '3'
     user.save()
 
 User custom attributes
