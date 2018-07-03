@@ -9,7 +9,7 @@ Reference
 
   + :class:`gitlab.v4.objects.Snippet`
   + :class:`gitlab.v4.objects.SnipptManager`
-  + :attr:`gilab.Gitlab.snippets`
+  + :attr:`gitlab.Gitlab.snippets`
 
 * GitLab API: https://docs.gitlab.com/ce/api/snippets.html
 
@@ -42,10 +42,18 @@ Create a snippet::
                                   'file_name': 'snippet1.py',
                                   'content': open('snippet1.py').read()})
 
-Update a snippet::
+Update the snippet attributes::
 
     snippet.visibility_level = gitlab.Project.VISIBILITY_PUBLIC
     snippet.save()
+
+To update a snippet code you need to create a ``ProjectSnippet`` object:
+
+    snippet = gl.snippets.get(snippet_id)
+    project = gl.projects.get(snippet.projec_id, lazy=True)
+    editable_snippet = project.snippets.get(snippet.id)
+    editable_snippet.code = new_snippet_content
+    editable_snippet.save()
 
 Delete a snippet::
 
