@@ -366,6 +366,5 @@ def run(gl, what, action, args, verbose, output, fields):
         printer.display(get_dict(data, fields), verbose=verbose, obj=data)
     elif isinstance(data, six.string_types):
         print(data)
-    else:
-        # We assume we got bytes
+    elif hasattr(data, 'decode'):
         print(data.decode())
