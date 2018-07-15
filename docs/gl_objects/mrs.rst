@@ -116,6 +116,14 @@ List commits of a MR::
 
     commits = mr.commits()
 
+List the changes of a MR::
+
+    changes = mr.changes()
+
+List the pipelines for a MR::
+
+    pipelines = mr.pipelines()
+
 List issues that will close on merge::
 
     mr.closes_issues()
