@@ -114,6 +114,7 @@ class Gitlab(object):
         self.ldapgroups = objects.LDAPGroupManager(self)
         self.licenses = objects.LicenseManager(self)
         self.namespaces = objects.NamespaceManager(self)
+        self.mergerequests = objects.MergeRequestManager(self)
         self.notificationsettings = objects.NotificationSettingsManager(self)
         self.projects = objects.ProjectManager(self)
         self.runners = objects.RunnerManager(self)

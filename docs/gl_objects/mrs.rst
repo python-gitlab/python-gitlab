@@ -5,6 +5,48 @@ Merge requests
 You can use merge requests to notify a project that a branch is ready for
 merging. The owner of the target projet can accept the merge request.
 
+Merge requests are linked to projects, but they can be listed globally or for
+groups.
+
+Group and global listing
+========================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.GroupMergeRequest`
+  + :class:`gitlab.v4.objects.GroupMergeRequestManager`
+  + :attr:`gitlab.v4.objects.Group.mergerequests`
+  + :class:`gitlab.v4.objects.MergeRequest`
+  + :class:`gitlab.v4.objects.MergeRequestManager`
+  + :attr:`gitlab.Gtilab.mergerequests`
+
+* GitLab API: https://docs.gitlab.com/ce/api/merge_requests.html
+
+Examples
+--------
+
+List the merge requests available on the GitLab server::
+
+    mrs = gl.mergerequests.list()
+
+List the merge requests for a group::
+
+    group = gl.groups.get('mygroup')
+    mrs = group.mergerequests.list()
+
+To edit or delete a merge request, create a ``ProjectMergeRequest`` object
+first::
+
+    mr = group.mergerequests.list()[0]  # pick the first MR
+    project = gl.projects.get(mr.project_id, lazy=True)
+    editable_mr = project.mergerequests.get(mr.iid)
+
+Project merge requests
+======================
+
 Reference
 ---------
 

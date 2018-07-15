@@ -710,8 +710,16 @@ class GroupMergeRequest(RESTObject):
     pass
 
 
-class GroupMergeRequestManager(RESTManager):
-    pass
+class GroupMergeRequestManager(ListMixin, RESTManager):
+    _path = '/groups/%(group_id)s/merge_requests'
+    _obj_cls = GroupMergeRequest
+    _from_parent_attrs = {'group_id': 'id'}
+    _list_filters = ('state', 'order_by', 'sort', 'milestone', 'view',
+                     'labels', 'created_after', 'created_before',
+                     'updated_after', 'updated_before', 'scope', 'author_id',
+                     'assignee_id', 'my_reaction_emoji', 'source_branch',
+                     'target_branch', 'search')
+    _types = {'labels': types.ListAttribute}
 
 
 class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -842,6 +850,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('epics', 'GroupEpicManager'),
         ('issues', 'GroupIssueManager'),
         ('members', 'GroupMemberManager'),
+        ('mergerequests', 'GroupMergeRequestManager'),
         ('milestones', 'GroupMilestoneManager'),
         ('notificationsettings', 'GroupNotificationSettingsManager'),
         ('projects', 'GroupProjectManager'),
@@ -1038,6 +1047,22 @@ class LicenseManager(RetrieveMixin, RESTManager):
     _obj_cls = License
     _list_filters = ('popular', )
     _optional_get_attrs = ('project', 'fullname')
+
+
+class MergeRequest(RESTObject):
+    pass
+
+
+class MergeRequestManager(ListMixin, RESTManager):
+    _path = '/merge_requests'
+    _obj_cls = MergeRequest
+    _from_parent_attrs = {'group_id': 'id'}
+    _list_filters = ('state', 'order_by', 'sort', 'milestone', 'view',
+                     'labels', 'created_after', 'created_before',
+                     'updated_after', 'updated_before', 'scope', 'author_id',
+                     'assignee_id', 'my_reaction_emoji', 'source_branch',
+                     'target_branch', 'search')
+    _types = {'labels': types.ListAttribute}
 
 
 class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
