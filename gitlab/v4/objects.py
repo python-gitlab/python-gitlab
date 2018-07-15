@@ -3605,7 +3605,8 @@ class ProjectManager(CRUDMixin, RESTManager):
             'overwrite': overwrite
         }
         if override_params:
-            data['override_params'] = override_params
+            for k, v in override_params.items():
+                data['override_params[%s]' % k] = v
         if namespace:
             data['namespace'] = namespace
         return self.gitlab.http_post('/projects/import', post_data=data,
