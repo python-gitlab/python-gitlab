@@ -2219,13 +2219,14 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
     _create_attrs = (
         ('source_branch', 'target_branch', 'title'),
         ('assignee_id', 'description', 'target_project_id', 'labels',
-         'milestone_id', 'remove_source_branch', 'allow_maintainer_to_push')
+         'milestone_id', 'remove_source_branch', 'allow_maintainer_to_push',
+         'squash')
     )
-    _update_attrs = (tuple(),
-                     ('target_branch', 'assignee_id', 'title', 'description',
-                      'state_event', 'labels', 'milestone_id',
-                      'remove_source_branch', 'discussion_locked',
-                      'allow_maintainer_to_push'))
+    _update_attrs = (
+        tuple(),
+        ('target_branch', 'assignee_id', 'title', 'description', 'state_event',
+         'labels', 'milestone_id', 'remove_source_branch', 'discussion_locked',
+         'allow_maintainer_to_push', 'squash'))
     _list_filters = ('state', 'order_by', 'sort', 'milestone', 'view',
                      'labels', 'created_after', 'created_before',
                      'updated_after', 'updated_before', 'scope', 'author_id',
