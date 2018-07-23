@@ -3589,6 +3589,25 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = '/projects/%d/mirror/pull' % self.get_id()
         self.manager.gitlab.http_post(path, **kwargs)
 
+    @cli.register_custom_action('Project', ('to_namespace', ))
+    @exc.on_http_error(exc.GitlabTransferProjectError)
+    def transfer_project(self, to_namespace, **kwargs):
+        """Transfer a project to the given namespace ID
+
+        Args:
+            to_namespace (str): ID or path of the namespace to transfer the
+            project to
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabTransferProjectError: If the project could not be transfered
+        """
+        path = '/projects/%d/transfer' % (self.id,)
+        self.manager.gitlab.http_put(path,
+                                     post_data={"namespace": to_namespace},
+                                     **kwargs)
+
 
 class ProjectManager(CRUDMixin, RESTManager):
     _path = '/projects'
