@@ -1654,9 +1654,11 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
                      'with_custom_attributes', 'with_issues_enabled',
                      'with_merge_requests_enabled')
     _create_attrs = (tuple(), ('namespace', ))
-    
+
     def list(self, **kwargs):
-        return super().list(path=self._compute_path(path=(self._path + "s")), **kwargs)
+        computed_path = self._compute_path(path=(self._path + "s"))
+        return super(ProjectForkManager, self).list(path=computed_path, **kwargs)
+
 
 class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'url'
