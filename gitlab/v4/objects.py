@@ -1645,7 +1645,7 @@ class ProjectFork(RESTObject):
     pass
 
 
-class ProjectForkManager(CreateMixin, RESTManager):
+class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
     _path = '/projects/%(project_id)s/fork'
     _obj_cls = ProjectFork
     _from_parent_attrs = {'project_id': 'id'}
@@ -1654,7 +1654,9 @@ class ProjectForkManager(CreateMixin, RESTManager):
                      'with_custom_attributes', 'with_issues_enabled',
                      'with_merge_requests_enabled')
     _create_attrs = (tuple(), ('namespace', ))
-
+    
+    def list(self, **kwargs):
+        return super().list(path=self._compute_path(path=(self._path + "s")), **kwargs)
 
 class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'url'
