@@ -1831,7 +1831,7 @@ class ProjectIssue(UserAgentDetailMixin, SubscribableMixin, TodoMixin,
         path = '%s/%s/move' % (self.manager.path, self.get_id())
         data = {'to_project_id': to_project_id}
         server_data = self.manager.gitlab.http_post(path, post_data=data,
-**kwargs)
+                                                    **kwargs)
         self._update_attrs(server_data)
 
     @cli.register_custom_action('ProjectIssue')
