@@ -1656,8 +1656,26 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
     _create_attrs = (tuple(), ('namespace', ))
 
     def list(self, **kwargs):
-        computed_path = self._compute_path(path=(self._path + "s"))
-        return super(ProjectForkManager, self).list(path=computed_path, **kwargs)
+        """Retrieve a list of objects.
+
+        Args:
+            all (bool): If True, return all the items, without pagination
+            per_page (int): Number of items to retrieve per request
+            page (int): ID of the page to return (starts with page 1)
+            as_list (bool): If set to False and no pagination option is
+                defined, return a generator instead of a list
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Returns:
+            list: The list of objects, or a generator if `as_list` is False
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the server cannot perform the request
+        """
+
+        path = self._compute_path('/projects/%(project_id)s/forks')
+        return ListMixin.list(self, path=path, **kwargs)
 
 
 class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -1813,7 +1831,7 @@ class ProjectIssue(UserAgentDetailMixin, SubscribableMixin, TodoMixin,
         path = '%s/%s/move' % (self.manager.path, self.get_id())
         data = {'to_project_id': to_project_id}
         server_data = self.manager.gitlab.http_post(path, post_data=data,
-                                                    **kwargs)
+**kwargs)
         self._update_attrs(server_data)
 
     @cli.register_custom_action('ProjectIssue')
