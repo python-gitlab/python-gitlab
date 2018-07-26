@@ -467,6 +467,9 @@ fork = admin_project.forks.create({'namespace': user1.username})
 p = gl.projects.get(fork.id)
 assert(p.forked_from_project['id'] == admin_project.id)
 
+forks = admin_project.forks.list()
+assert(fork.id in map(lambda p: p.id, forks))
+
 # project hooks
 hook = admin_project.hooks.create({'url': 'http://hook.url'})
 assert(len(admin_project.hooks.list()) == 1)

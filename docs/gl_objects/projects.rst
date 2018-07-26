@@ -95,6 +95,10 @@ Fork a project::
     # fork to a specific namespace
     fork = project.forks.create({'namespace': 'myteam'})
 
+Get a list of forks for the project::
+
+    forks = project.forks.list()
+
 Create/delete a fork relation between projects (requires admin permissions)::
 
     project.create_fork_relation(source_project.id)
