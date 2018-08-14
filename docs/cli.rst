@@ -69,7 +69,7 @@ parameters. You can override the values in each GitLab server section.
      - Integer
      - Number of seconds to wait for an answer before failing.
    * - ``api_version``
-     - ``3`` ou ``4``
+     - ``3`` or ``4``
      - The API version to use to make queries. Requires python-gitlab >= 1.3.0.
    * - ``per_page``
      - Integer between 1 and 100
