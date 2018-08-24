@@ -30,6 +30,17 @@ Use the ``state`` and ``label`` parameters to filter the results. Use the
     closed_issues = gl.issues.list(state='closed')
     tagged_issues = gl.issues.list(labels=['foo', 'bar'])
 
+.. note::
+
+   It is not possible to edit or delete Issue objects. You need to create a
+   ProjectIssue object to perform changes::
+
+       issue = gl.issues.list()[0]
+       project = gl.projects.get(issue.project_id, lazy=True)
+       editable_issue = project.issues.get(issue.iid, lazy=True)
+       editable_issue.title = updated_title
+       editable_issue.save()
+
 Group issues
 ============
 
@@ -54,6 +65,17 @@ List the group issues::
     issues = group.issues.list(milestone='1.0', state='opened')
     # Order using the order_by and sort parameters
     issues = group.issues.list(order_by='created_at', sort='desc')
+
+.. note::
+
+   It is not possible to edit or delete GroupIssue objects. You need to create
+   a ProjectIssue object to perform changes::
+
+       issue = group.issues.list()[0]
+       project = gl.projects.get(issue.project_id, lazy=True)
+       editable_issue = project.issues.get(issue.iid, lazy=True)
+       editable_issue.title = updated_title
+       editable_issue.save()
 
 Project issues
 ==============

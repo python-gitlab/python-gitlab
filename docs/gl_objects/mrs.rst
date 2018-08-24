@@ -37,12 +37,17 @@ List the merge requests for a group::
     group = gl.groups.get('mygroup')
     mrs = group.mergerequests.list()
 
-To edit or delete a merge request, create a ``ProjectMergeRequest`` object
-first::
+.. note::
 
-    mr = group.mergerequests.list()[0]  # pick the first MR
-    project = gl.projects.get(mr.project_id, lazy=True)
-    editable_mr = project.mergerequests.get(mr.iid)
+   It is not possible to edit or delete ``MergeRequest`` and
+   ``GroupMergeRequest`` objects. You need to create a ``ProjectMergeRequest``
+   object to apply changes::
+
+       mr = group.mergerequests.list()[0]
+       project = gl.projects.get(mr.project_id, lazy=True)
+       editable_mr = project.mergerequests.get(mr.iid, lazy=True)
+       editable_mr.title = updated_title
+       editable_mr.save()
 
 Project merge requests
 ======================
