@@ -41,6 +41,10 @@ class GitlabAuthenticationError(GitlabError):
     pass
 
 
+class RedirectError(GitlabError):
+    pass
+
+
 class GitlabParsingError(GitlabError):
     pass
 

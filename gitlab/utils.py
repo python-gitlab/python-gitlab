@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import six
+
 
 class _StdoutStream(object):
     def __call__(self, chunk):
@@ -31,3 +33,21 @@ def response_content(response, streamed, action, chunk_size):
     for chunk in response.iter_content(chunk_size=chunk_size):
         if chunk:
             action(chunk)
+
+
+def copy_dict(dest, src):
+    for k, v in src.items():
+        if isinstance(v, dict):
+            # Transform dict values to new attributes. For example:
+            # custom_attributes: {'foo', 'bar'} =>
+            #   "custom_attributes['foo']": "bar"
+            for dict_k, dict_v in v.items():
+                dest['%s[%s]' % (k, dict_k)] = dict_v
+        else:
+            dest[k] = v
+
+
+def sanitized_url(url):
+    parsed = six.moves.urllib.parse.urlparse(url)
+    new_path = parsed.path.replace('.', '%2E')
+    return parsed._replace(path=new_path).geturl()

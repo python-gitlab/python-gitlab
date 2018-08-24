@@ -28,6 +28,7 @@ import six
 import gitlab.config
 from gitlab.const import *  # noqa
 from gitlab.exceptions import *  # noqa
+from gitlab import utils  # noqa
 
 __title__ = 'python-gitlab'
 __version__ = '1.5.1'
@@ -38,6 +39,9 @@ __copyright__ = 'Copyright 2013-2018 Gauvain Pocentek'
 
 warnings.filterwarnings('default', category=DeprecationWarning,
                         module='^gitlab')
+
+REDIRECT_MSG = ('python-gitlab detected an http to https redirection. You '
+                'must update your GitLab URL to use https:// to avoid issues.')
 
 
 def _sanitize(value):
@@ -394,6 +398,26 @@ class Gitlab(object):
         else:
             return '%s%s' % (self._url, path)
 
+    def _check_redirects(self, result):
+        # Check the requests history to detect http to https redirections.
+        # If the initial verb is POST, the next request will use a GET request,
+        # leading to an unwanted behaviour.
+        # If the initial verb is PUT, the data will not be send with the next
+        # request.
+        # If we detect a redirection to https with a POST or a PUT request, we
+        # raise an exception with a useful error message.
+        if result.history and self._base_url.startswith('http:'):
+            for item in result.history:
+                if item.status_code not in (301, 302):
+                    continue
+                # GET methods can be redirected without issue
+                if result.request.method == 'GET':
+                    continue
+                # Did we end-up with an https:// URL?
+                location = item.headers.get('Location', None)
+                if location and location.startswith('https://'):
+                    raise RedirectError(REDIRECT_MSG)
+
     def http_request(self, verb, path, query_data={}, post_data=None,
                      streamed=False, files=None, **kwargs):
         """Make an HTTP request to the Gitlab server.
@@ -417,27 +441,11 @@ class Gitlab(object):
             GitlabHttpError: When the return code is not 2xx
         """
 
-        def sanitized_url(url):
-            parsed = six.moves.urllib.parse.urlparse(url)
-            new_path = parsed.path.replace('.', '%2E')
-            return parsed._replace(path=new_path).geturl()
-
         url = self._build_url(path)
 
-        def copy_dict(dest, src):
-            for k, v in src.items():
-                if isinstance(v, dict):
-                    # Transform dict values in new attributes. For example:
-                    # custom_attributes: {'foo', 'bar'} =>
-                    #   custom_attributes['foo']: 'bar'
-                    for dict_k, dict_v in v.items():
-                        dest['%s[%s]' % (k, dict_k)] = dict_v
-                else:
-                    dest[k] = v
-
         params = {}
-        copy_dict(params, query_data)
-        copy_dict(params, kwargs)
+        utils.copy_dict(params, query_data)
+        utils.copy_dict(params, kwargs)
 
         opts = self._get_session_opts(content_type='application/json')
 
@@ -462,7 +470,7 @@ class Gitlab(object):
         req = requests.Request(verb, url, json=json, data=data, params=params,
                                files=files, **opts)
         prepped = self.session.prepare_request(req)
-        prepped.url = sanitized_url(prepped.url)
+        prepped.url = utils.sanitized_url(prepped.url)
         settings = self.session.merge_environment_settings(
             prepped.url, {}, streamed, verify, None)
 
@@ -471,6 +479,8 @@ class Gitlab(object):
 
         while True:
             result = self.session.send(prepped, timeout=timeout, **settings)
+
+            self._check_redirects(result)
 
             if 200 <= result.status_code < 300:
                 return result
