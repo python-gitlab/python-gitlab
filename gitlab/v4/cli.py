@@ -19,6 +19,7 @@
 from __future__ import print_function
 import inspect
 import operator
+import sys
 
 import six
 
@@ -54,11 +55,18 @@ class GitlabCLI(object):
                     self.args[attr_name] = obj.get()
 
     def __call__(self):
+        # Check for a method that matches object + action
+        method = 'do_%s_%s' % (self.what, self.action)
+        if hasattr(self, method):
+            return getattr(self, method)()
+
+        # Fallback to standard actions (get, list, create, ...)
         method = 'do_%s' % self.action
         if hasattr(self, method):
             return getattr(self, method)()
-        else:
-            return self.do_custom()
+
+        # Finally try to find custom methods
+        return self.do_custom()
 
     def do_custom(self):
         in_obj = cli.custom_actions[self.cls_name][self.action][2]
@@ -76,6 +84,20 @@ class GitlabCLI(object):
             return getattr(o, method_name)(**self.args)
         else:
             return getattr(self.mgr, self.action)(**self.args)
+
+    def do_project_export_download(self):
+        try:
+            project = self.gl.projects.get(int(self.args['project_id']),
+                                           lazy=True)
+            data = project.exports.get().download()
+            if hasattr(sys.stdout, 'buffer'):
+                # python3
+                sys.stdout.buffer.write(data)
+            else:
+                sys.stdout.write(data)
+
+        except Exception as e:
+            cli.die("Impossible to download the export", e)
 
     def do_create(self):
         try:
