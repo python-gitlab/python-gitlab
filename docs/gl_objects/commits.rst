@@ -85,7 +85,7 @@ Reference
 
   + :class:`gitlab.v4.objects.ProjectCommitComment`
   + :class:`gitlab.v4.objects.ProjectCommitCommentManager`
-  + :attr:`gitlab.v4.objects.Commit.comments`
+  + :attr:`gitlab.v4.objects.ProjectCommit.comments`
 
 * GitLab API: https://docs.gitlab.com/ce/api/commits.html
 
@@ -116,7 +116,7 @@ Reference
 
   + :class:`gitlab.v4.objects.ProjectCommitStatus`
   + :class:`gitlab.v4.objects.ProjectCommitStatusManager`
-  + :attr:`gitlab.v4.objects.Commit.statuses`
+  + :attr:`gitlab.v4.objects.ProjectCommit.statuses`
 
 * GitLab API: https://docs.gitlab.com/ce/api/commits.html
 

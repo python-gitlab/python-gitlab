@@ -1,3 +1,5 @@
+.. _merge_requests_examples:
+
 ##############
 Merge requests
 ##############

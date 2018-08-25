@@ -1,3 +1,5 @@
+.. _issues_examples:
+
 ######
 Issues
 ######

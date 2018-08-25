@@ -14,6 +14,7 @@ Changes from 1.4 to 1.5
   configuration, epics.
 * The ``GetFromListMixin`` class has been removed. The ``get()`` method is not
   available anymore for the following managers:
+
   - UserKeyManager
   - DeployKeyManager
   - GroupAccessRequestManager
@@ -27,6 +28,7 @@ Changes from 1.4 to 1.5
   - ProjectPipelineJobManager
   - ProjectAccessRequestManager
   - TodoManager
+
 * ``ProjectPipelineJob`` do not heritate from ``ProjectJob`` anymore and thus
   can only be listed.
 

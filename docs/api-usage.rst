@@ -7,7 +7,7 @@ python-gitlab supports both GitLab v3 and v4 APIs. To use the v3 make sure to
 .. note::
 
    To use the v3 make sure to install python-gitlab 1.4. Only the v4 API is
-   documented here. See the documentation of earlier version for the v3 API.
+   documented here. See the documentation of earlier versions for the v3 API.
 
 ``gitlab.Gitlab`` class
 =======================
@@ -88,7 +88,7 @@ Examples:
 You can list the mandatory and optional attributes for object creation and
 update with the manager's ``get_create_attrs()`` and ``get_update_attrs()``
 methods. They return 2 tuples, the first one is the list of mandatory
-attributes, the second one the list of optional attribute:
+attributes, the second one is the list of optional attribute:
 
 .. code-block:: python
 
@@ -206,7 +206,7 @@ through a large number of items:
    for item in items:
        print(item.attributes)
 
-The generator exposes extra listing information as received by the server:
+The generator exposes extra listing information as received from the server:
 
 * ``current_page``: current page number (first page is 1)
 * ``prev_page``: if ``None`` the current page is the first one
@@ -249,7 +249,7 @@ properly closed when you exit a ``with`` block:
 .. warning::
 
    The context manager will also close the custom ``Session`` object you might
-   have used to build a ``Gitlab`` instance.
+   have used to build the ``Gitlab`` instance.
 
 Proxy configuration
 -------------------
