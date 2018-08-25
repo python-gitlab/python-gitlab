@@ -1,6 +1,23 @@
 ChangeLog
 =========
 
+Version 1.6.0_ - 2018-08-25
+---------------------------
+
+* [docs] Don't use hardcoded values for ids
+* [docs] Improve the snippets examples
+* [cli] Output: handle bytes in API responses
+* [cli] Fix the case where we have nothing to print
+* Project import: fix the override_params parameter
+* Support group and global MR listing
+* Implement MR.pipelines()
+* MR: add the squash attribute for create/update
+* Added support for listing forks of a project
+* [docs] Add/update notes about read-only objects
+* Raise an exception on https redirects for PUT/POST
+* [docs] Add a FAQ
+* [cli] Fix the project-export download
+
 Version 1.5.1_ - 2018-06-23
 ---------------------------
 
@@ -643,7 +660,8 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
-.. _1.5.1: https://github.com/python-gitlab/python-gitlab/compare/1.4.0...1.5.1
+.. _1.6.0: https://github.com/python-gitlab/python-gitlab/compare/1.5.1...1.6.0
+.. _1.5.1: https://github.com/python-gitlab/python-gitlab/compare/1.5.0...1.5.1
 .. _1.5.0: https://github.com/python-gitlab/python-gitlab/compare/1.4.0...1.5.0
 .. _1.4.0: https://github.com/python-gitlab/python-gitlab/compare/1.3.0...1.4.0
 .. _1.3.0: https://github.com/python-gitlab/python-gitlab/compare/1.2.0...1.3.0

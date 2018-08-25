@@ -4,6 +4,15 @@ Release notes
 
 This page describes important changes between python-gitlab releases.
 
+Changes from 1.5 to 1.6
+=======================
+
+* When python-gitlab detects HTTP redirections from http to https it will raise
+  a RedirectionError instead of a cryptic error.
+
+  Make sure to use an ``https://`` protocol in your GitLab URL parameter if the
+  server requires it.
+
 Changes from 1.4 to 1.5
 =======================
 
