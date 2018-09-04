@@ -45,10 +45,10 @@ Results can also be sorted using the following parameters:
     projects = gl.projects.list(visibility='public')
 
     # List owned projects
-    projects = gl.projects.owned()
+    projects = gl.projects.list(owned=True)
 
     # List starred projects
-    projects = gl.projects.starred()
+    projects = gl.projects.list(starred=True)
 
     # Search projects
     projects = gl.projects.list(search='keyword')

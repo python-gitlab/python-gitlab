@@ -187,7 +187,7 @@ parameter to get all the items when using listing methods:
 .. code-block:: python
 
    all_groups = gl.groups.list(all=True)
-   all_owned_projects = gl.projects.owned(all=True)
+   all_owned_projects = gl.projects.list(owned=True, all=True)
 
 You can define the ``per_page`` value globally to avoid passing it to every
 ``list()`` method call:
