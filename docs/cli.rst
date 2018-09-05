@@ -78,6 +78,11 @@ parameters. You can override the values in each GitLab server section.
 
 You must define the ``url`` in each GitLab server section.
 
+.. warning::
+
+   If the GitLab server you are using redirects requests from http to https,
+   make sure to use the ``https://`` protocol in the ``url`` definition.
+
 Only one of ``private_token`` or ``oauth_token`` should be defined. If neither
 are defined an anonymous request will be sent to the Gitlab server, with very
 limited permissions.

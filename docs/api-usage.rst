@@ -43,6 +43,11 @@ You can also use configuration files to create ``gitlab.Gitlab`` objects:
 See the :ref:`cli_configuration` section for more information about
 configuration files.
 
+.. warning::
+
+   If the GitLab server you are using redirects requests from http to https,
+   make sure to use the ``https://`` protocol in the URL definition.
+
 Note on password authentication
 -------------------------------
 
