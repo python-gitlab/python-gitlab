@@ -31,6 +31,15 @@ List a group's projects::
 
     projects = group.projects.list()
 
+.. note::
+
+   ``GroupProject`` objects returned by this API call are very limited, and do
+   not provide all the features of ``Project`` objects. If you need to
+   manipulate projects, create a new ``Project`` object::
+
+       first_group_project = group.projects.list()[0]
+       manageable_project = gl.projects.get(first_group_project.id, lazy=True)
+
 You can filter and sort the result using the following parameters:
 
 * ``archived``: limit by archived status
@@ -76,11 +85,14 @@ List the subgroups for a group::
 
     subgroups = group.subgroups.list()
 
-    # The GroupSubgroup objects don't expose the same API as the Group
-    # objects. If you need to manipulate a subgroup as a group, create a new
-    # Group object:
-    real_group = gl.groups.get(subgroup_id, lazy=True)
-    real_group.issues.list()
+.. note::
+
+    The ``GroupSubgroup`` objects don't expose the same API as the ``Group``
+    objects.  If you need to manipulate a subgroup as a group, create a new
+    ``Group`` object::
+
+        real_group = gl.groups.get(subgroup_id, lazy=True)
+        real_group.issues.list()
 
 Group custom attributes
 =======================
