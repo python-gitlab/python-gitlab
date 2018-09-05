@@ -411,7 +411,7 @@ class Gitlab(object):
                 if item.status_code not in (301, 302):
                     continue
                 # GET methods can be redirected without issue
-                if result.request.method == 'GET':
+                if item.request.method == 'GET':
                     continue
                 # Did we end-up with an https:// URL?
                 location = item.headers.get('Location', None)
