@@ -2,7 +2,7 @@
 Getting started with the API
 ############################
 
-python-gitlab supports both GitLab v3 and v4 APIs. To use the v3 make sure to
+python-gitlab supports both GitLab v3 and v4 APIs.
 
 .. note::
 
