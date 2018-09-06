@@ -1965,6 +1965,18 @@ class ProjectTagManager(NoUpdateMixin, RESTManager):
     _create_attrs = (('tag_name', 'ref'), ('message',))
 
 
+class ProjectProtectedTag(ObjectDeleteMixin, RESTObject):
+    _id_attr = 'name'
+    _short_print_attr = 'name'
+
+
+class ProjectProtectedTagManager(NoUpdateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/protected_tags'
+    _obj_cls = ProjectProtectedTag
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('name',), ('create_access_level',))
+
+
 class ProjectMergeRequestApproval(SaveMixin, RESTObject):
     _id_attr = None
 
@@ -3124,6 +3136,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('pagesdomains', 'ProjectPagesDomainManager'),
         ('pipelines', 'ProjectPipelineManager'),
         ('protectedbranches', 'ProjectProtectedBranchManager'),
+        ('protectedtags', 'ProjectProtectedTagManager'),
         ('pipelineschedules', 'ProjectPipelineScheduleManager'),
         ('pushrules', 'ProjectPushRulesManager'),
         ('runners', 'ProjectRunnerManager'),
