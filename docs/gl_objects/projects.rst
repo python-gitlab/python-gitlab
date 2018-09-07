@@ -685,7 +685,7 @@ Get a single protected tag or wildcard protected tag::
 
 Protect a single repository tag or several project repository tags using a wildcard protected tag::
 
-    tag = project.protectedtags.create({'name': 'v*', 'create_access_level': '40'})
+    project.protectedtags.create({'name': 'v*', 'create_access_level': '40'})
 
 Unprotect the given protected tag or wildcard protected tag.::
 
