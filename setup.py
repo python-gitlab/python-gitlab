@@ -20,7 +20,7 @@ setup(name='python-gitlab',
       author_email='gauvain@pocentek.net',
       license='LGPLv3',
       url='https://github.com/python-gitlab/python-gitlab',
-      packages=find_packages(),
+      packages=find_packages(exclude=["*.tests"]),
       install_requires=['requests>=2.4.2', 'six'],
       entry_points={
           'console_scripts': [
