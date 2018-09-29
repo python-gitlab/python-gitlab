@@ -1,19 +1,20 @@
 python-gitlab docker image
 ==========================
 
-Dockerfile contributed by *oupala*:
-https://github.com/python-gitlab/python-gitlab/issues/295
-
 How to build
 ------------
 
-``docker build -t me/python-gitlab:VERSION .``
+``docker build -t python-gitlab:VERSION .``
 
 How to use
 ----------
 
-``docker run -it -v /path/to/python-gitlab.cfg:/python-gitlab.cfg python-gitlab <command> ...``
+``docker run -it --rm  -e GITLAB_PRIVATE_TOKEN=<your token> =/python-gitlab.cfg python-gitlab <command> ...``
 
-To make things easier you can create a shell alias:
+To change the endpoint, add `-e GITLAB_URL=<your url>`
 
-``alias gitlab='docker run --rm -it -v /path/to/python-gitlab.cfg:/python-gitlab.cfg python-gitlab``
+
+Bring your own config file:
+``docker run -it --rm -v /path/to/python-gitlab.cfg:/python-gitlab.cfg -e GITLAB_CFG=/python-gitlab.cfg python-gitlab <command> ...``
+
+
