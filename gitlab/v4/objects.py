@@ -706,6 +706,14 @@ class GroupMemberManager(CRUDMixin, RESTManager):
     _update_attrs = (('access_level', ), ('expires_at', ))
 
 
+class GroupMemberAll(RESTObject):
+    pass
+
+class GroupMemberAllManager(ListMixin, RESTManager):
+    _path = '/groups/%(group_id)s/members/all'
+    _obj_cls = GroupMemberAll
+    _from_parent_attrs = {'group_id': 'id'}
+
 class GroupMergeRequest(RESTObject):
     pass
 
@@ -850,6 +858,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('epics', 'GroupEpicManager'),
         ('issues', 'GroupIssueManager'),
         ('members', 'GroupMemberManager'),
+        ('membersAll', 'GroupMemberAllManager'),
         ('mergerequests', 'GroupMergeRequestManager'),
         ('milestones', 'GroupMilestoneManager'),
         ('notificationsettings', 'GroupNotificationSettingsManager'),
