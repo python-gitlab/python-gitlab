@@ -709,10 +709,12 @@ class GroupMemberManager(CRUDMixin, RESTManager):
 class GroupMemberAll(RESTObject):
     pass
 
+
 class GroupMemberAllManager(ListMixin, RESTManager):
     _path = '/groups/%(group_id)s/members/all'
     _obj_cls = GroupMemberAll
     _from_parent_attrs = {'group_id': 'id'}
+
 
 class GroupMergeRequest(RESTObject):
     pass
