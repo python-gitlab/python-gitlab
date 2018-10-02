@@ -98,7 +98,7 @@ def _get_base_parser(add_help=True):
                               "will be used."),
                         required=False)
     parser.add_argument("-o", "--output",
-                        help=("Output format (v4 only): json|legacy|yaml"),
+                        help="Output format (v4 only): json|legacy|yaml",
                         required=False,
                         choices=['json', 'legacy', 'yaml'],
                         default="legacy")
@@ -135,6 +135,10 @@ def main():
         exit(0)
 
     parser = _get_base_parser(add_help=False)
+    if "--help" in sys.argv or "-h" in sys.argv:
+        parser.print_help()
+        exit(0)
+
     # This first parsing step is used to find the gitlab config to use, and
     # load the propermodule (v3 or v4) accordingly. At that point we don't have
     # any subparser setup
