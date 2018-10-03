@@ -17,6 +17,12 @@ Python GitLab
 
 It supports the v4 API of GitLab, and provides a CLI tool (``gitlab``).
 
+Maintainer(s) wanted
+====================
+
+We are looking for neww maintainer(s) for this project. See
+https://github.com/python-gitlab/python-gitlab/issues/596.
+
 Installation
 ============
 
