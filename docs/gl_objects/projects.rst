@@ -657,3 +657,36 @@ Edit project push rules::
 Delete project push rules::
 
     pr.delete()
+
+Project protected tags
+==================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectProtectedTag`
+  + :class:`gitlab.v4.objects.ProjectProtectedTagManager`
+  + :attr:`gitlab.v4.objects.Project.protectedtags`
+
+* GitLab API: https://docs.gitlab.com/ce/api/protected_tags.html
+
+Examples
+---------
+
+Get a list of protected tags from a project::
+
+    protected_tags = project.protectedtags.list()
+
+Get a single protected tag or wildcard protected tag::
+
+    protected_tag = project.protectedtags.get('v*')
+
+Protect a single repository tag or several project repository tags using a wildcard protected tag::
+
+    project.protectedtags.create({'name': 'v*', 'create_access_level': '40'})
+
+Unprotect the given protected tag or wildcard protected tag.::
+
+    protected_tag.delete()
