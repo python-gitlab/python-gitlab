@@ -1,10 +1,10 @@
-FROM python:slim
+FROM python:alpine
 
-# Install python-gitlab
 RUN pip install --upgrade python-gitlab
 
-# Copy sample configuration file
-COPY python-gitlab.cfg /
+COPY entrypoint-python-gitlab.sh /usr/local/bin/.
 
-# Define the entrypoint that enable a configuration file
-ENTRYPOINT ["gitlab", "--config-file", "/python-gitlab.cfg"]
+WORKDIR /src
+
+ENTRYPOINT ["entrypoint-python-gitlab.sh"]
+CMD ["--version"]
