@@ -493,7 +493,7 @@ Add a project member::
 
 Modify a project member (change the access level)::
 
-    member.access_level = gitlab.MASTER_ACCESS
+    member.access_level = gitlab.MAINTAINER_ACCESS
     member.save()
 
 Remove a member from the project team::

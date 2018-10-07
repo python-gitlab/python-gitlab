@@ -32,7 +32,7 @@ Create a protected branch::
     p_branch = project.protectedbranches.create({
         'name': '*-stable',
         'merge_access_level': gitlab.DEVELOPER_ACCESS,
-        'push_access_level': gitlab.MASTER_ACCESS
+        'push_access_level': gitlab.MAINTAINER_ACCESS
     })
 
 Delete a protected branch::
