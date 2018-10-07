@@ -54,6 +54,13 @@ Documentation
 The full documentation for CLI and API is available on `readthedocs
 <http://python-gitlab.readthedocs.org/en/stable/>`_.
 
+Build the docs
+--------------
+You can build the documentation using ``sphinx``::
+
+    pip install sphinx
+    python setup.py build_sphinx
+
 
 Contributing
 ============
