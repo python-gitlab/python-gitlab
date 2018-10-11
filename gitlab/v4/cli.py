@@ -302,14 +302,24 @@ class JSONPrinter(object):
 
 class YAMLPrinter(object):
     def display(self, d, **kwargs):
-        import yaml  # noqa
-        print(yaml.safe_dump(d, default_flow_style=False))
+        try:
+            import yaml  # noqa
+            print(yaml.safe_dump(d, default_flow_style=False))
+        except ImportError:
+            exit("PyYaml is not installed.\n"
+                 "Install it with `pip install PyYaml` "
+                 "to use the yaml output feature")
 
     def display_list(self, data, fields, **kwargs):
-        import yaml  # noqa
-        print(yaml.safe_dump(
-            [get_dict(obj, fields) for obj in data],
-            default_flow_style=False))
+        try:
+            import yaml  # noqa
+            print(yaml.safe_dump(
+                [get_dict(obj, fields) for obj in data],
+                default_flow_style=False))
+        except ImportError:
+            exit("PyYaml is not installed.\n"
+                 "Install it with `pip install PyYaml` "
+                 "to use the yaml output feature")
 
 
 class LegacyPrinter(object):

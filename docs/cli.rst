@@ -157,6 +157,11 @@ These options must be defined before the mandatory arguments.
 ``--output``, ``-o``
     Output format. Defaults to a custom format. Can also be ``yaml`` or ``json``.
 
+    **Notice:**
+
+        The `PyYAML package <https://pypi.org/project/PyYAML/>`_ is required to use the yaml output option.
+        You need to install it separately using ``pip install PyYAML``
+
 ``--fields``, ``-f``
     Comma-separated list of fields to display (``yaml`` and ``json`` output
     formats only).  If not used, all the object fields are displayed.
