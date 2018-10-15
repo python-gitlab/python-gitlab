@@ -20,7 +20,7 @@ It supports the v4 API of GitLab, and provides a CLI tool (``gitlab``).
 Maintainer(s) wanted
 ====================
 
-We are looking for neww maintainer(s) for this project. See
+We are looking for new maintainer(s) for this project. See
 https://github.com/python-gitlab/python-gitlab/issues/596.
 
 Installation
@@ -40,6 +40,27 @@ Install with pip
 .. code-block:: console
 
    pip install python-gitlab
+
+
+Using the python-gitlab docker image
+====================================
+
+How to build
+------------
+
+``docker build -t python-gitlab:TAG .``
+
+How to use
+----------
+
+``docker run -it --rm -e GITLAB_PRIVATE_TOKEN=<your token> -v /path/to/python-gitlab.cfg:/python-gitlab.cfg python-gitlab <command> ...``
+
+To change the GitLab URL, use `-e GITLAB_URL=<your url>`
+
+
+Bring your own config file:
+``docker run -it --rm -v /path/to/python-gitlab.cfg:/python-gitlab.cfg -e GITLAB_CFG=/python-gitlab.cfg python-gitlab <command> ...``
+
 
 Bug reports
 ===========
