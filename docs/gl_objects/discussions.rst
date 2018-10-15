@@ -48,7 +48,7 @@ List the discussions for a resource (issue, merge request, snippet or commit)::
 
 Get a single discussion::
 
-    discussion = resource.discussion.get(discussion_id)
+    discussion = resource.discussions.get(discussion_id)
 
 You can access the individual notes in the discussion through the ``notes``
 attribute. It holds a list of notes in chronological order::
@@ -68,7 +68,7 @@ You can add notes to existing discussions::
 
 You can get and update a single note using the ``*DiscussionNote`` resources::
 
-    discussion = resource.discussion.get(discussion_id)
+    discussion = resource.discussions.get(discussion_id)
     # Get the latest note's id
     note_id = discussion.attributes['note'][-1]['id']
     last_note = discussion.notes.get(note_id)
@@ -77,7 +77,7 @@ You can get and update a single note using the ``*DiscussionNote`` resources::
 
 Create a new discussion::
 
-    discussion = resource.discussion.create({'body': 'First comment of discussion'})
+    discussion = resource.discussions.create({'body': 'First comment of discussion'})
 
 You can comment on merge requests and commit diffs. Provide the ``position``
 dict to define where the comment should appear in the diff::
