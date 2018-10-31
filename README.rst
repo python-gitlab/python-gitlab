@@ -10,6 +10,9 @@
 .. image:: https://img.shields.io/pypi/pyversions/python-gitlab.svg
    :target: https://pypi.python.org/pypi/python-gitlab
 
+.. image:: https://img.shields.io/gitter/room/python-gitlab/Lobby.svg
+   :target: https://gitter.im/python-gitlab/Lobby
+
 Python GitLab
 =============
 
