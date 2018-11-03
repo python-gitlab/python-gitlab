@@ -390,7 +390,7 @@ data = {
     ]
 }
 admin_project.commits.create(data)
-assert('---' in admin_project.commits.list()[0].diff()[0]['diff'])
+assert('@@' in admin_project.commits.list()[0].diff()[0]['diff'])
 
 # commit status
 commit = admin_project.commits.list()[0]
