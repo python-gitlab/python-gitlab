@@ -88,6 +88,8 @@ class TestConfigParser(unittest.TestCase):
         fd = six.StringIO(no_default_config)
         fd.close = mock.Mock(return_value=None)
         m_open.return_value = fd
+        path_exists.return_value = True
+        config.GitlabConfigParser('there')
         self.assertRaises(config.GitlabIDError, config.GitlabConfigParser)
 
         fd = six.StringIO(valid_config)
