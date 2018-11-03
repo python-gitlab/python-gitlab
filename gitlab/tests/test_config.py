@@ -79,7 +79,7 @@ class TestConfigParser(unittest.TestCase):
     @mock.patch('os.path.exists')
     def test_missing_config(self, path_exists):
         path_exists.return_value = False
-        with self.assertRaises(config.GitlabConfigMissingError) as cme:
+        with self.assertRaises(config.GitlabConfigMissingError):
             config.GitlabConfigParser('test')
 
     @mock.patch('os.path.exists')
