@@ -539,6 +539,15 @@ assert(isinstance(issue1.user_agent_detail(), dict))
 assert(issue1.user_agent_detail()['user_agent'])
 assert(issue1.participants())
 
+# issues labels and events
+label2 = admin_project.labels.create({'name': 'label2', 'color': '#aabbcc'})
+issue1.labels = ['label2']
+issue1.save()
+events = issue1.resourcelabelevents.list()
+assert(events)
+event = issue1.resourcelabelevents.get(events[0].id)
+assert(event)
+
 discussion = issue1.discussions.create({'body': 'Discussion body'})
 assert(len(issue1.discussions.list()) == 1)
 d_note = discussion.notes.create({'body': 'first note'})
@@ -627,6 +636,14 @@ assert(discussion.attributes['notes'][-1]['body'] == 'updated body')
 d_note_from_get.delete()
 discussion = mr.discussions.get(discussion.id)
 assert(len(discussion.attributes['notes']) == 1)
+
+# mr labels and events
+mr.labels = ['label2']
+mr.save()
+events = mr.resourcelabelevents.list()
+assert(events)
+event = mr.resourcelabelevents.get(events[0].id)
+assert(event)
 
 # basic testing: only make sure that the methods exist
 mr.commits()

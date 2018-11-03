@@ -662,9 +662,22 @@ class GroupEpicIssueManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin,
         return self._obj_cls(self, server_data)
 
 
+class GroupEpicResourceLabelEvent(RESTObject):
+    pass
+
+
+class GroupEpicResourceLabelEventManager(RetrieveMixin, RESTManager):
+    _path = ('/groups/%(group_id)s/epics/%(epic_id)s/resource_label_events')
+    _obj_cls = GroupEpicResourceLabelEvent
+    _from_parent_attrs = {'group_id': 'group_id', 'epic_id': 'id'}
+
+
 class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
     _id_attr = 'iid'
-    _managers = (('issues', 'GroupEpicIssueManager'),)
+    _managers = (
+        ('issues', 'GroupEpicIssueManager'),
+        ('resourcelabelevents', 'GroupEpicResourceLabelEventManager'),
+    )
 
 
 class GroupEpicManager(CRUDMixin, RESTManager):
@@ -1803,6 +1816,17 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin,
         return source_issue, target_issue
 
 
+class ProjectIssueResourceLabelEvent(RESTObject):
+    pass
+
+
+class ProjectIssueResourceLabelEventManager(RetrieveMixin, RESTManager):
+    _path = ('/projects/%(project_id)s/issues/%(issue_iid)s'
+             '/resource_label_events')
+    _obj_cls = ProjectIssueResourceLabelEvent
+    _from_parent_attrs = {'project_id': 'project_id', 'issue_iid': 'iid'}
+
+
 class ProjectIssue(UserAgentDetailMixin, SubscribableMixin, TodoMixin,
                    TimeTrackingMixin, ParticipantsMixin, SaveMixin,
                    ObjectDeleteMixin, RESTObject):
@@ -1813,6 +1837,7 @@ class ProjectIssue(UserAgentDetailMixin, SubscribableMixin, TodoMixin,
         ('discussions', 'ProjectIssueDiscussionManager'),
         ('links', 'ProjectIssueLinkManager'),
         ('notes', 'ProjectIssueNoteManager'),
+        ('resourcelabelevents', 'ProjectIssueResourceLabelEventManager'),
     )
 
     @cli.register_custom_action('ProjectIssue', ('to_project_id',))
@@ -2086,6 +2111,17 @@ class ProjectMergeRequestDiscussionManager(RetrieveMixin, CreateMixin,
     _update_attrs = (('resolved',), tuple())
 
 
+class ProjectMergeRequestResourceLabelEvent(RESTObject):
+    pass
+
+
+class ProjectMergeRequestResourceLabelEventManager(RetrieveMixin, RESTManager):
+    _path = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s'
+             '/resource_label_events')
+    _obj_cls = ProjectMergeRequestResourceLabelEvent
+    _from_parent_attrs = {'project_id': 'project_id', 'mr_iid': 'iid'}
+
+
 class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                           ParticipantsMixin, SaveMixin, ObjectDeleteMixin,
                           RESTObject):
@@ -2097,6 +2133,8 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
         ('diffs', 'ProjectMergeRequestDiffManager'),
         ('discussions', 'ProjectMergeRequestDiscussionManager'),
         ('notes', 'ProjectMergeRequestNoteManager'),
+        ('resourcelabelevents',
+         'ProjectMergeRequestResourceLabelEventManager'),
     )
 
     @cli.register_custom_action('ProjectMergeRequest')
