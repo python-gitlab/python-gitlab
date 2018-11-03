@@ -37,10 +37,27 @@ class GitlabDataError(ConfigError):
     pass
 
 
+class GitlabConfigMissingError(ConfigError):
+    pass
+
+
 class GitlabConfigParser(object):
     def __init__(self, gitlab_id=None, config_files=None):
         self.gitlab_id = gitlab_id
         _files = config_files or _DEFAULT_FILES
+        file_exist = False
+        for file in _files:
+            if os.path.exists(file):
+                file_exist = True
+        if not file_exist:
+            raise GitlabConfigMissingError(
+                "Config file not found. \nPlease create one in "
+                "one of the following locations: {} \nor "
+                "specify a config file using the '-c' parameter.".format(
+                    ", ".join(_DEFAULT_FILES)
+                )
+            )
+
         self._config = configparser.ConfigParser()
         self._config.read(_files)
 
