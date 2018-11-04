@@ -76,11 +76,20 @@ per_page = 200
 
 
 class TestConfigParser(unittest.TestCase):
+    @mock.patch('os.path.exists')
+    def test_missing_config(self, path_exists):
+        path_exists.return_value = False
+        with self.assertRaises(config.GitlabConfigMissingError):
+            config.GitlabConfigParser('test')
+
+    @mock.patch('os.path.exists')
     @mock.patch('six.moves.builtins.open')
-    def test_invalid_id(self, m_open):
+    def test_invalid_id(self, m_open, path_exists):
         fd = six.StringIO(no_default_config)
         fd.close = mock.Mock(return_value=None)
         m_open.return_value = fd
+        path_exists.return_value = True
+        config.GitlabConfigParser('there')
         self.assertRaises(config.GitlabIDError, config.GitlabConfigParser)
 
         fd = six.StringIO(valid_config)
@@ -90,12 +99,15 @@ class TestConfigParser(unittest.TestCase):
                           config.GitlabConfigParser,
                           gitlab_id='not_there')
 
+    @mock.patch('os.path.exists')
     @mock.patch('six.moves.builtins.open')
-    def test_invalid_data(self, m_open):
+    def test_invalid_data(self, m_open, path_exists):
         fd = six.StringIO(missing_attr_config)
         fd.close = mock.Mock(return_value=None,
                              side_effect=lambda: fd.seek(0))
         m_open.return_value = fd
+        path_exists.return_value = True
+
         config.GitlabConfigParser('one')
         config.GitlabConfigParser('one')
         self.assertRaises(config.GitlabDataError, config.GitlabConfigParser,
@@ -107,11 +119,13 @@ class TestConfigParser(unittest.TestCase):
         self.assertEqual('Unsupported per_page number: 200',
                          emgr.exception.args[0])
 
+    @mock.patch('os.path.exists')
     @mock.patch('six.moves.builtins.open')
-    def test_valid_data(self, m_open):
+    def test_valid_data(self, m_open, path_exists):
         fd = six.StringIO(valid_config)
         fd.close = mock.Mock(return_value=None)
         m_open.return_value = fd
+        path_exists.return_value = True
 
         cp = config.GitlabConfigParser()
         self.assertEqual("one", cp.gitlab_id)

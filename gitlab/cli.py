@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
+
 import argparse
 import functools
 import importlib
@@ -143,9 +144,13 @@ def main():
     # load the propermodule (v3 or v4) accordingly. At that point we don't have
     # any subparser setup
     (options, args) = parser.parse_known_args(sys.argv)
-
-    config = gitlab.config.GitlabConfigParser(options.gitlab,
-                                              options.config_file)
+    try:
+        config = gitlab.config.GitlabConfigParser(
+            options.gitlab,
+            options.config_file
+        )
+    except gitlab.config.ConfigError as e:
+        sys.exit(e)
     cli_module = importlib.import_module('gitlab.v%s.cli' % config.api_version)
 
     # Now we build the entire set of subcommands and do the complete parsing
