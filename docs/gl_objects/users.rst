@@ -190,7 +190,7 @@ are admin.
 
 * GitLab API: https://docs.gitlab.com/ce/api/users.html#list-all-gpg-keys
 
-Exemples
+Examples
 --------
 
 List GPG keys for a user::
@@ -232,7 +232,7 @@ are admin.
 
 * GitLab API: https://docs.gitlab.com/ce/api/users.html#list-ssh-keys
 
-Exemples
+Examples
 --------
 
 List SSH keys for a user::
@@ -270,7 +270,7 @@ are admin.
 
 * GitLab API: https://docs.gitlab.com/ce/api/users.html#list-emails
 
-Exemples
+Examples
 --------
 
 List emails for a user::
