@@ -62,7 +62,7 @@ Update a group::
 
 Remove a group::
 
-    gl.group.delete(group_id)
+    gl.groups.delete(group_id)
     # or
     group.delete()
 
