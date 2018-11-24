@@ -478,6 +478,11 @@ List the project members::
 
     members = project.members.list()
 
+List the project members recursively (including inherited members through
+ancestor groups)::
+
+    members = project.members.all(all=True)
+
 Search project members matching a query string::
 
     members = project.members.list(query='bar')
