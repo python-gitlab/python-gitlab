@@ -89,6 +89,31 @@ testcase "merge request validation" '
         --iid "$MR_ID" >/dev/null 2>&1
 '
 
+# Test project variables
+testcase "create project variable" '
+    OUTPUT=$(GITLAB -v project-variable create --project-id $PROJECT_ID \
+        --key junk --value car)
+'
+
+testcase "get project variable" '
+    OUTPUT=$(GITLAB -v project-variable get --project-id $PROJECT_ID \
+        --key junk)
+'
+
+testcase "update project variable" '
+    OUTPUT=$(GITLAB -v project-variable update --project-id $PROJECT_ID \
+        --key junk --value bus)
+'
+
+testcase "list project variable" '
+    OUTPUT=$(GITLAB -v project-variable list --project-id $PROJECT_ID)
+'
+
+testcase "delete project variable" '
+    OUTPUT=$(GITLAB -v project-variable delete --project-id $PROJECT_ID \
+        --key junk)
+'
+
 testcase "branch deletion" '
     GITLAB project-branch delete --project-id "$PROJECT_ID" \
         --name branch1 >/dev/null 2>&1
