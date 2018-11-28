@@ -2,6 +2,9 @@
 Labels
 ######
 
+Project labels
+==============
+
 Reference
 ---------
 
@@ -48,3 +51,39 @@ Manage labels in issues and merge requests::
                              'labels': ['foo']})
     issue.labels.append('bar')
     issue.save()
+
+Label events
+============
+
+Resource label events keep track about who, when, and which label was added or
+removed to an issuable.
+
+Group epic label events are only available in the EE edition.
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectIssueResourceLabelEvent`
+  + :class:`gitlab.v4.objects.ProjectIssueResourceLabelEventManager`
+  + :attr:`gitlab.v4.objects.ProjectIssue.resourcelabelevents`
+  + :class:`gitlab.v4.objects.ProjectMergeRequestResourceLabelEvent`
+  + :class:`gitlab.v4.objects.ProjectMergeRequestResourceLabelEventManager`
+  + :attr:`gitlab.v4.objects.ProjectMergeRequest.resourcelabelevents`
+  + :class:`gitlab.v4.objects.GroupEpicResourceLabelEvent`
+  + :class:`gitlab.v4.objects.GroupEpicResourceLabelEventManager`
+  + :attr:`gitlab.v4.objects.GroupEpic.resourcelabelevents`
+
+* GitLab API: https://docs.gitlab.com/ee/api/resource_label_events.html
+
+Examples
+--------
+
+Get the events for a resource (issue, merge request or epic)::
+
+    events = resource.resourcelabelevents.list()
+
+Get a specific event for a resource::
+
+    event = resource.resourcelabelevents.get(event_id)

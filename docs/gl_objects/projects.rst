@@ -664,7 +664,7 @@ Delete project push rules::
     pr.delete()
 
 Project protected tags
-==================
+======================
 
 Reference
 ---------
