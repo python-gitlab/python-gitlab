@@ -28,7 +28,12 @@ class GitlabError(Exception):
         # Full http response
         self.response_body = response_body
         # Parsed error message from gitlab
-        self.error_message = error_message
+        try:
+            # if we receive str/bytes we try to convert to unicode/str to have
+            # consistent message types (see #616)
+            self.error_message = error_message.decode()
+        except Exception:
+            self.error_message = error_message
 
     def __str__(self):
         if self.response_code is not None:

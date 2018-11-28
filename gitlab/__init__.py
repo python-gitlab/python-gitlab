@@ -490,10 +490,14 @@ class Gitlab(object):
                 time.sleep(wait_time)
                 continue
 
+            error_message = result.content
             try:
-                error_message = result.json()['message']
+                error_json = result.json()
+                for k in ('message', 'error'):
+                    if k in error_json:
+                        error_message = error_json[k]
             except (KeyError, ValueError, TypeError):
-                error_message = result.content
+                pass
 
             if result.status_code == 401:
                 raise GitlabAuthenticationError(
