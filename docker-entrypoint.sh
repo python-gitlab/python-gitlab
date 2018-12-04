@@ -18,4 +18,4 @@ http_username = ${GITLAB_HTTP_USERNAME}
 http_password = ${GITLAB_HTTP_PASSWORD}
 EOF
 
-exec gitlab --config-file "${GITLAB_CFG}" $@
+exec gitlab --config-file "${GITLAB_CFG}" "$@"
