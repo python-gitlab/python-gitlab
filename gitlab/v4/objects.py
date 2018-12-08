@@ -3117,7 +3117,10 @@ class ProjectProtectedBranchManager(NoUpdateMixin, RESTManager):
     _path = '/projects/%(project_id)s/protected_branches'
     _obj_cls = ProjectProtectedBranch
     _from_parent_attrs = {'project_id': 'id'}
-    _create_attrs = (('name', ), ('push_access_level', 'merge_access_level'))
+    _create_attrs = (('name', ),
+                     ('push_access_level', 'merge_access_level',
+                      'unprotect_access_level', 'allowed_to_push',
+                      'allowed_to_merge', 'allowed_to_unprotect'))
 
 
 class ProjectRunner(ObjectDeleteMixin, RESTObject):
