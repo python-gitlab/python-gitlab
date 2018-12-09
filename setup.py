@@ -11,11 +11,13 @@ def get_version():
             if line.startswith('__version__'):
                 return eval(line.split('=')[-1])
 
+with open("README.rst", "r") as readme_file:
+    readme = readme_file.read()
 
 setup(name='python-gitlab',
       version=get_version(),
       description='Interact with GitLab API',
-      long_description='Interact with GitLab API',
+      long_description=readme,
       author='Gauvain Pocentek',
       author_email='gauvain@pocentek.net',
       license='LGPLv3',
