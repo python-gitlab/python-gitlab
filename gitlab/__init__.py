@@ -31,7 +31,7 @@ from gitlab.exceptions import *  # noqa
 from gitlab import utils  # noqa
 
 __title__ = 'python-gitlab'
-__version__ = '1.6.0'
+__version__ = '1.7.0'
 __author__ = 'Gauvain Pocentek'
 __email__ = 'gauvain@pocentek.net'
 __license__ = 'LGPL3'
