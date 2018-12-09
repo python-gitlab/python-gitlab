@@ -1,6 +1,31 @@
 ChangeLog
 =========
 
+Version 1.7.0_ - 2018-12-09
+---------------------------
+
+* [docs] Fix the owned/starred usage documentation
+* [docs] Add a warning about http to https redirects
+* Fix the https redirection test
+* [docs] Add a note about GroupProject limited API
+* Add missing comma in ProjectIssueManager _create_attrs
+* More flexible docker image
+* Add project protected tags management
+* [cli] Print help and usage without config file
+* Rename MASTER_ACCESS to MAINTAINER_ACCESS
+* [docs] Add docs build information
+* Use docker image with current sources
+* [docs] Add PyYAML requirement notice
+* Add Gitter badge to README
+* [docs] Add an example of pipeline schedule vars listing
+* [cli] Exit on config parse error, instead of crashing
+* Add support for resource label events
+* [docs] Fix the milestone filetring doc (iid -> iids)
+* [docs] Fix typo in custom attributes example
+* Improve error message handling in exceptions
+* Add support for members all() method
+* Add access control options to protected branch creation
+
 Version 1.6.0_ - 2018-08-25
 ---------------------------
 
@@ -660,6 +685,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
+.. _1.7.0: https://github.com/python-gitlab/python-gitlab/compare/1.6.0...1.7.0
 .. _1.6.0: https://github.com/python-gitlab/python-gitlab/compare/1.5.1...1.6.0
 .. _1.5.1: https://github.com/python-gitlab/python-gitlab/compare/1.5.0...1.5.1
 .. _1.5.0: https://github.com/python-gitlab/python-gitlab/compare/1.4.0...1.5.0
