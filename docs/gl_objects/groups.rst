@@ -164,6 +164,11 @@ List group members::
 
     members = group.members.list()
 
+List the group members recursively (including inherited members through
+ancestor groups)::
+
+    members = group.members.all(all=True)
+
 Get a group member::
 
     members = group.members.get(member_id)
