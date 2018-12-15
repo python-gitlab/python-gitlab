@@ -208,7 +208,7 @@ class CreateMixin(object):
 class UpdateMixin(object):
     def _check_missing_update_attrs(self, data):
         required, optional = self.get_update_attrs()
-        # Remove the id field from the required list as it has been moved to the http path.
+        # Remove the id field from the required list as it was previously moved to the http path.
         required = tuple(filter(lambda k: k != self._obj_cls._id_attr, required))
         missing = []
         for attr in required:
