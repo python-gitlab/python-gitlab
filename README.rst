@@ -91,6 +91,9 @@ You can contribute to the project in multiple ways:
 * Add unit and functional tests
 * Everything else you can think of
 
+We prefer commit messages to be formatted using the `conventional-changelog <https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-guidelines>`_.
+This leads to more readable messages that are easy to follow when looking through the project history.
+
 Provide your patches as github pull requests. Thanks!
 
 Running unit tests
