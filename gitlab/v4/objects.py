@@ -237,7 +237,7 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
             GitlabListError: If the server cannot perform the request
         """
 
-        path = '/users/%s/projects' % self._parent.id
+        path = '/users/%s/projects' % kwargs['user_id']
         return ListMixin.list(self, path=path, **kwargs)
 
 
