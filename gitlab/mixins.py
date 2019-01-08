@@ -532,7 +532,7 @@ class TimeTrackingMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
-        path = '%s/%s/rest_time_estimate' % (self.manager.path, self.get_id())
+        path = '%s/%s/reset_time_estimate' % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'),
