@@ -798,7 +798,7 @@ for i in range(20, 40):
     except gitlab.GitlabCreateError as e:
         error_message = e.error_message
         break
-assert 'Retry later' in error_message.decode()
+assert 'Retry later' in error_message
 [current_project.delete() for current_project in projects]
 settings.throttle_authenticated_api_enabled = False
 settings.save()
