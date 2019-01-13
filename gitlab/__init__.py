@@ -477,6 +477,10 @@ class Gitlab(object):
         # obey the rate limit by default
         obey_rate_limit = kwargs.get("obey_rate_limit", True)
 
+        # set max_retries to 10 by default, disable by setting it to -1
+        max_retries = kwargs.get("max_retries", 10)
+        cur_retries = 0
+
         while True:
             result = self.session.send(prepped, timeout=timeout, **settings)
 
@@ -486,9 +490,13 @@ class Gitlab(object):
                 return result
 
             if 429 == result.status_code and obey_rate_limit:
-                wait_time = int(result.headers["Retry-After"])
-                time.sleep(wait_time)
-                continue
+                if max_retries == -1 or cur_retries < max_retries:
+                    wait_time = 2 ** cur_retries * 0.1
+                    if "Retry-After" in result.headers:
+                        wait_time = int(result.headers["Retry-After"])
+                    cur_retries += 1
+                    time.sleep(wait_time)
+                    continue
 
             error_message = result.content
             try:

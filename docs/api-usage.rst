@@ -299,7 +299,9 @@ Rate limits
 
 python-gitlab obeys the rate limit of the GitLab server by default.  On
 receiving a 429 response (Too Many Requests), python-gitlab sleeps for the
-amount of time in the Retry-After header that GitLab sends back.
+amount of time in the Retry-After header that GitLab sends back.  If GitLab
+does not return a response with the Retry-After header, python-gitlab will
+perform an exponential backoff.
 
 If you don't want to wait, you can disable the rate-limiting feature, by
 supplying the ``obey_rate_limit`` argument.
@@ -312,6 +314,18 @@ supplying the ``obey_rate_limit`` argument.
    gl = gitlab.gitlab(url, token, api_version=4)
    gl.projects.list(all=True, obey_rate_limit=False)
 
+If you do not disable the rate-limiting feature, you can supply a custom value
+for ``max_retries``; by default, this is set to 10. To retry without bound when
+throttled, you can set this parameter to -1. This parameter is ignored if
+``obey_rate_limit`` is set to ``False``.
+
+.. code-block:: python
+
+   import gitlab
+   import requests
+
+   gl = gitlab.gitlab(url, token, api_version=4)
+   gl.projects.list(all=True, max_retries=12)
 
 .. warning::
 
