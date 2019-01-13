@@ -118,6 +118,25 @@ Some objects also provide managers to access related GitLab resources:
    project = gl.projects.get(1)
    issues = project.issues.list()
 
+python-gitlab allows to send any data to the GitLab server when making queries.
+In case of invalid or missing arguments python-gitlab will raise an exception
+with the GitLab server error message:
+
+.. code-block:: python
+
+   >>> gl.projects.list(sort='invalid value')
+   ...
+   GitlabListError: 400: sort does not have a valid value
+
+You can use the ``query_parameters`` argument to send arguments that would
+conflict with python or python-gitlab when using them as kwargs:
+
+.. code-block:: python
+
+   gl.user_activities.list(from='2019-01-01')  ## invalid
+
+   gl.user_activities.list(query_parameters={'from': '2019-01-01'})  # OK
+
 Gitlab Objects
 ==============
 

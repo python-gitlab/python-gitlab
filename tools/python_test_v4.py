@@ -773,7 +773,7 @@ snippets = gl.snippets.list(all=True)
 assert(len(snippets) == 0)
 
 # user activities
-gl.user_activities.list()
+gl.user_activities.list(query_parameters={'from': '2019-01-01'})
 
 # events
 gl.events.list()
