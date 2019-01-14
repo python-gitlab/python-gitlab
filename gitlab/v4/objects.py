@@ -2132,6 +2132,47 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
         path = '%s/%s/changes' % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)
 
+    @cli.register_custom_action('ProjectMergeRequest', tuple(), ('sha'))
+    @exc.on_http_error(exc.GitlabMRApprovalError)
+    def approve(self, sha=None, **kwargs):
+        """Approve the merge request.
+
+        Args:
+            sha (str): Head SHA of MR
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabMRApprovalError: If the approval failed
+        """
+        path = '%s/%s/approve' % (self.manager.path, self.get_id())
+        data = {}
+        if sha:
+            data['sha'] = sha
+
+        server_data = self.manager.gitlab.http_post(path, post_data=data,
+                                                    **kwargs)
+        self._update_attrs(server_data)
+
+    @cli.register_custom_action('ProjectMergeRequest')
+    @exc.on_http_error(exc.GitlabMRApprovalError)
+    def unapprove(self, **kwargs):
+        """Unapprove the merge request.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabMRApprovalError: If the unapproval failed
+        """
+        path = '%s/%s/unapprove' % (self.manager.path, self.get_id())
+        data = {}
+
+        server_data = self.manager.gitlab.http_post(path, post_data=data,
+                                                    **kwargs)
+        self._update_attrs(server_data)
+
     @cli.register_custom_action('ProjectMergeRequest', tuple(),
                                 ('merge_commit_message',
                                  'should_remove_source_branch',

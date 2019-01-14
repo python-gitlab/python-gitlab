@@ -161,6 +161,10 @@ class GitlabMRForbiddenError(GitlabOperationError):
     pass
 
 
+class GitlabMRApprovalError(GitlabOperationError):
+    pass
+
+
 class GitlabMRClosedError(GitlabOperationError):
     pass
 
