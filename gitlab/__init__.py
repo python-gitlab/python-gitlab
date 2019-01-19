@@ -445,7 +445,20 @@ class Gitlab(object):
 
         params = {}
         utils.copy_dict(params, query_data)
-        utils.copy_dict(params, kwargs)
+
+        # Deal with kwargs: by default a user uses kwargs to send data to the
+        # gitlab server, but this generates problems (python keyword conflicts
+        # and python-gitlab/gitlab conflicts).
+        # So we provide a `query_parameters` key: if it's there we use its dict
+        # value as arguments for the gitlab server, and ignore the other
+        # arguments, except pagination ones (per_page and page)
+        if 'query_parameters' in kwargs:
+            utils.copy_dict(params, kwargs['query_parameters'])
+            for arg in ('per_page', 'page'):
+                if arg in kwargs:
+                    params[arg] = kwargs[arg]
+        else:
+            utils.copy_dict(params, kwargs)
 
         opts = self._get_session_opts(content_type='application/json')
 
