@@ -1128,7 +1128,7 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = '/snippets/%s/raw' % self.get_id()
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
 
@@ -1365,7 +1365,7 @@ class ProjectJob(RESTObject, RefreshMixin):
         """
         path = '%s/%s/artifacts' % (self.manager.path, self.get_id())
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action('ProjectJob')
@@ -1393,7 +1393,7 @@ class ProjectJob(RESTObject, RefreshMixin):
         """
         path = '%s/%s/artifacts/%s' % (self.manager.path, self.get_id(), path)
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action('ProjectJob')
@@ -1419,7 +1419,7 @@ class ProjectJob(RESTObject, RefreshMixin):
         """
         path = '%s/%s/trace' % (self.manager.path, self.get_id())
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
 
@@ -2654,7 +2654,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
         path = '%s/%s/raw' % (self.path, file_path)
         query_data = {'ref': ref}
         result = self.gitlab.http_get(path, query_data=query_data,
-                                      streamed=streamed, **kwargs)
+                                      streamed=streamed, raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
 
@@ -2897,7 +2897,7 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin,
         """
         path = "%s/%s/raw" % (self.manager.path, self.get_id())
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
 
@@ -3174,7 +3174,7 @@ class ProjectExport(RefreshMixin, RESTObject):
         """
         path = '/projects/%d/export/download' % self.project_id
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
 
@@ -3315,7 +3315,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = '/projects/%s/repository/blobs/%s/raw' % (self.get_id(), sha)
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action('Project', ('from_', 'to'))
@@ -3391,7 +3391,8 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         if sha:
             query_data['sha'] = sha
         result = self.manager.gitlab.http_get(path, query_data=query_data,
-                                              streamed=streamed, **kwargs)
+                                              raw=True, streamed=streamed,
+                                              **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action('Project', ('forked_from_id', ))
@@ -3674,7 +3675,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = '/projects/%d/snapshot' % self.get_id()
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action('Project', ('scope', 'search'))
