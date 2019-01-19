@@ -517,7 +517,8 @@ class Gitlab(object):
                                   error_message=error_message,
                                   response_body=result.content)
 
-    def http_get(self, path, query_data={}, streamed=False, **kwargs):
+    def http_get(self, path, query_data={}, streamed=False, raw=False,
+                 **kwargs):
         """Make a GET request to the Gitlab server.
 
         Args:
@@ -525,6 +526,7 @@ class Gitlab(object):
                         'http://whatever/v4/api/projecs')
             query_data (dict): Data to send as query parameters
             streamed (bool): Whether the data should be streamed
+            raw (bool): If True do not try to parse the output as json
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
@@ -538,8 +540,10 @@ class Gitlab(object):
         """
         result = self.http_request('get', path, query_data=query_data,
                                    streamed=streamed, **kwargs)
-        if (result.headers['Content-Type'] == 'application/json' and
-           not streamed):
+
+        if (result.headers['Content-Type'] == 'application/json'
+           and not streamed
+           and not raw):
             try:
                 return result.json()
             except Exception:
