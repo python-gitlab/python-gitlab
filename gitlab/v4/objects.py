@@ -662,9 +662,22 @@ class GroupEpicIssueManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin,
         return self._obj_cls(self, server_data)
 
 
+class GroupEpicResourceLabelEvent(RESTObject):
+    pass
+
+
+class GroupEpicResourceLabelEventManager(RetrieveMixin, RESTManager):
+    _path = ('/groups/%(group_id)s/epics/%(epic_id)s/resource_label_events')
+    _obj_cls = GroupEpicResourceLabelEvent
+    _from_parent_attrs = {'group_id': 'group_id', 'epic_id': 'id'}
+
+
 class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
     _id_attr = 'iid'
-    _managers = (('issues', 'GroupEpicIssueManager'),)
+    _managers = (
+        ('issues', 'GroupEpicIssueManager'),
+        ('resourcelabelevents', 'GroupEpicResourceLabelEventManager'),
+    )
 
 
 class GroupEpicManager(CRUDMixin, RESTManager):
@@ -705,13 +718,45 @@ class GroupMemberManager(CRUDMixin, RESTManager):
     _create_attrs = (('access_level', 'user_id'), ('expires_at', ))
     _update_attrs = (('access_level', ), ('expires_at', ))
 
+    @cli.register_custom_action('GroupMemberManager')
+    @exc.on_http_error(exc.GitlabListError)
+    def all(self, **kwargs):
+        """List all the members, included inherited ones.
+
+        Args:
+            all (bool): If True, return all the items, without pagination
+            per_page (int): Number of items to retrieve per request
+            page (int): ID of the page to return (starts with page 1)
+            as_list (bool): If set to False and no pagination option is
+                defined, return a generator instead of a list
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
+
+        Returns:
+            RESTObjectList: The list of members
+        """
+
+        path = '%s/all' % self.path
+        return self.gitlab.http_list(path, **kwargs)
+
 
 class GroupMergeRequest(RESTObject):
     pass
 
 
-class GroupMergeRequestManager(RESTManager):
-    pass
+class GroupMergeRequestManager(ListMixin, RESTManager):
+    _path = '/groups/%(group_id)s/merge_requests'
+    _obj_cls = GroupMergeRequest
+    _from_parent_attrs = {'group_id': 'id'}
+    _list_filters = ('state', 'order_by', 'sort', 'milestone', 'view',
+                     'labels', 'created_after', 'created_before',
+                     'updated_after', 'updated_before', 'scope', 'author_id',
+                     'assignee_id', 'my_reaction_emoji', 'source_branch',
+                     'target_branch', 'search')
+    _types = {'labels': types.ListAttribute}
 
 
 class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -842,6 +887,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('epics', 'GroupEpicManager'),
         ('issues', 'GroupIssueManager'),
         ('members', 'GroupMemberManager'),
+        ('mergerequests', 'GroupMergeRequestManager'),
         ('milestones', 'GroupMilestoneManager'),
         ('notificationsettings', 'GroupNotificationSettingsManager'),
         ('projects', 'GroupProjectManager'),
@@ -1040,6 +1086,22 @@ class LicenseManager(RetrieveMixin, RESTManager):
     _optional_get_attrs = ('project', 'fullname')
 
 
+class MergeRequest(RESTObject):
+    pass
+
+
+class MergeRequestManager(ListMixin, RESTManager):
+    _path = '/merge_requests'
+    _obj_cls = MergeRequest
+    _from_parent_attrs = {'group_id': 'id'}
+    _list_filters = ('state', 'order_by', 'sort', 'milestone', 'view',
+                     'labels', 'created_after', 'created_before',
+                     'updated_after', 'updated_before', 'scope', 'author_id',
+                     'assignee_id', 'my_reaction_emoji', 'source_branch',
+                     'target_branch', 'search')
+    _types = {'labels': types.ListAttribute}
+
+
 class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'title'
 
@@ -1066,7 +1128,7 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = '/snippets/%s/raw' % self.get_id()
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
 
@@ -1303,7 +1365,7 @@ class ProjectJob(RESTObject, RefreshMixin):
         """
         path = '%s/%s/artifacts' % (self.manager.path, self.get_id())
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action('ProjectJob')
@@ -1331,7 +1393,7 @@ class ProjectJob(RESTObject, RefreshMixin):
         """
         path = '%s/%s/artifacts/%s' % (self.manager.path, self.get_id(), path)
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action('ProjectJob')
@@ -1357,7 +1419,7 @@ class ProjectJob(RESTObject, RefreshMixin):
         """
         path = '%s/%s/trace' % (self.manager.path, self.get_id())
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
 
@@ -1620,7 +1682,7 @@ class ProjectFork(RESTObject):
     pass
 
 
-class ProjectForkManager(CreateMixin, RESTManager):
+class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
     _path = '/projects/%(project_id)s/fork'
     _obj_cls = ProjectFork
     _from_parent_attrs = {'project_id': 'id'}
@@ -1629,6 +1691,28 @@ class ProjectForkManager(CreateMixin, RESTManager):
                      'with_custom_attributes', 'with_issues_enabled',
                      'with_merge_requests_enabled')
     _create_attrs = (tuple(), ('namespace', ))
+
+    def list(self, **kwargs):
+        """Retrieve a list of objects.
+
+        Args:
+            all (bool): If True, return all the items, without pagination
+            per_page (int): Number of items to retrieve per request
+            page (int): ID of the page to return (starts with page 1)
+            as_list (bool): If set to False and no pagination option is
+                defined, return a generator instead of a list
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Returns:
+            list: The list of objects, or a generator if `as_list` is False
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the server cannot perform the request
+        """
+
+        path = self._compute_path('/projects/%(project_id)s/forks')
+        return ListMixin.list(self, path=path, **kwargs)
 
 
 class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -1756,6 +1840,17 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin,
         return source_issue, target_issue
 
 
+class ProjectIssueResourceLabelEvent(RESTObject):
+    pass
+
+
+class ProjectIssueResourceLabelEventManager(RetrieveMixin, RESTManager):
+    _path = ('/projects/%(project_id)s/issues/%(issue_iid)s'
+             '/resource_label_events')
+    _obj_cls = ProjectIssueResourceLabelEvent
+    _from_parent_attrs = {'project_id': 'project_id', 'issue_iid': 'iid'}
+
+
 class ProjectIssue(UserAgentDetailMixin, SubscribableMixin, TodoMixin,
                    TimeTrackingMixin, ParticipantsMixin, SaveMixin,
                    ObjectDeleteMixin, RESTObject):
@@ -1766,6 +1861,7 @@ class ProjectIssue(UserAgentDetailMixin, SubscribableMixin, TodoMixin,
         ('discussions', 'ProjectIssueDiscussionManager'),
         ('links', 'ProjectIssueLinkManager'),
         ('notes', 'ProjectIssueNoteManager'),
+        ('resourcelabelevents', 'ProjectIssueResourceLabelEventManager'),
     )
 
     @cli.register_custom_action('ProjectIssue', ('to_project_id',))
@@ -1815,8 +1911,8 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
                      'order_by', 'sort', 'search', 'created_after',
                      'created_before', 'updated_after', 'updated_before')
     _create_attrs = (('title', ),
-                     ('description', 'confidential', 'assignee_id',
-                      'assignee_idss' 'milestone_id', 'labels', 'created_at',
+                     ('description', 'confidential', 'assignee_ids',
+                      'assignee_id', 'milestone_id', 'labels', 'created_at',
                       'due_date', 'merge_request_to_resolve_discussions_of',
                       'discussion_to_resolve'))
     _update_attrs = (tuple(), ('title', 'description', 'confidential',
@@ -1836,6 +1932,30 @@ class ProjectMemberManager(CRUDMixin, RESTManager):
     _from_parent_attrs = {'project_id': 'id'}
     _create_attrs = (('access_level', 'user_id'), ('expires_at', ))
     _update_attrs = (('access_level', ), ('expires_at', ))
+
+    @cli.register_custom_action('ProjectMemberManager')
+    @exc.on_http_error(exc.GitlabListError)
+    def all(self, **kwargs):
+        """List all the members, included inherited ones.
+
+        Args:
+            all (bool): If True, return all the items, without pagination
+            per_page (int): Number of items to retrieve per request
+            page (int): ID of the page to return (starts with page 1)
+            as_list (bool): If set to False and no pagination option is
+                defined, return a generator instead of a list
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
+
+        Returns:
+            RESTObjectList: The list of members
+        """
+
+        path = '%s/all' % self.path
+        return self.gitlab.http_list(path, **kwargs)
 
 
 class ProjectNote(RESTObject):
@@ -1916,6 +2036,18 @@ class ProjectTagManager(NoUpdateMixin, RESTManager):
     _obj_cls = ProjectTag
     _from_parent_attrs = {'project_id': 'id'}
     _create_attrs = (('tag_name', 'ref'), ('message',))
+
+
+class ProjectProtectedTag(ObjectDeleteMixin, RESTObject):
+    _id_attr = 'name'
+    _short_print_attr = 'name'
+
+
+class ProjectProtectedTagManager(NoUpdateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/protected_tags'
+    _obj_cls = ProjectProtectedTag
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('name',), ('create_access_level',))
 
 
 class ProjectMergeRequestApproval(SaveMixin, RESTObject):
@@ -2027,6 +2159,17 @@ class ProjectMergeRequestDiscussionManager(RetrieveMixin, CreateMixin,
     _update_attrs = (('resolved',), tuple())
 
 
+class ProjectMergeRequestResourceLabelEvent(RESTObject):
+    pass
+
+
+class ProjectMergeRequestResourceLabelEventManager(RetrieveMixin, RESTManager):
+    _path = ('/projects/%(project_id)s/merge_requests/%(mr_iid)s'
+             '/resource_label_events')
+    _obj_cls = ProjectMergeRequestResourceLabelEvent
+    _from_parent_attrs = {'project_id': 'project_id', 'mr_iid': 'iid'}
+
+
 class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                           ParticipantsMixin, SaveMixin, ObjectDeleteMixin,
                           RESTObject):
@@ -2038,6 +2181,8 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
         ('diffs', 'ProjectMergeRequestDiffManager'),
         ('discussions', 'ProjectMergeRequestDiscussionManager'),
         ('notes', 'ProjectMergeRequestNoteManager'),
+        ('resourcelabelevents',
+         'ProjectMergeRequestResourceLabelEventManager'),
     )
 
     @cli.register_custom_action('ProjectMergeRequest')
@@ -2217,13 +2362,14 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
     _create_attrs = (
         ('source_branch', 'target_branch', 'title'),
         ('assignee_id', 'description', 'target_project_id', 'labels',
-         'milestone_id', 'remove_source_branch', 'allow_maintainer_to_push')
+         'milestone_id', 'remove_source_branch', 'allow_maintainer_to_push',
+         'squash')
     )
-    _update_attrs = (tuple(),
-                     ('target_branch', 'assignee_id', 'title', 'description',
-                      'state_event', 'labels', 'milestone_id',
-                      'remove_source_branch', 'discussion_locked',
-                      'allow_maintainer_to_push'))
+    _update_attrs = (
+        tuple(),
+        ('target_branch', 'assignee_id', 'title', 'description', 'state_event',
+         'labels', 'milestone_id', 'remove_source_branch', 'discussion_locked',
+         'allow_maintainer_to_push', 'squash'))
     _list_filters = ('state', 'order_by', 'sort', 'milestone', 'view',
                      'labels', 'created_after', 'created_before',
                      'updated_after', 'updated_before', 'scope', 'author_id',
@@ -2531,7 +2677,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin,
         path = '%s/%s/raw' % (self.path, file_path)
         query_data = {'ref': ref}
         result = self.gitlab.http_get(path, query_data=query_data,
-                                      streamed=streamed, **kwargs)
+                                      streamed=streamed, raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
 
@@ -2774,7 +2920,7 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin,
         """
         path = "%s/%s/raw" % (self.manager.path, self.get_id())
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
 
@@ -2994,7 +3140,10 @@ class ProjectProtectedBranchManager(NoUpdateMixin, RESTManager):
     _path = '/projects/%(project_id)s/protected_branches'
     _obj_cls = ProjectProtectedBranch
     _from_parent_attrs = {'project_id': 'id'}
-    _create_attrs = (('name', ), ('push_access_level', 'merge_access_level'))
+    _create_attrs = (('name', ),
+                     ('push_access_level', 'merge_access_level',
+                      'unprotect_access_level', 'allowed_to_push',
+                      'allowed_to_merge', 'allowed_to_unprotect'))
 
 
 class ProjectRunner(ObjectDeleteMixin, RESTObject):
@@ -3048,7 +3197,7 @@ class ProjectExport(RefreshMixin, RESTObject):
         """
         path = '/projects/%d/export/download' % self.project_id
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
 
@@ -3099,6 +3248,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('pagesdomains', 'ProjectPagesDomainManager'),
         ('pipelines', 'ProjectPipelineManager'),
         ('protectedbranches', 'ProjectProtectedBranchManager'),
+        ('protectedtags', 'ProjectProtectedTagManager'),
         ('pipelineschedules', 'ProjectPipelineScheduleManager'),
         ('pushrules', 'ProjectPushRulesManager'),
         ('runners', 'ProjectRunnerManager'),
@@ -3188,7 +3338,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = '/projects/%s/repository/blobs/%s/raw' % (self.get_id(), sha)
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action('Project', ('from_', 'to'))
@@ -3264,7 +3414,8 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         if sha:
             query_data['sha'] = sha
         result = self.manager.gitlab.http_get(path, query_data=query_data,
-                                              streamed=streamed, **kwargs)
+                                              raw=True, streamed=streamed,
+                                              **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action('Project', ('forked_from_id', ))
@@ -3547,7 +3698,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = '/projects/%d/snapshot' % self.get_id()
         result = self.manager.gitlab.http_get(path, streamed=streamed,
-                                              **kwargs)
+                                              raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action('Project', ('scope', 'search'))
@@ -3585,6 +3736,25 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = '/projects/%d/mirror/pull' % self.get_id()
         self.manager.gitlab.http_post(path, **kwargs)
+
+    @cli.register_custom_action('Project', ('to_namespace', ))
+    @exc.on_http_error(exc.GitlabTransferProjectError)
+    def transfer_project(self, to_namespace, **kwargs):
+        """Transfer a project to the given namespace ID
+
+        Args:
+            to_namespace (str): ID or path of the namespace to transfer the
+            project to
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabTransferProjectError: If the project could not be transfered
+        """
+        path = '/projects/%d/transfer' % (self.id,)
+        self.manager.gitlab.http_put(path,
+                                     post_data={"namespace": to_namespace},
+                                     **kwargs)
 
 
 class ProjectManager(CRUDMixin, RESTManager):
@@ -3646,7 +3816,8 @@ class ProjectManager(CRUDMixin, RESTManager):
             'overwrite': overwrite
         }
         if override_params:
-            data['override_params'] = override_params
+            for k, v in override_params.items():
+                data['override_params[%s]' % k] = v
         if namespace:
             data['namespace'] = namespace
         return self.gitlab.http_post('/projects/import', post_data=data,

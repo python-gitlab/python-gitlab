@@ -4,6 +4,34 @@ Release notes
 
 This page describes important changes between python-gitlab releases.
 
+Changes from 1.7 to 1.8
+=======================
+
+* You can now use the ``query_parameters`` argument in method calls to define
+  arguments to send to the GitLab server. This allows to avoid conflicts
+  between python-gitlab and GitLab server variables, and allows to use the
+  python reserved keywords as GitLab arguments.
+
+  The following examples make the same GitLab request with the 2 syntaxes::
+
+     projects = gl.projects.list(owned=True, starred=True)
+     projects = gl.projects.list(query_parameters={'owned': True, 'starred': True})
+
+  The following example only works with the new parameter::
+
+     activities = gl.user_activities.list(
+                    query_parameters={'from': '2019-01-01'},
+                    all=True)
+
+Changes from 1.5 to 1.6
+=======================
+
+* When python-gitlab detects HTTP redirections from http to https it will raise
+  a RedirectionError instead of a cryptic error.
+
+  Make sure to use an ``https://`` protocol in your GitLab URL parameter if the
+  server requires it.
+
 Changes from 1.4 to 1.5
 =======================
 
@@ -14,6 +42,7 @@ Changes from 1.4 to 1.5
   configuration, epics.
 * The ``GetFromListMixin`` class has been removed. The ``get()`` method is not
   available anymore for the following managers:
+
   - UserKeyManager
   - DeployKeyManager
   - GroupAccessRequestManager
@@ -27,6 +56,7 @@ Changes from 1.4 to 1.5
   - ProjectPipelineJobManager
   - ProjectAccessRequestManager
   - TodoManager
+
 * ``ProjectPipelineJob`` do not heritate from ``ProjectJob`` anymore and thus
   can only be listed.
 

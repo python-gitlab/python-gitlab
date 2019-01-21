@@ -112,7 +112,7 @@ Delete a custom attribute for a user::
 
 Search users by custom attribute::
 
-    user.customattributes.set('role': 'QA')
+    user.customattributes.set('role', 'QA')
     gl.users.list(custom_attributes={'role': 'QA'})
 
 User impersonation tokens
@@ -190,7 +190,7 @@ are admin.
 
 * GitLab API: https://docs.gitlab.com/ce/api/users.html#list-all-gpg-keys
 
-Exemples
+Examples
 --------
 
 List GPG keys for a user::
@@ -232,7 +232,7 @@ are admin.
 
 * GitLab API: https://docs.gitlab.com/ce/api/users.html#list-ssh-keys
 
-Exemples
+Examples
 --------
 
 List SSH keys for a user::
@@ -270,7 +270,7 @@ are admin.
 
 * GitLab API: https://docs.gitlab.com/ce/api/users.html#list-emails
 
-Exemples
+Examples
 --------
 
 List emails for a user::
@@ -312,4 +312,6 @@ Examples
 
 Get the users activities::
 
-    activities = gl.user_activities.list(all=True, as_list=False)
+    activities = gl.user_activities.list(
+        query_parameters={'from': '2018-07-01'},
+        all=True, as_list=False)

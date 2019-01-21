@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
+
 import argparse
 import functools
 import importlib
@@ -98,7 +99,7 @@ def _get_base_parser(add_help=True):
                               "will be used."),
                         required=False)
     parser.add_argument("-o", "--output",
-                        help=("Output format (v4 only): json|legacy|yaml"),
+                        help="Output format (v4 only): json|legacy|yaml",
                         required=False,
                         choices=['json', 'legacy', 'yaml'],
                         default="legacy")
@@ -135,13 +136,21 @@ def main():
         exit(0)
 
     parser = _get_base_parser(add_help=False)
+    if "--help" in sys.argv or "-h" in sys.argv:
+        parser.print_help()
+        exit(0)
+
     # This first parsing step is used to find the gitlab config to use, and
     # load the propermodule (v3 or v4) accordingly. At that point we don't have
     # any subparser setup
     (options, args) = parser.parse_known_args(sys.argv)
-
-    config = gitlab.config.GitlabConfigParser(options.gitlab,
-                                              options.config_file)
+    try:
+        config = gitlab.config.GitlabConfigParser(
+            options.gitlab,
+            options.config_file
+        )
+    except gitlab.config.ConfigError as e:
+        sys.exit(e)
     cli_module = importlib.import_module('gitlab.v%s.cli' % config.api_version)
 
     # Now we build the entire set of subcommands and do the complete parsing

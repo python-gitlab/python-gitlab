@@ -28,9 +28,10 @@ import six
 import gitlab.config
 from gitlab.const import *  # noqa
 from gitlab.exceptions import *  # noqa
+from gitlab import utils  # noqa
 
 __title__ = 'python-gitlab'
-__version__ = '1.5.1'
+__version__ = '1.7.0'
 __author__ = 'Gauvain Pocentek'
 __email__ = 'gauvain@pocentek.net'
 __license__ = 'LGPL3'
@@ -38,6 +39,9 @@ __copyright__ = 'Copyright 2013-2018 Gauvain Pocentek'
 
 warnings.filterwarnings('default', category=DeprecationWarning,
                         module='^gitlab')
+
+REDIRECT_MSG = ('python-gitlab detected an http to https redirection. You '
+                'must update your GitLab URL to use https:// to avoid issues.')
 
 
 def _sanitize(value):
@@ -114,6 +118,7 @@ class Gitlab(object):
         self.ldapgroups = objects.LDAPGroupManager(self)
         self.licenses = objects.LicenseManager(self)
         self.namespaces = objects.NamespaceManager(self)
+        self.mergerequests = objects.MergeRequestManager(self)
         self.notificationsettings = objects.NotificationSettingsManager(self)
         self.projects = objects.ProjectManager(self)
         self.runners = objects.RunnerManager(self)
@@ -393,6 +398,26 @@ class Gitlab(object):
         else:
             return '%s%s' % (self._url, path)
 
+    def _check_redirects(self, result):
+        # Check the requests history to detect http to https redirections.
+        # If the initial verb is POST, the next request will use a GET request,
+        # leading to an unwanted behaviour.
+        # If the initial verb is PUT, the data will not be send with the next
+        # request.
+        # If we detect a redirection to https with a POST or a PUT request, we
+        # raise an exception with a useful error message.
+        if result.history and self._base_url.startswith('http:'):
+            for item in result.history:
+                if item.status_code not in (301, 302):
+                    continue
+                # GET methods can be redirected without issue
+                if item.request.method == 'GET':
+                    continue
+                # Did we end-up with an https:// URL?
+                location = item.headers.get('Location', None)
+                if location and location.startswith('https://'):
+                    raise RedirectError(REDIRECT_MSG)
+
     def http_request(self, verb, path, query_data={}, post_data=None,
                      streamed=False, files=None, **kwargs):
         """Make an HTTP request to the Gitlab server.
@@ -416,27 +441,24 @@ class Gitlab(object):
             GitlabHttpError: When the return code is not 2xx
         """
 
-        def sanitized_url(url):
-            parsed = six.moves.urllib.parse.urlparse(url)
-            new_path = parsed.path.replace('.', '%2E')
-            return parsed._replace(path=new_path).geturl()
-
         url = self._build_url(path)
 
-        def copy_dict(dest, src):
-            for k, v in src.items():
-                if isinstance(v, dict):
-                    # Transform dict values in new attributes. For example:
-                    # custom_attributes: {'foo', 'bar'} =>
-                    #   custom_attributes['foo']: 'bar'
-                    for dict_k, dict_v in v.items():
-                        dest['%s[%s]' % (k, dict_k)] = dict_v
-                else:
-                    dest[k] = v
-
         params = {}
-        copy_dict(params, query_data)
-        copy_dict(params, kwargs)
+        utils.copy_dict(params, query_data)
+
+        # Deal with kwargs: by default a user uses kwargs to send data to the
+        # gitlab server, but this generates problems (python keyword conflicts
+        # and python-gitlab/gitlab conflicts).
+        # So we provide a `query_parameters` key: if it's there we use its dict
+        # value as arguments for the gitlab server, and ignore the other
+        # arguments, except pagination ones (per_page and page)
+        if 'query_parameters' in kwargs:
+            utils.copy_dict(params, kwargs['query_parameters'])
+            for arg in ('per_page', 'page'):
+                if arg in kwargs:
+                    params[arg] = kwargs[arg]
+        else:
+            utils.copy_dict(params, kwargs)
 
         opts = self._get_session_opts(content_type='application/json')
 
@@ -461,28 +483,42 @@ class Gitlab(object):
         req = requests.Request(verb, url, json=json, data=data, params=params,
                                files=files, **opts)
         prepped = self.session.prepare_request(req)
-        prepped.url = sanitized_url(prepped.url)
+        prepped.url = utils.sanitized_url(prepped.url)
         settings = self.session.merge_environment_settings(
             prepped.url, {}, streamed, verify, None)
 
         # obey the rate limit by default
         obey_rate_limit = kwargs.get("obey_rate_limit", True)
 
+        # set max_retries to 10 by default, disable by setting it to -1
+        max_retries = kwargs.get("max_retries", 10)
+        cur_retries = 0
+
         while True:
             result = self.session.send(prepped, timeout=timeout, **settings)
+
+            self._check_redirects(result)
 
             if 200 <= result.status_code < 300:
                 return result
 
             if 429 == result.status_code and obey_rate_limit:
-                wait_time = int(result.headers["Retry-After"])
-                time.sleep(wait_time)
-                continue
+                if max_retries == -1 or cur_retries < max_retries:
+                    wait_time = 2 ** cur_retries * 0.1
+                    if "Retry-After" in result.headers:
+                        wait_time = int(result.headers["Retry-After"])
+                    cur_retries += 1
+                    time.sleep(wait_time)
+                    continue
 
+            error_message = result.content
             try:
-                error_message = result.json()['message']
+                error_json = result.json()
+                for k in ('message', 'error'):
+                    if k in error_json:
+                        error_message = error_json[k]
             except (KeyError, ValueError, TypeError):
-                error_message = result.content
+                pass
 
             if result.status_code == 401:
                 raise GitlabAuthenticationError(
@@ -494,7 +530,8 @@ class Gitlab(object):
                                   error_message=error_message,
                                   response_body=result.content)
 
-    def http_get(self, path, query_data={}, streamed=False, **kwargs):
+    def http_get(self, path, query_data={}, streamed=False, raw=False,
+                 **kwargs):
         """Make a GET request to the Gitlab server.
 
         Args:
@@ -502,6 +539,7 @@ class Gitlab(object):
                         'http://whatever/v4/api/projecs')
             query_data (dict): Data to send as query parameters
             streamed (bool): Whether the data should be streamed
+            raw (bool): If True do not try to parse the output as json
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
@@ -515,8 +553,10 @@ class Gitlab(object):
         """
         result = self.http_request('get', path, query_data=query_data,
                                    streamed=streamed, **kwargs)
-        if (result.headers['Content-Type'] == 'application/json' and
-           not streamed):
+
+        if (result.headers['Content-Type'] == 'application/json'
+           and not streamed
+           and not raw):
             try:
                 return result.json()
             except Exception:

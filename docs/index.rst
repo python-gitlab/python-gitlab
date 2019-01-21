@@ -14,6 +14,7 @@ Contents:
    install
    cli
    api-usage
+   faq
    switching-to-v4
    api-objects
    api/gitlab

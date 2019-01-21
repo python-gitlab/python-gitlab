@@ -244,6 +244,7 @@ assert(len(group2.members.list()) == 2)
 
 group1.members.delete(user1.id)
 assert(len(group1.members.list()) == 2)
+assert(len(group1.members.all()))
 member = group1.members.get(user2.id)
 member.access_level = gitlab.const.OWNER_ACCESS
 member.save()
@@ -390,7 +391,7 @@ data = {
     ]
 }
 admin_project.commits.create(data)
-assert('---' in admin_project.commits.list()[0].diff()[0]['diff'])
+assert('@@' in admin_project.commits.list()[0].diff()[0]['diff'])
 
 # commit status
 commit = admin_project.commits.list()[0]
@@ -467,6 +468,9 @@ fork = admin_project.forks.create({'namespace': user1.username})
 p = gl.projects.get(fork.id)
 assert(p.forked_from_project['id'] == admin_project.id)
 
+forks = admin_project.forks.list()
+assert(fork.id in map(lambda p: p.id, forks))
+
 # project hooks
 hook = admin_project.hooks.create({'url': 'http://hook.url'})
 assert(len(admin_project.hooks.list()) == 1)
@@ -535,6 +539,15 @@ assert(isinstance(issue1.user_agent_detail(), dict))
 
 assert(issue1.user_agent_detail()['user_agent'])
 assert(issue1.participants())
+
+# issues labels and events
+label2 = admin_project.labels.create({'name': 'label2', 'color': '#aabbcc'})
+issue1.labels = ['label2']
+issue1.save()
+events = issue1.resourcelabelevents.list()
+assert(events)
+event = issue1.resourcelabelevents.get(events[0].id)
+assert(event)
 
 discussion = issue1.discussions.create({'body': 'Discussion body'})
 assert(len(issue1.discussions.list()) == 1)
@@ -624,6 +637,14 @@ assert(discussion.attributes['notes'][-1]['body'] == 'updated body')
 d_note_from_get.delete()
 discussion = mr.discussions.get(discussion.id)
 assert(len(discussion.attributes['notes']) == 1)
+
+# mr labels and events
+mr.labels = ['label2']
+mr.save()
+events = mr.resourcelabelevents.list()
+assert(events)
+event = mr.resourcelabelevents.get(events[0].id)
+assert(event)
 
 # basic testing: only make sure that the methods exist
 mr.commits()
@@ -752,7 +773,7 @@ snippets = gl.snippets.list(all=True)
 assert(len(snippets) == 0)
 
 # user activities
-gl.user_activities.list()
+gl.user_activities.list(query_parameters={'from': '2019-01-01'})
 
 # events
 gl.events.list()
@@ -777,7 +798,7 @@ for i in range(20, 40):
     except gitlab.GitlabCreateError as e:
         error_message = e.error_message
         break
-assert 'Retry later' in error_message.decode()
+assert 'Retry later' in error_message
 [current_project.delete() for current_project in projects]
 settings.throttle_authenticated_api_enabled = False
 settings.save()

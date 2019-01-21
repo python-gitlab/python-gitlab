@@ -32,7 +32,16 @@ Create a protected branch::
     p_branch = project.protectedbranches.create({
         'name': '*-stable',
         'merge_access_level': gitlab.DEVELOPER_ACCESS,
-        'push_access_level': gitlab.MASTER_ACCESS
+        'push_access_level': gitlab.MAINTAINER_ACCESS
+    })
+
+Create a protected branch with more granular access control::
+
+    p_branch = project.protectedbranches.create({
+        'name': '*-stable',
+        'allowed_to_push': [{"user_id": 99}, {"user_id": 98}],
+        'allowed_to_merge': [{"group_id": 653}],
+        'allowed_to_unprotect': [{"access_level": gitlab.MAINTAINER_ACCESS}]
     })
 
 Delete a protected branch::

@@ -30,7 +30,7 @@ List the milestones for a project or a group::
 
 You can filter the list using the following parameters:
 
-* ``iid``: unique ID of the milestone for the project
+* ``iids``: unique IDs of milestones for the project
 * ``state``: either ``active`` or ``closed``
 * ``search``: to search using a string
 

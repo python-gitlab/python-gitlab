@@ -10,6 +10,9 @@
 .. image:: https://img.shields.io/pypi/pyversions/python-gitlab.svg
    :target: https://pypi.python.org/pypi/python-gitlab
 
+.. image:: https://img.shields.io/gitter/room/python-gitlab/Lobby.svg
+   :target: https://gitter.im/python-gitlab/Lobby
+
 Python GitLab
 =============
 
@@ -35,6 +38,27 @@ Install with pip
 
    pip install python-gitlab
 
+
+Using the python-gitlab docker image
+====================================
+
+How to build
+------------
+
+``docker build -t python-gitlab:TAG .``
+
+How to use
+----------
+
+``docker run -it --rm -e GITLAB_PRIVATE_TOKEN=<your token> -v /path/to/python-gitlab.cfg:/python-gitlab.cfg python-gitlab <command> ...``
+
+To change the GitLab URL, use `-e GITLAB_URL=<your url>`
+
+
+Bring your own config file:
+``docker run -it --rm -v /path/to/python-gitlab.cfg:/python-gitlab.cfg -e GITLAB_CFG=/python-gitlab.cfg python-gitlab <command> ...``
+
+
 Bug reports
 ===========
 
@@ -48,6 +72,13 @@ Documentation
 The full documentation for CLI and API is available on `readthedocs
 <http://python-gitlab.readthedocs.org/en/stable/>`_.
 
+Build the docs
+--------------
+You can build the documentation using ``sphinx``::
+
+    pip install sphinx
+    python setup.py build_sphinx
+
 
 Contributing
 ============
@@ -59,6 +90,9 @@ You can contribute to the project in multiple ways:
 * Fix bugs
 * Add unit and functional tests
 * Everything else you can think of
+
+We prefer commit messages to be formatted using the `conventional-changelog <https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-guidelines>`_.
+This leads to more readable messages that are easy to follow when looking through the project history.
 
 Provide your patches as github pull requests. Thanks!
 

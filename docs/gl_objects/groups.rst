@@ -31,6 +31,15 @@ List a group's projects::
 
     projects = group.projects.list()
 
+.. note::
+
+   ``GroupProject`` objects returned by this API call are very limited, and do
+   not provide all the features of ``Project`` objects. If you need to
+   manipulate projects, create a new ``Project`` object::
+
+       first_group_project = group.projects.list()[0]
+       manageable_project = gl.projects.get(first_group_project.id, lazy=True)
+
 You can filter and sort the result using the following parameters:
 
 * ``archived``: limit by archived status
@@ -53,7 +62,7 @@ Update a group::
 
 Remove a group::
 
-    gl.group.delete(group_id)
+    gl.groups.delete(group_id)
     # or
     group.delete()
 
@@ -76,11 +85,14 @@ List the subgroups for a group::
 
     subgroups = group.subgroups.list()
 
-    # The GroupSubgroup objects don't expose the same API as the Group
-    # objects. If you need to manipulate a subgroup as a group, create a new
-    # Group object:
-    real_group = gl.groups.get(subgroup_id, lazy=True)
-    real_group.issues.list()
+.. note::
+
+    The ``GroupSubgroup`` objects don't expose the same API as the ``Group``
+    objects.  If you need to manipulate a subgroup as a group, create a new
+    ``Group`` object::
+
+        real_group = gl.groups.get(subgroup_id, lazy=True)
+        real_group.issues.list()
 
 Group custom attributes
 =======================
@@ -130,7 +142,7 @@ The following constants define the supported access levels:
 * ``gitlab.GUEST_ACCESS = 10``
 * ``gitlab.REPORTER_ACCESS = 20``
 * ``gitlab.DEVELOPER_ACCESS = 30``
-* ``gitlab.MASTER_ACCESS = 40``
+* ``gitlab.MAINTAINER_ACCESS = 40``
 * ``gitlab.OWNER_ACCESS = 50``
 
 Reference
@@ -151,6 +163,11 @@ Examples
 List group members::
 
     members = group.members.list()
+
+List the group members recursively (including inherited members through
+ancestor groups)::
+
+    members = group.members.all(all=True)
 
 Get a group member::
 

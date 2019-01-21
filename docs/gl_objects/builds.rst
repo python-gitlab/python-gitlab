@@ -141,6 +141,13 @@ Delete a schedule::
 
     sched.delete()
 
+List schedule variables::
+
+    # note: you need to use get() to retrieve the schedule variables. The
+    # attribute is not present in the response of a list() call
+    sched = projects.pipelineschedules.get(schedule_id)
+    vars = sched.attributes['variables']
+
 Create a schedule variable::
 
     var = sched.variables.create({'key': 'foo', 'value': 'bar'})

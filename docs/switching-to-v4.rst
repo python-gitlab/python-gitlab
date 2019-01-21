@@ -10,7 +10,7 @@ solve some problems with the existing one.
 
 GitLab will stop supporting the v3 API soon, and you should consider switching
 to v4 if you use a recent version of GitLab (>= 9.0), or if you use
-http://gitlab.com.
+https://gitlab.com.
 
 
 Using the v4 API

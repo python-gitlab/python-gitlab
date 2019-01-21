@@ -27,6 +27,14 @@ results::
     commits = project.commits.list(ref_name='my_branch')
     commits = project.commits.list(since='2016-01-01T00:00:00Z')
 
+.. note::
+
+   The available ``all`` listing argument conflicts with the python-gitlab
+   argument. Use ``query_parameters`` to avoid the conflict::
+
+       commits = project.commits.list(all=True,
+                                      query_parameters={'ref_name': 'my_branch'})
+
 Create a commit::
 
     # See https://docs.gitlab.com/ce/api/commits.html#create-a-commit-with-multiple-files-and-actions
@@ -85,7 +93,7 @@ Reference
 
   + :class:`gitlab.v4.objects.ProjectCommitComment`
   + :class:`gitlab.v4.objects.ProjectCommitCommentManager`
-  + :attr:`gitlab.v4.objects.Commit.comments`
+  + :attr:`gitlab.v4.objects.ProjectCommit.comments`
 
 * GitLab API: https://docs.gitlab.com/ce/api/commits.html
 
@@ -116,7 +124,7 @@ Reference
 
   + :class:`gitlab.v4.objects.ProjectCommitStatus`
   + :class:`gitlab.v4.objects.ProjectCommitStatusManager`
-  + :attr:`gitlab.v4.objects.Commit.statuses`
+  + :attr:`gitlab.v4.objects.ProjectCommit.statuses`
 
 * GitLab API: https://docs.gitlab.com/ce/api/commits.html
 

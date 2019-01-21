@@ -10,7 +10,7 @@ following constants are provided to represent the access levels:
 * ``gitlab.GUEST_ACCESS``: ``10``
 * ``gitlab.REPORTER_ACCESS``: ``20``
 * ``gitlab.DEVELOPER_ACCESS``: ``30``
-* ``gitlab.MASTER_ACCESS``: ``40``
+* ``gitlab.MAINTAINER_ACCESS``: ``40``
 * ``gitlab.OWNER_ACCESS``: ``50``
 
 References
@@ -43,7 +43,7 @@ Create an access request::
 Approve an access request::
 
     ar.approve()  # defaults to DEVELOPER level
-    ar.approve(access_level=gitlab.MASTER_ACCESS)  # explicitly set access level
+    ar.approve(access_level=gitlab.MAINTAINER_ACCESS)  # explicitly set access level
 
 Deny (delete) an access request::
 
