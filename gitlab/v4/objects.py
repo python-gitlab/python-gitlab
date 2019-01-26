@@ -2277,6 +2277,25 @@ class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
         path = '%s/%s/changes' % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)
 
+    @cli.register_custom_action('ProjectMergeRequest')
+    @exc.on_http_error(exc.GitlabListError)
+    def pipelines(self, **kwargs):
+        """List the merge request pipelines.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
+
+        Returns:
+            RESTObjectList: List of changes
+        """
+
+        path = '%s/%s/pipelines' % (self.manager.path, self.get_id())
+        return self.manager.gitlab.http_get(path, **kwargs)
+
     @cli.register_custom_action('ProjectMergeRequest', tuple(), ('sha'))
     @exc.on_http_error(exc.GitlabMRApprovalError)
     def approve(self, sha=None, **kwargs):
