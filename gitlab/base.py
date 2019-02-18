@@ -96,6 +96,16 @@ class RESTObject(object):
         else:
             return '<%s>' % self.__class__.__name__
 
+    def __eq__(self, other):
+        if self.get_id() and other.get_id():
+            return self.get_id() == other.get_id()
+        return super().__eq__(other)
+
+    def __hash__(self):
+        if not self.get_id():
+            return super().__hash__()
+        return hash(self.get_id())
+
     def _create_managers(self):
         managers = getattr(self, '_managers', None)
         if managers is None:
@@ -112,7 +122,7 @@ class RESTObject(object):
 
     def get_id(self):
         """Returns the id of the resource."""
-        if self._id_attr is None:
+        if self._id_attr is None or not hasattr(self, self._id_attr):
             return None
         return getattr(self, self._id_attr)
 
