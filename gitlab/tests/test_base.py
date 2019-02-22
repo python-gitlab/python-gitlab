@@ -134,3 +134,26 @@ class TestRESTObject(unittest.TestCase):
         self.assertIsInstance(obj.fakes, FakeManager)
         self.assertEqual(obj.fakes.gitlab, self.gitlab)
         self.assertEqual(obj.fakes._parent, obj)
+
+    def test_equality(self):
+        obj1 = FakeObject(self.manager, {'id': 'foo'})
+        obj2 = FakeObject(self.manager, {'id': 'foo', 'other_attr': 'bar'})
+        self.assertEqual(obj1, obj2)
+
+    def test_equality_custom_id(self):
+        class OtherFakeObject(FakeObject):
+            _id_attr = 'foo'
+
+        obj1 = OtherFakeObject(self.manager, {'foo': 'bar'})
+        obj2 = OtherFakeObject(self.manager, {'foo': 'bar', 'other_attr': 'baz'})
+        self.assertEqual(obj1, obj2)
+
+    def test_inequality(self):
+        obj1 = FakeObject(self.manager, {'id': 'foo'})
+        obj2 = FakeObject(self.manager, {'id': 'bar'})
+        self.assertNotEqual(obj1, obj2)
+
+    def test_inequality_no_id(self):
+        obj1 = FakeObject(self.manager, {'attr1': 'foo'})
+        obj2 = FakeObject(self.manager, {'attr1': 'bar'})
+        self.assertNotEqual(obj1, obj2)
