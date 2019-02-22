@@ -23,6 +23,8 @@ Changes from 1.7 to 1.8
                     query_parameters={'from': '2019-01-01'},
                     all=True)
 
+* Additionally the ``all`` paremeter is not sent to the GitLab anymore.
+
 Changes from 1.5 to 1.6
 =======================
 
