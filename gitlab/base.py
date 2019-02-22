@@ -99,11 +99,16 @@ class RESTObject(object):
     def __eq__(self, other):
         if self.get_id() and other.get_id():
             return self.get_id() == other.get_id()
-        return super().__eq__(other)
+        return super(RESTObject, self) == other
+
+    def __ne__(self, other):
+        if self.get_id() and other.get_id():
+            return self.get_id() != other.get_id()
+        return super(RESTObject, self) != other
 
     def __hash__(self):
         if not self.get_id():
-            return super().__hash__()
+            return super(RESTObject, self).__hash__()
         return hash(self.get_id())
 
     def _create_managers(self):
