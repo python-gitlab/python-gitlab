@@ -131,6 +131,7 @@ class TestRESTObject(unittest.TestCase):
             _managers = (('fakes', 'FakeManager'), )
 
         obj = ObjectWithManager(self.manager, {'foo': 'bar'})
+        obj.id = 42
         self.assertIsInstance(obj.fakes, FakeManager)
         self.assertEqual(obj.fakes.gitlab, self.gitlab)
         self.assertEqual(obj.fakes._parent, obj)
@@ -145,7 +146,10 @@ class TestRESTObject(unittest.TestCase):
             _id_attr = 'foo'
 
         obj1 = OtherFakeObject(self.manager, {'foo': 'bar'})
-        obj2 = OtherFakeObject(self.manager, {'foo': 'bar', 'other_attr': 'baz'})
+        obj2 = OtherFakeObject(
+            self.manager,
+            {'foo': 'bar', 'other_attr': 'baz'}
+        )
         self.assertEqual(obj1, obj2)
 
     def test_inequality(self):
