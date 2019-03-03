@@ -4,6 +4,13 @@ Release notes
 
 This page describes important changes between python-gitlab releases.
 
+Changes from 1.8 to 1.9
+=======================
+
+* ``ProjectMemberManager.all()`` and ``GroupMemberManager.all()`` now return a
+  list of ``ProjectMember`` and ``GroupMember`` objects respectively, instead
+  of a list of dicts.
+
 Changes from 1.7 to 1.8
 =======================
 
