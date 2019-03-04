@@ -273,7 +273,7 @@ def extend_parser(parser):
 
         object_subparsers = object_group.add_subparsers(
             title='action',
-            dest='action', help="Action to execute.")
+            dest='whaction', help="Action to execute.")
         _populate_sub_parser_by_class(cls, object_subparsers)
         object_subparsers.required = True
 
@@ -357,7 +357,7 @@ class LegacyPrinter(object):
                 id = getattr(obj, obj._id_attr)
                 print('%s: %s' % (obj._id_attr.replace('_', '-'), id))
             if hasattr(obj, '_short_print_attr'):
-                value = getattr(obj, obj._short_print_attr)
+                value = getattr(obj, obj._short_print_attr) or 'None'
                 value = value.replace('\r', '').replace('\n', ' ')
                 # If the attribute is a note (ProjectCommitComment) then we do
                 # some modifications to fit everything on one line

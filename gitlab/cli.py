@@ -165,12 +165,12 @@ def main():
     if args.fields:
         fields = [x.strip() for x in args.fields.split(',')]
     debug = args.debug
-    action = args.action
+    action = args.whaction
     what = args.what
 
     args = args.__dict__
     # Remove CLI behavior-related args
-    for item in ('gitlab', 'config_file', 'verbose', 'debug', 'what', 'action',
+    for item in ('gitlab', 'config_file', 'verbose', 'debug', 'what', 'whaction',
                  'version', 'output'):
         args.pop(item)
     args = {k: _parse_value(v) for k, v in args.items() if v is not None}
