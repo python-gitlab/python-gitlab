@@ -740,7 +740,8 @@ class GroupMemberManager(CRUDMixin, RESTManager):
         """
 
         path = '%s/all' % self.path
-        return self.gitlab.http_list(path, **kwargs)
+        obj = self.gitlab.http_list(path, **kwargs)
+        return [self._obj_cls(self, item) for item in obj]
 
 
 class GroupMergeRequest(RESTObject):
@@ -1955,7 +1956,8 @@ class ProjectMemberManager(CRUDMixin, RESTManager):
         """
 
         path = '%s/all' % self.path
-        return self.gitlab.http_list(path, **kwargs)
+        obj = self.gitlab.http_list(path, **kwargs)
+        return [self._obj_cls(self, item) for item in obj]
 
 
 class ProjectNote(RESTObject):
