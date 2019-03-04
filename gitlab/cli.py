@@ -182,7 +182,7 @@ def main():
     if args.fields:
         fields = [x.strip() for x in args.fields.split(",")]
     debug = args.debug
-    action = args.action
+    action = args.whaction
     what = args.what
 
     args = args.__dict__
@@ -193,7 +193,7 @@ def main():
         "verbose",
         "debug",
         "what",
-        "action",
+        "whaction",
         "version",
         "output",
     ):
