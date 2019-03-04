@@ -909,7 +909,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTransferProjectError: If the project could not be transfered
         """
-        path = '/groups/%d/projects/%d' % (self.id, to_project_id)
+        path = '/groups/%s/projects/%s' % (self.id, to_project_id)
         self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action('Group', ('scope', 'search'))
@@ -930,7 +930,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabList: A list of dicts describing the resources found.
         """
         data = {'scope': scope, 'search': search}
-        path = '/groups/%d/search' % self.get_id()
+        path = '/groups/%s/search' % self.get_id()
         return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
 
     @cli.register_custom_action('Group', ('cn', 'group_access', 'provider'))
@@ -949,7 +949,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server cannot perform the request
         """
-        path = '/groups/%d/ldap_group_links' % self.get_id()
+        path = '/groups/%s/ldap_group_links' % self.get_id()
         data = {'cn': cn, 'group_access': group_access, 'provider': provider}
         self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
@@ -967,7 +967,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
-        path = '/groups/%d/ldap_group_links' % self.get_id()
+        path = '/groups/%s/ldap_group_links' % self.get_id()
         if provider is not None:
             path += '/%s' % provider
         path += '/%s' % cn
@@ -985,7 +985,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server cannot perform the request
         """
-        path = '/groups/%d/ldap_sync' % self.get_id()
+        path = '/groups/%s/ldap_sync' % self.get_id()
         self.manager.gitlab.http_post(path, **kwargs)
 
 
@@ -3216,7 +3216,7 @@ class ProjectExport(RefreshMixin, RESTObject):
         Returns:
             str: The blob content if streamed is False, None otherwise
         """
-        path = '/projects/%d/export/download' % self.project_id
+        path = '/projects/%s/export/download' % self.project_id
         result = self.manager.gitlab.http_get(path, streamed=streamed,
                                               raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
@@ -3717,7 +3717,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             str: The uncompressed tar archive of the repository
         """
-        path = '/projects/%d/snapshot' % self.get_id()
+        path = '/projects/%s/snapshot' % self.get_id()
         result = self.manager.gitlab.http_get(path, streamed=streamed,
                                               raw=True, **kwargs)
         return utils.response_content(result, streamed, action, chunk_size)
@@ -3740,7 +3740,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabList: A list of dicts describing the resources found.
         """
         data = {'scope': scope, 'search': search}
-        path = '/projects/%d/search' % self.get_id()
+        path = '/projects/%s/search' % self.get_id()
         return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
 
     @cli.register_custom_action('Project')
@@ -3755,7 +3755,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server failed to perform the request
         """
-        path = '/projects/%d/mirror/pull' % self.get_id()
+        path = '/projects/%s/mirror/pull' % self.get_id()
         self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action('Project', ('to_namespace', ))
@@ -3772,7 +3772,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTransferProjectError: If the project could not be transfered
         """
-        path = '/projects/%d/transfer' % (self.id,)
+        path = '/projects/%s/transfer' % (self.id,)
         self.manager.gitlab.http_put(path,
                                      post_data={"namespace": to_namespace},
                                      **kwargs)
