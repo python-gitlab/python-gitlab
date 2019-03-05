@@ -43,6 +43,7 @@ class ListAttribute(GitlabAttribute):
         except TypeError:
             return self._value
 
+
 class LowercaseStringAttribute(GitlabAttribute):
     def get_for_api(self):
         return str(self._value).lower()
