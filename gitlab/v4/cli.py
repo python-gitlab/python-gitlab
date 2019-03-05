@@ -230,8 +230,7 @@ def _populate_sub_parser_by_class(cls, sub_parser):
              for x in required if x != cls._id_attr]
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                             required=False)
-             for x in optional if x != cls._id_attr 
-                                            and x not in ['recursive']]
+             for x in optional if x != cls._id_attr and x not in ['recursive']]
             [sub_parser_action.add_argument("--%s" % x, action='store_true',
                                             required=False)
              for x in optional if x in ['recursive']]
