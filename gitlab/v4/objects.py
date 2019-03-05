@@ -3786,7 +3786,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("wikis", "ProjectWikiManager"),
     )
 
-    @cli.register_custom_action("Project", tuple(), ("path", "ref"))
+    @cli.register_custom_action("Project", tuple(), ("path", "ref", "recursive"))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_tree(self, path="", ref="", recursive=False, **kwargs):
         """Return a list of files in the repository.
