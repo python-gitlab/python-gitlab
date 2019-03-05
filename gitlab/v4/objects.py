@@ -3282,7 +3282,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('wikis', 'ProjectWikiManager'),
     )
 
-    @cli.register_custom_action('Project', tuple(), 
+    @cli.register_custom_action('Project', tuple(),
                                       ('path', 'ref', 'recursive'))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_tree(self, path='', ref='', recursive=False, **kwargs):
