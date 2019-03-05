@@ -38,8 +38,10 @@ class ListAttribute(GitlabAttribute):
             self._value = [item.strip() for item in cli_value.split(',')]
 
     def get_for_api(self):
-        return ",".join(self._value)
-
+        try:
+            return ",".join(self._value)
+        except TypeError:
+            return self._value
 
 class LowercaseStringAttribute(GitlabAttribute):
     def get_for_api(self):
