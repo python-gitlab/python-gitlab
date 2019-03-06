@@ -133,7 +133,7 @@ def _parse_value(v):
 def main():
     if "--version" in sys.argv:
         print(gitlab.__version__)
-        exit(0)
+        sys.exit(0)
 
     parser = _get_base_parser(add_help=False)
 
@@ -149,7 +149,7 @@ def main():
     except gitlab.config.ConfigError as e:
         if "--help" in sys.argv or "-h" in sys.argv:
             parser.print_help()
-            exit(0)
+            sys.exit(0)
         sys.exit(e)
     cli_module = importlib.import_module('gitlab.v%s.cli' % config.api_version)
 
