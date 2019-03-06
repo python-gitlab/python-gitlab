@@ -2714,7 +2714,7 @@ class ProjectPipelineJobManager(ListMixin, RESTManager):
     _list_filters = ('scope',)
 
 
-class ProjectPipeline(RESTObject, RefreshMixin):
+class ProjectPipeline(RESTObject, RefreshMixin, ObjectDeleteMixin):
     _managers = (('jobs', 'ProjectPipelineJobManager'), )
 
     @cli.register_custom_action('ProjectPipeline')
@@ -2748,7 +2748,7 @@ class ProjectPipeline(RESTObject, RefreshMixin):
         self.manager.gitlab.http_post(path)
 
 
-class ProjectPipelineManager(RetrieveMixin, CreateMixin, RESTManager):
+class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = '/projects/%(project_id)s/pipelines'
     _obj_cls = ProjectPipeline
     _from_parent_attrs = {'project_id': 'id'}
