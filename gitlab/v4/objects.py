@@ -744,22 +744,6 @@ class GroupMemberManager(CRUDMixin, RESTManager):
         return [self._obj_cls(self, item) for item in obj]
 
 
-class GroupMergeRequest(RESTObject):
-    pass
-
-
-class GroupMergeRequestManager(ListMixin, RESTManager):
-    _path = '/groups/%(group_id)s/merge_requests'
-    _obj_cls = GroupMergeRequest
-    _from_parent_attrs = {'group_id': 'id'}
-    _list_filters = ('state', 'order_by', 'sort', 'milestone', 'view',
-                     'labels', 'created_after', 'created_before',
-                     'updated_after', 'updated_before', 'scope', 'author_id',
-                     'assignee_id', 'my_reaction_emoji', 'source_branch',
-                     'target_branch', 'search')
-    _types = {'labels': types.ListAttribute}
-
-
 class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = 'title'
 
@@ -839,31 +823,6 @@ class GroupNotificationSettingsManager(NotificationSettingsManager):
     _path = '/groups/%(group_id)s/notification_settings'
     _obj_cls = GroupNotificationSettings
     _from_parent_attrs = {'group_id': 'id'}
-
-
-class GroupProject(RESTObject):
-    pass
-
-
-class GroupProjectManager(ListMixin, RESTManager):
-    _path = '/groups/%(group_id)s/projects'
-    _obj_cls = GroupProject
-    _from_parent_attrs = {'group_id': 'id'}
-    _list_filters = ('archived', 'visibility', 'order_by', 'sort', 'search',
-                     'ci_enabled_first', 'simple', 'owned', 'starred',
-                     'with_custom_attributes')
-
-
-class GroupSubgroup(RESTObject):
-    pass
-
-
-class GroupSubgroupManager(ListMixin, RESTManager):
-    _path = '/groups/%(group_id)s/subgroups'
-    _obj_cls = GroupSubgroup
-    _from_parent_attrs = {'group_id': 'id'}
-    _list_filters = ('skip_groups', 'all_available', 'search', 'order_by',
-                     'sort', 'statistics', 'owned', 'with_custom_attributes')
 
 
 class GroupVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -1087,8 +1046,210 @@ class LicenseManager(RetrieveMixin, RESTManager):
     _optional_get_attrs = ('project', 'fullname')
 
 
-class MergeRequest(RESTObject):
-    pass
+class MergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
+                          ParticipantsMixin, SaveMixin, ObjectDeleteMixin,
+                          RESTObject):
+    _id_attr = 'iid'
+
+    _managers = (
+        ('approvals', 'ProjectMergeRequestApprovalManager'),
+        ('awardemojis', 'ProjectMergeRequestAwardEmojiManager'),
+        ('diffs', 'ProjectMergeRequestDiffManager'),
+        ('discussions', 'ProjectMergeRequestDiscussionManager'),
+        ('notes', 'ProjectMergeRequestNoteManager'),
+        ('resourcelabelevents',
+         'ProjectMergeRequestResourceLabelEventManager'),
+    )
+
+    @cli.register_custom_action('MergeRequest')
+    @exc.on_http_error(exc.GitlabMROnBuildSuccessError)
+    def cancel_merge_when_pipeline_succeeds(self, **kwargs):
+        """Cancel merge when the pipeline succeeds.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabMROnBuildSuccessError: If the server could not handle the
+                request
+        """
+        path = self._get_path() + '/cancel_merge_when_pipeline_succeeds'
+        server_data = self.manager.gitlab.http_put(path, **kwargs)
+        self._update_attrs(server_data)
+
+    @cli.register_custom_action('MergeRequest')
+    @exc.on_http_error(exc.GitlabListError)
+    def closes_issues(self, **kwargs):
+        """List issues that will close on merge."
+
+        Args:
+            all (bool): If True, return all the items, without pagination
+            per_page (int): Number of items to retrieve per request
+            page (int): ID of the page to return (starts with page 1)
+            as_list (bool): If set to False and no pagination option is
+                defined, return a generator instead of a list
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
+
+        Returns:
+            RESTObjectList: List of issues
+        """
+        path = self._get_path() + '/closes_issues'
+        data_list = self.manager.gitlab.http_list(path, as_list=False,
+                                                  **kwargs)
+        manager = ProjectIssueManager(self.manager.gitlab,
+                                      parent=self.manager._parent)
+        return RESTObjectList(manager, ProjectIssue, data_list)
+
+    @cli.register_custom_action('MergeRequest')
+    @exc.on_http_error(exc.GitlabListError)
+    def commits(self, **kwargs):
+        """List the merge request commits.
+
+        Args:
+            all (bool): If True, return all the items, without pagination
+            per_page (int): Number of items to retrieve per request
+            page (int): ID of the page to return (starts with page 1)
+            as_list (bool): If set to False and no pagination option is
+                defined, return a generator instead of a list
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
+
+        Returns:
+            RESTObjectList: The list of commits
+        """
+        path = self._get_path() + '/commits'
+        data_list = self.manager.gitlab.http_list(path, as_list=False,
+                                                  **kwargs)
+        manager = ProjectCommitManager(self.manager.gitlab,
+                                       parent=self.manager._parent)
+        return RESTObjectList(manager, ProjectCommit, data_list)
+
+    @cli.register_custom_action('MergeRequest')
+    @exc.on_http_error(exc.GitlabListError)
+    def changes(self, **kwargs):
+        """List the merge request changes.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
+
+        Returns:
+            RESTObjectList: List of changes
+        """
+        path = self._get_path() + '/changes'
+        return self.manager.gitlab.http_get(path, **kwargs)
+
+    @cli.register_custom_action('MergeRequest')
+    @exc.on_http_error(exc.GitlabListError)
+    def pipelines(self, **kwargs):
+        """List the merge request pipelines.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
+
+        Returns:
+            RESTObjectList: List of changes
+        """
+        path = self._get_path() + '/pipelines'
+        return self.manager.gitlab.http_get(path, **kwargs)
+
+    @cli.register_custom_action('MergeRequest', tuple(), ('sha'))
+    @exc.on_http_error(exc.GitlabMRApprovalError)
+    def approve(self, sha=None, **kwargs):
+        """Approve the merge request.
+
+        Args:
+            sha (str): Head SHA of MR
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabMRApprovalError: If the approval failed
+        """
+        path = self._get_path() + '/approve'
+        data = {}
+        if sha:
+            data['sha'] = sha
+
+        server_data = self.manager.gitlab.http_post(path, post_data=data,
+                                                    **kwargs)
+        self._update_attrs(server_data)
+
+    @cli.register_custom_action('MergeRequest')
+    @exc.on_http_error(exc.GitlabMRApprovalError)
+    def unapprove(self, **kwargs):
+        """Unapprove the merge request.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabMRApprovalError: If the unapproval failed
+        """
+        path = self._get_path() + '/unapprove'
+        data = {}
+
+        server_data = self.manager.gitlab.http_post(path, post_data=data,
+                                                    **kwargs)
+        self._update_attrs(server_data)
+
+    @cli.register_custom_action('MergeRequest', tuple(),
+                                ('merge_commit_message',
+                                 'should_remove_source_branch',
+                                 'merge_when_pipeline_succeeds'))
+    @exc.on_http_error(exc.GitlabMRClosedError)
+    def merge(self, merge_commit_message=None,
+              should_remove_source_branch=False,
+              merge_when_pipeline_succeeds=False,
+              **kwargs):
+        """Accept the merge request.
+
+        Args:
+            merge_commit_message (bool): Commit message
+            should_remove_source_branch (bool): If True, removes the source
+                                                branch
+            merge_when_pipeline_succeeds (bool): Wait for the build to succeed,
+                                                 then merge
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabMRClosedError: If the merge failed
+        """
+        path = self._get_path() + '/merge'
+        data = {}
+        if merge_commit_message:
+            data['merge_commit_message'] = merge_commit_message
+        if should_remove_source_branch:
+            data['should_remove_source_branch'] = True
+        if merge_when_pipeline_succeeds:
+            data['merge_when_pipeline_succeeds'] = True
+
+        server_data = self.manager.gitlab.http_put(path, post_data=data,
+                                                   **kwargs)
+        self._update_attrs(server_data)
+
+    def _get_path():
+        if not hasattr(self, '_path'):
+            self._path = '/projects/%s/merge_requests/%s' % \
+                         (self.project_id, self.get_id())
+        return self._path
 
 
 class MergeRequestManager(ListMixin, RESTManager):
@@ -2170,233 +2331,6 @@ class ProjectMergeRequestResourceLabelEventManager(RetrieveMixin, RESTManager):
              '/resource_label_events')
     _obj_cls = ProjectMergeRequestResourceLabelEvent
     _from_parent_attrs = {'project_id': 'project_id', 'mr_iid': 'iid'}
-
-
-class ProjectMergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
-                          ParticipantsMixin, SaveMixin, ObjectDeleteMixin,
-                          RESTObject):
-    _id_attr = 'iid'
-
-    _managers = (
-        ('approvals', 'ProjectMergeRequestApprovalManager'),
-        ('awardemojis', 'ProjectMergeRequestAwardEmojiManager'),
-        ('diffs', 'ProjectMergeRequestDiffManager'),
-        ('discussions', 'ProjectMergeRequestDiscussionManager'),
-        ('notes', 'ProjectMergeRequestNoteManager'),
-        ('resourcelabelevents',
-         'ProjectMergeRequestResourceLabelEventManager'),
-    )
-
-    @cli.register_custom_action('ProjectMergeRequest')
-    @exc.on_http_error(exc.GitlabMROnBuildSuccessError)
-    def cancel_merge_when_pipeline_succeeds(self, **kwargs):
-        """Cancel merge when the pipeline succeeds.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabMROnBuildSuccessError: If the server could not handle the
-                request
-        """
-
-        path = ('%s/%s/cancel_merge_when_pipeline_succeeds' %
-                (self.manager.path, self.get_id()))
-        server_data = self.manager.gitlab.http_put(path, **kwargs)
-        self._update_attrs(server_data)
-
-    @cli.register_custom_action('ProjectMergeRequest')
-    @exc.on_http_error(exc.GitlabListError)
-    def closes_issues(self, **kwargs):
-        """List issues that will close on merge."
-
-        Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
-                defined, return a generator instead of a list
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabListError: If the list could not be retrieved
-
-        Returns:
-            RESTObjectList: List of issues
-        """
-        path = '%s/%s/closes_issues' % (self.manager.path, self.get_id())
-        data_list = self.manager.gitlab.http_list(path, as_list=False,
-                                                  **kwargs)
-        manager = ProjectIssueManager(self.manager.gitlab,
-                                      parent=self.manager._parent)
-        return RESTObjectList(manager, ProjectIssue, data_list)
-
-    @cli.register_custom_action('ProjectMergeRequest')
-    @exc.on_http_error(exc.GitlabListError)
-    def commits(self, **kwargs):
-        """List the merge request commits.
-
-        Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
-                defined, return a generator instead of a list
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabListError: If the list could not be retrieved
-
-        Returns:
-            RESTObjectList: The list of commits
-        """
-
-        path = '%s/%s/commits' % (self.manager.path, self.get_id())
-        data_list = self.manager.gitlab.http_list(path, as_list=False,
-                                                  **kwargs)
-        manager = ProjectCommitManager(self.manager.gitlab,
-                                       parent=self.manager._parent)
-        return RESTObjectList(manager, ProjectCommit, data_list)
-
-    @cli.register_custom_action('ProjectMergeRequest')
-    @exc.on_http_error(exc.GitlabListError)
-    def changes(self, **kwargs):
-        """List the merge request changes.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabListError: If the list could not be retrieved
-
-        Returns:
-            RESTObjectList: List of changes
-        """
-        path = '%s/%s/changes' % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_get(path, **kwargs)
-
-    @cli.register_custom_action('ProjectMergeRequest')
-    @exc.on_http_error(exc.GitlabListError)
-    def pipelines(self, **kwargs):
-        """List the merge request pipelines.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabListError: If the list could not be retrieved
-
-        Returns:
-            RESTObjectList: List of changes
-        """
-
-        path = '%s/%s/pipelines' % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_get(path, **kwargs)
-
-    @cli.register_custom_action('ProjectMergeRequest', tuple(), ('sha'))
-    @exc.on_http_error(exc.GitlabMRApprovalError)
-    def approve(self, sha=None, **kwargs):
-        """Approve the merge request.
-
-        Args:
-            sha (str): Head SHA of MR
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabMRApprovalError: If the approval failed
-        """
-        path = '%s/%s/approve' % (self.manager.path, self.get_id())
-        data = {}
-        if sha:
-            data['sha'] = sha
-
-        server_data = self.manager.gitlab.http_post(path, post_data=data,
-                                                    **kwargs)
-        self._update_attrs(server_data)
-
-    @cli.register_custom_action('ProjectMergeRequest')
-    @exc.on_http_error(exc.GitlabMRApprovalError)
-    def unapprove(self, **kwargs):
-        """Unapprove the merge request.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabMRApprovalError: If the unapproval failed
-        """
-        path = '%s/%s/unapprove' % (self.manager.path, self.get_id())
-        data = {}
-
-        server_data = self.manager.gitlab.http_post(path, post_data=data,
-                                                    **kwargs)
-        self._update_attrs(server_data)
-
-    @cli.register_custom_action('ProjectMergeRequest', tuple(),
-                                ('merge_commit_message',
-                                 'should_remove_source_branch',
-                                 'merge_when_pipeline_succeeds'))
-    @exc.on_http_error(exc.GitlabMRClosedError)
-    def merge(self, merge_commit_message=None,
-              should_remove_source_branch=False,
-              merge_when_pipeline_succeeds=False,
-              **kwargs):
-        """Accept the merge request.
-
-        Args:
-            merge_commit_message (bool): Commit message
-            should_remove_source_branch (bool): If True, removes the source
-                                                branch
-            merge_when_pipeline_succeeds (bool): Wait for the build to succeed,
-                                                 then merge
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabMRClosedError: If the merge failed
-        """
-        path = '%s/%s/merge' % (self.manager.path, self.get_id())
-        data = {}
-        if merge_commit_message:
-            data['merge_commit_message'] = merge_commit_message
-        if should_remove_source_branch:
-            data['should_remove_source_branch'] = True
-        if merge_when_pipeline_succeeds:
-            data['merge_when_pipeline_succeeds'] = True
-
-        server_data = self.manager.gitlab.http_put(path, post_data=data,
-                                                   **kwargs)
-        self._update_attrs(server_data)
-
-
-class ProjectMergeRequestManager(CRUDMixin, RESTManager):
-    _path = '/projects/%(project_id)s/merge_requests'
-    _obj_cls = ProjectMergeRequest
-    _from_parent_attrs = {'project_id': 'id'}
-    _create_attrs = (
-        ('source_branch', 'target_branch', 'title'),
-        ('assignee_id', 'description', 'target_project_id', 'labels',
-         'milestone_id', 'remove_source_branch', 'allow_maintainer_to_push',
-         'squash')
-    )
-    _update_attrs = (
-        tuple(),
-        ('target_branch', 'assignee_id', 'title', 'description', 'state_event',
-         'labels', 'milestone_id', 'remove_source_branch', 'discussion_locked',
-         'allow_maintainer_to_push', 'squash'))
-    _list_filters = ('state', 'order_by', 'sort', 'milestone', 'view',
-                     'labels', 'created_after', 'created_before',
-                     'updated_after', 'updated_before', 'scope', 'author_id',
-                     'assignee_id', 'my_reaction_emoji', 'source_branch',
-                     'target_branch', 'search')
-    _types = {'labels': types.ListAttribute}
 
 
 class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -4037,3 +3971,71 @@ class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
             list: The list of failures
         """
         return self.gitlab.http_list('/geo_nodes/current/failures', **kwargs)
+
+
+class GroupProject(Project):
+    pass
+
+
+class GroupProjectManager(ListMixin, RESTManager):
+    _path = '/groups/%(group_id)s/projects'
+    _obj_cls = GroupProject
+    _from_parent_attrs = {'group_id': 'id'}
+    _list_filters = ('archived', 'visibility', 'order_by', 'sort', 'search',
+                     'ci_enabled_first', 'simple', 'owned', 'starred',
+                     'with_custom_attributes')
+
+
+class GroupSubgroup(Group):
+    pass
+
+
+class GroupSubgroupManager(ListMixin, RESTManager):
+    _path = '/groups/%(group_id)s/subgroups'
+    _obj_cls = GroupSubgroup
+    _from_parent_attrs = {'group_id': 'id'}
+    _list_filters = ('skip_groups', 'all_available', 'search', 'order_by',
+                     'sort', 'statistics', 'owned', 'with_custom_attributes')
+
+
+class GroupMergeRequest(MergeRequest):
+    pass
+
+
+class GroupMergeRequestManager(ListMixin, RESTManager):
+    _path = '/groups/%(group_id)s/merge_requests'
+    _obj_cls = GroupMergeRequest
+    _from_parent_attrs = {'group_id': 'id'}
+    _list_filters = ('state', 'order_by', 'sort', 'milestone', 'view',
+                     'labels', 'created_after', 'created_before',
+                     'updated_after', 'updated_before', 'scope', 'author_id',
+                     'assignee_id', 'my_reaction_emoji', 'source_branch',
+                     'target_branch', 'search')
+    _types = {'labels': types.ListAttribute}
+
+
+class ProjectMergeRequest(MergeRequest):
+    pass
+
+
+class ProjectMergeRequestManager(CRUDMixin, RESTManager):
+    _path = '/projects/%(project_id)s/merge_requests'
+    _obj_cls = ProjectMergeRequest
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (
+        ('source_branch', 'target_branch', 'title'),
+        ('assignee_id', 'description', 'target_project_id', 'labels',
+         'milestone_id', 'remove_source_branch', 'allow_maintainer_to_push',
+         'squash')
+    )
+    _update_attrs = (
+        tuple(),
+        ('target_branch', 'assignee_id', 'title', 'description', 'state_event',
+         'labels', 'milestone_id', 'remove_source_branch', 'discussion_locked',
+         'allow_maintainer_to_push', 'squash'))
+    _list_filters = ('state', 'order_by', 'sort', 'milestone', 'view',
+                     'labels', 'created_after', 'created_before',
+                     'updated_after', 'updated_before', 'scope', 'author_id',
+                     'assignee_id', 'my_reaction_emoji', 'source_branch',
+                     'target_branch', 'search')
+    _types = {'labels': types.ListAttribute}
