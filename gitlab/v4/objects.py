@@ -1247,8 +1247,8 @@ class MergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
 
     def _get_path():
         if not hasattr(self, '_path'):
-            self._path = '/projects/%s/merge_requests/%s' % \
-                         (self.project_id, self.get_id())
+            self._path = ('/projects/%s/merge_requests/%s' %
+                         (self.project_id, self.get_id()))
         return self._path
 
 
