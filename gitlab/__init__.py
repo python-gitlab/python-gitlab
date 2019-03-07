@@ -165,8 +165,8 @@ class Gitlab(object):
         """The API version used (4 only)."""
         return self._api_version
 
-    @staticmethod
-    def from_config(gitlab_id=None, config_files=None):
+    @classmethod
+    def from_config(cls, gitlab_id=None, config_files=None):
         """Create a Gitlab connection from configuration files.
 
         Args:
@@ -181,13 +181,13 @@ class Gitlab(object):
         """
         config = gitlab.config.GitlabConfigParser(gitlab_id=gitlab_id,
                                                   config_files=config_files)
-        return Gitlab(config.url, private_token=config.private_token,
-                      oauth_token=config.oauth_token,
-                      ssl_verify=config.ssl_verify, timeout=config.timeout,
-                      http_username=config.http_username,
-                      http_password=config.http_password,
-                      api_version=config.api_version,
-                      per_page=config.per_page)
+        return cls(config.url, private_token=config.private_token,
+                   oauth_token=config.oauth_token,
+                   ssl_verify=config.ssl_verify, timeout=config.timeout,
+                   http_username=config.http_username,
+                   http_password=config.http_password,
+                   api_version=config.api_version,
+                   per_page=config.per_page)
 
     def auth(self):
         """Performs an authentication.
