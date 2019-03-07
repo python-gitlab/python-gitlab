@@ -2748,7 +2748,8 @@ class ProjectPipeline(RESTObject, RefreshMixin, ObjectDeleteMixin):
         self.manager.gitlab.http_post(path)
 
 
-class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin,
+                             RESTManager):
     _path = '/projects/%(project_id)s/pipelines'
     _obj_cls = ProjectPipeline
     _from_parent_attrs = {'project_id': 'id'}
