@@ -18,7 +18,9 @@
 
 from __future__ import print_function
 
+import os
 import pickle
+import tempfile
 try:
     import unittest
 except ImportError:
@@ -32,6 +34,17 @@ import requests
 import gitlab
 from gitlab import *  # noqa
 from gitlab.v4.objects import *  # noqa
+
+
+valid_config = b"""[global]
+default = one
+ssl_verify = true
+timeout = 2
+
+[one]
+url = http://one.url
+private_token = ABCDEF
+"""
 
 
 class TestSanitize(unittest.TestCase):
@@ -536,3 +549,22 @@ class TestGitlab(unittest.TestCase):
             self.assertEqual(type(user), User)
             self.assertEqual(user.name, "name")
             self.assertEqual(user.id, 1)
+
+    def _default_config(self):
+        fd, temp_path = tempfile.mkstemp()
+        os.write(fd, valid_config)
+        os.close(fd)
+        return temp_path
+
+    def test_from_config(self):
+        config_path = self._default_config()
+        gitlab.Gitlab.from_config('one', [config_path])
+        os.unlink(config_path)
+
+    def test_subclass_from_config(self):
+        class MyGitlab(gitlab.Gitlab):
+            pass
+        config_path = self._default_config()
+        gl = MyGitlab.from_config('one', [config_path])
+        self.assertEqual(type(gl).__name__, 'MyGitlab')
+        os.unlink(config_path)
