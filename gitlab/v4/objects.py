@@ -1047,8 +1047,8 @@ class LicenseManager(RetrieveMixin, RESTManager):
 
 
 class MergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
-                          ParticipantsMixin, SaveMixin, ObjectDeleteMixin,
-                          RESTObject):
+                   ParticipantsMixin, SaveMixin, ObjectDeleteMixin,
+                   RESTObject):
     _id_attr = 'iid'
 
     _managers = (
