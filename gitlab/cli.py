@@ -133,12 +133,9 @@ def _parse_value(v):
 def main():
     if "--version" in sys.argv:
         print(gitlab.__version__)
-        exit(0)
+        sys.exit(0)
 
     parser = _get_base_parser(add_help=False)
-    if "--help" in sys.argv or "-h" in sys.argv:
-        parser.print_help()
-        exit(0)
 
     # This first parsing step is used to find the gitlab config to use, and
     # load the propermodule (v3 or v4) accordingly. At that point we don't have
@@ -150,6 +147,9 @@ def main():
             options.config_file
         )
     except gitlab.config.ConfigError as e:
+        if "--help" in sys.argv or "-h" in sys.argv:
+            parser.print_help()
+            sys.exit(0)
         sys.exit(e)
     cli_module = importlib.import_module('gitlab.v%s.cli' % config.api_version)
 
