@@ -401,7 +401,7 @@ class UserAgentDetailMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        path = '%s/%s/user_agent_detail' % (self.manager.path, self.get_id())
+        path = self.get_path() + '/user_agent_detail'
         return self.manager.gitlab.http_get(path, **kwargs)
 
 
@@ -420,8 +420,7 @@ class AccessRequestMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabUpdateError: If the server fails to perform the request
         """
-
-        path = '%s/%s/approve' % (self.manager.path, self.id)
+        path = self.get_path() + '/approve'
         data = {'access_level': access_level}
         server_data = self.manager.gitlab.http_put(path, post_data=data,
                                                    **kwargs)
@@ -429,8 +428,9 @@ class AccessRequestMixin(object):
 
 
 class SubscribableMixin(object):
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest',
-                                 'ProjectLabel'))
+    @cli.register_custom_action(('ProjectIssue', 'ProjectLabel',
+                                 'MergeRequest', 'GroupMergeRequest',
+                                 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabSubscribeError)
     def subscribe(self, **kwargs):
         """Subscribe to the object notifications.
@@ -442,12 +442,13 @@ class SubscribableMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabSubscribeError: If the subscription cannot be done
         """
-        path = '%s/%s/subscribe' % (self.manager.path, self.get_id())
+        path = self.get_path() + '/subscribe'
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest',
-                                 'ProjectLabel'))
+    @cli.register_custom_action(('ProjectIssue', 'ProjectLabel',
+                                 'MergeRequest', 'GroupMergeRequest',
+                                 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabUnsubscribeError)
     def unsubscribe(self, **kwargs):
         """Unsubscribe from the object notifications.
@@ -459,13 +460,14 @@ class SubscribableMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabUnsubscribeError: If the unsubscription cannot be done
         """
-        path = '%s/%s/unsubscribe' % (self.manager.path, self.get_id())
+        path = self.get_path() + '/unsubscribe'
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
 
 class TodoMixin(object):
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'))
+    @cli.register_custom_action(('ProjectIssue', 'MergeRequest',
+                                 'GroupMergeRequest', 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabTodoError)
     def todo(self, **kwargs):
         """Create a todo associated to the object.
@@ -477,12 +479,13 @@ class TodoMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTodoError: If the todo cannot be set
         """
-        path = '%s/%s/todo' % (self.manager.path, self.get_id())
+        path = self.get_path() + '/todo'
         self.manager.gitlab.http_post(path, **kwargs)
 
 
 class TimeTrackingMixin(object):
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'))
+    @cli.register_custom_action(('ProjectIssue', 'MergeRequest',
+                                 'GroupMergeRequest', 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def time_stats(self, **kwargs):
         """Get time stats for the object.
@@ -499,10 +502,11 @@ class TimeTrackingMixin(object):
         if 'time_stats' in self.attributes:
             return self.attributes['time_stats']
 
-        path = '%s/%s/time_stats' % (self.manager.path, self.get_id())
+        path = self.get_path() + '/time_stats'
         return self.manager.gitlab.http_get(path, **kwargs)
 
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'),
+    @cli.register_custom_action(('ProjectIssue', 'MergeRequest',
+                                 'GroupMergeRequest', 'ProjectMergeRequest'),
                                 ('duration', ))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def time_estimate(self, duration, **kwargs):
@@ -516,11 +520,12 @@ class TimeTrackingMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
-        path = '%s/%s/time_estimate' % (self.manager.path, self.get_id())
+        path = self.get_path() + '/time_estimate'
         data = {'duration': duration}
         return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'))
+    @cli.register_custom_action(('ProjectIssue', 'MergeRequest',
+                                 'GroupMergeRequest', 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def reset_time_estimate(self, **kwargs):
         """Resets estimated time for the object to 0 seconds.
@@ -535,7 +540,8 @@ class TimeTrackingMixin(object):
         path = '%s/%s/reset_time_estimate' % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'),
+    @cli.register_custom_action(('ProjectIssue', 'MergeRequest',
+                                 'GroupMergeRequest', 'ProjectMergeRequest'),
                                 ('duration', ))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def add_spent_time(self, duration, **kwargs):
@@ -549,11 +555,12 @@ class TimeTrackingMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
-        path = '%s/%s/add_spent_time' % (self.manager.path, self.get_id())
+        path = self.get_path() + '/add_spent_time'
         data = {'duration': duration}
         return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'))
+    @cli.register_custom_action(('ProjectIssue', 'MergeRequest',
+                                 'GroupMergeRequest', 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def reset_spent_time(self, **kwargs):
         """Resets the time spent working on the object.
@@ -565,12 +572,13 @@ class TimeTrackingMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
-        path = '%s/%s/reset_spent_time' % (self.manager.path, self.get_id())
+        path = self.get_path() + '/reset_spent_time'
         return self.manager.gitlab.http_post(path, **kwargs)
 
 
 class ParticipantsMixin(object):
-    @cli.register_custom_action(('ProjectMergeRequest', 'ProjectIssue'))
+    @cli.register_custom_action(('MergeRequest', 'GroupMergeRequest',
+                                 'ProjectMergeRequest', 'ProjectIssue'))
     @exc.on_http_error(exc.GitlabListError)
     def participants(self, **kwargs):
         """List the participants.
@@ -590,8 +598,7 @@ class ParticipantsMixin(object):
         Returns:
             RESTObjectList: The list of participants
         """
-
-        path = '%s/%s/participants' % (self.manager.path, self.get_id())
+        path = self.get_path() + '/participants'
         return self.manager.gitlab.http_get(path, **kwargs)
 
 

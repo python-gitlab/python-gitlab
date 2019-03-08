@@ -855,7 +855,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('variables', 'GroupVariableManager'),
     )
 
-    @cli.register_custom_action('Group', ('to_project_id', ))
+    @cli.register_custom_action(('Group', 'GroupSubgroup'),
+                                ('to_project_id', ))
     @exc.on_http_error(exc.GitlabTransferProjectError)
     def transfer_project(self, to_project_id, **kwargs):
         """Transfer a project to this group.
@@ -871,7 +872,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = '/groups/%s/projects/%s' % (self.id, to_project_id)
         self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action('Group', ('scope', 'search'))
+    @cli.register_custom_action(('Group', 'GroupSubgroup'),
+                                ('scope', 'search'))
     @exc.on_http_error(exc.GitlabSearchError)
     def search(self, scope, search, **kwargs):
         """Search the group resources matching the provided string.'
@@ -892,7 +894,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = '/groups/%s/search' % self.get_id()
         return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
 
-    @cli.register_custom_action('Group', ('cn', 'group_access', 'provider'))
+    @cli.register_custom_action(('Group', 'GroupSubgroup'),
+                                ('cn', 'group_access', 'provider'))
     @exc.on_http_error(exc.GitlabCreateError)
     def add_ldap_group_link(self, cn, group_access, provider, **kwargs):
         """Add an LDAP group link.
@@ -912,7 +915,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         data = {'cn': cn, 'group_access': group_access, 'provider': provider}
         self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
-    @cli.register_custom_action('Group', ('cn',), ('provider',))
+    @cli.register_custom_action(('Group', 'GroupSubgroup'),
+                                ('cn',), ('provider',))
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete_ldap_group_link(self, cn, provider=None, **kwargs):
         """Delete an LDAP group link.
@@ -932,7 +936,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path += '/%s' % cn
         self.manager.gitlab.http_delete(path)
 
-    @cli.register_custom_action('Group')
+    @cli.register_custom_action(('Group', 'GroupSubgroup'))
     @exc.on_http_error(exc.GitlabCreateError)
     def ldap_sync(self, **kwargs):
         """Sync LDAP groups.
@@ -1049,7 +1053,13 @@ class LicenseManager(RetrieveMixin, RESTManager):
 class MergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                    ParticipantsMixin, SaveMixin, ObjectDeleteMixin,
                    RESTObject):
-    _id_attr = 'iid'
+    _id_attr = 'iid'  #TODO: should be tuple ('project_id','iid')
+    _short_print_attr = 'title'
+    _path = '/projects/%s/merge_requests'
+
+    def get_path(self):
+        print('Project_id: ', self.project_id)
+        return '%s/%s' % (self.path % self.project_id, self.get_id())
 
     _managers = (
         ('approvals', 'ProjectMergeRequestApprovalManager'),
@@ -1061,7 +1071,8 @@ class MergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
          'ProjectMergeRequestResourceLabelEventManager'),
     )
 
-    @cli.register_custom_action('MergeRequest')
+    @cli.register_custom_action(('MergeRequest', 'GroupMergeRequest',
+                                 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabMROnBuildSuccessError)
     def cancel_merge_when_pipeline_succeeds(self, **kwargs):
         """Cancel merge when the pipeline succeeds.
@@ -1078,7 +1089,8 @@ class MergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
         server_data = self.manager.gitlab.http_put(path, **kwargs)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action('MergeRequest')
+    @cli.register_custom_action(('MergeRequest', 'GroupMergeRequest',
+                                 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabListError)
     def closes_issues(self, **kwargs):
         """List issues that will close on merge."
@@ -1105,7 +1117,8 @@ class MergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                                       parent=self.manager._parent)
         return RESTObjectList(manager, ProjectIssue, data_list)
 
-    @cli.register_custom_action('MergeRequest')
+    @cli.register_custom_action(('MergeRequest', 'GroupMergeRequest',
+                                 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabListError)
     def commits(self, **kwargs):
         """List the merge request commits.
@@ -1132,7 +1145,8 @@ class MergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                                        parent=self.manager._parent)
         return RESTObjectList(manager, ProjectCommit, data_list)
 
-    @cli.register_custom_action('MergeRequest')
+    @cli.register_custom_action(('MergeRequest', 'GroupMergeRequest',
+                                 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabListError)
     def changes(self, **kwargs):
         """List the merge request changes.
@@ -1150,7 +1164,8 @@ class MergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
         path = self._get_path() + '/changes'
         return self.manager.gitlab.http_get(path, **kwargs)
 
-    @cli.register_custom_action('MergeRequest')
+    @cli.register_custom_action(('MergeRequest', 'GroupMergeRequest',
+                                 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabListError)
     def pipelines(self, **kwargs):
         """List the merge request pipelines.
@@ -1168,7 +1183,8 @@ class MergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
         path = self._get_path() + '/pipelines'
         return self.manager.gitlab.http_get(path, **kwargs)
 
-    @cli.register_custom_action('MergeRequest', tuple(), ('sha'))
+    @cli.register_custom_action(('MergeRequest', 'GroupMergeRequest',
+                                 'ProjectMergeRequest'), tuple(), ('sha'))
     @exc.on_http_error(exc.GitlabMRApprovalError)
     def approve(self, sha=None, **kwargs):
         """Approve the merge request.
@@ -1190,7 +1206,8 @@ class MergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                                                     **kwargs)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action('MergeRequest')
+    @cli.register_custom_action(('MergeRequest', 'GroupMergeRequest',
+                                 'ProjectMergeRequest'))
     @exc.on_http_error(exc.GitlabMRApprovalError)
     def unapprove(self, **kwargs):
         """Unapprove the merge request.
@@ -1209,7 +1226,9 @@ class MergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                                                     **kwargs)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action('MergeRequest', tuple(),
+    @cli.register_custom_action(('MergeRequest', 'GroupMergeRequest',
+                                 'ProjectMergeRequest'),
+                                tuple(),
                                 ('merge_commit_message',
                                  'should_remove_source_branch',
                                  'merge_when_pipeline_succeeds'))
@@ -1245,7 +1264,7 @@ class MergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
                                                    **kwargs)
         self._update_attrs(server_data)
 
-    def _get_path():
+    def _get_path(self):
         if not hasattr(self, '_path'):
             self._path = ('/projects/%s/merge_requests/%s' %
                           (self.project_id, self.get_id()))
@@ -1255,7 +1274,6 @@ class MergeRequest(SubscribableMixin, TodoMixin, TimeTrackingMixin,
 class MergeRequestManager(ListMixin, RESTManager):
     _path = '/merge_requests'
     _obj_cls = MergeRequest
-    _from_parent_attrs = {'group_id': 'id'}
     _list_filters = ('state', 'order_by', 'sort', 'milestone', 'view',
                      'labels', 'created_after', 'created_before',
                      'updated_after', 'updated_before', 'scope', 'author_id',

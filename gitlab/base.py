@@ -29,6 +29,7 @@ class RESTObject(object):
     without ID in the url.
     """
     _id_attr = 'id'
+    _path = None
 
     def __init__(self, manager, attrs):
         self.__dict__.update({
@@ -130,6 +131,10 @@ class RESTObject(object):
         if self._id_attr is None or not hasattr(self, self._id_attr):
             return None
         return getattr(self, self._id_attr)
+
+    def get_path(self):
+        """Returns the path of the resource."""
+        return '%s/%s' % (self._path or self.manager.path, self.get_id())
 
     @property
     def attributes(self):
