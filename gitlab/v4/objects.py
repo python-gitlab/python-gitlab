@@ -1997,7 +1997,7 @@ class ProjectRelease(RESTObject):
     _id_attr = 'tag_name'
 
 
-class ProjectReleaseManager(CRUDMixin, RESTManager):
+class ProjectReleaseManager(NoUpdateMixin, RESTManager):
     _path = '/projects/%(project_id)s/releases'
     _obj_cls = ProjectRelease
     _from_parent_attrs = {'project_id': 'id'}
