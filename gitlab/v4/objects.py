@@ -1194,7 +1194,7 @@ class ProjectRegistryTag(ObjectDeleteMixin, RESTObject):
 class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
     _obj_cls = ProjectRegistryTag
     _from_parent_attrs = {'project_id': 'project_id', 'repository_id': 'id'}
-    _path = '/projects/%(project_id)s/registry/repositories/%(repository_id)d/tags'
+    _path = '/projects/%(project_id)s/registry/repositories/%(repository_id)s/tags'
 
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete_in_bulk(self, name_regex='.*', **kwargs):
