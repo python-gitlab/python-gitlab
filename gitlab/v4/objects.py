@@ -1993,6 +1993,17 @@ class ProjectPagesDomainManager(CRUDMixin, RESTManager):
     _update_attrs = (tuple(), ('certificate', 'key'))
 
 
+class ProjectRelease(RESTObject):
+    _id_attr = 'tag_name'
+
+
+class ProjectReleaseManager(NoUpdateMixin, RESTManager):
+    _path = '/projects/%(project_id)s/releases'
+    _obj_cls = ProjectRelease
+    _from_parent_attrs = {'project_id': 'id'}
+    _create_attrs = (('name', 'tag_name', 'description', ), ('ref', 'assets', ))
+
+
 class ProjectTag(ObjectDeleteMixin, RESTObject):
     _id_attr = 'name'
     _short_print_attr = 'name'
@@ -3273,6 +3284,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ('protectedtags', 'ProjectProtectedTagManager'),
         ('pipelineschedules', 'ProjectPipelineScheduleManager'),
         ('pushrules', 'ProjectPushRulesManager'),
+        ('releases', 'ProjectReleaseManager'),
         ('runners', 'ProjectRunnerManager'),
         ('services', 'ProjectServiceManager'),
         ('snippets', 'ProjectSnippetManager'),
