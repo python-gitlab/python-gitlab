@@ -1196,6 +1196,7 @@ class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
     _from_parent_attrs = {'project_id': 'project_id', 'repository_id': 'id'}
     _path = '/projects/%(project_id)s/registry/repositories/%(repository_id)s/tags'
 
+    @cli.register_custom_action('ProjectRegistryTagManager', optional=('name_regex', 'keep_n', 'older_than'))
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete_in_bulk(self, name_regex='.*', **kwargs):
         """Delete Tag by name or in bulk
