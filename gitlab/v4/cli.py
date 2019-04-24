@@ -80,10 +80,10 @@ class GitlabCLI(object):
             if gitlab.mixins.GetWithoutIdMixin not in inspect.getmro(self.cls):
                 data[self.cls._id_attr] = self.args.pop(self.cls._id_attr)
             o = self.cls(self.mgr, data)
-            method_name = self.action.replace('-', '_')
-            return getattr(o, method_name)(**self.args)
         else:
-            return getattr(self.mgr, self.action)(**self.args)
+            o = self.mgr
+        method_name = self.action.replace('-', '_')
+        return getattr(o, method_name)(**self.args)
 
     def do_project_export_download(self):
         try:
