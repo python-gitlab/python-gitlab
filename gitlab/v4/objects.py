@@ -1199,7 +1199,7 @@ class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
     @cli.register_custom_action('ProjectRegistryTagManager', optional=('name_regex', 'keep_n', 'older_than'))
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete_in_bulk(self, name_regex='.*', **kwargs):
-        """Delete Tag by name or in bulk
+        """Delete Tag in bulk
 
         Args:
             name_regex (string): The regex of the name to delete. To delete all
@@ -1213,8 +1213,8 @@ class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
             GitlabDeleteError: If the server cannot perform the request
         """
         valid_attrs = ['keep_n', 'older_than']
-        data = {'name_regex':name_regex}
-        data.update({k: v for k,v in kwargs.items() if k in valid_attrs})
+        data = {'name_regex': name_regex}
+        data.update({k: v for k, v in kwargs.items() if k in valid_attrs})
         self.gitlab.http_delete(self.path, query_data=data, **kwargs)
 
 
