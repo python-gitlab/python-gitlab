@@ -2001,7 +2001,8 @@ class ProjectReleaseManager(NoUpdateMixin, RESTManager):
     _path = '/projects/%(project_id)s/releases'
     _obj_cls = ProjectRelease
     _from_parent_attrs = {'project_id': 'id'}
-    _create_attrs = (('name', 'tag_name', 'description', ), ('ref', 'assets', ))
+    _create_attrs = (('name', 'tag_name', 'description', ),
+                     ('ref', 'assets', ))
 
 
 class ProjectTag(ObjectDeleteMixin, RESTObject):
