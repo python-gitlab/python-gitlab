@@ -94,6 +94,16 @@ Full example with wait for finish::
         pipeline.refresh()
         time.sleep(1)
 
+You can trigger a pipeline using token authentication instead of user
+authentication. To do so create an anonymous Gitlab instance and use lazy
+objects to get the associated project::
+
+    gl = gitlab.Gitlab(URL)  # no authentication
+    project = gl.projects.get(project_id, lazy=True)  # no API call
+    project.trigger_pipeline('master', trigger_token)
+
+Reference: https://docs.gitlab.com/ee/ci/triggers/#trigger-token
+
 Pipeline schedule
 =================
 
