@@ -421,8 +421,9 @@ assert "@@" in admin_project.commits.list()[0].diff()[0]["diff"]
 
 # commit status
 commit = admin_project.commits.list()[0]
+size = len(commit.statuses.list())
 status = commit.statuses.create({"state": "success", "sha": commit.id})
-assert len(commit.statuses.list()) == 1
+assert len(commit.statuses.list()) == size + 1
 
 assert commit.refs()
 assert commit.merge_requests() is not None

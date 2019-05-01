@@ -319,6 +319,10 @@ Mark a job artifact as kept when expiration is set::
 
     build_or_job.keep_artifacts()
 
+Delete the artifacts of a job::
+
+    build_or_job.delete_artifacts()
+
 Get a job trace::
 
     build_or_job.trace()
