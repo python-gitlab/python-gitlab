@@ -1184,12 +1184,14 @@ class ProjectRegistryRepository(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectRegistryRepositoryManager(DeleteMixin, ListMixin, RESTManager):
-    _path= '/projects/%(project_id)s/registry/repositories'
+    _path = '/projects/%(project_id)s/registry/repositories'
     _obj_cls = ProjectRegistryRepository
     _from_parent_attrs = {'project_id': 'id'}
 
+
 class ProjectRegistryTag(ObjectDeleteMixin, RESTObject):
     _id_attr = 'name'
+
 
 class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
     _obj_cls = ProjectRegistryTag
