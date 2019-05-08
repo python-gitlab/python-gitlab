@@ -18,28 +18,28 @@ Examples
 
 Get the list of repository tags in given registry::
 
-      registries = project.registries.list()
-      registry = registries.pop()
-      tags = registry.tags.list()
+      repositories = project.repositories.list()
+      repository = repositories.pop()
+      tags = repository.tags.list()
 
 Get specific tag::
       
-      registry.tags.get(id=tag_name)
+      repository.tags.get(id=tag_name)
 
 Delete tag::
 
-      registry.tags.delete(id=tag_name)
+      repository.tags.delete(id=tag_name)
       # or
-      tag = registry.tags.get(id=tag_name)
+      tag = repository.tags.get(id=tag_name)
       tag.delete()
 
 Delete tag in bulk::
 
-      registry.tags.delete_in_bulk(keep_n=1)
+      repository.tags.delete_in_bulk(keep_n=1)
       # or 
-      registry.tags.delete_in_bulk(older_than="1m")
+      repository.tags.delete_in_bulk(older_than="1m")
       # or 
-      registry.tags.delete_in_bulk(name_regex="v.+", keep_n=2)
+      repository.tags.delete_in_bulk(name_regex="v.+", keep_n=2)
 
 .. note::   
 
