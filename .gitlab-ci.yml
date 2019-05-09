@@ -1,0 +1,96 @@
+image: python:3.7
+
+stages:
+  - lint
+  - build-test-image
+  - test
+  - deploy
+
+commitlint:
+  image: node:12
+  stage: lint
+  before_script:
+    - npm install -g @commitlint/cli @commitlint/config-conventional
+    - 'echo "module.exports = {extends: [\"@commitlint/config-conventional\"]}" > commitlint.config.js'
+  script:
+    - npx commitlint --from=origin/master
+  except:
+    - master
+
+#build_test_image:  # Currently hangs forever, because of GitLab Runner infrastructure issues
+#  stage: build-test-image
+#  image:
+#    name: gcr.io/kaniko-project/executor:debug
+#    entrypoint: [""]
+#  script:
+#    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+#    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/tools/Dockerfile-test --destination $CI_REGISTRY_IMAGE:test
+#  only:
+#    refs:
+#      - master
+#    changes:
+#      - tools/
+
+.tox_includes: &tox_includes
+  stage: test
+  before_script:
+    - pip install tox
+  script:
+    - tox -e $TOX_ENV
+
+test_2.7:
+  <<: *tox_includes
+  image: python:2.7
+  variables:
+    TOX_ENV: py27
+
+test_3.4:
+  <<: *tox_includes
+  image: python:3.4
+  variables:
+    TOX_ENV: py34
+    
+test_3.5:
+  <<: *tox_includes
+  image: python:3.5
+  variables:
+    TOX_ENV: py35
+    
+test_3.6:
+  <<: *tox_includes
+  image: python:3.6
+  variables:
+    TOX_ENV: py36
+    
+test_3.7:
+  <<: *tox_includes
+  image: python:3.7
+  variables:
+    TOX_ENV: py37
+
+test_3.8:
+  <<: *tox_includes
+  image: python:3.8-rc-alpine
+  variables:
+    TOX_ENV: py38
+  allow_failure: true
+
+test_docs:
+  <<: *tox_includes
+  variables:
+    TOX_ENV: docs
+
+deploy:
+  stage: deploy
+  script:
+    - pip install -U setuptools wheel twine
+    - python setup.py sdist bdist_wheel
+    # test package
+    - python3 -m venv test
+    - . test/bin/activate
+    - pip install -U dist/python-gitlab*.whl
+    - gitlab -h
+    - deactivate
+    - twine upload --skip-existing -u $TWINE_USERNAME -p $TWINE_PASSWORD dist/*
+  only:
+    - tags
