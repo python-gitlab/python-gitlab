@@ -34,6 +34,8 @@ API examples
    gl_objects/pagesdomains
    gl_objects/projects
    gl_objects/runners
+   gl_objects/repositories
+   gl_objects/repository_tags
    gl_objects/search
    gl_objects/settings
    gl_objects/snippets
