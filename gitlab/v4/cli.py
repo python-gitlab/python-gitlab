@@ -80,10 +80,10 @@ class GitlabCLI(object):
             if gitlab.mixins.GetWithoutIdMixin not in inspect.getmro(self.cls):
                 data[self.cls._id_attr] = self.args.pop(self.cls._id_attr)
             o = self.cls(self.mgr, data)
+            method_name = self.action.replace('-', '_')
+            return getattr(o, method_name)(**self.args)
         else:
-            o = self.mgr
-        method_name = self.action.replace('-', '_')
-        return getattr(o, method_name)(**self.args)
+            return getattr(self.mgr, self.action)(**self.args)
 
     def do_project_export_download(self):
         try:
@@ -217,14 +217,14 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                  for x in mgr_cls._from_parent_attrs]
                 sub_parser_action.add_argument("--sudo", required=False)
 
-            required, optional, needs_id = cli.custom_actions[name][action_name]
             # We need to get the object somehow
-            if needs_id and gitlab.mixins.GetWithoutIdMixin not in inspect.getmro(cls):
+            if gitlab.mixins.GetWithoutIdMixin not in inspect.getmro(cls):
                 if cls._id_attr is not None:
                     id_attr = cls._id_attr.replace('_', '-')
                     sub_parser_action.add_argument("--%s" % id_attr,
                                                    required=True)
 
+            required, optional, dummy = cli.custom_actions[name][action_name]
             [sub_parser_action.add_argument("--%s" % x.replace('_', '-'),
                                             required=True)
              for x in required if x != cls._id_attr]
