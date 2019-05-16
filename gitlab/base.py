@@ -28,35 +28,38 @@ class RESTObject(object):
     must be used as uniq ID. ``None`` means that the object can be updated
     without ID in the url.
     """
-    _id_attr = 'id'
+
+    _id_attr = "id"
 
     def __init__(self, manager, attrs):
-        self.__dict__.update({
-            'manager': manager,
-            '_attrs': attrs,
-            '_updated_attrs': {},
-            '_module': importlib.import_module(self.__module__)
-        })
-        self.__dict__['_parent_attrs'] = self.manager.parent_attrs
+        self.__dict__.update(
+            {
+                "manager": manager,
+                "_attrs": attrs,
+                "_updated_attrs": {},
+                "_module": importlib.import_module(self.__module__),
+            }
+        )
+        self.__dict__["_parent_attrs"] = self.manager.parent_attrs
         self._create_managers()
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        module = state.pop('_module')
-        state['_module_name'] = module.__name__
+        module = state.pop("_module")
+        state["_module_name"] = module.__name__
         return state
 
     def __setstate__(self, state):
-        module_name = state.pop('_module_name')
+        module_name = state.pop("_module_name")
         self.__dict__.update(state)
         self._module = importlib.import_module(module_name)
 
     def __getattr__(self, name):
         try:
-            return self.__dict__['_updated_attrs'][name]
+            return self.__dict__["_updated_attrs"][name]
         except KeyError:
             try:
-                value = self.__dict__['_attrs'][name]
+                value = self.__dict__["_attrs"][name]
 
                 # If the value is a list, we copy it in the _updated_attrs dict
                 # because we are not able to detect changes made on the object
@@ -69,32 +72,34 @@ class RESTObject(object):
                 # note: _parent_attrs will only store simple values (int) so we
                 # don't make this check in the next except block.
                 if isinstance(value, list):
-                    self.__dict__['_updated_attrs'][name] = value[:]
-                    return self.__dict__['_updated_attrs'][name]
+                    self.__dict__["_updated_attrs"][name] = value[:]
+                    return self.__dict__["_updated_attrs"][name]
 
                 return value
 
             except KeyError:
                 try:
-                    return self.__dict__['_parent_attrs'][name]
+                    return self.__dict__["_parent_attrs"][name]
                 except KeyError:
                     raise AttributeError(name)
 
     def __setattr__(self, name, value):
-        self.__dict__['_updated_attrs'][name] = value
+        self.__dict__["_updated_attrs"][name] = value
 
     def __str__(self):
         data = self._attrs.copy()
         data.update(self._updated_attrs)
-        return '%s => %s' % (type(self), data)
+        return "%s => %s" % (type(self), data)
 
     def __repr__(self):
         if self._id_attr:
-            return '<%s %s:%s>' % (self.__class__.__name__,
-                                   self._id_attr,
-                                   self.get_id())
+            return "<%s %s:%s>" % (
+                self.__class__.__name__,
+                self._id_attr,
+                self.get_id(),
+            )
         else:
-            return '<%s>' % self.__class__.__name__
+            return "<%s>" % self.__class__.__name__
 
     def __eq__(self, other):
         if self.get_id() and other.get_id():
@@ -112,7 +117,7 @@ class RESTObject(object):
         return hash(self.get_id())
 
     def _create_managers(self):
-        managers = getattr(self, '_managers', None)
+        managers = getattr(self, "_managers", None)
         if managers is None:
             return
 
@@ -122,8 +127,8 @@ class RESTObject(object):
             self.__dict__[attr] = manager
 
     def _update_attrs(self, new_attrs):
-        self.__dict__['_updated_attrs'] = {}
-        self.__dict__['_attrs'].update(new_attrs)
+        self.__dict__["_updated_attrs"] = {}
+        self.__dict__["_attrs"].update(new_attrs)
 
     def get_id(self):
         """Returns the id of the resource."""
@@ -133,9 +138,9 @@ class RESTObject(object):
 
     @property
     def attributes(self):
-        d = self.__dict__['_updated_attrs'].copy()
-        d.update(self.__dict__['_attrs'])
-        d.update(self.__dict__['_parent_attrs'])
+        d = self.__dict__["_updated_attrs"].copy()
+        d.update(self.__dict__["_attrs"])
+        d.update(self.__dict__["_parent_attrs"])
         return d
 
 
@@ -153,6 +158,7 @@ class RESTObjectList(object):
         obj_cls: Type of objects to create from the json data
         _list: A GitlabList object
     """
+
     def __init__(self, manager, obj_cls, _list):
         """Creates an objects list from a GitlabList.
 
@@ -250,11 +256,13 @@ class RESTManager(object):
         self._parent_attrs = {}
         if path is None:
             path = self._path
-        if self._parent is None or not hasattr(self, '_from_parent_attrs'):
+        if self._parent is None or not hasattr(self, "_from_parent_attrs"):
             return path
 
-        data = {self_attr: getattr(self._parent, parent_attr, None)
-                for self_attr, parent_attr in self._from_parent_attrs.items()}
+        data = {
+            self_attr: getattr(self._parent, parent_attr, None)
+            for self_attr, parent_attr in self._from_parent_attrs.items()
+        }
         self._parent_attrs = data
         return path % data
 

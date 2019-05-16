@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+
 try:
     from urllib.parse import urljoin
 except ImportError:
@@ -33,10 +34,7 @@ def obtain_csrf_token():
 
 
 def sign_in(csrf, cookies):
-    data = {
-        "user[login]": login,
-        "user[password]": password,
-    }
+    data = {"user[login]": login, "user[password]": password}
     data.update(csrf)
     r = requests.post(sign_in_route, data=data, cookies=cookies)
     token = find_csrf_token(r.text)
@@ -51,7 +49,7 @@ def obtain_personal_access_token(name, csrf, cookies):
     data.update(csrf)
     r = requests.post(pat_route, data=data, cookies=cookies)
     soup = BeautifulSoup(r.text, "lxml")
-    token = soup.find('input', id='created-personal-access-token').get('value')
+    token = soup.find("input", id="created-personal-access-token").get("value")
     return token
 
 
@@ -59,7 +57,7 @@ def main():
     csrf1, cookies1 = obtain_csrf_token()
     csrf2, cookies2 = sign_in(csrf1, cookies1)
 
-    token = obtain_personal_access_token('default', csrf2, cookies2)
+    token = obtain_personal_access_token("default", csrf2, cookies2)
     print(token)
 
 

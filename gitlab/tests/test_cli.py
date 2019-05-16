@@ -22,6 +22,7 @@ from __future__ import absolute_import
 import argparse
 import os
 import tempfile
+
 try:
     from contextlib import redirect_stderr  # noqa: H302
 except ImportError:
@@ -33,6 +34,7 @@ except ImportError:
         old_target, sys.stderr = sys.stderr, new_target
         yield
         sys.stderr = old_target
+
 
 try:
     import unittest
@@ -69,8 +71,8 @@ class TestCLI(unittest.TestCase):
         self.assertEqual(test.exception.code, 1)
 
     def test_parse_value(self):
-        ret = cli._parse_value('foobar')
-        self.assertEqual(ret, 'foobar')
+        ret = cli._parse_value("foobar")
+        self.assertEqual(ret, "foobar")
 
         ret = cli._parse_value(True)
         self.assertEqual(ret, True)
@@ -82,36 +84,39 @@ class TestCLI(unittest.TestCase):
         self.assertEqual(ret, None)
 
         fd, temp_path = tempfile.mkstemp()
-        os.write(fd, b'content')
+        os.write(fd, b"content")
         os.close(fd)
-        ret = cli._parse_value('@%s' % temp_path)
-        self.assertEqual(ret, 'content')
+        ret = cli._parse_value("@%s" % temp_path)
+        self.assertEqual(ret, "content")
         os.unlink(temp_path)
 
         fl = six.StringIO()
         with redirect_stderr(fl):
             with self.assertRaises(SystemExit) as exc:
-                cli._parse_value('@/thisfileprobablydoesntexist')
-            self.assertEqual(fl.getvalue(),
-                             "[Errno 2] No such file or directory:"
-                             " '/thisfileprobablydoesntexist'\n")
+                cli._parse_value("@/thisfileprobablydoesntexist")
+            self.assertEqual(
+                fl.getvalue(),
+                "[Errno 2] No such file or directory:"
+                " '/thisfileprobablydoesntexist'\n",
+            )
             self.assertEqual(exc.exception.code, 1)
 
     def test_base_parser(self):
         parser = cli._get_base_parser()
-        args = parser.parse_args(['-v', '-g', 'gl_id',
-                                  '-c', 'foo.cfg', '-c', 'bar.cfg'])
+        args = parser.parse_args(
+            ["-v", "-g", "gl_id", "-c", "foo.cfg", "-c", "bar.cfg"]
+        )
         self.assertTrue(args.verbose)
-        self.assertEqual(args.gitlab, 'gl_id')
-        self.assertEqual(args.config_file, ['foo.cfg', 'bar.cfg'])
+        self.assertEqual(args.gitlab, "gl_id")
+        self.assertEqual(args.config_file, ["foo.cfg", "bar.cfg"])
 
 
 class TestV4CLI(unittest.TestCase):
     def test_parse_args(self):
         parser = cli._get_parser(gitlab.v4.cli)
-        args = parser.parse_args(['project', 'list'])
-        self.assertEqual(args.what, 'project')
-        self.assertEqual(args.action, 'list')
+        args = parser.parse_args(["project", "list"])
+        self.assertEqual(args.what, "project")
+        self.assertEqual(args.action, "list")
 
     def test_parser(self):
         parser = cli._get_parser(gitlab.v4.cli)
@@ -121,29 +126,29 @@ class TestV4CLI(unittest.TestCase):
                 subparsers = action
                 break
         self.assertIsNotNone(subparsers)
-        self.assertIn('project', subparsers.choices)
+        self.assertIn("project", subparsers.choices)
 
         user_subparsers = None
-        for action in subparsers.choices['project']._actions:
+        for action in subparsers.choices["project"]._actions:
             if type(action) == argparse._SubParsersAction:
                 user_subparsers = action
                 break
         self.assertIsNotNone(user_subparsers)
-        self.assertIn('list', user_subparsers.choices)
-        self.assertIn('get', user_subparsers.choices)
-        self.assertIn('delete', user_subparsers.choices)
-        self.assertIn('update', user_subparsers.choices)
-        self.assertIn('create', user_subparsers.choices)
-        self.assertIn('archive', user_subparsers.choices)
-        self.assertIn('unarchive', user_subparsers.choices)
+        self.assertIn("list", user_subparsers.choices)
+        self.assertIn("get", user_subparsers.choices)
+        self.assertIn("delete", user_subparsers.choices)
+        self.assertIn("update", user_subparsers.choices)
+        self.assertIn("create", user_subparsers.choices)
+        self.assertIn("archive", user_subparsers.choices)
+        self.assertIn("unarchive", user_subparsers.choices)
 
-        actions = user_subparsers.choices['create']._option_string_actions
-        self.assertFalse(actions['--description'].required)
+        actions = user_subparsers.choices["create"]._option_string_actions
+        self.assertFalse(actions["--description"].required)
 
         user_subparsers = None
-        for action in subparsers.choices['group']._actions:
+        for action in subparsers.choices["group"]._actions:
             if type(action) == argparse._SubParsersAction:
                 user_subparsers = action
                 break
-        actions = user_subparsers.choices['create']._option_string_actions
-        self.assertTrue(actions['--name'].required)
+        actions = user_subparsers.choices["create"]._option_string_actions
+        self.assertTrue(actions["--name"].required)

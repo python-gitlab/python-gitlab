@@ -35,7 +35,7 @@ class ListAttribute(GitlabAttribute):
         if not cli_value.strip():
             self._value = []
         else:
-            self._value = [item.strip() for item in cli_value.split(',')]
+            self._value = [item.strip() for item in cli_value.split(",")]
 
     def get_for_api(self):
         return ",".join(self._value)
@@ -53,4 +53,4 @@ class FileAttribute(GitlabAttribute):
 
 class ImageAttribute(FileAttribute):
     def get_file_name(self, attr_name=None):
-        return '%s.png' % attr_name if attr_name else 'image.png'
+        return "%s.png" % attr_name if attr_name else "image.png"

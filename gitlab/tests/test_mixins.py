@@ -38,47 +38,47 @@ class TestObjectMixinsAttributes(unittest.TestCase):
             pass
 
         obj = O()
-        self.assertTrue(hasattr(obj, 'approve'))
+        self.assertTrue(hasattr(obj, "approve"))
 
     def test_subscribable_mixin(self):
         class O(SubscribableMixin):
             pass
 
         obj = O()
-        self.assertTrue(hasattr(obj, 'subscribe'))
-        self.assertTrue(hasattr(obj, 'unsubscribe'))
+        self.assertTrue(hasattr(obj, "subscribe"))
+        self.assertTrue(hasattr(obj, "unsubscribe"))
 
     def test_todo_mixin(self):
         class O(TodoMixin):
             pass
 
         obj = O()
-        self.assertTrue(hasattr(obj, 'todo'))
+        self.assertTrue(hasattr(obj, "todo"))
 
     def test_time_tracking_mixin(self):
         class O(TimeTrackingMixin):
             pass
 
         obj = O()
-        self.assertTrue(hasattr(obj, 'time_stats'))
-        self.assertTrue(hasattr(obj, 'time_estimate'))
-        self.assertTrue(hasattr(obj, 'reset_time_estimate'))
-        self.assertTrue(hasattr(obj, 'add_spent_time'))
-        self.assertTrue(hasattr(obj, 'reset_spent_time'))
+        self.assertTrue(hasattr(obj, "time_stats"))
+        self.assertTrue(hasattr(obj, "time_estimate"))
+        self.assertTrue(hasattr(obj, "reset_time_estimate"))
+        self.assertTrue(hasattr(obj, "add_spent_time"))
+        self.assertTrue(hasattr(obj, "reset_spent_time"))
 
     def test_set_mixin(self):
         class O(SetMixin):
             pass
 
         obj = O()
-        self.assertTrue(hasattr(obj, 'set'))
+        self.assertTrue(hasattr(obj, "set"))
 
     def test_user_agent_detail_mixin(self):
         class O(UserAgentDetailMixin):
             pass
 
         obj = O()
-        self.assertTrue(hasattr(obj, 'user_agent_detail'))
+        self.assertTrue(hasattr(obj, "user_agent_detail"))
 
 
 class TestMetaMixins(unittest.TestCase):
@@ -87,11 +87,11 @@ class TestMetaMixins(unittest.TestCase):
             pass
 
         obj = M()
-        self.assertTrue(hasattr(obj, 'list'))
-        self.assertTrue(hasattr(obj, 'get'))
-        self.assertFalse(hasattr(obj, 'create'))
-        self.assertFalse(hasattr(obj, 'update'))
-        self.assertFalse(hasattr(obj, 'delete'))
+        self.assertTrue(hasattr(obj, "list"))
+        self.assertTrue(hasattr(obj, "get"))
+        self.assertFalse(hasattr(obj, "create"))
+        self.assertFalse(hasattr(obj, "update"))
+        self.assertFalse(hasattr(obj, "delete"))
         self.assertIsInstance(obj, ListMixin)
         self.assertIsInstance(obj, GetMixin)
 
@@ -100,11 +100,11 @@ class TestMetaMixins(unittest.TestCase):
             pass
 
         obj = M()
-        self.assertTrue(hasattr(obj, 'get'))
-        self.assertTrue(hasattr(obj, 'list'))
-        self.assertTrue(hasattr(obj, 'create'))
-        self.assertTrue(hasattr(obj, 'update'))
-        self.assertTrue(hasattr(obj, 'delete'))
+        self.assertTrue(hasattr(obj, "get"))
+        self.assertTrue(hasattr(obj, "list"))
+        self.assertTrue(hasattr(obj, "create"))
+        self.assertTrue(hasattr(obj, "update"))
+        self.assertTrue(hasattr(obj, "delete"))
         self.assertIsInstance(obj, ListMixin)
         self.assertIsInstance(obj, GetMixin)
         self.assertIsInstance(obj, CreateMixin)
@@ -116,11 +116,11 @@ class TestMetaMixins(unittest.TestCase):
             pass
 
         obj = M()
-        self.assertTrue(hasattr(obj, 'get'))
-        self.assertTrue(hasattr(obj, 'list'))
-        self.assertTrue(hasattr(obj, 'create'))
-        self.assertFalse(hasattr(obj, 'update'))
-        self.assertTrue(hasattr(obj, 'delete'))
+        self.assertTrue(hasattr(obj, "get"))
+        self.assertTrue(hasattr(obj, "list"))
+        self.assertTrue(hasattr(obj, "create"))
+        self.assertFalse(hasattr(obj, "update"))
+        self.assertTrue(hasattr(obj, "delete"))
         self.assertIsInstance(obj, ListMixin)
         self.assertIsInstance(obj, GetMixin)
         self.assertIsInstance(obj, CreateMixin)
@@ -133,23 +133,25 @@ class FakeObject(base.RESTObject):
 
 
 class FakeManager(base.RESTManager):
-    _path = '/tests'
+    _path = "/tests"
     _obj_cls = FakeObject
 
 
 class TestMixinMethods(unittest.TestCase):
     def setUp(self):
-        self.gl = Gitlab("http://localhost", private_token="private_token",
-                         api_version=4)
+        self.gl = Gitlab(
+            "http://localhost", private_token="private_token", api_version=4
+        )
 
     def test_get_mixin(self):
         class M(GetMixin, FakeManager):
             pass
 
-        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/tests/42',
-                  method="get")
+        @urlmatch(
+            scheme="http", netloc="localhost", path="/api/v4/tests/42", method="get"
+        )
         def resp_cont(url, request):
-            headers = {'Content-Type': 'application/json'}
+            headers = {"Content-Type": "application/json"}
             content = '{"id": 42, "foo": "bar"}'
             return response(200, content, headers, None, 5, request)
 
@@ -157,36 +159,36 @@ class TestMixinMethods(unittest.TestCase):
             mgr = M(self.gl)
             obj = mgr.get(42)
             self.assertIsInstance(obj, FakeObject)
-            self.assertEqual(obj.foo, 'bar')
+            self.assertEqual(obj.foo, "bar")
             self.assertEqual(obj.id, 42)
 
     def test_refresh_mixin(self):
         class O(RefreshMixin, FakeObject):
             pass
 
-        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/tests/42',
-                  method="get")
+        @urlmatch(
+            scheme="http", netloc="localhost", path="/api/v4/tests/42", method="get"
+        )
         def resp_cont(url, request):
-            headers = {'Content-Type': 'application/json'}
+            headers = {"Content-Type": "application/json"}
             content = '{"id": 42, "foo": "bar"}'
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
             mgr = FakeManager(self.gl)
-            obj = O(mgr, {'id': 42})
+            obj = O(mgr, {"id": 42})
             res = obj.refresh()
             self.assertIsNone(res)
-            self.assertEqual(obj.foo, 'bar')
+            self.assertEqual(obj.foo, "bar")
             self.assertEqual(obj.id, 42)
 
     def test_get_without_id_mixin(self):
         class M(GetWithoutIdMixin, FakeManager):
             pass
 
-        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/tests',
-                  method="get")
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/tests", method="get")
         def resp_cont(url, request):
-            headers = {'Content-Type': 'application/json'}
+            headers = {"Content-Type": "application/json"}
             content = '{"foo": "bar"}'
             return response(200, content, headers, None, 5, request)
 
@@ -194,17 +196,16 @@ class TestMixinMethods(unittest.TestCase):
             mgr = M(self.gl)
             obj = mgr.get()
             self.assertIsInstance(obj, FakeObject)
-            self.assertEqual(obj.foo, 'bar')
-            self.assertFalse(hasattr(obj, 'id'))
+            self.assertEqual(obj.foo, "bar")
+            self.assertFalse(hasattr(obj, "id"))
 
     def test_list_mixin(self):
         class M(ListMixin, FakeManager):
             pass
 
-        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/tests',
-                  method="get")
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/tests", method="get")
         def resp_cont(url, request):
-            headers = {'Content-Type': 'application/json'}
+            headers = {"Content-Type": "application/json"}
             content = '[{"id": 42, "foo": "bar"},{"id": 43, "foo": "baz"}]'
             return response(200, content, headers, None, 5, request)
 
@@ -229,20 +230,21 @@ class TestMixinMethods(unittest.TestCase):
         class M(ListMixin, FakeManager):
             pass
 
-        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/others',
-                  method="get")
+        @urlmatch(
+            scheme="http", netloc="localhost", path="/api/v4/others", method="get"
+        )
         def resp_cont(url, request):
-            headers = {'Content-Type': 'application/json'}
+            headers = {"Content-Type": "application/json"}
             content = '[{"id": 42, "foo": "bar"}]'
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
             mgr = M(self.gl)
-            obj_list = mgr.list(path='/others', as_list=False)
+            obj_list = mgr.list(path="/others", as_list=False)
             self.assertIsInstance(obj_list, base.RESTObjectList)
             obj = obj_list.next()
             self.assertEqual(obj.id, 42)
-            self.assertEqual(obj.foo, 'bar')
+            self.assertEqual(obj.foo, "bar")
             self.assertRaises(StopIteration, obj_list.next)
 
     def test_create_mixin_get_attrs(self):
@@ -250,8 +252,8 @@ class TestMixinMethods(unittest.TestCase):
             pass
 
         class M2(CreateMixin, FakeManager):
-            _create_attrs = (('foo',), ('bar', 'baz'))
-            _update_attrs = (('foo',), ('bam', ))
+            _create_attrs = (("foo",), ("bar", "baz"))
+            _update_attrs = (("foo",), ("bam",))
 
         mgr = M1(self.gl)
         required, optional = mgr.get_create_attrs()
@@ -260,69 +262,71 @@ class TestMixinMethods(unittest.TestCase):
 
         mgr = M2(self.gl)
         required, optional = mgr.get_create_attrs()
-        self.assertIn('foo', required)
-        self.assertIn('bar', optional)
-        self.assertIn('baz', optional)
-        self.assertNotIn('bam', optional)
+        self.assertIn("foo", required)
+        self.assertIn("bar", optional)
+        self.assertIn("baz", optional)
+        self.assertNotIn("bam", optional)
 
     def test_create_mixin_missing_attrs(self):
         class M(CreateMixin, FakeManager):
-            _create_attrs = (('foo',), ('bar', 'baz'))
+            _create_attrs = (("foo",), ("bar", "baz"))
 
         mgr = M(self.gl)
-        data = {'foo': 'bar', 'baz': 'blah'}
+        data = {"foo": "bar", "baz": "blah"}
         mgr._check_missing_create_attrs(data)
 
-        data = {'baz': 'blah'}
+        data = {"baz": "blah"}
         with self.assertRaises(AttributeError) as error:
             mgr._check_missing_create_attrs(data)
-        self.assertIn('foo', str(error.exception))
+        self.assertIn("foo", str(error.exception))
 
     def test_create_mixin(self):
         class M(CreateMixin, FakeManager):
-            _create_attrs = (('foo',), ('bar', 'baz'))
-            _update_attrs = (('foo',), ('bam', ))
+            _create_attrs = (("foo",), ("bar", "baz"))
+            _update_attrs = (("foo",), ("bam",))
 
-        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/tests',
-                  method="post")
+        @urlmatch(
+            scheme="http", netloc="localhost", path="/api/v4/tests", method="post"
+        )
         def resp_cont(url, request):
-            headers = {'Content-Type': 'application/json'}
+            headers = {"Content-Type": "application/json"}
             content = '{"id": 42, "foo": "bar"}'
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
             mgr = M(self.gl)
-            obj = mgr.create({'foo': 'bar'})
+            obj = mgr.create({"foo": "bar"})
             self.assertIsInstance(obj, FakeObject)
             self.assertEqual(obj.id, 42)
-            self.assertEqual(obj.foo, 'bar')
+            self.assertEqual(obj.foo, "bar")
 
     def test_create_mixin_custom_path(self):
         class M(CreateMixin, FakeManager):
-            _create_attrs = (('foo',), ('bar', 'baz'))
-            _update_attrs = (('foo',), ('bam', ))
+            _create_attrs = (("foo",), ("bar", "baz"))
+            _update_attrs = (("foo",), ("bam",))
 
-        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/others',
-                  method="post")
+        @urlmatch(
+            scheme="http", netloc="localhost", path="/api/v4/others", method="post"
+        )
         def resp_cont(url, request):
-            headers = {'Content-Type': 'application/json'}
+            headers = {"Content-Type": "application/json"}
             content = '{"id": 42, "foo": "bar"}'
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
             mgr = M(self.gl)
-            obj = mgr.create({'foo': 'bar'}, path='/others')
+            obj = mgr.create({"foo": "bar"}, path="/others")
             self.assertIsInstance(obj, FakeObject)
             self.assertEqual(obj.id, 42)
-            self.assertEqual(obj.foo, 'bar')
+            self.assertEqual(obj.foo, "bar")
 
     def test_update_mixin_get_attrs(self):
         class M1(UpdateMixin, FakeManager):
             pass
 
         class M2(UpdateMixin, FakeManager):
-            _create_attrs = (('foo',), ('bar', 'baz'))
-            _update_attrs = (('foo',), ('bam', ))
+            _create_attrs = (("foo",), ("bar", "baz"))
+            _update_attrs = (("foo",), ("bam",))
 
         mgr = M1(self.gl)
         required, optional = mgr.get_update_attrs()
@@ -331,70 +335,71 @@ class TestMixinMethods(unittest.TestCase):
 
         mgr = M2(self.gl)
         required, optional = mgr.get_update_attrs()
-        self.assertIn('foo', required)
-        self.assertIn('bam', optional)
-        self.assertNotIn('bar', optional)
-        self.assertNotIn('baz', optional)
+        self.assertIn("foo", required)
+        self.assertIn("bam", optional)
+        self.assertNotIn("bar", optional)
+        self.assertNotIn("baz", optional)
 
     def test_update_mixin_missing_attrs(self):
         class M(UpdateMixin, FakeManager):
-            _update_attrs = (('foo',), ('bar', 'baz'))
+            _update_attrs = (("foo",), ("bar", "baz"))
 
         mgr = M(self.gl)
-        data = {'foo': 'bar', 'baz': 'blah'}
+        data = {"foo": "bar", "baz": "blah"}
         mgr._check_missing_update_attrs(data)
 
-        data = {'baz': 'blah'}
+        data = {"baz": "blah"}
         with self.assertRaises(AttributeError) as error:
             mgr._check_missing_update_attrs(data)
-        self.assertIn('foo', str(error.exception))
+        self.assertIn("foo", str(error.exception))
 
     def test_update_mixin(self):
         class M(UpdateMixin, FakeManager):
-            _create_attrs = (('foo',), ('bar', 'baz'))
-            _update_attrs = (('foo',), ('bam', ))
+            _create_attrs = (("foo",), ("bar", "baz"))
+            _update_attrs = (("foo",), ("bam",))
 
-        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/tests/42',
-                  method="put")
+        @urlmatch(
+            scheme="http", netloc="localhost", path="/api/v4/tests/42", method="put"
+        )
         def resp_cont(url, request):
-            headers = {'Content-Type': 'application/json'}
+            headers = {"Content-Type": "application/json"}
             content = '{"id": 42, "foo": "baz"}'
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
             mgr = M(self.gl)
-            server_data = mgr.update(42, {'foo': 'baz'})
+            server_data = mgr.update(42, {"foo": "baz"})
             self.assertIsInstance(server_data, dict)
-            self.assertEqual(server_data['id'], 42)
-            self.assertEqual(server_data['foo'], 'baz')
+            self.assertEqual(server_data["id"], 42)
+            self.assertEqual(server_data["foo"], "baz")
 
     def test_update_mixin_no_id(self):
         class M(UpdateMixin, FakeManager):
-            _create_attrs = (('foo',), ('bar', 'baz'))
-            _update_attrs = (('foo',), ('bam', ))
+            _create_attrs = (("foo",), ("bar", "baz"))
+            _update_attrs = (("foo",), ("bam",))
 
-        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/tests',
-                  method="put")
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/tests", method="put")
         def resp_cont(url, request):
-            headers = {'Content-Type': 'application/json'}
+            headers = {"Content-Type": "application/json"}
             content = '{"foo": "baz"}'
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
             mgr = M(self.gl)
-            server_data = mgr.update(new_data={'foo': 'baz'})
+            server_data = mgr.update(new_data={"foo": "baz"})
             self.assertIsInstance(server_data, dict)
-            self.assertEqual(server_data['foo'], 'baz')
+            self.assertEqual(server_data["foo"], "baz")
 
     def test_delete_mixin(self):
         class M(DeleteMixin, FakeManager):
             pass
 
-        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/tests/42',
-                  method="delete")
+        @urlmatch(
+            scheme="http", netloc="localhost", path="/api/v4/tests/42", method="delete"
+        )
         def resp_cont(url, request):
-            headers = {'Content-Type': 'application/json'}
-            content = ''
+            headers = {"Content-Type": "application/json"}
+            content = ""
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
@@ -408,35 +413,37 @@ class TestMixinMethods(unittest.TestCase):
         class O(SaveMixin, RESTObject):
             pass
 
-        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/tests/42',
-                  method="put")
+        @urlmatch(
+            scheme="http", netloc="localhost", path="/api/v4/tests/42", method="put"
+        )
         def resp_cont(url, request):
-            headers = {'Content-Type': 'application/json'}
+            headers = {"Content-Type": "application/json"}
             content = '{"id": 42, "foo": "baz"}'
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
             mgr = M(self.gl)
-            obj = O(mgr, {'id': 42, 'foo': 'bar'})
-            obj.foo = 'baz'
+            obj = O(mgr, {"id": 42, "foo": "bar"})
+            obj.foo = "baz"
             obj.save()
-            self.assertEqual(obj._attrs['foo'], 'baz')
+            self.assertEqual(obj._attrs["foo"], "baz")
             self.assertDictEqual(obj._updated_attrs, {})
 
     def test_set_mixin(self):
         class M(SetMixin, FakeManager):
             pass
 
-        @urlmatch(scheme="http", netloc="localhost", path='/api/v4/tests/foo',
-                  method="put")
+        @urlmatch(
+            scheme="http", netloc="localhost", path="/api/v4/tests/foo", method="put"
+        )
         def resp_cont(url, request):
-            headers = {'Content-Type': 'application/json'}
+            headers = {"Content-Type": "application/json"}
             content = '{"key": "foo", "value": "bar"}'
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
             mgr = M(self.gl)
-            obj = mgr.set('foo', 'bar')
+            obj = mgr.set("foo", "bar")
             self.assertIsInstance(obj, FakeObject)
-            self.assertEqual(obj.key, 'foo')
-            self.assertEqual(obj.value, 'bar')
+            self.assertEqual(obj.key, "foo")
+            self.assertEqual(obj.value, "bar")
