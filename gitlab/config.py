@@ -19,10 +19,7 @@ import os
 
 from six.moves import configparser
 
-_DEFAULT_FILES = [
-    '/etc/python-gitlab.cfg',
-    os.path.expanduser('~/.python-gitlab.cfg')
-]
+_DEFAULT_FILES = ["/etc/python-gitlab.cfg", os.path.expanduser("~/.python-gitlab.cfg")]
 
 
 class ConfigError(Exception):
@@ -63,40 +60,41 @@ class GitlabConfigParser(object):
 
         if self.gitlab_id is None:
             try:
-                self.gitlab_id = self._config.get('global', 'default')
+                self.gitlab_id = self._config.get("global", "default")
             except Exception:
-                raise GitlabIDError("Impossible to get the gitlab id "
-                                    "(not specified in config file)")
+                raise GitlabIDError(
+                    "Impossible to get the gitlab id " "(not specified in config file)"
+                )
 
         try:
-            self.url = self._config.get(self.gitlab_id, 'url')
+            self.url = self._config.get(self.gitlab_id, "url")
         except Exception:
-            raise GitlabDataError("Impossible to get gitlab informations from "
-                                  "configuration (%s)" % self.gitlab_id)
+            raise GitlabDataError(
+                "Impossible to get gitlab informations from "
+                "configuration (%s)" % self.gitlab_id
+            )
 
         self.ssl_verify = True
         try:
-            self.ssl_verify = self._config.getboolean('global', 'ssl_verify')
+            self.ssl_verify = self._config.getboolean("global", "ssl_verify")
         except ValueError:
             # Value Error means the option exists but isn't a boolean.
             # Get as a string instead as it should then be a local path to a
             # CA bundle.
             try:
-                self.ssl_verify = self._config.get('global', 'ssl_verify')
+                self.ssl_verify = self._config.get("global", "ssl_verify")
             except Exception:
                 pass
         except Exception:
             pass
         try:
-            self.ssl_verify = self._config.getboolean(self.gitlab_id,
-                                                      'ssl_verify')
+            self.ssl_verify = self._config.getboolean(self.gitlab_id, "ssl_verify")
         except ValueError:
             # Value Error means the option exists but isn't a boolean.
             # Get as a string instead as it should then be a local path to a
             # CA bundle.
             try:
-                self.ssl_verify = self._config.get(self.gitlab_id,
-                                                   'ssl_verify')
+                self.ssl_verify = self._config.get(self.gitlab_id, "ssl_verify")
             except Exception:
                 pass
         except Exception:
@@ -104,66 +102,59 @@ class GitlabConfigParser(object):
 
         self.timeout = 60
         try:
-            self.timeout = self._config.getint('global', 'timeout')
+            self.timeout = self._config.getint("global", "timeout")
         except Exception:
             pass
         try:
-            self.timeout = self._config.getint(self.gitlab_id, 'timeout')
+            self.timeout = self._config.getint(self.gitlab_id, "timeout")
         except Exception:
             pass
 
         self.private_token = None
         try:
-            self.private_token = self._config.get(self.gitlab_id,
-                                                  'private_token')
+            self.private_token = self._config.get(self.gitlab_id, "private_token")
         except Exception:
             pass
 
         self.oauth_token = None
         try:
-            self.oauth_token = self._config.get(self.gitlab_id, 'oauth_token')
+            self.oauth_token = self._config.get(self.gitlab_id, "oauth_token")
         except Exception:
             pass
 
         self.http_username = None
         self.http_password = None
         try:
-            self.http_username = self._config.get(self.gitlab_id,
-                                                  'http_username')
-            self.http_password = self._config.get(self.gitlab_id,
-                                                  'http_password')
+            self.http_username = self._config.get(self.gitlab_id, "http_username")
+            self.http_password = self._config.get(self.gitlab_id, "http_password")
         except Exception:
             pass
 
         self.http_username = None
         self.http_password = None
         try:
-            self.http_username = self._config.get(self.gitlab_id,
-                                                  'http_username')
-            self.http_password = self._config.get(self.gitlab_id,
-                                                  'http_password')
+            self.http_username = self._config.get(self.gitlab_id, "http_username")
+            self.http_password = self._config.get(self.gitlab_id, "http_password")
         except Exception:
             pass
 
-        self.api_version = '4'
+        self.api_version = "4"
         try:
-            self.api_version = self._config.get('global', 'api_version')
+            self.api_version = self._config.get("global", "api_version")
         except Exception:
             pass
         try:
-            self.api_version = self._config.get(self.gitlab_id, 'api_version')
+            self.api_version = self._config.get(self.gitlab_id, "api_version")
         except Exception:
             pass
-        if self.api_version not in ('4',):
-            raise GitlabDataError("Unsupported API version: %s" %
-                                  self.api_version)
+        if self.api_version not in ("4",):
+            raise GitlabDataError("Unsupported API version: %s" % self.api_version)
 
         self.per_page = None
-        for section in ['global', self.gitlab_id]:
+        for section in ["global", self.gitlab_id]:
             try:
-                self.per_page = self._config.getint(section, 'per_page')
+                self.per_page = self._config.getint(section, "per_page")
             except Exception:
                 pass
         if self.per_page is not None and not 0 <= self.per_page <= 100:
-            raise GitlabDataError("Unsupported per_page number: %s" %
-                                  self.per_page)
+            raise GitlabDataError("Unsupported per_page number: %s" % self.per_page)

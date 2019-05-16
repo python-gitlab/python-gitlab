@@ -25,13 +25,13 @@ from gitlab import types
 
 class TestGitlabAttribute(unittest.TestCase):
     def test_all(self):
-        o = types.GitlabAttribute('whatever')
-        self.assertEqual('whatever', o.get())
+        o = types.GitlabAttribute("whatever")
+        self.assertEqual("whatever", o.get())
 
-        o.set_from_cli('whatever2')
-        self.assertEqual('whatever2', o.get())
+        o.set_from_cli("whatever2")
+        self.assertEqual("whatever2", o.get())
 
-        self.assertEqual('whatever2', o.get_for_api())
+        self.assertEqual("whatever2", o.get_for_api())
 
         o = types.GitlabAttribute()
         self.assertEqual(None, o._value)
@@ -40,27 +40,27 @@ class TestGitlabAttribute(unittest.TestCase):
 class TestListAttribute(unittest.TestCase):
     def test_list_input(self):
         o = types.ListAttribute()
-        o.set_from_cli('foo,bar,baz')
-        self.assertEqual(['foo', 'bar', 'baz'], o.get())
+        o.set_from_cli("foo,bar,baz")
+        self.assertEqual(["foo", "bar", "baz"], o.get())
 
-        o.set_from_cli('foo')
-        self.assertEqual(['foo'], o.get())
+        o.set_from_cli("foo")
+        self.assertEqual(["foo"], o.get())
 
     def test_empty_input(self):
         o = types.ListAttribute()
-        o.set_from_cli('')
+        o.set_from_cli("")
         self.assertEqual([], o.get())
 
-        o.set_from_cli('  ')
+        o.set_from_cli("  ")
         self.assertEqual([], o.get())
 
     def test_get_for_api(self):
         o = types.ListAttribute()
-        o.set_from_cli('foo,bar,baz')
-        self.assertEqual('foo,bar,baz', o.get_for_api())
+        o.set_from_cli("foo,bar,baz")
+        self.assertEqual("foo,bar,baz", o.get_for_api())
 
 
 class TestLowercaseStringAttribute(unittest.TestCase):
     def test_get_for_api(self):
-        o = types.LowercaseStringAttribute('FOO')
-        self.assertEqual('foo', o.get_for_api())
+        o = types.LowercaseStringAttribute("FOO")
+        self.assertEqual("foo", o.get_for_api())

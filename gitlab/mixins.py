@@ -42,8 +42,8 @@ class GetMixin(object):
             GitlabGetError: If the server cannot perform the request
         """
         if not isinstance(id, int):
-            id = id.replace('/', '%2F')
-        path = '%s/%s' % (self.path, id)
+            id = id.replace("/", "%2F")
+        path = "%s/%s" % (self.path, id)
         if lazy is True:
             return self._obj_cls(self, {self._obj_cls._id_attr: id})
         server_data = self.gitlab.http_get(path, **kwargs)
@@ -86,7 +86,7 @@ class RefreshMixin(object):
             GitlabGetError: If the server cannot perform the request
         """
         if self._id_attr:
-            path = '%s/%s' % (self.manager.path, self.id)
+            path = "%s/%s" % (self.manager.path, self.id)
         else:
             path = self.manager.path
         server_data = self.manager.gitlab.http_get(path, **kwargs)
@@ -117,10 +117,10 @@ class ListMixin(object):
         # Duplicate data to avoid messing with what the user sent us
         data = kwargs.copy()
         if self.gitlab.per_page:
-            data.setdefault('per_page', self.gitlab.per_page)
+            data.setdefault("per_page", self.gitlab.per_page)
 
         # We get the attributes that need some special transformation
-        types = getattr(self, '_types', {})
+        types = getattr(self, "_types", {})
         if types:
             for attr_name, type_cls in types.items():
                 if attr_name in data.keys():
@@ -128,7 +128,7 @@ class ListMixin(object):
                     data[attr_name] = type_obj.get_for_api()
 
         # Allow to overwrite the path, handy for custom listings
-        path = data.pop('path', self.path)
+        path = data.pop("path", self.path)
 
         obj = self.gitlab.http_list(path, **data)
         if isinstance(obj, list):
@@ -159,7 +159,7 @@ class CreateMixin(object):
             tuple: 2 items: list of required arguments and list of optional
                    arguments for creation (in that order)
         """
-        return getattr(self, '_create_attrs', (tuple(), tuple()))
+        return getattr(self, "_create_attrs", (tuple(), tuple()))
 
     @exc.on_http_error(exc.GitlabCreateError)
     def create(self, data, **kwargs):
@@ -182,7 +182,7 @@ class CreateMixin(object):
         files = {}
 
         # We get the attributes that need some special transformation
-        types = getattr(self, '_types', {})
+        types = getattr(self, "_types", {})
         if types:
             # Duplicate data to avoid messing with what the user sent us
             data = data.copy()
@@ -199,9 +199,8 @@ class CreateMixin(object):
                         data[attr_name] = type_obj.get_for_api()
 
         # Handle specific URL for creation
-        path = kwargs.pop('path', self.path)
-        server_data = self.gitlab.http_post(path, post_data=data, files=files,
-                                            **kwargs)
+        path = kwargs.pop("path", self.path)
+        server_data = self.gitlab.http_post(path, post_data=data, files=files, **kwargs)
         return self._obj_cls(self, server_data)
 
 
@@ -223,7 +222,7 @@ class UpdateMixin(object):
             tuple: 2 items: list of required arguments and list of optional
                    arguments for update (in that order)
         """
-        return getattr(self, '_update_attrs', (tuple(), tuple()))
+        return getattr(self, "_update_attrs", (tuple(), tuple()))
 
     def _get_update_method(self):
         """Return the HTTP method to use.
@@ -231,7 +230,7 @@ class UpdateMixin(object):
         Returns:
             object: http_put (default) or http_post
         """
-        if getattr(self, '_update_uses_post', False):
+        if getattr(self, "_update_uses_post", False):
             http_method = self.gitlab.http_post
         else:
             http_method = self.gitlab.http_put
@@ -257,13 +256,13 @@ class UpdateMixin(object):
         if id is None:
             path = self.path
         else:
-            path = '%s/%s' % (self.path, id)
+            path = "%s/%s" % (self.path, id)
 
         self._check_missing_update_attrs(new_data)
         files = {}
 
         # We get the attributes that need some special transformation
-        types = getattr(self, '_types', {})
+        types = getattr(self, "_types", {})
         if types:
             # Duplicate data to avoid messing with what the user sent us
             new_data = new_data.copy()
@@ -300,8 +299,8 @@ class SetMixin(object):
         Returns:
             obj: The created/updated attribute
         """
-        path = '%s/%s' % (self.path, key.replace('/', '%2F'))
-        data = {'value': value}
+        path = "%s/%s" % (self.path, key.replace("/", "%2F"))
+        data = {"value": value}
         server_data = self.gitlab.http_put(path, post_data=data, **kwargs)
         return self._obj_cls(self, server_data)
 
@@ -323,8 +322,8 @@ class DeleteMixin(object):
             path = self.path
         else:
             if not isinstance(id, int):
-                id = id.replace('/', '%2F')
-            path = '%s/%s' % (self.path, id)
+                id = id.replace("/", "%2F")
+            path = "%s/%s" % (self.path, id)
         self.gitlab.http_delete(path, **kwargs)
 
 
@@ -338,6 +337,7 @@ class NoUpdateMixin(GetMixin, ListMixin, CreateMixin, DeleteMixin):
 
 class SaveMixin(object):
     """Mixin for RESTObject's that can be updated."""
+
     def _get_updated_data(self):
         updated_data = {}
         required, optional = self.manager.get_update_attrs()
@@ -375,6 +375,7 @@ class SaveMixin(object):
 
 class ObjectDeleteMixin(object):
     """Mixin for RESTObject's that can be deleted."""
+
     def delete(self, **kwargs):
         """Delete the object from the server.
 
@@ -389,7 +390,7 @@ class ObjectDeleteMixin(object):
 
 
 class UserAgentDetailMixin(object):
-    @cli.register_custom_action(('Snippet', 'ProjectSnippet', 'ProjectIssue'))
+    @cli.register_custom_action(("Snippet", "ProjectSnippet", "ProjectIssue"))
     @exc.on_http_error(exc.GitlabGetError)
     def user_agent_detail(self, **kwargs):
         """Get the user agent detail.
@@ -401,13 +402,14 @@ class UserAgentDetailMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        path = '%s/%s/user_agent_detail' % (self.manager.path, self.get_id())
+        path = "%s/%s/user_agent_detail" % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)
 
 
 class AccessRequestMixin(object):
-    @cli.register_custom_action(('ProjectAccessRequest', 'GroupAccessRequest'),
-                                tuple(), ('access_level', ))
+    @cli.register_custom_action(
+        ("ProjectAccessRequest", "GroupAccessRequest"), tuple(), ("access_level",)
+    )
     @exc.on_http_error(exc.GitlabUpdateError)
     def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
         """Approve an access request.
@@ -421,16 +423,14 @@ class AccessRequestMixin(object):
             GitlabUpdateError: If the server fails to perform the request
         """
 
-        path = '%s/%s/approve' % (self.manager.path, self.id)
-        data = {'access_level': access_level}
-        server_data = self.manager.gitlab.http_put(path, post_data=data,
-                                                   **kwargs)
+        path = "%s/%s/approve" % (self.manager.path, self.id)
+        data = {"access_level": access_level}
+        server_data = self.manager.gitlab.http_put(path, post_data=data, **kwargs)
         self._update_attrs(server_data)
 
 
 class SubscribableMixin(object):
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest',
-                                 'ProjectLabel'))
+    @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest", "ProjectLabel"))
     @exc.on_http_error(exc.GitlabSubscribeError)
     def subscribe(self, **kwargs):
         """Subscribe to the object notifications.
@@ -442,12 +442,11 @@ class SubscribableMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabSubscribeError: If the subscription cannot be done
         """
-        path = '%s/%s/subscribe' % (self.manager.path, self.get_id())
+        path = "%s/%s/subscribe" % (self.manager.path, self.get_id())
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest',
-                                 'ProjectLabel'))
+    @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest", "ProjectLabel"))
     @exc.on_http_error(exc.GitlabUnsubscribeError)
     def unsubscribe(self, **kwargs):
         """Unsubscribe from the object notifications.
@@ -459,13 +458,13 @@ class SubscribableMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabUnsubscribeError: If the unsubscription cannot be done
         """
-        path = '%s/%s/unsubscribe' % (self.manager.path, self.get_id())
+        path = "%s/%s/unsubscribe" % (self.manager.path, self.get_id())
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
 
 class TodoMixin(object):
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'))
+    @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTodoError)
     def todo(self, **kwargs):
         """Create a todo associated to the object.
@@ -477,12 +476,12 @@ class TodoMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTodoError: If the todo cannot be set
         """
-        path = '%s/%s/todo' % (self.manager.path, self.get_id())
+        path = "%s/%s/todo" % (self.manager.path, self.get_id())
         self.manager.gitlab.http_post(path, **kwargs)
 
 
 class TimeTrackingMixin(object):
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'))
+    @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def time_stats(self, **kwargs):
         """Get time stats for the object.
@@ -496,14 +495,13 @@ class TimeTrackingMixin(object):
         """
         # Use the existing time_stats attribute if it exist, otherwise make an
         # API call
-        if 'time_stats' in self.attributes:
-            return self.attributes['time_stats']
+        if "time_stats" in self.attributes:
+            return self.attributes["time_stats"]
 
-        path = '%s/%s/time_stats' % (self.manager.path, self.get_id())
+        path = "%s/%s/time_stats" % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)
 
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'),
-                                ('duration', ))
+    @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"), ("duration",))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def time_estimate(self, duration, **kwargs):
         """Set an estimated time of work for the object.
@@ -516,11 +514,11 @@ class TimeTrackingMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
-        path = '%s/%s/time_estimate' % (self.manager.path, self.get_id())
-        data = {'duration': duration}
+        path = "%s/%s/time_estimate" % (self.manager.path, self.get_id())
+        data = {"duration": duration}
         return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'))
+    @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def reset_time_estimate(self, **kwargs):
         """Resets estimated time for the object to 0 seconds.
@@ -532,11 +530,10 @@ class TimeTrackingMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
-        path = '%s/%s/reset_time_estimate' % (self.manager.path, self.get_id())
+        path = "%s/%s/reset_time_estimate" % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'),
-                                ('duration', ))
+    @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"), ("duration",))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def add_spent_time(self, duration, **kwargs):
         """Add time spent working on the object.
@@ -549,11 +546,11 @@ class TimeTrackingMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
-        path = '%s/%s/add_spent_time' % (self.manager.path, self.get_id())
-        data = {'duration': duration}
+        path = "%s/%s/add_spent_time" % (self.manager.path, self.get_id())
+        data = {"duration": duration}
         return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
-    @cli.register_custom_action(('ProjectIssue', 'ProjectMergeRequest'))
+    @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def reset_spent_time(self, **kwargs):
         """Resets the time spent working on the object.
@@ -565,12 +562,12 @@ class TimeTrackingMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
-        path = '%s/%s/reset_spent_time' % (self.manager.path, self.get_id())
+        path = "%s/%s/reset_spent_time" % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_post(path, **kwargs)
 
 
 class ParticipantsMixin(object):
-    @cli.register_custom_action(('ProjectMergeRequest', 'ProjectIssue'))
+    @cli.register_custom_action(("ProjectMergeRequest", "ProjectIssue"))
     @exc.on_http_error(exc.GitlabListError)
     def participants(self, **kwargs):
         """List the participants.
@@ -591,13 +588,14 @@ class ParticipantsMixin(object):
             RESTObjectList: The list of participants
         """
 
-        path = '%s/%s/participants' % (self.manager.path, self.get_id())
+        path = "%s/%s/participants" % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)
 
 
 class BadgeRenderMixin(object):
-    @cli.register_custom_action(('GroupBadgeManager', 'ProjectBadgeManager'),
-                                ('link_url', 'image_url'))
+    @cli.register_custom_action(
+        ("GroupBadgeManager", "ProjectBadgeManager"), ("link_url", "image_url")
+    )
     @exc.on_http_error(exc.GitlabRenderError)
     def render(self, link_url, image_url, **kwargs):
         """Preview link_url and image_url after interpolation.
@@ -614,6 +612,6 @@ class BadgeRenderMixin(object):
         Returns:
             dict: The rendering properties
         """
-        path = '%s/render' % self.path
-        data = {'link_url': link_url, 'image_url': image_url}
+        path = "%s/render" % self.path
+        data = {"link_url": link_url, "image_url": image_url}
         return self.gitlab.http_get(path, data, **kwargs)

@@ -19,8 +19,7 @@ import functools
 
 
 class GitlabError(Exception):
-    def __init__(self, error_message="", response_code=None,
-                 response_body=None):
+    def __init__(self, error_message="", response_code=None, response_body=None):
 
         Exception.__init__(self, error_message)
         # Http status code
@@ -248,6 +247,7 @@ def on_http_error(error):
         error(Exception): The exception type to raise -- must inherit from
             GitlabError
     """
+
     def wrap(f):
         @functools.wraps(f)
         def wrapped_f(*args, **kwargs):
@@ -255,5 +255,7 @@ def on_http_error(error):
                 return f(*args, **kwargs)
             except GitlabHttpError as e:
                 raise error(e.error_message, e.response_code, e.response_body)
+
         return wrapped_f
+
     return wrap

@@ -17,6 +17,15 @@ commitlint:
   except:
     - master
 
+black_lint:
+  stage: lint
+  before_script:
+    - pip3 install black
+  script:
+    - black --check .
+  except:
+    - master
+
 #build_test_image:  # Currently hangs forever, because of GitLab Runner infrastructure issues
 #  stage: build-test-image
 #  image:

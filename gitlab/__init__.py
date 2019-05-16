@@ -30,26 +30,26 @@ from gitlab.const import *  # noqa
 from gitlab.exceptions import *  # noqa
 from gitlab import utils  # noqa
 
-__title__ = 'python-gitlab'
-__version__ = '1.8.0'
-__author__ = 'Gauvain Pocentek'
-__email__ = 'gauvainpocentek@gmail.com'
-__license__ = 'LGPL3'
-__copyright__ = 'Copyright 2013-2019 Gauvain Pocentek'
+__title__ = "python-gitlab"
+__version__ = "1.8.0"
+__author__ = "Gauvain Pocentek"
+__email__ = "gauvainpocentek@gmail.com"
+__license__ = "LGPL3"
+__copyright__ = "Copyright 2013-2019 Gauvain Pocentek"
 
-warnings.filterwarnings('default', category=DeprecationWarning,
-                        module='^gitlab')
+warnings.filterwarnings("default", category=DeprecationWarning, module="^gitlab")
 
-REDIRECT_MSG = ('python-gitlab detected an http to https redirection. You '
-                'must update your GitLab URL to use https:// to avoid issues.')
+REDIRECT_MSG = (
+    "python-gitlab detected an http to https redirection. You "
+    "must update your GitLab URL to use https:// to avoid issues."
+)
 
 
 def _sanitize(value):
     if isinstance(value, dict):
-        return dict((k, _sanitize(v))
-                    for k, v in six.iteritems(value))
+        return dict((k, _sanitize(v)) for k, v in six.iteritems(value))
     if isinstance(value, six.string_types):
-        return value.replace('/', '%2F')
+        return value.replace("/", "%2F")
     return value
 
 
@@ -71,15 +71,26 @@ class Gitlab(object):
         api_version (str): Gitlab API version to use (support for 4 only)
     """
 
-    def __init__(self, url, private_token=None, oauth_token=None, email=None,
-                 password=None, ssl_verify=True, http_username=None,
-                 http_password=None, timeout=None, api_version='4',
-                 session=None, per_page=None):
+    def __init__(
+        self,
+        url,
+        private_token=None,
+        oauth_token=None,
+        email=None,
+        password=None,
+        ssl_verify=True,
+        http_username=None,
+        http_password=None,
+        timeout=None,
+        api_version="4",
+        session=None,
+        per_page=None,
+    ):
 
         self._api_version = str(api_version)
         self._server_version = self._server_revision = None
         self._base_url = url
-        self._url = '%s/api/v%s' % (url, api_version)
+        self._url = "%s/api/v%s" % (url, api_version)
         #: Timeout to use for requests to gitlab server
         self.timeout = timeout
         #: Headers that will be used in request to GitLab
@@ -103,8 +114,7 @@ class Gitlab(object):
 
         self.per_page = per_page
 
-        objects = importlib.import_module('gitlab.v%s.objects' %
-                                          self._api_version)
+        objects = importlib.import_module("gitlab.v%s.objects" % self._api_version)
         self._objects = objects
 
         self.broadcastmessages = objects.BroadcastMessageManager(self)
@@ -141,13 +151,12 @@ class Gitlab(object):
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        state.pop('_objects')
+        state.pop("_objects")
         return state
 
     def __setstate__(self, state):
         self.__dict__.update(state)
-        objects = importlib.import_module('gitlab.v%s.objects' %
-                                          self._api_version)
+        objects = importlib.import_module("gitlab.v%s.objects" % self._api_version)
         self._objects = objects
 
     @property
@@ -179,15 +188,20 @@ class Gitlab(object):
         Raises:
             gitlab.config.GitlabDataError: If the configuration is not correct.
         """
-        config = gitlab.config.GitlabConfigParser(gitlab_id=gitlab_id,
-                                                  config_files=config_files)
-        return cls(config.url, private_token=config.private_token,
-                   oauth_token=config.oauth_token,
-                   ssl_verify=config.ssl_verify, timeout=config.timeout,
-                   http_username=config.http_username,
-                   http_password=config.http_password,
-                   api_version=config.api_version,
-                   per_page=config.per_page)
+        config = gitlab.config.GitlabConfigParser(
+            gitlab_id=gitlab_id, config_files=config_files
+        )
+        return cls(
+            config.url,
+            private_token=config.private_token,
+            oauth_token=config.oauth_token,
+            ssl_verify=config.ssl_verify,
+            timeout=config.timeout,
+            http_username=config.http_username,
+            http_password=config.http_password,
+            api_version=config.api_version,
+            per_page=config.per_page,
+        )
 
     def auth(self):
         """Performs an authentication.
@@ -203,8 +217,8 @@ class Gitlab(object):
             self._credentials_auth()
 
     def _credentials_auth(self):
-        data = {'email': self.email, 'password': self.password}
-        r = self.http_post('/session', data)
+        data = {"email": self.email, "password": self.password}
+        r = self.http_post("/session", data)
         manager = self._objects.CurrentUserManager(self)
         self.user = self._objects.CurrentUser(manager, r)
         self.private_token = self.user.private_token
@@ -226,11 +240,11 @@ class Gitlab(object):
         """
         if self._server_version is None:
             try:
-                data = self.http_get('/version')
-                self._server_version = data['version']
-                self._server_revision = data['revision']
+                data = self.http_get("/version")
+                self._server_version = data["version"]
+                self._server_revision = data["revision"]
             except Exception:
-                self._server_version = self._server_revision = 'unknown'
+                self._server_version = self._server_revision = "unknown"
 
         return self._server_version, self._server_revision
 
@@ -250,9 +264,9 @@ class Gitlab(object):
             tuple: (True, []) if the file is valid, (False, errors(list))
                 otherwise
         """
-        post_data = {'content': content}
-        data = self.http_post('/ci/lint', post_data=post_data, **kwargs)
-        return (data['status'] == 'valid', data['errors'])
+        post_data = {"content": content}
+        data = self.http_post("/ci/lint", post_data=post_data, **kwargs)
+        return (data["status"] == "valid", data["errors"])
 
     @on_http_error(GitlabMarkdownError)
     def markdown(self, text, gfm=False, project=None, **kwargs):
@@ -273,11 +287,11 @@ class Gitlab(object):
         Returns:
             str: The HTML rendering of the markdown text.
         """
-        post_data = {'text': text, 'gfm': gfm}
+        post_data = {"text": text, "gfm": gfm}
         if project is not None:
-            post_data['project'] = project
-        data = self.http_post('/markdown', post_data=post_data, **kwargs)
-        return data['html']
+            post_data["project"] = project
+        data = self.http_post("/markdown", post_data=post_data, **kwargs)
+        return data["html"]
 
     @on_http_error(GitlabLicenseError)
     def get_license(self, **kwargs):
@@ -293,7 +307,7 @@ class Gitlab(object):
         Returns:
             dict: The current license information
         """
-        return self.http_get('/license', **kwargs)
+        return self.http_get("/license", **kwargs)
 
     @on_http_error(GitlabLicenseError)
     def set_license(self, license, **kwargs):
@@ -310,54 +324,61 @@ class Gitlab(object):
         Returns:
             dict: The new license information
         """
-        data = {'license': license}
-        return self.http_post('/license', post_data=data, **kwargs)
+        data = {"license": license}
+        return self.http_post("/license", post_data=data, **kwargs)
 
     def _construct_url(self, id_, obj, parameters, action=None):
-        if 'next_url' in parameters:
-            return parameters['next_url']
+        if "next_url" in parameters:
+            return parameters["next_url"]
         args = _sanitize(parameters)
 
-        url_attr = '_url'
+        url_attr = "_url"
         if action is not None:
-            attr = '_%s_url' % action
+            attr = "_%s_url" % action
             if hasattr(obj, attr):
                 url_attr = attr
         obj_url = getattr(obj, url_attr)
         url = obj_url % args
 
         if id_ is not None:
-            return '%s/%s' % (url, str(id_))
+            return "%s/%s" % (url, str(id_))
         else:
             return url
 
     def _set_auth_info(self):
         if self.private_token and self.oauth_token:
-            raise ValueError("Only one of private_token or oauth_token should "
-                             "be defined")
-        if ((self.http_username and not self.http_password)
-           or (not self.http_username and self.http_password)):
-            raise ValueError("Both http_username and http_password should "
-                             "be defined")
+            raise ValueError(
+                "Only one of private_token or oauth_token should " "be defined"
+            )
+        if (self.http_username and not self.http_password) or (
+            not self.http_username and self.http_password
+        ):
+            raise ValueError(
+                "Both http_username and http_password should " "be defined"
+            )
         if self.oauth_token and self.http_username:
-            raise ValueError("Only one of oauth authentication or http "
-                             "authentication should be defined")
+            raise ValueError(
+                "Only one of oauth authentication or http "
+                "authentication should be defined"
+            )
 
         self._http_auth = None
         if self.private_token:
-            self.headers['PRIVATE-TOKEN'] = self.private_token
-            self.headers.pop('Authorization', None)
+            self.headers["PRIVATE-TOKEN"] = self.private_token
+            self.headers.pop("Authorization", None)
 
         if self.oauth_token:
-            self.headers['Authorization'] = "Bearer %s" % self.oauth_token
-            self.headers.pop('PRIVATE-TOKEN', None)
+            self.headers["Authorization"] = "Bearer %s" % self.oauth_token
+            self.headers.pop("PRIVATE-TOKEN", None)
 
         if self.http_username:
-            self._http_auth = requests.auth.HTTPBasicAuth(self.http_username,
-                                                          self.http_password)
+            self._http_auth = requests.auth.HTTPBasicAuth(
+                self.http_username, self.http_password
+            )
 
     def enable_debug(self):
         import logging
+
         try:
             from http.client import HTTPConnection  # noqa
         except ImportError:
@@ -373,15 +394,15 @@ class Gitlab(object):
     def _create_headers(self, content_type=None):
         request_headers = self.headers.copy()
         if content_type is not None:
-            request_headers['Content-type'] = content_type
+            request_headers["Content-type"] = content_type
         return request_headers
 
     def _get_session_opts(self, content_type):
         return {
-            'headers': self._create_headers(content_type),
-            'auth': self._http_auth,
-            'timeout': self.timeout,
-            'verify': self.ssl_verify
+            "headers": self._create_headers(content_type),
+            "auth": self._http_auth,
+            "timeout": self.timeout,
+            "verify": self.ssl_verify,
         }
 
     def _build_url(self, path):
@@ -393,10 +414,10 @@ class Gitlab(object):
         Returns:
             str: The full URL
         """
-        if path.startswith('http://') or path.startswith('https://'):
+        if path.startswith("http://") or path.startswith("https://"):
             return path
         else:
-            return '%s%s' % (self._url, path)
+            return "%s%s" % (self._url, path)
 
     def _check_redirects(self, result):
         # Check the requests history to detect http to https redirections.
@@ -406,20 +427,28 @@ class Gitlab(object):
         # request.
         # If we detect a redirection to https with a POST or a PUT request, we
         # raise an exception with a useful error message.
-        if result.history and self._base_url.startswith('http:'):
+        if result.history and self._base_url.startswith("http:"):
             for item in result.history:
                 if item.status_code not in (301, 302):
                     continue
                 # GET methods can be redirected without issue
-                if item.request.method == 'GET':
+                if item.request.method == "GET":
                     continue
                 # Did we end-up with an https:// URL?
-                location = item.headers.get('Location', None)
-                if location and location.startswith('https://'):
+                location = item.headers.get("Location", None)
+                if location and location.startswith("https://"):
                     raise RedirectError(REDIRECT_MSG)
 
-    def http_request(self, verb, path, query_data={}, post_data=None,
-                     streamed=False, files=None, **kwargs):
+    def http_request(
+        self,
+        verb,
+        path,
+        query_data={},
+        post_data=None,
+        streamed=False,
+        files=None,
+        **kwargs
+    ):
         """Make an HTTP request to the Gitlab server.
 
         Args:
@@ -452,18 +481,18 @@ class Gitlab(object):
         # So we provide a `query_parameters` key: if it's there we use its dict
         # value as arguments for the gitlab server, and ignore the other
         # arguments, except pagination ones (per_page and page)
-        if 'query_parameters' in kwargs:
-            utils.copy_dict(params, kwargs['query_parameters'])
-            for arg in ('per_page', 'page'):
+        if "query_parameters" in kwargs:
+            utils.copy_dict(params, kwargs["query_parameters"])
+            for arg in ("per_page", "page"):
                 if arg in kwargs:
                     params[arg] = kwargs[arg]
         else:
             utils.copy_dict(params, kwargs)
 
-        opts = self._get_session_opts(content_type='application/json')
+        opts = self._get_session_opts(content_type="application/json")
 
-        verify = opts.pop('verify')
-        timeout = opts.pop('timeout')
+        verify = opts.pop("verify")
+        timeout = opts.pop("timeout")
 
         # We need to deal with json vs. data when uploading files
         if files:
@@ -480,12 +509,14 @@ class Gitlab(object):
         # The Requests behavior is right but it seems that web servers don't
         # always agree with this decision (this is the case with a default
         # gitlab installation)
-        req = requests.Request(verb, url, json=json, data=data, params=params,
-                               files=files, **opts)
+        req = requests.Request(
+            verb, url, json=json, data=data, params=params, files=files, **opts
+        )
         prepped = self.session.prepare_request(req)
         prepped.url = utils.sanitized_url(prepped.url)
         settings = self.session.merge_environment_settings(
-            prepped.url, {}, streamed, verify, None)
+            prepped.url, {}, streamed, verify, None
+        )
 
         # obey the rate limit by default
         obey_rate_limit = kwargs.get("obey_rate_limit", True)
@@ -514,7 +545,7 @@ class Gitlab(object):
             error_message = result.content
             try:
                 error_json = result.json()
-                for k in ('message', 'error'):
+                for k in ("message", "error"):
                     if k in error_json:
                         error_message = error_json[k]
             except (KeyError, ValueError, TypeError):
@@ -524,14 +555,16 @@ class Gitlab(object):
                 raise GitlabAuthenticationError(
                     response_code=result.status_code,
                     error_message=error_message,
-                    response_body=result.content)
+                    response_body=result.content,
+                )
 
-            raise GitlabHttpError(response_code=result.status_code,
-                                  error_message=error_message,
-                                  response_body=result.content)
+            raise GitlabHttpError(
+                response_code=result.status_code,
+                error_message=error_message,
+                response_body=result.content,
+            )
 
-    def http_get(self, path, query_data={}, streamed=False, raw=False,
-                 **kwargs):
+    def http_get(self, path, query_data={}, streamed=False, raw=False, **kwargs):
         """Make a GET request to the Gitlab server.
 
         Args:
@@ -551,17 +584,21 @@ class Gitlab(object):
             GitlabHttpError: When the return code is not 2xx
             GitlabParsingError: If the json data could not be parsed
         """
-        result = self.http_request('get', path, query_data=query_data,
-                                   streamed=streamed, **kwargs)
+        result = self.http_request(
+            "get", path, query_data=query_data, streamed=streamed, **kwargs
+        )
 
-        if (result.headers['Content-Type'] == 'application/json'
-           and not streamed
-           and not raw):
+        if (
+            result.headers["Content-Type"] == "application/json"
+            and not streamed
+            and not raw
+        ):
             try:
                 return result.json()
             except Exception:
                 raise GitlabParsingError(
-                    error_message="Failed to parse the server message")
+                    error_message="Failed to parse the server message"
+                )
         else:
             return result
 
@@ -590,22 +627,20 @@ class Gitlab(object):
         # In case we want to change the default behavior at some point
         as_list = True if as_list is None else as_list
 
-        get_all = kwargs.pop('all', False)
+        get_all = kwargs.pop("all", False)
         url = self._build_url(path)
 
         if get_all is True:
             return list(GitlabList(self, url, query_data, **kwargs))
 
-        if 'page' in kwargs or as_list is True:
+        if "page" in kwargs or as_list is True:
             # pagination requested, we return a list
-            return list(GitlabList(self, url, query_data, get_next=False,
-                                   **kwargs))
+            return list(GitlabList(self, url, query_data, get_next=False, **kwargs))
 
         # No pagination, generator requested
         return GitlabList(self, url, query_data, **kwargs)
 
-    def http_post(self, path, query_data={}, post_data={}, files=None,
-                  **kwargs):
+    def http_post(self, path, query_data={}, post_data={}, files=None, **kwargs):
         """Make a POST request to the Gitlab server.
 
         Args:
@@ -625,18 +660,22 @@ class Gitlab(object):
             GitlabHttpError: When the return code is not 2xx
             GitlabParsingError: If the json data could not be parsed
         """
-        result = self.http_request('post', path, query_data=query_data,
-                                   post_data=post_data, files=files, **kwargs)
+        result = self.http_request(
+            "post",
+            path,
+            query_data=query_data,
+            post_data=post_data,
+            files=files,
+            **kwargs
+        )
         try:
-            if result.headers.get('Content-Type', None) == 'application/json':
+            if result.headers.get("Content-Type", None) == "application/json":
                 return result.json()
         except Exception:
-            raise GitlabParsingError(
-                error_message="Failed to parse the server message")
+            raise GitlabParsingError(error_message="Failed to parse the server message")
         return result
 
-    def http_put(self, path, query_data={}, post_data={}, files=None,
-                 **kwargs):
+    def http_put(self, path, query_data={}, post_data={}, files=None, **kwargs):
         """Make a PUT request to the Gitlab server.
 
         Args:
@@ -655,13 +694,18 @@ class Gitlab(object):
             GitlabHttpError: When the return code is not 2xx
             GitlabParsingError: If the json data could not be parsed
         """
-        result = self.http_request('put', path, query_data=query_data,
-                                   post_data=post_data, files=files, **kwargs)
+        result = self.http_request(
+            "put",
+            path,
+            query_data=query_data,
+            post_data=post_data,
+            files=files,
+            **kwargs
+        )
         try:
             return result.json()
         except Exception:
-            raise GitlabParsingError(
-                error_message="Failed to parse the server message")
+            raise GitlabParsingError(error_message="Failed to parse the server message")
 
     def http_delete(self, path, **kwargs):
         """Make a PUT request to the Gitlab server.
@@ -677,7 +721,7 @@ class Gitlab(object):
         Raises:
             GitlabHttpError: When the return code is not 2xx
         """
-        return self.http_request('delete', path, **kwargs)
+        return self.http_request("delete", path, **kwargs)
 
     @on_http_error(GitlabSearchError)
     def search(self, scope, search, **kwargs):
@@ -695,8 +739,8 @@ class Gitlab(object):
         Returns:
             GitlabList: A list of dicts describing the resources found.
         """
-        data = {'scope': scope, 'search': search}
-        return self.http_list('/search', query_data=data, **kwargs)
+        data = {"scope": scope, "search": search}
+        return self.http_list("/search", query_data=data, **kwargs)
 
 
 class GitlabList(object):
@@ -712,24 +756,22 @@ class GitlabList(object):
         self._get_next = get_next
 
     def _query(self, url, query_data={}, **kwargs):
-        result = self._gl.http_request('get', url, query_data=query_data,
-                                       **kwargs)
+        result = self._gl.http_request("get", url, query_data=query_data, **kwargs)
         try:
-            self._next_url = result.links['next']['url']
+            self._next_url = result.links["next"]["url"]
         except KeyError:
             self._next_url = None
-        self._current_page = result.headers.get('X-Page')
-        self._prev_page = result.headers.get('X-Prev-Page')
-        self._next_page = result.headers.get('X-Next-Page')
-        self._per_page = result.headers.get('X-Per-Page')
-        self._total_pages = result.headers.get('X-Total-Pages')
-        self._total = result.headers.get('X-Total')
+        self._current_page = result.headers.get("X-Page")
+        self._prev_page = result.headers.get("X-Prev-Page")
+        self._next_page = result.headers.get("X-Next-Page")
+        self._per_page = result.headers.get("X-Per-Page")
+        self._total_pages = result.headers.get("X-Total-Pages")
+        self._total = result.headers.get("X-Total")
 
         try:
             self._data = result.json()
         except Exception:
-            raise GitlabParsingError(
-                error_message="Failed to parse the server message")
+            raise GitlabParsingError(error_message="Failed to parse the server message")
 
         self._current = 0
 

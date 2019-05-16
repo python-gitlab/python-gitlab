@@ -13,46 +13,47 @@ def classref(value, short=True):
     return value
 
     if not inspect.isclass(value):
-        return ':class:%s' % value
-    tilde = '~' if short else ''
-    string = '%s.%s' % (value.__module__, value.__name__)
-    return ':class:`%sgitlab.objects.%s`' % (tilde, value.__name__)
+        return ":class:%s" % value
+    tilde = "~" if short else ""
+    string = "%s.%s" % (value.__module__, value.__name__)
+    return ":class:`%sgitlab.objects.%s`" % (tilde, value.__name__)
 
 
 def setup(app):
-    app.connect('autodoc-process-docstring', _process_docstring)
-    app.connect('autodoc-skip-member', napoleon._skip_member)
+    app.connect("autodoc-process-docstring", _process_docstring)
+    app.connect("autodoc-skip-member", napoleon._skip_member)
 
     conf = napoleon.Config._config_values
 
     for name, (default, rebuild) in six.iteritems(conf):
         app.add_config_value(name, default, rebuild)
-    return {'version': sphinx.__display_version__, 'parallel_read_safe': True}
+    return {"version": sphinx.__display_version__, "parallel_read_safe": True}
 
 
 def _process_docstring(app, what, name, obj, options, lines):
     result_lines = lines
-    docstring = GitlabDocstring(result_lines, app.config, app, what, name, obj,
-                                options)
+    docstring = GitlabDocstring(result_lines, app.config, app, what, name, obj, options)
     result_lines = docstring.lines()
     lines[:] = result_lines[:]
 
 
 class GitlabDocstring(GoogleDocstring):
     def _build_doc(self, tmpl, **kwargs):
-        env = jinja2.Environment(loader=jinja2.FileSystemLoader(
-            os.path.dirname(__file__)), trim_blocks=False)
-        env.filters['classref'] = classref
+        env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(os.path.dirname(__file__)), trim_blocks=False
+        )
+        env.filters["classref"] = classref
         template = env.get_template(tmpl)
         output = template.render(**kwargs)
 
-        return output.split('\n')
+        return output.split("\n")
 
-    def __init__(self, docstring, config=None, app=None, what='', name='',
-                 obj=None, options=None):
-        super(GitlabDocstring, self).__init__(docstring, config, app, what,
-                                              name, obj, options)
+    def __init__(
+        self, docstring, config=None, app=None, what="", name="", obj=None, options=None
+    ):
+        super(GitlabDocstring, self).__init__(
+            docstring, config, app, what, name, obj, options
+        )
 
-        if name.startswith('gitlab.v4.objects') and name.endswith('Manager'):
-            self._parsed_lines.extend(self._build_doc('manager_tmpl.j2',
-                                                      cls=self._obj))
+        if name.startswith("gitlab.v4.objects") and name.endswith("Manager"):
+            self._parsed_lines.extend(self._build_doc("manager_tmpl.j2", cls=self._obj))
