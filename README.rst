@@ -12,6 +12,9 @@
 
 .. image:: https://img.shields.io/gitter/room/python-gitlab/Lobby.svg
    :target: https://gitter.im/python-gitlab/Lobby
+   
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/python/black
 
 Python GitLab
 =============
@@ -91,10 +94,27 @@ You can contribute to the project in multiple ways:
 * Add unit and functional tests
 * Everything else you can think of
 
-We prefer commit messages to be formatted using the `conventional-changelog <https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-guidelines>`_.
+We enforce commit messages to be formatted using the `conventional-changelog <https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-guidelines>`_.
 This leads to more readable messages that are easy to follow when looking through the project history.
 
-Provide your patches as github pull requests. Thanks!
+Please provide your patches as github pull requests. Thanks!
+
+Code-Style
+----------
+
+We use black as code formatter, so you'll need to format your changes using the
+`black code formatter
+<https://github.com/python/black>`_.
+
+Just run
+
+.. code-block:: bash
+
+  cd python-gitlab/
+  pip3 install --user black
+  black .
+  
+to format your code according to our guidelines.
 
 Running unit tests
 ------------------
