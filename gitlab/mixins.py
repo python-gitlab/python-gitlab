@@ -433,7 +433,9 @@ class AccessRequestMixin(object):
 
 
 class SubscribableMixin(object):
-    @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest", "ProjectLabel"))
+    @cli.register_custom_action(
+        ("ProjectIssue", "ProjectMergeRequest", "ProjectLabel", "GroupLabel")
+    )
     @exc.on_http_error(exc.GitlabSubscribeError)
     def subscribe(self, **kwargs):
         """Subscribe to the object notifications.
@@ -449,7 +451,9 @@ class SubscribableMixin(object):
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest", "ProjectLabel"))
+    @cli.register_custom_action(
+        ("ProjectIssue", "ProjectMergeRequest", "ProjectLabel", "GroupLabel")
+    )
     @exc.on_http_error(exc.GitlabUnsubscribeError)
     def unsubscribe(self, **kwargs):
         """Unsubscribe from the object notifications.
