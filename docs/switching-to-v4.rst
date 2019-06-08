@@ -8,7 +8,7 @@ GitLab provides a new API version (v4) since its 9.0 release. ``python-gitlab``
 provides support for this new version, but the python API has been modified to
 solve some problems with the existing one.
 
-GitLab will stop supporting the v3 API soon, and you should consider switching
+GitLab does not support the v3 API anymore, and you should consider switching
 to v4 if you use a recent version of GitLab (>= 9.0), or if you use
 https://gitlab.com.
 
@@ -16,15 +16,15 @@ https://gitlab.com.
 Using the v4 API
 ================
 
-python-gitlab uses the v4 API by default since the 1.3.0 release. To use the
-old v3 API, explicitly define ``api_version`` in the ``Gitlab`` constructor:
+python-gitlab uses the v4 API by default since the 1.3.0 release. If you are
+migrating from an older release, make sure that you remove the ``api_version``
+definition in you constructors and configuration file:
+
+The following examples are **not valid** anymore:
 
 .. code-block:: python
 
    gl = gitlab.Gitlab(..., api_version=3)
-
-
-If you use the configuration file, also explicitly define the version:
 
 .. code-block:: ini
 

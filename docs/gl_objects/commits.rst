@@ -40,8 +40,7 @@ Create a commit::
     # See https://docs.gitlab.com/ce/api/commits.html#create-a-commit-with-multiple-files-and-actions
     # for actions detail
     data = {
-        'branch_name': 'master',  # v3
-        'branch': 'master',  # v4
+        'branch': 'master',
         'commit_message': 'blah blah blah',
         'actions': [
             {
