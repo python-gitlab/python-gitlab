@@ -20,6 +20,7 @@ from gitlab import base
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types as g_types
+from gitlab import utils
 
 
 class GetMixin(object):
@@ -42,7 +43,7 @@ class GetMixin(object):
             GitlabGetError: If the server cannot perform the request
         """
         if not isinstance(id, int):
-            id = id.replace("/", "%2F")
+            id = utils.clean_str_id(id)
         path = "%s/%s" % (self.path, id)
         if lazy is True:
             return self._obj_cls(self, {self._obj_cls._id_attr: id})
@@ -299,7 +300,7 @@ class SetMixin(object):
         Returns:
             obj: The created/updated attribute
         """
-        path = "%s/%s" % (self.path, key.replace("/", "%2F"))
+        path = "%s/%s" % (self.path, utils.clean_str_id(key))
         data = {"value": value}
         server_data = self.gitlab.http_put(path, post_data=data, **kwargs)
         return self._obj_cls(self, server_data)
@@ -322,7 +323,7 @@ class DeleteMixin(object):
             path = self.path
         else:
             if not isinstance(id, int):
-                id = id.replace("/", "%2F")
+                id = utils.clean_str_id(id)
             path = "%s/%s" % (self.path, id)
         self.gitlab.http_delete(path, **kwargs)
 
