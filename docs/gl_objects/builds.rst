@@ -29,6 +29,10 @@ Get a pipeline for a project::
 
     pipeline = project.pipelines.get(pipeline_id)
 
+Get variables of a pipeline::
+
+    variables = pipeline.variables.list()
+
 Create a pipeline for a particular reference::
 
     pipeline = project.pipelines.create({'ref': 'master'})

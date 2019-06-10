@@ -3100,8 +3100,21 @@ class ProjectPipelineJobManager(ListMixin, RESTManager):
     _list_filters = ("scope",)
 
 
+class ProjectPipelineVariable(RESTObject):
+    _id_attr = "key"
+
+
+class ProjectPipelineVariableManager(ListMixin, RESTManager):
+    _path = "/projects/%(project_id)s/pipelines/%(pipeline_id)s/variables"
+    _obj_cls = ProjectPipelineVariable
+    _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
+
+
 class ProjectPipeline(RESTObject, RefreshMixin, ObjectDeleteMixin):
-    _managers = (("jobs", "ProjectPipelineJobManager"),)
+    _managers = (
+        ("jobs", "ProjectPipelineJobManager"),
+        ("variables", "ProjectPipelineVariableManager"),
+    )
 
     @cli.register_custom_action("ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineCancelError)
