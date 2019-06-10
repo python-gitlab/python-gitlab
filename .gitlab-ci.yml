@@ -26,19 +26,19 @@ black_lint:
   except:
     - master
 
-#build_test_image:  # Currently hangs forever, because of GitLab Runner infrastructure issues
-#  stage: build-test-image
-#  image:
-#    name: gcr.io/kaniko-project/executor:debug
-#    entrypoint: [""]
-#  script:
-#    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-#    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/tools/Dockerfile-test --destination $CI_REGISTRY_IMAGE:test
-#  only:
-#    refs:
-#      - master
-#    changes:
-#      - tools/
+build_test_image:
+  stage: build-test-image
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/tools/Dockerfile-test --destination $CI_REGISTRY_IMAGE:test
+  only:
+    refs:
+      - master
+    changes:
+      - tools/
 
 .tox_includes: &tox_includes
   stage: test
@@ -101,5 +101,16 @@ deploy:
     - gitlab -h
     - deactivate
     - twine upload --skip-existing -u $TWINE_USERNAME -p $TWINE_PASSWORD dist/*
+  only:
+    - tags
+
+deploy_image:
+  stage: deploy
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   only:
     - tags

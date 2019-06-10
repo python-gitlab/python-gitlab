@@ -77,7 +77,7 @@ cleanup() {
 }
 
 try docker run --name gitlab-test --detach --publish 8080:80 \
-    --publish 2222:22 pythongitlab/test-python-gitlab:latest >/dev/null
+    --publish 2222:22 registry.gitlab.com/python-gitlab/python-gitlab:test >/dev/null
 
 LOGIN='root'
 PASSWORD='5iveL!fe'
