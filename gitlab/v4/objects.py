@@ -1585,6 +1585,21 @@ class ProjectJob(RESTObject, RefreshMixin):
         self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
+    @exc.on_http_error(exc.GitlabCreateError)
+    def delete_artifacts(self, **kwargs):
+        """Delete artifacts of a job.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the request could not be performed
+        """
+        path = "%s/%s/artifacts" % (self.manager.path, self.get_id())
+        self.manager.gitlab.http_delete(path)
+
+    @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
     def artifacts(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Get the job artifacts.
