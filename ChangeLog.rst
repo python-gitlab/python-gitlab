@@ -1,6 +1,34 @@
 ChangeLog
 =========
 
+Version 1.9.0_ - 2019-06-19
+---------------------------
+
+Features
+^^^^^^^^
+
+-  implement artifacts deletion
+-  add endpoint to get the variables of a pipeline
+-  delete ProjectPipeline
+-  implement __eq__ and __hash__ methods
+-  Allow runpy invocation of CLI tool (python -m gitlab)
+-  add project releases api
+-  merged new release & registry apis
+
+Bug Fixes
+^^^^^^^^^
+
+-  convert # to %23 in URLs
+-  pep8 errors
+-  use python2 compatible syntax for super
+-  Make MemberManager.all() return a list of objects
+-  %d replaced by %s
+-  Re-enable command specific help messages
+-  dont ask for id attr if this is *Manager originating custom action
+-  fix -/_ replacament for *Manager custom actions
+-  fix repository_id marshaling in cli
+-  register cli action for delete_in_bulk
+
 Version 1.8.0_ - 2019-02-22
 ---------------------------
 
@@ -699,6 +727,7 @@ Version 0.1 - 2013-07-08
 
 * Initial release
 
+.. _1.9.0: https://github.com/python-gitlab/python-gitlab/compare/1.8.0...1.9.0
 .. _1.8.0: https://github.com/python-gitlab/python-gitlab/compare/1.7.0...1.8.0
 .. _1.7.0: https://github.com/python-gitlab/python-gitlab/compare/1.6.0...1.7.0
 .. _1.6.0: https://github.com/python-gitlab/python-gitlab/compare/1.5.1...1.6.0
