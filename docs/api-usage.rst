@@ -77,8 +77,8 @@ Examples:
 
    # get the group with id == 2
    group = gl.groups.get(2)
-   for group in groups:
-       print()
+   for project in group.projects.list():
+       print(project)
 
    # create a new user
    user_data = {'email': 'jen@foo.com', 'username': 'jen', 'name': 'Jen'}
