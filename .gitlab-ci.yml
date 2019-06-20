@@ -97,7 +97,7 @@ deploy:
     # test package
     - python3 -m venv test
     - . test/bin/activate
-    - pip install -U dist/python-gitlab*.whl
+    - pip install -U dist/python_gitlab*.whl
     - gitlab -h
     - deactivate
     - twine upload --skip-existing -u $TWINE_USERNAME -p $TWINE_PASSWORD dist/*
