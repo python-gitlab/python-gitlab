@@ -180,6 +180,10 @@ Get the list of merge requests that will close an issue when merged::
 
     mrs = issue.closed_by()
 
+Get the merge requests related to an issue::
+
+    mrs = issue.related_merge_requests()
+
 Get the list of participants::
 
     users = issue.participants()

@@ -2188,6 +2188,24 @@ class ProjectIssue(
 
     @cli.register_custom_action("ProjectIssue")
     @exc.on_http_error(exc.GitlabGetError)
+    def related_merge_requests(self, **kwargs):
+        """List merge requests related to the issue.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetErrot: If the merge requests could not be retrieved
+
+        Returns:
+            list: The list of merge requests.
+        """
+        path = "%s/%s/related_merge_requests" % (self.manager.path, self.get_id())
+        return self.manager.gitlab.http_get(path, **kwargs)
+
+    @cli.register_custom_action("ProjectIssue")
+    @exc.on_http_error(exc.GitlabGetError)
     def closed_by(self, **kwargs):
         """List merge requests that will close the issue when merged.
 
