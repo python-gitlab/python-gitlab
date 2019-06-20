@@ -693,11 +693,11 @@ class GroupBoardListManager(CRUDMixin, RESTManager):
     _update_attrs = (("position",), tuple())
 
 
-class GroupBoard(ObjectDeleteMixin, RESTObject):
+class GroupBoard(SaveMixin, ObjectDeleteMixin, RESTObject):
     _managers = (("lists", "GroupBoardListManager"),)
 
 
-class GroupBoardManager(NoUpdateMixin, RESTManager):
+class GroupBoardManager(CRUDMixin, RESTManager):
     _path = "/groups/%(group_id)s/boards"
     _obj_cls = GroupBoard
     _from_parent_attrs = {"group_id": "id"}
@@ -1432,11 +1432,11 @@ class ProjectBoardListManager(CRUDMixin, RESTManager):
     _update_attrs = (("position",), tuple())
 
 
-class ProjectBoard(ObjectDeleteMixin, RESTObject):
+class ProjectBoard(SaveMixin, ObjectDeleteMixin, RESTObject):
     _managers = (("lists", "ProjectBoardListManager"),)
 
 
-class ProjectBoardManager(NoUpdateMixin, RESTManager):
+class ProjectBoardManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/boards"
     _obj_cls = ProjectBoard
     _from_parent_attrs = {"project_id": "id"}
