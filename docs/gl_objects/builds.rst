@@ -45,6 +45,10 @@ Cancel builds in a pipeline::
 
     pipeline.cancel()
 
+Delete a pipeline::
+
+    pipeline.delete()
+
 Triggers
 ========
 
