@@ -566,6 +566,8 @@ assert isinstance(issue1.user_agent_detail(), dict)
 
 assert issue1.user_agent_detail()["user_agent"]
 assert issue1.participants()
+assert type(issue1.closed_by()) == list
+assert type(issue1.related_merge_requests()) == list
 
 # issues labels and events
 label2 = admin_project.labels.create({"name": "label2", "color": "#aabbcc"})
