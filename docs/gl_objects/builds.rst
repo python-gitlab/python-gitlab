@@ -319,6 +319,10 @@ Get a single artifact file::
 
     build_or_job.artifact('path/to/file')
 
+Get a single artifact file by branch and job::
+
+    project.artifact('branch', 'path/to/file', 'job')
+
 Mark a job artifact as kept when expiration is set::
 
     build_or_job.keep_artifacts()
