@@ -2712,6 +2712,22 @@ class ProjectMergeRequest(
         server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
         self._update_attrs(server_data)
 
+    @cli.register_custom_action("ProjectMergeRequest")
+    @exc.on_http_error(exc.GitlabMRRebaseError)
+    def rebase(self, **kwargs):
+        """Attempt to rebase the source branch onto the target branch
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabMRRebaseError: If rebasing failed
+        """
+        path = "%s/%s/rebase" % (self.manager.path, self.get_id())
+        data = {}
+        return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+
     @cli.register_custom_action(
         "ProjectMergeRequest",
         tuple(),

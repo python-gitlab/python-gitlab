@@ -181,3 +181,7 @@ Reset spent time for a merge request::
 Get user agent detail for the issue (admin only)::
 
     detail = issue.user_agent_detail()
+
+Attempt to rebase an MR::
+
+    mr.rebase()

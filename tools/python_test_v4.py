@@ -686,6 +686,9 @@ assert events
 event = mr.resourcelabelevents.get(events[0].id)
 assert event
 
+# rebasing
+assert mr.rebase()
+
 # basic testing: only make sure that the methods exist
 mr.commits()
 mr.changes()
