@@ -4263,6 +4263,38 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         )
 
 
+    @cli.register_custom_action("Project", ("ref_name", "artifact_path", "job"))
+    @exc.on_http_error(exc.GitlabGetError)
+    def artifact(self, ref_name, artifact_path, job, streamed=False, action=None, chunk_size=1024, **kwargs):
+        """Download a single artifact file from a specific tag or branch from within the job’s artifacts archive.
+
+        Args:
+            ref_name (str): Branch or tag name in repository. HEAD or SHA references are not supported.
+            artifact_path (str): Path to a file inside the artifacts archive.
+            job (str): The name of the job.
+            streamed (bool): If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment
+            action (callable): Callable responsible of dealing with chunk of
+                data
+            chunk_size (int): Size of each chunk
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the artifacts could not be retrieved
+
+        Returns:
+            str: The artifacts if `streamed` is False, None otherwise.
+        """
+
+        path = "/projects/%s/jobs/artifacts/%s/raw/%s?job=%s" % (self.get_id(), ref_name, artifact_path, job)
+        result = self.manager.gitlab.http_get(
+            path, streamed=streamed, raw=True, **kwargs
+        )
+        return utils.response_content(result, streamed, action, chunk_size)
+
+
 class ProjectManager(CRUDMixin, RESTManager):
     _path = "/projects"
     _obj_cls = Project
