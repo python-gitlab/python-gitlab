@@ -52,7 +52,7 @@ class RESTObject(object):
     def __setstate__(self, state):
         module_name = state.pop("_module_name")
         self.__dict__.update(state)
-        self._module = importlib.import_module(module_name)
+        self.__dict__["_module"] = importlib.import_module(module_name)
 
     def __getattr__(self, name):
         try:
