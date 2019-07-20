@@ -4,7 +4,7 @@ services:
 language: python
 python: 2.7
 env:
-  - TOX_ENV=py_func_v4
+  #- TOX_ENV=py_func_v4
   - TOX_ENV=cli_func_v4
 install:
   - pip install tox
