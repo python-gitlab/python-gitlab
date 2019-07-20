@@ -9,9 +9,7 @@ API examples
    gl_objects/emojis
    gl_objects/badges
    gl_objects/branches
-   gl_objects/protected_branches
    gl_objects/messages
-   gl_objects/builds
    gl_objects/commits
    gl_objects/deploy_keys
    gl_objects/deployments
@@ -32,7 +30,9 @@ API examples
    gl_objects/namespaces
    gl_objects/notes
    gl_objects/pagesdomains
+   gl_objects/pipelines_and_jobs
    gl_objects/projects
+   gl_objects/protected_branches
    gl_objects/runners
    gl_objects/repositories
    gl_objects/repository_tags
