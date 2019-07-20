@@ -4262,10 +4262,18 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             path, post_data={"namespace": to_namespace}, **kwargs
         )
 
-
     @cli.register_custom_action("Project", ("ref_name", "artifact_path", "job"))
     @exc.on_http_error(exc.GitlabGetError)
-    def artifact(self, ref_name, artifact_path, job, streamed=False, action=None, chunk_size=1024, **kwargs):
+    def artifact(
+        self,
+        ref_name,
+        artifact_path,
+        job,
+        streamed=False,
+        action=None,
+        chunk_size=1024,
+        **kwargs
+    ):
         """Download a single artifact file from a specific tag or branch from within the job’s artifacts archive.
 
         Args:
@@ -4288,7 +4296,12 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             str: The artifacts if `streamed` is False, None otherwise.
         """
 
-        path = "/projects/%s/jobs/artifacts/%s/raw/%s?job=%s" % (self.get_id(), ref_name, artifact_path, job)
+        path = "/projects/%s/jobs/artifacts/%s/raw/%s?job=%s" % (
+            self.get_id(),
+            ref_name,
+            artifact_path,
+            job,
+        )
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
