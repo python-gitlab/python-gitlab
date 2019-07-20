@@ -2,7 +2,6 @@ sudo: required
 services:
   - docker
 language: python
-python: 2.7
 env:
   #- TOX_ENV=py_func_v4
   - TOX_ENV=cli_func_v4
@@ -10,3 +9,79 @@ install:
   - pip install tox
 script:
   - tox -e $TOX_ENV
+
+git:
+  depth: false
+
+stages:
+  - lint
+  - test
+
+jobs:
+  include:
+    - stage: lint
+      name: commitlint
+      script:
+        - npm install -g @commitlint/cli @commitlint/config-conventional
+        - 'echo "module.exports = {extends: [\"@commitlint/config-conventional\"]}" > commitlint.config.js'
+        - npx commitlint --from=origin/master
+    - stage: lint
+      name: black_lint
+      dist: bionic
+      python: 3.7
+      script:
+        - pip3 install black
+        - black --check .
+    - stage: test
+      name: cli_func_v4
+      dist: bionic
+      python: 3.7
+      script:
+        - pip3 install tox
+        - tox -e cli_func_v4
+    - stage: test
+      name: docs
+      dist: bionic
+      python: 3.7
+      script:
+        - pip3 install tox
+        - tox -e docs
+    - stage: test
+      name: py27
+      python: 2.7
+      script:
+        - pip2 install tox
+        - tox -e py27
+    - stage: test
+      name: py34
+      python: 3.4
+      script:
+        - pip3 install tox
+        - tox -e py34
+    - stage: test
+      name: py35
+      python: 3.5
+      script:
+        - pip3 install tox
+        - tox -e py35
+    - stage: test
+      name: py36
+      python: 3.6
+      dist: bionic
+      script:
+        - pip3 install tox
+        - tox -e py36
+    - stage: test
+      name: py37
+      dist: bionic
+      python: 3.7
+      script:
+        - pip3 install tox
+        - tox -e py37
+    - stage: test
+      dist: bionic
+      name: py38
+      python: 3.8-dev
+      script:
+        - pip3 install tox
+        - tox -e py38
