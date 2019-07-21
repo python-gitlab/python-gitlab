@@ -32,7 +32,7 @@ Requirements
 python-gitlab depends on:
 
 * `python-requests <http://docs.python-requests.org/en/latest/>`_
-* `six <https://pythonhosted.org/six/>`_
+* `six <https://six.readthedocs.io/>`_
 
 Install with pip
 ----------------
