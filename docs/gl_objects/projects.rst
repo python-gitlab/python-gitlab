@@ -39,6 +39,8 @@ Results can also be sorted using the following parameters:
 
 ::
 
+    # List all projects (default 20)
+    projects = gl.projects.list(all=True)
     # Archived projects
     projects = gl.projects.list(archived=1)
     # Limit to projects with a defined visibility
