@@ -93,6 +93,7 @@ class TestRESTObject(unittest.TestCase):
         self.assertIsInstance(unpickled, FakeObject)
         self.assertTrue(hasattr(unpickled, "_module"))
         self.assertEqual(unpickled._module, original_obj_module)
+        pickled2 = pickle.dumps(unpickled)
 
     def test_attrs(self):
         obj = FakeObject(self.manager, {"foo": "bar"})
