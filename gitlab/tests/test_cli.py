@@ -116,7 +116,7 @@ class TestV4CLI(unittest.TestCase):
         parser = cli._get_parser(gitlab.v4.cli)
         args = parser.parse_args(["project", "list"])
         self.assertEqual(args.what, "project")
-        self.assertEqual(args.action, "list")
+        self.assertEqual(args.whaction, "list")
 
     def test_parser(self):
         parser = cli._get_parser(gitlab.v4.cli)
