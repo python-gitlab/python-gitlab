@@ -843,9 +843,9 @@ for i in range(20, 40):
         error_message = e.error_message
         break
 assert "Retry later" in error_message
-[current_project.delete() for current_project in projects]
 settings.throttle_authenticated_api_enabled = False
 settings.save()
+[current_project.delete() for current_project in projects]
 
 # project import/export
 ex = admin_project.exports.create({})
@@ -871,3 +871,31 @@ while project_import.import_status != "finished":
     count += 1
     if count == 10:
         raise Exception("Project import taking too much time")
+
+# project releases
+release_test_project = gl.projects.create(
+    {"name": "release-test-project", "initialize_with_readme": True}
+)
+release_name = "Demo Release"
+release_tag_name = "v1.2.3"
+release_description = "release notes go here"
+release_test_project.releases.create(
+    {
+        "name": release_name,
+        "tag_name": release_tag_name,
+        "description": release_description,
+        "ref": "master",
+    }
+)
+assert len(release_test_project.releases.list()) == 1
+
+# get single release
+retrieved_project = release_test_project.releases.get(release_tag_name)
+assert retrieved_project.name == release_name
+assert retrieved_project.tag_name == release_tag_name
+assert retrieved_project.description == release_description
+
+# delete release
+release_test_project.releases.delete(release_tag_name)
+assert len(release_test_project.releases.list()) == 0
+release_test_project.delete()

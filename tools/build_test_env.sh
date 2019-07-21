@@ -76,6 +76,7 @@ cleanup() {
     trap 'exit 1' HUP INT TERM
 }
 
+try docker pull registry.gitlab.com/python-gitlab/python-gitlab:test >/dev/null
 try docker run --name gitlab-test --detach --publish 8080:80 \
     --publish 2222:22 registry.gitlab.com/python-gitlab/python-gitlab:test >/dev/null
 
@@ -99,7 +100,7 @@ if [ -z "$NOVENV" ]; then
     . "$VENV"/bin/activate || fatal "failed to activate Python virtual environment"
 
     log "Installing dependencies into virtualenv..."
-    try pip install -rrequirements.txt
+    try pip install -r requirements.txt
 
     log "Installing into virtualenv..."
     try pip install -e .
@@ -126,7 +127,7 @@ TOKEN=$($(dirname $0)/generate_token.py)
 cat > $CONFIG << EOF
 [global]
 default = local
-timeout = 10
+timeout = 30
 
 [local]
 url = http://localhost:8080
@@ -138,6 +139,6 @@ log "Config file content ($CONFIG):"
 log <$CONFIG
 
 log "Pausing to give GitLab some time to finish starting up..."
-sleep 60
+sleep 200
 
 log "Test environment initialized."
