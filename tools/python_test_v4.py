@@ -843,9 +843,9 @@ for i in range(20, 40):
         error_message = e.error_message
         break
 assert "Retry later" in error_message
-[current_project.delete() for current_project in projects]
 settings.throttle_authenticated_api_enabled = False
 settings.save()
+[current_project.delete() for current_project in projects]
 
 # project import/export
 ex = admin_project.exports.create({})
