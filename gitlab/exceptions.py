@@ -173,6 +173,10 @@ class GitlabMRApprovalError(GitlabOperationError):
     pass
 
 
+class GitlabMRRebaseError(GitlabOperationError):
+    pass
+
+
 class GitlabMRClosedError(GitlabOperationError):
     pass
 
