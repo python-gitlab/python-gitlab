@@ -47,7 +47,7 @@ Update the snippet attributes::
     snippet.visibility_level = gitlab.Project.VISIBILITY_PUBLIC
     snippet.save()
 
-To update a snippet code you need to create a ``ProjectSnippet`` object:
+To update a snippet code you need to create a ``ProjectSnippet`` object::
 
     snippet = gl.snippets.get(snippet_id)
     project = gl.projects.get(snippet.projec_id, lazy=True)
