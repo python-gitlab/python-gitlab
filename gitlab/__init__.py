@@ -211,10 +211,10 @@ class Gitlab(object):
         The `user` attribute will hold a `gitlab.objects.CurrentUser` object on
         success.
         """
-        if self.private_token or self.oauth_token:
-            self._token_auth()
-        else:
+        if self.email and self.password:
             self._credentials_auth()
+        else:
+            self._token_auth()
 
     def _credentials_auth(self):
         data = {"email": self.email, "password": self.password}
