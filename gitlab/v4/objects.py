@@ -833,6 +833,64 @@ class GroupIssueManager(ListMixin, RESTManager):
     _types = {"labels": types.ListAttribute}
 
 
+class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
+    _id_attr = "name"
+
+    # Update without ID, but we need an ID to get from list.
+    @exc.on_http_error(exc.GitlabUpdateError)
+    def save(self, **kwargs):
+        """Saves the changes made to the object to the server.
+
+        The object is updated to match what the server returns.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct.
+            GitlabUpdateError: If the server cannot perform the request.
+        """
+        updated_data = self._get_updated_data()
+
+        # call the manager
+        server_data = self.manager.update(None, updated_data, **kwargs)
+        self._update_attrs(server_data)
+
+
+class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
+    _path = "/groups/%(group_id)s/labels"
+    _obj_cls = GroupLabel
+    _from_parent_attrs = {"group_id": "id"}
+    _create_attrs = (("name", "color"), ("description", "priority"))
+    _update_attrs = (("name",), ("new_name", "color", "description", "priority"))
+
+    # Update without ID.
+    def update(self, name, new_data={}, **kwargs):
+        """Update a Label on the server.
+
+        Args:
+            name: The name of the label
+            **kwargs: Extra options to send to the server (e.g. sudo)
+        """
+        new_data["name"] = name
+        super().update(id=None, new_data=new_data, **kwargs)
+
+    # Delete without ID.
+    @exc.on_http_error(exc.GitlabDeleteError)
+    def delete(self, name, **kwargs):
+        """Delete a Label on the server.
+
+        Args:
+            name: The name of the label
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the server cannot perform the request
+        """
+        self.gitlab.http_delete(self.path, query_data={"name": name}, **kwargs)
+
+
 class GroupMember(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "username"
 
@@ -1042,6 +1100,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("customattributes", "GroupCustomAttributeManager"),
         ("epics", "GroupEpicManager"),
         ("issues", "GroupIssueManager"),
+        ("labels", "GroupLabelManager"),
         ("members", "GroupMemberManager"),
         ("mergerequests", "GroupMergeRequestManager"),
         ("milestones", "GroupMilestoneManager"),
@@ -2933,6 +2992,17 @@ class ProjectLabelManager(
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = (("name", "color"), ("description", "priority"))
     _update_attrs = (("name",), ("new_name", "color", "description", "priority"))
+
+    # Update without ID.
+    def update(self, name, new_data={}, **kwargs):
+        """Update a Label on the server.
+
+        Args:
+            name: The name of the label
+            **kwargs: Extra options to send to the server (e.g. sudo)
+        """
+        new_data["name"] = name
+        super().update(id=None, new_data=new_data, **kwargs)
 
     # Delete without ID.
     @exc.on_http_error(exc.GitlabDeleteError)

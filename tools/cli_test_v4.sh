@@ -25,6 +25,17 @@ testcase "project update" '
     GITLAB project update --id "$PROJECT_ID" --description "My New Description"
 '
 
+testcase "group creation" '
+    OUTPUT=$(try GITLAB group create --name test-group1 --path group1) || exit 1
+    GROUP_ID=$(pecho "${OUTPUT}" | grep ^id: | cut -d" " -f2)
+    OUTPUT=$(try GITLAB group list) || exit 1
+    pecho "${OUTPUT}" | grep -q test-group1
+'
+
+testcase "group update" '
+    GITLAB group update --id "$GROUP_ID" --description "My New Description"
+'
+
 testcase "user creation" '
     OUTPUT=$(GITLAB user create --email fake@email.com --username user1 \
         --name "User One" --password fakepassword)
@@ -89,6 +100,46 @@ testcase "merge request validation" '
         --iid "$MR_ID" >/dev/null 2>&1
 '
 
+# Test project labels
+testcase "create project label" '
+    OUTPUT=$(GITLAB -v project-label create --project-id $PROJECT_ID \
+        --name prjlabel1 --description "prjlabel1 description" --color "#112233")
+'
+
+testcase "list project label" '
+    OUTPUT=$(GITLAB -v project-label list --project-id $PROJECT_ID)
+'
+
+testcase "update project label" '
+    OUTPUT=$(GITLAB -v project-label update --project-id $PROJECT_ID \
+        --name prjlabel1 --new-name prjlabel2 --description "prjlabel2 description" --color "#332211")
+'
+
+testcase "delete project label" '
+    OUTPUT=$(GITLAB -v project-label delete --project-id $PROJECT_ID \
+        --name prjlabel2)
+'
+
+# Test group labels
+testcase "create group label" '
+    OUTPUT=$(GITLAB -v group-label create --group-id $GROUP_ID \
+        --name grplabel1 --description "grplabel1 description" --color "#112233")
+'
+
+testcase "list group label" '
+    OUTPUT=$(GITLAB -v group-label list --group-id $GROUP_ID)
+'
+
+testcase "update group label" '
+    OUTPUT=$(GITLAB -v group-label update --group-id $GROUP_ID \
+        --name grplabel1 --new-name grplabel2 --description "grplabel2 description" --color "#332211")
+'
+
+testcase "delete group label" '
+    OUTPUT=$(GITLAB -v group-label delete --group-id $GROUP_ID \
+        --name grplabel2)
+'
+
 # Test project variables
 testcase "create project variable" '
     OUTPUT=$(GITLAB -v project-variable create --project-id $PROJECT_ID \
@@ -128,6 +179,10 @@ testcase "project deletion" '
     GITLAB project delete --id "$PROJECT_ID"
 '
 
+testcase "group deletion" '
+    OUTPUT=$(try GITLAB group delete --id $GROUP_ID)
+'
+
 testcase "application settings get" '
     GITLAB application-settings get >/dev/null 2>&1
 '
@@ -146,3 +201,4 @@ testcase "values from files" '
             --description @/tmp/gitlab-project-description)
     echo $OUTPUT | grep -q "Multi line"
 '
+

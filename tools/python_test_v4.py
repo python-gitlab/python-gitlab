@@ -337,6 +337,18 @@ assert len(group1.variables.list()) == 1
 g_v.delete()
 assert len(group1.variables.list()) == 0
 
+# group labels
+group1.labels.create({"name": "foo", "description": "bar", "color": "#112233"})
+g_l = group1.labels.get("foo")
+assert g_l.description == "bar"
+g_l.description = "baz"
+g_l.save()
+g_l = group1.labels.get("foo")
+assert g_l.description == "baz"
+assert len(group1.labels.list()) == 1
+g_l.delete()
+assert len(group1.labels.list()) == 0
+
 # hooks
 hook = gl.hooks.create({"url": "http://whatever.com"})
 assert len(gl.hooks.list()) == 1
