@@ -864,6 +864,17 @@ class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
     _create_attrs = (("name", "color"), ("description", "priority"))
     _update_attrs = (("name",), ("new_name", "color", "description", "priority"))
 
+    # Update without ID.
+    def update(self, name, new_data={}, **kwargs):
+        """Update a Label on the server.
+
+        Args:
+            name: The name of the label
+            **kwargs: Extra options to send to the server (e.g. sudo)
+        """
+        new_data["name"] = name
+        super().update(id=None, new_data=new_data, **kwargs)
+
     # Delete without ID.
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete(self, name, **kwargs):
@@ -2981,6 +2992,17 @@ class ProjectLabelManager(
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = (("name", "color"), ("description", "priority"))
     _update_attrs = (("name",), ("new_name", "color", "description", "priority"))
+
+    # Update without ID.
+    def update(self, name, new_data={}, **kwargs):
+        """Update a Label on the server.
+
+        Args:
+            name: The name of the label
+            **kwargs: Extra options to send to the server (e.g. sudo)
+        """
+        new_data["name"] = name
+        super().update(id=None, new_data=new_data, **kwargs)
 
     # Delete without ID.
     @exc.on_http_error(exc.GitlabDeleteError)
