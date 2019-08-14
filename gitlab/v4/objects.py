@@ -2490,7 +2490,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
     _update_uses_post = True
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def set_approvers(self, approver_ids=[], approver_group_ids=[], **kwargs):
+    def set_approvers(self, approver_ids=None, approver_group_ids=None, **kwargs):
         """Change MR-level allowed approvers and approver groups.
 
         Args:
@@ -2501,6 +2501,9 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
             GitlabAuthenticationError: If authentication is not correct
             GitlabUpdateError: If the server failed to perform the request
         """
+        approver_ids = approver_ids or []
+        approver_group_ids = approver_group_ids or []
+
         path = "%s/%s/approvers" % (self._parent.manager.path, self._parent.get_id())
         data = {"approver_ids": approver_ids, "approver_group_ids": approver_group_ids}
         self.gitlab.http_put(path, post_data=data, **kwargs)
@@ -3692,7 +3695,7 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _update_uses_post = True
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def set_approvers(self, approver_ids=[], approver_group_ids=[], **kwargs):
+    def set_approvers(self, approver_ids=None, approver_group_ids=None, **kwargs):
         """Change project-level allowed approvers and approver groups.
 
         Args:
@@ -3703,6 +3706,8 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
             GitlabAuthenticationError: If authentication is not correct
             GitlabUpdateError: If the server failed to perform the request
         """
+        approver_ids = approver_ids or []
+        approver_group_ids = approver_group_ids or []
 
         path = "/projects/%s/approvers" % self._parent.get_id()
         data = {"approver_ids": approver_ids, "approver_group_ids": approver_group_ids}
