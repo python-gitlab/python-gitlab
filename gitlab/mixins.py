@@ -240,7 +240,7 @@ class UpdateMixin(object):
         return http_method
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def update(self, id=None, new_data={}, **kwargs):
+    def update(self, id=None, new_data=None, **kwargs):
         """Update an object on the server.
 
         Args:
@@ -255,6 +255,7 @@ class UpdateMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabUpdateError: If the server cannot perform the request
         """
+        new_data = new_data or {}
 
         if id is None:
             path = self.path

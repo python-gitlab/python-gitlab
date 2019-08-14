@@ -530,7 +530,7 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     )
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def update(self, id=None, new_data={}, **kwargs):
+    def update(self, id=None, new_data=None, **kwargs):
         """Update an object on the server.
 
         Args:
@@ -545,7 +545,7 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
             GitlabAuthenticationError: If authentication is not correct
             GitlabUpdateError: If the server cannot perform the request
         """
-
+        new_data = new_data or {}
         data = new_data.copy()
         if "domain_whitelist" in data and data["domain_whitelist"] is None:
             data.pop("domain_whitelist")
@@ -865,13 +865,14 @@ class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
     _update_attrs = (("name",), ("new_name", "color", "description", "priority"))
 
     # Update without ID.
-    def update(self, name, new_data={}, **kwargs):
+    def update(self, name, new_data=None, **kwargs):
         """Update a Label on the server.
 
         Args:
             name: The name of the label
             **kwargs: Extra options to send to the server (e.g. sudo)
         """
+        new_data = new_data or {}
         new_data["name"] = name
         super().update(id=None, new_data=new_data, **kwargs)
 
@@ -2994,13 +2995,14 @@ class ProjectLabelManager(
     _update_attrs = (("name",), ("new_name", "color", "description", "priority"))
 
     # Update without ID.
-    def update(self, name, new_data={}, **kwargs):
+    def update(self, name, new_data=None, **kwargs):
         """Update a Label on the server.
 
         Args:
             name: The name of the label
             **kwargs: Extra options to send to the server (e.g. sudo)
         """
+        new_data = new_data or {}
         new_data["name"] = name
         super().update(id=None, new_data=new_data, **kwargs)
 
@@ -3130,7 +3132,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         return self._obj_cls(self, server_data)
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def update(self, file_path, new_data={}, **kwargs):
+    def update(self, file_path, new_data=None, **kwargs):
         """Update an object on the server.
 
         Args:
@@ -3145,7 +3147,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             GitlabAuthenticationError: If authentication is not correct
             GitlabUpdateError: If the server cannot perform the request
         """
-
+        new_data = new_data or {}
         data = new_data.copy()
         file_path = file_path.replace("/", "%2F")
         data["file_path"] = file_path
@@ -3632,7 +3634,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
         obj.id = id
         return obj
 
-    def update(self, id=None, new_data={}, **kwargs):
+    def update(self, id=None, new_data=None, **kwargs):
         """Update an object on the server.
 
         Args:
@@ -3647,6 +3649,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
             GitlabAuthenticationError: If authentication is not correct
             GitlabUpdateError: If the server cannot perform the request
         """
+        new_data = new_data or {}
         super(ProjectServiceManager, self).update(id, new_data, **kwargs)
         self.id = id
 
@@ -4182,7 +4185,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
     # variables not supported in CLI
     @cli.register_custom_action("Project", ("ref", "token"))
     @exc.on_http_error(exc.GitlabCreateError)
-    def trigger_pipeline(self, ref, token, variables={}, **kwargs):
+    def trigger_pipeline(self, ref, token, variables=None, **kwargs):
         """Trigger a CI build.
 
         See https://gitlab.com/help/ci/triggers/README.md#trigger-a-build
@@ -4197,6 +4200,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server failed to perform the request
         """
+        variables = variables or {}
         path = "/projects/%s/trigger/pipeline" % self.get_id()
         post_data = {"ref": ref, "token": token, "variables": variables}
         attrs = self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)

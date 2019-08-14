@@ -443,7 +443,7 @@ class Gitlab(object):
         self,
         verb,
         path,
-        query_data={},
+        query_data=None,
         post_data=None,
         streamed=False,
         files=None,
@@ -469,7 +469,7 @@ class Gitlab(object):
         Raises:
             GitlabHttpError: When the return code is not 2xx
         """
-
+        query_data = query_data or {}
         url = self._build_url(path)
 
         params = {}
@@ -564,7 +564,7 @@ class Gitlab(object):
                 response_body=result.content,
             )
 
-    def http_get(self, path, query_data={}, streamed=False, raw=False, **kwargs):
+    def http_get(self, path, query_data=None, streamed=False, raw=False, **kwargs):
         """Make a GET request to the Gitlab server.
 
         Args:
@@ -584,6 +584,7 @@ class Gitlab(object):
             GitlabHttpError: When the return code is not 2xx
             GitlabParsingError: If the json data could not be parsed
         """
+        query_data = query_data or {}
         result = self.http_request(
             "get", path, query_data=query_data, streamed=streamed, **kwargs
         )
@@ -602,7 +603,7 @@ class Gitlab(object):
         else:
             return result
 
-    def http_list(self, path, query_data={}, as_list=None, **kwargs):
+    def http_list(self, path, query_data=None, as_list=None, **kwargs):
         """Make a GET request to the Gitlab server for list-oriented queries.
 
         Args:
@@ -623,6 +624,7 @@ class Gitlab(object):
             GitlabHttpError: When the return code is not 2xx
             GitlabParsingError: If the json data could not be parsed
         """
+        query_data = query_data or {}
 
         # In case we want to change the default behavior at some point
         as_list = True if as_list is None else as_list
@@ -640,7 +642,7 @@ class Gitlab(object):
         # No pagination, generator requested
         return GitlabList(self, url, query_data, **kwargs)
 
-    def http_post(self, path, query_data={}, post_data={}, files=None, **kwargs):
+    def http_post(self, path, query_data=None, post_data=None, files=None, **kwargs):
         """Make a POST request to the Gitlab server.
 
         Args:
@@ -660,6 +662,9 @@ class Gitlab(object):
             GitlabHttpError: When the return code is not 2xx
             GitlabParsingError: If the json data could not be parsed
         """
+        query_data = query_data or {}
+        post_data = post_data or {}
+
         result = self.http_request(
             "post",
             path,
@@ -675,7 +680,7 @@ class Gitlab(object):
             raise GitlabParsingError(error_message="Failed to parse the server message")
         return result
 
-    def http_put(self, path, query_data={}, post_data={}, files=None, **kwargs):
+    def http_put(self, path, query_data=None, post_data=None, files=None, **kwargs):
         """Make a PUT request to the Gitlab server.
 
         Args:
@@ -694,6 +699,9 @@ class Gitlab(object):
             GitlabHttpError: When the return code is not 2xx
             GitlabParsingError: If the json data could not be parsed
         """
+        query_data = query_data or {}
+        post_data = post_data or {}
+
         result = self.http_request(
             "put",
             path,
@@ -755,7 +763,8 @@ class GitlabList(object):
         self._query(url, query_data, **kwargs)
         self._get_next = get_next
 
-    def _query(self, url, query_data={}, **kwargs):
+    def _query(self, url, query_data=None, **kwargs):
+        query_data = query_data or {}
         result = self._gl.http_request("get", url, query_data=query_data, **kwargs)
         try:
             self._next_url = result.links["next"]["url"]
