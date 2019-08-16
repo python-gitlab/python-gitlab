@@ -556,6 +556,36 @@ class TestGitlab(unittest.TestCase):
             self.assertEqual(data.name, "name")
             self.assertEqual(data.id, 1)
 
+    def test_project_environments(self):
+        @urlmatch(
+            scheme="http", netloc="localhost", path="/api/v4/projects/1$", method="get"
+        )
+        def resp_get_project(url, request):
+            headers = {"content-type": "application/json"}
+            content = '{"name": "name", "id": 1}'.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/projects/1/environments/1",
+            method="get",
+        )
+        def resp_get_environment(url, request):
+            headers = {"content-type": "application/json"}
+            content = '{"name": "environment_name", "id": 1, "last_deployment": "sometime"}'.encode(
+                "utf-8"
+            )
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_get_project, resp_get_environment):
+            project = self.gl.projects.get(1)
+            environment = project.environments.get(1)
+            self.assertIsInstance(environment, ProjectEnvironment)
+            self.assertEqual(environment.id, 1)
+            self.assertEqual(environment.last_deployment, "sometime")
+            self.assertEqual(environment.name, "environment_name")
+
     def test_groups(self):
         @urlmatch(
             scheme="http", netloc="localhost", path="/api/v4/groups/1", method="get"
