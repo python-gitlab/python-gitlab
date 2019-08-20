@@ -3554,8 +3554,8 @@ class ProjectVariableManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/variables"
     _obj_cls = ProjectVariable
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (("key", "value"), tuple())
-    _update_attrs = (("key", "value"), tuple())
+    _create_attrs = (("key", "value"), ("environment_scope",))
+    _update_attrs = (("key", "value"), ("environment_scope",))
 
 
 class ProjectService(SaveMixin, ObjectDeleteMixin, RESTObject):
