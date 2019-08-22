@@ -4463,6 +4463,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             "ci_config_path",
         ),
     )
+    _types = {"avatar": types.ImageAttribute}
     _list_filters = (
         "search",
         "owned",

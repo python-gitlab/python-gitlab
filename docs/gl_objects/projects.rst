@@ -84,6 +84,13 @@ Update a project::
     project.snippets_enabled = 1
     project.save()
 
+Set the avatar image for a project::
+
+    # the avatar image can be passed as data (content of the file) or as a file
+    # object opened in binary mode
+    project.avatar = open('path/to/file.png', 'rb')
+    project.save()
+
 Delete a project::
 
     gl.projects.delete(project_id)
