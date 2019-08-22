@@ -24,6 +24,10 @@ Create an environment for a project::
 
     environment = project.environments.create({'name': 'production'})
 
+Retrieve a specific environment for a project::
+
+    environment = project.environments.get(112)
+
 Update an environment for a project::
 
     environment.external_url = 'http://foo.bar.com'

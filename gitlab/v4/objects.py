@@ -1944,7 +1944,7 @@ class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectEnvironmentManager(
-    ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
 ):
     _path = "/projects/%(project_id)s/environments"
     _obj_cls = ProjectEnvironment
