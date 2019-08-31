@@ -12,10 +12,7 @@ build_test_image:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/tools/Dockerfile-test --destination $CI_REGISTRY_IMAGE:test
   only:
-    refs:
-      - master
-    changes:
-      - tools/*
+    - tags
 
 deploy:
   stage: deploy
