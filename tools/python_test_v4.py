@@ -911,3 +911,14 @@ assert retrieved_project.description == release_description
 release_test_project.releases.delete(release_tag_name)
 assert len(release_test_project.releases.list()) == 0
 release_test_project.delete()
+
+# status
+message = "Test"
+emoji = "thumbsup"
+status = gl.user.status.get()
+status.message = message
+status.emoji = emoji
+status.save()
+new_status = gl.user.status.get()
+assert new_status.message == message
+assert new_status.emoji == emoji

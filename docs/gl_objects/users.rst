@@ -250,6 +250,43 @@ Delete an SSH key for a user::
     # or
     key.delete()
 
+Status
+======
+
+References
+----------
+
+You can manipulate the status for the current user and you can read the status of other users.
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.CurrentUserStatus`
+  + :class:`gitlab.v4.objects.CurrentUserStatusManager`
+  + :attr:`gitlab.v4.objects.CurrentUser.status`
+  + :class:`gitlab.v4.objects.UserStatus`
+  + :class:`gitlab.v4.objects.UserStatusManager`
+  + :attr:`gitlab.v4.objects.User.status`
+
+* GitLab API: https://docs.gitlab.com/ce/api/users.html#user-status
+
+Examples
+--------
+
+Get current user status::
+
+    status = user.status.get()
+
+Update the status for the current user::
+
+    status = user.status.get()
+    status.message = "message"
+    status.emoji = "thumbsup"
+    status.save()
+
+Get the status of other users::
+
+    gl.users.get(1).status.get()
+
 Emails
 ======
 
