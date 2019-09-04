@@ -32,13 +32,13 @@ jobs:
       script:
         - pip3 install tox
         - tox -e cli_func_v4
-    #- stage: test
-    #  name: py_func_v4
-    #  dist: bionic
-    #  python: 3.7
-    #  script:
-    #    - pip3 install tox
-    #    - tox -e py_func_v4
+    - stage: test
+      name: py_func_v4
+      dist: bionic
+      python: 3.7
+      script:
+        - pip3 install tox
+        - tox -e py_func_v4
     - stage: test
       name: docs
       dist: bionic
