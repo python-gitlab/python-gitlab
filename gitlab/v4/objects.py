@@ -3864,6 +3864,34 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("wikis", "ProjectWikiManager"),
     )
 
+    @cli.register_custom_action("Project", ("submodule", "branch", "commit_sha"))
+    @exc.on_http_error(exc.GitlabUpdateError)
+    def update_submodule(self, submodule, branch, commit_sha, **kwargs):
+        """Transfer a project to the given namespace ID
+
+        Args:
+            submodule (str): Full path to the submodule
+            branch (str): Name of the branch to commit into
+            commit_sha (str): Full commit SHA to update the submodule to
+            commit_message (str): Commit message. If no message is provided, a default one will be set (optional)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabPutError: If the submodule could not be updated
+        """
+
+        submodule = submodule.replace('/', '%2F')  # .replace('.', '%2E')
+        path = "/projects/%s/repository/submodules/%s" % (self.get_id(), submodule)
+        data = {
+            "branch": branch,
+            "commit_sha": commit_sha,
+        }
+        if 'commit_message' in kwargs:
+            data['commit_message'] = kwargs['commit_message']
+        return self.manager.gitlab.http_put(
+            path, post_data=data
+        )
+
     @cli.register_custom_action("Project", tuple(), ("path", "ref", "recursive"))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_tree(self, path="", ref="", recursive=False, **kwargs):
