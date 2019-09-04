@@ -717,6 +717,56 @@ class TestGitlab(unittest.TestCase):
         with HTTMock(resp_mark_all_as_done):
             self.gl.todos.mark_all_as_done()
 
+    def test_update_submodule(self):
+        @urlmatch(
+            scheme="http", netloc="localhost", path="/api/v4/projects/1$", method="get"
+        )
+        def resp_get_project(url, request):
+            headers = {"content-type": "application/json"}
+            content = '{"name": "name", "id": 1}'.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/projects/$1/repository/submodules/foo%2Fbar",
+            method="post",
+        )
+        def resp_update_submodule(url, request):
+            headers = {"content-type": "application/json"}
+            content = """{
+            "id": "ed899a2f4b50b4370feeea94676502b42383c746",
+            "short_id": "ed899a2f4b5",
+            "title": "Message",
+            "author_name": "Author",
+            "author_email": "author@example.com",
+            "committer_name": "Author",
+            "committer_email": "author@example.com",
+            "created_at": "2018-09-20T09:26:24.000-07:00",
+            "message": "Message", 
+            "parent_ids": [ "ae1d9fb46aa2b07ee9836d49862ec4e2c46fbbba" ], 
+            "committed_date": "2018-09-20T09:26:24.000-07:00",
+            "authored_date": "2018-09-20T09:26:24.000-07:00", 
+            "status": null}"""
+            content = content.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_update_submodule):
+            project = self.gl.projects.get(1)
+            self.assertIsInstance(project, Project)
+            self.assertEqual(project.name, "name")
+            self.assertEqual(project.id, 1)
+
+            ret = project.update_submodule(
+                submodule="foo/bar",
+                branch="master",
+                commit_sha="4c3674f66071e30b3311dac9b9ccc90502a72664",
+                commit_message="Message",
+            )
+            self.assertIsInstance(ret, dict)
+            self.assertEqual(ret["message"], "Message")
+            self.assertEqual(ret["id"], "ed899a2f4b50b4370feeea94676502b42383c746")
+
     def _default_config(self):
         fd, temp_path = tempfile.mkstemp()
         os.write(fd, valid_config)
