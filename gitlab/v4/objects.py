@@ -128,6 +128,17 @@ class UserActivities(RESTObject):
     _id_attr = "username"
 
 
+class UserStatus(RESTObject):
+    _id_attr = None
+    _short_print_attr = "message"
+
+
+class UserStatusManager(GetWithoutIdMixin, RESTManager):
+    _path = "/users/%(user_id)s/status"
+    _obj_cls = UserStatus
+    _from_parent_attrs = {"user_id": "id"}
+
+
 class UserActivitiesManager(ListMixin, RESTManager):
     _path = "/user/activities"
     _obj_cls = UserActivities
@@ -184,6 +195,16 @@ class UserKeyManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     _obj_cls = UserKey
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = (("title", "key"), tuple())
+
+
+class UserStatus(RESTObject):
+    pass
+
+
+class UserStatusManager(GetWithoutIdMixin, RESTManager):
+    _path = "/users/%(user_id)s/status"
+    _obj_cls = UserStatus
+    _from_parent_attrs = {"user_id": "id"}
 
 
 class UserImpersonationToken(ObjectDeleteMixin, RESTObject):
@@ -272,6 +293,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("impersonationtokens", "UserImpersonationTokenManager"),
         ("keys", "UserKeyManager"),
         ("projects", "UserProjectManager"),
+        ("status", "UserStatusManager"),
     )
 
     @cli.register_custom_action("User")
@@ -330,6 +352,7 @@ class UserManager(CRUDMixin, RESTManager):
         "external",
         "search",
         "custom_attributes",
+        "status",
     )
     _create_attrs = (
         tuple(),
@@ -410,10 +433,22 @@ class CurrentUserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager
     _create_attrs = (("title", "key"), tuple())
 
 
+class CurrentUserStatus(SaveMixin, RESTObject):
+    _id_attr = None
+    _short_print_attr = "message"
+
+
+class CurrentUserStatusManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+    _path = "/user/status"
+    _obj_cls = CurrentUserStatus
+    _update_attrs = (tuple(), ("emoji", "message"))
+
+
 class CurrentUser(RESTObject):
     _id_attr = None
     _short_print_attr = "username"
     _managers = (
+        ("status", "CurrentUserStatusManager"),
         ("emails", "CurrentUserEmailManager"),
         ("gpgkeys", "CurrentUserGPGKeyManager"),
         ("keys", "CurrentUserKeyManager"),
