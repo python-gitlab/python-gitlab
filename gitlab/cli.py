@@ -202,7 +202,7 @@ def main():
 
     try:
         gl = gitlab.Gitlab.from_config(gitlab_id, config_files)
-        if gl.private_token or gl.oauth_token:
+        if gl.private_token or gl.oauth_token or gl.job_token:
             gl.auth()
     except Exception as e:
         die(str(e))

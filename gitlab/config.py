@@ -122,6 +122,12 @@ class GitlabConfigParser(object):
         except Exception:
             pass
 
+        self.job_token = None
+        try:
+            self.job_token = self._config.get(self.gitlab_id, "job_token")
+        except Exception:
+            pass
+
         self.http_username = None
         self.http_password = None
         try:

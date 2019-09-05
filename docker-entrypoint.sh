@@ -14,6 +14,7 @@ per_page = ${GITLAB_PER_PAGE:-10}
 url = ${GITLAB_URL:-https://gitlab.com}
 private_token = ${GITLAB_PRIVATE_TOKEN}
 oauth_token = ${GITLAB_OAUTH_TOKEN}
+job_token = ${GITLAB_JOB_TOKEN}
 http_username = ${GITLAB_HTTP_USERNAME}
 http_password = ${GITLAB_HTTP_PASSWORD}
 EOF
