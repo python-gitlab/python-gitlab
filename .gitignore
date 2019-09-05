@@ -8,3 +8,4 @@ MANIFEST
 docs/_build
 .testrepository/
 .tox
+venv/
