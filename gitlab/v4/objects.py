@@ -3880,17 +3880,12 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabPutError: If the submodule could not be updated
         """
 
-        submodule = submodule.replace('/', '%2F')  # .replace('.', '%2E')
+        submodule = submodule.replace("/", "%2F")  # .replace('.', '%2E')
         path = "/projects/%s/repository/submodules/%s" % (self.get_id(), submodule)
-        data = {
-            "branch": branch,
-            "commit_sha": commit_sha,
-        }
-        if 'commit_message' in kwargs:
-            data['commit_message'] = kwargs['commit_message']
-        return self.manager.gitlab.http_put(
-            path, post_data=data
-        )
+        data = {"branch": branch, "commit_sha": commit_sha}
+        if "commit_message" in kwargs:
+            data["commit_message"] = kwargs["commit_message"]
+        return self.manager.gitlab.http_put(path, post_data=data)
 
     @cli.register_custom_action("Project", tuple(), ("path", "ref", "recursive"))
     @exc.on_http_error(exc.GitlabGetError)
