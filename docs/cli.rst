@@ -83,9 +83,9 @@ You must define the ``url`` in each GitLab server section.
    If the GitLab server you are using redirects requests from http to https,
    make sure to use the ``https://`` protocol in the ``url`` definition.
 
-Only one of ``private_token`` or ``oauth_token`` should be defined. If neither
-are defined an anonymous request will be sent to the Gitlab server, with very
-limited permissions.
+Only one of ``private_token``, ``oauth_token`` or ``job_token`` should be
+defined. If neither are defined an anonymous request will be sent to the Gitlab
+server, with very limited permissions.
 
 .. list-table:: GitLab server options
    :header-rows: 1
@@ -96,10 +96,12 @@ limited permissions.
      - URL for the GitLab server
    * - ``private_token``
      - Your user token. Login/password is not supported. Refer to `the official
-       documentation`__ to learn how to obtain a token.
+       documentation`_pat to learn how to obtain a token.
    * - ``oauth_token``
      - An Oauth token for authentication. The Gitlab server must be configured
        to support this authentication method.
+   * - ``job_token``
+     - Your job token. See `the official  documentation`_job-token to learn how to obtain a token.
    * - ``api_version``
      - GitLab API version to use (``3`` or ``4``). Defaults to ``4`` since
        version 1.3.0.
@@ -108,7 +110,8 @@ limited permissions.
    * - ``http_password``
      - Password for optional HTTP authentication
 
-__ https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html
+.. _pat: https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html
+.. _job-token: https://docs.gitlab.com/ce/api/jobs.html#get-job-artifacts
 
 CLI
 ===

@@ -403,17 +403,31 @@ class TestGitlabAuth(unittest.TestCase):
         gl = Gitlab("http://localhost", private_token="private_token", api_version="4")
         self.assertEqual(gl.private_token, "private_token")
         self.assertEqual(gl.oauth_token, None)
+        self.assertEqual(gl.job_token, None)
         self.assertEqual(gl._http_auth, None)
-        self.assertEqual(gl.headers["PRIVATE-TOKEN"], "private_token")
         self.assertNotIn("Authorization", gl.headers)
+        self.assertEqual(gl.headers["PRIVATE-TOKEN"], "private_token")
+        self.assertNotIn("JOB-TOKEN", gl.headers)
 
     def test_oauth_token_auth(self):
         gl = Gitlab("http://localhost", oauth_token="oauth_token", api_version="4")
         self.assertEqual(gl.private_token, None)
         self.assertEqual(gl.oauth_token, "oauth_token")
+        self.assertEqual(gl.job_token, None)
         self.assertEqual(gl._http_auth, None)
         self.assertEqual(gl.headers["Authorization"], "Bearer oauth_token")
         self.assertNotIn("PRIVATE-TOKEN", gl.headers)
+        self.assertNotIn("JOB-TOKEN", gl.headers)
+
+    def test_job_token_auth(self):
+        gl = Gitlab("http://localhost", job_token="CI_JOB_TOKEN", api_version="4")
+        self.assertEqual(gl.private_token, None)
+        self.assertEqual(gl.oauth_token, None)
+        self.assertEqual(gl.job_token, "CI_JOB_TOKEN")
+        self.assertEqual(gl._http_auth, None)
+        self.assertNotIn("Authorization", gl.headers)
+        self.assertNotIn("PRIVATE-TOKEN", gl.headers)
+        self.assertEqual(gl.headers["JOB-TOKEN"], "CI_JOB_TOKEN")
 
     def test_http_auth(self):
         gl = Gitlab(
@@ -425,6 +439,7 @@ class TestGitlabAuth(unittest.TestCase):
         )
         self.assertEqual(gl.private_token, "private_token")
         self.assertEqual(gl.oauth_token, None)
+        self.assertEqual(gl.job_token, None)
         self.assertIsInstance(gl._http_auth, requests.auth.HTTPBasicAuth)
         self.assertEqual(gl.headers["PRIVATE-TOKEN"], "private_token")
         self.assertNotIn("Authorization", gl.headers)

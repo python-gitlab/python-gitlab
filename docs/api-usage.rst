@@ -19,6 +19,10 @@ To connect to a GitLab server, create a ``gitlab.Gitlab`` object:
    # oauth token authentication
    gl = gitlab.Gitlab('http://10.0.0.1', oauth_token='my_long_token_here')
 
+   # job token authentication (to be used in CI)
+   import os
+   gl = gitlab.Gitlab('http://10.0.0.1', job_token=os.environ['CI_JOB_TOKEN'])
+
    # username/password authentication (for GitLab << 10.2)
    gl = gitlab.Gitlab('http://10.0.0.1', email='jdoe', password='s3cr3t')
 

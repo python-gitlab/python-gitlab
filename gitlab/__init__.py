@@ -60,6 +60,7 @@ class Gitlab(object):
         url (str): The URL of the GitLab server.
         private_token (str): The user private token
         oauth_token (str): An oauth token
+        job_token (str): A CI job token
         email (str): The user email or login.
         password (str): The user password (associated with email).
         ssl_verify (bool|str): Whether SSL certificates should be validated. If
@@ -76,6 +77,7 @@ class Gitlab(object):
         url,
         private_token=None,
         oauth_token=None,
+        job_token=None,
         email=None,
         password=None,
         ssl_verify=True,
@@ -107,6 +109,7 @@ class Gitlab(object):
         self.http_username = http_username
         self.http_password = http_password
         self.oauth_token = oauth_token
+        self.job_token = job_token
         self._set_auth_info()
 
         #: Create a session object for requests
@@ -195,6 +198,7 @@ class Gitlab(object):
             config.url,
             private_token=config.private_token,
             oauth_token=config.oauth_token,
+            job_token=config.job_token,
             ssl_verify=config.ssl_verify,
             timeout=config.timeout,
             http_username=config.http_username,
@@ -211,7 +215,7 @@ class Gitlab(object):
         The `user` attribute will hold a `gitlab.objects.CurrentUser` object on
         success.
         """
-        if self.private_token or self.oauth_token:
+        if self.private_token or self.oauth_token or self.job_token:
             self._token_auth()
         else:
             self._credentials_auth()
@@ -346,9 +350,16 @@ class Gitlab(object):
             return url
 
     def _set_auth_info(self):
-        if self.private_token and self.oauth_token:
+        if (
+            sum(
+                bool(arg)
+                for arg in [self.private_token, self.oauth_token, self.job_token]
+            )
+            != 1
+        ):
             raise ValueError(
-                "Only one of private_token or oauth_token should " "be defined"
+                "Only one of private_token, oauth_token or job_token should "
+                "be defined"
             )
         if (self.http_username and not self.http_password) or (
             not self.http_username and self.http_password
@@ -364,12 +375,19 @@ class Gitlab(object):
 
         self._http_auth = None
         if self.private_token:
-            self.headers["PRIVATE-TOKEN"] = self.private_token
             self.headers.pop("Authorization", None)
+            self.headers["PRIVATE-TOKEN"] = self.private_token
+            self.headers.pop("JOB-TOKEN", None)
 
         if self.oauth_token:
             self.headers["Authorization"] = "Bearer %s" % self.oauth_token
             self.headers.pop("PRIVATE-TOKEN", None)
+            self.headers.pop("JOB-TOKEN", None)
+
+        if self.job_token:
+            self.headers.pop("Authorization", None)
+            self.headers.pop("PRIVATE-TOKEN", None)
+            self.headers["JOB-TOKEN"] = self.job_token
 
         if self.http_username:
             self._http_auth = requests.auth.HTTPBasicAuth(
