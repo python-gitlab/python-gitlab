@@ -633,9 +633,7 @@ class TestGitlab(unittest.TestCase):
             self.assertEqual(data[1].id, 2)
             self.assertEqual(data[1].name, "other_name")
 
-    @urlmatch(
-        scheme="http", netloc="localhost", path="/api/v4/users/1", method="get"
-    )
+    @urlmatch(scheme="http", netloc="localhost", path="/api/v4/users/1", method="get")
     def resp_get_user(self, url, request):
         headers = {"content-type": "application/json"}
         content = (
