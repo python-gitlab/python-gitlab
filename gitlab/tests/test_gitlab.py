@@ -633,24 +633,45 @@ class TestGitlab(unittest.TestCase):
             self.assertEqual(data[1].id, 2)
             self.assertEqual(data[1].name, "other_name")
 
-    def test_users(self):
-        @urlmatch(
-            scheme="http", netloc="localhost", path="/api/v4/users/1", method="get"
+    @urlmatch(
+        scheme="http", netloc="localhost", path="/api/v4/users/1", method="get"
+    )
+    def resp_get_user(self, url, request):
+        headers = {"content-type": "application/json"}
+        content = (
+            '{"name": "name", "id": 1, "password": "password", '
+            '"username": "username", "email": "email"}'
         )
-        def resp_get_user(url, request):
-            headers = {"content-type": "application/json"}
-            content = (
-                '{"name": "name", "id": 1, "password": "password", '
-                '"username": "username", "email": "email"}'
-            )
-            content = content.encode("utf-8")
-            return response(200, content, headers, None, 5, request)
+        content = content.encode("utf-8")
+        return response(200, content, headers, None, 5, request)
 
-        with HTTMock(resp_get_user):
+    def test_users(self):
+        with HTTMock(self.resp_get_user):
             user = self.gl.users.get(1)
             self.assertEqual(type(user), User)
             self.assertEqual(user.name, "name")
             self.assertEqual(user.id, 1)
+
+    def test_user_status(self):
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/users/1/status",
+            method="get",
+        )
+        def resp_get_user_status(url, request):
+            headers = {"content-type": "application/json"}
+            content = '{"message": "test", "message_html": "<h1>Message</h1>", "emoji": "thumbsup"}'
+            content = content.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(self.resp_get_user):
+            user = self.gl.users.get(1)
+        with HTTMock(resp_get_user_status):
+            status = user.status.get()
+            self.assertEqual(type(status), UserStatus)
+            self.assertEqual(status.message, "test")
+            self.assertEqual(status.emoji, "thumbsup")
 
     def _default_config(self):
         fd, temp_path = tempfile.mkstemp()
