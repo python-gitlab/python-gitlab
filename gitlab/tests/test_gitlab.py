@@ -21,6 +21,7 @@ from __future__ import print_function
 import os
 import pickle
 import tempfile
+import json
 
 try:
     import unittest
@@ -670,6 +671,51 @@ class TestGitlab(unittest.TestCase):
             self.assertEqual(type(status), UserStatus)
             self.assertEqual(status.message, "test")
             self.assertEqual(status.emoji, "thumbsup")
+
+    def test_todo(self):
+        todo_content = open(os.path.dirname(__file__) + "/data/todo.json", "r").read()
+        json_content = json.loads(todo_content)
+
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/todos", method="get")
+        def resp_get_todo(url, request):
+            headers = {"content-type": "application/json"}
+            content = todo_content.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/todos/102/mark_as_done",
+            method="post",
+        )
+        def resp_mark_as_done(url, request):
+            headers = {"content-type": "application/json"}
+            single_todo = json.dumps(json_content[0])
+            content = single_todo.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_get_todo):
+            todo = self.gl.todos.list()[0]
+            self.assertEqual(type(todo), Todo)
+            self.assertEqual(todo.id, 102)
+            self.assertEqual(todo.target_type, "MergeRequest")
+            self.assertEqual(todo.target["assignee"]["username"], "root")
+            with HTTMock(resp_mark_as_done):
+                todo.mark_as_done()
+
+    def test_todo_mark_all_as_done(self):
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/todos/mark_as_done",
+            method="post",
+        )
+        def resp_mark_all_as_done(url, request):
+            headers = {"content-type": "application/json"}
+            return response(204, {}, headers, None, 5, request)
+
+        with HTTMock(resp_mark_all_as_done):
+            self.gl.todos.mark_all_as_done()
 
     def _default_config(self):
         fd, temp_path = tempfile.mkstemp()

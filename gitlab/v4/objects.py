@@ -4644,10 +4644,6 @@ class TodoManager(ListMixin, DeleteMixin, RESTManager):
             int: The number of todos maked done
         """
         result = self.gitlab.http_post("/todos/mark_as_done", **kwargs)
-        try:
-            return int(result)
-        except ValueError:
-            return 0
 
 
 class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):

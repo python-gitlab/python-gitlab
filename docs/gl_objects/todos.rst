@@ -36,10 +36,9 @@ For example::
 
 Mark a todo as done::
 
-    gl.todos.delete(todo_id)
-    # or
-    todo.delete()
+    todos = gl.todos.list(project_id=1)
+    todos[0].mark_as_done()
 
 Mark all the todos as done::
 
-    nb_of_closed_todos = gl.todos.delete_all()
+    gl.todos.mark_all_as_done()
