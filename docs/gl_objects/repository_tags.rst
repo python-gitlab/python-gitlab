@@ -43,5 +43,5 @@ Delete tag in bulk::
 
 .. note::   
 
-      Delete in bulk is asnychronous operation and may take a while. 
+      Delete in bulk is asynchronous operation and may take a while. 
       Refer to: https://docs.gitlab.com/ce/api/container_registry.html#delete-repository-tags-in-bulk 
