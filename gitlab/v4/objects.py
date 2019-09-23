@@ -868,7 +868,8 @@ class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             **kwargs: Extra options to send to the server (e.g. sudo)
         """
         new_data = new_data or {}
-        new_data["name"] = name
+        if name:
+            new_data["name"] = name
         super().update(id=None, new_data=new_data, **kwargs)
 
     # Delete without ID.
@@ -3001,7 +3002,8 @@ class ProjectLabelManager(
             **kwargs: Extra options to send to the server (e.g. sudo)
         """
         new_data = new_data or {}
-        new_data["name"] = name
+        if name:
+            new_data["name"] = name
         super().update(id=None, new_data=new_data, **kwargs)
 
     # Delete without ID.
