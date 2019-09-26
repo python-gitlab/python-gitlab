@@ -278,8 +278,10 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
             GitlabAuthenticationError: If authentication is not correct
             GitlabListError: If the server cannot perform the request
         """
-
-        path = "/users/%s/projects" % self._parent.id
+        if self._parent:
+            path = "/users/%s/projects" % self._parent.id
+        else:
+            path = "/users/%s/projects" % kwargs["user_id"]
         return ListMixin.list(self, path=path, **kwargs)
 
 
