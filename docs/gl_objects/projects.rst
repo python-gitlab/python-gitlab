@@ -55,6 +55,11 @@ Results can also be sorted using the following parameters:
     # Search projects
     projects = gl.projects.list(search='keyword')
 
+.. note::
+
+   Fetching a list of projects, doesn't include all attributes of all projects.
+   To retrieve all attributes, you'll need to fetch a single project
+
 Get a single project::
 
     # Get a project by ID
