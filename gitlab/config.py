@@ -63,7 +63,7 @@ class GitlabConfigParser(object):
                 self.gitlab_id = self._config.get("global", "default")
             except Exception:
                 raise GitlabIDError(
-                    "Impossible to get the gitlab id " "(not specified in config file)"
+                    "Impossible to get the gitlab id (not specified in config file)"
                 )
 
         try:

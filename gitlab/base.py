@@ -227,7 +227,7 @@ class RESTObjectList(object):
 class RESTManager(object):
     """Base class for CRUD operations on objects.
 
-    Derivated class must define ``_path`` and ``_obj_cls``.
+    Derived class must define ``_path`` and ``_obj_cls``.
 
     ``_path``: Base URL path on which requests will be sent (e.g. '/projects')
     ``_obj_cls``: The class of objects that will be created
