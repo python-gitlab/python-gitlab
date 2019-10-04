@@ -423,6 +423,8 @@ readme = admin_project.files.get(file_path="README.rst", ref="master")
 # object method
 assert readme.decode().decode() == "Initial content"
 
+blame = admin_project.files.blame(file_path="README.rst", ref="master")
+
 data = {
     "branch": "master",
     "commit_message": "blah blah blah",

@@ -362,6 +362,10 @@ Delete a file::
 
     f.delete(commit_message='Delete testfile')
 
+Get file blame::
+
+    b = project.files.blame(file_path='README.rst', ref='master')
+
 Project tags
 ============
 
