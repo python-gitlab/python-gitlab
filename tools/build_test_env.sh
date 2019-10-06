@@ -25,11 +25,13 @@ error() { log "ERROR: $@" >&2; }
 fatal() { error "$@"; exit 1; }
 try() { "$@" || fatal "'$@' failed"; }
 
+REUSE_CONTAINER=
 NOVENV=
 PY_VER=3
 API_VER=4
-while getopts :np:a: opt "$@"; do
+while getopts :knp:a: opt "$@"; do
     case $opt in
+        k) REUSE_CONTAINER=1;;
         n) NOVENV=1;;
         p) PY_VER=$OPTARG;;
         a) API_VER=$OPTARG;;
@@ -67,8 +69,10 @@ cleanup() {
     command -v deactivate >/dev/null 2>&1 && deactivate || true
     log "Deleting python virtualenv..."
     rm -rf "$VENV"
-    log "Stopping gitlab-test docker container..."
-    docker rm -f gitlab-test >/dev/null
+    if [ -z "$REUSE_CONTAINER" ]; then
+        log "Stopping gitlab-test docker container..."
+        docker rm -f gitlab-test >/dev/null
+    fi
     log "Done."
 }
 [ -z "${BUILD_TEST_ENV_AUTO_CLEANUP+set}" ] || {
@@ -76,9 +80,31 @@ cleanup() {
     trap 'exit 1' HUP INT TERM
 }
 
-try docker pull registry.gitlab.com/python-gitlab/python-gitlab:test >/dev/null
-try docker run --name gitlab-test --detach --publish 8080:80 \
-    --publish 2222:22 registry.gitlab.com/python-gitlab/python-gitlab:test >/dev/null
+if [ -z "$REUSE_CONTAINER" ] || ! docker top gitlab-test >/dev/null 2>&1; then
+    GITLAB_OMNIBUS_CONFIG="external_url 'http://gitlab.test'
+gitlab_rails['initial_root_password'] = '5iveL!fe'
+gitlab_rails['initial_shared_runners_registration_token'] = 'sTPNtWLEuSrHzoHP8oCU'
+registry['enable'] = false
+nginx['redirect_http_to_https'] = false
+nginx['listen_port'] = 80
+nginx['listen_https'] = false
+pages_external_url 'http://pages.gitlab.lxd'
+gitlab_pages['enable'] = true
+gitlab_pages['inplace_chroot'] = true
+prometheus['enable'] = false
+alertmanager['enable'] = false
+node_exporter['enable'] = false
+redis_exporter['enable'] = false
+postgres_exporter['enable'] = false
+pgbouncer_exporter['enable'] = false
+gitlab_exporter['enable'] = false
+grafana['enable'] = false
+letsencrypt['enable'] = false
+"
+    try docker run --name gitlab-test --detach --publish 8080:80 \
+        --publish 2222:22 --env "GITLAB_OMNIBUS_CONFIG=$GITLAB_OMNIBUS_CONFIG" \
+        gitlab/gitlab-ce:latest >/dev/null
+fi
 
 LOGIN='root'
 PASSWORD='5iveL!fe'
@@ -106,7 +132,7 @@ if [ -z "$NOVENV" ]; then
     try pip install -e .
 
     # to run generate_token.py
-    pip install bs4 lxml
+    pip install requests-html
 fi
 
 log "Waiting for gitlab to come online... "
@@ -115,11 +141,19 @@ while :; do
     sleep 1
     docker top gitlab-test >/dev/null 2>&1 || fatal "docker failed to start"
     sleep 4
-    curl -s http://localhost:8080/users/sign_in 2>/dev/null \
-        | grep -q "GitLab Community Edition" && break
+    # last command started by the container is "gitlab-ctl tail"
+    docker exec gitlab-test pgrep -f 'gitlab-ctl tail' &>/dev/null \
+    && docker exec gitlab-test curl http://localhost/-/health 2>/dev/null \
+        | grep -q 'GitLab OK' \
+    && curl -s http://localhost:8080/users/sign_in 2>/dev/null \
+        | grep -q "GitLab Community Edition" \
+    && break
     I=$((I+5))
     [ "$I" -lt 180 ] || fatal "timed out"
 done
+
+log "Pausing to give GitLab some time to finish starting up..."
+sleep 200
 
 # Get the token
 TOKEN=$($(dirname $0)/generate_token.py)
@@ -138,7 +172,8 @@ EOF
 log "Config file content ($CONFIG):"
 log <$CONFIG
 
-log "Pausing to give GitLab some time to finish starting up..."
-sleep 200
-
+if [ ! -z "$REUSE_CONTAINER" ]; then
+    echo reset gitlab
+    $(dirname $0)/reset_gitlab.py
+fi
 log "Test environment initialized."

@@ -1,64 +1,50 @@
 #!/usr/bin/env python
 
-import sys
+from six.moves.urllib.parse import urljoin
+from requests_html import HTMLSession
 
-try:
-    from urllib.parse import urljoin
-except ImportError:
-    from urlparse import urljoin
-
-from bs4 import BeautifulSoup
-import requests
-
-endpoint = "http://localhost:8080"
-root_route = urljoin(endpoint, "/")
-sign_in_route = urljoin(endpoint, "/users/sign_in")
-pat_route = urljoin(endpoint, "/profile/personal_access_tokens")
-
-login = "root"
-password = "5iveL!fe"
+ENDPOINT = "http://localhost:8080"
+LOGIN = "root"
+PASSWORD = "5iveL!fe"
 
 
-def find_csrf_token(text):
-    soup = BeautifulSoup(text, "lxml")
-    token = soup.find(attrs={"name": "csrf-token"})
-    param = soup.find(attrs={"name": "csrf-param"})
-    data = {param.get("content"): token.get("content")}
-    return data
+class GitlabSession(HTMLSession):
+    def __init__(self, endpoint, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.endpoint = endpoint
+        self.csrf = None
 
+    def find_csrf_token(self, html):
+        param = html.find("meta[name=csrf-param]")[0].attrs["content"]
+        token = html.find("meta[name=csrf-token]")[0].attrs["content"]
+        self.csrf = {param: token}
 
-def obtain_csrf_token():
-    r = requests.get(root_route)
-    token = find_csrf_token(r.text)
-    return token, r.cookies
+    def obtain_csrf_token(self):
+        r = self.get(urljoin(self.endpoint, "/"))
+        self.find_csrf_token(r.html)
 
+    def sign_in(self, login, password):
+        data = {"user[login]": login, "user[password]": password, **self.csrf}
+        r = self.post(urljoin(self.endpoint, "/users/sign_in"), data=data)
+        self.find_csrf_token(r.html)
 
-def sign_in(csrf, cookies):
-    data = {"user[login]": login, "user[password]": password}
-    data.update(csrf)
-    r = requests.post(sign_in_route, data=data, cookies=cookies)
-    token = find_csrf_token(r.text)
-    return token, r.history[0].cookies
-
-
-def obtain_personal_access_token(name, csrf, cookies):
-    data = {
-        "personal_access_token[name]": name,
-        "personal_access_token[scopes][]": ["api", "sudo"],
-    }
-    data.update(csrf)
-    r = requests.post(pat_route, data=data, cookies=cookies)
-    soup = BeautifulSoup(r.text, "lxml")
-    token = soup.find("input", id="created-personal-access-token").get("value")
-    return token
+    def obtain_personal_access_token(self, name):
+        data = {
+            "personal_access_token[name]": name,
+            "personal_access_token[scopes][]": ["api", "sudo"],
+            **self.csrf,
+        }
+        r = self.post(
+            urljoin(self.endpoint, "/profile/personal_access_tokens"), data=data
+        )
+        return r.html.find("#created-personal-access-token")[0].attrs["value"]
 
 
 def main():
-    csrf1, cookies1 = obtain_csrf_token()
-    csrf2, cookies2 = sign_in(csrf1, cookies1)
-
-    token = obtain_personal_access_token("default", csrf2, cookies2)
-    print(token)
+    with GitlabSession(ENDPOINT) as s:
+        s.obtain_csrf_token()
+        s.sign_in(LOGIN, PASSWORD)
+        print(s.obtain_personal_access_token("default"))
 
 
 if __name__ == "__main__":
