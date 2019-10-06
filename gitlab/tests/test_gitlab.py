@@ -729,8 +729,8 @@ class TestGitlab(unittest.TestCase):
         @urlmatch(
             scheme="http",
             netloc="localhost",
-            path="/api/v4/projects/$1/repository/submodules/foo%2Fbar",
-            method="post",
+            path="/api/v4/projects/1/repository/submodules/foo%2Fbar",
+            method="put",
         )
         def resp_update_submodule(url, request):
             headers = {"content-type": "application/json"}
@@ -751,12 +751,12 @@ class TestGitlab(unittest.TestCase):
             content = content.encode("utf-8")
             return response(200, content, headers, None, 5, request)
 
-        with HTTMock(resp_update_submodule):
+        with HTTMock(resp_get_project):
             project = self.gl.projects.get(1)
             self.assertIsInstance(project, Project)
             self.assertEqual(project.name, "name")
             self.assertEqual(project.id, 1)
-
+        with HTTMock(resp_update_submodule):
             ret = project.update_submodule(
                 submodule="foo/bar",
                 branch="master",
