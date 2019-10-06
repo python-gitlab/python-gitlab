@@ -3888,7 +3888,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("Project", ("submodule", "branch", "commit_sha"))
     @exc.on_http_error(exc.GitlabUpdateError)
     def update_submodule(self, submodule, branch, commit_sha, **kwargs):
-        """Transfer a project to the given namespace ID
+        """Update a project submodule
 
         Args:
             submodule (str): Full path to the submodule

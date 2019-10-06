@@ -151,6 +151,15 @@ Get the content and metadata of a file for a commit, using a blob sha::
     content = base64.b64decode(file_info['content'])
     size = file_info['size']
 
+Update a project submodule::
+
+    items = project.update_submodule(
+        submodule="foo/bar",
+        branch="master",
+        commit_sha="4c3674f66071e30b3311dac9b9ccc90502a72664",
+        commit_message="Message",  # optional
+    )
+
 Get the repository archive::
 
     tgz = project.repository_archive()
