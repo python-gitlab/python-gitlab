@@ -56,9 +56,6 @@ class TestRESTManager(unittest.TestCase):
         class Parent(object):
             id = 42
 
-        class BrokenParent(object):
-            no_id = 0
-
         mgr = MGR(FakeGitlab(), parent=Parent())
         self.assertEqual(mgr._computed_path, "/tests/42/cases")
 

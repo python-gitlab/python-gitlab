@@ -98,7 +98,7 @@ def _get_base_parser(add_help=True):
         "-c",
         "--config-file",
         action="append",
-        help=("Configuration file to use. Can be used " "multiple times."),
+        help="Configuration file to use. Can be used multiple times.",
     )
     parser.add_argument(
         "-g",
