@@ -1,6 +1,7 @@
 import base64
 import os
 import time
+from distutils.version import LooseVersion
 
 import requests
 
@@ -174,7 +175,8 @@ assert(len(l) == 1)
 
 new_user.delete()
 foobar_user.delete()
-assert(len(gl.users.list()) == 3)
+assert(len(gl.users.list()) ==
+       3 + len([u for u in gl.users.list() if u.username == 'ghost']))
 
 # current user mail
 mail = gl.user.emails.create({'email': 'current@user.com'})
@@ -275,14 +277,14 @@ settings = group2.notificationsettings.get()
 assert(settings.level == 'disabled')
 
 # group badges
-badge_image = 'http://example.com'
-badge_link = 'http://example/img.svg'
+badge_image = 'https://httpbin.org/image/svg'
+badge_link = 'https://httpbin.org/get'
 badge = group2.badges.create({'link_url': badge_link, 'image_url': badge_image})
 assert(len(group2.badges.list()) == 1)
-badge.image_url = 'http://another.example.com'
+badge.image_url = 'https://httpbin.org/image/svg'
 badge.save()
 badge = group2.badges.get(badge.id)
-assert(badge.image_url == 'http://another.example.com')
+assert(badge.image_url == 'https://httpbin.org/image/svg')
 badge.delete()
 assert(len(group2.badges.list()) == 0)
 
@@ -390,7 +392,7 @@ data = {
     ]
 }
 admin_project.commits.create(data)
-assert('---' in admin_project.commits.list()[0].diff()[0]['diff'])
+assert('+blah' in admin_project.commits.list()[0].diff()[0]['diff'])
 
 # commit status
 commit = admin_project.commits.list()[0]
@@ -447,14 +449,14 @@ assert(uploaded_file["markdown"] == "[{}]({})".format(
 
 # environments
 admin_project.environments.create({'name': 'env1', 'external_url':
-                                   'http://fake.env/whatever'})
+                                   'https://httpbin.org/get'})
 envs = admin_project.environments.list()
 assert(len(envs) == 1)
 env = envs[0]
-env.external_url = 'http://new.env/whatever'
+env.external_url = 'https://httpbin.org/anything'
 env.save()
 env = admin_project.environments.list()[0]
-assert(env.external_url == 'http://new.env/whatever')
+assert(env.external_url == 'https://httpbin.org/anything')
 env.stop()
 env.delete()
 assert(len(admin_project.environments.list()) == 0)
@@ -468,7 +470,7 @@ p = gl.projects.get(fork.id)
 assert(p.forked_from_project['id'] == admin_project.id)
 
 # project hooks
-hook = admin_project.hooks.create({'url': 'http://hook.url'})
+hook = admin_project.hooks.create({'url': 'https://httpbin.org/get'})
 assert(len(admin_project.hooks.list()) == 1)
 hook.note_events = True
 hook.save()
@@ -514,6 +516,8 @@ assert(len(m1.merge_requests()) == 0)
 # issues
 issue1 = admin_project.issues.create({'title': 'my issue 1',
                                       'milestone_id': m1.id})
+# assigning milestone also creates a note
+assert(len(issue1.notes.list()) == 1)
 issue2 = admin_project.issues.create({'title': 'my issue 2'})
 issue3 = admin_project.issues.create({'title': 'my issue 3'})
 assert(len(admin_project.issues.list()) == 3)
@@ -524,20 +528,20 @@ assert(len(admin_project.issues.list(state='opened')) == 2)
 assert(len(admin_project.issues.list(milestone='milestone1')) == 1)
 assert(m1.issues().next().title == 'my issue 1')
 note = issue1.notes.create({'body': 'This is an issue note'})
-assert(len(issue1.notes.list()) == 1)
+assert(len(issue1.notes.list()) == 2)
 emoji = note.awardemojis.create({'name': 'tractor'})
 assert(len(note.awardemojis.list()) == 1)
 emoji.delete()
 assert(len(note.awardemojis.list()) == 0)
 note.delete()
-assert(len(issue1.notes.list()) == 0)
+assert(len(issue1.notes.list()) == 1)
 assert(isinstance(issue1.user_agent_detail(), dict))
 
 assert(issue1.user_agent_detail()['user_agent'])
 assert(issue1.participants())
 
 discussion = issue1.discussions.create({'body': 'Discussion body'})
-assert(len(issue1.discussions.list()) == 1)
+assert(len(issue1.discussions.list()) == 2)
 d_note = discussion.notes.create({'body': 'first note'})
 d_note_from_get = discussion.notes.get(d_note.id)
 d_note_from_get.body = 'updated body'
@@ -668,14 +672,14 @@ assert(admin_project.star_count == 0)
 #assert(len(lists) == begin_size - 1)
 
 # project badges
-badge_image = 'http://example.com'
-badge_link = 'http://example/img.svg'
+badge_image = 'https://httpbin.org/image/svg'
+badge_link = 'https://httpbin.org/get'
 badge = admin_project.badges.create({'link_url': badge_link, 'image_url': badge_image})
 assert(len(admin_project.badges.list()) == 1)
-badge.image_url = 'http://another.example.com'
+badge.image_url = 'https://httpbin.org/image/png'
 badge.save()
 badge = admin_project.badges.get(badge.id)
-assert(badge.image_url == 'http://another.example.com')
+assert(badge.image_url == 'https://httpbin.org/image/png')
 badge.delete()
 assert(len(admin_project.badges.list()) == 0)
 
@@ -698,11 +702,13 @@ ns = gl.namespaces.list(search='root', all=True)[0]
 assert(ns.kind == 'user')
 
 # features
-feat = gl.features.set('foo', 30)
-assert(feat.name == 'foo')
-assert(len(gl.features.list()) == 1)
-feat.delete()
-assert(len(gl.features.list()) == 0)
+# https://gitlab.com/gitlab-org/gitlab/issues/33481
+if LooseVersion(gl.version()[0]) < LooseVersion('11.8'):
+    feat = gl.features.set('foo', 30)
+    assert(feat.name == 'foo')
+    assert(len(gl.features.list()) == 1)
+    feat.delete()
+    assert(len(gl.features.list()) == 0)
 
 # broadcast messages
 msg = gl.broadcastmessages.create({'message': 'this is the message'})

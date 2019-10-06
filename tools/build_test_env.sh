@@ -76,8 +76,29 @@ cleanup() {
     trap 'exit 1' HUP INT TERM
 }
 
+GITLAB_OMNIBUS_CONFIG="external_url 'http://gitlab.test'
+gitlab_rails['initial_root_password'] = '5iveL!fe'
+gitlab_rails['initial_shared_runners_registration_token'] = 'sTPNtWLEuSrHzoHP8oCU'
+registry['enable'] = false
+nginx['redirect_http_to_https'] = false
+nginx['listen_port'] = 80
+nginx['listen_https'] = false
+pages_external_url 'http://pages.gitlab.lxd'
+gitlab_pages['enable'] = true
+gitlab_pages['inplace_chroot'] = true
+prometheus['enable'] = false
+alertmanager['enable'] = false
+node_exporter['enable'] = false
+redis_exporter['enable'] = false
+postgres_exporter['enable'] = false
+pgbouncer_exporter['enable'] = false
+gitlab_exporter['enable'] = false
+grafana['enable'] = false
+letsencrypt['enable'] = false
+"
 try docker run --name gitlab-test --detach --publish 8080:80 \
-    --publish 2222:22 gpocentek/test-python-gitlab:latest >/dev/null
+    --publish 2222:22 --env "GITLAB_OMNIBUS_CONFIG=$GITLAB_OMNIBUS_CONFIG" \
+    gitlab/gitlab-ce:12.3.4-ce.0 >/dev/null
 
 LOGIN='root'
 PASSWORD='5iveL!fe'
