@@ -190,7 +190,9 @@ assert len(l) == 1
 
 new_user.delete()
 foobar_user.delete()
-assert len(gl.users.list()) == 3
+assert len(gl.users.list()) == 3 + len(
+    [u for u in gl.users.list() if u.username == "ghost"]
+)
 
 # current user mail
 mail = gl.user.emails.create({"email": "current@user.com"})
@@ -787,9 +789,10 @@ assert ns.kind == "user"
 msg = gl.broadcastmessages.create({"message": "this is the message"})
 msg.color = "#444444"
 msg.save()
+msg_id = msg.id
 msg = gl.broadcastmessages.list(all=True)[0]
 assert msg.color == "#444444"
-msg = gl.broadcastmessages.get(1)
+msg = gl.broadcastmessages.get(msg_id)
 assert msg.color == "#444444"
 msg.delete()
 assert len(gl.broadcastmessages.list()) == 0
