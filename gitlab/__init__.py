@@ -355,7 +355,7 @@ class Gitlab(object):
                 bool(arg)
                 for arg in [self.private_token, self.oauth_token, self.job_token]
             )
-            != 1
+            > 1
         ):
             raise ValueError(
                 "Only one of private_token, oauth_token or job_token should "
