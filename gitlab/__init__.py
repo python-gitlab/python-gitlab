@@ -31,7 +31,7 @@ from gitlab.exceptions import *  # noqa
 from gitlab import utils  # noqa
 
 __title__ = "python-gitlab"
-__version__ = "1.12.0"
+__version__ = "1.12.1"
 __author__ = "Gauvain Pocentek"
 __email__ = "gauvainpocentek@gmail.com"
 __license__ = "LGPL3"
@@ -350,13 +350,12 @@ class Gitlab(object):
             return url
 
     def _set_auth_info(self):
-        if (
-            sum(
-                bool(arg)
-                for arg in [self.private_token, self.oauth_token, self.job_token]
-            )
-            != 1
-        ):
+        tokens = [
+            token
+            for token in [self.private_token, self.oauth_token, self.job_token]
+            if token
+        ]
+        if len(tokens) > 1:
             raise ValueError(
                 "Only one of private_token, oauth_token or job_token should "
                 "be defined"
