@@ -78,8 +78,6 @@ class Gitlab(object):
         private_token=None,
         oauth_token=None,
         job_token=None,
-        email=None,
-        password=None,
         ssl_verify=True,
         http_username=None,
         http_password=None,
@@ -98,10 +96,6 @@ class Gitlab(object):
         #: Headers that will be used in request to GitLab
         self.headers = {}
 
-        #: The user email
-        self.email = email
-        #: The user password (associated with email)
-        self.password = password
         #: Whether SSL certificates should be validated
         self.ssl_verify = ssl_verify
 
@@ -215,20 +209,6 @@ class Gitlab(object):
         The `user` attribute will hold a `gitlab.objects.CurrentUser` object on
         success.
         """
-        if self.private_token or self.oauth_token or self.job_token:
-            self._token_auth()
-        else:
-            self._credentials_auth()
-
-    def _credentials_auth(self):
-        data = {"email": self.email, "password": self.password}
-        r = self.http_post("/session", data)
-        manager = self._objects.CurrentUserManager(self)
-        self.user = self._objects.CurrentUser(manager, r)
-        self.private_token = self.user.private_token
-        self._set_auth_info()
-
-    def _token_auth(self):
         self.user = self._objects.CurrentUserManager(self).get()
 
     def version(self):
