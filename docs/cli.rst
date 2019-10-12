@@ -41,7 +41,7 @@ example:
    [somewhere]
    url = https://some.whe.re
    private_token = vTbFeqJYCY3sibBP7BZM
-   api_version = 3
+   api_version = 4
 
    [elsewhere]
    url = http://else.whe.re:8080
@@ -69,8 +69,8 @@ parameters. You can override the values in each GitLab server section.
      - Integer
      - Number of seconds to wait for an answer before failing.
    * - ``api_version``
-     - ``3`` or ``4``
-     - The API version to use to make queries. Requires python-gitlab >= 1.3.0.
+     - ``4``
+     - The API version to use to make queries. Only ``4`` is available since 1.5.0.
    * - ``per_page``
      - Integer between 1 and 100
      - The number of items to return in listing queries. GitLab limits the
@@ -103,8 +103,7 @@ server, with very limited permissions.
    * - ``job_token``
      - Your job token. See `the official  documentation`_job-token to learn how to obtain a token.
    * - ``api_version``
-     - GitLab API version to use (``3`` or ``4``). Defaults to ``4`` since
-       version 1.3.0.
+     - GitLab API version to use. Only ``4`` is available since 1.5.0.
    * - ``http_username``
      - Username for optional HTTP authentication
    * - ``http_password``
