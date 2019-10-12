@@ -16,17 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
-
 import os
 import pickle
 import tempfile
 import json
-
-try:
-    import unittest
-except ImportError:
-    import unittest2 as unittest
+import unittest
 
 from httmock import HTTMock  # noqa
 from httmock import response  # noqa
@@ -479,7 +473,7 @@ class TestGitlab(unittest.TestCase):
             self.gl.auth()
         self.assertEqual(self.gl.user.username, name)
         self.assertEqual(self.gl.user.id, id_)
-        self.assertEqual(type(self.gl.user), CurrentUser)
+        self.assertIsInstance(self.gl.user, CurrentUser)
 
     def test_hooks(self):
         @urlmatch(
@@ -492,7 +486,7 @@ class TestGitlab(unittest.TestCase):
 
         with HTTMock(resp_get_hook):
             data = self.gl.hooks.get(1)
-            self.assertEqual(type(data), Hook)
+            self.assertIsInstance(data, Hook)
             self.assertEqual(data.url, "testurl")
             self.assertEqual(data.id, 1)
 
@@ -507,7 +501,7 @@ class TestGitlab(unittest.TestCase):
 
         with HTTMock(resp_get_project):
             data = self.gl.projects.get(1)
-            self.assertEqual(type(data), Project)
+            self.assertIsInstance(data, Project)
             self.assertEqual(data.name, "name")
             self.assertEqual(data.id, 1)
 
@@ -553,7 +547,7 @@ class TestGitlab(unittest.TestCase):
 
         with HTTMock(resp_get_group):
             data = self.gl.groups.get(1)
-            self.assertEqual(type(data), Group)
+            self.assertIsInstance(data, Group)
             self.assertEqual(data.name, "name")
             self.assertEqual(data.path, "path")
             self.assertEqual(data.id, 1)
@@ -586,7 +580,7 @@ class TestGitlab(unittest.TestCase):
     def test_users(self):
         with HTTMock(self.resp_get_user):
             user = self.gl.users.get(1)
-            self.assertEqual(type(user), User)
+            self.assertIsInstance(user, User)
             self.assertEqual(user.name, "name")
             self.assertEqual(user.id, 1)
 
@@ -607,7 +601,7 @@ class TestGitlab(unittest.TestCase):
             user = self.gl.users.get(1)
         with HTTMock(resp_get_user_status):
             status = user.status.get()
-            self.assertEqual(type(status), UserStatus)
+            self.assertIsInstance(status, UserStatus)
             self.assertEqual(status.message, "test")
             self.assertEqual(status.emoji, "thumbsup")
 
@@ -636,7 +630,7 @@ class TestGitlab(unittest.TestCase):
 
         with HTTMock(resp_get_todo):
             todo = self.gl.todos.list()[0]
-            self.assertEqual(type(todo), Todo)
+            self.assertIsInstance(todo, Todo)
             self.assertEqual(todo.id, 102)
             self.assertEqual(todo.target_type, "MergeRequest")
             self.assertEqual(todo.target["assignee"]["username"], "root")
@@ -683,10 +677,10 @@ class TestGitlab(unittest.TestCase):
             "committer_name": "Author",
             "committer_email": "author@example.com",
             "created_at": "2018-09-20T09:26:24.000-07:00",
-            "message": "Message", 
-            "parent_ids": [ "ae1d9fb46aa2b07ee9836d49862ec4e2c46fbbba" ], 
+            "message": "Message",
+            "parent_ids": [ "ae1d9fb46aa2b07ee9836d49862ec4e2c46fbbba" ],
             "committed_date": "2018-09-20T09:26:24.000-07:00",
-            "authored_date": "2018-09-20T09:26:24.000-07:00", 
+            "authored_date": "2018-09-20T09:26:24.000-07:00",
             "status": null}"""
             content = content.encode("utf-8")
             return response(200, content, headers, None, 5, request)
@@ -724,5 +718,5 @@ class TestGitlab(unittest.TestCase):
 
         config_path = self._default_config()
         gl = MyGitlab.from_config("one", [config_path])
-        self.assertEqual(type(gl).__name__, "MyGitlab")
+        self.assertIsInstance(gl, MyGitlab)
         os.unlink(config_path)
