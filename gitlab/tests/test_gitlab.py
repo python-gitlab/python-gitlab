@@ -451,8 +451,6 @@ class TestGitlab(unittest.TestCase):
         self.gl = Gitlab(
             "http://localhost",
             private_token="private_token",
-            email="testuser@test.com",
-            password="testpassword",
             ssl_verify=True,
             api_version=4,
         )
@@ -465,66 +463,7 @@ class TestGitlab(unittest.TestCase):
         self.assertTrue(hasattr(unpickled, "_objects"))
         self.assertEqual(unpickled._objects, original_gl_objects)
 
-    def test_credentials_auth_nopassword(self):
-        self.gl.email = None
-        self.gl.password = None
-
-        @urlmatch(
-            scheme="http", netloc="localhost", path="/api/v4/session", method="post"
-        )
-        def resp_cont(url, request):
-            headers = {"content-type": "application/json"}
-            content = '{"message": "message"}'.encode("utf-8")
-            return response(404, content, headers, None, 5, request)
-
-        with HTTMock(resp_cont):
-            self.assertRaises(GitlabHttpError, self.gl._credentials_auth)
-
-    def test_credentials_auth_notok(self):
-        @urlmatch(
-            scheme="http", netloc="localhost", path="/api/v4/session", method="post"
-        )
-        def resp_cont(url, request):
-            headers = {"content-type": "application/json"}
-            content = '{"message": "message"}'.encode("utf-8")
-            return response(404, content, headers, None, 5, request)
-
-        with HTTMock(resp_cont):
-            self.assertRaises(GitlabHttpError, self.gl._credentials_auth)
-
-    def test_auth_with_credentials(self):
-        self.gl.private_token = None
-        self.test_credentials_auth(callback=self.gl.auth)
-
-    def test_auth_with_token(self):
-        self.test_token_auth(callback=self.gl.auth)
-
-    def test_credentials_auth(self, callback=None):
-        if callback is None:
-            callback = self.gl._credentials_auth
-        token = "credauthtoken"
-        id_ = 1
-        expected = {"PRIVATE-TOKEN": token}
-
-        @urlmatch(
-            scheme="http", netloc="localhost", path="/api/v4/session", method="post"
-        )
-        def resp_cont(url, request):
-            headers = {"content-type": "application/json"}
-            content = '{{"id": {0:d}, "private_token": "{1:s}"}}'.format(
-                id_, token
-            ).encode("utf-8")
-            return response(201, content, headers, None, 5, request)
-
-        with HTTMock(resp_cont):
-            callback()
-        self.assertEqual(self.gl.private_token, token)
-        self.assertDictEqual(expected, self.gl.headers)
-        self.assertEqual(self.gl.user.id, id_)
-
     def test_token_auth(self, callback=None):
-        if callback is None:
-            callback = self.gl._token_auth
         name = "username"
         id_ = 1
 
@@ -537,7 +476,7 @@ class TestGitlab(unittest.TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
-            callback()
+            self.gl.auth()
         self.assertEqual(self.gl.user.username, name)
         self.assertEqual(self.gl.user.id, id_)
         self.assertEqual(type(self.gl.user), CurrentUser)
