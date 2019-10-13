@@ -16,12 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
-
-try:
-    import unittest
-except ImportError:
-    import unittest2 as unittest
+import unittest
 
 from httmock import HTTMock  # noqa
 from httmock import response  # noqa

@@ -16,11 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pickle
-
-try:
-    import unittest
-except ImportError:
-    import unittest2 as unittest
+import unittest
 
 from gitlab import base
 

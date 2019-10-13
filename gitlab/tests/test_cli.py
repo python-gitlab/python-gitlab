@@ -16,12 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
-from __future__ import absolute_import
-
 import argparse
 import os
 import tempfile
+import unittest
 
 try:
     from contextlib import redirect_stderr  # noqa: H302
@@ -35,11 +33,6 @@ except ImportError:
         yield
         sys.stderr = old_target
 
-
-try:
-    import unittest
-except ImportError:
-    import unittest2 as unittest
 
 import six
 
@@ -120,19 +113,19 @@ class TestV4CLI(unittest.TestCase):
 
     def test_parser(self):
         parser = cli._get_parser(gitlab.v4.cli)
-        subparsers = None
-        for action in parser._actions:
-            if type(action) == argparse._SubParsersAction:
-                subparsers = action
-                break
+        subparsers = next(
+            action
+            for action in parser._actions
+            if isinstance(action, argparse._SubParsersAction)
+        )
         self.assertIsNotNone(subparsers)
         self.assertIn("project", subparsers.choices)
 
-        user_subparsers = None
-        for action in subparsers.choices["project"]._actions:
-            if type(action) == argparse._SubParsersAction:
-                user_subparsers = action
-                break
+        user_subparsers = next(
+            action
+            for action in subparsers.choices["project"]._actions
+            if isinstance(action, argparse._SubParsersAction)
+        )
         self.assertIsNotNone(user_subparsers)
         self.assertIn("list", user_subparsers.choices)
         self.assertIn("get", user_subparsers.choices)
@@ -145,10 +138,10 @@ class TestV4CLI(unittest.TestCase):
         actions = user_subparsers.choices["create"]._option_string_actions
         self.assertFalse(actions["--description"].required)
 
-        user_subparsers = None
-        for action in subparsers.choices["group"]._actions:
-            if type(action) == argparse._SubParsersAction:
-                user_subparsers = action
-                break
+        user_subparsers = next(
+            action
+            for action in subparsers.choices["group"]._actions
+            if isinstance(action, argparse._SubParsersAction)
+        )
         actions = user_subparsers.choices["create"]._option_string_actions
         self.assertTrue(actions["--name"].required)
