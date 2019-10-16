@@ -81,7 +81,7 @@ Create a project in a group::
 
     # You need to get the id of the group, then use the namespace_id attribute
     # to create the group
-    group_id = gl.groups.search('my-group')[0].id
+    group_id = gl.groups.list(search='my-group')[0].id
     project = gl.projects.create({'name': 'myrepo', 'namespace_id': group_id})
 
 Update a project::
