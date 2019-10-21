@@ -63,9 +63,8 @@ Results can also be sorted using the following parameters:
 Get a single project::
 
     # Get a project by ID
+    project_id = 851
     project = gl.projects.get(project_id)
-    # Get a project by userspace/name
-    project = gl.projects.get('myteam/myproject')
 
 Create a project::
 
