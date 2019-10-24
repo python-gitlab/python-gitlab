@@ -3735,15 +3735,16 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         self.gitlab.http_put(path, post_data=data, **kwargs)
 
 
-class ProjectDeployment(RESTObject):
+class ProjectDeployment(RESTObject, SaveMixin):
     pass
 
 
-class ProjectDeploymentManager(RetrieveMixin, RESTManager):
+class ProjectDeploymentManager(RetrieveMixin, CreateMixin, UpdateMixin, RESTManager):
     _path = "/projects/%(project_id)s/deployments"
     _obj_cls = ProjectDeployment
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = ("order_by", "sort")
+    _create_attrs = (("sha", "ref", "tag", "status", "environment"), tuple())
 
 
 class ProjectProtectedBranch(ObjectDeleteMixin, RESTObject):

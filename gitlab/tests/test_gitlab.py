@@ -651,6 +651,50 @@ class TestGitlab(unittest.TestCase):
         with HTTMock(resp_mark_all_as_done):
             self.gl.todos.mark_all_as_done()
 
+    def test_deployment(self):
+        content = '{"id": 42, "status": "success", "ref": "master"}'
+        json_content = json.loads(content)
+
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/projects/1/deployments",
+            method="post",
+        )
+        def resp_deployment_create(url, request):
+            headers = {"content-type": "application/json"}
+            return response(200, json_content, headers, None, 5, request)
+
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/projects/1/deployments/42",
+            method="put",
+        )
+        def resp_deployment_update(url, request):
+            headers = {"content-type": "application/json"}
+            return response(200, json_content, headers, None, 5, request)
+
+        with HTTMock(resp_deployment_create):
+            deployment = self.gl.projects.get(1, lazy=True).deployments.create(
+                {
+                    "environment": "Test",
+                    "sha": "1agf4gs",
+                    "ref": "master",
+                    "tag": False,
+                    "status": "created",
+                }
+            )
+            self.assertEqual(deployment.id, 42)
+            self.assertEqual(deployment.status, "success")
+            self.assertEqual(deployment.ref, "master")
+
+        with HTTMock(resp_deployment_update):
+            json_content["status"] = "failed"
+            deployment.status = "failed"
+            deployment.save()
+            self.assertEqual(deployment.status, "failed")
+
     def test_update_submodule(self):
         @urlmatch(
             scheme="http", netloc="localhost", path="/api/v4/projects/1$", method="get"
