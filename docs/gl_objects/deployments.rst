@@ -23,3 +23,19 @@ List deployments for a project::
 Get a single deployment::
 
     deployment = project.deployments.get(deployment_id)
+
+Create a new deployment::
+
+    deployment = project.deployments.create({
+        "environment": "Test",
+        "sha": "1agf4gs",
+        "ref": "master",
+        "tag": False,
+        "status": "created",
+    })
+
+Update a deployment::
+
+    deployment = project.deployments.get(42)
+    deployment.status = "failed"
+    deployment.save()
