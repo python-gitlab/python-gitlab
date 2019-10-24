@@ -94,7 +94,7 @@ class Gitlab(object):
         #: Timeout to use for requests to gitlab server
         self.timeout = timeout
         #: Headers that will be used in request to GitLab
-        self.headers = {}
+        self.headers = {"User-Agent": "%s/%s" % (__title__, __version__)}
 
         #: Whether SSL certificates should be validated
         self.ssl_verify = ssl_verify
