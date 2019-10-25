@@ -62,6 +62,11 @@ Block/Unblock a user::
     user.block()
     user.unblock()
 
+Activate/Deactivate a user::
+
+    user.activate()
+    user.deactivate()
+
 Set the avatar image for a user::
 
     # the avatar image can be passed as data (content of the file) or as a file

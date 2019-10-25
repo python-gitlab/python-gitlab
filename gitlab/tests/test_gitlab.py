@@ -695,6 +695,31 @@ class TestGitlab(unittest.TestCase):
             deployment.save()
             self.assertEqual(deployment.status, "failed")
 
+    def test_user_activate_deactivate(self):
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/users/1/activate",
+            method="post",
+        )
+        def resp_activate(url, request):
+            headers = {"content-type": "application/json"}
+            return response(201, {}, headers, None, 5, request)
+
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/users/1/deactivate",
+            method="post",
+        )
+        def resp_deactivate(url, request):
+            headers = {"content-type": "application/json"}
+            return response(201, {}, headers, None, 5, request)
+
+        with HTTMock(resp_activate), HTTMock(resp_deactivate):
+            self.gl.users.get(1, lazy=True).activate()
+            self.gl.users.get(1, lazy=True).deactivate()
+
     def test_update_submodule(self):
         @urlmatch(
             scheme="http", netloc="localhost", path="/api/v4/projects/1$", method="get"
