@@ -340,6 +340,48 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             self._attrs["state"] = "active"
         return server_data
 
+    @cli.register_custom_action("User")
+    @exc.on_http_error(exc.GitlabDeactivateError)
+    def deactivate(self, **kwargs):
+        """Deactivate the user.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeactivateError: If the user could not be deactivated
+
+        Returns:
+            bool: Whether the user status has been changed
+        """
+        path = "/users/%s/deactivate" % self.id
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if server_data:
+            self._attrs["state"] = "deactivated"
+        return server_data
+
+    @cli.register_custom_action("User")
+    @exc.on_http_error(exc.GitlabActivateError)
+    def activate(self, **kwargs):
+        """Activate the user.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabActivateError: If the user could not be activated
+
+        Returns:
+            bool: Whether the user status has been changed
+        """
+        path = "/users/%s/activate" % self.id
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if server_data:
+            self._attrs["state"] = "active"
+        return server_data
+
 
 class UserManager(CRUDMixin, RESTManager):
     _path = "/users"

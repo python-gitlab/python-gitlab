@@ -157,6 +157,14 @@ class GitlabUnblockError(GitlabOperationError):
     pass
 
 
+class GitlabDeactivateError(GitlabOperationError):
+    pass
+
+
+class GitlabActivateError(GitlabOperationError):
+    pass
+
+
 class GitlabSubscribeError(GitlabOperationError):
     pass
 
