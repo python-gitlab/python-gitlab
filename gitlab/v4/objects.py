@@ -3777,6 +3777,19 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         self.gitlab.http_put(path, post_data=data, **kwargs)
 
 
+class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _id_attr = "id"
+
+
+class ProjectApprovalRuleManager(
+    ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+):
+    _path = "/projects/%(project_id)s/approval_rules"
+    _obj_cls = ProjectApprovalRule
+    _from_parent_attrs = {"project_id": "id"}
+    _create_attrs = (("name", "approvals_required"), ("user_ids", "group_ids"))
+
+
 class ProjectDeployment(RESTObject, SaveMixin):
     pass
 
@@ -3888,6 +3901,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
     _managers = (
         ("accessrequests", "ProjectAccessRequestManager"),
         ("approvals", "ProjectApprovalManager"),
+        ("approvalrules", "ProjectApprovalRuleManager"),
         ("badges", "ProjectBadgeManager"),
         ("boards", "ProjectBoardManager"),
         ("branches", "ProjectBranchManager"),

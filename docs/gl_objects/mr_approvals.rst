@@ -12,6 +12,8 @@ References
 
   + :class:`gitlab.v4.objects.ProjectApproval`
   + :class:`gitlab.v4.objects.ProjectApprovalManager`
+  + :class:`gitlab.v4.objects.ProjectApprovalRule`
+  + :class:`gitlab.v4.objects.ProjectApprovalRuleManager`
   + :attr:`gitlab.v4.objects.Project.approvals`
   + :class:`gitlab.v4.objects.ProjectMergeRequestApproval`
   + :class:`gitlab.v4.objects.ProjectMergeRequestApprovalManager`
@@ -21,6 +23,19 @@ References
 
 Examples
 --------
+
+List project-level MR approval rules::
+
+    p_mras = project.approvalrules.list()
+
+Change project-level MR approval rule::
+
+    p_approvalrule.user_ids = [234]
+    p_approvalrule.save()
+
+Delete project-level MR approval rule::
+
+    p_approvalrule.delete()
 
 Get project-level or MR-level MR approvals settings::
 
