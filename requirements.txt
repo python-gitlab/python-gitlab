@@ -1,2 +1,2 @@
-requests>=2.4.2
+requests>=2.22
 six
