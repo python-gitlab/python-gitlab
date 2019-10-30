@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 GITLAB_CFG=${GITLAB_CFG:-"/etc/python-gitlab-default.cfg"}
 
