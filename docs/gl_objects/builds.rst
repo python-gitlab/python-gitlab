@@ -29,9 +29,9 @@ Get a pipeline for a project::
 
     pipeline = project.pipelines.get(pipeline_id)
 
-Create a pipeline for a particular reference::
+Create a pipeline for a particular reference with custom variables::
 
-    pipeline = project.pipelines.create({'ref': 'master'})
+    pipeline = project.pipelines.create({'ref': 'master', "variables": [{"key": "MY_VARIABLE", "value": "hello"}]})
 
 Retry the failed builds for a pipeline::
 
