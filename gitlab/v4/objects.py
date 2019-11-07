@@ -1097,6 +1097,7 @@ class GroupProjectManager(ListMixin, RESTManager):
         "owned",
         "starred",
         "with_custom_attributes",
+        "include_subgroups",
     )
 
 

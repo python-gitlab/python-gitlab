@@ -50,6 +50,7 @@ You can filter and sort the result using the following parameters:
   ``created_at``, ``updated_at`` and ``last_activity_at``
 * ``sort``: sort order: ``asc`` or ``desc``
 * ``ci_enabled_first``: return CI enabled groups first
+* ``include_subgroups``: include projects in subgroups
 
 Create a group::
 
