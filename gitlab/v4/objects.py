@@ -3754,6 +3754,8 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
             "approvals_before_merge",
             "reset_approvals_on_push",
             "disable_overriding_approvers_per_merge_request",
+            "merge_requests_author_approval",
+            "merge_requests_disable_committers_approval",
         ),
     )
     _update_uses_post = True
