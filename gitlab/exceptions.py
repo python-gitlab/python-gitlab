@@ -17,6 +17,8 @@
 
 import functools
 
+import six
+
 
 class GitlabError(Exception):
     def __init__(self, error_message="", response_code=None, response_body=None):
@@ -266,7 +268,7 @@ def on_http_error(error):
             try:
                 return f(*args, **kwargs)
             except GitlabHttpError as e:
-                raise error(e.error_message, e.response_code, e.response_body)
+                six.raise_from(error(e.error_message, e.response_code, e.response_body), e)
 
         return wrapped_f
 
