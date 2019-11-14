@@ -914,7 +914,7 @@ class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         new_data = new_data or {}
         if name:
             new_data["name"] = name
-        super().update(id=None, new_data=new_data, **kwargs)
+        return super().update(id=None, new_data=new_data, **kwargs)
 
     # Delete without ID.
     @exc.on_http_error(exc.GitlabDeleteError)
@@ -3049,7 +3049,7 @@ class ProjectLabelManager(
         new_data = new_data or {}
         if name:
             new_data["name"] = name
-        super().update(id=None, new_data=new_data, **kwargs)
+        return super().update(id=None, new_data=new_data, **kwargs)
 
     # Delete without ID.
     @exc.on_http_error(exc.GitlabDeleteError)
