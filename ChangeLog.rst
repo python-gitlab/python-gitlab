@@ -1,5 +1,7 @@
-ChangeLog
-=========
+ChangeLog - Moved to GitHub releases
+====================================
+
+The changes of newer versions can be found at https://github.com/python-gitlab/python-gitlab/releases
 
 Version 1.9.0_ - 2019-06-19
 ---------------------------
