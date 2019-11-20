@@ -2069,6 +2069,25 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
     )
     _create_attrs = (tuple(), ("namespace",))
 
+    def create(self, data, **kwargs):
+        """Creates a new object.
+
+        Args:
+            data (dict): Parameters to send to the server to create the
+                         resource
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server cannot perform the request
+
+        Returns:
+            RESTObject: A new instance of the managed object class build with
+                the data sent by the server
+        """
+        path = self.path[:-1]  # drop the 's'
+        return CreateMixin.create(self, data, path=path, **kwargs)
+
 
 class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "url"
