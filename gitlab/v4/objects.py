@@ -2049,7 +2049,7 @@ class ProjectFork(RESTObject):
 
 
 class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
-    _path = "/projects/%(project_id)s/fork"
+    _path = "/projects/%(project_id)s/forks"
     _obj_cls = ProjectFork
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = (
@@ -2069,27 +2069,24 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
     )
     _create_attrs = (tuple(), ("namespace",))
 
-    def list(self, **kwargs):
-        """Retrieve a list of objects.
+    def create(self, data, **kwargs):
+        """Creates a new object.
 
         Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
-                defined, return a generator instead of a list
+            data (dict): Parameters to send to the server to create the
+                         resource
             **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Returns:
-            list: The list of objects, or a generator if `as_list` is False
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
-            GitlabListError: If the server cannot perform the request
-        """
+            GitlabCreateError: If the server cannot perform the request
 
-        path = self._compute_path("/projects/%(project_id)s/forks")
-        return ListMixin.list(self, path=path, **kwargs)
+        Returns:
+            RESTObject: A new instance of the managed object class build with
+                the data sent by the server
+        """
+        path = self.path[:-1]  # drop the 's'
+        return CreateMixin.create(self, data, path=path, **kwargs)
 
 
 class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
