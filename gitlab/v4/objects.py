@@ -743,6 +743,51 @@ class GroupBoardManager(CRUDMixin, RESTManager):
     _create_attrs = (("name",), tuple())
 
 
+class GroupCluster(SaveMixin, ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class GroupClusterManager(CRUDMixin, RESTManager):
+    _path = "/groups/%(group_id)s/clusters"
+    _obj_cls = GroupCluster
+    _from_parent_attrs = {"group_id": "id"}
+    _create_attrs = (
+        ("name", "platform_kubernetes_attributes",),
+        ("domain", "enabled", "managed", "environment_scope",),
+    )
+    _update_attrs = (
+        tuple(),
+        (
+            "name",
+            "domain",
+            "management_project_id",
+            "platform_kubernetes_attributes",
+            "environment_scope",
+        ),
+    )
+
+    @exc.on_http_error(exc.GitlabStopError)
+    def create(self, data, **kwargs):
+        """Create a new object.
+
+        Args:
+            data (dict): Parameters to send to the server to create the
+                         resource
+            **kwargs: Extra options to send to the server (e.g. sudo or
+                      'ref_name', 'stage', 'name', 'all')
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server cannot perform the request
+
+        Returns:
+            RESTObject: A new instance of the manage object class build with
+                        the data sent by the server
+        """
+        path = "%s/user" % (self.path)
+        return CreateMixin.create(self, data, path=path, **kwargs)
+
+
 class GroupCustomAttribute(ObjectDeleteMixin, RESTObject):
     _id_attr = "key"
 
@@ -1150,6 +1195,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("projects", "GroupProjectManager"),
         ("subgroups", "GroupSubgroupManager"),
         ("variables", "GroupVariableManager"),
+        ("clusters", "GroupClusterManager"),
     )
 
     @cli.register_custom_action("Group", ("to_project_id",))
@@ -1597,6 +1643,51 @@ class ProjectBranchManager(NoUpdateMixin, RESTManager):
     _obj_cls = ProjectBranch
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = (("branch", "ref"), tuple())
+
+
+class ProjectCluster(SaveMixin, ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class ProjectClusterManager(CRUDMixin, RESTManager):
+    _path = "/projects/%(project_id)s/clusters"
+    _obj_cls = ProjectCluster
+    _from_parent_attrs = {"project_id": "id"}
+    _create_attrs = (
+        ("name", "platform_kubernetes_attributes",),
+        ("domain", "enabled", "managed", "environment_scope",),
+    )
+    _update_attrs = (
+        tuple(),
+        (
+            "name",
+            "domain",
+            "management_project_id",
+            "platform_kubernetes_attributes",
+            "environment_scope",
+        ),
+    )
+
+    @exc.on_http_error(exc.GitlabStopError)
+    def create(self, data, **kwargs):
+        """Create a new object.
+
+        Args:
+            data (dict): Parameters to send to the server to create the
+                         resource
+            **kwargs: Extra options to send to the server (e.g. sudo or
+                      'ref_name', 'stage', 'name', 'all')
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server cannot perform the request
+
+        Returns:
+            RESTObject: A new instance of the manage object class build with
+                        the data sent by the server
+        """
+        path = "%s/user" % (self.path)
+        return CreateMixin.create(self, data, path=path, **kwargs)
 
 
 class ProjectCustomAttribute(ObjectDeleteMixin, RESTObject):
@@ -3943,6 +4034,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("triggers", "ProjectTriggerManager"),
         ("variables", "ProjectVariableManager"),
         ("wikis", "ProjectWikiManager"),
+        ("clusters", "ProjectClusterManager"),
     )
 
     @cli.register_custom_action("Project", ("submodule", "branch", "commit_sha"))

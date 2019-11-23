@@ -9,6 +9,7 @@ API examples
    gl_objects/emojis
    gl_objects/badges
    gl_objects/branches
+   gl_objects/clusters
    gl_objects/messages
    gl_objects/commits
    gl_objects/deploy_keys

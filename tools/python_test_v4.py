@@ -503,6 +503,46 @@ env.stop()
 env.delete()
 assert len(admin_project.environments.list()) == 0
 
+# Project clusters
+admin_project.clusters.create(
+    {
+        "name": "cluster1",
+        "platform_kubernetes_attributes": {
+            "api_url": "http://url",
+            "token": "tokenval",
+        },
+    }
+)
+clusters = admin_project.clusters.list()
+assert len(clusters) == 1
+cluster = clusters[0]
+cluster.platform_kubernetes_attributes = {"api_url": "http://newurl"}
+cluster.save()
+cluster = admin_project.clusters.list()[0]
+assert cluster.platform_kubernetes["api_url"] == "http://newurl"
+cluster.delete()
+assert len(admin_project.clusters.list()) == 0
+
+# Group clusters
+group1.clusters.create(
+    {
+        "name": "cluster1",
+        "platform_kubernetes_attributes": {
+            "api_url": "http://url",
+            "token": "tokenval",
+        },
+    }
+)
+clusters = group1.clusters.list()
+assert len(clusters) == 1
+cluster = clusters[0]
+cluster.platform_kubernetes_attributes = {"api_url": "http://newurl"}
+cluster.save()
+cluster = group1.clusters.list()[0]
+assert cluster.platform_kubernetes["api_url"] == "http://newurl"
+cluster.delete()
+assert len(group1.clusters.list()) == 0
+
 # project events
 admin_project.events.list()
 
