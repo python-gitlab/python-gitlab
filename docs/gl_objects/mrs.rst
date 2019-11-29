@@ -23,7 +23,7 @@ Reference
   + :attr:`gitlab.v4.objects.Group.mergerequests`
   + :class:`gitlab.v4.objects.MergeRequest`
   + :class:`gitlab.v4.objects.MergeRequestManager`
-  + :attr:`gitlab.Gtilab.mergerequests`
+  + :attr:`gitlab.Gitlab.mergerequests`
 
 * GitLab API: https://docs.gitlab.com/ce/api/merge_requests.html
 
