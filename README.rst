@@ -57,7 +57,7 @@ How to use
 
 or run it directly from the upstream image:
 
-``docker run -it --rm -e GITLAB_PRIVATE_TOKEN=<your token> -v /path/to/python-gitlab.cfg:/python-gitlab.cfg registry.gitlab.com/python-gitlab/python-gitlab:v1.8.0 <command> ...``
+``docker run -it --rm -e GITLAB_PRIVATE_TOKEN=<your token> -v /path/to/python-gitlab.cfg:/python-gitlab.cfg registry.gitlab.com/python-gitlab/python-gitlab:latest <command> ...``
 
 To change the GitLab URL, use `-e GITLAB_URL=<your url>`
 
