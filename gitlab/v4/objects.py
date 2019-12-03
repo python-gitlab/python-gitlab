@@ -4744,6 +4744,69 @@ class ProjectManager(CRUDMixin, RESTManager):
             "/projects/import", post_data=data, files=files, **kwargs
         )
 
+    def import_github(
+        self,
+        personal_access_token,
+        repo_id,
+        target_namespace,
+        new_name=None,
+        timeout_override=60.0,
+        **kwargs
+    ):
+        """Import a project from Github to Gitlab (schedule the import)
+
+        This method will return when an import operation has been safely queued,
+        or an error has occurred. After triggering an import, check the
+        `import_status` of the newly created project to detect when the import
+        operation has completed.
+
+        NOTE: this request may take longer than most other API requests.
+        So this method will override the session timeout with <timeout_override>,
+        which defaults to 60 seconds.
+
+        Args:
+            personal_access_token (str): GitHub personal access token
+            repo_id (int): Github repository ID
+            target_namespace (str): Namespace to import repo into
+            new_name (str): New repo name (Optional)
+            timeout_override (int or float): Timeout to use for this request
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the server failed to perform the request
+
+        Returns:
+            dict: A representation of the import status.
+
+        Example:
+        ```
+            gl = gitlab.Gitlab_from_config()
+            print "Triggering import"
+            result = gl.projects.import_github(ACCESS_TOKEN,
+                                               123456,
+                                               "my-group/my-subgroup")
+            project = gl.projects.get(ret['id'])
+            print "Waiting for import to complete"
+            while project.import_status == u'started':
+                time.sleep(1.0)
+                project = gl.projects.get(project.id)
+            print "Github import complete"
+        ```
+        """
+        data = {
+            "personal_access_token": personal_access_token,
+            "repo_id": repo_id,
+            "target_namespace": target_namespace,
+        }
+        if new_name:
+            data["new_name"] = new_name
+        prev_timeout = self.gitlab.timeout
+        self.gitlab.timeout = timeout_override
+        result = self.gitlab.http_post("/import/github", post_data=data, **kwargs)
+        self.gitlab.timeout = prev_timeout
+        return result
+
 
 class RunnerJob(RESTObject):
     pass
