@@ -118,6 +118,16 @@ class Event(RESTObject):
     _short_print_attr = "target_title"
 
 
+class AuditEvent(RESTObject):
+    _id_attr = "id"
+
+
+class AuditEventManager(ListMixin, RESTManager):
+    _path = "/audit_events"
+    _obj_cls = AuditEvent
+    _list_filters = ("created_after", "created_before", "entity_type", "entity_id")
+
+
 class EventManager(ListMixin, RESTManager):
     _path = "/events"
     _obj_cls = Event
