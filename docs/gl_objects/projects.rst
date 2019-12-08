@@ -368,7 +368,7 @@ encoded text::
 
 Delete a file::
 
-    f.delete(commit_message='Delete testfile')
+    f.delete(commit_message='Delete testfile', branch='master')
 
 Get file blame::
 
