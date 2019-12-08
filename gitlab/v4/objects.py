@@ -762,8 +762,8 @@ class GroupClusterManager(CRUDMixin, RESTManager):
     _obj_cls = GroupCluster
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = (
-        ("name", "platform_kubernetes_attributes",),
-        ("domain", "enabled", "managed", "environment_scope",),
+        ("name", "platform_kubernetes_attributes"),
+        ("domain", "enabled", "managed", "environment_scope"),
     )
     _update_attrs = (
         tuple(),
@@ -1664,8 +1664,8 @@ class ProjectClusterManager(CRUDMixin, RESTManager):
     _obj_cls = ProjectCluster
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = (
-        ("name", "platform_kubernetes_attributes",),
-        ("domain", "enabled", "managed", "environment_scope",),
+        ("name", "platform_kubernetes_attributes"),
+        ("domain", "enabled", "managed", "environment_scope"),
     )
     _update_attrs = (
         tuple(),
