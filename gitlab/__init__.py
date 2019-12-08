@@ -630,7 +630,7 @@ class Gitlab(object):
         get_all = kwargs.pop("all", False)
         url = self._build_url(path)
 
-        if get_all is True:
+        if get_all is True and as_list is True:
             return list(GitlabList(self, url, query_data, **kwargs))
 
         if "page" in kwargs or as_list is True:
