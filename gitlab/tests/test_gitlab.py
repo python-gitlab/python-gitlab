@@ -119,6 +119,24 @@ class TestGitlabList(unittest.TestCase):
                 self.assertEqual(l[0]["a"], "b")
                 self.assertEqual(l[1]["c"], "d")
 
+    def test_all_omitted_when_as_list(self):
+        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/tests", method="get")
+        def resp(url, request):
+            headers = {
+                "content-type": "application/json",
+                "X-Page": 2,
+                "X-Next-Page": 2,
+                "X-Per-Page": 1,
+                "X-Total-Pages": 2,
+                "X-Total": 2,
+            }
+            content = '[{"c": "d"}]'
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp):
+            result = self.gl.http_list("/tests", as_list=False, all=True)
+            self.assertIsInstance(result, GitlabList)
+
 
 class TestGitlabHttpMethods(unittest.TestCase):
     def setUp(self):

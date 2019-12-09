@@ -23,7 +23,7 @@ jobs:
       dist: bionic
       python: 3.7
       script:
-        - pip3 install black
+        - pip3 install -U --pre black
         - black --check .
     - stage: test
       name: cli_func_v4
