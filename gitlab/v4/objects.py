@@ -3997,6 +3997,16 @@ class ProjectImportManager(GetWithoutIdMixin, RESTManager):
     _from_parent_attrs = {"project_id": "id"}
 
 
+class ProjectAdditionalStatistics(RefreshMixin, RESTObject):
+    _id_attr = None
+
+
+class ProjectAdditionalStatisticsManager(GetWithoutIdMixin, RESTManager):
+    _path = "/projects/%(project_id)s/statistics"
+    _obj_cls = ProjectAdditionalStatistics
+    _from_parent_attrs = {"project_id": "id"}
+
+
 class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "path"
     _managers = (
@@ -4042,6 +4052,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("variables", "ProjectVariableManager"),
         ("wikis", "ProjectWikiManager"),
         ("clusters", "ProjectClusterManager"),
+        ("additionalstatistics", "ProjectAdditionalStatisticsManager"),
     )
 
     @cli.register_custom_action("Project", ("submodule", "branch", "commit_sha"))
