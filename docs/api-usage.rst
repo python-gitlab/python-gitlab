@@ -366,3 +366,20 @@ default an exception is raised for these errors.
 
    gl = gitlab.gitlab(url, token, api_version=4)
    gl.projects.list(all=True, retry_transient_errors=True)
+
+Timeout
+-------
+
+python-gitlab will by default use the ``timeout`` option from it's configuration
+for all requests. This is passed downwards to the ``requests`` module at the
+time of making the HTTP request. However if you would like to override the
+global timeout parameter for a particular call, you can provide the ``timeout``
+parameter to that API invocation:
+
+.. code-block:: python
+
+   import gitlab
+
+   gl = gitlab.gitlab(url, token, api_version=4)
+   gl.projects.import_github(ACCESS_TOKEN, 123456, "root", timeout=120.0)
+

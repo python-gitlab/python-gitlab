@@ -4745,13 +4745,7 @@ class ProjectManager(CRUDMixin, RESTManager):
         )
 
     def import_github(
-        self,
-        personal_access_token,
-        repo_id,
-        target_namespace,
-        new_name=None,
-        timeout_override=60.0,
-        **kwargs
+        self, personal_access_token, repo_id, target_namespace, new_name=None, **kwargs
     ):
         """Import a project from Github to Gitlab (schedule the import)
 
@@ -4761,15 +4755,14 @@ class ProjectManager(CRUDMixin, RESTManager):
         operation has completed.
 
         NOTE: this request may take longer than most other API requests.
-        So this method will override the session timeout with <timeout_override>,
-        which defaults to 60 seconds.
+        So this method will specify a 60 second default timeout if none is specified.
+        A timeout can be specified via kwargs to override this functionality.
 
         Args:
             personal_access_token (str): GitHub personal access token
             repo_id (int): Github repository ID
             target_namespace (str): Namespace to import repo into
             new_name (str): New repo name (Optional)
-            timeout_override (int or float): Timeout to use for this request
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -4801,10 +4794,17 @@ class ProjectManager(CRUDMixin, RESTManager):
         }
         if new_name:
             data["new_name"] = new_name
-        prev_timeout = self.gitlab.timeout
-        self.gitlab.timeout = timeout_override
+        if (
+            "timeout" not in kwargs
+            or self.gitlab.timeout is None
+            or self.gitlab.timeout < 60.0
+        ):
+            # Ensure that this HTTP request has a longer-than-usual default timeout
+            # The base gitlab object tends to have a default that is <10 seconds,
+            # and this is too short for this API command, typically.
+            # On the order of 24 seconds has been measured on a typical gitlab instance.
+            kwargs["timeout"] = 60.0
         result = self.gitlab.http_post("/import/github", post_data=data, **kwargs)
-        self.gitlab.timeout = prev_timeout
         return result
 
 

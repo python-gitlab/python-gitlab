@@ -491,6 +491,8 @@ class Gitlab(object):
 
         verify = opts.pop("verify")
         timeout = opts.pop("timeout")
+        # If timeout was passed into kwargs, allow it to override the default
+        timeout = kwargs.get("timeout", timeout)
 
         # We need to deal with json vs. data when uploading files
         if files:
