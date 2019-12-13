@@ -754,3 +754,54 @@ Protect a single repository tag or several project repository tags using a wildc
 Unprotect the given protected tag or wildcard protected tag.::
 
     protected_tag.delete()
+
+Additional project statistics
+=============================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectAdditionalStatistics`
+  + :class:`gitlab.v4.objects.ProjectAdditionalStatisticsManager`
+  + :attr:`gitlab.v4.objects.Project.additionalstatistics`
+
+* GitLab API: https://docs.gitlab.com/ce/api/project_statistics.html
+
+Examples
+---------
+
+Get all additional statistics of a project::
+
+    statistics = project.additionalstatistics.get()
+
+Get total fetches in last 30 days of a project::
+
+    total_fetches = project.additionalstatistics.get()['fetches']['total']
+
+Project issues statistics
+=========================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectIssuesStatistics`
+  + :class:`gitlab.v4.objects.ProjectIssuesStatisticsManager`
+  + :attr:`gitlab.v4.objects.Project.issuesstatistics`
+
+* GitLab API: https://docs.gitlab.com/ce/api/issues_statistics.html#get-project-issues-statistics
+
+Examples
+---------
+
+Get statistics of all issues in a project::
+
+    statistics = project.issuesstatistics.get()
+
+Get statistics of issues in a project with ``foobar`` in ``title`` and
+``description``::
+
+    statistics = project.issuesstatistics.get(search='foobar')
