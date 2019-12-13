@@ -553,6 +553,62 @@ class TestGitlab(unittest.TestCase):
             self.assertEqual(environment.last_deployment, "sometime")
             self.assertEqual(environment.name, "environment_name")
 
+    def test_project_additional_statistics(self):
+        @urlmatch(
+            scheme="http", netloc="localhost", path="/api/v4/projects/1$", method="get"
+        )
+        def resp_get_project(url, request):
+            headers = {"content-type": "application/json"}
+            content = '{"name": "name", "id": 1}'.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/projects/1/statistics",
+            method="get",
+        )
+        def resp_get_environment(url, request):
+            headers = {"content-type": "application/json"}
+            content = """{"fetches": {"total": 50, "days": [{"count": 10, "date": "2018-01-10"}]}}""".encode(
+                "utf-8"
+            )
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_get_project, resp_get_environment):
+            project = self.gl.projects.get(1)
+            statistics = project.additionalstatistics.get()
+            self.assertIsInstance(statistics, ProjectAdditionalStatistics)
+            self.assertEqual(statistics.fetches["total"], 50)
+
+    def test_project_issues_statistics(self):
+        @urlmatch(
+            scheme="http", netloc="localhost", path="/api/v4/projects/1$", method="get"
+        )
+        def resp_get_project(url, request):
+            headers = {"content-type": "application/json"}
+            content = '{"name": "name", "id": 1}'.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/projects/1/issues_statistics",
+            method="get",
+        )
+        def resp_get_environment(url, request):
+            headers = {"content-type": "application/json"}
+            content = """{"statistics": {"counts": {"all": 20, "closed": 5, "opened": 15}}}""".encode(
+                "utf-8"
+            )
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_get_project, resp_get_environment):
+            project = self.gl.projects.get(1)
+            statistics = project.issuesstatistics.get()
+            self.assertIsInstance(statistics, ProjectIssuesStatistics)
+            self.assertEqual(statistics.statistics["counts"]["all"], 20)
+
     def test_groups(self):
         @urlmatch(
             scheme="http", netloc="localhost", path="/api/v4/groups/1", method="get"
