@@ -518,6 +518,8 @@ class Gitlab(object):
 
         # obey the rate limit by default
         obey_rate_limit = kwargs.get("obey_rate_limit", True)
+        # do not retry transient errors by default
+        retry_transient_errors = kwargs.get("retry_transient_errors", False)
 
         # set max_retries to 10 by default, disable by setting it to -1
         max_retries = kwargs.get("max_retries", 10)
@@ -531,7 +533,9 @@ class Gitlab(object):
             if 200 <= result.status_code < 300:
                 return result
 
-            if 429 == result.status_code and obey_rate_limit:
+            if (429 == result.status_code and obey_rate_limit) or (
+                result.status_code in [500, 502, 503, 504] and retry_transient_errors
+            ):
                 if max_retries == -1 or cur_retries < max_retries:
                     wait_time = 2 ** cur_retries * 0.1
                     if "Retry-After" in result.headers:
