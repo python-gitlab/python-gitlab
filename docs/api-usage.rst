@@ -348,3 +348,21 @@ throttled, you can set this parameter to -1. This parameter is ignored if
 .. warning::
 
    You will get an Exception, if you then go over the rate limit of your GitLab instance.
+
+Transient errors
+----------------
+
+GitLab server can sometimes return a transient HTTP error.
+python-gitlab can automatically retry in such case, when
+``retry_transient_errors`` argument is set to ``True``.  When enabled,
+HTTP error codes 500 (Internal Server Error), 502 (502 Bad Gateway),
+503 (Service Unavailable), and 504 (Gateway Timeout) are retried.  By
+default an exception is raised for these errors.
+
+.. code-block:: python
+
+   import gitlab
+   import requests
+
+   gl = gitlab.gitlab(url, token, api_version=4)
+   gl.projects.list(all=True, retry_transient_errors=True)
