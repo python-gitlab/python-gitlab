@@ -837,8 +837,10 @@ class GitlabList(object):
             self._current += 1
             return item
         except IndexError:
-            if self._next_url and self._get_next is True:
-                self._query(self._next_url)
-                return self.next()
+            pass
 
-            raise StopIteration
+        if self._next_url and self._get_next is True:
+            self._query(self._next_url)
+            return self.next()
+
+        raise StopIteration
