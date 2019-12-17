@@ -271,3 +271,61 @@ command line. This is handy for values containing new lines for instance:
    It is obviously the best project around
    EOF
    $ gitlab project create --name SuperProject --description @/tmp/description
+
+Enabling shell autocompletion
+============================
+
+To get autocompletion, you'll need to install the package with the extra
+"autocompletion":
+
+.. code-block:: console
+
+    pip install python_gitlab[autocompletion]
+
+
+Add the appropriate command below to your shell's config file so that it is run on
+startup. You will likely have to restart or re-login for the autocompletion to
+start working.
+
+Bash
+----
+
+.. code-block:: console
+
+   eval "$(register-python-argcomplete gitlab)"
+
+tcsh
+----
+
+.. code-block:: console
+
+   eval `register-python-argcomplete --shell tcsh gitlab`
+
+fish
+----
+
+.. code-block:: console
+
+   register-python-argcomplete --shell fish gitlab | .
+
+Zsh
+---
+
+.. warning::
+
+    Zsh autocompletion support is broken right now in the argcomplete python
+    package. Perhaps it will be fixed in a future release of argcomplete at
+    which point the following instructions will enable autocompletion in zsh.
+
+To activate completions for zsh you need to have bashcompinit enabled in zsh:
+
+.. code-block:: console
+
+   autoload -U bashcompinit
+   bashcompinit
+
+Afterwards you can enable completion for gitlab:
+
+.. code-block:: console
+
+   eval "$(register-python-argcomplete gitlab)"

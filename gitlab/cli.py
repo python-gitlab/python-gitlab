@@ -172,6 +172,12 @@ def main():
 
     # Now we build the entire set of subcommands and do the complete parsing
     parser = _get_parser(cli_module)
+    try:
+        import argcomplete
+
+        argcomplete.autocomplete(parser)
+    except Exception:
+        pass
     args = parser.parse_args(sys.argv[1:])
 
     config_files = args.config_file

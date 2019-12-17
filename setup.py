@@ -45,4 +45,5 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],
+    extras_require={"autocompletion": ["argcomplete>=1.10.0,<2"]},
 )
