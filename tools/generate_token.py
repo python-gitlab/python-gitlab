@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from six.moves.urllib.parse import urljoin
+from urllib.parse import urljoin
 from requests_html import HTMLSession
 
 ENDPOINT = "http://localhost:8080"

@@ -20,6 +20,7 @@ import argparse
 import os
 import tempfile
 import unittest
+import io
 
 try:
     from contextlib import redirect_stderr  # noqa: H302
@@ -33,8 +34,6 @@ except ImportError:
         yield
         sys.stderr = old_target
 
-
-import six
 
 from gitlab import cli
 import gitlab.v4.cli
@@ -56,7 +55,7 @@ class TestCLI(unittest.TestCase):
         self.assertEqual("class", cli.cls_to_what(Class))
 
     def test_die(self):
-        fl = six.StringIO()
+        fl = io.StringIO()
         with redirect_stderr(fl):
             with self.assertRaises(SystemExit) as test:
                 cli.die("foobar")
@@ -83,7 +82,7 @@ class TestCLI(unittest.TestCase):
         self.assertEqual(ret, "content")
         os.unlink(temp_path)
 
-        fl = six.StringIO()
+        fl = io.StringIO()
         with redirect_stderr(fl):
             with self.assertRaises(SystemExit) as exc:
                 cli._parse_value("@/thisfileprobablydoesntexist")

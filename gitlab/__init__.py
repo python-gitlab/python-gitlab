@@ -23,7 +23,6 @@ import time
 import warnings
 
 import requests
-import six
 
 import gitlab.config
 from gitlab.const import *  # noqa
@@ -47,8 +46,8 @@ REDIRECT_MSG = (
 
 def _sanitize(value):
     if isinstance(value, dict):
-        return dict((k, _sanitize(v)) for k, v in six.iteritems(value))
-    if isinstance(value, six.string_types):
+        return dict((k, _sanitize(v)) for k, v in value.items())
+    if isinstance(value, str):
         return value.replace("/", "%2F")
     return value
 

@@ -18,7 +18,7 @@
 import unittest
 
 import mock
-import six
+import io
 
 from gitlab import config
 
@@ -80,16 +80,16 @@ class TestConfigParser(unittest.TestCase):
             config.GitlabConfigParser("test")
 
     @mock.patch("os.path.exists")
-    @mock.patch("six.moves.builtins.open")
+    @mock.patch("builtins.open")
     def test_invalid_id(self, m_open, path_exists):
-        fd = six.StringIO(no_default_config)
+        fd = io.StringIO(no_default_config)
         fd.close = mock.Mock(return_value=None)
         m_open.return_value = fd
         path_exists.return_value = True
         config.GitlabConfigParser("there")
         self.assertRaises(config.GitlabIDError, config.GitlabConfigParser)
 
-        fd = six.StringIO(valid_config)
+        fd = io.StringIO(valid_config)
         fd.close = mock.Mock(return_value=None)
         m_open.return_value = fd
         self.assertRaises(
@@ -97,9 +97,9 @@ class TestConfigParser(unittest.TestCase):
         )
 
     @mock.patch("os.path.exists")
-    @mock.patch("six.moves.builtins.open")
+    @mock.patch("builtins.open")
     def test_invalid_data(self, m_open, path_exists):
-        fd = six.StringIO(missing_attr_config)
+        fd = io.StringIO(missing_attr_config)
         fd.close = mock.Mock(return_value=None, side_effect=lambda: fd.seek(0))
         m_open.return_value = fd
         path_exists.return_value = True
@@ -117,9 +117,9 @@ class TestConfigParser(unittest.TestCase):
         self.assertEqual("Unsupported per_page number: 200", emgr.exception.args[0])
 
     @mock.patch("os.path.exists")
-    @mock.patch("six.moves.builtins.open")
+    @mock.patch("builtins.open")
     def test_valid_data(self, m_open, path_exists):
-        fd = six.StringIO(valid_config)
+        fd = io.StringIO(valid_config)
         fd.close = mock.Mock(return_value=None)
         m_open.return_value = fd
         path_exists.return_value = True
@@ -133,7 +133,7 @@ class TestConfigParser(unittest.TestCase):
         self.assertEqual(True, cp.ssl_verify)
         self.assertIsNone(cp.per_page)
 
-        fd = six.StringIO(valid_config)
+        fd = io.StringIO(valid_config)
         fd.close = mock.Mock(return_value=None)
         m_open.return_value = fd
         cp = config.GitlabConfigParser(gitlab_id="two")
@@ -144,7 +144,7 @@ class TestConfigParser(unittest.TestCase):
         self.assertEqual(10, cp.timeout)
         self.assertEqual(False, cp.ssl_verify)
 
-        fd = six.StringIO(valid_config)
+        fd = io.StringIO(valid_config)
         fd.close = mock.Mock(return_value=None)
         m_open.return_value = fd
         cp = config.GitlabConfigParser(gitlab_id="three")
@@ -156,7 +156,7 @@ class TestConfigParser(unittest.TestCase):
         self.assertEqual("/path/to/CA/bundle.crt", cp.ssl_verify)
         self.assertEqual(50, cp.per_page)
 
-        fd = six.StringIO(valid_config)
+        fd = io.StringIO(valid_config)
         fd.close = mock.Mock(return_value=None)
         m_open.return_value = fd
         cp = config.GitlabConfigParser(gitlab_id="four")
