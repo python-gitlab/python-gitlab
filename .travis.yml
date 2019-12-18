@@ -21,49 +21,31 @@ jobs:
     - stage: lint
       name: black_lint
       dist: bionic
-      python: 3.7
+      python: 3.8
       script:
         - pip3 install -U --pre black
         - black --check .
     - stage: test
       name: cli_func_v4
       dist: bionic
-      python: 3.7
+      python: 3.8
       script:
         - pip3 install tox
         - tox -e cli_func_v4
     - stage: test
       name: py_func_v4
       dist: bionic
-      python: 3.7
+      python: 3.8
       script:
         - pip3 install tox
         - tox -e py_func_v4
     - stage: test
       name: docs
       dist: bionic
-      python: 3.7
+      python: 3.8
       script:
         - pip3 install tox
         - tox -e docs
-    - stage: test
-      name: py27
-      python: 2.7
-      script:
-        - pip2 install tox
-        - tox -e py27
-    - stage: test
-      name: py34
-      python: 3.4
-      script:
-        - pip3 install tox
-        - tox -e py34
-    - stage: test
-      name: py35
-      python: 3.5
-      script:
-        - pip3 install tox
-        - tox -e py35
     - stage: test
       name: py36
       python: 3.6
@@ -81,7 +63,7 @@ jobs:
     - stage: test
       dist: bionic
       name: py38
-      python: 3.8-dev
+      python: 3.8
       script:
         - pip3 install tox
         - tox -e py38
