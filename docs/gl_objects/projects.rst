@@ -343,6 +343,13 @@ Get a file::
 
     # get the decoded content
     print(f.decode())
+    
+Get a raw file::
+    
+    raw_content = project.files.raw(file_path='README.rst', ref='master')
+    print(raw_content)
+    with open('/tmp/raw-download.txt', 'wb') as f:
+        project.files.raw(file_path='README.rst', ref='master', streamed=True, action=f.write)
 
 Create a new file::
 
