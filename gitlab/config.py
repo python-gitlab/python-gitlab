@@ -16,8 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-
-from six.moves import configparser
+import configparser
 
 _DEFAULT_FILES = ["/etc/python-gitlab.cfg", os.path.expanduser("~/.python-gitlab.cfg")]
 

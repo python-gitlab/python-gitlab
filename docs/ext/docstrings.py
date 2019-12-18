@@ -3,7 +3,6 @@ import itertools
 import os
 
 import jinja2
-import six
 import sphinx
 import sphinx.ext.napoleon as napoleon
 from sphinx.ext.napoleon.docstring import GoogleDocstring
@@ -25,7 +24,7 @@ def setup(app):
 
     conf = napoleon.Config._config_values
 
-    for name, (default, rebuild) in six.iteritems(conf):
+    for name, (default, rebuild) in conf.items():
         app.add_config_value(name, default, rebuild)
     return {"version": sphinx.__display_version__, "parallel_read_safe": True}
 

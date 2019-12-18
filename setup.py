@@ -25,7 +25,7 @@ setup(
     license="LGPLv3",
     url="https://github.com/python-gitlab/python-gitlab",
     packages=find_packages(),
-    install_requires=["requests>=2.4.2", "six"],
+    install_requires=["requests>=2.22.0"],
     entry_points={"console_scripts": ["gitlab = gitlab.cli:main"]},
     classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -36,14 +36,13 @@ setup(
         "Operating System :: POSIX",
         "Operating System :: Microsoft :: Windows",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],
-    extras_require={"autocompletion": ["argcomplete>=1.10.0,<2"]},
+    extras_require={
+        "autocompletion": ["argcomplete>=1.10.0,<2"],
+        "yaml": ["PyYaml>=5.2"],
+    },
 )

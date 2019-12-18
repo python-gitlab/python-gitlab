@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import six
+from urllib.parse import urlparse
 
 
 class _StdoutStream(object):
@@ -52,6 +52,6 @@ def clean_str_id(id):
 
 
 def sanitized_url(url):
-    parsed = six.moves.urllib.parse.urlparse(url)
+    parsed = urlparse(url)
     new_path = parsed.path.replace(".", "%2E")
     return parsed._replace(path=new_path).geturl()

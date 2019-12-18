@@ -162,7 +162,7 @@ These options must be defined before the mandatory arguments.
     **Notice:**
 
         The `PyYAML package <https://pypi.org/project/PyYAML/>`_ is required to use the yaml output option.
-        You need to install it separately using ``pip install PyYAML``
+        You need to install it explicitly using ``pip install python-gitlab[yaml]``
 
 ``--fields``, ``-f``
     Comma-separated list of fields to display (``yaml`` and ``json`` output

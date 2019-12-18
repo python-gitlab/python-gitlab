@@ -21,8 +21,6 @@ import inspect
 import operator
 import sys
 
-import six
-
 import gitlab
 import gitlab.base
 from gitlab import cli
@@ -321,7 +319,7 @@ def extend_parser(parser):
 
 
 def get_dict(obj, fields):
-    if isinstance(obj, six.string_types):
+    if isinstance(obj, str):
         return obj
 
     if fields:
@@ -441,7 +439,7 @@ def run(gl, what, action, args, verbose, output, fields):
         printer.display_list(data, fields, verbose=verbose)
     elif isinstance(data, gitlab.base.RESTObject):
         printer.display(get_dict(data, fields), verbose=verbose, obj=data)
-    elif isinstance(data, six.string_types):
+    elif isinstance(data, str):
         print(data)
     elif hasattr(data, "decode"):
         print(data.decode())
