@@ -663,7 +663,7 @@ snippet = admin_project.snippets.create(
     {
         "title": "snip1",
         "file_name": "foo.py",
-        "code": "initial content",
+        "content": "initial content",
         "visibility": gitlab.v4.objects.VISIBILITY_PRIVATE,
     }
 )
