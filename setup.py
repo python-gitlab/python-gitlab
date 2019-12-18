@@ -26,6 +26,7 @@ setup(
     url="https://github.com/python-gitlab/python-gitlab",
     packages=find_packages(),
     install_requires=["requests>=2.22.0"],
+    python_requires=">=3.6.0",
     entry_points={"console_scripts": ["gitlab = gitlab.cli:main"]},
     classifiers=[
         "Development Status :: 5 - Production/Stable",
