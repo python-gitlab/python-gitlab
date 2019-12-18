@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+
+strategy:
+  matrix:
+    environment: ["py36", "py37", "docs", "py_func_v4", "cli_func_v4"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Test CLI func
+      run: |
+        pip3 install tox
+        tox -e ${ENVIRONMENT}
+      with:
+        environment: ${{ matrix.environment }}
