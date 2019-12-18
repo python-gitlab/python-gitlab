@@ -25,7 +25,7 @@ setup(
     license="LGPLv3",
     url="https://github.com/python-gitlab/python-gitlab",
     packages=find_packages(),
-    install_requires=["requests>=2.4.2", "six"],
+    install_requires=["requests>=2.22.0", "six"],
     entry_points={"console_scripts": ["gitlab = gitlab.cli:main"]},
     classifiers=[
         "Development Status :: 5 - Production/Stable",
