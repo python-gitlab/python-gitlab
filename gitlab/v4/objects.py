@@ -3667,8 +3667,11 @@ class ProjectSnippetManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/snippets"
     _obj_cls = ProjectSnippet
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (("title", "file_name", "code"), ("lifetime", "visibility"))
-    _update_attrs = (tuple(), ("title", "file_name", "code", "visibility"))
+    _create_attrs = (("title", "file_name", "content", "visibility"), ("description",))
+    _update_attrs = (
+        tuple(),
+        ("title", "file_name", "content", "visibility", "description"),
+    )
 
 
 class ProjectTrigger(SaveMixin, ObjectDeleteMixin, RESTObject):
