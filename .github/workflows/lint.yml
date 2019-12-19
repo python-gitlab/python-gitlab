@@ -13,9 +13,9 @@ jobs:
         npm config set prefix "${HOME}/.npm-packages"
         export PATH="$PATH:$NPM_PACKAGES/bin"
         npm install -g @commitlint/cli @commitlint/config-conventional
-        'echo "module.exports = {extends: [\"@commitlint/config-conventional\"]}" > commitlint.config.js'
+        echo "module.exports = {extends: [\"@commitlint/config-conventional\"]}" > commitlint.config.js
         npx commitlint --from=origin/master
     - name: Run black
       run: |
         pip3 install --pre black==19.10b0
-        black --check .
+        python3 -m black --check .

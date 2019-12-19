@@ -1,22 +1,71 @@
 name: CI
 
-on:
-  push:
-    branches:
-      - master
-
-strategy:
-  matrix:
-    environment: ["py36", "py37", "docs", "py_func_v4", "cli_func_v4"]
+on: [push]
 
 jobs:
-  build:
+  test-3-6:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Test CLI func
+    - uses: actions/setup-python@v1
+      with:
+        python-version: "3.6"
+    - name: Test py36
       run: |
         pip3 install tox
-        tox -e ${ENVIRONMENT}
+        python3 -m tox -e py36
+  test-3-7:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
       with:
-        environment: ${{ matrix.environment }}
+        python-version: "3.7"
+    - name: Test py37
+      run: |
+        pip3 install tox
+        python3 -m tox -e py37
+  test-3-8:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+      with:
+        python-version: "3.8"
+    - name: Test py38
+      run: |
+        pip3 install tox
+        python3 -m tox -e py38
+  test-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+      with:
+        python-version: "3.8"
+    - name: Test py38
+      run: |
+        pip3 install tox
+        python3 -m tox -e docs
+  test-py_func_v4:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+      with:
+        python-version: "3.8"
+    - name: Test py38
+      run: |
+        pip3 install tox
+        python3 -m tox -e py_func_v4
+  test-cli_func_v4:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+      with:
+        python-version: "3.8"
+    - name: Test py38
+      run: |
+        pip3 install tox
+        python3 -m tox -e cli_func_v4
