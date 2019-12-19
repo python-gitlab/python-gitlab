@@ -9,6 +9,9 @@ jobs:
     - uses: actions/checkout@v1
     - name: Run commitlint
       run: |
+        mkdir "${HOME}/.npm-packages"
+        npm config set prefix "${HOME}/.npm-packages"
+        export PATH="$PATH:$NPM_PACKAGES/bin"
         npm install -g @commitlint/cli @commitlint/config-conventional
         'echo "module.exports = {extends: [\"@commitlint/config-conventional\"]}" > commitlint.config.js'
         npx commitlint --from=origin/master
