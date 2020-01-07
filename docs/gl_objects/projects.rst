@@ -451,7 +451,7 @@ List the project snippets::
 
 Get a snippet::
 
-    snippets = project.snippets.list(snippet_id)
+    snippet = project.snippets.get(snippet_id)
 
 Get the content of a snippet::
 
