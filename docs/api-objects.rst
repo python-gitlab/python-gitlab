@@ -6,6 +6,7 @@ API examples
    :maxdepth: 1
 
    gl_objects/access_requests
+   gl_objects/appearance
    gl_objects/emojis
    gl_objects/badges
    gl_objects/branches
