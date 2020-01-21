@@ -1,30 +1,10 @@
-# -*- coding: utf-8 -*-
-#
-# Copyright (C) 2013-2017 Gauvain Pocentek <gauvain@pocentek.net>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-from __future__ import print_function
-from __future__ import absolute_import
 import base64
-
 from gitlab.base import *  # noqa
-from gitlab import cli
 from gitlab.exceptions import *  # noqa
 from gitlab.mixins import *  # noqa
 from gitlab import types
 from gitlab import utils
+
 
 VISIBILITY_PRIVATE = "private"
 VISIBILITY_INTERNAL = "internal"
@@ -1532,6 +1512,8 @@ class PagesDomain(RESTObject):
 class PagesDomainManager(ListMixin, RESTManager):
     _path = "/pages/domains"
     _obj_cls = PagesDomain
+=======
+>>>>>>> 509394d... refactor: structure python objects in a reasonable way:gitlab/v4/objects/project.py
 
 
 class ProjectRegistryRepository(ObjectDeleteMixin, RESTObject):
@@ -4500,136 +4482,6 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
 
         return {"alt": data["alt"], "url": data["url"], "markdown": data["markdown"]}
 
-    @cli.register_custom_action("Project", optional=("wiki",))
-    @exc.on_http_error(exc.GitlabGetError)
-    def snapshot(
-        self, wiki=False, streamed=False, action=None, chunk_size=1024, **kwargs
-    ):
-        """Return a snapshot of the repository.
-
-        Args:
-            wiki (bool): If True return the wiki repository
-            streamed (bool): If True the data will be processed by chunks of
-                `chunk_size` and each chunk is passed to `action` for
-                treatment.
-            action (callable): Callable responsible of dealing with chunk of
-                data
-            chunk_size (int): Size of each chunk
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabGetError: If the content could not be retrieved
-
-        Returns:
-            str: The uncompressed tar archive of the repository
-        """
-        path = "/projects/%s/snapshot" % self.get_id()
-        result = self.manager.gitlab.http_get(
-            path, streamed=streamed, raw=True, **kwargs
-        )
-        return utils.response_content(result, streamed, action, chunk_size)
-
-    @cli.register_custom_action("Project", ("scope", "search"))
-    @exc.on_http_error(exc.GitlabSearchError)
-    def search(self, scope, search, **kwargs):
-        """Search the project resources matching the provided string.'
-
-        Args:
-            scope (str): Scope of the search
-            search (str): Search string
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabSearchError: If the server failed to perform the request
-
-        Returns:
-            GitlabList: A list of dicts describing the resources found.
-        """
-        data = {"scope": scope, "search": search}
-        path = "/projects/%s/search" % self.get_id()
-        return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
-
-    @cli.register_custom_action("Project")
-    @exc.on_http_error(exc.GitlabCreateError)
-    def mirror_pull(self, **kwargs):
-        """Start the pull mirroring process for the project.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabCreateError: If the server failed to perform the request
-        """
-        path = "/projects/%s/mirror/pull" % self.get_id()
-        self.manager.gitlab.http_post(path, **kwargs)
-
-    @cli.register_custom_action("Project", ("to_namespace",))
-    @exc.on_http_error(exc.GitlabTransferProjectError)
-    def transfer_project(self, to_namespace, **kwargs):
-        """Transfer a project to the given namespace ID
-
-        Args:
-            to_namespace (str): ID or path of the namespace to transfer the
-            project to
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabTransferProjectError: If the project could not be transfered
-        """
-        path = "/projects/%s/transfer" % (self.id,)
-        self.manager.gitlab.http_put(
-            path, post_data={"namespace": to_namespace}, **kwargs
-        )
-
-    @cli.register_custom_action("Project", ("ref_name", "artifact_path", "job"))
-    @exc.on_http_error(exc.GitlabGetError)
-    def artifact(
-        self,
-        ref_name,
-        artifact_path,
-        job,
-        streamed=False,
-        action=None,
-        chunk_size=1024,
-        **kwargs
-    ):
-        """Download a single artifact file from a specific tag or branch from within the job’s artifacts archive.
-
-        Args:
-            ref_name (str): Branch or tag name in repository. HEAD or SHA references are not supported.
-            artifact_path (str): Path to a file inside the artifacts archive.
-            job (str): The name of the job.
-            streamed (bool): If True the data will be processed by chunks of
-                `chunk_size` and each chunk is passed to `action` for
-                treatment
-            action (callable): Callable responsible of dealing with chunk of
-                data
-            chunk_size (int): Size of each chunk
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabGetError: If the artifacts could not be retrieved
-
-        Returns:
-            str: The artifacts if `streamed` is False, None otherwise.
-        """
-
-        path = "/projects/%s/jobs/artifacts/%s/raw/%s?job=%s" % (
-            self.get_id(),
-            ref_name,
-            artifact_path,
-            job,
-        )
-        result = self.manager.gitlab.http_get(
-            path, streamed=streamed, raw=True, **kwargs
-        )
-        return utils.response_content(result, streamed, action, chunk_size)
-
 
 class ProjectManager(CRUDMixin, RESTManager):
     _path = "/projects"
@@ -4811,211 +4663,140 @@ class ProjectManager(CRUDMixin, RESTManager):
         return result
 
 
-class RunnerJob(RESTObject):
-    pass
+class PagesDomain(RESTObject):
+    _id_attr = "domain"
 
 
-class RunnerJobManager(ListMixin, RESTManager):
-    _path = "/runners/%(runner_id)s/jobs"
-    _obj_cls = RunnerJob
-    _from_parent_attrs = {"runner_id": "id"}
-    _list_filters = ("status",)
+class PagesDomainManager(ListMixin, RESTManager):
+    _path = "/pages/domains"
+    _obj_cls = PagesDomain
 
-
-class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _managers = (("jobs", "RunnerJobManager"),)
-
-
-class RunnerManager(CRUDMixin, RESTManager):
-    _path = "/runners"
-    _obj_cls = Runner
-    _list_filters = ("scope",)
-    _create_attrs = (
-        ("token",),
-        (
-            "description",
-            "info",
-            "active",
-            "locked",
-            "run_untagged",
-            "tag_list",
-            "maximum_timeout",
-        ),
-    )
-    _update_attrs = (
-        tuple(),
-        (
-            "description",
-            "active",
-            "tag_list",
-            "run_untagged",
-            "locked",
-            "access_level",
-            "maximum_timeout",
-        ),
-    )
-
-    @cli.register_custom_action("RunnerManager", tuple(), ("scope",))
-    @exc.on_http_error(exc.GitlabListError)
-    def all(self, scope=None, **kwargs):
-        """List all the runners.
-
-        Args:
-            scope (str): The scope of runners to show, one of: specific,
-                shared, active, paused, online
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
-                defined, return a generator instead of a list
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabListError: If the server failed to perform the request
-
-        Returns:
-            list(Runner): a list of runners matching the scope.
-        """
-        path = "/runners/all"
-        query_data = {}
-        if scope is not None:
-            query_data["scope"] = scope
-        return self.gitlab.http_list(path, query_data, **kwargs)
-
-    @cli.register_custom_action("RunnerManager", ("token",))
-    @exc.on_http_error(exc.GitlabVerifyError)
-    def verify(self, token, **kwargs):
-        """Validates authentication credentials for a registered Runner.
-
-        Args:
-            token (str): The runner's authentication token
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabVerifyError: If the server failed to verify the token
-        """
-        path = "/runners/verify"
-        post_data = {"token": token}
-        self.gitlab.http_post(path, post_data=post_data, **kwargs)
-
-
-class Todo(ObjectDeleteMixin, RESTObject):
-    @cli.register_custom_action("Todo")
-    @exc.on_http_error(exc.GitlabTodoError)
-    def mark_as_done(self, **kwargs):
-        """Mark the todo as done.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabTodoError: If the server failed to perform the request
-        """
-        path = "%s/%s/mark_as_done" % (self.manager.path, self.id)
-        server_data = self.manager.gitlab.http_post(path, **kwargs)
-        self._update_attrs(server_data)
-
-
-class TodoManager(ListMixin, DeleteMixin, RESTManager):
-    _path = "/todos"
-    _obj_cls = Todo
-    _list_filters = ("action", "author_id", "project_id", "state", "type")
-
-    @cli.register_custom_action("TodoManager")
-    @exc.on_http_error(exc.GitlabTodoError)
-    def mark_all_as_done(self, **kwargs):
-        """Mark all the todos as done.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabTodoError: If the server failed to perform the request
-
-        Returns:
-            int: The number of todos maked done
-        """
-        result = self.gitlab.http_post("/todos/mark_as_done", **kwargs)
-
-
-class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
-    @cli.register_custom_action("GeoNode")
-    @exc.on_http_error(exc.GitlabRepairError)
-    def repair(self, **kwargs):
-        """Repair the OAuth authentication of the geo node.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabRepairError: If the server failed to perform the request
-        """
-        path = "/geo_nodes/%s/repair" % self.get_id()
-        server_data = self.manager.gitlab.http_post(path, **kwargs)
-        self._update_attrs(server_data)
-
-    @cli.register_custom_action("GeoNode")
+    @cli.register_custom_action("Project", optional=("wiki",))
     @exc.on_http_error(exc.GitlabGetError)
-    def status(self, **kwargs):
-        """Get the status of the geo node.
+    def snapshot(
+        self, wiki=False, streamed=False, action=None, chunk_size=1024, **kwargs
+    ):
+        """Return a snapshot of the repository.
+
+        Args:
+            wiki (bool): If True return the wiki repository
+            streamed (bool): If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment.
+            action (callable): Callable responsible of dealing with chunk of
+                data
+            chunk_size (int): Size of each chunk
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the content could not be retrieved
+
+        Returns:
+            str: The uncompressed tar archive of the repository
+        """
+        path = "/projects/%s/snapshot" % self.get_id()
+        result = self.manager.gitlab.http_get(
+            path, streamed=streamed, raw=True, **kwargs
+        )
+        return utils.response_content(result, streamed, action, chunk_size)
+
+    @cli.register_custom_action("Project", ("scope", "search"))
+    @exc.on_http_error(exc.GitlabSearchError)
+    def search(self, scope, search, **kwargs):
+        """Search the project resources matching the provided string.'
+
+        Args:
+            scope (str): Scope of the search
+            search (str): Search string
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabSearchError: If the server failed to perform the request
+
+        Returns:
+            GitlabList: A list of dicts describing the resources found.
+        """
+        data = {"scope": scope, "search": search}
+        path = "/projects/%s/search" % self.get_id()
+        return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
+
+    @cli.register_custom_action("Project")
+    @exc.on_http_error(exc.GitlabCreateError)
+    def mirror_pull(self, **kwargs):
+        """Start the pull mirroring process for the project.
 
         Args:
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
-            GitlabGetError: If the server failed to perform the request
-
-        Returns:
-            dict: The status of the geo node
+            GitlabCreateError: If the server failed to perform the request
         """
-        path = "/geo_nodes/%s/status" % self.get_id()
-        return self.manager.gitlab.http_get(path, **kwargs)
+        path = "/projects/%s/mirror/pull" % self.get_id()
+        self.manager.gitlab.http_post(path, **kwargs)
 
+    @cli.register_custom_action("Project", ("to_namespace",))
+    @exc.on_http_error(exc.GitlabTransferProjectError)
+    def transfer_project(self, to_namespace, **kwargs):
+        """Transfer a project to the given namespace ID
 
-class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
-    _path = "/geo_nodes"
-    _obj_cls = GeoNode
-    _update_attrs = (
-        tuple(),
-        ("enabled", "url", "files_max_capacity", "repos_max_capacity"),
-    )
+        Args:
+            to_namespace (str): ID or path of the namespace to transfer the
+            project to
+            **kwargs: Extra options to send to the server (e.g. sudo)
 
-    @cli.register_custom_action("GeoNodeManager")
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabTransferProjectError: If the project could not be transfered
+        """
+        path = "/projects/%s/transfer" % (self.id,)
+        self.manager.gitlab.http_put(
+            path, post_data={"namespace": to_namespace}, **kwargs
+        )
+
+    @cli.register_custom_action("Project", ("ref_name", "artifact_path", "job"))
     @exc.on_http_error(exc.GitlabGetError)
-    def status(self, **kwargs):
-        """Get the status of all the geo nodes.
+    def artifact(
+        self,
+        ref_name,
+        artifact_path,
+        job,
+        streamed=False,
+        action=None,
+        chunk_size=1024,
+        **kwargs
+    ):
+        """Download a single artifact file from a specific tag or branch from within the job’s artifacts archive.
 
         Args:
+            ref_name (str): Branch or tag name in repository. HEAD or SHA references are not supported.
+            artifact_path (str): Path to a file inside the artifacts archive.
+            job (str): The name of the job.
+            streamed (bool): If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment
+            action (callable): Callable responsible of dealing with chunk of
+                data
+            chunk_size (int): Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
-            GitlabGetError: If the server failed to perform the request
+            GitlabGetError: If the artifacts could not be retrieved
 
         Returns:
-            list: The status of all the geo nodes
+            str: The artifacts if `streamed` is False, None otherwise.
         """
-        return self.gitlab.http_list("/geo_nodes/status", **kwargs)
 
-    @cli.register_custom_action("GeoNodeManager")
-    @exc.on_http_error(exc.GitlabGetError)
-    def current_failures(self, **kwargs):
-        """Get the list of failures on the current geo node.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabGetError: If the server failed to perform the request
-
-        Returns:
-            list: The list of failures
-        """
-        return self.gitlab.http_list("/geo_nodes/current/failures", **kwargs)
+        path = "/projects/%s/jobs/artifacts/%s/raw/%s?job=%s" % (
+            self.get_id(),
+            ref_name,
+            artifact_path,
+            job,
+        )
+        result = self.manager.gitlab.http_get(
+            path, streamed=streamed, raw=True, **kwargs
+        )
+        return utils.response_content(result, streamed, action, chunk_size)

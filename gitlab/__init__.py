@@ -18,16 +18,12 @@
 
 from __future__ import print_function
 from __future__ import absolute_import
+from gitlab.v4 import objects
 import importlib
 import time
 import warnings
-
 import requests
-
 import gitlab.config
-from gitlab.const import *  # noqa
-from gitlab.exceptions import *  # noqa
-from gitlab import utils  # noqa
 
 __title__ = "python-gitlab"
 __version__ = "2.0.0"
@@ -110,7 +106,6 @@ class Gitlab(object):
 
         self.per_page = per_page
 
-        objects = importlib.import_module("gitlab.v%s.objects" % self._api_version)
         self._objects = objects
 
         self.broadcastmessages = objects.BroadcastMessageManager(self)

@@ -16,11 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gitlab
-from gitlab import base
-from gitlab import cli
+from gitlab import base, cli, utils
 from gitlab import exceptions as exc
 from gitlab import types as g_types
-from gitlab import utils
 
 
 class GetMixin(object):
@@ -415,7 +413,7 @@ class AccessRequestMixin(object):
         ("ProjectAccessRequest", "GroupAccessRequest"), tuple(), ("access_level",)
     )
     @exc.on_http_error(exc.GitlabUpdateError)
-    def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
+    def approve(self, access_level=gitlab.const.DEVELOPER_ACCESS, **kwargs):
         """Approve an access request.
 
         Args:
