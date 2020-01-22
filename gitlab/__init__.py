@@ -23,6 +23,7 @@ import time
 import warnings
 
 import httpx
+import asyncio
 
 import gitlab.config
 from gitlab.const import *  # noqa
@@ -146,8 +147,9 @@ class Gitlab(object):
     def __enter__(self):
         return self
 
-    async def __exit__(self, *args):
-        await self.client.aclose()
+    def __exit__(self, *args):
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.client.aclose())
 
     def __getstate__(self):
         state = self.__dict__.copy()
