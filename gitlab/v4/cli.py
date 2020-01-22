@@ -24,7 +24,6 @@ import sys
 import gitlab
 import gitlab.base
 from gitlab import cli
-import gitlab.v4.objects
 
 
 class GitlabCLI(object):

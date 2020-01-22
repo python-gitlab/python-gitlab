@@ -1512,8 +1512,6 @@ class PagesDomain(RESTObject):
 class PagesDomainManager(ListMixin, RESTManager):
     _path = "/pages/domains"
     _obj_cls = PagesDomain
-=======
->>>>>>> 509394d... refactor: structure python objects in a reasonable way:gitlab/v4/objects/project.py
 
 
 class ProjectRegistryRepository(ObjectDeleteMixin, RESTObject):

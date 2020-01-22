@@ -2,7 +2,7 @@ from gitlab.base import *  # noqa
 from gitlab.exceptions import *  # noqa
 from gitlab.mixins import *  # noqa
 from gitlab import types
-from gitlab.v4 import objects
+from gitlab.v4.objects.notification_settings import NotificationSettings, NotificationSettingsManager
 from gitlab import utils
 
 
@@ -421,11 +421,11 @@ class GroupMilestoneManager(CRUDMixin, RESTManager):
     _list_filters = ("iids", "state", "search")
 
 
-class GroupNotificationSettings(objects.NotificationSettings):
+class GroupNotificationSettings(NotificationSettings):
     pass
 
 
-class GroupNotificationSettingsManager(objects.NotificationSettingsManager):
+class GroupNotificationSettingsManager(NotificationSettingsManager):
     _path = "/groups/%(group_id)s/notification_settings"
     _obj_cls = GroupNotificationSettings
     _from_parent_attrs = {"group_id": "id"}

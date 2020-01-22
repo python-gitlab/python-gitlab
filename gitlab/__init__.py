@@ -18,7 +18,27 @@
 
 from __future__ import print_function
 from __future__ import absolute_import
-from gitlab.v4 import objects
+from gitlab.exceptions import *  # noqa
+from gitlab.v4.objects.application import *  # noqa
+from gitlab.v4.objects.broadcast_message import *  # noqa
+from gitlab.v4.objects.current_user import *  # noqa
+from gitlab.v4.objects.deploy_key import *  # noqa
+from gitlab.v4.objects.ee import *  # noqa
+from gitlab.v4.objects.event import *  # noqa
+from gitlab.v4.objects.feature import *  # noqa
+from gitlab.v4.objects.group import *  # noqa
+from gitlab.v4.objects.hook import *  # noqa
+from gitlab.v4.objects.issue import *  # noqa
+from gitlab.v4.objects.mergerequest import *  # noqa
+from gitlab.v4.objects.namespace import *  # noqa
+from gitlab.v4.objects.notification_settings import *  # noqa
+from gitlab.v4.objects.project import *  # noqa
+from gitlab.v4.objects.runner import *  # noqa
+from gitlab.v4.objects.sidekiq import *  # noqa
+from gitlab.v4.objects.snippet import *  # noqa
+from gitlab.v4.objects.template import *  # noqa
+from gitlab.v4.objects.todo import *  # noqa
+from gitlab.v4.objects.user import *  # noqa
 import importlib
 import time
 import warnings
@@ -106,34 +126,32 @@ class Gitlab(object):
 
         self.per_page = per_page
 
-        self._objects = objects
-
-        self.broadcastmessages = objects.BroadcastMessageManager(self)
-        self.deploykeys = objects.DeployKeyManager(self)
-        self.geonodes = objects.GeoNodeManager(self)
-        self.gitlabciymls = objects.GitlabciymlManager(self)
-        self.gitignores = objects.GitignoreManager(self)
-        self.groups = objects.GroupManager(self)
-        self.hooks = objects.HookManager(self)
-        self.issues = objects.IssueManager(self)
-        self.ldapgroups = objects.LDAPGroupManager(self)
-        self.licenses = objects.LicenseManager(self)
-        self.namespaces = objects.NamespaceManager(self)
-        self.mergerequests = objects.MergeRequestManager(self)
-        self.notificationsettings = objects.NotificationSettingsManager(self)
-        self.projects = objects.ProjectManager(self)
-        self.runners = objects.RunnerManager(self)
-        self.settings = objects.ApplicationSettingsManager(self)
-        self.sidekiq = objects.SidekiqManager(self)
-        self.snippets = objects.SnippetManager(self)
-        self.users = objects.UserManager(self)
-        self.todos = objects.TodoManager(self)
-        self.dockerfiles = objects.DockerfileManager(self)
-        self.events = objects.EventManager(self)
-        self.audit_events = objects.AuditEventManager(self)
-        self.features = objects.FeatureManager(self)
-        self.pagesdomains = objects.PagesDomainManager(self)
-        self.user_activities = objects.UserActivitiesManager(self)
+        self.broadcastmessages = BroadcastMessageManager(self)
+        self.deploykeys = DeployKeyManager(self)
+        self.geonodes = GeoNodeManager(self)
+        self.gitlabciymls = GitlabciymlManager(self)
+        self.gitignores = GitignoreManager(self)
+        self.groups = GroupManager(self)
+        self.hooks = HookManager(self)
+        self.issues = IssueManager(self)
+        self.ldapgroups = LDAPGroupManager(self)
+        self.licenses = LicenseManager(self)
+        self.namespaces = NamespaceManager(self)
+        self.mergerequests = MergeRequestManager(self)
+        self.notificationsettings = NotificationSettingsManager(self)
+        self.projects = ProjectManager(self)
+        self.runners = RunnerManager(self)
+        self.settings = ApplicationSettingsManager(self)
+        self.sidekiq = SidekiqManager(self)
+        self.snippets = SnippetManager(self)
+        self.users = UserManager(self)
+        self.todos = TodoManager(self)
+        self.dockerfiles = DockerfileManager(self)
+        self.events = EventManager(self)
+        self.audit_events = AuditEventManager(self)
+        self.features = FeatureManager(self)
+        self.pagesdomains = PagesDomainManager(self)
+        self.user_activities = UserActivitiesManager(self)
 
     def __enter__(self):
         return self
