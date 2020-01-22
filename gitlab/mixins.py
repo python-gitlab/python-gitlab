@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gitlab
+import asyncio
 from gitlab import base
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -25,7 +26,7 @@ from gitlab import utils
 
 class GetMixin(object):
     @exc.on_http_error(exc.GitlabGetError)
-    def get(self, id, lazy=False, **kwargs):
+    async def async_get(self, id, lazy=False, **kwargs):
         """Retrieve a single object.
 
         Args:
@@ -47,13 +48,17 @@ class GetMixin(object):
         path = "%s/%s" % (self.path, id)
         if lazy is True:
             return self._obj_cls(self, {self._obj_cls._id_attr: id})
-        server_data = self.gitlab.http_get(path, **kwargs)
+        server_data = await self.gitlab.http_get(path, **kwargs)
         return self._obj_cls(self, server_data)
+
+    def get(self, id, lazy=False, **kwargs):
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.async_get(id, lazy, **kwargs))
 
 
 class GetWithoutIdMixin(object):
     @exc.on_http_error(exc.GitlabGetError)
-    def get(self, id=None, **kwargs):
+    async def async_get(self, id=None, **kwargs):
         """Retrieve a single object.
 
         Args:
@@ -66,15 +71,18 @@ class GetWithoutIdMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        server_data = self.gitlab.http_get(self.path, **kwargs)
+        server_data = await self.gitlab.http_get(self.path, **kwargs)
         if server_data is None:
             return None
         return self._obj_cls(self, server_data)
 
+    def get(self, id=None, **kwargs):
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.async_get(id, **kwargs))
 
 class RefreshMixin(object):
     @exc.on_http_error(exc.GitlabGetError)
-    def refresh(self, **kwargs):
+    async def async_refresh(self, **kwargs):
         """Refresh a single object from server.
 
         Args:
@@ -90,13 +98,17 @@ class RefreshMixin(object):
             path = "%s/%s" % (self.manager.path, self.id)
         else:
             path = self.manager.path
-        server_data = self.manager.gitlab.http_get(path, **kwargs)
+        server_data = await self.manager.gitlab.http_get(path, **kwargs)
         self._update_attrs(server_data)
+
+    def refresh(self, **kwargs):
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.async_refresh(**kwargs))
 
 
 class ListMixin(object):
     @exc.on_http_error(exc.GitlabListError)
-    def list(self, **kwargs):
+    async def async_list(self, **kwargs):
         """Retrieve a list of objects.
 
         Args:
@@ -131,11 +143,15 @@ class ListMixin(object):
         # Allow to overwrite the path, handy for custom listings
         path = data.pop("path", self.path)
 
-        obj = self.gitlab.http_list(path, **data)
+        obj = await self.gitlab.http_list(path, **data)
         if isinstance(obj, list):
             return [self._obj_cls(self, item) for item in obj]
         else:
             return base.RESTObjectList(self, self._obj_cls, obj)
+
+    def list(self, **kwargs):
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.async_list(**kwargs))
 
 
 class RetrieveMixin(ListMixin, GetMixin):
@@ -163,7 +179,7 @@ class CreateMixin(object):
         return getattr(self, "_create_attrs", (tuple(), tuple()))
 
     @exc.on_http_error(exc.GitlabCreateError)
-    def create(self, data, **kwargs):
+    async def async_create(self, data, **kwargs):
         """Create a new object.
 
         Args:
@@ -201,8 +217,13 @@ class CreateMixin(object):
 
         # Handle specific URL for creation
         path = kwargs.pop("path", self.path)
-        server_data = self.gitlab.http_post(path, post_data=data, files=files, **kwargs)
+        server_data = await self.gitlab.http_post(path, post_data=data,
+                                                  files=files, **kwargs)
         return self._obj_cls(self, server_data)
+
+    def create(self, data, **kwargs):
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.async_create(data, **kwargs))
 
 
 class UpdateMixin(object):
@@ -240,7 +261,7 @@ class UpdateMixin(object):
         return http_method
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def update(self, id=None, new_data=None, **kwargs):
+    async def async_update(self, id=None, new_data=None, **kwargs):
         """Update an object on the server.
 
         Args:
@@ -283,12 +304,16 @@ class UpdateMixin(object):
                         new_data[attr_name] = type_obj.get_for_api()
 
         http_method = self._get_update_method()
-        return http_method(path, post_data=new_data, files=files, **kwargs)
+        return await http_method(path, post_data=new_data, files=files, **kwargs)
+
+    def update(self, id=None, new_data=None, **kwargs):
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.async_update(id, new_data, **kwargs))
 
 
 class SetMixin(object):
     @exc.on_http_error(exc.GitlabSetError)
-    def set(self, key, value, **kwargs):
+    async def async_set(self, key, value, **kwargs):
         """Create or update the object.
 
         Args:
@@ -305,13 +330,17 @@ class SetMixin(object):
         """
         path = "%s/%s" % (self.path, utils.clean_str_id(key))
         data = {"value": value}
-        server_data = self.gitlab.http_put(path, post_data=data, **kwargs)
+        server_data = await self.gitlab.http_put(path, post_data=data, **kwargs)
         return self._obj_cls(self, server_data)
+
+    def set(self, key, value, **kwargs):
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(key, value, **kwargs)
 
 
 class DeleteMixin(object):
     @exc.on_http_error(exc.GitlabDeleteError)
-    def delete(self, id, **kwargs):
+    async def async_delete(self, id, **kwargs):
         """Delete an object on the server.
 
         Args:
@@ -328,7 +357,11 @@ class DeleteMixin(object):
             if not isinstance(id, int):
                 id = utils.clean_str_id(id)
             path = "%s/%s" % (self.path, id)
-        self.gitlab.http_delete(path, **kwargs)
+        await self.gitlab.http_delete(path, **kwargs)
+
+    def delete(self, id, **kwargs):
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.async_delete(id, **kwargs))
 
 
 class CRUDMixin(GetMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin):
@@ -353,7 +386,7 @@ class SaveMixin(object):
 
         return updated_data
 
-    def save(self, **kwargs):
+    async def async_save(self, **kwargs):
         """Save the changes made to the object to the server.
 
         The object is updated to match what the server returns.
@@ -372,15 +405,19 @@ class SaveMixin(object):
 
         # call the manager
         obj_id = self.get_id()
-        server_data = self.manager.update(obj_id, updated_data, **kwargs)
+        server_data = await self.manager.update(obj_id, updated_data, **kwargs)
         if server_data is not None:
             self._update_attrs(server_data)
+
+    def save(self, **kwargs):
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.async_save(**kwargs))
 
 
 class ObjectDeleteMixin(object):
     """Mixin for RESTObject's that can be deleted."""
 
-    def delete(self, **kwargs):
+    async def async_delete(self, **kwargs):
         """Delete the object from the server.
 
         Args:
@@ -390,13 +427,17 @@ class ObjectDeleteMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
-        self.manager.delete(self.get_id())
+        await self.manager.delete(self.get_id())
+
+    def delete(self, **kwargs):
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.async_delete(**kwargs))
 
 
 class UserAgentDetailMixin(object):
     @cli.register_custom_action(("Snippet", "ProjectSnippet", "ProjectIssue"))
     @exc.on_http_error(exc.GitlabGetError)
-    def user_agent_detail(self, **kwargs):
+    async def async_user_agent_detail(self, **kwargs):
         """Get the user agent detail.
 
         Args:
@@ -407,7 +448,11 @@ class UserAgentDetailMixin(object):
             GitlabGetError: If the server cannot perform the request
         """
         path = "%s/%s/user_agent_detail" % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_get(path, **kwargs)
+        return await self.manager.gitlab.http_get(path, **kwargs)
+
+    def user_agent_detail(self, **kwargs):
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.async_user_agent_detail(**kwargs))
 
 
 class AccessRequestMixin(object):
@@ -415,7 +460,7 @@ class AccessRequestMixin(object):
         ("ProjectAccessRequest", "GroupAccessRequest"), tuple(), ("access_level",)
     )
     @exc.on_http_error(exc.GitlabUpdateError)
-    def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
+    async def async_approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
         """Approve an access request.
 
         Args:
@@ -429,8 +474,12 @@ class AccessRequestMixin(object):
 
         path = "%s/%s/approve" % (self.manager.path, self.id)
         data = {"access_level": access_level}
-        server_data = self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+        server_data = await self.manager.gitlab.http_put(path, post_data=data, **kwargs)
         self._update_attrs(server_data)
+
+    def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.async_approve(access_level, **kwargs))
 
 
 class SubscribableMixin(object):
@@ -438,7 +487,7 @@ class SubscribableMixin(object):
         ("ProjectIssue", "ProjectMergeRequest", "ProjectLabel", "GroupLabel")
     )
     @exc.on_http_error(exc.GitlabSubscribeError)
-    def subscribe(self, **kwargs):
+    async def async_subscribe(self, **kwargs):
         """Subscribe to the object notifications.
 
         Args:
@@ -449,14 +498,18 @@ class SubscribableMixin(object):
             GitlabSubscribeError: If the subscription cannot be done
         """
         path = "%s/%s/subscribe" % (self.manager.path, self.get_id())
-        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        server_data = await self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
+
+    def subscribe(self, **kwargs):
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.async_subscribe(**kwargs))
 
     @cli.register_custom_action(
         ("ProjectIssue", "ProjectMergeRequest", "ProjectLabel", "GroupLabel")
     )
     @exc.on_http_error(exc.GitlabUnsubscribeError)
-    def unsubscribe(self, **kwargs):
+    async def async_unsubscribe(self, **kwargs):
         """Unsubscribe from the object notifications.
 
         Args:
@@ -467,14 +520,18 @@ class SubscribableMixin(object):
             GitlabUnsubscribeError: If the unsubscription cannot be done
         """
         path = "%s/%s/unsubscribe" % (self.manager.path, self.get_id())
-        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        server_data = await self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
+
+    def unsubscribe(self, **kwargs):
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.async_unsubscribe(**kwargs))
 
 
 class TodoMixin(object):
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTodoError)
-    def todo(self, **kwargs):
+    async def async_todo(self, **kwargs):
         """Create a todo associated to the object.
 
         Args:
@@ -485,13 +542,17 @@ class TodoMixin(object):
             GitlabTodoError: If the todo cannot be set
         """
         path = "%s/%s/todo" % (self.manager.path, self.get_id())
-        self.manager.gitlab.http_post(path, **kwargs)
+        await self.manager.gitlab.http_post(path, **kwargs)
+
+    def todo(self, **kwargs):
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.async_todo(**kwargs))
 
 
 class TimeTrackingMixin(object):
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
-    def time_stats(self, **kwargs):
+    async def async_time_stats(self, **kwargs):
         """Get time stats for the object.
 
         Args:
@@ -507,7 +568,11 @@ class TimeTrackingMixin(object):
             return self.attributes["time_stats"]
 
         path = "%s/%s/time_stats" % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_get(path, **kwargs)
+        return await self.manager.gitlab.http_get(path, **kwargs)
+
+    def time_stats(self, **kwargs):
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.async_time_stats(**kwargs))
 
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"), ("duration",))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
@@ -528,7 +593,7 @@ class TimeTrackingMixin(object):
 
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
-    def reset_time_estimate(self, **kwargs):
+    async def async_reset_time_estimate(self, **kwargs):
         """Resets estimated time for the object to 0 seconds.
 
         Args:
@@ -539,11 +604,15 @@ class TimeTrackingMixin(object):
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
         path = "%s/%s/reset_time_estimate" % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_post(path, **kwargs)
+        return await self.manager.gitlab.http_post(path, **kwargs)
+
+    def reset_time_estimate(self, **kwargs):
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.async_reset_time_estimate(**kwargs))
 
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"), ("duration",))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
-    def add_spent_time(self, duration, **kwargs):
+    async def async_add_spent_time(self, duration, **kwargs):
         """Add time spent working on the object.
 
         Args:
@@ -556,11 +625,15 @@ class TimeTrackingMixin(object):
         """
         path = "%s/%s/add_spent_time" % (self.manager.path, self.get_id())
         data = {"duration": duration}
-        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        return await self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+
+    def add_spent_time(self, duration, **kwargs):
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.async_add_spent_time(duration, **kwargs))
 
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
-    def reset_spent_time(self, **kwargs):
+    async def async_reset_spent_time(self, **kwargs):
         """Resets the time spent working on the object.
 
         Args:
@@ -571,13 +644,17 @@ class TimeTrackingMixin(object):
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
         path = "%s/%s/reset_spent_time" % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_post(path, **kwargs)
+        return await self.manager.gitlab.http_post(path, **kwargs)
+
+    def reset_spent_time(self, **kwargs):
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.async_reset_spent_time(self, **kwargs))
 
 
 class ParticipantsMixin(object):
     @cli.register_custom_action(("ProjectMergeRequest", "ProjectIssue"))
     @exc.on_http_error(exc.GitlabListError)
-    def participants(self, **kwargs):
+    async def async_participants(self, **kwargs):
         """List the participants.
 
         Args:
@@ -597,7 +674,11 @@ class ParticipantsMixin(object):
         """
 
         path = "%s/%s/participants" % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_get(path, **kwargs)
+        return await self.manager.gitlab.http_get(path, **kwargs)
+
+    def participants(self, **kwargs):
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.async_participants(**kwargs))
 
 
 class BadgeRenderMixin(object):
@@ -605,7 +686,7 @@ class BadgeRenderMixin(object):
         ("GroupBadgeManager", "ProjectBadgeManager"), ("link_url", "image_url")
     )
     @exc.on_http_error(exc.GitlabRenderError)
-    def render(self, link_url, image_url, **kwargs):
+    async def async_render(self, link_url, image_url, **kwargs):
         """Preview link_url and image_url after interpolation.
 
         Args:
@@ -622,4 +703,8 @@ class BadgeRenderMixin(object):
         """
         path = "%s/render" % self.path
         data = {"link_url": link_url, "image_url": image_url}
-        return self.gitlab.http_get(path, data, **kwargs)
+        return await self.gitlab.http_get(path, data, **kwargs)
+
+    def render(self, link_url, image_url, **kwargs):
+        loop = asyncio.get_event_loop()
+        return loop.async_render(link_url, image_url, **kwargs)

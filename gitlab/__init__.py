@@ -22,11 +22,14 @@ import importlib
 import time
 import warnings
 
-import requests
+import httpx
 
 import gitlab.config
 from gitlab.const import *  # noqa
-from gitlab.exceptions import *  # noqa
+from gitlab.exceptions import (on_http_error, GitlabVerifyError,
+                               GitlabMarkdownError, GitlabLicenseError, RedirectError,
+                               GitlabHttpError, GitlabAuthenticationError,
+                               GitlabParsingError, GitlabSearchError)
 from gitlab import utils  # noqa
 
 __title__ = "python-gitlab"
@@ -82,7 +85,7 @@ class Gitlab(object):
         http_password=None,
         timeout=None,
         api_version="4",
-        session=None,
+        client=None,
         per_page=None,
     ):
 
@@ -105,8 +108,8 @@ class Gitlab(object):
         self.job_token = job_token
         self._set_auth_info()
 
-        #: Create a session object for requests
-        self.session = session or requests.Session()
+        #: Create a client object for requests
+        self.client = client or httpx.AsyncClient()
 
         self.per_page = per_page
 
@@ -143,8 +146,8 @@ class Gitlab(object):
     def __enter__(self):
         return self
 
-    def __exit__(self, *args):
-        self.session.close()
+    async def __exit__(self, *args):
+        await self.client.aclose()
 
     def __getstate__(self):
         state = self.__dict__.copy()
@@ -211,7 +214,7 @@ class Gitlab(object):
         """
         self.user = self._objects.CurrentUserManager(self).get()
 
-    def version(self):
+    async def version(self):
         """Returns the version and revision of the gitlab server.
 
         Note that self.version and self.revision will be set on the gitlab
@@ -224,7 +227,7 @@ class Gitlab(object):
         """
         if self._server_version is None:
             try:
-                data = self.http_get("/version")
+                data = await self.http_get("/version")
                 self._server_version = data["version"]
                 self._server_revision = data["revision"]
             except Exception:
@@ -233,7 +236,7 @@ class Gitlab(object):
         return self._server_version, self._server_revision
 
     @on_http_error(GitlabVerifyError)
-    def lint(self, content, **kwargs):
+    async def lint(self, content, **kwargs):
         """Validate a gitlab CI configuration.
 
         Args:
@@ -249,11 +252,11 @@ class Gitlab(object):
                 otherwise
         """
         post_data = {"content": content}
-        data = self.http_post("/ci/lint", post_data=post_data, **kwargs)
+        data = await self.http_post("/ci/lint", post_data=post_data, **kwargs)
         return (data["status"] == "valid", data["errors"])
 
     @on_http_error(GitlabMarkdownError)
-    def markdown(self, text, gfm=False, project=None, **kwargs):
+    async def markdown(self, text, gfm=False, project=None, **kwargs):
         """Render an arbitrary Markdown document.
 
         Args:
@@ -274,11 +277,11 @@ class Gitlab(object):
         post_data = {"text": text, "gfm": gfm}
         if project is not None:
             post_data["project"] = project
-        data = self.http_post("/markdown", post_data=post_data, **kwargs)
+        data = await self.http_post("/markdown", post_data=post_data, **kwargs)
         return data["html"]
 
     @on_http_error(GitlabLicenseError)
-    def get_license(self, **kwargs):
+    async def get_license(self, **kwargs):
         """Retrieve information about the current license.
 
         Args:
@@ -291,10 +294,10 @@ class Gitlab(object):
         Returns:
             dict: The current license information
         """
-        return self.http_get("/license", **kwargs)
+        return await self.http_get("/license", **kwargs)
 
     @on_http_error(GitlabLicenseError)
-    def set_license(self, license, **kwargs):
+    async def set_license(self, license, **kwargs):
         """Add a new license.
 
         Args:
@@ -309,7 +312,7 @@ class Gitlab(object):
             dict: The new license information
         """
         data = {"license": license}
-        return self.http_post("/license", post_data=data, **kwargs)
+        return await self.http_post("/license", post_data=data, **kwargs)
 
     def _construct_url(self, id_, obj, parameters, action=None):
         if "next_url" in parameters:
@@ -369,7 +372,7 @@ class Gitlab(object):
             self.headers["JOB-TOKEN"] = self.job_token
 
         if self.http_username:
-            self._http_auth = requests.auth.HTTPBasicAuth(
+            self._http_auth = httpx.auth.HTTPBasicAuth(
                 self.http_username, self.http_password
             )
 
@@ -436,7 +439,7 @@ class Gitlab(object):
                 if location and location.startswith("https://"):
                     raise RedirectError(REDIRECT_MSG)
 
-    def http_request(
+    async def http_request(
         self,
         verb,
         path,
@@ -508,12 +511,12 @@ class Gitlab(object):
         # The Requests behavior is right but it seems that web servers don't
         # always agree with this decision (this is the case with a default
         # gitlab installation)
-        req = requests.Request(
+        req = httpx.Request(
             verb, url, json=json, data=data, params=params, files=files, **opts
         )
-        prepped = self.session.prepare_request(req)
+        prepped = self.client.prepare_request(req)
         prepped.url = utils.sanitized_url(prepped.url)
-        settings = self.session.merge_environment_settings(
+        settings = self.client.merge_environment_settings(
             prepped.url, {}, streamed, verify, None
         )
 
@@ -527,7 +530,7 @@ class Gitlab(object):
         cur_retries = 0
 
         while True:
-            result = self.session.send(prepped, timeout=timeout, **settings)
+            result = await self.client.send(prepped, timeout=timeout, **settings)
 
             self._check_redirects(result)
 
@@ -567,7 +570,7 @@ class Gitlab(object):
                 response_body=result.content,
             )
 
-    def http_get(self, path, query_data=None, streamed=False, raw=False, **kwargs):
+    async def http_get(self, path, query_data=None, streamed=False, raw=False, **kwargs):
         """Make a GET request to the Gitlab server.
 
         Args:
@@ -588,7 +591,7 @@ class Gitlab(object):
             GitlabParsingError: If the json data could not be parsed
         """
         query_data = query_data or {}
-        result = self.http_request(
+        result = await self.http_request(
             "get", path, query_data=query_data, streamed=streamed, **kwargs
         )
 
@@ -606,7 +609,7 @@ class Gitlab(object):
         else:
             return result
 
-    def http_list(self, path, query_data=None, as_list=None, **kwargs):
+    async def http_list(self, path, query_data=None, as_list=None, **kwargs):
         """Make a GET request to the Gitlab server for list-oriented queries.
 
         Args:
@@ -645,7 +648,8 @@ class Gitlab(object):
         # No pagination, generator requested
         return GitlabList(self, url, query_data, **kwargs)
 
-    def http_post(self, path, query_data=None, post_data=None, files=None, **kwargs):
+    async def http_post(self, path, query_data=None,
+                        post_data=None, files=None, **kwargs):
         """Make a POST request to the Gitlab server.
 
         Args:
@@ -668,7 +672,7 @@ class Gitlab(object):
         query_data = query_data or {}
         post_data = post_data or {}
 
-        result = self.http_request(
+        result = await self.http_request(
             "post",
             path,
             query_data=query_data,
@@ -683,7 +687,8 @@ class Gitlab(object):
             raise GitlabParsingError(error_message="Failed to parse the server message")
         return result
 
-    def http_put(self, path, query_data=None, post_data=None, files=None, **kwargs):
+    async def http_put(self, path, query_data=None,
+                       post_data=None, files=None, **kwargs):
         """Make a PUT request to the Gitlab server.
 
         Args:
@@ -705,7 +710,7 @@ class Gitlab(object):
         query_data = query_data or {}
         post_data = post_data or {}
 
-        result = self.http_request(
+        result = await self.http_request(
             "put",
             path,
             query_data=query_data,
@@ -718,7 +723,7 @@ class Gitlab(object):
         except Exception:
             raise GitlabParsingError(error_message="Failed to parse the server message")
 
-    def http_delete(self, path, **kwargs):
+    async def http_delete(self, path, **kwargs):
         """Make a PUT request to the Gitlab server.
 
         Args:
@@ -732,10 +737,10 @@ class Gitlab(object):
         Raises:
             GitlabHttpError: When the return code is not 2xx
         """
-        return self.http_request("delete", path, **kwargs)
+        return await self.http_request("delete", path, **kwargs)
 
     @on_http_error(GitlabSearchError)
-    def search(self, scope, search, **kwargs):
+    async def search(self, scope, search, **kwargs):
         """Search GitLab resources matching the provided string.'
 
         Args:
@@ -761,14 +766,17 @@ class GitlabList(object):
     the API again when needed.
     """
 
-    def __init__(self, gl, url, query_data, get_next=True, **kwargs):
+    async def __init__(self, gl, url, query_data, get_next=True, **kwargs):
         self._gl = gl
-        self._query(url, query_data, **kwargs)
+        await self._query(url, query_data, **kwargs)
         self._get_next = get_next
 
-    def _query(self, url, query_data=None, **kwargs):
+    async def _query(self, url, query_data=None, **kwargs):
         query_data = query_data or {}
-        result = self._gl.http_request("get", url, query_data=query_data, **kwargs)
+        result = await self._gl.http_request("get",
+                                             url,
+                                             query_data=query_data,
+                                             **kwargs)
         try:
             self._next_url = result.links["next"]["url"]
         except KeyError:
@@ -829,10 +837,10 @@ class GitlabList(object):
     def __len__(self):
         return int(self._total)
 
-    def __next__(self):
+    async def __next__(self):
         return self.next()
 
-    def next(self):
+    async def next(self):
         try:
             item = self._data[self._current]
             self._current += 1
@@ -841,7 +849,7 @@ class GitlabList(object):
             pass
 
         if self._next_url and self._get_next is True:
-            self._query(self._next_url)
+            await self._query(self._next_url)
             return self.next()
 
         raise StopIteration
