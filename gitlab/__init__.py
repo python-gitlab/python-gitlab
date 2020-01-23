@@ -129,6 +129,7 @@ class Gitlab(object):
         self.projects = objects.ProjectManager(self)
         self.runners = objects.RunnerManager(self)
         self.settings = objects.ApplicationSettingsManager(self)
+        self.appearance = objects.ApplicationAppearanceManager(self)
         self.sidekiq = objects.SidekiqManager(self)
         self.snippets = objects.SnippetManager(self)
         self.users = objects.UserManager(self)
