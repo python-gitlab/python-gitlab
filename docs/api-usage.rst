@@ -219,6 +219,18 @@ You can define the ``per_page`` value globally to avoid passing it to every
 
    gl = gitlab.Gitlab(url, token, per_page=50)
 
+Gitlab allows to also use keyset pagination. You can supply it to your project listing,
+but you can also do so globally. Be aware that GitLab then also requires you to only use supported
+order options. At the time of writing, only ``order_by="id"`` works.
+
+.. code-block:: python
+
+   gl = gitlab.Gitlab(url, token, pagination="keyset", per_page=100)
+   gl.projects.list(order_by="id")
+
+Reference:
+https://docs.gitlab.com/ce/api/README.html#keyset-based-pagination
+
 ``list()`` methods can also return a generator object which will handle the
 next calls to the API when required. This is the recommended way to iterate
 through a large number of items:

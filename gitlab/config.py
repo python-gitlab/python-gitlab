@@ -163,3 +163,9 @@ class GitlabConfigParser(object):
                 pass
         if self.per_page is not None and not 0 <= self.per_page <= 100:
             raise GitlabDataError("Unsupported per_page number: %s" % self.per_page)
+
+        self.pagination = None
+        try:
+            self.pagination = self._config.get(self.gitlab_id, "pagination")
+        except Exception:
+            pass

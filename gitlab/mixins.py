@@ -120,6 +120,10 @@ class ListMixin(object):
         if self.gitlab.per_page:
             data.setdefault("per_page", self.gitlab.per_page)
 
+        # global keyset pagination
+        if self.gitlab.pagination:
+            data.setdefault("pagination", self.gitlab.pagination)
+
         # We get the attributes that need some special transformation
         types = getattr(self, "_types", {})
         if types:
