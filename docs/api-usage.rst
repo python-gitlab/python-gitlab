@@ -225,8 +225,8 @@ order options. At the time of writing, only ``order_by="id"`` works.
 
 .. code-block:: python
 
-   gl = gitlab.Gitlab(url, token, pagination="keyset", per_page=100)
-   gl.projects.list(order_by="id")
+   gl = gitlab.Gitlab(url, token, pagination="keyset", order_by="id", per_page=100)
+   gl.projects.list()
 
 Reference:
 https://docs.gitlab.com/ce/api/README.html#keyset-based-pagination

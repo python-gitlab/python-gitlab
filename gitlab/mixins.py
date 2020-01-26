@@ -124,6 +124,9 @@ class ListMixin(object):
         if self.gitlab.pagination:
             data.setdefault("pagination", self.gitlab.pagination)
 
+        if self.gitlab.order_by:
+            data.setdefault("order_by", self.gitlab.order_by)
+
         # We get the attributes that need some special transformation
         types = getattr(self, "_types", {})
         if types:

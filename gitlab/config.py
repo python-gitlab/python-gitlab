@@ -169,3 +169,9 @@ class GitlabConfigParser(object):
             self.pagination = self._config.get(self.gitlab_id, "pagination")
         except Exception:
             pass
+
+        self.order_by = None
+        try:
+            self.order_by = self._config.get(self.gitlab_id, "order_by")
+        except Exception:
+            pass
