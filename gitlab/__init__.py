@@ -60,8 +60,6 @@ class Gitlab(object):
         private_token (str): The user private token
         oauth_token (str): An oauth token
         job_token (str): A CI job token
-        email (str): The user email or login.
-        password (str): The user password (associated with email).
         ssl_verify (bool|str): Whether SSL certificates should be validated. If
             the value is a string, it is the path to a CA file used for
             certificate validation.
@@ -211,9 +209,7 @@ class Gitlab(object):
         )
 
     def auth(self):
-        """Performs an authentication.
-
-        Uses either the private token, or the email/password pair.
+        """Performs an authentication using private token.
 
         The `user` attribute will hold a `gitlab.objects.CurrentUser` object on
         success.
