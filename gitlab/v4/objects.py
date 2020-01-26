@@ -268,6 +268,13 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
         "statistics",
         "with_issues_enabled",
         "with_merge_requests_enabled",
+        "with_custom_attributes",
+        "with_programming_language",
+        "wiki_checksum_failed",
+        "repository_checksum_failed",
+        "min_access_level",
+        "id_after",
+        "id_before",
     )
 
     def list(self, **kwargs):
@@ -1192,12 +1199,16 @@ class GroupProjectManager(ListMixin, RESTManager):
         "order_by",
         "sort",
         "search",
-        "ci_enabled_first",
         "simple",
         "owned",
         "starred",
         "with_custom_attributes",
         "include_subgroups",
+        "with_issues_enabled",
+        "with_merge_requests_enabled",
+        "with_shared",
+        "min_access_level",
+        "with_security_reports",
     )
 
 
