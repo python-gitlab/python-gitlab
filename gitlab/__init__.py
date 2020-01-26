@@ -69,6 +69,8 @@ class Gitlab(object):
         http_username (str): Username for HTTP authentication
         http_password (str): Password for HTTP authentication
         api_version (str): Gitlab API version to use (support for 4 only)
+        pagination (str): Can be set to 'keyset' to use keyset pagination
+        order_by (str): Set order_by globally
     """
 
     def __init__(
@@ -84,6 +86,8 @@ class Gitlab(object):
         api_version="4",
         session=None,
         per_page=None,
+        pagination=None,
+        order_by=None,
     ):
 
         self._api_version = str(api_version)
@@ -109,6 +113,8 @@ class Gitlab(object):
         self.session = session or requests.Session()
 
         self.per_page = per_page
+        self.pagination = pagination
+        self.order_by = order_by
 
         objects = importlib.import_module("gitlab.v%s.objects" % self._api_version)
         self._objects = objects
@@ -200,6 +206,8 @@ class Gitlab(object):
             http_password=config.http_password,
             api_version=config.api_version,
             per_page=config.per_page,
+            pagination=config.pagination,
+            order_by=config.order_by,
         )
 
     def auth(self):
