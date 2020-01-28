@@ -22,7 +22,7 @@ import asyncio
 
 from gitlab.base import *  # noqa
 from gitlab import cli
-from gitlab.exceptions import exc  # noqa
+from gitlab.exceptions import *  # noqa
 from gitlab.mixins import *  # noqa
 from gitlab import types
 from gitlab import utils
@@ -3701,7 +3701,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
     def raw(
         self, file_path, ref, streamed=False, action=None, chunk_size=1024, **kwargs
     ):
-        loop = async.get_event_loop()
+        loop = asyncio.get_event_loop()
         return loop.run_until_complete(
             self.async_raw(
                 file_path, ref, streamed=False, action=None, chunck_size=1024, **kwargs

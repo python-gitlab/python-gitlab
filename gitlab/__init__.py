@@ -650,14 +650,18 @@ class Gitlab(object):
         url = self._build_url(path)
 
         if get_all is True and as_list is True:
-            return list(GitlabList(self, url, query_data, **kwargs))
+            return list(await GitlabList(self, url, query_data, **kwargs).__setup__())
 
         if "page" in kwargs or as_list is True:
             # pagination requested, we return a list
-            return list(GitlabList(self, url, query_data, get_next=False, **kwargs))
+            return list(
+                await GitlabList(
+                    self, url, query_data, get_next=False, **kwargs
+                ).__setup__()
+            )
 
         # No pagination, generator requested
-        return GitlabList(self, url, query_data, **kwargs)
+        return await GitlabList(self, url, query_data, **kwargs).__setup__()
 
     async def http_post(
         self, path, query_data=None, post_data=None, files=None, **kwargs
@@ -779,10 +783,15 @@ class GitlabList(object):
     the API again when needed.
     """
 
-    async def __init__(self, gl, url, query_data, get_next=True, **kwargs):
+    def __init__(self, gl, url, query_data, get_next=True, **kwargs):
         self._gl = gl
-        await self._query(url, query_data, **kwargs)
+        self.url = url
+        self.query_data = query_data
+        self.kwargs = kwargs
         self._get_next = get_next
+
+        async def __setup__(self):
+            await self._query(self.url, self.query_data, **self.kwargs)
 
     async def _query(self, url, query_data=None, **kwargs):
         query_data = query_data or {}
