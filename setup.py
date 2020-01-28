@@ -25,7 +25,7 @@ setup(
     license="LGPLv3",
     url="https://github.com/python-gitlab/python-gitlab",
     packages=find_packages(),
-    install_requires=["httpx"],
+    install_requires=["httpx>=0.11.1"],
     python_requires=">=3.6.0",
     entry_points={"console_scripts": ["gitlab = gitlab.cli:main"]},
     classifiers=[
