@@ -27,10 +27,17 @@ import asyncio
 
 import gitlab.config
 from gitlab.const import *  # noqa
-from gitlab.exceptions import (on_http_error, GitlabVerifyError,
-                               GitlabMarkdownError, GitlabLicenseError, RedirectError,
-                               GitlabHttpError, GitlabAuthenticationError,
-                               GitlabParsingError, GitlabSearchError)
+from gitlab.exceptions import (
+    on_http_error,
+    GitlabVerifyError,
+    GitlabMarkdownError,
+    GitlabLicenseError,
+    RedirectError,
+    GitlabHttpError,
+    GitlabAuthenticationError,
+    GitlabParsingError,
+    GitlabSearchError,
+)
 from gitlab import utils  # noqa
 
 __title__ = "python-gitlab"
@@ -572,7 +579,9 @@ class Gitlab(object):
                 response_body=result.content,
             )
 
-    async def http_get(self, path, query_data=None, streamed=False, raw=False, **kwargs):
+    async def http_get(
+        self, path, query_data=None, streamed=False, raw=False, **kwargs
+    ):
         """Make a GET request to the Gitlab server.
 
         Args:
@@ -650,8 +659,9 @@ class Gitlab(object):
         # No pagination, generator requested
         return GitlabList(self, url, query_data, **kwargs)
 
-    async def http_post(self, path, query_data=None,
-                        post_data=None, files=None, **kwargs):
+    async def http_post(
+        self, path, query_data=None, post_data=None, files=None, **kwargs
+    ):
         """Make a POST request to the Gitlab server.
 
         Args:
@@ -689,8 +699,9 @@ class Gitlab(object):
             raise GitlabParsingError(error_message="Failed to parse the server message")
         return result
 
-    async def http_put(self, path, query_data=None,
-                       post_data=None, files=None, **kwargs):
+    async def http_put(
+        self, path, query_data=None, post_data=None, files=None, **kwargs
+    ):
         """Make a PUT request to the Gitlab server.
 
         Args:
@@ -775,10 +786,9 @@ class GitlabList(object):
 
     async def _query(self, url, query_data=None, **kwargs):
         query_data = query_data or {}
-        result = await self._gl.http_request("get",
-                                             url,
-                                             query_data=query_data,
-                                             **kwargs)
+        result = await self._gl.http_request(
+            "get", url, query_data=query_data, **kwargs
+        )
         try:
             self._next_url = result.links["next"]["url"]
         except KeyError:

@@ -728,7 +728,9 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
 
     def set(self, name, value, feature_group=None, user=None, **kwargs):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_set(name, value, feature_group, user, **kwargs))
+        return loop.run_until_complete(
+            self.async_set(name, value, feature_group, user, **kwargs)
+        )
 
 
 class Gitignore(RESTObject):
@@ -1376,7 +1378,9 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     def delete_ldap_group_link(self, cn, provider=None, **kwargs):
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.async_delete_ldap_group_link(cn, provider, **kwargs))
+        loop.run_until_complete(
+            self.async_delete_ldap_group_link(cn, provider, **kwargs)
+        )
 
     @cli.register_custom_action("Group")
     @exc.on_http_error(exc.GitlabCreateError)
@@ -1567,7 +1571,9 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("Snippet")
     @exc.on_http_error(exc.GitlabGetError)
-    async def async_content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+    async def async_content(
+        self, streamed=False, action=None, chunk_size=1024, **kwargs
+    ):
         """Return the content of a snippet.
 
         Args:
@@ -1594,7 +1600,9 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
     def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_content(streamed, action, chunk_size, **kwargs))
+        return loop.run_until_complete(
+            self.async_content(streamed, action, chunk_size, **kwargs)
+        )
 
 
 class SnippetManager(CRUDMixin, RESTManager):
@@ -1716,7 +1724,9 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
         "ProjectBranch", tuple(), ("developers_can_push", "developers_can_merge")
     )
     @exc.on_http_error(exc.GitlabProtectError)
-    async def async_protect(self, developers_can_push=False, developers_can_merge=False, **kwargs):
+    async def async_protect(
+        self, developers_can_push=False, developers_can_merge=False, **kwargs
+    ):
         """Protect the branch.
 
         Args:
@@ -1948,7 +1958,9 @@ class ProjectJob(RESTObject, RefreshMixin):
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
-    async def async_artifacts(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+    async def async_artifacts(
+        self, streamed=False, action=None, chunk_size=1024, **kwargs
+    ):
         """Get the job artifacts.
 
         Args:
@@ -1975,11 +1987,15 @@ class ProjectJob(RESTObject, RefreshMixin):
 
     async def artifacts(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_artifacts(streamed, action, chunk_size, **kwargs))
+        return loop.run_until_complete(
+            self.async_artifacts(streamed, action, chunk_size, **kwargs)
+        )
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
-    async def async_artifact(self, path, streamed=False, action=None, chunk_size=1024, **kwargs):
+    async def async_artifact(
+        self, path, streamed=False, action=None, chunk_size=1024, **kwargs
+    ):
         """Get a single artifact file from within the job's artifacts archive.
 
         Args:
@@ -2007,7 +2023,9 @@ class ProjectJob(RESTObject, RefreshMixin):
 
     def artifact(self, path, streamed=False, action=None, chunk_size=1024, **kwargs):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_artifact(path, streamed, action, chunk_size, **kwargs))
+        return loop.run_until_complete(
+            self.async_artifact(path, streamed, action, chunk_size, **kwargs)
+        )
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
@@ -2038,7 +2056,9 @@ class ProjectJob(RESTObject, RefreshMixin):
 
     def trace(self, streamed, action, chunk_size, **kwargs):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_trace(streamed, action, chunk_size, **kwargs))
+        return loop.run_until_complete(
+            self.async_trace(streamed, action, chunk_size, **kwargs)
+        )
 
 
 class ProjectJobManager(RetrieveMixin, RESTManager):
@@ -2575,7 +2595,9 @@ class ProjectIssue(
         """
         path = "%s/%s/move" % (self.manager.path, self.get_id())
         data = {"to_project_id": to_project_id}
-        server_data = await self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        server_data = await self.manager.gitlab.http_post(
+            path, post_data=data, **kwargs
+        )
         self._update_attrs(server_data)
 
     def move(self, to_project_id, **kwargs):
@@ -2808,7 +2830,9 @@ class ProjectTag(ObjectDeleteMixin, RESTObject):
 
     def set_release_description(self, description, **kwargs):
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.async_set_release_description(description, **kwargs))
+        loop.run_until_complete(
+            self.async_set_release_description(description, **kwargs)
+        )
 
 
 class ProjectTagManager(NoUpdateMixin, RESTManager):
@@ -2842,7 +2866,9 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
     _update_uses_post = True
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    async def async_set_approvers(self, approver_ids=None, approver_group_ids=None, **kwargs):
+    async def async_set_approvers(
+        self, approver_ids=None, approver_group_ids=None, **kwargs
+    ):
         """Change MR-level allowed approvers and approver groups.
 
         Args:
@@ -2862,7 +2888,9 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
 
     def set_approvers(self, approver_id=None, approver_group_ids=None, **kwargs):
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.async_set_approvers(approver_id, approver_group_ids, **kwargs))
+        loop.run_until_complete(
+            self.async_set_approvers(approver_id, approver_group_ids, **kwargs)
+        )
 
 
 class ProjectMergeRequestAwardEmoji(ObjectDeleteMixin, RESTObject):
@@ -3006,7 +3034,9 @@ class ProjectMergeRequest(
 
     def cancel_merge_when_pipeline_succeeds(self, **kwargs):
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.async_cancel_merge_when_pipeline_succeeds(**kwargs))
+        loop.run_until_complete(
+            self.async_cancel_merge_when_pipeline_succeeds(**kwargs)
+        )
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
@@ -3130,7 +3160,9 @@ class ProjectMergeRequest(
         if sha:
             data["sha"] = sha
 
-        server_data = await self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        server_data = await self.manager.gitlab.http_post(
+            path, post_data=data, **kwargs
+        )
         self._update_attrs(server_data)
 
     def approve(self, sha=None, **kwargs):
@@ -3152,7 +3184,9 @@ class ProjectMergeRequest(
         path = "%s/%s/unapprove" % (self.manager.path, self.get_id())
         data = {}
 
-        server_data = await self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        server_data = await self.manager.gitlab.http_post(
+            path, post_data=data, **kwargs
+        )
         self._update_attrs(server_data)
 
     def unapprove(self, **kwargs):
@@ -3222,17 +3256,22 @@ class ProjectMergeRequest(
         server_data = await self.manager.gitlab.http_put(path, post_data=data, **kwargs)
         self._update_attrs(server_data)
 
-    def merge(self,
-              merge_commit_message=None,
-              should_remove_source_branch=False,
-              merge_when_pipeline_succeeds=False,
-              **kwargs
+    def merge(
+        self,
+        merge_commit_message=None,
+        should_remove_source_branch=False,
+        merge_when_pipeline_succeeds=False,
+        **kwargs
     ):
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.async_merge(merge_commit_message,
-                                                 should_remove_source_branch,
-                                                 merge_when_pipeline_succeeds,
-                                                 **kwargs))
+        loop.run_until_complete(
+            self.async_merge(
+                merge_commit_message,
+                should_remove_source_branch,
+                merge_when_pipeline_succeeds,
+                **kwargs
+            )
+        )
 
 
 class ProjectMergeRequestManager(CRUDMixin, RESTManager):
@@ -3622,7 +3661,9 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
 
     def delete(self, file_path, branch, commit_message, **kwargs):
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.async_delete(file_path, branch, commit_message, **kwargs))
+        loop.run_until_complete(
+            self.async_delete(file_path, branch, commit_message, **kwargs)
+        )
 
     @cli.register_custom_action("ProjectFileManager", ("file_path", "ref"))
     @exc.on_http_error(exc.GitlabGetError)
@@ -3661,9 +3702,11 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         self, file_path, ref, streamed=False, action=None, chunk_size=1024, **kwargs
     ):
         loop = async.get_event_loop()
-        return loop.run_until_complete(self.async_raw(
-            file_path, ref, streamed=False, action=None, chunck_size=1024, **kwargs
-        ))
+        return loop.run_until_complete(
+            self.async_raw(
+                file_path, ref, streamed=False, action=None, chunck_size=1024, **kwargs
+            )
+        )
 
     @cli.register_custom_action("ProjectFileManager", ("file_path", "ref"))
     @exc.on_http_error(exc.GitlabListError)
@@ -3970,7 +4013,9 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
 
     @cli.register_custom_action("ProjectSnippet")
     @exc.on_http_error(exc.GitlabGetError)
-    async def async_content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+    async def async_content(
+        self, streamed=False, action=None, chunk_size=1024, **kwargs
+    ):
         """Return the content of a snippet.
 
         Args:
@@ -3997,7 +4042,9 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
 
     def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_content(streamed, action, chunk_size, **kwargs))
+        return loop.run_until_complete(
+            self.async_content(streamed, action, chunk_size, **kwargs)
+        )
 
 
 class ProjectSnippetManager(CRUDMixin, RESTManager):
@@ -4211,7 +4258,9 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _update_uses_post = True
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    async def async_set_approvers(self, approver_ids=None, approver_group_ids=None, **kwargs):
+    async def async_set_approvers(
+        self, approver_ids=None, approver_group_ids=None, **kwargs
+    ):
         """Change project-level allowed approvers and approver groups.
 
         Args:
@@ -4231,7 +4280,9 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
 
     def set_approvers(self, approver_ids=None, approver_group_ids=None, **kwargs):
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.async_set_approvers(approver_ids, approver_group_ids, **kwargs))
+        loop.run_until_complete(
+            self.async_set_approvers(approver_ids, approver_group_ids, **kwargs)
+        )
 
 
 class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -4310,7 +4361,9 @@ class ProjectExport(RefreshMixin, RESTObject):
 
     @cli.register_custom_action("ProjectExport")
     @exc.on_http_error(exc.GitlabGetError)
-    async def async_download(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+    async def async_download(
+        self, streamed=False, action=None, chunk_size=1024, **kwargs
+    ):
         """Download the archive of a project export.
 
         Args:
@@ -4451,7 +4504,9 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     def update_submodule(self, submodule, branch, commit_sha, **kwargs):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_update_submodule(submodule, branch, commit_sha, **kwargs))
+        return loop.run_until_complete(
+            self.async_update_submodule(submodule, branch, commit_sha, **kwargs)
+        )
 
     @cli.register_custom_action("Project", tuple(), ("path", "ref", "recursive"))
     @exc.on_http_error(exc.GitlabGetError)
@@ -4482,11 +4537,15 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             query_data["path"] = path
         if ref:
             query_data["ref"] = ref
-        return await self.manager.gitlab.http_list(gl_path, query_data=query_data, **kwargs)
+        return await self.manager.gitlab.http_list(
+            gl_path, query_data=query_data, **kwargs
+        )
 
     def repository_tree(self, path="", ref="", recursive=False, **kwargs):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_repository_tree(path, ref, recursive, **kwargs))
+        return loop.run_until_complete(
+            self.async_repository_tree(path, ref, recursive, **kwargs)
+        )
 
     @cli.register_custom_action("Project", ("sha",))
     @exc.on_http_error(exc.GitlabGetError)
@@ -4546,7 +4605,9 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         self, sha, streamed=False, action=None, chunk_size=1024, **kwargs
     ):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_repository_raw_blob(sha, streamed, action, chunk_size, **kwargs))
+        return loop.run_until_complete(
+            self.async_repository_raw_blob(sha, streamed, action, chunk_size, **kwargs)
+        )
 
     @cli.register_custom_action("Project", ("from_", "to"))
     @exc.on_http_error(exc.GitlabGetError)
@@ -4571,7 +4632,9 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     def repository_compare(self, from_, to, **kwargs):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_repository_compare(from_, to, **kwargs))
+        return loop.run_until_complete(
+            self.async_repository_compare(from_, to, **kwargs)
+        )
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabGetError)
@@ -4633,9 +4696,13 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         )
         return utils.response_content(result, streamed, action, chunk_size)
 
-    def repository_archive(self, sha=None, streamed=False, action=None, chunk_size=1024, **kwargs):
+    def repository_archive(
+        self, sha=None, streamed=False, action=None, chunk_size=1024, **kwargs
+    ):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_repository_archive(sha, streamed, action, chunk_size,**kwargs))
+        return loop.run_until_complete(
+            self.async_repository_archive(sha, streamed, action, chunk_size, **kwargs)
+        )
 
     @cli.register_custom_action("Project", ("forked_from_id",))
     @exc.on_http_error(exc.GitlabCreateError)
@@ -4751,7 +4818,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         self._update_attrs(server_data)
 
     def unstar(self, **kwargs):
-        loop =asyncio.get_event_loop()
+        loop = asyncio.get_event_loop()
         loop.run_until_complete(self.async_unstar(**kwargs))
 
     @cli.register_custom_action("Project")
@@ -4790,9 +4857,9 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         server_data = await self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
-    def unarchive(self, kwargs**):
+    def unarchive(self, **kwargs):
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.async_unarchive(kwargs**))
+        loop.run_until_complete(self.async_unarchive(**kwargs))
 
     @cli.register_custom_action(
         "Project", ("group_id", "group_access"), ("expires_at",)
@@ -4820,7 +4887,9 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     def share(self, group_id, group_access, expires_at=None, **kwargs):
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.async_share(group_id, group_access, expires_at, **kwargs))
+        loop.run_until_complete(
+            self.async_share(group_id, group_access, expires_at, **kwargs)
+        )
 
     @cli.register_custom_action("Project", ("group_id",))
     @exc.on_http_error(exc.GitlabDeleteError)
@@ -4868,7 +4937,9 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     def trigger_pipeline(self, ref, token, variables=None, **kwargs):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_trigger_pipeline(ref, token, variables, **kwargs))
+        return loop.run_until_complete(
+            self.async_trigger_pipeline(ref, token, variables, **kwargs)
+        )
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabHousekeepingError)
@@ -4937,7 +5008,9 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     def upload(self, filename, filedata=None, filepath=None, **kwargs):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_upload(filename, filedata, filepath, **kwargs))
+        return loop.run_until_complete(
+            self.async_upload(filename, filedata, filepath, **kwargs)
+        )
 
     @cli.register_custom_action("Project", optional=("wiki",))
     @exc.on_http_error(exc.GitlabGetError)
@@ -4973,7 +5046,9 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         self, wiki=False, streamed=False, action=None, chunk_size=1024, **kwargs
     ):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_snapshot(wiki, streamed, action, chunk_size, **kwargs))
+        return loop.run_until_complete(
+            self.async_snapshot(wiki, streamed, action, chunk_size, **kwargs)
+        )
 
     @cli.register_custom_action("Project", ("scope", "search"))
     @exc.on_http_error(exc.GitlabSearchError)
@@ -5039,8 +5114,8 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         )
 
     def transfer_project(self, to_namespace, **kwargs):
-            loop = asyncio.get_event_loop()
-            loop.run_until_complete(self.async_transfer_project(to_namespace, **kwargs))
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.async_transfer_project(to_namespace, **kwargs))
 
     @cli.register_custom_action("Project", ("ref_name", "artifact_path", "job"))
     @exc.on_http_error(exc.GitlabGetError)
@@ -5098,8 +5173,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         **kwargs
     ):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_artifact(ref_name, artifact_path, job, streamed,
-        action, chunk_size, **kwargs))
+        return loop.run_until_complete(
+            self.async_artifact(
+                ref_name, artifact_path, job, streamed, action, chunk_size, **kwargs
+            )
+        )
 
 
 class ProjectManager(CRUDMixin, RESTManager):
@@ -5228,8 +5306,11 @@ class ProjectManager(CRUDMixin, RESTManager):
         **kwargs
     ):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_import_project(file, path, namespace,
-        override, override_params, **kwargs))
+        return loop.run_until_complete(
+            self.async_import_project(
+                file, path, namespace, override, override_params, **kwargs
+            )
+        )
 
     async def async_import_github(
         self, personal_access_token, repo_id, target_namespace, new_name=None, **kwargs
@@ -5298,8 +5379,11 @@ class ProjectManager(CRUDMixin, RESTManager):
         self, personal_access_token, repo_id, target_namespace, new_name=None, **kwargs
     ):
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.async_import_github(personal_access_token,
-        repo_id, target_namespace, new_name, **kwargs))
+        return loop.run_until_complete(
+            self.async_import_github(
+                personal_access_token, repo_id, target_namespace, new_name, **kwargs
+            )
+        )
 
 
 class RunnerJob(RESTObject):

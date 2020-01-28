@@ -80,6 +80,7 @@ class GetWithoutIdMixin(object):
         loop = asyncio.get_event_loop()
         return loop.run_until_complete(self.async_get(id, **kwargs))
 
+
 class RefreshMixin(object):
     @exc.on_http_error(exc.GitlabGetError)
     async def async_refresh(self, **kwargs):
@@ -217,8 +218,9 @@ class CreateMixin(object):
 
         # Handle specific URL for creation
         path = kwargs.pop("path", self.path)
-        server_data = await self.gitlab.http_post(path, post_data=data,
-                                                  files=files, **kwargs)
+        server_data = await self.gitlab.http_post(
+            path, post_data=data, files=files, **kwargs
+        )
         return self._obj_cls(self, server_data)
 
     def create(self, data, **kwargs):
