@@ -56,5 +56,5 @@ Change project-level or MR-level MR allowed approvers::
 	project.approvals.set_approvers(approver_ids=[105],
                                     approver_group_ids=[653, 654])
 
-	mr.approvals.set_approvers(approver_ids=[105],
+	mr.approvals.set_approvers(approvals_required = 1, approver_ids=[105],
                                approver_group_ids=[653, 654])

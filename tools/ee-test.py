@@ -37,7 +37,7 @@ approval.reset_approvals_on_push = not v
 approval.save()
 approval = project1.approvals.get()
 assert v != approval.reset_approvals_on_push
-project1.approvals.set_approvers([1], [])
+project1.approvals.set_approvers(1, [1], [])
 approval = project1.approvals.get()
 assert approval.approvers[0]["user"]["id"] == 1
 
@@ -50,7 +50,7 @@ approval.approvals_required = 3
 approval.save()
 approval = mr.approvals.get()
 assert approval.approvals_required == 3
-mr.approvals.set_approvers([1], [])
+mr.approvals.set_approvers(1, [1], [])
 approval = mr.approvals.get()
 assert approval.approvers[0]["user"]["id"] == 1
 
