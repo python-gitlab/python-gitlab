@@ -48,8 +48,7 @@ Change project-level or MR-level MR approvals settings::
     p_mras.approvals_before_merge = 2
     p_mras.save()
 
-    mr_mras.approvals_before_merge = 2
-    mr_mras.save()
+    mr_mras.set_approvers(approvals_required = 1)
 
 Change project-level or MR-level MR allowed approvers::
 
