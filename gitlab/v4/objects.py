@@ -414,6 +414,7 @@ class UserManager(CRUDMixin, RESTManager):
         "search",
         "custom_attributes",
         "status",
+        "two_factor",
     )
     _create_attrs = (
         tuple(),
@@ -438,6 +439,8 @@ class UserManager(CRUDMixin, RESTManager):
             "organization",
             "location",
             "avatar",
+            "public_email",
+            "private_profile",
         ),
     )
     _update_attrs = (
@@ -459,6 +462,8 @@ class UserManager(CRUDMixin, RESTManager):
             "organization",
             "location",
             "avatar",
+            "public_email",
+            "private_profile",
         ),
     )
     _types = {"confirm": types.LowercaseStringAttribute, "avatar": types.ImageAttribute}
