@@ -760,6 +760,7 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
             "group": group,
             "project": project,
         }
+        data = utils.remove_none_from_dict(data)
         server_data = self.gitlab.http_post(path, post_data=data, **kwargs)
         return self._obj_cls(self, server_data)
 

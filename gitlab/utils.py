@@ -55,3 +55,7 @@ def sanitized_url(url):
     parsed = urlparse(url)
     new_path = parsed.path.replace(".", "%2E")
     return parsed._replace(path=new_path).geturl()
+
+
+def remove_none_from_dict(data):
+    return {k: v for k, v in data.items() if v is not None}
