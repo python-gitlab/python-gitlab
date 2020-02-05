@@ -24,6 +24,8 @@ Create or set a feature::
 
     feature = gl.features.set(feature_name, True)
     feature = gl.features.set(feature_name, 30)
+    feature = gl.features.set(feature_name, True, user=filipowm)
+    feature = gl.features.set(feature_name, 40, group=mygroup)
 
 Delete a feature::
 
