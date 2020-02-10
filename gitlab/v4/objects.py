@@ -724,7 +724,16 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
     _obj_cls = Feature
 
     @exc.on_http_error(exc.GitlabSetError)
-    def set(self, name, value, feature_group=None, user=None, **kwargs):
+    def set(
+        self,
+        name,
+        value,
+        feature_group=None,
+        user=None,
+        group=None,
+        project=None,
+        **kwargs
+    ):
         """Create or update the object.
 
         Args:
@@ -732,6 +741,8 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
             value (bool/int): The value to set for the object
             feature_group (str): A feature group name
             user (str): A GitLab username
+            group (str): A GitLab group
+            project (str): A GitLab project in form group/project
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -742,7 +753,14 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
             obj: The created/updated attribute
         """
         path = "%s/%s" % (self.path, name.replace("/", "%2F"))
-        data = {"value": value, "feature_group": feature_group, "user": user}
+        data = {
+            "value": value,
+            "feature_group": feature_group,
+            "user": user,
+            "group": group,
+            "project": project,
+        }
+        data = utils.remove_none_from_dict(data)
         server_data = self.gitlab.http_post(path, post_data=data, **kwargs)
         return self._obj_cls(self, server_data)
 
