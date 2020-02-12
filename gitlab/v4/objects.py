@@ -2708,10 +2708,13 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
     _update_uses_post = True
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def set_approvers(self, approver_ids=None, approver_group_ids=None, **kwargs):
+    def set_approvers(
+        self, approvals_required, approver_ids=None, approver_group_ids=None, **kwargs
+    ):
         """Change MR-level allowed approvers and approver groups.
 
         Args:
+            approvals_required (integer): The number of required approvals for this rule
             approver_ids (list): User IDs that can approve MRs
             approver_group_ids (list): Group IDs whose members can approve MRs
 
@@ -2722,8 +2725,16 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
         approver_ids = approver_ids or []
         approver_group_ids = approver_group_ids or []
 
-        path = "%s/%s/approvers" % (self._parent.manager.path, self._parent.get_id())
-        data = {"approver_ids": approver_ids, "approver_group_ids": approver_group_ids}
+        path = "%s/%s/approval_rules" % (
+            self._parent.manager.path,
+            self._parent.get_id(),
+        )
+        data = {
+            "approvals_required": approvals_required,
+            "rule_type": "regular",
+            "user_ids": approver_ids,
+            "group_ids": approver_group_ids,
+        }
         self.gitlab.http_put(path, post_data=data, **kwargs)
 
 
