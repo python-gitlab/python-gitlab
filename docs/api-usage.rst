@@ -206,8 +206,8 @@ parameter to get all the items when using listing methods:
 
 .. warning::
 
-   The all=True option uses keyset pagination by default, if order_by="id"
-   or if order_by is not supplied.
+   The all=True option uses keyset pagination by default if order_by is not supplied,
+   or if order_by="id".
 
 .. code-block:: python
 
@@ -396,4 +396,3 @@ parameter to that API invocation:
 
    gl = gitlab.gitlab(url, token, api_version=4)
    gl.projects.import_github(ACCESS_TOKEN, 123456, "root", timeout=120.0)
-
