@@ -4528,6 +4528,30 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         post_data = {"ref": ref, "token": token, "variables": variables}
         attrs = self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
         return ProjectPipeline(self.pipelines, attrs)
+    
+    # variables not supported in CLI
+    @cli.register_custom_action("Project", ("ref", "token"))
+    @exc.on_http_error(exc.GitlabCreateError)
+    def trigger_merge_request_pipeline(self, mr_id, token, variables=None, **kwargs):
+        """Trigger a merge request CI build.
+
+        See https://docs.gitlab.com/ee/api/merge_requests.html#create-mr-pipeline
+
+        Args:
+            mr_id (str): Merge request Id. 
+            token (str): The trigger token
+            variables (dict): Variables passed to the build script
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server failed to perform the request
+        """
+        variables = variables or {}
+        path = "/projects/%s/merge_requests/%s/pipeline" % (project.get_id(), mr_id)
+        post_data = {"token": token, "variables": variables}
+        attrs = self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)         
+        return ProjectPipeline(self.pipelines, attrs)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabHousekeepingError)
