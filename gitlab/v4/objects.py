@@ -4548,7 +4548,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabCreateError: If the server failed to perform the request
         """
         variables = variables or {}
-        path = "/projects/%s/merge_requests/%s/pipeline" % (project.get_id(), mr_id)
+        path = "/projects/%s/merge_requests/%s/pipelines" % (project.get_id(), mr_id)
         post_data = {"token": token, "variables": variables}
         attrs = self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)         
         return ProjectPipeline(self.pipelines, attrs)
