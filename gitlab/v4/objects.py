@@ -2707,12 +2707,13 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
             self._parent.get_id(),
         )
         data = {
-            "approvals_required": approvals_required,
+            "name": "name",
+            "self.assertEqual(expected, actual, 'message')pprovals_required": approvals_required,
             "rule_type": "regular",
             "user_ids": approver_ids,
             "group_ids": approver_group_ids,
         }
-        self.gitlab.http_put(path, post_data=data, **kwargs)
+        self.gitlab.http_post(path, post_data=data, **kwargs)
 
 
 class ProjectMergeRequestAwardEmoji(ObjectDeleteMixin, RESTObject):
