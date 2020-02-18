@@ -794,6 +794,58 @@ class TestGitlab(unittest.TestCase):
             self.gl.users.get(1, lazy=True).activate()
             self.gl.users.get(1, lazy=True).deactivate()
 
+    def test_commit_revert(self):
+        @urlmatch(
+            scheme="http", netloc="localhost", path="/api/v4/projects/1$", method="get"
+        )
+        def resp_get_project(url, request):
+            headers = {"content-type": "application/json"}
+            content = '{"name": "name", "id": 1}'.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/projects/1/repository/commits/6b2257ea",
+            method="get",
+        )
+        def resp_get_commit(url, request):
+            headers = {"content-type": "application/json"}
+            content = """{
+            "id": "6b2257eabcec3db1f59dafbd84935e3caea04235",
+            "short_id": "6b2257ea",
+            "title": "Initial commit"
+            }"""
+            content = content.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/projects/1/repository/commits/6b2257ea",
+            method="post",
+        )
+        def resp_revert_commit(url, request):
+            headers = {"content-type": "application/json"}
+            content = """{
+            "id": "8b090c1b79a14f2bd9e8a738f717824ff53aebad",
+            "short_id": "8b090c1b",
+            "title":"Revert \\"Initial commit\\""
+            }"""
+            content = content.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_get_project, resp_get_commit):
+            project = self.gl.projects.get(1)
+            commit = project.commits.get("6b2257ea")
+            self.assertEqual(commit.short_id, "6b2257ea")
+            self.assertEqual(commit.title, "Initial commit")
+
+        with HTTMock(resp_revert_commit):
+            revert_commit = commit.revert(branch="master")
+            self.assertEqual(revert_commit["short_id"], "8b090c1b")
+            self.assertEqual(revert_commit["title"], 'Revert "Initial commit"')
+
     def test_update_submodule(self):
         @urlmatch(
             scheme="http", netloc="localhost", path="/api/v4/projects/1$", method="get"
