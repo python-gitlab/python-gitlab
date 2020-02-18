@@ -466,8 +466,9 @@ discussion = commit.discussions.get(discussion.id)
 commit.revert(branch="master")
 revert_commit = admin_project.commits.list()[0]
 
-expected_message = "Revert \"{}\"\n\nThis reverts commit {}".format(
-    commit.message, commit.id)
+expected_message = 'Revert "{}"\n\nThis reverts commit {}'.format(
+    commit.message, commit.id
+)
 assert revert_commit.message == expected_message
 
 try:

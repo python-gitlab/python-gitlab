@@ -2153,6 +2153,7 @@ class ProjectCommit(RESTObject):
         post_data = {"branch": branch}
         self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
+
 class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
     _path = "/projects/%(project_id)s/repository/commits"
     _obj_cls = ProjectCommit
