@@ -2136,6 +2136,22 @@ class ProjectCommit(RESTObject):
         path = "%s/%s/merge_requests" % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)
 
+    @cli.register_custom_action("ProjectCommit", ("branch",))
+    @exc.on_http_error(exc.GitlabRevertError)
+    def revert(self, branch, **kwargs):
+        """Revert a commit on a given branch.
+
+        Args:
+            branch (str): Name of target branch
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabRevertError: If the revert could not be performed
+        """
+        path = "%s/%s/revert" % (self.manager.path, self.get_id())
+        post_data = {"branch": branch}
+        self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
 class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
     _path = "/projects/%(project_id)s/repository/commits"
