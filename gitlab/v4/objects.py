@@ -2148,10 +2148,13 @@ class ProjectCommit(RESTObject):
         Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabRevertError: If the revert could not be performed
+
+        Returns:
+            dict: The new commit data (*not* a RESTObject)
         """
         path = "%s/%s/revert" % (self.manager.path, self.get_id())
         post_data = {"branch": branch}
-        self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        return self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
 
 class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
