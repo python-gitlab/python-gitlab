@@ -796,14 +796,6 @@ class TestGitlab(unittest.TestCase):
 
     def test_commit_revert(self):
         @urlmatch(
-            scheme="http", netloc="localhost", path="/api/v4/projects/1$", method="get"
-        )
-        def resp_get_project(url, request):
-            headers = {"content-type": "application/json"}
-            content = '{"name": "name", "id": 1}'.encode("utf-8")
-            return response(200, content, headers, None, 5, request)
-
-        @urlmatch(
             scheme="http",
             netloc="localhost",
             path="/api/v4/projects/1/repository/commits/6b2257ea",
@@ -835,7 +827,7 @@ class TestGitlab(unittest.TestCase):
             content = content.encode("utf-8")
             return response(200, content, headers, None, 5, request)
 
-        with HTTMock(resp_get_project, resp_get_commit):
+        with HTTMock(resp_get_commit):
             project = self.gl.projects.get(1, lazy=True)
             commit = project.commits.get("6b2257ea")
             self.assertEqual(commit.short_id, "6b2257ea")
