@@ -56,7 +56,7 @@ nxs4TLO3kZjUTgWKdhpgRNF5hwaz51ZjpebaRf/ZqRuNyX4lIRolDxzOn/+O1o8L
 qG2ZdhHHmSK2LaQLFiSprUkikStNU9BqSQ==
 =5OGa
 -----END PGP PUBLIC KEY BLOCK-----"""
-AVATAR_PATH = os.path.join(os.path.dirname(__file__), "avatar.png")
+AVATAR_PATH = os.path.join(os.path.dirname(__file__), "data", "avatar.png")
 
 
 # token authentication from config file

@@ -18,4 +18,4 @@ setenv_script=$(dirname "$0")/build_test_env.sh || exit 1
 BUILD_TEST_ENV_AUTO_CLEANUP=true
 . "$setenv_script" "$@" || exit 1
 
-try python "$(dirname "$0")"/python_test_v${API_VER}.py
+try python "$(dirname "$0")"/../tests/functional/test_api_v${API_VER}.py
