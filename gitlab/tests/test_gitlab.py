@@ -164,14 +164,6 @@ class TestGitlab(unittest.TestCase):
             api_version=4,
         )
 
-    def test_pickability(self):
-        original_gl_objects = self.gl._objects
-        pickled = pickle.dumps(self.gl)
-        unpickled = pickle.loads(pickled)
-        self.assertIsInstance(unpickled, Gitlab)
-        self.assertTrue(hasattr(unpickled, "_objects"))
-        self.assertEqual(unpickled._objects, original_gl_objects)
-
     def _default_config(self):
         fd, temp_path = tempfile.mkstemp()
         os.write(fd, valid_config)
