@@ -221,13 +221,13 @@ class Gitlab(object):
             order_by=config.order_by,
         )
 
-    def auth(self):
+    async def auth(self):
         """Performs an authentication using private token.
 
         The `user` attribute will hold a `gitlab.objects.CurrentUser` object on
         success.
         """
-        self.user = self._objects.CurrentUserManager(self).get()
+        self.user = await self._objects.CurrentUserManager(self).get()
 
     def version(self):
         """Returns the version and revision of the gitlab server.

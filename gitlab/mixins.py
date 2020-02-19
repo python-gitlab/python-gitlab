@@ -46,8 +46,8 @@ class GetMixin(object):
         path = "%s/%s" % (self.path, id)
         if lazy is True:
             return self._obj_cls(self, {self._obj_cls._id_attr: id})
-        server_data = self.gitlab.http_get(path, **kwargs)
-        return await self._obj_cls(self, server_data)
+        server_data = await self.gitlab.http_get(path, **kwargs)
+        return self._obj_cls(self, server_data)
 
 
 class GetWithoutIdMixin(object):
@@ -65,10 +65,10 @@ class GetWithoutIdMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        server_data = self.gitlab.http_get(self.path, **kwargs)
+        server_data = await self.gitlab.http_get(self.path, **kwargs)
         if server_data is None:
             return None
-        return await self._obj_cls(self, server_data)
+        return self._obj_cls(self, server_data)
 
 
 class RefreshMixin(object):
