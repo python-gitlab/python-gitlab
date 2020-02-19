@@ -1,6 +1,5 @@
 import pytest
 import respx
-from httpx import status_codes
 from httpx.status_codes import StatusCode
 
 from gitlab import Gitlab, GitlabList

@@ -16,21 +16,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import json
 import os
 import pickle
 import tempfile
-import json
 import unittest
 
+import requests
 from httmock import HTTMock  # noqa
 from httmock import response  # noqa
 from httmock import urlmatch  # noqa
-import requests
 
 import gitlab
 from gitlab import *  # noqa
 from gitlab.v4.objects import *  # noqa
-
 
 valid_config = b"""[global]
 default = one
@@ -56,86 +55,6 @@ class TestSanitize(unittest.TestCase):
         source = {"url": "foo/bar", "id": 1}
         expected = {"url": "foo%2Fbar", "id": 1}
         self.assertEqual(expected, gitlab._sanitize(source))
-
-
-class TestGitlabList(unittest.TestCase):
-    def setUp(self):
-        self.gl = Gitlab(
-            "http://localhost", private_token="private_token", api_version=4
-        )
-
-    def test_build_list(self):
-        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/tests", method="get")
-        def resp_1(url, request):
-            headers = {
-                "content-type": "application/json",
-                "X-Page": 1,
-                "X-Next-Page": 2,
-                "X-Per-Page": 1,
-                "X-Total-Pages": 2,
-                "X-Total": 2,
-                "Link": (
-                    "<http://localhost/api/v4/tests?per_page=1&page=2>;" ' rel="next"'
-                ),
-            }
-            content = '[{"a": "b"}]'
-            return response(200, content, headers, None, 5, request)
-
-        @urlmatch(
-            scheme="http",
-            netloc="localhost",
-            path="/api/v4/tests",
-            method="get",
-            query=r".*page=2",
-        )
-        def resp_2(url, request):
-            headers = {
-                "content-type": "application/json",
-                "X-Page": 2,
-                "X-Next-Page": 2,
-                "X-Per-Page": 1,
-                "X-Total-Pages": 2,
-                "X-Total": 2,
-            }
-            content = '[{"c": "d"}]'
-            return response(200, content, headers, None, 5, request)
-
-        with HTTMock(resp_1):
-            obj = self.gl.http_list("/tests", as_list=False)
-            self.assertEqual(len(obj), 2)
-            self.assertEqual(
-                obj._next_url, "http://localhost/api/v4/tests?per_page=1&page=2"
-            )
-            self.assertEqual(obj.current_page, 1)
-            self.assertEqual(obj.prev_page, None)
-            self.assertEqual(obj.next_page, 2)
-            self.assertEqual(obj.per_page, 1)
-            self.assertEqual(obj.total_pages, 2)
-            self.assertEqual(obj.total, 2)
-
-            with HTTMock(resp_2):
-                l = list(obj)
-                self.assertEqual(len(l), 2)
-                self.assertEqual(l[0]["a"], "b")
-                self.assertEqual(l[1]["c"], "d")
-
-    def test_all_omitted_when_as_list(self):
-        @urlmatch(scheme="http", netloc="localhost", path="/api/v4/tests", method="get")
-        def resp(url, request):
-            headers = {
-                "content-type": "application/json",
-                "X-Page": 2,
-                "X-Next-Page": 2,
-                "X-Per-Page": 1,
-                "X-Total-Pages": 2,
-                "X-Total": 2,
-            }
-            content = '[{"c": "d"}]'
-            return response(200, content, headers, None, 5, request)
-
-        with HTTMock(resp):
-            result = self.gl.http_list("/tests", as_list=False, all=True)
-            self.assertIsInstance(result, GitlabList)
 
 
 class TestGitlabHttpMethods(unittest.TestCase):
