@@ -22,8 +22,9 @@ import asyncio
 import importlib
 import warnings
 
-import gitlab.config
 import httpx
+
+import gitlab.config
 from gitlab import utils  # noqa
 from gitlab.const import *  # noqa
 from gitlab.exceptions import *  # noqa
@@ -622,13 +623,15 @@ class Gitlab(object):
         url = self._build_url(path)
 
         if get_all is True and as_list is True:
-            return list(await GitlabList.create(self, url, query_data, **kwargs))
+            gitlab_list = await GitlabList.create(self, url, query_data, **kwargs)
+            return await gitlab_list.as_list()
 
         if "page" in kwargs or as_list is True:
             # pagination requested, we return a list
-            return list(
-                await GitlabList.create(self, url, query_data, get_next=False, **kwargs)
+            gitlab_list = await GitlabList.create(
+                self, url, query_data, get_next=False, **kwargs
             )
+            return await gitlab_list.as_list()
 
         # No pagination, generator requested
         return await GitlabList.create(self, url, query_data, **kwargs)
@@ -825,10 +828,13 @@ class GitlabList(object):
         """The total number of items."""
         return int(self._total)
 
-    async def __aiter__(self):
-        return await self
+    def __aiter__(self):
+        return self
 
     async def __anext__(self):
+        return await self.next()
+
+    async def next(self):
         try:
             item = self._data[self._current]
             self._current += 1
@@ -844,3 +850,7 @@ class GitlabList(object):
 
     def __len__(self):
         return int(self._total)
+
+    async def as_list(self):
+        # since list() does not support async way
+        return [o async for o in self]
