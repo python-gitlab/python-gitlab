@@ -141,19 +141,12 @@ while :; do
     sleep 1
     docker top gitlab-test >/dev/null 2>&1 || fatal "docker failed to start"
     sleep 4
-    # last command started by the container is "gitlab-ctl tail"
-    docker exec gitlab-test pgrep -f 'gitlab-ctl tail' &>/dev/null \
-    && docker exec gitlab-test curl http://localhost/-/health 2>/dev/null \
-        | grep -q 'GitLab OK' \
-    && curl -s http://localhost:8080/users/sign_in 2>/dev/null \
-        | grep -q "GitLab Community Edition" \
+    docker logs gitlab-test 2>&1 | grep "gitlab Reconfigured!" \
     && break
     I=$((I+5))
+    log "Waiting for GitLab to reconfigure.. (${I}s)"
     [ "$I" -lt 180 ] || fatal "timed out"
 done
-
-log "Pausing to give GitLab some time to finish starting up..."
-sleep 200
 
 # Get the token
 TOKEN=$($(dirname $0)/generate_token.py)
