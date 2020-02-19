@@ -836,7 +836,7 @@ class TestGitlab(unittest.TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_get_project, resp_get_commit):
-            project = self.gl.projects.get(1)
+            project = self.gl.projects.get(1, lazy=True)
             commit = project.commits.get("6b2257ea")
             self.assertEqual(commit.short_id, "6b2257ea")
             self.assertEqual(commit.title, "Initial commit")
