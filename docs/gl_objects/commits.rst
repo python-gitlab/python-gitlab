@@ -72,6 +72,10 @@ Cherry-pick a commit into another branch::
 
     commit.cherry_pick(branch='target_branch')
 
+Revert a commit on a given branch::
+
+    commit.revert(branch='target_branch')
+
 Get the references the commit has been pushed to (branches and tags)::
 
     commit.refs()  # all references

@@ -100,6 +100,15 @@ testcase "merge request validation" '
         --iid "$MR_ID" >/dev/null 2>&1
 '
 
+# Test revert commit
+COMMITS=$(GITLAB -v project-commit list --project-id "${PROJECT_ID}")
+COMMIT_ID=$(pecho "${COMMITS}" | grep -m1 '^id:' | cut -d' ' -f2)
+
+testcase "revert commit" '
+    GITLAB project-commit revert --project-id "$PROJECT_ID" \
+        --id "$COMMIT_ID" --branch master
+'
+
 # Test project labels
 testcase "create project label" '
     OUTPUT=$(GITLAB -v project-label create --project-id $PROJECT_ID \

@@ -462,6 +462,21 @@ d_note_from_get.delete()
 discussion = commit.discussions.get(discussion.id)
 # assert len(discussion.attributes["notes"]) == 1
 
+# Revert commit
+revert_commit = commit.revert(branch="master")
+
+expected_message = 'Revert "{}"\n\nThis reverts commit {}'.format(
+    commit.message, commit.id
+)
+assert revert_commit["message"] == expected_message
+
+try:
+    commit.revert(branch="master")
+    # Only here to really ensure expected error without a full test framework
+    raise AssertionError("Two revert attempts should raise GitlabRevertError")
+except gitlab.GitlabRevertError:
+    pass
+
 # housekeeping
 admin_project.housekeeping()
 
