@@ -4830,7 +4830,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             dict: A representation of the import status.
         """
         files = {"file": ("file.tar.gz", file)}
-        data = {"path": path, "overwrite": overwrite}
+        data = {"path": path, "overwrite": "true" if overwrite else "false"}
         if override_params:
             for k, v in override_params.items():
                 data["override_params[%s]" % k] = v
