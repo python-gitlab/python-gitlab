@@ -1,8 +1,8 @@
+import asyncio
 import base64
 import os
-import time
 
-import requests
+import httpx
 
 import gitlab
 
@@ -59,911 +59,945 @@ qG2ZdhHHmSK2LaQLFiSprUkikStNU9BqSQ==
 AVATAR_PATH = os.path.join(os.path.dirname(__file__), "avatar.png")
 
 
-# token authentication from config file
-gl = gitlab.Gitlab.from_config(config_files=["/tmp/python-gitlab.cfg"])
-gl.auth()
-assert isinstance(gl.user, gitlab.v4.objects.CurrentUser)
+async def main():
+    # token authentication from config file
+    gl = gitlab.Gitlab.from_config(config_files=["/tmp/python-gitlab.cfg"])
+    gl.enable_debug()
+    await gl.auth()
+    assert isinstance(gl.user, gitlab.v4.objects.CurrentUser)
 
-# markdown
-html = gl.markdown("foo")
-assert "foo" in html
+    # markdown
+    html = await gl.markdown("foo")
+    assert "foo" in html
 
-success, errors = gl.lint("Invalid")
-assert success is False
-assert errors
+    success, errors = await gl.lint("Invalid")
+    assert success is False
+    assert errors
 
-# sidekiq
-out = gl.sidekiq.queue_metrics()
-assert isinstance(out, dict)
-assert "pages" in out["queues"]
-out = gl.sidekiq.process_metrics()
-assert isinstance(out, dict)
-assert "hostname" in out["processes"][0]
-out = gl.sidekiq.job_stats()
-assert isinstance(out, dict)
-assert "processed" in out["jobs"]
-out = gl.sidekiq.compound_metrics()
-assert isinstance(out, dict)
-assert "jobs" in out
-assert "processes" in out
-assert "queues" in out
+    # sidekiq
+    out = await gl.sidekiq.queue_metrics()
+    assert isinstance(out, dict)
+    assert "pages" in out["queues"]
+    out = await gl.sidekiq.process_metrics()
+    assert isinstance(out, dict)
+    assert "hostname" in out["processes"][0]
+    out = await gl.sidekiq.job_stats()
+    assert isinstance(out, dict)
+    assert "processed" in out["jobs"]
+    out = await gl.sidekiq.compound_metrics()
+    assert isinstance(out, dict)
+    assert "jobs" in out
+    assert "processes" in out
+    assert "queues" in out
 
-# settings
-settings = gl.settings.get()
-settings.default_projects_limit = 42
-settings.save()
-settings = gl.settings.get()
-assert settings.default_projects_limit == 42
+    # settings
+    settings = await gl.settings.get()
+    settings.default_projects_limit = 42
+    await settings.save()
+    settings = await gl.settings.get()
+    assert settings.default_projects_limit == 42
 
-# users
-new_user = gl.users.create(
-    {
-        "email": "foo@bar.com",
-        "username": "foo",
-        "name": "foo",
-        "password": "foo_password",
-        "avatar": open(AVATAR_PATH, "rb"),
-    }
-)
-avatar_url = new_user.avatar_url.replace("gitlab.test", "localhost:8080")
-uploaded_avatar = requests.get(avatar_url).content
-assert uploaded_avatar == open(AVATAR_PATH, "rb").read()
-users_list = gl.users.list()
-for user in users_list:
-    if user.username == "foo":
-        break
-assert new_user.username == user.username
-assert new_user.email == user.email
+    # users
+    new_user = await gl.users.create(
+        {
+            "email": "foo@bar.com",
+            "username": "foo",
+            "name": "foo",
+            "password": "foo_password",
+            "avatar": open(AVATAR_PATH, "rb"),
+        }
+    )
+    avatar_url = new_user.avatar_url.replace("gitlab.test", "localhost:8080")
+    uploaded_avatar = httpx.get(avatar_url).content
+    assert uploaded_avatar == open(AVATAR_PATH, "rb").read()
+    users_list = await gl.users.list()
+    for user in users_list:
+        if user.username == "foo":
+            break
+    assert new_user.username == user.username
+    assert new_user.email == user.email
 
-new_user.block()
-new_user.unblock()
+    await new_user.block()
+    await new_user.unblock()
 
-# user projects list
-assert len(new_user.projects.list()) == 0
+    # user projects list
+    assert len(await new_user.projects.list()) == 0
 
-# events list
-new_user.events.list()
+    # events list
+    await new_user.events.list()
 
-foobar_user = gl.users.create(
-    {
-        "email": "foobar@example.com",
-        "username": "foobar",
-        "name": "Foo Bar",
-        "password": "foobar_password",
-    }
-)
+    foobar_user = await gl.users.create(
+        {
+            "email": "foobar@example.com",
+            "username": "foobar",
+            "name": "Foo Bar",
+            "password": "foobar_password",
+        }
+    )
 
-assert gl.users.list(search="foobar")[0].id == foobar_user.id
-expected = [new_user, foobar_user]
-actual = list(gl.users.list(search="foo"))
-assert len(expected) == len(actual)
-assert len(gl.users.list(search="asdf")) == 0
-foobar_user.bio = "This is the user bio"
-foobar_user.save()
+    assert (await gl.users.list(search="foobar"))[0].id == foobar_user.id
+    expected = [new_user, foobar_user]
+    actual = list(await gl.users.list(search="foo"))
+    assert len(expected) == len(actual)
+    assert len(await gl.users.list(search="asdf")) == 0
+    foobar_user.bio = "This is the user bio"
+    await foobar_user.save()
 
-# GPG keys
-gkey = new_user.gpgkeys.create({"key": GPG_KEY})
-assert len(new_user.gpgkeys.list()) == 1
-# Seems broken on the gitlab side
-# gkey = new_user.gpgkeys.get(gkey.id)
-gkey.delete()
-assert len(new_user.gpgkeys.list()) == 0
+    # GPG keys
+    gkey = await new_user.gpgkeys.create({"key": GPG_KEY})
+    assert len(await new_user.gpgkeys.list()) == 1
+    # Seems broken on the gitlab side
+    # gkey = new_user.gpgkeys.get(gkey.id)
+    await gkey.delete()
+    assert len(await new_user.gpgkeys.list()) == 0
 
-# SSH keys
-key = new_user.keys.create({"title": "testkey", "key": SSH_KEY})
-assert len(new_user.keys.list()) == 1
-key.delete()
-assert len(new_user.keys.list()) == 0
+    # SSH keys
+    key = await new_user.keys.create({"title": "testkey", "key": SSH_KEY})
+    assert len(await new_user.keys.list()) == 1
+    await key.delete()
+    assert len(await new_user.keys.list()) == 0
 
-# emails
-email = new_user.emails.create({"email": "foo2@bar.com"})
-assert len(new_user.emails.list()) == 1
-email.delete()
-assert len(new_user.emails.list()) == 0
+    # emails
+    email = await new_user.emails.create({"email": "foo2@bar.com"})
+    assert len(await new_user.emails.list()) == 1
+    await email.delete()
+    assert len(await new_user.emails.list()) == 0
 
-# custom attributes
-attrs = new_user.customattributes.list()
-assert len(attrs) == 0
-attr = new_user.customattributes.set("key", "value1")
-assert len(gl.users.list(custom_attributes={"key": "value1"})) == 1
-assert attr.key == "key"
-assert attr.value == "value1"
-assert len(new_user.customattributes.list()) == 1
-attr = new_user.customattributes.set("key", "value2")
-attr = new_user.customattributes.get("key")
-assert attr.value == "value2"
-assert len(new_user.customattributes.list()) == 1
-attr.delete()
-assert len(new_user.customattributes.list()) == 0
+    # custom attributes
+    attrs = await new_user.customattributes.list()
+    assert len(attrs) == 0
+    attr = await new_user.customattributes.set("key", "value1")
+    assert len(await gl.users.list(custom_attributes={"key": "value1"})) == 1
+    assert attr.key == "key"
+    assert attr.value == "value1"
+    assert len(await new_user.customattributes.list()) == 1
+    attr = await new_user.customattributes.set("key", "value2")
+    attr = await new_user.customattributes.get("key")
+    assert attr.value == "value2"
+    assert len(await new_user.customattributes.list()) == 1
+    await attr.delete()
+    assert len(await new_user.customattributes.list()) == 0
 
-# impersonation tokens
-user_token = new_user.impersonationtokens.create(
-    {"name": "token1", "scopes": ["api", "read_user"]}
-)
-l = new_user.impersonationtokens.list(state="active")
-assert len(l) == 1
-user_token.delete()
-l = new_user.impersonationtokens.list(state="active")
-assert len(l) == 0
-l = new_user.impersonationtokens.list(state="inactive")
-assert len(l) == 1
+    # impersonation tokens
+    user_token = await new_user.impersonationtokens.create(
+        {"name": "token1", "scopes": ["api", "read_user"]}
+    )
+    l = await new_user.impersonationtokens.list(state="active")
+    assert len(l) == 1
+    await user_token.delete()
+    l = await new_user.impersonationtokens.list(state="active")
+    assert len(l) == 0
+    l = await new_user.impersonationtokens.list(state="inactive")
+    assert len(l) == 1
 
-new_user.delete()
-foobar_user.delete()
-assert len(gl.users.list()) == 3 + len(
-    [u for u in gl.users.list() if u.username == "ghost"]
-)
+    await new_user.delete()
+    await foobar_user.delete()
+    assert len(await gl.users.list()) == 3 + len(
+        [u for u in await gl.users.list() if u.username == "ghost"]
+    )
 
-# current user mail
-mail = gl.user.emails.create({"email": "current@user.com"})
-assert len(gl.user.emails.list()) == 1
-mail.delete()
-assert len(gl.user.emails.list()) == 0
+    # current user mail
+    mail = await gl.user.emails.create({"email": "current@user.com"})
+    assert len(await gl.user.emails.list()) == 1
+    await mail.delete()
+    assert len(await gl.user.emails.list()) == 0
 
-# current user GPG keys
-gkey = gl.user.gpgkeys.create({"key": GPG_KEY})
-assert len(gl.user.gpgkeys.list()) == 1
-# Seems broken on the gitlab side
-gkey = gl.user.gpgkeys.get(gkey.id)
-gkey.delete()
-assert len(gl.user.gpgkeys.list()) == 0
+    # current user GPG keys
+    gkey = await gl.user.gpgkeys.create({"key": GPG_KEY})
+    assert len(await gl.user.gpgkeys.list()) == 1
+    # Seems broken on the gitlab side
+    gkey = await gl.user.gpgkeys.get(gkey.id)
+    await gkey.delete()
+    assert len(await gl.user.gpgkeys.list()) == 0
 
-# current user key
-key = gl.user.keys.create({"title": "testkey", "key": SSH_KEY})
-assert len(gl.user.keys.list()) == 1
-key.delete()
-assert len(gl.user.keys.list()) == 0
+    # current user key
+    key = await gl.user.keys.create({"title": "testkey", "key": SSH_KEY})
+    assert len(await gl.user.keys.list()) == 1
+    await key.delete()
+    assert len(await gl.user.keys.list()) == 0
 
-# templates
-assert gl.dockerfiles.list()
-dockerfile = gl.dockerfiles.get("Node")
-assert dockerfile.content is not None
+    # templates
+    assert await gl.dockerfiles.list()
+    dockerfile = await gl.dockerfiles.get("Node")
+    assert dockerfile.content is not None
 
-assert gl.gitignores.list()
-gitignore = gl.gitignores.get("Node")
-assert gitignore.content is not None
+    assert await gl.gitignores.list()
+    gitignore = await gl.gitignores.get("Node")
+    assert gitignore.content is not None
 
-assert gl.gitlabciymls.list()
-gitlabciyml = gl.gitlabciymls.get("Nodejs")
-assert gitlabciyml.content is not None
+    assert await gl.gitlabciymls.list()
+    gitlabciyml = await gl.gitlabciymls.get("Nodejs")
+    assert gitlabciyml.content is not None
 
-assert gl.licenses.list()
-license = gl.licenses.get(
-    "bsd-2-clause", project="mytestproject", fullname="mytestfullname"
-)
-assert "mytestfullname" in license.content
+    assert await gl.licenses.list()
+    license = await gl.licenses.get(
+        "bsd-2-clause", project="mytestproject", fullname="mytestfullname"
+    )
+    assert "mytestfullname" in license.content
 
-# groups
-user1 = gl.users.create(
-    {
-        "email": "user1@test.com",
-        "username": "user1",
-        "name": "user1",
-        "password": "user1_pass",
-    }
-)
-user2 = gl.users.create(
-    {
-        "email": "user2@test.com",
-        "username": "user2",
-        "name": "user2",
-        "password": "user2_pass",
-    }
-)
-group1 = gl.groups.create({"name": "group1", "path": "group1"})
-group2 = gl.groups.create({"name": "group2", "path": "group2"})
+    # groups
+    user1 = await gl.users.create(
+        {
+            "email": "user1@test.com",
+            "username": "user1",
+            "name": "user1",
+            "password": "user1_pass",
+        }
+    )
+    user2 = await gl.users.create(
+        {
+            "email": "user2@test.com",
+            "username": "user2",
+            "name": "user2",
+            "password": "user2_pass",
+        }
+    )
+    group1 = await gl.groups.create({"name": "group1", "path": "group1"})
+    group2 = await gl.groups.create({"name": "group2", "path": "group2"})
 
-p_id = gl.groups.list(search="group2")[0].id
-group3 = gl.groups.create({"name": "group3", "path": "group3", "parent_id": p_id})
+    p_id = (await gl.groups.list(search="group2"))[0].id
+    group3 = await gl.groups.create(
+        {"name": "group3", "path": "group3", "parent_id": p_id}
+    )
 
-assert len(gl.groups.list()) == 3
-assert len(gl.groups.list(search="oup1")) == 1
-assert group3.parent_id == p_id
-assert group2.subgroups.list()[0].id == group3.id
+    assert len(await gl.groups.list()) == 3
+    assert len(await gl.groups.list(search="oup1")) == 1
+    assert group3.parent_id == p_id
+    assert (await group2.subgroups.list())[0].id == group3.id
 
-group1.members.create({"access_level": gitlab.const.OWNER_ACCESS, "user_id": user1.id})
-group1.members.create({"access_level": gitlab.const.GUEST_ACCESS, "user_id": user2.id})
+    await group1.members.create(
+        {"access_level": gitlab.const.OWNER_ACCESS, "user_id": user1.id}
+    )
+    await group1.members.create(
+        {"access_level": gitlab.const.GUEST_ACCESS, "user_id": user2.id}
+    )
 
-group2.members.create({"access_level": gitlab.const.OWNER_ACCESS, "user_id": user2.id})
+    await group2.members.create(
+        {"access_level": gitlab.const.OWNER_ACCESS, "user_id": user2.id}
+    )
 
-# Administrator belongs to the groups
-assert len(group1.members.list()) == 3
-assert len(group2.members.list()) == 2
+    # Administrator belongs to the groups
+    assert len(await group1.members.list()) == 3
+    assert len(await group2.members.list()) == 2
 
-group1.members.delete(user1.id)
-assert len(group1.members.list()) == 2
-assert len(group1.members.all())
-member = group1.members.get(user2.id)
-member.access_level = gitlab.const.OWNER_ACCESS
-member.save()
-member = group1.members.get(user2.id)
-assert member.access_level == gitlab.const.OWNER_ACCESS
+    await group1.members.delete(user1.id)
+    assert len(await group1.members.list()) == 2
+    assert len(await group1.members.all())
+    member = await group1.members.get(user2.id)
+    member.access_level = gitlab.const.OWNER_ACCESS
+    await member.save()
+    member = await group1.members.get(user2.id)
+    assert member.access_level == gitlab.const.OWNER_ACCESS
 
-group2.members.delete(gl.user.id)
+    await group2.members.delete(gl.user.id)
 
-# group custom attributes
-attrs = group2.customattributes.list()
-assert len(attrs) == 0
-attr = group2.customattributes.set("key", "value1")
-assert len(gl.groups.list(custom_attributes={"key": "value1"})) == 1
-assert attr.key == "key"
-assert attr.value == "value1"
-assert len(group2.customattributes.list()) == 1
-attr = group2.customattributes.set("key", "value2")
-attr = group2.customattributes.get("key")
-assert attr.value == "value2"
-assert len(group2.customattributes.list()) == 1
-attr.delete()
-assert len(group2.customattributes.list()) == 0
+    # group custom attributes
+    attrs = await group2.customattributes.list()
+    assert len(attrs) == 0
+    attr = await group2.customattributes.set("key", "value1")
+    assert len(await gl.groups.list(custom_attributes={"key": "value1"})) == 1
+    assert attr.key == "key"
+    assert attr.value == "value1"
+    assert len(await group2.customattributes.list()) == 1
+    attr = await group2.customattributes.set("key", "value2")
+    attr = await group2.customattributes.get("key")
+    assert attr.value == "value2"
+    assert len(await group2.customattributes.list()) == 1
+    await attr.delete()
+    assert len(await group2.customattributes.list()) == 0
 
-# group notification settings
-settings = group2.notificationsettings.get()
-settings.level = "disabled"
-settings.save()
-settings = group2.notificationsettings.get()
-assert settings.level == "disabled"
+    # group notification settings
+    settings = await group2.notificationsettings.get()
+    settings.level = "disabled"
+    await settings.save()
+    settings = await group2.notificationsettings.get()
+    assert settings.level == "disabled"
 
-# group badges
-badge_image = "http://example.com"
-badge_link = "http://example/img.svg"
-badge = group2.badges.create({"link_url": badge_link, "image_url": badge_image})
-assert len(group2.badges.list()) == 1
-badge.image_url = "http://another.example.com"
-badge.save()
-badge = group2.badges.get(badge.id)
-assert badge.image_url == "http://another.example.com"
-badge.delete()
-assert len(group2.badges.list()) == 0
+    # group badges
+    badge_image = "http://example.com"
+    badge_link = "http://example/img.svg"
+    badge = await group2.badges.create(
+        {"link_url": badge_link, "image_url": badge_image}
+    )
+    assert len(await group2.badges.list()) == 1
+    badge.image_url = "http://another.example.com"
+    await badge.save()
+    badge = await group2.badges.get(badge.id)
+    assert badge.image_url == "http://another.example.com"
+    await badge.delete()
+    assert len(await group2.badges.list()) == 0
 
-# group milestones
-gm1 = group1.milestones.create({"title": "groupmilestone1"})
-assert len(group1.milestones.list()) == 1
-gm1.due_date = "2020-01-01T00:00:00Z"
-gm1.save()
-gm1.state_event = "close"
-gm1.save()
-gm1 = group1.milestones.get(gm1.id)
-assert gm1.state == "closed"
-assert len(gm1.issues()) == 0
-assert len(gm1.merge_requests()) == 0
+    # group milestones
+    gm1 = await group1.milestones.create({"title": "groupmilestone1"})
+    assert len(await group1.milestones.list()) == 1
+    gm1.due_date = "2020-01-01T00:00:00Z"
+    await gm1.save()
+    gm1.state_event = "close"
+    await gm1.save()
+    gm1 = await group1.milestones.get(gm1.id)
+    assert gm1.state == "closed"
+    assert len(await gm1.issues()) == 0
+    assert len(await gm1.merge_requests()) == 0
 
-# group variables
-group1.variables.create({"key": "foo", "value": "bar"})
-g_v = group1.variables.get("foo")
-assert g_v.value == "bar"
-g_v.value = "baz"
-g_v.save()
-g_v = group1.variables.get("foo")
-assert g_v.value == "baz"
-assert len(group1.variables.list()) == 1
-g_v.delete()
-assert len(group1.variables.list()) == 0
+    # group variables
+    await group1.variables.create({"key": "foo", "value": "bar"})
+    g_v = await group1.variables.get("foo")
+    assert g_v.value == "bar"
+    g_v.value = "baz"
+    await g_v.save()
+    g_v = await group1.variables.get("foo")
+    assert g_v.value == "baz"
+    assert len(await group1.variables.list()) == 1
+    await g_v.delete()
+    assert len(await group1.variables.list()) == 0
 
-# group labels
-# group1.labels.create({"name": "foo", "description": "bar", "color": "#112233"})
-# g_l = group1.labels.get("foo")
-# assert g_l.description == "bar"
-# g_l.description = "baz"
-# g_l.save()
-# g_l = group1.labels.get("foo")
-# assert g_l.description == "baz"
-# assert len(group1.labels.list()) == 1
-# g_l.delete()
-# assert len(group1.labels.list()) == 0
+    # group labels
+    # group1.labels.create({"name": "foo", "description": "bar", "color": "#112233"})
+    # g_l = group1.labels.get("foo")
+    # assert g_l.description == "bar"
+    # g_l.description = "baz"
+    # g_l.save()
+    # g_l = group1.labels.get("foo")
+    # assert g_l.description == "baz"
+    # assert len(group1.labels.list()) == 1
+    # g_l.delete()
+    # assert len(group1.labels.list()) == 0
 
-# hooks
-hook = gl.hooks.create({"url": "http://whatever.com"})
-assert len(gl.hooks.list()) == 1
-hook.delete()
-assert len(gl.hooks.list()) == 0
+    # hooks
+    hook = await gl.hooks.create({"url": "http://whatever.com"})
+    assert len(await gl.hooks.list()) == 1
+    await hook.delete()
+    assert len(await gl.hooks.list()) == 0
 
-# projects
-admin_project = gl.projects.create({"name": "admin_project"})
-gr1_project = gl.projects.create({"name": "gr1_project", "namespace_id": group1.id})
-gr2_project = gl.projects.create({"name": "gr2_project", "namespace_id": group2.id})
-sudo_project = gl.projects.create({"name": "sudo_project"}, sudo=user1.name)
+    # projects
+    admin_project = await gl.projects.create({"name": "admin_project"})
+    gr1_project = await gl.projects.create(
+        {"name": "gr1_project", "namespace_id": group1.id}
+    )
+    gr2_project = await gl.projects.create(
+        {"name": "gr2_project", "namespace_id": group2.id}
+    )
+    sudo_project = await gl.projects.create({"name": "sudo_project"}, sudo=user1.name)
 
-assert len(gl.projects.list(owned=True)) == 2
-assert len(gl.projects.list(search="admin")) == 1
+    assert len(await gl.projects.list(owned=True)) == 2
+    assert len(await gl.projects.list(search="admin")) == 1
 
-# test pagination
-l1 = gl.projects.list(per_page=1, page=1)
-l2 = gl.projects.list(per_page=1, page=2)
-assert len(l1) == 1
-assert len(l2) == 1
-assert l1[0].id != l2[0].id
+    # test pagination
+    l1 = await gl.projects.list(per_page=1, page=1)
+    l2 = await gl.projects.list(per_page=1, page=2)
+    assert len(l1) == 1
+    assert len(l2) == 1
+    assert l1[0].id != l2[0].id
 
-# group custom attributes
-attrs = admin_project.customattributes.list()
-assert len(attrs) == 0
-attr = admin_project.customattributes.set("key", "value1")
-assert len(gl.projects.list(custom_attributes={"key": "value1"})) == 1
-assert attr.key == "key"
-assert attr.value == "value1"
-assert len(admin_project.customattributes.list()) == 1
-attr = admin_project.customattributes.set("key", "value2")
-attr = admin_project.customattributes.get("key")
-assert attr.value == "value2"
-assert len(admin_project.customattributes.list()) == 1
-attr.delete()
-assert len(admin_project.customattributes.list()) == 0
+    # group custom attributes
+    attrs = await admin_project.customattributes.list()
+    assert len(attrs) == 0
+    attr = await admin_project.customattributes.set("key", "value1")
+    assert len(await gl.projects.list(custom_attributes={"key": "value1"})) == 1
+    assert attr.key == "key"
+    assert attr.value == "value1"
+    assert len(await admin_project.customattributes.list()) == 1
+    attr = await admin_project.customattributes.set("key", "value2")
+    attr = await admin_project.customattributes.get("key")
+    assert attr.value == "value2"
+    assert len(await admin_project.customattributes.list()) == 1
+    await attr.delete()
+    assert len(await admin_project.customattributes.list()) == 0
 
-# project pages domains
-domain = admin_project.pagesdomains.create({"domain": "foo.domain.com"})
-assert len(admin_project.pagesdomains.list()) == 1
-assert len(gl.pagesdomains.list()) == 1
-domain = admin_project.pagesdomains.get("foo.domain.com")
-assert domain.domain == "foo.domain.com"
-domain.delete()
-assert len(admin_project.pagesdomains.list()) == 0
+    # project pages domains
+    domain = await admin_project.pagesdomains.create({"domain": "foo.domain.com"})
+    assert len(await admin_project.pagesdomains.list()) == 1
+    assert len(await gl.pagesdomains.list()) == 1
+    domain = await admin_project.pagesdomains.get("foo.domain.com")
+    assert domain.domain == "foo.domain.com"
+    await domain.delete()
+    assert len(await admin_project.pagesdomains.list()) == 0
 
-# project content (files)
-admin_project.files.create(
-    {
-        "file_path": "README",
+    # project content (files)
+    await admin_project.files.create(
+        {
+            "file_path": "README",
+            "branch": "master",
+            "content": "Initial content",
+            "commit_message": "Initial commit",
+        }
+    )
+    readme = await admin_project.files.get(file_path="README", ref="master")
+    readme.content = base64.b64encode(b"Improved README").decode()
+    await asyncio.sleep(2)
+    await readme.save(branch="master", commit_message="new commit")
+    await readme.delete(commit_message="Removing README", branch="master")
+
+    await admin_project.files.create(
+        {
+            "file_path": "README.rst",
+            "branch": "master",
+            "content": "Initial content",
+            "commit_message": "New commit",
+        }
+    )
+    readme = await admin_project.files.get(file_path="README.rst", ref="master")
+    # The first decode() is the ProjectFile method, the second one is the bytes
+    # object method
+    assert readme.decode().decode() == "Initial content"
+
+    blame = await admin_project.files.blame(file_path="README.rst", ref="master")
+
+    data = {
         "branch": "master",
-        "content": "Initial content",
-        "commit_message": "Initial commit",
+        "commit_message": "blah blah blah",
+        "actions": [{"action": "create", "file_path": "blah", "content": "blah"}],
     }
-)
-readme = admin_project.files.get(file_path="README", ref="master")
-readme.content = base64.b64encode(b"Improved README").decode()
-time.sleep(2)
-readme.save(branch="master", commit_message="new commit")
-readme.delete(commit_message="Removing README", branch="master")
+    await admin_project.commits.create(data)
+    assert "@@" in (await (await admin_project.commits.list())[0].diff())[0]["diff"]
 
-admin_project.files.create(
-    {
-        "file_path": "README.rst",
-        "branch": "master",
-        "content": "Initial content",
-        "commit_message": "New commit",
-    }
-)
-readme = admin_project.files.get(file_path="README.rst", ref="master")
-# The first decode() is the ProjectFile method, the second one is the bytes
-# object method
-assert readme.decode().decode() == "Initial content"
+    # commit status
+    commit = (await admin_project.commits.list())[0]
+    # size = len(commit.statuses.list())
+    # status = commit.statuses.create({"state": "success", "sha": commit.id})
+    # assert len(commit.statuses.list()) == size + 1
 
-blame = admin_project.files.blame(file_path="README.rst", ref="master")
+    # assert commit.refs()
+    # assert commit.merge_requests()
 
-data = {
-    "branch": "master",
-    "commit_message": "blah blah blah",
-    "actions": [{"action": "create", "file_path": "blah", "content": "blah"}],
-}
-admin_project.commits.create(data)
-assert "@@" in admin_project.commits.list()[0].diff()[0]["diff"]
+    # commit comment
+    await commit.comments.create({"note": "This is a commit comment"})
+    # assert len(commit.comments.list()) == 1
 
-# commit status
-commit = admin_project.commits.list()[0]
-# size = len(commit.statuses.list())
-# status = commit.statuses.create({"state": "success", "sha": commit.id})
-# assert len(commit.statuses.list()) == size + 1
+    # commit discussion
+    count = len(await commit.discussions.list())
+    discussion = await commit.discussions.create({"body": "Discussion body"})
+    # assert len(commit.discussions.list()) == (count + 1)
+    d_note = await discussion.notes.create({"body": "first note"})
+    d_note_from_get = await discussion.notes.get(d_note.id)
+    d_note_from_get.body = "updated body"
+    await d_note_from_get.save()
+    discussion = await commit.discussions.get(discussion.id)
+    # assert discussion.attributes["notes"][-1]["body"] == "updated body"
+    await d_note_from_get.delete()
+    discussion = await commit.discussions.get(discussion.id)
+    # assert len(discussion.attributes["notes"]) == 1
 
-# assert commit.refs()
-# assert commit.merge_requests()
+    # housekeeping
+    await admin_project.housekeeping()
 
-# commit comment
-commit.comments.create({"note": "This is a commit comment"})
-# assert len(commit.comments.list()) == 1
+    # repository
+    tree = await admin_project.repository_tree()
+    assert len(tree) != 0
+    assert tree[0]["name"] == "README.rst"
+    blob_id = tree[0]["id"]
+    blob = await admin_project.repository_raw_blob(blob_id)
+    assert blob.decode() == "Initial content"
+    archive1 = await admin_project.repository_archive()
+    archive2 = await admin_project.repository_archive("master")
+    assert archive1 == archive2
+    snapshot = await admin_project.snapshot()
 
-# commit discussion
-count = len(commit.discussions.list())
-discussion = commit.discussions.create({"body": "Discussion body"})
-# assert len(commit.discussions.list()) == (count + 1)
-d_note = discussion.notes.create({"body": "first note"})
-d_note_from_get = discussion.notes.get(d_note.id)
-d_note_from_get.body = "updated body"
-d_note_from_get.save()
-discussion = commit.discussions.get(discussion.id)
-# assert discussion.attributes["notes"][-1]["body"] == "updated body"
-d_note_from_get.delete()
-discussion = commit.discussions.get(discussion.id)
-# assert len(discussion.attributes["notes"]) == 1
+    # project file uploads
+    filename = "test.txt"
+    file_contents = "testing contents"
+    uploaded_file = await admin_project.upload(filename, file_contents)
+    assert uploaded_file["alt"] == filename
+    assert uploaded_file["url"].startswith("/uploads/")
+    assert uploaded_file["url"].endswith("/" + filename)
+    assert uploaded_file["markdown"] == "[{}]({})".format(
+        uploaded_file["alt"], uploaded_file["url"]
+    )
 
-# housekeeping
-admin_project.housekeeping()
+    # environments
+    await admin_project.environments.create(
+        {"name": "env1", "external_url": "http://fake.env/whatever"}
+    )
+    envs = await admin_project.environments.list()
+    assert len(envs) == 1
+    env = envs[0]
+    env.external_url = "http://new.env/whatever"
+    await env.save()
+    env = (await admin_project.environments.list())[0]
+    assert env.external_url == "http://new.env/whatever"
+    await env.stop()
+    await env.delete()
+    assert len(await admin_project.environments.list()) == 0
 
-# repository
-tree = admin_project.repository_tree()
-assert len(tree) != 0
-assert tree[0]["name"] == "README.rst"
-blob_id = tree[0]["id"]
-blob = admin_project.repository_raw_blob(blob_id)
-assert blob.decode() == "Initial content"
-archive1 = admin_project.repository_archive()
-archive2 = admin_project.repository_archive("master")
-assert archive1 == archive2
-snapshot = admin_project.snapshot()
+    # Project clusters
+    await admin_project.clusters.create(
+        {
+            "name": "cluster1",
+            "platform_kubernetes_attributes": {
+                "api_url": "http://url",
+                "token": "tokenval",
+            },
+        }
+    )
+    clusters = await admin_project.clusters.list()
+    assert len(clusters) == 1
+    cluster = clusters[0]
+    cluster.platform_kubernetes_attributes = {"api_url": "http://newurl"}
+    await cluster.save()
+    cluster = (await admin_project.clusters.list())[0]
+    assert cluster.platform_kubernetes["api_url"] == "http://newurl"
+    await cluster.delete()
+    assert len(await admin_project.clusters.list()) == 0
 
-# project file uploads
-filename = "test.txt"
-file_contents = "testing contents"
-uploaded_file = admin_project.upload(filename, file_contents)
-assert uploaded_file["alt"] == filename
-assert uploaded_file["url"].startswith("/uploads/")
-assert uploaded_file["url"].endswith("/" + filename)
-assert uploaded_file["markdown"] == "[{}]({})".format(
-    uploaded_file["alt"], uploaded_file["url"]
-)
+    # Group clusters
+    await group1.clusters.create(
+        {
+            "name": "cluster1",
+            "platform_kubernetes_attributes": {
+                "api_url": "http://url",
+                "token": "tokenval",
+            },
+        }
+    )
+    clusters = await group1.clusters.list()
+    assert len(clusters) == 1
+    cluster = clusters[0]
+    cluster.platform_kubernetes_attributes = {"api_url": "http://newurl"}
+    await cluster.save()
+    cluster = (await group1.clusters.list())[0]
+    assert cluster.platform_kubernetes["api_url"] == "http://newurl"
+    await cluster.delete()
+    assert len(await group1.clusters.list()) == 0
 
-# environments
-admin_project.environments.create(
-    {"name": "env1", "external_url": "http://fake.env/whatever"}
-)
-envs = admin_project.environments.list()
-assert len(envs) == 1
-env = envs[0]
-env.external_url = "http://new.env/whatever"
-env.save()
-env = admin_project.environments.list()[0]
-assert env.external_url == "http://new.env/whatever"
-env.stop()
-env.delete()
-assert len(admin_project.environments.list()) == 0
+    # project events
+    await admin_project.events.list()
 
-# Project clusters
-admin_project.clusters.create(
-    {
-        "name": "cluster1",
-        "platform_kubernetes_attributes": {
-            "api_url": "http://url",
-            "token": "tokenval",
-        },
-    }
-)
-clusters = admin_project.clusters.list()
-assert len(clusters) == 1
-cluster = clusters[0]
-cluster.platform_kubernetes_attributes = {"api_url": "http://newurl"}
-cluster.save()
-cluster = admin_project.clusters.list()[0]
-assert cluster.platform_kubernetes["api_url"] == "http://newurl"
-cluster.delete()
-assert len(admin_project.clusters.list()) == 0
+    # forks
+    fork = await admin_project.forks.create({"namespace": user1.username})
+    p = await gl.projects.get(fork.id)
+    assert p.forked_from_project["id"] == admin_project.id
 
-# Group clusters
-group1.clusters.create(
-    {
-        "name": "cluster1",
-        "platform_kubernetes_attributes": {
-            "api_url": "http://url",
-            "token": "tokenval",
-        },
-    }
-)
-clusters = group1.clusters.list()
-assert len(clusters) == 1
-cluster = clusters[0]
-cluster.platform_kubernetes_attributes = {"api_url": "http://newurl"}
-cluster.save()
-cluster = group1.clusters.list()[0]
-assert cluster.platform_kubernetes["api_url"] == "http://newurl"
-cluster.delete()
-assert len(group1.clusters.list()) == 0
+    forks = await admin_project.forks.list()
+    assert fork.id in map(lambda p: p.id, forks)
 
-# project events
-admin_project.events.list()
+    # project hooks
+    hook = await admin_project.hooks.create({"url": "http://hook.url"})
+    assert len(await admin_project.hooks.list()) == 1
+    hook.note_events = True
+    await hook.save()
+    hook = await admin_project.hooks.get(hook.id)
+    assert hook.note_events is True
+    await hook.delete()
 
-# forks
-fork = admin_project.forks.create({"namespace": user1.username})
-p = gl.projects.get(fork.id)
-assert p.forked_from_project["id"] == admin_project.id
+    # deploy keys
+    deploy_key = await admin_project.keys.create(
+        {"title": "foo@bar", "key": DEPLOY_KEY}
+    )
+    project_keys = list(await admin_project.keys.list())
+    assert len(project_keys) == 1
 
-forks = admin_project.forks.list()
-assert fork.id in map(lambda p: p.id, forks)
+    await sudo_project.keys.enable(deploy_key.id)
+    assert len(await sudo_project.keys.list()) == 1
+    await sudo_project.keys.delete(deploy_key.id)
+    assert len(await sudo_project.keys.list()) == 0
 
-# project hooks
-hook = admin_project.hooks.create({"url": "http://hook.url"})
-assert len(admin_project.hooks.list()) == 1
-hook.note_events = True
-hook.save()
-hook = admin_project.hooks.get(hook.id)
-assert hook.note_events is True
-hook.delete()
+    # labels
+    # label1 = admin_project.labels.create({"name": "label1", "color": "#778899"})
+    # label1 = admin_project.labels.list()[0]
+    # assert len(admin_project.labels.list()) == 1
+    # label1.new_name = "label1updated"
+    # label1.save()
+    # assert label1.name == "label1updated"
+    # label1.subscribe()
+    # assert label1.subscribed == True
+    # label1.unsubscribe()
+    # assert label1.subscribed == False
+    # label1.delete()
 
-# deploy keys
-deploy_key = admin_project.keys.create({"title": "foo@bar", "key": DEPLOY_KEY})
-project_keys = list(admin_project.keys.list())
-assert len(project_keys) == 1
+    # milestones
+    m1 = await admin_project.milestones.create({"title": "milestone1"})
+    assert len(await admin_project.milestones.list()) == 1
+    m1.due_date = "2020-01-01T00:00:00Z"
+    await m1.save()
+    m1.state_event = "close"
+    await m1.save()
+    m1 = await admin_project.milestones.get(m1.id)
+    assert m1.state == "closed"
+    assert len(await m1.issues()) == 0
+    assert len(await m1.merge_requests()) == 0
 
-sudo_project.keys.enable(deploy_key.id)
-assert len(sudo_project.keys.list()) == 1
-sudo_project.keys.delete(deploy_key.id)
-assert len(sudo_project.keys.list()) == 0
+    # issues
+    issue1 = await admin_project.issues.create(
+        {"title": "my issue 1", "milestone_id": m1.id}
+    )
+    issue2 = await admin_project.issues.create({"title": "my issue 2"})
+    issue3 = await admin_project.issues.create({"title": "my issue 3"})
+    assert len(await admin_project.issues.list()) == 3
+    issue3.state_event = "close"
+    await issue3.save()
+    assert len(await admin_project.issues.list(state="closed")) == 1
+    assert len(await admin_project.issues.list(state="opened")) == 2
+    assert len(await admin_project.issues.list(milestone="milestone1")) == 1
+    assert (await (await m1.issues()).next()).title == "my issue 1"
+    size = len(await issue1.notes.list())
+    note = await issue1.notes.create({"body": "This is an issue note"})
+    assert len(await issue1.notes.list()) == size + 1
+    emoji = await note.awardemojis.create({"name": "tractor"})
+    assert len(await note.awardemojis.list()) == 1
+    await emoji.delete()
+    assert len(await note.awardemojis.list()) == 0
+    await note.delete()
+    assert len(await issue1.notes.list()) == size
+    assert isinstance(await issue1.user_agent_detail(), dict)
 
-# labels
-# label1 = admin_project.labels.create({"name": "label1", "color": "#778899"})
-# label1 = admin_project.labels.list()[0]
-# assert len(admin_project.labels.list()) == 1
-# label1.new_name = "label1updated"
-# label1.save()
-# assert label1.name == "label1updated"
-# label1.subscribe()
-# assert label1.subscribed == True
-# label1.unsubscribe()
-# assert label1.subscribed == False
-# label1.delete()
+    assert (await issue1.user_agent_detail())["user_agent"]
+    assert await issue1.participants()
+    assert type(await issue1.closed_by()) == list
+    assert type(await issue1.related_merge_requests()) == list
 
-# milestones
-m1 = admin_project.milestones.create({"title": "milestone1"})
-assert len(admin_project.milestones.list()) == 1
-m1.due_date = "2020-01-01T00:00:00Z"
-m1.save()
-m1.state_event = "close"
-m1.save()
-m1 = admin_project.milestones.get(m1.id)
-assert m1.state == "closed"
-assert len(m1.issues()) == 0
-assert len(m1.merge_requests()) == 0
+    # issues labels and events
+    label2 = await admin_project.labels.create({"name": "label2", "color": "#aabbcc"})
+    issue1.labels = ["label2"]
+    await issue1.save()
+    events = await issue1.resourcelabelevents.list()
+    assert events
+    event = await issue1.resourcelabelevents.get(events[0].id)
+    assert event
 
-# issues
-issue1 = admin_project.issues.create({"title": "my issue 1", "milestone_id": m1.id})
-issue2 = admin_project.issues.create({"title": "my issue 2"})
-issue3 = admin_project.issues.create({"title": "my issue 3"})
-assert len(admin_project.issues.list()) == 3
-issue3.state_event = "close"
-issue3.save()
-assert len(admin_project.issues.list(state="closed")) == 1
-assert len(admin_project.issues.list(state="opened")) == 2
-assert len(admin_project.issues.list(milestone="milestone1")) == 1
-assert m1.issues().next().title == "my issue 1"
-size = len(issue1.notes.list())
-note = issue1.notes.create({"body": "This is an issue note"})
-assert len(issue1.notes.list()) == size + 1
-emoji = note.awardemojis.create({"name": "tractor"})
-assert len(note.awardemojis.list()) == 1
-emoji.delete()
-assert len(note.awardemojis.list()) == 0
-note.delete()
-assert len(issue1.notes.list()) == size
-assert isinstance(issue1.user_agent_detail(), dict)
+    size = len(await issue1.discussions.list())
+    discussion = await issue1.discussions.create({"body": "Discussion body"})
+    assert len(await issue1.discussions.list()) == size + 1
+    d_note = await discussion.notes.create({"body": "first note"})
+    d_note_from_get = await discussion.notes.get(d_note.id)
+    d_note_from_get.body = "updated body"
+    await d_note_from_get.save()
+    discussion = await issue1.discussions.get(discussion.id)
+    assert discussion.attributes["notes"][-1]["body"] == "updated body"
+    await d_note_from_get.delete()
+    discussion = await issue1.discussions.get(discussion.id)
+    assert len(discussion.attributes["notes"]) == 1
 
-assert issue1.user_agent_detail()["user_agent"]
-assert issue1.participants()
-assert type(issue1.closed_by()) == list
-assert type(issue1.related_merge_requests()) == list
+    # tags
+    tag1 = await admin_project.tags.create({"tag_name": "v1.0", "ref": "master"})
+    assert len(await admin_project.tags.list()) == 1
+    await tag1.set_release_description("Description 1")
+    await tag1.set_release_description("Description 2")
+    assert tag1.release["description"] == "Description 2"
+    await tag1.delete()
 
-# issues labels and events
-label2 = admin_project.labels.create({"name": "label2", "color": "#aabbcc"})
-issue1.labels = ["label2"]
-issue1.save()
-events = issue1.resourcelabelevents.list()
-assert events
-event = issue1.resourcelabelevents.get(events[0].id)
-assert event
+    # project snippet
+    admin_project.snippets_enabled = True
+    await admin_project.save()
+    snippet = await admin_project.snippets.create(
+        {
+            "title": "snip1",
+            "file_name": "foo.py",
+            "content": "initial content",
+            "visibility": gitlab.v4.objects.VISIBILITY_PRIVATE,
+        }
+    )
 
+    assert (await snippet.user_agent_detail())["user_agent"]
 
-size = len(issue1.discussions.list())
-discussion = issue1.discussions.create({"body": "Discussion body"})
-assert len(issue1.discussions.list()) == size + 1
-d_note = discussion.notes.create({"body": "first note"})
-d_note_from_get = discussion.notes.get(d_note.id)
-d_note_from_get.body = "updated body"
-d_note_from_get.save()
-discussion = issue1.discussions.get(discussion.id)
-assert discussion.attributes["notes"][-1]["body"] == "updated body"
-d_note_from_get.delete()
-discussion = issue1.discussions.get(discussion.id)
-assert len(discussion.attributes["notes"]) == 1
+    size = len(await snippet.discussions.list())
+    discussion = await snippet.discussions.create({"body": "Discussion body"})
+    assert len(await snippet.discussions.list()) == size + 1
+    d_note = await discussion.notes.create({"body": "first note"})
+    d_note_from_get = await discussion.notes.get(d_note.id)
+    d_note_from_get.body = "updated body"
+    await d_note_from_get.save()
+    discussion = await snippet.discussions.get(discussion.id)
+    assert discussion.attributes["notes"][-1]["body"] == "updated body"
+    await d_note_from_get.delete()
+    discussion = await snippet.discussions.get(discussion.id)
+    assert len(discussion.attributes["notes"]) == 1
 
-# tags
-tag1 = admin_project.tags.create({"tag_name": "v1.0", "ref": "master"})
-assert len(admin_project.tags.list()) == 1
-tag1.set_release_description("Description 1")
-tag1.set_release_description("Description 2")
-assert tag1.release["description"] == "Description 2"
-tag1.delete()
+    snippet.file_name = "bar.py"
+    await snippet.save()
+    snippet = await admin_project.snippets.get(snippet.id)
+    assert (await snippet.content()).decode() == "initial content"
+    assert snippet.file_name == "bar.py"
+    size = len(await admin_project.snippets.list())
+    await snippet.delete()
+    assert len(await admin_project.snippets.list()) == (size - 1)
 
-# project snippet
-admin_project.snippets_enabled = True
-admin_project.save()
-snippet = admin_project.snippets.create(
-    {
-        "title": "snip1",
-        "file_name": "foo.py",
-        "content": "initial content",
-        "visibility": gitlab.v4.objects.VISIBILITY_PRIVATE,
-    }
-)
+    # triggers
+    tr1 = await admin_project.triggers.create({"description": "trigger1"})
+    assert len(await admin_project.triggers.list()) == 1
+    await tr1.delete()
 
-assert snippet.user_agent_detail()["user_agent"]
+    # variables
+    v1 = await admin_project.variables.create({"key": "key1", "value": "value1"})
+    assert len(await admin_project.variables.list()) == 1
+    v1.value = "new_value1"
+    await v1.save()
+    v1 = await admin_project.variables.get(v1.key)
+    assert v1.value == "new_value1"
+    await v1.delete()
 
-size = len(snippet.discussions.list())
-discussion = snippet.discussions.create({"body": "Discussion body"})
-assert len(snippet.discussions.list()) == size + 1
-d_note = discussion.notes.create({"body": "first note"})
-d_note_from_get = discussion.notes.get(d_note.id)
-d_note_from_get.body = "updated body"
-d_note_from_get.save()
-discussion = snippet.discussions.get(discussion.id)
-assert discussion.attributes["notes"][-1]["body"] == "updated body"
-d_note_from_get.delete()
-discussion = snippet.discussions.get(discussion.id)
-assert len(discussion.attributes["notes"]) == 1
+    # branches and merges
+    to_merge = await admin_project.branches.create(
+        {"branch": "branch1", "ref": "master"}
+    )
+    await admin_project.files.create(
+        {
+            "file_path": "README2.rst",
+            "branch": "branch1",
+            "content": "Initial content",
+            "commit_message": "New commit in new branch",
+        }
+    )
+    mr = await admin_project.mergerequests.create(
+        {"source_branch": "branch1", "target_branch": "master", "title": "MR readme2"}
+    )
 
-snippet.file_name = "bar.py"
-snippet.save()
-snippet = admin_project.snippets.get(snippet.id)
-assert snippet.content().decode() == "initial content"
-assert snippet.file_name == "bar.py"
-size = len(admin_project.snippets.list())
-snippet.delete()
-assert len(admin_project.snippets.list()) == (size - 1)
+    # discussion
+    size = len(await mr.discussions.list())
+    discussion = await mr.discussions.create({"body": "Discussion body"})
+    assert len(await mr.discussions.list()) == size + 1
+    d_note = await discussion.notes.create({"body": "first note"})
+    d_note_from_get = await discussion.notes.get(d_note.id)
+    d_note_from_get.body = "updated body"
+    await d_note_from_get.save()
+    discussion = await mr.discussions.get(discussion.id)
+    assert discussion.attributes["notes"][-1]["body"] == "updated body"
+    await d_note_from_get.delete()
+    discussion = await mr.discussions.get(discussion.id)
+    assert len(discussion.attributes["notes"]) == 1
 
-# triggers
-tr1 = admin_project.triggers.create({"description": "trigger1"})
-assert len(admin_project.triggers.list()) == 1
-tr1.delete()
+    # mr labels and events
+    mr.labels = ["label2"]
+    await mr.save()
+    events = await mr.resourcelabelevents.list()
+    assert events
+    event = await mr.resourcelabelevents.get(events[0].id)
+    assert event
 
-# variables
-v1 = admin_project.variables.create({"key": "key1", "value": "value1"})
-assert len(admin_project.variables.list()) == 1
-v1.value = "new_value1"
-v1.save()
-v1 = admin_project.variables.get(v1.key)
-assert v1.value == "new_value1"
-v1.delete()
+    # rebasing
+    assert await mr.rebase()
 
-# branches and merges
-to_merge = admin_project.branches.create({"branch": "branch1", "ref": "master"})
-admin_project.files.create(
-    {
-        "file_path": "README2.rst",
-        "branch": "branch1",
-        "content": "Initial content",
-        "commit_message": "New commit in new branch",
-    }
-)
-mr = admin_project.mergerequests.create(
-    {"source_branch": "branch1", "target_branch": "master", "title": "MR readme2"}
-)
+    # basic testing: only make sure that the methods exist
+    await mr.commits()
+    await mr.changes()
+    assert await mr.participants()
 
-# discussion
-size = len(mr.discussions.list())
-discussion = mr.discussions.create({"body": "Discussion body"})
-assert len(mr.discussions.list()) == size + 1
-d_note = discussion.notes.create({"body": "first note"})
-d_note_from_get = discussion.notes.get(d_note.id)
-d_note_from_get.body = "updated body"
-d_note_from_get.save()
-discussion = mr.discussions.get(discussion.id)
-assert discussion.attributes["notes"][-1]["body"] == "updated body"
-d_note_from_get.delete()
-discussion = mr.discussions.get(discussion.id)
-assert len(discussion.attributes["notes"]) == 1
+    await mr.merge()
+    await admin_project.branches.delete("branch1")
 
-# mr labels and events
-mr.labels = ["label2"]
-mr.save()
-events = mr.resourcelabelevents.list()
-assert events
-event = mr.resourcelabelevents.get(events[0].id)
-assert event
-
-# rebasing
-assert mr.rebase()
-
-# basic testing: only make sure that the methods exist
-mr.commits()
-mr.changes()
-assert mr.participants()
-
-mr.merge()
-admin_project.branches.delete("branch1")
-
-try:
-    mr.merge()
-except gitlab.GitlabMRClosedError:
-    pass
-
-# protected branches
-p_b = admin_project.protectedbranches.create({"name": "*-stable"})
-assert p_b.name == "*-stable"
-p_b = admin_project.protectedbranches.get("*-stable")
-# master is protected by default when a branch has been created
-assert len(admin_project.protectedbranches.list()) == 2
-admin_project.protectedbranches.delete("master")
-p_b.delete()
-assert len(admin_project.protectedbranches.list()) == 0
-
-# stars
-admin_project.star()
-assert admin_project.star_count == 1
-admin_project.unstar()
-assert admin_project.star_count == 0
-
-# project boards
-# boards = admin_project.boards.list()
-# assert(len(boards))
-# board = boards[0]
-# lists = board.lists.list()
-# begin_size = len(lists)
-# last_list = lists[-1]
-# last_list.position = 0
-# last_list.save()
-# last_list.delete()
-# lists = board.lists.list()
-# assert(len(lists) == begin_size - 1)
-
-# project badges
-badge_image = "http://example.com"
-badge_link = "http://example/img.svg"
-badge = admin_project.badges.create({"link_url": badge_link, "image_url": badge_image})
-assert len(admin_project.badges.list()) == 1
-badge.image_url = "http://another.example.com"
-badge.save()
-badge = admin_project.badges.get(badge.id)
-assert badge.image_url == "http://another.example.com"
-badge.delete()
-assert len(admin_project.badges.list()) == 0
-
-# project wiki
-wiki_content = "Wiki page content"
-wp = admin_project.wikis.create({"title": "wikipage", "content": wiki_content})
-assert len(admin_project.wikis.list()) == 1
-wp = admin_project.wikis.get(wp.slug)
-assert wp.content == wiki_content
-# update and delete seem broken
-# wp.content = 'new content'
-# wp.save()
-# wp.delete()
-# assert(len(admin_project.wikis.list()) == 0)
-
-# namespaces
-ns = gl.namespaces.list(all=True)
-assert len(ns) != 0
-ns = gl.namespaces.list(search="root", all=True)[0]
-assert ns.kind == "user"
-
-# features
-# Disabled as this fails with GitLab 11.11
-# feat = gl.features.set("foo", 30)
-# assert feat.name == "foo"
-# assert len(gl.features.list()) == 1
-# feat.delete()
-# assert len(gl.features.list()) == 0
-
-# broadcast messages
-msg = gl.broadcastmessages.create({"message": "this is the message"})
-msg.color = "#444444"
-msg.save()
-msg_id = msg.id
-msg = gl.broadcastmessages.list(all=True)[0]
-assert msg.color == "#444444"
-msg = gl.broadcastmessages.get(msg_id)
-assert msg.color == "#444444"
-msg.delete()
-assert len(gl.broadcastmessages.list()) == 0
-
-# notification settings
-settings = gl.notificationsettings.get()
-settings.level = gitlab.NOTIFICATION_LEVEL_WATCH
-settings.save()
-settings = gl.notificationsettings.get()
-assert settings.level == gitlab.NOTIFICATION_LEVEL_WATCH
-
-# services
-service = admin_project.services.get("asana")
-service.api_key = "whatever"
-service.save()
-service = admin_project.services.get("asana")
-assert service.active == True
-service.delete()
-service = admin_project.services.get("asana")
-assert service.active == False
-
-# snippets
-snippets = gl.snippets.list(all=True)
-assert len(snippets) == 0
-snippet = gl.snippets.create(
-    {"title": "snippet1", "file_name": "snippet1.py", "content": "import gitlab"}
-)
-snippet = gl.snippets.get(snippet.id)
-snippet.title = "updated_title"
-snippet.save()
-snippet = gl.snippets.get(snippet.id)
-assert snippet.title == "updated_title"
-content = snippet.content()
-assert content.decode() == "import gitlab"
-
-assert snippet.user_agent_detail()["user_agent"]
-
-snippet.delete()
-snippets = gl.snippets.list(all=True)
-assert len(snippets) == 0
-
-# user activities
-gl.user_activities.list(query_parameters={"from": "2019-01-01"})
-
-# events
-gl.events.list()
-
-# rate limit
-settings = gl.settings.get()
-settings.throttle_authenticated_api_enabled = True
-settings.throttle_authenticated_api_requests_per_period = 1
-settings.throttle_authenticated_api_period_in_seconds = 3
-settings.save()
-projects = list()
-for i in range(0, 20):
-    projects.append(gl.projects.create({"name": str(i) + "ok"}))
-
-error_message = None
-for i in range(20, 40):
     try:
-        projects.append(
-            gl.projects.create({"name": str(i) + "shouldfail"}, obey_rate_limit=False)
-        )
-    except gitlab.GitlabCreateError as e:
-        error_message = e.error_message
-        break
-assert "Retry later" in error_message
-settings.throttle_authenticated_api_enabled = False
-settings.save()
-[current_project.delete() for current_project in projects]
+        await mr.merge()
+    except gitlab.GitlabMRClosedError:
+        pass
 
-# project import/export
-ex = admin_project.exports.create({})
-ex.refresh()
-count = 0
-while ex.export_status != "finished":
-    time.sleep(1)
-    ex.refresh()
-    count += 1
-    if count == 10:
-        raise Exception("Project export taking too much time")
-with open("/tmp/gitlab-export.tgz", "wb") as f:
-    ex.download(streamed=True, action=f.write)
+    # protected branches
+    p_b = await admin_project.protectedbranches.create({"name": "*-stable"})
+    assert p_b.name == "*-stable"
+    p_b = await admin_project.protectedbranches.get("*-stable")
+    # master is protected by default when a branch has been created
+    assert len(await admin_project.protectedbranches.list()) == 2
+    await admin_project.protectedbranches.delete("master")
+    await p_b.delete()
+    assert len(await admin_project.protectedbranches.list()) == 0
 
-output = gl.projects.import_project(
-    open("/tmp/gitlab-export.tgz", "rb"), "imported_project"
-)
-project_import = gl.projects.get(output["id"], lazy=True).imports.get()
-count = 0
-while project_import.import_status != "finished":
-    time.sleep(1)
-    project_import.refresh()
-    count += 1
-    if count == 10:
-        raise Exception("Project import taking too much time")
+    # stars
+    await admin_project.star()
+    assert admin_project.star_count == 1
+    await admin_project.unstar()
+    assert admin_project.star_count == 0
 
-# project releases
-release_test_project = gl.projects.create(
-    {"name": "release-test-project", "initialize_with_readme": True}
-)
-release_name = "Demo Release"
-release_tag_name = "v1.2.3"
-release_description = "release notes go here"
-release_test_project.releases.create(
-    {
-        "name": release_name,
-        "tag_name": release_tag_name,
-        "description": release_description,
-        "ref": "master",
-    }
-)
-assert len(release_test_project.releases.list()) == 1
+    # project boards
+    # boards = admin_project.boards.list()
+    # assert(len(boards))
+    # board = boards[0]
+    # lists = board.lists.list()
+    # begin_size = len(lists)
+    # last_list = lists[-1]
+    # last_list.position = 0
+    # last_list.save()
+    # last_list.delete()
+    # lists = board.lists.list()
+    # assert(len(lists) == begin_size - 1)
 
-# get single release
-retrieved_project = release_test_project.releases.get(release_tag_name)
-assert retrieved_project.name == release_name
-assert retrieved_project.tag_name == release_tag_name
-assert retrieved_project.description == release_description
+    # project badges
+    badge_image = "http://example.com"
+    badge_link = "http://example/img.svg"
+    badge = await admin_project.badges.create(
+        {"link_url": badge_link, "image_url": badge_image}
+    )
+    assert len(await admin_project.badges.list()) == 1
+    badge.image_url = "http://another.example.com"
+    await badge.save()
+    badge = await admin_project.badges.get(badge.id)
+    assert badge.image_url == "http://another.example.com"
+    await badge.delete()
+    assert len(await admin_project.badges.list()) == 0
 
-# delete release
-release_test_project.releases.delete(release_tag_name)
-assert len(release_test_project.releases.list()) == 0
-release_test_project.delete()
+    # project wiki
+    wiki_content = "Wiki page content"
+    wp = await admin_project.wikis.create(
+        {"title": "wikipage", "content": wiki_content}
+    )
+    assert len(await admin_project.wikis.list()) == 1
+    wp = await admin_project.wikis.get(wp.slug)
+    assert wp.content == wiki_content
+    # update and delete seem broken
+    # wp.content = 'new content'
+    # wp.save()
+    # wp.delete()
+    # assert(len(admin_project.wikis.list()) == 0)
 
-# status
-message = "Test"
-emoji = "thumbsup"
-status = gl.user.status.get()
-status.message = message
-status.emoji = emoji
-status.save()
-new_status = gl.user.status.get()
-assert new_status.message == message
-assert new_status.emoji == emoji
+    # namespaces
+    ns = await gl.namespaces.list(all=True)
+    assert len(ns) != 0
+    ns = (await gl.namespaces.list(search="root", all=True))[0]
+    assert ns.kind == "user"
+
+    # features
+    # Disabled as this fails with GitLab 11.11
+    # feat = gl.features.set("foo", 30)
+    # assert feat.name == "foo"
+    # assert len(gl.features.list()) == 1
+    # feat.delete()
+    # assert len(gl.features.list()) == 0
+
+    # broadcast messages
+    msg = await gl.broadcastmessages.create({"message": "this is the message"})
+    msg.color = "#444444"
+    await msg.save()
+    msg_id = msg.id
+    msg = (await gl.broadcastmessages.list(all=True))[0]
+    assert msg.color == "#444444"
+    msg = await gl.broadcastmessages.get(msg_id)
+    assert msg.color == "#444444"
+    await msg.delete()
+    assert len(await gl.broadcastmessages.list()) == 0
+
+    # notification settings
+    settings = await gl.notificationsettings.get()
+    settings.level = gitlab.NOTIFICATION_LEVEL_WATCH
+    await settings.save()
+    settings = await gl.notificationsettings.get()
+    assert settings.level == gitlab.NOTIFICATION_LEVEL_WATCH
+
+    # services
+    service = await admin_project.services.get("asana")
+    service.api_key = "whatever"
+    await service.save()
+    service = await admin_project.services.get("asana")
+    assert service.active == True
+    await service.delete()
+    service = await admin_project.services.get("asana")
+    assert service.active == False
+
+    # snippets
+    snippets = await gl.snippets.list(all=True)
+    assert len(snippets) == 0
+    snippet = await gl.snippets.create(
+        {"title": "snippet1", "file_name": "snippet1.py", "content": "import gitlab"}
+    )
+    snippet = await gl.snippets.get(snippet.id)
+    snippet.title = "updated_title"
+    await snippet.save()
+    snippet = await gl.snippets.get(snippet.id)
+    assert snippet.title == "updated_title"
+    content = await snippet.content()
+    assert content.decode() == "import gitlab"
+
+    assert (await snippet.user_agent_detail())["user_agent"]
+
+    await snippet.delete()
+    snippets = await gl.snippets.list(all=True)
+    assert len(snippets) == 0
+
+    # user activities
+    await gl.user_activities.list(query_parameters={"from": "2019-01-01"})
+
+    # events
+    await gl.events.list()
+
+    # rate limit
+    settings = await gl.settings.get()
+    settings.throttle_authenticated_api_enabled = True
+    settings.throttle_authenticated_api_requests_per_period = 1
+    settings.throttle_authenticated_api_period_in_seconds = 3
+    await settings.save()
+    projects = list()
+    for i in range(0, 20):
+        projects.append(await gl.projects.create({"name": str(i) + "ok"}))
+
+    error_message = None
+    for i in range(20, 40):
+        try:
+            projects.append(
+                await gl.projects.create(
+                    {"name": str(i) + "shouldfail"}, obey_rate_limit=False
+                )
+            )
+        except gitlab.GitlabCreateError as e:
+            error_message = e.error_message
+            break
+    assert "Retry later" in error_message
+    settings.throttle_authenticated_api_enabled = False
+    await settings.save()
+    [await current_project.delete() for current_project in projects]
+
+    # project import/export
+    ex = await admin_project.exports.create({})
+    await ex.refresh()
+    count = 0
+    while ex.export_status != "finished":
+        await asyncio.sleep(1)
+        await ex.refresh()
+        count += 1
+        if count == 10:
+            raise Exception("Project export taking too much time")
+    with open("/tmp/gitlab-export.tgz", "wb") as f:
+        await ex.download(streamed=True, action=f.write)
+
+    output = await gl.projects.import_project(
+        open("/tmp/gitlab-export.tgz", "rb"), "imported_project"
+    )
+    project_import = await (
+        await gl.projects.get(output["id"], lazy=True)
+    ).imports.get()
+    count = 0
+    while project_import.import_status != "finished":
+        await asyncio.sleep(1)
+        await project_import.refresh()
+        count += 1
+        if count == 10:
+            raise Exception("Project import taking too much time")
+
+    # project releases
+    release_test_project = await gl.projects.create(
+        {"name": "release-test-project", "initialize_with_readme": True}
+    )
+    release_name = "Demo Release"
+    release_tag_name = "v1.2.3"
+    release_description = "release notes go here"
+    await release_test_project.releases.create(
+        {
+            "name": release_name,
+            "tag_name": release_tag_name,
+            "description": release_description,
+            "ref": "master",
+        }
+    )
+    assert len(await release_test_project.releases.list()) == 1
+
+    # get single release
+    retrieved_project = await release_test_project.releases.get(release_tag_name)
+    assert retrieved_project.name == release_name
+    assert retrieved_project.tag_name == release_tag_name
+    assert retrieved_project.description == release_description
+
+    # delete release
+    await release_test_project.releases.delete(release_tag_name)
+    assert len(await release_test_project.releases.list()) == 0
+    await release_test_project.delete()
+
+    # status
+    message = "Test"
+    emoji = "thumbsup"
+    status = await gl.user.status.get()
+    status.message = message
+    status.emoji = emoji
+    await status.save()
+    new_status = await gl.user.status.get()
+    assert new_status.message == message
+    assert new_status.emoji == emoji
+
+
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
