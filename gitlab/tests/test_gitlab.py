@@ -23,7 +23,6 @@ import tempfile
 import unittest
 
 import httpx
-import requests
 from httmock import HTTMock  # noqa
 from httmock import response  # noqa
 from httmock import urlmatch  # noqa

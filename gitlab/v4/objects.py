@@ -1566,7 +1566,7 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         result = await self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action, chunk_size)
+        return await utils.response_content(result, streamed, action)
 
 
 class SnippetManager(CRUDMixin, RESTManager):
@@ -1905,7 +1905,7 @@ class ProjectJob(RESTObject, RefreshMixin):
         result = await self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action, chunk_size)
+        return await utils.response_content(result, streamed, action)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
@@ -1935,7 +1935,7 @@ class ProjectJob(RESTObject, RefreshMixin):
         result = await self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action, chunk_size)
+        return await utils.response_content(result, streamed, action)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
@@ -1962,7 +1962,7 @@ class ProjectJob(RESTObject, RefreshMixin):
         result = await self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action, chunk_size)
+        return await utils.response_content(result, streamed, action)
 
 
 class ProjectJobManager(RetrieveMixin, RESTManager):
@@ -3260,14 +3260,14 @@ class ProjectLabelManager(
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
-        self.gitlab.http_delete(self.path, query_data={"name": name}, **kwargs)
+        await self.gitlab.http_delete(self.path, query_data={"name": name}, **kwargs)
 
 
 class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "file_path"
     _short_print_attr = "file_path"
 
-    async def decode(self):
+    def decode(self):
         """Returns the decoded content of the file.
 
         Returns:
@@ -3445,10 +3445,10 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         file_path = file_path.replace("/", "%2F").replace(".", "%2E")
         path = "%s/%s/raw" % (self.path, file_path)
         query_data = {"ref": ref}
-        result = self.gitlab.http_get(
+        result = await self.gitlab.http_get(
             path, query_data=query_data, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action, chunk_size)
+        return await utils.response_content(result, streamed, action)
 
     @cli.register_custom_action("ProjectFileManager", ("file_path", "ref"))
     @exc.on_http_error(exc.GitlabListError)
@@ -3758,7 +3758,7 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
         result = await self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action, chunk_size)
+        return await utils.response_content(result, streamed, action)
 
 
 class ProjectSnippetManager(CRUDMixin, RESTManager):
@@ -4078,7 +4078,7 @@ class ProjectExport(RefreshMixin, RESTObject):
         result = await self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action, chunk_size)
+        return await utils.response_content(result, streamed, action)
 
 
 class ProjectExportManager(GetWithoutIdMixin, CreateMixin, RESTManager):
@@ -4348,7 +4348,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         result = await self.manager.gitlab.http_get(
             path, query_data=query_data, raw=True, streamed=streamed, **kwargs
         )
-        return utils.response_content(result, streamed, action, chunk_size)
+        return await utils.response_content(result, streamed, action)
 
     @cli.register_custom_action("Project", ("forked_from_id",))
     @exc.on_http_error(exc.GitlabCreateError)
@@ -4628,7 +4628,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         result = await self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action, chunk_size)
+        return await utils.response_content(result, streamed, action)
 
     @cli.register_custom_action("Project", ("scope", "search"))
     @exc.on_http_error(exc.GitlabSearchError)
