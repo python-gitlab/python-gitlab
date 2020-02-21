@@ -2010,7 +2010,7 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
             path = base_path % data
         else:
             path = self._compute_path(base_path)
-        return CreateMixin.create(self, data, path=path, **kwargs)
+        return await CreateMixin.create(self, data, path=path, **kwargs)
 
 
 class ProjectCommitComment(RESTObject):
@@ -2268,7 +2268,7 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
                 the data sent by the server
         """
         path = self.path[:-1]  # drop the 's'
-        return CreateMixin.create(self, data, path=path, **kwargs)
+        return await CreateMixin.create(self, data, path=path, **kwargs)
 
 
 class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -3292,7 +3292,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.branch = branch
         self.commit_message = commit_message
         self.file_path = self.file_path.replace("/", "%2F")
-        super(ProjectFile, self).save(**kwargs)
+        await super(ProjectFile, self).save(**kwargs)
 
     async def delete(self, branch, commit_message, **kwargs):
         """Delete the file from the server.
@@ -3307,7 +3307,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabDeleteError: If the server cannot perform the request
         """
         file_path = self.get_id().replace("/", "%2F")
-        self.manager.delete(file_path, branch, commit_message, **kwargs)
+        await self.manager.delete(file_path, branch, commit_message, **kwargs)
 
 
 class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
@@ -3340,7 +3340,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             object: The generated RESTObject
         """
         file_path = file_path.replace("/", "%2F")
-        return GetMixin.get(self, file_path, ref=ref, **kwargs)
+        return await GetMixin.get(self, file_path, ref=ref, **kwargs)
 
     @cli.register_custom_action(
         "ProjectFileManager",
@@ -3415,7 +3415,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         """
         path = "%s/%s" % (self.path, file_path.replace("/", "%2F"))
         data = {"branch": branch, "commit_message": commit_message}
-        self.gitlab.http_delete(path, query_data=data, **kwargs)
+        await self.gitlab.http_delete(path, query_data=data, **kwargs)
 
     @cli.register_custom_action("ProjectFileManager", ("file_path", "ref"))
     @exc.on_http_error(exc.GitlabGetError)
@@ -3565,7 +3565,7 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManage
                 the data sent by the server
         """
         path = self.path[:-1]  # drop the 's'
-        return CreateMixin.create(self, data, path=path, **kwargs)
+        return await CreateMixin.create(self, data, path=path, **kwargs)
 
 
 class ProjectPipelineScheduleVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -3896,7 +3896,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        obj = super(ProjectServiceManager, self).get(id, **kwargs)
+        obj = await super(ProjectServiceManager, self).get(id, **kwargs)
         obj.id = id
         return obj
 
@@ -3916,11 +3916,11 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
             GitlabUpdateError: If the server cannot perform the request
         """
         new_data = new_data or {}
-        super(ProjectServiceManager, self).update(id, new_data, **kwargs)
+        await super(ProjectServiceManager, self).update(id, new_data, **kwargs)
         self.id = id
 
     @cli.register_custom_action("ProjectServiceManager")
-    async def available(self, **kwargs):
+    def available(self, **kwargs):
         """List the services known by python-gitlab.
 
         Returns:
@@ -3976,7 +3976,7 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
 
         path = "/projects/%s/approvers" % self._parent.get_id()
         data = {"approver_ids": approver_ids, "approver_group_ids": approver_group_ids}
-        self.gitlab.http_put(path, post_data=data, **kwargs)
+        await self.gitlab.http_put(path, post_data=data, **kwargs)
 
 
 class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -4271,7 +4271,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         result = await self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action, chunk_size)
+        return await utils.response_content(result, streamed, action)
 
     @cli.register_custom_action("Project", ("from_", "to"))
     @exc.on_http_error(exc.GitlabGetError)
@@ -4688,14 +4688,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("Project", ("ref_name", "artifact_path", "job"))
     @exc.on_http_error(exc.GitlabGetError)
     async def artifact(
-        self,
-        ref_name,
-        artifact_path,
-        job,
-        streamed=False,
-        action=None,
-        chunk_size=1024,
-        **kwargs
+        self, ref_name, artifact_path, job, streamed=False, action=None, **kwargs
     ):
         """Download a single artifact file from a specific tag or branch from within the job’s artifacts archive.
 
@@ -4728,7 +4721,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         result = await self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action, chunk_size)
+        return await utils.response_content(result, streamed, action)
 
 
 class ProjectManager(CRUDMixin, RESTManager):
