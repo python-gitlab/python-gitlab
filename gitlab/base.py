@@ -174,17 +174,17 @@ class RESTObjectList(object):
         self._obj_cls = obj_cls
         self._list = _list
 
-    def __iter__(self):
+    def __aiter__(self):
         return self
 
     def __len__(self):
         return len(self._list)
 
-    def __next__(self):
-        return self.next()
+    async def __anext__(self):
+        return await self.next()
 
-    def next(self):
-        data = self._list.next()
+    async def next(self):
+        data = await self._list.next()
         return self._obj_cls(self.manager, data)
 
     @property

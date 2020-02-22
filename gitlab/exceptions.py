@@ -262,9 +262,9 @@ def on_http_error(error):
 
     def wrap(f):
         @functools.wraps(f)
-        def wrapped_f(*args, **kwargs):
+        async def wrapped_f(*args, **kwargs):
             try:
-                return f(*args, **kwargs)
+                return await f(*args, **kwargs)
             except GitlabHttpError as e:
                 raise error(e.error_message, e.response_code, e.response_body)
 

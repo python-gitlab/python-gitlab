@@ -23,14 +23,14 @@ class _StdoutStream(object):
         print(chunk)
 
 
-def response_content(response, streamed, action, chunk_size):
+async def response_content(response, streamed, action):
     if streamed is False:
         return response.content
 
     if action is None:
         action = _StdoutStream()
 
-    for chunk in response.iter_content(chunk_size=chunk_size):
+    async for chunk in response.aiter_bytes():
         if chunk:
             action(chunk)
 
