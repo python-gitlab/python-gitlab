@@ -178,7 +178,7 @@ List only direct project memberships::
 
 List only direct group memberships::
 
-    memberships = user.memberships.list('Namespace')
+    memberships = user.memberships.list(type='Namespace')
 
 Current User
 ============
