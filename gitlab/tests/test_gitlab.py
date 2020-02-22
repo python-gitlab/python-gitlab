@@ -658,6 +658,38 @@ class TestGitlab(unittest.TestCase):
             self.assertEqual(user.name, "name")
             self.assertEqual(user.id, 1)
 
+    def test_user_memberships(self):
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/users/1/memberships",
+            method="get",
+        )
+        def resp_get_user_memberships(url, request):
+            headers = {"content-type": "application/json"}
+            content = """[
+                          {
+                            "source_id": 1,
+                            "source_name": "Project one",
+                            "source_type": "Project",
+                            "access_level": "20"
+                          },
+                          {
+                            "source_id": 3,
+                            "source_name": "Group three",
+                            "source_type": "Namespace",
+                            "access_level": "20"
+                          }
+                        ]"""
+            content = content.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_get_user_memberships):
+            user = self.gl.users.get(1, lazy=True)
+            memberships = user.memberships.list()
+            self.assertIsInstance(memberships[0], UserMembership)
+            self.assertEqual(memberships[0].source_type, "Project")
+
     def test_user_status(self):
         @urlmatch(
             scheme="http",

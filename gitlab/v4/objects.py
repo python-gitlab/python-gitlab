@@ -229,6 +229,17 @@ class UserImpersonationTokenManager(NoUpdateMixin, RESTManager):
     _list_filters = ("state",)
 
 
+class UserMembership(RESTObject):
+    _id_attr = "source_id"
+
+
+class UserMembershipManager(RetrieveMixin, RESTManager):
+    _path = "/users/%(user_id)s/memberships"
+    _obj_cls = UserMembership
+    _from_parent_attrs = {"user_id": "id"}
+    _list_filters = ("type",)
+
+
 class UserProject(RESTObject):
     pass
 
@@ -311,6 +322,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("gpgkeys", "UserGPGKeyManager"),
         ("impersonationtokens", "UserImpersonationTokenManager"),
         ("keys", "UserKeyManager"),
+        ("memberships", "UserMembershipManager"),
         ("projects", "UserProjectManager"),
         ("status", "UserStatusManager"),
     )
