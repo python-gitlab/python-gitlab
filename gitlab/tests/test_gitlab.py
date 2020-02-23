@@ -376,6 +376,23 @@ class TestGitlabHttpMethods(unittest.TestCase):
             self.assertRaises(GitlabHttpError, self.gl.http_delete, "/not_there")
 
 
+class TestGitlabStripBaseUrl(unittest.TestCase):
+    def setUp(self):
+        self.gl = Gitlab(
+            "http://localhost/", private_token="private_token", api_version=4
+        )
+
+    def test_strip_base_url(self):
+        self.assertEqual(self.gl.url, "http://localhost")
+
+    def test_strip_api_url(self):
+        self.assertEqual(self.gl.api_url, "http://localhost/api/v4")
+
+    def test_build_url(self):
+        r = self.gl._build_url("/projects")
+        self.assertEqual(r, "http://localhost/api/v4/projects")
+
+
 class TestGitlabAuth(unittest.TestCase):
     def test_invalid_auth_args(self):
         self.assertRaises(
