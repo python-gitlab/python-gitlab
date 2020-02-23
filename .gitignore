@@ -1,11 +1,13 @@
 *.pyc
 build/
 dist/
+htmlcov/
 MANIFEST
 .*.swp
 *.egg-info
 .idea/
 docs/_build
+.coverage
 .testrepository/
 .tox
 venv/
