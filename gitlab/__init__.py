@@ -90,8 +90,8 @@ class Gitlab(object):
 
         self._api_version = str(api_version)
         self._server_version = self._server_revision = None
-        self._base_url = url
-        self._url = "%s/api/v%s" % (url, api_version)
+        self._base_url = url.rstrip("/")
+        self._url = "%s/api/v%s" % (self._base_url, api_version)
         #: Timeout to use for requests to gitlab server
         self.timeout = timeout
         #: Headers that will be used in request to GitLab
