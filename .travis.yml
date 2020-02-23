@@ -67,3 +67,10 @@ jobs:
       script:
         - pip3 install tox
         - tox -e py38
+    - stage: test
+      dist: bionic
+      name: coverage
+      python: 3.8
+      script:
+        - pip3 install tox
+        - tox -e cover
