@@ -153,6 +153,33 @@ Revoke (delete) an impersonation token for a user::
 
     i_t.delete()
 
+
+User memberships
+=========================
+
+References
+----------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.UserMembership`
+  + :class:`gitlab.v4.objects.UserMembershipManager`
+  + :attr:`gitlab.v4.objects.User.memberships`
+
+* GitLab API: https://docs.gitlab.com/ee/api/users.html#user-memberships-admin-only
+
+List direct memberships for a user::
+
+    memberships = user.memberships.list()
+
+List only direct project memberships::
+
+    memberships = user.memberships.list(type='Project')
+
+List only direct group memberships::
+
+    memberships = user.memberships.list(type='Namespace')
+
 Current User
 ============
 

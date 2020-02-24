@@ -266,6 +266,35 @@ group1.members.create({"access_level": gitlab.const.GUEST_ACCESS, "user_id": use
 
 group2.members.create({"access_level": gitlab.const.OWNER_ACCESS, "user_id": user2.id})
 
+# User memberships (admin only)
+memberships1 = user1.memberships.list()
+assert len(memberships1) == 1
+
+memberships2 = user2.memberships.list()
+assert len(memberships2) == 2
+
+membership = memberships1[0]
+assert membership.source_type == "Namespace"
+assert membership.access_level == gitlab.const.OWNER_ACCESS
+
+project_memberships = user1.memberships.list(type="Project")
+assert len(project_memberships) == 0
+
+group_memberships = user1.memberships.list(type="Namespace")
+assert len(group_memberships) == 1
+
+try:
+    membership = user1.memberships.list(type="Invalid")
+except gitlab.GitlabListError as e:
+    error_message = e.error_message
+assert error_message == "type does not have a valid value"
+
+try:
+    user1.memberships.list(sudo=user1.name)
+except gitlab.GitlabListError as e:
+    error_message = e.error_message
+assert error_message == "403 Forbidden"
+
 # Administrator belongs to the groups
 assert len(group1.members.list()) == 3
 assert len(group2.members.list()) == 2

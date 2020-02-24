@@ -61,6 +61,10 @@ testcase "adding member to a project" '
         --user-id "$USER_ID" --access-level 40 >/dev/null 2>&1
 '
 
+testcase "listing user memberships" '
+    GITLAB user-membership list --user-id "$USER_ID" >/dev/null 2>&1
+'
+
 testcase "file creation" '
     GITLAB project-file create --project-id "$PROJECT_ID" \
         --file-path README --branch master --content "CONTENT" \
