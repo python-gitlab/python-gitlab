@@ -29,12 +29,15 @@ REUSE_CONTAINER=
 NOVENV=
 PY_VER=3
 API_VER=4
+GITLAB_IMAGE="gitlab/gitlab-ce"
+GITLAB_TAG="latest"
 while getopts :knp:a: opt "$@"; do
     case $opt in
         k) REUSE_CONTAINER=1;;
         n) NOVENV=1;;
         p) PY_VER=$OPTARG;;
         a) API_VER=$OPTARG;;
+        t) GITLAB_TAG=$OPTARG;;
         :) fatal "Option -${OPTARG} requires a value";;
         '?') fatal "Unknown option: -${OPTARG}";;
         *) fatal "Internal error: opt=${opt}";;
@@ -81,6 +84,7 @@ cleanup() {
 }
 
 if [ -z "$REUSE_CONTAINER" ] || ! docker top gitlab-test >/dev/null 2>&1; then
+    try docker pull "$GITLAB_IMAGE:$GITLAB_TAG"
     GITLAB_OMNIBUS_CONFIG="external_url 'http://gitlab.test'
 gitlab_rails['initial_root_password'] = '5iveL!fe'
 gitlab_rails['initial_shared_runners_registration_token'] = 'sTPNtWLEuSrHzoHP8oCU'
@@ -103,7 +107,7 @@ letsencrypt['enable'] = false
 "
     try docker run --name gitlab-test --detach --publish 8080:80 \
         --publish 2222:22 --env "GITLAB_OMNIBUS_CONFIG=$GITLAB_OMNIBUS_CONFIG" \
-        gitlab/gitlab-ce:latest >/dev/null
+        "$GITLAB_IMAGE:$GITLAB_TAG" >/dev/null
 fi
 
 LOGIN='root'
