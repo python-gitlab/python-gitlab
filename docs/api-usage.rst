@@ -307,7 +307,7 @@ python-gitlab:
    gl = gitlab.gitlab(url, token, api_version=4, session=session)
 
 Reference:
-http://docs.python-requests.org/en/master/user/advanced/#proxies
+https://2.python-requests.org/en/master/user/advanced/#proxies
 
 SSL certificate verification
 ----------------------------
@@ -336,7 +336,7 @@ The following sample illustrates how to use a client-side certificate:
    gl = gitlab.gitlab(url, token, api_version=4, session=session)
 
 Reference:
-http://docs.python-requests.org/en/master/user/advanced/#client-side-certificates
+https://2.python-requests.org/en/master/user/advanced/#client-side-certificates
 
 Rate limits
 -----------
