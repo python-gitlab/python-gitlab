@@ -204,6 +204,11 @@ listing methods support the ``page`` and ``per_page`` parameters:
 By default GitLab does not return the complete list of items. Use the ``all``
 parameter to get all the items when using listing methods:
 
+.. warning::
+
+   The all=True option uses keyset pagination by default if order_by is not supplied,
+   or if order_by="id".
+
 .. code-block:: python
 
    all_groups = gl.groups.list(all=True)
@@ -391,4 +396,3 @@ parameter to that API invocation:
 
    gl = gitlab.gitlab(url, token, api_version=4)
    gl.projects.import_github(ACCESS_TOKEN, 123456, "root", timeout=120.0)
-
