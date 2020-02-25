@@ -309,6 +309,18 @@ python-gitlab:
 Reference:
 http://docs.python-requests.org/en/master/user/advanced/#proxies
 
+SSL certificate verification
+----------------------------
+
+python-gitlab relies on the CA certificate bundle in the `certifi` package
+that comes with the requests library.
+
+If you need python-gitlab to use your system CA store instead, you can provide
+the path to the CA bundle in the `REQUESTS_CA_BUNDLE` environment variable.
+
+Reference:
+https://2.python-requests.org/en/master/user/advanced/#ssl-cert-verification
+
 Client side certificate
 -----------------------
 
