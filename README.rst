@@ -31,7 +31,7 @@ Requirements
 
 python-gitlab depends on:
 
-* `python-requests <http://docs.python-requests.org/en/latest/>`_
+* `python-requests <https://2.python-requests.org/en/latest/>`_
 
 Install with pip
 ----------------
