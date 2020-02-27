@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import functools
 
 
@@ -262,11 +263,22 @@ def on_http_error(error):
 
     def wrap(f):
         @functools.wraps(f)
-        async def wrapped_f(*args, **kwargs):
+        def wrapped_f(*args, **kwargs):
             try:
-                return await f(*args, **kwargs)
+                result = f(*args, **kwargs)
             except GitlabHttpError as e:
                 raise error(e.error_message, e.response_code, e.response_body)
+            else:
+                if not asyncio.iscoroutine(result):
+                    return result
+
+                async def awaiter():
+                    try:
+                        await result
+                    except GitlabHttpError as e:
+                        raise error(e.error_message, e.response_code, e.response_body)
+
+                return awaiter
 
         return wrapped_f
 
