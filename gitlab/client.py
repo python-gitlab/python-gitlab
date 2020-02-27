@@ -536,6 +536,8 @@ class BaseGitlab:
 
 
 class Gitlab(BaseGitlab):
+    _httpx_client_class = httpx.Client
+
     def auth(self):
         self.user = self._objects.CurrentUserManager(self).get()
 
@@ -743,6 +745,8 @@ class Gitlab(BaseGitlab):
 
 
 class AsyncGitlab(BaseGitlab):
+    _httpx_client_class = httpx.AsyncClient
+
     async def auth(self):
         self.user = await self._objects.CurrentUserManager(self).get()
 
