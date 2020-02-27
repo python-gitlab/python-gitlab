@@ -18,7 +18,7 @@
 import importlib
 
 
-class RESTObject(object):
+class RESTObject:
     """Represents an object built from server data.
 
     It holds the attributes know from the server, and the updated attributes in
@@ -144,7 +144,7 @@ class RESTObject(object):
         return d
 
 
-class RESTObjectList(object):
+class RESTObjectList:
     """Generator object representing a list of RESTObject's.
 
     This generator uses the Gitlab pagination system to fetch new data when
@@ -174,16 +174,26 @@ class RESTObjectList(object):
         self._obj_cls = obj_cls
         self._list = _list
 
-    def __aiter__(self):
-        return self
-
     def __len__(self):
         return len(self._list)
 
-    async def __anext__(self):
-        return await self.next()
+    def __iter__(self):
+        return self
 
-    async def next(self):
+    def __next__(self):
+        return self.next()
+
+    def next(self):
+        data = self._list.next()
+        return self._obj_cls(self.manager, data)
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        return await self.anext()
+
+    async def anext(self):
         data = await self._list.next()
         return self._obj_cls(self.manager, data)
 
