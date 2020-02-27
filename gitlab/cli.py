@@ -39,8 +39,8 @@ custom_actions = {}
 def register_custom_action(cls_names, mandatory=tuple(), optional=tuple()):
     def wrap(f):
         @functools.wraps(f)
-        async def wrapped_f(*args, **kwargs):
-            return await f(*args, **kwargs)
+        def wrapped_f(*args, **kwargs):
+            return f(*args, **kwargs)
 
         # in_obj defines whether the method belongs to the obj or the manager
         in_obj = True
