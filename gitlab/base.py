@@ -140,8 +140,15 @@ class RESTObject:
             self.__dict__[attr] = manager
 
     def _update_attrs(self, new_attrs):
+        if new_attrs is None:
+            return
+
         self.__dict__["_updated_attrs"] = {}
         self.__dict__["_attrs"].update(new_attrs)
+
+    async def _aupdate_attrs(self, new_attrs):
+        new_attrs = await new_attrs
+        self._update_attrs(new_attrs)
 
     def get_id(self):
         """Returns the id of the resource."""

@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
+import functools
+
 import gitlab
 from gitlab import base, cli
 from gitlab import exceptions as exc
@@ -22,9 +25,29 @@ from gitlab import types as g_types
 from gitlab import utils
 
 
-class GetMixin(object):
+def update_attrs():
+    """Update attrs with returned server_data
+
+    Updates object if data returned or coroutine
+    """
+
+    def wrap(f):
+        @functools.wraps(f)
+        def wrapped_f(self, *args, **kwargs):
+            server_data = f(*args, **kwargs)
+            if asyncio.iscoroutine(server_data):
+                return self._aupdate_attrs(server_data)
+            else:
+                return self._update_attrs(server_data)
+
+        return wrapped_f
+
+    return wrap
+
+
+class GetMixin:
     @exc.on_http_error(exc.GitlabGetError)
-    async def get(self, id, lazy=False, **kwargs):
+    def get(self, id, lazy=False, **kwargs):
         """Retrieve a single object.
 
         Args:
@@ -46,13 +69,13 @@ class GetMixin(object):
         path = "%s/%s" % (self.path, id)
         if lazy is True:
             return self._obj_cls(self, {self._obj_cls._id_attr: id})
-        server_data = await self.gitlab.http_get(path, **kwargs)
-        return self._obj_cls(self, server_data)
+        server_data = self.gitlab.http_get(path, **kwargs)
+        return self._obj_cls.create(self, server_data)
 
 
-class GetWithoutIdMixin(object):
+class GetWithoutIdMixin:
     @exc.on_http_error(exc.GitlabGetError)
-    async def get(self, id=None, **kwargs):
+    def get(self, id=None, **kwargs):
         """Retrieve a single object.
 
         Args:
@@ -65,15 +88,17 @@ class GetWithoutIdMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        server_data = await self.gitlab.http_get(self.path, **kwargs)
+        server_data = self.gitlab.http_get(self.path, **kwargs)
+        # TODO: what should we do???
         if server_data is None:
             return None
-        return self._obj_cls(self, server_data)
+        return self._obj_cls.create(self, server_data)
 
 
-class RefreshMixin(object):
+class RefreshMixin:
     @exc.on_http_error(exc.GitlabGetError)
-    async def refresh(self, **kwargs):
+    @update_attrs
+    def refresh(self, **kwargs):
         """Refresh a single object from server.
 
         Args:
@@ -89,13 +114,24 @@ class RefreshMixin(object):
             path = "%s/%s" % (self.manager.path, self.id)
         else:
             path = self.manager.path
-        server_data = await self.manager.gitlab.http_get(path, **kwargs)
-        self._update_attrs(server_data)
+        return self.manager.gitlab.http_get(path, **kwargs)
 
 
-class ListMixin(object):
+class ListMixin:
+    def _list_or_object_list(self, server_data):
+        if asyncio.iscoroutine(server_data):
+            return self._alist_or_object_list(server_data)
+        elif isinstance(server_data, list):
+            return [self._obj_cls(self, item) for item in server_data]
+        else:
+            return base.RESTObjectList(self, self._obj_cls, server_data)
+
+    async def _alist_or_object_list(self, server_data):
+        server_data = await server_data
+        return self._list_or_object_list
+
     @exc.on_http_error(exc.GitlabListError)
-    async def list(self, **kwargs):
+    def list(self, **kwargs):
         """Retrieve a list of objects.
 
         Args:
@@ -137,11 +173,8 @@ class ListMixin(object):
         # Allow to overwrite the path, handy for custom listings
         path = data.pop("path", self.path)
 
-        obj = await self.gitlab.http_list(path, **data)
-        if isinstance(obj, list):
-            return [self._obj_cls(self, item) for item in obj]
-        else:
-            return base.RESTObjectList(self, self._obj_cls, obj)
+        server_data = self.gitlab.http_list(path, **data)
+        return self._list_or_object_list(server_data)
 
 
 class RetrieveMixin(ListMixin, GetMixin):
@@ -169,7 +202,7 @@ class CreateMixin(object):
         return getattr(self, "_create_attrs", (tuple(), tuple()))
 
     @exc.on_http_error(exc.GitlabCreateError)
-    async def create(self, data, **kwargs):
+    def create(self, data, **kwargs):
         """Create a new object.
 
         Args:
@@ -207,10 +240,8 @@ class CreateMixin(object):
 
         # Handle specific URL for creation
         path = kwargs.pop("path", self.path)
-        server_data = await self.gitlab.http_post(
-            path, post_data=data, files=files, **kwargs
-        )
-        return self._obj_cls(self, server_data)
+        server_data = self.gitlab.http_post(path, post_data=data, files=files, **kwargs)
+        return self._obj_cls.create(self, server_data)
 
 
 class UpdateMixin(object):
@@ -248,7 +279,7 @@ class UpdateMixin(object):
         return http_method
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    async def update(self, id=None, new_data=None, **kwargs):
+    def update(self, id=None, new_data=None, **kwargs):
         """Update an object on the server.
 
         Args:
@@ -291,12 +322,12 @@ class UpdateMixin(object):
                         new_data[attr_name] = type_obj.get_for_api()
 
         http_method = self._get_update_method()
-        return await http_method(path, post_data=new_data, files=files, **kwargs)
+        return http_method(path, post_data=new_data, files=files, **kwargs)
 
 
 class SetMixin(object):
     @exc.on_http_error(exc.GitlabSetError)
-    async def set(self, key, value, **kwargs):
+    def set(self, key, value, **kwargs):
         """Create or update the object.
 
         Args:
@@ -313,13 +344,13 @@ class SetMixin(object):
         """
         path = "%s/%s" % (self.path, utils.clean_str_id(key))
         data = {"value": value}
-        server_data = await self.gitlab.http_put(path, post_data=data, **kwargs)
-        return self._obj_cls(self, server_data)
+        server_data = self.gitlab.http_put(path, post_data=data, **kwargs)
+        return self._obj_cls.create(self, server_data)
 
 
 class DeleteMixin(object):
     @exc.on_http_error(exc.GitlabDeleteError)
-    async def delete(self, id, **kwargs):
+    def delete(self, id, **kwargs):
         """Delete an object on the server.
 
         Args:
@@ -336,7 +367,7 @@ class DeleteMixin(object):
             if not isinstance(id, int):
                 id = utils.clean_str_id(id)
             path = "%s/%s" % (self.path, id)
-        await self.gitlab.http_delete(path, **kwargs)
+        return self.gitlab.http_delete(path, **kwargs)
 
 
 class CRUDMixin(GetMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin):
@@ -347,7 +378,7 @@ class NoUpdateMixin(GetMixin, ListMixin, CreateMixin, DeleteMixin):
     pass
 
 
-class SaveMixin(object):
+class SaveMixin:
     """Mixin for RESTObject's that can be updated."""
 
     def _get_updated_data(self):
@@ -361,7 +392,8 @@ class SaveMixin(object):
 
         return updated_data
 
-    async def save(self, **kwargs):
+    @update_attrs
+    def save(self, **kwargs):
         """Save the changes made to the object to the server.
 
         The object is updated to match what the server returns.
@@ -380,15 +412,13 @@ class SaveMixin(object):
 
         # call the manager
         obj_id = self.get_id()
-        server_data = await self.manager.update(obj_id, updated_data, **kwargs)
-        if server_data is not None:
-            self._update_attrs(server_data)
+        return self.manager.update(obj_id, updated_data, **kwargs)
 
 
 class ObjectDeleteMixin(object):
     """Mixin for RESTObject's that can be deleted."""
 
-    async def delete(self, **kwargs):
+    def delete(self, **kwargs):
         """Delete the object from the server.
 
         Args:
@@ -398,13 +428,13 @@ class ObjectDeleteMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
-        await self.manager.delete(self.get_id())
+        return self.manager.delete(self.get_id())
 
 
 class UserAgentDetailMixin(object):
     @cli.register_custom_action(("Snippet", "ProjectSnippet", "ProjectIssue"))
     @exc.on_http_error(exc.GitlabGetError)
-    async def user_agent_detail(self, **kwargs):
+    def user_agent_detail(self, **kwargs):
         """Get the user agent detail.
 
         Args:
@@ -415,7 +445,7 @@ class UserAgentDetailMixin(object):
             GitlabGetError: If the server cannot perform the request
         """
         path = "%s/%s/user_agent_detail" % (self.manager.path, self.get_id())
-        return await self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_get(path, **kwargs)
 
 
 class AccessRequestMixin(object):
@@ -423,7 +453,8 @@ class AccessRequestMixin(object):
         ("ProjectAccessRequest", "GroupAccessRequest"), tuple(), ("access_level",)
     )
     @exc.on_http_error(exc.GitlabUpdateError)
-    async def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
+    @update_attrs
+    def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
         """Approve an access request.
 
         Args:
@@ -437,8 +468,7 @@ class AccessRequestMixin(object):
 
         path = "%s/%s/approve" % (self.manager.path, self.id)
         data = {"access_level": access_level}
-        server_data = await self.manager.gitlab.http_put(path, post_data=data, **kwargs)
-        self._update_attrs(server_data)
+        return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
 
 
 class SubscribableMixin(object):
@@ -446,7 +476,8 @@ class SubscribableMixin(object):
         ("ProjectIssue", "ProjectMergeRequest", "ProjectLabel", "GroupLabel")
     )
     @exc.on_http_error(exc.GitlabSubscribeError)
-    async def subscribe(self, **kwargs):
+    @update_attrs
+    def subscribe(self, **kwargs):
         """Subscribe to the object notifications.
 
         Args:
@@ -457,14 +488,14 @@ class SubscribableMixin(object):
             GitlabSubscribeError: If the subscription cannot be done
         """
         path = "%s/%s/subscribe" % (self.manager.path, self.get_id())
-        server_data = await self.manager.gitlab.http_post(path, **kwargs)
-        self._update_attrs(server_data)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action(
         ("ProjectIssue", "ProjectMergeRequest", "ProjectLabel", "GroupLabel")
     )
     @exc.on_http_error(exc.GitlabUnsubscribeError)
-    async def unsubscribe(self, **kwargs):
+    @update_attrs
+    def unsubscribe(self, **kwargs):
         """Unsubscribe from the object notifications.
 
         Args:
@@ -475,14 +506,13 @@ class SubscribableMixin(object):
             GitlabUnsubscribeError: If the unsubscription cannot be done
         """
         path = "%s/%s/unsubscribe" % (self.manager.path, self.get_id())
-        server_data = await self.manager.gitlab.http_post(path, **kwargs)
-        self._update_attrs(server_data)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
 
 class TodoMixin(object):
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTodoError)
-    async def todo(self, **kwargs):
+    def todo(self, **kwargs):
         """Create a todo associated to the object.
 
         Args:
@@ -493,13 +523,13 @@ class TodoMixin(object):
             GitlabTodoError: If the todo cannot be set
         """
         path = "%s/%s/todo" % (self.manager.path, self.get_id())
-        await self.manager.gitlab.http_post(path, **kwargs)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
 
 class TimeTrackingMixin(object):
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
-    async def time_stats(self, **kwargs):
+    def time_stats(self, **kwargs):
         """Get time stats for the object.
 
         Args:
@@ -515,11 +545,11 @@ class TimeTrackingMixin(object):
             return self.attributes["time_stats"]
 
         path = "%s/%s/time_stats" % (self.manager.path, self.get_id())
-        return await self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"), ("duration",))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
-    async def time_estimate(self, duration, **kwargs):
+    def time_estimate(self, duration, **kwargs):
         """Set an estimated time of work for the object.
 
         Args:
@@ -532,11 +562,11 @@ class TimeTrackingMixin(object):
         """
         path = "%s/%s/time_estimate" % (self.manager.path, self.get_id())
         data = {"duration": duration}
-        return await self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
-    async def reset_time_estimate(self, **kwargs):
+    def reset_time_estimate(self, **kwargs):
         """Resets estimated time for the object to 0 seconds.
 
         Args:
@@ -547,11 +577,11 @@ class TimeTrackingMixin(object):
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
         path = "%s/%s/reset_time_estimate" % (self.manager.path, self.get_id())
-        return await self.manager.gitlab.http_post(path, **kwargs)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"), ("duration",))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
-    async def add_spent_time(self, duration, **kwargs):
+    def add_spent_time(self, duration, **kwargs):
         """Add time spent working on the object.
 
         Args:
@@ -564,11 +594,11 @@ class TimeTrackingMixin(object):
         """
         path = "%s/%s/add_spent_time" % (self.manager.path, self.get_id())
         data = {"duration": duration}
-        return await self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
-    async def reset_spent_time(self, **kwargs):
+    def reset_spent_time(self, **kwargs):
         """Resets the time spent working on the object.
 
         Args:
@@ -579,13 +609,13 @@ class TimeTrackingMixin(object):
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
         path = "%s/%s/reset_spent_time" % (self.manager.path, self.get_id())
-        return await self.manager.gitlab.http_post(path, **kwargs)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
 
 class ParticipantsMixin(object):
     @cli.register_custom_action(("ProjectMergeRequest", "ProjectIssue"))
     @exc.on_http_error(exc.GitlabListError)
-    async def participants(self, **kwargs):
+    def participants(self, **kwargs):
         """List the participants.
 
         Args:
@@ -605,7 +635,7 @@ class ParticipantsMixin(object):
         """
 
         path = "%s/%s/participants" % (self.manager.path, self.get_id())
-        return await self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_get(path, **kwargs)
 
 
 class BadgeRenderMixin(object):
@@ -613,7 +643,7 @@ class BadgeRenderMixin(object):
         ("GroupBadgeManager", "ProjectBadgeManager"), ("link_url", "image_url")
     )
     @exc.on_http_error(exc.GitlabRenderError)
-    async def render(self, link_url, image_url, **kwargs):
+    def render(self, link_url, image_url, **kwargs):
         """Preview link_url and image_url after interpolation.
 
         Args:
@@ -630,4 +660,4 @@ class BadgeRenderMixin(object):
         """
         path = "%s/render" % self.path
         data = {"link_url": link_url, "image_url": image_url}
-        return await self.gitlab.http_get(path, data, **kwargs)
+        return self.gitlab.http_get(path, data, **kwargs)
