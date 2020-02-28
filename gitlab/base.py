@@ -234,7 +234,7 @@ class RESTObjectList:
         return self._list.total
 
 
-class RESTManager(object):
+class RESTManager:
     """Base class for CRUD operations on objects.
 
     Derived class must define ``_path`` and ``_obj_cls``.
