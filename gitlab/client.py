@@ -26,7 +26,7 @@ import gitlab
 import gitlab.config
 from gitlab import exceptions as exc
 from gitlab import utils
-from gitlab.exceptions import on_http_error
+from gitlab.exceptions import GitlabHttpError, GitlabParsingError, on_http_error
 from gitlab.types import GitlabList
 
 REDIRECT_MSG = (

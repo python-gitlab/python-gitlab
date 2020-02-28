@@ -2,13 +2,13 @@ import pytest
 import respx
 from httpx.status_codes import StatusCode
 
-from gitlab import Gitlab
+from gitlab import AsyncGitlab
 
 
 class TestProjectSnippets:
     @pytest.fixture
     def gl(self):
-        return Gitlab(
+        return AsyncGitlab(
             "http://localhost",
             private_token="private_token",
             ssl_verify=True,
@@ -34,7 +34,7 @@ class TestProjectSnippets:
             status_code=StatusCode.OK,
         )
 
-        project = await gl.projects.get(1, lazy=True)
+        project = gl.projects.get(1, lazy=True)
         snippets = await project.snippets.list()
         assert len(snippets) == 1
         assert snippets[0].title == title
@@ -57,7 +57,7 @@ class TestProjectSnippets:
             status_code=StatusCode.OK,
         )
 
-        project = await gl.projects.get(1, lazy=True)
+        project = gl.projects.get(1, lazy=True)
         snippet = await project.snippets.get(1)
         assert snippet.title == title
         assert snippet.visibility == visibility
@@ -92,7 +92,7 @@ class TestProjectSnippets:
             status_code=StatusCode.OK,
         )
 
-        project = await gl.projects.get(1, lazy=True)
+        project = gl.projects.get(1, lazy=True)
         snippet = await project.snippets.create(
             {
                 "title": title,

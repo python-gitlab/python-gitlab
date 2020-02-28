@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from .exceptions import GitlabParsingError
+
 
 class GitlabAttribute:
     def __init__(self, value=None):
@@ -54,53 +56,6 @@ class FileAttribute(GitlabAttribute):
 class ImageAttribute(FileAttribute):
     def get_file_name(self, attr_name=None):
         return "%s.png" % attr_name if attr_name else "image.png"
-
-
-class GitlabList:
-    """Generator representing a list of remote objects.
-
-    The object handles the links returned by a query to the API, and will call
-    the API again when needed.
-    """
-
-    @property
-    def current_page(self):
-        """The current page number."""
-        return int(self._current_page)
-
-    @property
-    def prev_page(self):
-        """The next page number.
-
-        If None, the current page is the last.
-        """
-        return int(self._prev_page) if self._prev_page else None
-
-    @property
-    def next_page(self):
-        """The next page number.
-
-        If None, the current page is the last.
-        """
-        return int(self._next_page) if self._next_page else None
-
-    @property
-    def per_page(self):
-        """The number of items per page."""
-        return int(self._per_page)
-
-    @property
-    def total_pages(self):
-        """The total number of pages."""
-        return int(self._total_pages)
-
-    @property
-    def total(self):
-        """The total number of items."""
-        return int(self._total)
-
-    def __len__(self):
-        return int(self._total)
 
 
 class GitlabList:
@@ -161,6 +116,45 @@ class GitlabList:
         query_data = query_data or {}
         result = self._gl.http_request("get", url, query_data=query_data, **kwargs)
         return self._process_query_result(result)
+
+    @property
+    def current_page(self):
+        """The current page number."""
+        return int(self._current_page)
+
+    @property
+    def prev_page(self):
+        """The next page number.
+
+        If None, the current page is the last.
+        """
+        return int(self._prev_page) if self._prev_page else None
+
+    @property
+    def next_page(self):
+        """The next page number.
+
+        If None, the current page is the last.
+        """
+        return int(self._next_page) if self._next_page else None
+
+    @property
+    def per_page(self):
+        """The number of items per page."""
+        return int(self._per_page)
+
+    @property
+    def total_pages(self):
+        """The total number of pages."""
+        return int(self._total_pages)
+
+    @property
+    def total(self):
+        """The total number of items."""
+        return int(self._total)
+
+    def __len__(self):
+        return int(self._total)
 
     def __iter__(self):
         return self

@@ -7,8 +7,9 @@ import pytest
 import respx
 from httpx.status_codes import StatusCode
 
-from gitlab import Gitlab, GitlabList
+from gitlab import AsyncGitlab
 from gitlab import exceptions as exc
+from gitlab.types import GitlabList
 from gitlab.v4.objects import (
     CurrentUser,
     Group,
@@ -26,7 +27,9 @@ from gitlab.v4.objects import (
 class TestGitlabList:
     @pytest.fixture
     def gl(self):
-        return Gitlab("http://localhost", private_token="private_token", api_version=4)
+        return AsyncGitlab(
+            "http://localhost", private_token="private_token", api_version=4
+        )
 
     @respx.mock
     @pytest.mark.asyncio
@@ -100,7 +103,9 @@ class TestGitlabList:
 class TestGitlabHttpMethods:
     @pytest.fixture
     def gl(self):
-        return Gitlab("http://localhost", private_token="private_token", api_version=4)
+        return AsyncGitlab(
+            "http://localhost", private_token="private_token", api_version=4
+        )
 
     @respx.mock
     @pytest.mark.asyncio
@@ -263,7 +268,7 @@ class TestGitlabHttpMethods:
 class TestGitlab:
     @pytest.fixture
     def gl(self):
-        return Gitlab(
+        return AsyncGitlab(
             "http://localhost",
             private_token="private_token",
             ssl_verify=True,
@@ -517,7 +522,7 @@ class TestGitlab:
             status_code=StatusCode.OK,
         )
 
-        project = await gl.projects.get(1, lazy=True)
+        project = gl.projects.get(1, lazy=True)
         deployment = await project.deployments.create(
             {
                 "environment": "Test",
@@ -558,7 +563,7 @@ class TestGitlab:
             status_code=StatusCode.CREATED,
         )
 
-        user = await gl.users.get(1, lazy=True)
+        user = gl.users.get(1, lazy=True)
         await user.activate()
         await user.deactivate()
 

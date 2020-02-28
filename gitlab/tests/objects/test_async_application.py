@@ -4,13 +4,13 @@ import pytest
 import respx
 from httpx.status_codes import StatusCode
 
-from gitlab import Gitlab
+from gitlab import AsyncGitlab
 
 
 class TestApplicationAppearance:
     @pytest.fixture
     def gl(self):
-        return Gitlab(
+        return AsyncGitlab(
             "http://localhost",
             private_token="private_token",
             ssl_verify=True,

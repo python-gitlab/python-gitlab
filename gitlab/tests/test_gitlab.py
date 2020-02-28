@@ -29,6 +29,7 @@ from httmock import urlmatch  # noqa
 
 import gitlab
 from gitlab import *  # noqa
+from gitlab.client import _sanitize
 from gitlab.v4.objects import *  # noqa
 
 valid_config = b"""[global]
@@ -44,17 +45,17 @@ private_token = ABCDEF
 
 class TestSanitize(unittest.TestCase):
     def test_do_nothing(self):
-        self.assertEqual(1, gitlab._sanitize(1))
-        self.assertEqual(1.5, gitlab._sanitize(1.5))
-        self.assertEqual("foo", gitlab._sanitize("foo"))
+        self.assertEqual(1, _sanitize(1))
+        self.assertEqual(1.5, _sanitize(1.5))
+        self.assertEqual("foo", _sanitize("foo"))
 
     def test_slash(self):
-        self.assertEqual("foo%2Fbar", gitlab._sanitize("foo/bar"))
+        self.assertEqual("foo%2Fbar", _sanitize("foo/bar"))
 
     def test_dict(self):
         source = {"url": "foo/bar", "id": 1}
         expected = {"url": "foo%2Fbar", "id": 1}
-        self.assertEqual(expected, gitlab._sanitize(source))
+        self.assertEqual(expected, _sanitize(source))
 
 
 class TestGitlabHttpMethods(unittest.TestCase):
