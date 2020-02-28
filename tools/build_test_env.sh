@@ -27,15 +27,15 @@ try() { "$@" || fatal "'$@' failed"; }
 
 REUSE_CONTAINER=
 NOVENV=
-PY_VER=3
 API_VER=4
 GITLAB_IMAGE="gitlab/gitlab-ce"
 GITLAB_TAG="latest"
-while getopts :knp:a: opt "$@"; do
+VENV_CMD="python3 -m venv"
+
+while getopts :kn:a: opt "$@"; do
     case $opt in
         k) REUSE_CONTAINER=1;;
         n) NOVENV=1;;
-        p) PY_VER=$OPTARG;;
         a) API_VER=$OPTARG;;
         t) GITLAB_TAG=$OPTARG;;
         :) fatal "Option -${OPTARG} requires a value";;
@@ -43,12 +43,6 @@ while getopts :knp:a: opt "$@"; do
         *) fatal "Internal error: opt=${opt}";;
     esac
 done
-
-case $PY_VER in
-    2) VENV_CMD=virtualenv;;
-    3) VENV_CMD="python3 -m venv";;
-    *) fatal "Wrong python version (2 or 3)";;
-esac
 
 case $API_VER in
     4) ;;
