@@ -124,7 +124,7 @@ if [ -z "$NOVENV" ]; then
     . "$VENV"/bin/activate || fatal "failed to activate Python virtual environment"
 
     log "Installing dependencies into virtualenv..."
-    try pip install -r requirements.txt
+    try pip install -r requirements.txt -r test-requirements.txt
 
     log "Installing into virtualenv..."
     try pip install -e .
