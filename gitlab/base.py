@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import importlib
 
 
@@ -42,6 +43,18 @@ class RESTObject:
         )
         self.__dict__["_parent_attrs"] = self.manager.parent_attrs
         self._create_managers()
+
+    @classmethod
+    def create(cls, manager, attrs):
+        if asyncio.iscoroutine(attrs):
+            return cls._acreate(manager, attrs)
+        else:
+            return cls(manager, attrs)
+
+    @classmethod
+    async def _acreate(cls, manager, attrs):
+        attrs = await attrs
+        return cls(manager, attrs)
 
     def __getstate__(self):
         state = self.__dict__.copy()
@@ -173,6 +186,18 @@ class RESTObjectList:
         self.manager = manager
         self._obj_cls = obj_cls
         self._list = _list
+
+    @classmethod
+    def create(cls, manager, obj_cls, _list):
+        if asyncio.iscoroutine(_list):
+            return cls._acreate(manager, obj_cls, _list)
+        else:
+            return cls(manager, obj_cls, _list)
+
+    @classmethod
+    async def _from_coroutine(cls, manager, obj_cls, _list):
+        _list = await _list
+        return cls(manager, obj_cls, _list)
 
     def __len__(self):
         return len(self._list)
