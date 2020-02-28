@@ -226,7 +226,7 @@ class RESTObjectList:
         return await self.anext()
 
     async def anext(self):
-        data = await self._list.next()
+        data = await self._list.anext()
         return self._obj_cls(self.manager, data)
 
     @property

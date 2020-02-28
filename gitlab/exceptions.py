@@ -272,13 +272,13 @@ def on_http_error(error):
                 if not asyncio.iscoroutine(result):
                     return result
 
-                async def awaiter():
+                async def awaiter(result):
                     try:
-                        await result
+                        return await result
                     except GitlabHttpError as e:
                         raise error(e.error_message, e.response_code, e.response_body)
 
-                return awaiter
+                return awaiter(result)
 
         return wrapped_f
 

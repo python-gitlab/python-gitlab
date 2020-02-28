@@ -17,10 +17,13 @@
 """Wrapper for the GitLab API."""
 
 import importlib
-from typing import Any
+import time
+from typing import Union
 
-import gitlab.config
 import httpx
+
+import gitlab
+import gitlab.config
 from gitlab import exceptions as exc
 from gitlab import utils
 from gitlab.exceptions import on_http_error
@@ -41,7 +44,7 @@ def _sanitize(value):
 
 
 class BaseGitlab:
-    _httpx_client_class: Any[httpx.Client, httpx.AsyncClient]
+    _httpx_client_class: Union[httpx.Client, httpx.AsyncClient]
 
     """Represents a GitLab server connection.
 
@@ -73,7 +76,7 @@ class BaseGitlab:
         http_password=None,
         timeout=None,
         api_version="4",
-        session=None,
+        client=None,
         per_page=None,
         pagination=None,
         order_by=None,
@@ -85,7 +88,7 @@ class BaseGitlab:
         #: Timeout to use for requests to gitlab server
         self.timeout = timeout
         #: Headers that will be used in request to GitLab
-        self.headers = {"User-Agent": "%s/%s" % (__title__, __version__)}
+        self.headers = {"User-Agent": "%s/%s" % (gitlab.__title__, gitlab.__version__)}
 
         #: Whether SSL certificates should be validated
         self.ssl_verify = ssl_verify
@@ -97,8 +100,7 @@ class BaseGitlab:
         self.job_token = job_token
         self._set_auth_info()
 
-        #: Create a session object for requests
-        self.session = session or requests.Session()
+        self.client = client or self._get_client()
 
         self.per_page = per_page
         self.pagination = pagination
@@ -239,7 +241,7 @@ class BaseGitlab:
         """
         raise NotImplemented
 
-    async def lint(self, content, **kwargs):
+    def lint(self, content, **kwargs):
         """Validate a gitlab CI configuration.
 
         Args:
@@ -673,7 +675,7 @@ class Gitlab(BaseGitlab):
                     if "Retry-After" in result.headers:
                         wait_time = int(result.headers["Retry-After"])
                     cur_retries += 1
-                    await asyncio.sleep(wait_time)
+                    time.sleep(wait_time)
                     continue
 
             error_message = result.content

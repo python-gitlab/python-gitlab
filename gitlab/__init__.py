@@ -18,6 +18,7 @@
 import warnings
 
 from .client import AsyncGitlab, Gitlab
+from .const import *
 
 __title__ = "python-gitlab"
 __version__ = "2.0.1"
@@ -27,5 +28,3 @@ __license__ = "LGPL3"
 __copyright__ = "Copyright 2013-2019 Gauvain Pocentek"
 
 warnings.filterwarnings("default", category=DeprecationWarning, module="^gitlab")
-
-__all__ = [Gitlab, AsyncGitlab]

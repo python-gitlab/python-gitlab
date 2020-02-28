@@ -25,24 +25,21 @@ from gitlab import types as g_types
 from gitlab import utils
 
 
-def update_attrs():
+def update_attrs(f):
     """Update attrs with returned server_data
 
     Updates object if data returned or coroutine
     """
 
-    def wrap(f):
-        @functools.wraps(f)
-        def wrapped_f(self, *args, **kwargs):
-            server_data = f(*args, **kwargs)
-            if asyncio.iscoroutine(server_data):
-                return self._aupdate_attrs(server_data)
-            else:
-                return self._update_attrs(server_data)
+    @functools.wraps(f)
+    def wrapped_f(self, *args, **kwargs):
+        server_data = f(self, *args, **kwargs)
+        if asyncio.iscoroutine(server_data):
+            return self._aupdate_attrs(server_data)
+        else:
+            return self._update_attrs(server_data)
 
-        return wrapped_f
-
-    return wrap
+    return wrapped_f
 
 
 class GetMixin:
@@ -128,7 +125,7 @@ class ListMixin:
 
     async def _alist_or_object_list(self, server_data):
         server_data = await server_data
-        return self._list_or_object_list
+        return self._list_or_object_list(server_data)
 
     @exc.on_http_error(exc.GitlabListError)
     def list(self, **kwargs):
@@ -325,7 +322,7 @@ class UpdateMixin(object):
         return http_method(path, post_data=new_data, files=files, **kwargs)
 
 
-class SetMixin(object):
+class SetMixin:
     @exc.on_http_error(exc.GitlabSetError)
     def set(self, key, value, **kwargs):
         """Create or update the object.
