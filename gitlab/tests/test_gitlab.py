@@ -306,6 +306,7 @@ class TestGitlabHttpMethods:
                 "/projects",
             ),
         ],
+        ids=["http_error", "parsing_error"],
     )
     @pytest.mark.parametrize(
         "http_method, gl_method",
@@ -315,6 +316,7 @@ class TestGitlabHttpMethods:
             ("post", "http_post"),
             ("put", "http_put"),
         ],
+        ids=["get", "list", "post", "put"],
     )
     async def test_errors(
         self, gl, is_gl_sync, http_method, gl_method, respx_params, gl_exc, path

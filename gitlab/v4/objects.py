@@ -23,6 +23,7 @@ from gitlab import cli, types, utils
 from gitlab.base import *  # noqa
 from gitlab.exceptions import *  # noqa
 from gitlab.mixins import *  # noqa
+from gitlab.mixins import update_attrs
 
 VISIBILITY_PRIVATE = "private"
 VISIBILITY_INTERNAL = "internal"
@@ -44,7 +45,7 @@ class SidekiqManager(RESTManager):
 
     @cli.register_custom_action("SidekiqManager")
     @exc.on_http_error(exc.GitlabGetError)
-    async def queue_metrics(self, **kwargs):
+    def queue_metrics(self, **kwargs):
         """Return the registred queues information.
 
         Args:
@@ -57,11 +58,11 @@ class SidekiqManager(RESTManager):
         Returns:
             dict: Information about the Sidekiq queues
         """
-        return await self.gitlab.http_get("/sidekiq/queue_metrics", **kwargs)
+        return self.gitlab.http_get("/sidekiq/queue_metrics", **kwargs)
 
     @cli.register_custom_action("SidekiqManager")
     @exc.on_http_error(exc.GitlabGetError)
-    async def process_metrics(self, **kwargs):
+    def process_metrics(self, **kwargs):
         """Return the registred sidekiq workers.
 
         Args:
@@ -74,11 +75,11 @@ class SidekiqManager(RESTManager):
         Returns:
             dict: Information about the register Sidekiq worker
         """
-        return await self.gitlab.http_get("/sidekiq/process_metrics", **kwargs)
+        return self.gitlab.http_get("/sidekiq/process_metrics", **kwargs)
 
     @cli.register_custom_action("SidekiqManager")
     @exc.on_http_error(exc.GitlabGetError)
-    async def job_stats(self, **kwargs):
+    def job_stats(self, **kwargs):
         """Return statistics about the jobs performed.
 
         Args:
@@ -91,11 +92,11 @@ class SidekiqManager(RESTManager):
         Returns:
             dict: Statistics about the Sidekiq jobs performed
         """
-        return await self.gitlab.http_get("/sidekiq/job_stats", **kwargs)
+        return self.gitlab.http_get("/sidekiq/job_stats", **kwargs)
 
     @cli.register_custom_action("SidekiqManager")
     @exc.on_http_error(exc.GitlabGetError)
-    async def compound_metrics(self, **kwargs):
+    def compound_metrics(self, **kwargs):
         """Return all available metrics and statistics.
 
         Args:
@@ -108,7 +109,7 @@ class SidekiqManager(RESTManager):
         Returns:
             dict: All available Sidekiq metrics and statistics
         """
-        return await self.gitlab.http_get("/sidekiq/compound_metrics", **kwargs)
+        return self.gitlab.http_get("/sidekiq/compound_metrics", **kwargs)
 
 
 class Event(RESTObject):
@@ -275,7 +276,7 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
         "id_before",
     )
 
-    async def list(self, **kwargs):
+    def list(self, **kwargs):
         """Retrieve a list of objects.
 
         Args:
@@ -297,7 +298,7 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
             path = "/users/%s/projects" % self._parent.id
         else:
             path = "/users/%s/projects" % kwargs["user_id"]
-        return await ListMixin.list(self, path=path, **kwargs)
+        return ListMixin.list(self, path=path, **kwargs)
 
 
 class User(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -313,9 +314,21 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("status", "UserStatusManager"),
     )
 
+    def _change_state(self, dest, server_data):
+        if asyncio.iscoroutine(server_data):
+            return self._achange_state(dest, server_data)
+
+        if server_data:
+            self._attrs["state"] = dest
+        return server_data
+
+    async def _achange_state(self, dest, server_data):
+        server_data = await server_data
+        return self._change_state(dest, server_data)
+
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabBlockError)
-    async def block(self, **kwargs):
+    def block(self, **kwargs):
         """Block the user.
 
         Args:
@@ -329,14 +342,12 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             bool: Whether the user status has been changed
         """
         path = "/users/%s/block" % self.id
-        server_data = await self.manager.gitlab.http_post(path, **kwargs)
-        if server_data is True:
-            self._attrs["state"] = "blocked"
-        return server_data
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return self._change_state("blocked", server_data)
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUnblockError)
-    async def unblock(self, **kwargs):
+    def unblock(self, **kwargs):
         """Unblock the user.
 
         Args:
@@ -350,14 +361,12 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             bool: Whether the user status has been changed
         """
         path = "/users/%s/unblock" % self.id
-        server_data = await self.manager.gitlab.http_post(path, **kwargs)
-        if server_data is True:
-            self._attrs["state"] = "active"
-        return server_data
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return self._change_state("active", server_data)
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabDeactivateError)
-    async def deactivate(self, **kwargs):
+    def deactivate(self, **kwargs):
         """Deactivate the user.
 
         Args:
@@ -371,14 +380,12 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             bool: Whether the user status has been changed
         """
         path = "/users/%s/deactivate" % self.id
-        server_data = await self.manager.gitlab.http_post(path, **kwargs)
-        if server_data:
-            self._attrs["state"] = "deactivated"
-        return server_data
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return self._change_state("deactivated", server_data)
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabActivateError)
-    async def activate(self, **kwargs):
+    def activate(self, **kwargs):
         """Activate the user.
 
         Args:
@@ -392,10 +399,8 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             bool: Whether the user status has been changed
         """
         path = "/users/%s/activate" % self.id
-        server_data = await self.manager.gitlab.http_post(path, **kwargs)
-        if server_data:
-            self._attrs["state"] = "active"
-        return server_data
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return self._change_state("active", server_data)
 
 
 class UserManager(CRUDMixin, RESTManager):
@@ -549,7 +554,7 @@ class ApplicationAppearanceManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     )
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    async def update(self, id=None, new_data=None, **kwargs):
+    def update(self, id=None, new_data=None, **kwargs):
         """Update an object on the server.
 
         Args:
@@ -566,7 +571,7 @@ class ApplicationAppearanceManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         """
         new_data = new_data or {}
         data = new_data.copy()
-        await super(ApplicationAppearanceManager, self).update(id, data, **kwargs)
+        return super(ApplicationAppearanceManager, self).update(id, data, **kwargs)
 
 
 class ApplicationSettings(SaveMixin, RESTObject):
@@ -634,7 +639,7 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     )
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    async def update(self, id=None, new_data=None, **kwargs):
+    def update(self, id=None, new_data=None, **kwargs):
         """Update an object on the server.
 
         Args:
@@ -653,7 +658,7 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         data = new_data.copy()
         if "domain_whitelist" in data and data["domain_whitelist"] is None:
             data.pop("domain_whitelist")
-        await super(ApplicationSettingsManager, self).update(id, data, **kwargs)
+        return super(ApplicationSettingsManager, self).update(id, data, **kwargs)
 
 
 class BroadcastMessage(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -722,7 +727,7 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
     _obj_cls = Feature
 
     @exc.on_http_error(exc.GitlabSetError)
-    async def set(
+    def set(
         self,
         name,
         value,
@@ -759,8 +764,8 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
             "project": project,
         }
         data = utils.remove_none_from_dict(data)
-        server_data = await self.gitlab.http_post(path, post_data=data, **kwargs)
-        return self._obj_cls(self, server_data)
+        server_data = self.gitlab.http_post(path, post_data=data, **kwargs)
+        return self._obj_cls.create(self, server_data)
 
 
 class Gitignore(RESTObject):
@@ -850,7 +855,7 @@ class GroupClusterManager(CRUDMixin, RESTManager):
     )
 
     @exc.on_http_error(exc.GitlabStopError)
-    async def create(self, data, **kwargs):
+    def create(self, data, **kwargs):
         """Create a new object.
 
         Args:
@@ -868,7 +873,7 @@ class GroupClusterManager(CRUDMixin, RESTManager):
                         the data sent by the server
         """
         path = "%s/user" % (self.path)
-        return await CreateMixin.create(self, data, path=path, **kwargs)
+        return CreateMixin.create(self, data, path=path, **kwargs)
 
 
 class GroupCustomAttribute(ObjectDeleteMixin, RESTObject):
@@ -884,7 +889,7 @@ class GroupCustomAttributeManager(RetrieveMixin, SetMixin, DeleteMixin, RESTMana
 class GroupEpicIssue(ObjectDeleteMixin, SaveMixin, RESTObject):
     _id_attr = "epic_issue_id"
 
-    async def save(self, **kwargs):
+    def save(self, **kwargs):
         """Save the changes made to the object to the server.
 
         The object is updated to match what the server returns.
@@ -903,7 +908,7 @@ class GroupEpicIssue(ObjectDeleteMixin, SaveMixin, RESTObject):
 
         # call the manager
         obj_id = self.get_id()
-        await self.manager.update(obj_id, updated_data, **kwargs)
+        return self.manager.update(obj_id, updated_data, **kwargs)
 
 
 class GroupEpicIssueManager(
@@ -916,7 +921,7 @@ class GroupEpicIssueManager(
     _update_attrs = (tuple(), ("move_before_id", "move_after_id"))
 
     @exc.on_http_error(exc.GitlabCreateError)
-    async def create(self, data, **kwargs):
+    def create(self, data, **kwargs):
         """Create a new object.
 
         Args:
@@ -934,12 +939,12 @@ class GroupEpicIssueManager(
         """
         CreateMixin._check_missing_create_attrs(self, data)
         path = "%s/%s" % (self.path, data.pop("issue_id"))
-        server_data = await self.gitlab.http_post(path, **kwargs)
+        server_data = self.gitlab.http_post(path, **kwargs)
         # The epic_issue_id attribute doesn't exist when creating the resource,
         # but is used everywhere elese. Let's create it to be consistent client
         # side
         server_data["epic_issue_id"] = server_data["id"]
-        return self._obj_cls(self, server_data)
+        return self._obj_cls.create(self, server_data)
 
 
 class GroupEpicResourceLabelEvent(RESTObject):
@@ -1005,7 +1010,8 @@ class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
     # Update without ID, but we need an ID to get from list.
     @exc.on_http_error(exc.GitlabUpdateError)
-    async def save(self, **kwargs):
+    @update_attrs
+    def save(self, **kwargs):
         """Saves the changes made to the object to the server.
 
         The object is updated to match what the server returns.
@@ -1019,9 +1025,7 @@ class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         updated_data = self._get_updated_data()
 
-        # call the manager
-        server_data = await self.manager.update(None, updated_data, **kwargs)
-        self._update_attrs(server_data)
+        return self.manager.update(None, updated_data, **kwargs)
 
 
 class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
@@ -1032,7 +1036,7 @@ class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
     _update_attrs = (("name",), ("new_name", "color", "description", "priority"))
 
     # Update without ID.
-    async def update(self, name, new_data=None, **kwargs):
+    def update(self, name, new_data=None, **kwargs):
         """Update a Label on the server.
 
         Args:
@@ -1042,11 +1046,11 @@ class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         new_data = new_data or {}
         if name:
             new_data["name"] = name
-        return await super().update(id=None, new_data=new_data, **kwargs)
+        return super().update(id=None, new_data=new_data, **kwargs)
 
     # Delete without ID.
     @exc.on_http_error(exc.GitlabDeleteError)
-    async def delete(self, name, **kwargs):
+    def delete(self, name, **kwargs):
         """Delete a Label on the server.
 
         Args:
@@ -1057,7 +1061,7 @@ class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
-        await self.gitlab.http_delete(self.path, query_data={"name": name}, **kwargs)
+        return self.gitlab.http_delete(self.path, query_data={"name": name}, **kwargs)
 
 
 class GroupMember(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -1073,7 +1077,7 @@ class GroupMemberManager(CRUDMixin, RESTManager):
 
     @cli.register_custom_action("GroupMemberManager")
     @exc.on_http_error(exc.GitlabListError)
-    async def all(self, **kwargs):
+    def all(self, **kwargs):
         """List all the members, included inherited ones.
 
         Args:
@@ -1093,8 +1097,8 @@ class GroupMemberManager(CRUDMixin, RESTManager):
         """
 
         path = "%s/all" % self.path
-        obj = await self.gitlab.http_list(path, **kwargs)
-        return [self._obj_cls(self, item) for item in obj]
+        obj = self.gitlab.http_list(path, **kwargs)
+        return [self._obj_cls(self, item) for item in obj]  # TODO???
 
 
 class GroupMergeRequest(RESTObject):
@@ -1132,7 +1136,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("GroupMilestone")
     @exc.on_http_error(exc.GitlabListError)
-    async def issues(self, **kwargs):
+    def issues(self, **kwargs):
         """List issues related to this milestone.
 
         Args:
@@ -1152,14 +1156,14 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
 
         path = "%s/%s/issues" % (self.manager.path, self.get_id())
-        data_list = await self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
-        return RESTObjectList(manager, GroupIssue, data_list)
+        return RESTObjectList(manager, GroupIssue, data_list)  # TODO: ???
 
     @cli.register_custom_action("GroupMilestone")
     @exc.on_http_error(exc.GitlabListError)
-    async def merge_requests(self, **kwargs):
+    def merge_requests(self, **kwargs):
         """List the merge requests related to this milestone.
 
         Args:
@@ -1178,10 +1182,10 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
             RESTObjectList: The list of merge requests
         """
         path = "%s/%s/merge_requests" % (self.manager.path, self.get_id())
-        data_list = await self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list =  self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
-        return RESTObjectList(manager, GroupMergeRequest, data_list)
+        return RESTObjectList(manager, GroupMergeRequest, data_list)  # TODO: ???
 
 
 class GroupMilestoneManager(CRUDMixin, RESTManager):
@@ -1287,7 +1291,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("Group", ("to_project_id",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
-    async def transfer_project(self, to_project_id, **kwargs):
+    def transfer_project(self, to_project_id, **kwargs):
         """Transfer a project to this group.
 
         Args:
@@ -1299,11 +1303,11 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabTransferProjectError: If the project could not be transfered
         """
         path = "/groups/%s/projects/%s" % (self.id, to_project_id)
-        await self.manager.gitlab.http_post(path, **kwargs)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("Group", ("scope", "search"))
     @exc.on_http_error(exc.GitlabSearchError)
-    async def search(self, scope, search, **kwargs):
+    def search(self, scope, search, **kwargs):
         """Search the group resources matching the provided string.'
 
         Args:
@@ -1320,11 +1324,11 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         data = {"scope": scope, "search": search}
         path = "/groups/%s/search" % self.get_id()
-        return await self.manager.gitlab.http_list(path, query_data=data, **kwargs)
+        return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
 
     @cli.register_custom_action("Group", ("cn", "group_access", "provider"))
     @exc.on_http_error(exc.GitlabCreateError)
-    async def add_ldap_group_link(self, cn, group_access, provider, **kwargs):
+    def add_ldap_group_link(self, cn, group_access, provider, **kwargs):
         """Add an LDAP group link.
 
         Args:
@@ -1340,11 +1344,11 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = "/groups/%s/ldap_group_links" % self.get_id()
         data = {"cn": cn, "group_access": group_access, "provider": provider}
-        await self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
     @cli.register_custom_action("Group", ("cn",), ("provider",))
     @exc.on_http_error(exc.GitlabDeleteError)
-    async def delete_ldap_group_link(self, cn, provider=None, **kwargs):
+    def delete_ldap_group_link(self, cn, provider=None, **kwargs):
         """Delete an LDAP group link.
 
         Args:
@@ -1360,11 +1364,11 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         if provider is not None:
             path += "/%s" % provider
         path += "/%s" % cn
-        await self.manager.gitlab.http_delete(path)
+        return self.manager.gitlab.http_delete(path)
 
     @cli.register_custom_action("Group")
     @exc.on_http_error(exc.GitlabCreateError)
-    async def ldap_sync(self, **kwargs):
+    def ldap_sync(self, **kwargs):
         """Sync LDAP groups.
 
         Args:
@@ -1375,7 +1379,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabCreateError: If the server cannot perform the request
         """
         path = "/groups/%s/ldap_sync" % self.get_id()
-        await self.manager.gitlab.http_post(path, **kwargs)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
 
 class GroupManager(CRUDMixin, RESTManager):
@@ -1463,7 +1467,7 @@ class LDAPGroupManager(RESTManager):
     _list_filters = ("search", "provider")
 
     @exc.on_http_error(exc.GitlabListError)
-    async def list(self, **kwargs):
+    def list(self, **kwargs):
         """Retrieve a list of objects.
 
         Args:
@@ -1490,7 +1494,7 @@ class LDAPGroupManager(RESTManager):
         else:
             path = self._path
 
-        obj = await self.gitlab.http_list(path, **data)
+        obj =  self.gitlab.http_list(path, **data)  # TODO: ???
         if isinstance(obj, list):
             return [self._obj_cls(self, item) for item in obj]
         else:
@@ -1543,7 +1547,7 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("Snippet")
     @exc.on_http_error(exc.GitlabGetError)
-    async def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+    def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Return the content of a snippet.
 
         Args:
@@ -1563,10 +1567,10 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
             str: The snippet content
         """
         path = "/snippets/%s/raw" % self.get_id()
-        result = await self.manager.gitlab.http_get(
+        result =  self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return await utils.response_content(result, streamed, action)
+        return utils.response_content(result, streamed, action)  # TODO:???
 
 
 class SnippetManager(CRUDMixin, RESTManager):
@@ -1576,7 +1580,7 @@ class SnippetManager(CRUDMixin, RESTManager):
     _update_attrs = (tuple(), ("title", "file_name", "content", "visibility"))
 
     @cli.register_custom_action("SnippetManager")
-    async def public(self, **kwargs):
+    def public(self, **kwargs):
         """List all the public snippets.
 
         Args:
@@ -1589,7 +1593,7 @@ class SnippetManager(CRUDMixin, RESTManager):
         Returns:
             RESTObjectList: A generator for the snippets list
         """
-        return await self.list(path="/snippets/public", **kwargs)
+        return self.list(path="/snippets/public", **kwargs)
 
 
 class Namespace(RESTObject):
@@ -1634,7 +1638,7 @@ class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
         "ProjectRegistryTagManager", optional=("name_regex", "keep_n", "older_than")
     )
     @exc.on_http_error(exc.GitlabDeleteError)
-    async def delete_in_bulk(self, name_regex=".*", **kwargs):
+    def delete_in_bulk(self, name_regex=".*", **kwargs):
         """Delete Tag in bulk
 
         Args:
@@ -1651,7 +1655,7 @@ class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
         valid_attrs = ["keep_n", "older_than"]
         data = {"name_regex": name_regex}
         data.update({k: v for k, v in kwargs.items() if k in valid_attrs})
-        await self.gitlab.http_delete(self.path, query_data=data, **kwargs)
+        return self.gitlab.http_delete(self.path, query_data=data, **kwargs)
 
 
 class ProjectBoardList(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -1680,13 +1684,22 @@ class ProjectBoardManager(CRUDMixin, RESTManager):
 class ProjectBranch(ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
 
+    async def _achange_protected(self, dest, server_data):
+        server_data = await server_data
+        return self._change_protected(dest, server_data)
+
+    def _change_protected(self, dest, server_data):
+        if asyncio.iscoroutine(server_data):
+            return self._achange_protected(dest, server_data)
+
+        self._attrs["protected"] = dest
+        return server_data
+
     @cli.register_custom_action(
         "ProjectBranch", tuple(), ("developers_can_push", "developers_can_merge")
     )
     @exc.on_http_error(exc.GitlabProtectError)
-    async def protect(
-        self, developers_can_push=False, developers_can_merge=False, **kwargs
-    ):
+    def protect(self, developers_can_push=False, developers_can_merge=False, **kwargs):
         """Protect the branch.
 
         Args:
@@ -1706,12 +1719,12 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
             "developers_can_push": developers_can_push,
             "developers_can_merge": developers_can_merge,
         }
-        await self.manager.gitlab.http_put(path, post_data=post_data, **kwargs)
-        self._attrs["protected"] = True
+        server_data = self.manager.gitlab.http_put(path, post_data=post_data, **kwargs)
+        return self._change_protected(True, server_data)
 
     @cli.register_custom_action("ProjectBranch")
     @exc.on_http_error(exc.GitlabProtectError)
-    async def unprotect(self, **kwargs):
+    def unprotect(self, **kwargs):
         """Unprotect the branch.
 
         Args:
@@ -1723,8 +1736,8 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
         """
         id = self.get_id().replace("/", "%2F")
         path = "%s/%s/unprotect" % (self.manager.path, id)
-        await self.manager.gitlab.http_put(path, **kwargs)
-        self._attrs["protected"] = False
+        server_data self.manager.gitlab.http_put(path, **kwargs)
+        return self._change_protected(False, server_data)
 
 
 class ProjectBranchManager(NoUpdateMixin, RESTManager):
@@ -1758,7 +1771,7 @@ class ProjectClusterManager(CRUDMixin, RESTManager):
     )
 
     @exc.on_http_error(exc.GitlabStopError)
-    async def create(self, data, **kwargs):
+    def create(self, data, **kwargs):
         """Create a new object.
 
         Args:
@@ -1776,7 +1789,7 @@ class ProjectClusterManager(CRUDMixin, RESTManager):
                         the data sent by the server
         """
         path = "%s/user" % (self.path)
-        return await CreateMixin.create(self, data, path=path, **kwargs)
+        return CreateMixin.create(self, data, path=path, **kwargs)
 
 
 class ProjectCustomAttribute(ObjectDeleteMixin, RESTObject):
@@ -1792,7 +1805,7 @@ class ProjectCustomAttributeManager(RetrieveMixin, SetMixin, DeleteMixin, RESTMa
 class ProjectJob(RESTObject, RefreshMixin):
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobCancelError)
-    async def cancel(self, **kwargs):
+    def cancel(self, **kwargs):
         """Cancel the job.
 
         Args:
@@ -1803,11 +1816,11 @@ class ProjectJob(RESTObject, RefreshMixin):
             GitlabJobCancelError: If the job could not be canceled
         """
         path = "%s/%s/cancel" % (self.manager.path, self.get_id())
-        await self.manager.gitlab.http_post(path)
+        return self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobRetryError)
-    async def retry(self, **kwargs):
+    def retry(self, **kwargs):
         """Retry the job.
 
         Args:
@@ -1818,11 +1831,11 @@ class ProjectJob(RESTObject, RefreshMixin):
             GitlabJobRetryError: If the job could not be retried
         """
         path = "%s/%s/retry" % (self.manager.path, self.get_id())
-        await self.manager.gitlab.http_post(path)
+        return self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobPlayError)
-    async def play(self, **kwargs):
+    def play(self, **kwargs):
         """Trigger a job explicitly.
 
         Args:
@@ -1833,11 +1846,11 @@ class ProjectJob(RESTObject, RefreshMixin):
             GitlabJobPlayError: If the job could not be triggered
         """
         path = "%s/%s/play" % (self.manager.path, self.get_id())
-        await self.manager.gitlab.http_post(path)
+        return self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobEraseError)
-    async def erase(self, **kwargs):
+    def erase(self, **kwargs):
         """Erase the job (remove job artifacts and trace).
 
         Args:
@@ -1848,11 +1861,11 @@ class ProjectJob(RESTObject, RefreshMixin):
             GitlabJobEraseError: If the job could not be erased
         """
         path = "%s/%s/erase" % (self.manager.path, self.get_id())
-        await self.manager.gitlab.http_post(path)
+        return self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabCreateError)
-    async def keep_artifacts(self, **kwargs):
+    def keep_artifacts(self, **kwargs):
         """Prevent artifacts from being deleted when expiration is set.
 
         Args:
@@ -1863,11 +1876,11 @@ class ProjectJob(RESTObject, RefreshMixin):
             GitlabCreateError: If the request could not be performed
         """
         path = "%s/%s/artifacts/keep" % (self.manager.path, self.get_id())
-        await self.manager.gitlab.http_post(path)
+        return self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabCreateError)
-    async def delete_artifacts(self, **kwargs):
+    def delete_artifacts(self, **kwargs):
         """Delete artifacts of a job.
 
         Args:
@@ -1878,11 +1891,11 @@ class ProjectJob(RESTObject, RefreshMixin):
             GitlabDeleteError: If the request could not be performed
         """
         path = "%s/%s/artifacts" % (self.manager.path, self.get_id())
-        await self.manager.gitlab.http_delete(path)
+        return self.manager.gitlab.http_delete(path)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
-    async def artifacts(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+    def artifacts(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Get the job artifacts.
 
         Args:
@@ -1902,16 +1915,14 @@ class ProjectJob(RESTObject, RefreshMixin):
             str: The artifacts if `streamed` is False, None otherwise.
         """
         path = "%s/%s/artifacts" % (self.manager.path, self.get_id())
-        result = await self.manager.gitlab.http_get(
+        result =  self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return await utils.response_content(result, streamed, action)
+        return utils.response_content(result, streamed, action)  # TODO: ???
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
-    async def artifact(
-        self, path, streamed=False, action=None, chunk_size=1024, **kwargs
-    ):
+    def artifact(self, path, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Get a single artifact file from within the job's artifacts archive.
 
         Args:
@@ -1932,14 +1943,14 @@ class ProjectJob(RESTObject, RefreshMixin):
             str: The artifacts if `streamed` is False, None otherwise.
         """
         path = "%s/%s/artifacts/%s" % (self.manager.path, self.get_id(), path)
-        result = await self.manager.gitlab.http_get(
+        result =  self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return await utils.response_content(result, streamed, action)
+        return utils.response_content(result, streamed, action)  # TODO: ???
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
-    async def trace(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+    def trace(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Get the job trace.
 
         Args:
@@ -1959,10 +1970,10 @@ class ProjectJob(RESTObject, RefreshMixin):
             str: The trace
         """
         path = "%s/%s/trace" % (self.manager.path, self.get_id())
-        result = await self.manager.gitlab.http_get(
+        result =  self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return await utils.response_content(result, streamed, action)
+        return utils.response_content(result, streamed, action)  # TODO: ???
 
 
 class ProjectJobManager(RetrieveMixin, RESTManager):
@@ -1985,7 +1996,7 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
     )
 
     @exc.on_http_error(exc.GitlabCreateError)
-    async def create(self, data, **kwargs):
+    def create(self, data, **kwargs):
         """Create a new object.
 
         Args:
@@ -2010,7 +2021,7 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
             path = base_path % data
         else:
             path = self._compute_path(base_path)
-        return await CreateMixin.create(self, data, path=path, **kwargs)
+        return CreateMixin.create(self, data, path=path, **kwargs)
 
 
 class ProjectCommitComment(RESTObject):
@@ -2067,7 +2078,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action("ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    async def diff(self, **kwargs):
+    def diff(self, **kwargs):
         """Generate the commit diff.
 
         Args:
@@ -2081,11 +2092,11 @@ class ProjectCommit(RESTObject):
             list: The changes done in this commit
         """
         path = "%s/%s/diff" % (self.manager.path, self.get_id())
-        return await self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action("ProjectCommit", ("branch",))
     @exc.on_http_error(exc.GitlabCherryPickError)
-    async def cherry_pick(self, branch, **kwargs):
+    def cherry_pick(self, branch, **kwargs):
         """Cherry-pick a commit into a branch.
 
         Args:
@@ -2098,11 +2109,11 @@ class ProjectCommit(RESTObject):
         """
         path = "%s/%s/cherry_pick" % (self.manager.path, self.get_id())
         post_data = {"branch": branch}
-        await self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        return self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
     @cli.register_custom_action("ProjectCommit", optional=("type",))
     @exc.on_http_error(exc.GitlabGetError)
-    async def refs(self, type="all", **kwargs):
+    def refs(self, type="all", **kwargs):
         """List the references the commit is pushed to.
 
         Args:
@@ -2118,11 +2129,11 @@ class ProjectCommit(RESTObject):
         """
         path = "%s/%s/refs" % (self.manager.path, self.get_id())
         data = {"type": type}
-        return await self.manager.gitlab.http_get(path, query_data=data, **kwargs)
+        return self.manager.gitlab.http_get(path, query_data=data, **kwargs)
 
     @cli.register_custom_action("ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    async def merge_requests(self, **kwargs):
+    def merge_requests(self, **kwargs):
         """List the merge requests related to the commit.
 
         Args:
@@ -2136,7 +2147,7 @@ class ProjectCommit(RESTObject):
             list: The merge requests related to the commit.
         """
         path = "%s/%s/merge_requests" % (self.manager.path, self.get_id())
-        return await self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_get(path, **kwargs)
 
 
 class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
@@ -2152,7 +2163,7 @@ class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
 class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("ProjectEnvironment")
     @exc.on_http_error(exc.GitlabStopError)
-    async def stop(self, **kwargs):
+    def stop(self, **kwargs):
         """Stop the environment.
 
         Args:
@@ -2163,7 +2174,7 @@ class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabStopError: If the operation failed
         """
         path = "%s/%s/stop" % (self.manager.path, self.get_id())
-        await self.manager.gitlab.http_post(path, **kwargs)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
 
 class ProjectEnvironmentManager(
@@ -2189,7 +2200,7 @@ class ProjectKeyManager(CRUDMixin, RESTManager):
 
     @cli.register_custom_action("ProjectKeyManager", ("key_id",))
     @exc.on_http_error(exc.GitlabProjectDeployKeyError)
-    async def enable(self, key_id, **kwargs):
+    def enable(self, key_id, **kwargs):
         """Enable a deploy key for a project.
 
         Args:
@@ -2201,7 +2212,7 @@ class ProjectKeyManager(CRUDMixin, RESTManager):
             GitlabProjectDeployKeyError: If the key could not be enabled
         """
         path = "%s/%s/enable" % (self.path, key_id)
-        await self.gitlab.http_post(path, **kwargs)
+        return self.gitlab.http_post(path, **kwargs)
 
 
 class ProjectBadge(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -2251,7 +2262,7 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
     )
     _create_attrs = (tuple(), ("namespace",))
 
-    async def create(self, data, **kwargs):
+    def create(self, data, **kwargs):
         """Creates a new object.
 
         Args:
@@ -2268,7 +2279,7 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
                 the data sent by the server
         """
         path = self.path[:-1]  # drop the 's'
-        return await CreateMixin.create(self, data, path=path, **kwargs)
+        return CreateMixin.create(self, data, path=path, **kwargs)
 
 
 class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -2396,7 +2407,7 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     _create_attrs = (("target_project_id", "target_issue_iid"), tuple())
 
     @exc.on_http_error(exc.GitlabCreateError)
-    async def create(self, data, **kwargs):
+    def create(self, data, **kwargs):
         """Create a new object.
 
         Args:
@@ -2412,10 +2423,10 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
             GitlabCreateError: If the server cannot perform the request
         """
         self._check_missing_create_attrs(data)
-        server_data = await self.gitlab.http_post(self.path, post_data=data, **kwargs)
+        server_data =  self.gitlab.http_post(self.path, post_data=data, **kwargs)
         source_issue = ProjectIssue(self._parent.manager, server_data["source_issue"])
         target_issue = ProjectIssue(self._parent.manager, server_data["target_issue"])
-        return source_issue, target_issue
+        return source_issue, target_issue  # TODO: ???
 
 
 class ProjectIssueResourceLabelEvent(RESTObject):
@@ -2450,7 +2461,8 @@ class ProjectIssue(
 
     @cli.register_custom_action("ProjectIssue", ("to_project_id",))
     @exc.on_http_error(exc.GitlabUpdateError)
-    async def move(self, to_project_id, **kwargs):
+    @update_attrs
+    def move(self, to_project_id, **kwargs):
         """Move the issue to another project.
 
         Args:
@@ -2463,14 +2475,13 @@ class ProjectIssue(
         """
         path = "%s/%s/move" % (self.manager.path, self.get_id())
         data = {"to_project_id": to_project_id}
-        server_data = await self.manager.gitlab.http_post(
+        return  self.manager.gitlab.http_post(
             path, post_data=data, **kwargs
         )
-        self._update_attrs(server_data)
 
     @cli.register_custom_action("ProjectIssue")
     @exc.on_http_error(exc.GitlabGetError)
-    async def related_merge_requests(self, **kwargs):
+    def related_merge_requests(self, **kwargs):
         """List merge requests related to the issue.
 
         Args:
@@ -2484,11 +2495,11 @@ class ProjectIssue(
             list: The list of merge requests.
         """
         path = "%s/%s/related_merge_requests" % (self.manager.path, self.get_id())
-        return await self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action("ProjectIssue")
     @exc.on_http_error(exc.GitlabGetError)
-    async def closed_by(self, **kwargs):
+    def closed_by(self, **kwargs):
         """List merge requests that will close the issue when merged.
 
         Args:
@@ -2502,7 +2513,7 @@ class ProjectIssue(
             list: The list of merge requests.
         """
         path = "%s/%s/closed_by" % (self.manager.path, self.get_id())
-        return await self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_get(path, **kwargs)
 
 
 class ProjectIssueManager(CRUDMixin, RESTManager):
@@ -2573,7 +2584,7 @@ class ProjectMemberManager(CRUDMixin, RESTManager):
 
     @cli.register_custom_action("ProjectMemberManager")
     @exc.on_http_error(exc.GitlabListError)
-    async def all(self, **kwargs):
+    def all(self, **kwargs):
         """List all the members, included inherited ones.
 
         Args:
@@ -2646,7 +2657,7 @@ class ProjectTag(ObjectDeleteMixin, RESTObject):
     _short_print_attr = "name"
 
     @cli.register_custom_action("ProjectTag", ("description",))
-    async def set_release_description(self, description, **kwargs):
+    def set_release_description(self, description, **kwargs):
         """Set the release notes on the tag.
 
         If the release doesn't exist yet, it will be created. If it already
@@ -2666,19 +2677,19 @@ class ProjectTag(ObjectDeleteMixin, RESTObject):
         data = {"description": description}
         if self.release is None:
             try:
-                server_data = await self.manager.gitlab.http_post(
+                server_data = self.manager.gitlab.http_post(
                     path, post_data=data, **kwargs
                 )
             except exc.GitlabHttpError as e:
                 raise exc.GitlabCreateError(e.response_code, e.error_message)
         else:
             try:
-                server_data = await self.manager.gitlab.http_put(
+                server_data = self.manager.gitlab.http_put(
                     path, post_data=data, **kwargs
                 )
             except exc.GitlabHttpError as e:
                 raise exc.GitlabUpdateError(e.response_code, e.error_message)
-        self.release = server_data
+        self.release = server_data  # TODO: ???
 
 
 class ProjectTagManager(NoUpdateMixin, RESTManager):
@@ -2712,7 +2723,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
     _update_uses_post = True
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    async def set_approvers(
+    def set_approvers(
         self, approvals_required, approver_ids=None, approver_group_ids=None, **kwargs
     ):
         """Change MR-level allowed approvers and approver groups.
@@ -2862,7 +2873,8 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMROnBuildSuccessError)
-    async def cancel_merge_when_pipeline_succeeds(self, **kwargs):
+    @update_attrs
+    def cancel_merge_when_pipeline_succeeds(self, **kwargs):
         """Cancel merge when the pipeline succeeds.
 
         Args:
@@ -2878,12 +2890,11 @@ class ProjectMergeRequest(
             self.manager.path,
             self.get_id(),
         )
-        server_data = await self.manager.gitlab.http_put(path, **kwargs)
-        self._update_attrs(server_data)
+        return self.manager.gitlab.http_put(path, **kwargs)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
-    async def closes_issues(self, **kwargs):
+    def closes_issues(self, **kwargs):
         """List issues that will close on merge."
 
         Args:
@@ -2902,13 +2913,13 @@ class ProjectMergeRequest(
             RESTObjectList: List of issues
         """
         path = "%s/%s/closes_issues" % (self.manager.path, self.get_id())
-        data_list = await self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
-        return RESTObjectList(manager, ProjectIssue, data_list)
+        return RESTObjectList(manager, ProjectIssue, data_list)  # TODO: ???
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
-    async def commits(self, **kwargs):
+    def commits(self, **kwargs):
         """List the merge request commits.
 
         Args:
@@ -2928,13 +2939,13 @@ class ProjectMergeRequest(
         """
 
         path = "%s/%s/commits" % (self.manager.path, self.get_id())
-        data_list = await self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list =  self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = ProjectCommitManager(self.manager.gitlab, parent=self.manager._parent)
-        return RESTObjectList(manager, ProjectCommit, data_list)
+        return RESTObjectList(manager, ProjectCommit, data_list)  # TODO: ???
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
-    async def changes(self, **kwargs):
+    def changes(self, **kwargs):
         """List the merge request changes.
 
         Args:
@@ -2948,11 +2959,11 @@ class ProjectMergeRequest(
             RESTObjectList: List of changes
         """
         path = "%s/%s/changes" % (self.manager.path, self.get_id())
-        return await self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
-    async def pipelines(self, **kwargs):
+    def pipelines(self, **kwargs):
         """List the merge request pipelines.
 
         Args:
@@ -2967,11 +2978,12 @@ class ProjectMergeRequest(
         """
 
         path = "%s/%s/pipelines" % (self.manager.path, self.get_id())
-        return await self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action("ProjectMergeRequest", tuple(), ("sha"))
     @exc.on_http_error(exc.GitlabMRApprovalError)
-    async def approve(self, sha=None, **kwargs):
+    @update_attrs
+    def approve(self, sha=None, **kwargs):
         """Approve the merge request.
 
         Args:
@@ -2987,14 +2999,14 @@ class ProjectMergeRequest(
         if sha:
             data["sha"] = sha
 
-        server_data = await self.manager.gitlab.http_post(
+        return self.manager.gitlab.http_post(
             path, post_data=data, **kwargs
         )
-        self._update_attrs(server_data)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMRApprovalError)
-    async def unapprove(self, **kwargs):
+    @update_attrs
+    def unapprove(self, **kwargs):
         """Unapprove the merge request.
 
         Args:
@@ -3007,14 +3019,13 @@ class ProjectMergeRequest(
         path = "%s/%s/unapprove" % (self.manager.path, self.get_id())
         data = {}
 
-        server_data = await self.manager.gitlab.http_post(
+        return self.manager.gitlab.http_post(
             path, post_data=data, **kwargs
         )
-        self._update_attrs(server_data)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMRRebaseError)
-    async def rebase(self, **kwargs):
+    def rebase(self, **kwargs):
         """Attempt to rebase the source branch onto the target branch
 
         Args:
@@ -3026,7 +3037,7 @@ class ProjectMergeRequest(
         """
         path = "%s/%s/rebase" % (self.manager.path, self.get_id())
         data = {}
-        return await self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+        return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
 
     @cli.register_custom_action(
         "ProjectMergeRequest",
@@ -3038,7 +3049,8 @@ class ProjectMergeRequest(
         ),
     )
     @exc.on_http_error(exc.GitlabMRClosedError)
-    async def merge(
+    @update_attrs
+    def merge(
         self,
         merge_commit_message=None,
         should_remove_source_branch=False,
@@ -3068,8 +3080,7 @@ class ProjectMergeRequest(
         if merge_when_pipeline_succeeds:
             data["merge_when_pipeline_succeeds"] = True
 
-        server_data = await self.manager.gitlab.http_put(path, post_data=data, **kwargs)
-        self._update_attrs(server_data)
+        return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
 
 
 class ProjectMergeRequestManager(CRUDMixin, RESTManager):
@@ -3132,7 +3143,7 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("ProjectMilestone")
     @exc.on_http_error(exc.GitlabListError)
-    async def issues(self, **kwargs):
+    def issues(self, **kwargs):
         """List issues related to this milestone.
 
         Args:
@@ -3152,14 +3163,14 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
 
         path = "%s/%s/issues" % (self.manager.path, self.get_id())
-        data_list = await self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list =  self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
-        return RESTObjectList(manager, ProjectIssue, data_list)
+        return RESTObjectList(manager, ProjectIssue, data_list)  # TODO: ???
 
     @cli.register_custom_action("ProjectMilestone")
     @exc.on_http_error(exc.GitlabListError)
-    async def merge_requests(self, **kwargs):
+    def merge_requests(self, **kwargs):
         """List the merge requests related to this milestone.
 
         Args:
@@ -3178,12 +3189,12 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
             RESTObjectList: The list of merge requests
         """
         path = "%s/%s/merge_requests" % (self.manager.path, self.get_id())
-        data_list = await self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list =  self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = ProjectMergeRequestManager(
             self.manager.gitlab, parent=self.manager._parent
         )
         # FIXME(gpocentek): the computed manager path is not correct
-        return RESTObjectList(manager, ProjectMergeRequest, data_list)
+        return RESTObjectList(manager, ProjectMergeRequest, data_list)  # TODO: ???
 
 
 class ProjectMilestoneManager(CRUDMixin, RESTManager):
@@ -3206,7 +3217,8 @@ class ProjectLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
     # Update without ID, but we need an ID to get from list.
     @exc.on_http_error(exc.GitlabUpdateError)
-    async def save(self, **kwargs):
+    @update_attrs
+    def save(self, **kwargs):
         """Saves the changes made to the object to the server.
 
         The object is updated to match what the server returns.
@@ -3220,9 +3232,7 @@ class ProjectLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         updated_data = self._get_updated_data()
 
-        # call the manager
-        server_data = self.manager.update(None, updated_data, **kwargs)
-        self._update_attrs(server_data)
+        return self.manager.update(None, updated_data, **kwargs)
 
 
 class ProjectLabelManager(
@@ -3235,7 +3245,7 @@ class ProjectLabelManager(
     _update_attrs = (("name",), ("new_name", "color", "description", "priority"))
 
     # Update without ID.
-    async def update(self, name, new_data=None, **kwargs):
+    def update(self, name, new_data=None, **kwargs):
         """Update a Label on the server.
 
         Args:
@@ -3249,7 +3259,7 @@ class ProjectLabelManager(
 
     # Delete without ID.
     @exc.on_http_error(exc.GitlabDeleteError)
-    async def delete(self, name, **kwargs):
+    def delete(self, name, **kwargs):
         """Delete a Label on the server.
 
         Args:
@@ -3260,7 +3270,7 @@ class ProjectLabelManager(
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
-        await self.gitlab.http_delete(self.path, query_data={"name": name}, **kwargs)
+        return self.gitlab.http_delete(self.path, query_data={"name": name}, **kwargs)
 
 
 class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -3275,7 +3285,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         return base64.b64decode(self.content)
 
-    async def save(self, branch, commit_message, **kwargs):
+    def save(self, branch, commit_message, **kwargs):
         """Save the changes made to the file to the server.
 
         The object is updated to match what the server returns.
@@ -3292,9 +3302,9 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.branch = branch
         self.commit_message = commit_message
         self.file_path = self.file_path.replace("/", "%2F")
-        await super(ProjectFile, self).save(**kwargs)
+        return super(ProjectFile, self).save(**kwargs)
 
-    async def delete(self, branch, commit_message, **kwargs):
+    def delete(self, branch, commit_message, **kwargs):
         """Delete the file from the server.
 
         Args:
@@ -3307,7 +3317,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabDeleteError: If the server cannot perform the request
         """
         file_path = self.get_id().replace("/", "%2F")
-        await self.manager.delete(file_path, branch, commit_message, **kwargs)
+        return self.manager.delete(file_path, branch, commit_message, **kwargs)
 
 
 class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
@@ -3324,7 +3334,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
     )
 
     @cli.register_custom_action("ProjectFileManager", ("file_path", "ref"))
-    async def get(self, file_path, ref, **kwargs):
+    def get(self, file_path, ref, **kwargs):
         """Retrieve a single file.
 
         Args:
@@ -3340,7 +3350,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             object: The generated RESTObject
         """
         file_path = file_path.replace("/", "%2F")
-        return await GetMixin.get(self, file_path, ref=ref, **kwargs)
+        return GetMixin.get(self, file_path, ref=ref, **kwargs)
 
     @cli.register_custom_action(
         "ProjectFileManager",
@@ -3348,7 +3358,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         ("encoding", "author_email", "author_name"),
     )
     @exc.on_http_error(exc.GitlabCreateError)
-    async def create(self, data, **kwargs):
+    def create(self, data, **kwargs):
         """Create a new object.
 
         Args:
@@ -3369,11 +3379,11 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         new_data = data.copy()
         file_path = new_data.pop("file_path").replace("/", "%2F")
         path = "%s/%s" % (self.path, file_path)
-        server_data = await self.gitlab.http_post(path, post_data=new_data, **kwargs)
-        return self._obj_cls(self, server_data)
+        server_data = self.gitlab.http_post(path, post_data=new_data, **kwargs)
+        return self._obj_cls.create(self, server_data)
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    async def update(self, file_path, new_data=None, **kwargs):
+    def update(self, file_path, new_data=None, **kwargs):
         """Update an object on the server.
 
         Args:
@@ -3394,13 +3404,13 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         data["file_path"] = file_path
         path = "%s/%s" % (self.path, file_path)
         self._check_missing_update_attrs(data)
-        return await self.gitlab.http_put(path, post_data=data, **kwargs)
+        return self.gitlab.http_put(path, post_data=data, **kwargs)
 
     @cli.register_custom_action(
         "ProjectFileManager", ("file_path", "branch", "commit_message")
     )
     @exc.on_http_error(exc.GitlabDeleteError)
-    async def delete(self, file_path, branch, commit_message, **kwargs):
+    def delete(self, file_path, branch, commit_message, **kwargs):
         """Delete a file on the server.
 
         Args:
@@ -3415,11 +3425,11 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         """
         path = "%s/%s" % (self.path, file_path.replace("/", "%2F"))
         data = {"branch": branch, "commit_message": commit_message}
-        await self.gitlab.http_delete(path, query_data=data, **kwargs)
+        return self.gitlab.http_delete(path, query_data=data, **kwargs)
 
     @cli.register_custom_action("ProjectFileManager", ("file_path", "ref"))
     @exc.on_http_error(exc.GitlabGetError)
-    async def raw(
+    def raw(
         self, file_path, ref, streamed=False, action=None, chunk_size=1024, **kwargs
     ):
         """Return the content of a file for a commit.
@@ -3445,14 +3455,14 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         file_path = file_path.replace("/", "%2F").replace(".", "%2E")
         path = "%s/%s/raw" % (self.path, file_path)
         query_data = {"ref": ref}
-        result = await self.gitlab.http_get(
+        result =  self.gitlab.http_get(
             path, query_data=query_data, streamed=streamed, raw=True, **kwargs
         )
-        return await utils.response_content(result, streamed, action)
+        return utils.response_content(result, streamed, action)  # TODO: ???
 
     @cli.register_custom_action("ProjectFileManager", ("file_path", "ref"))
     @exc.on_http_error(exc.GitlabListError)
-    async def blame(self, file_path, ref, **kwargs):
+    def blame(self, file_path, ref, **kwargs):
         """Return the content of a file for a commit.
 
         Args:
@@ -3470,7 +3480,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         file_path = file_path.replace("/", "%2F").replace(".", "%2E")
         path = "%s/%s/blame" % (self.path, file_path)
         query_data = {"ref": ref}
-        return await self.gitlab.http_list(path, query_data, **kwargs)
+        return self.gitlab.http_list(path, query_data, **kwargs)
 
 
 class ProjectPipelineJob(RESTObject):
@@ -3502,7 +3512,7 @@ class ProjectPipeline(RESTObject, RefreshMixin, ObjectDeleteMixin):
 
     @cli.register_custom_action("ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineCancelError)
-    async def cancel(self, **kwargs):
+    def cancel(self, **kwargs):
         """Cancel the job.
 
         Args:
@@ -3513,11 +3523,11 @@ class ProjectPipeline(RESTObject, RefreshMixin, ObjectDeleteMixin):
             GitlabPipelineCancelError: If the request failed
         """
         path = "%s/%s/cancel" % (self.manager.path, self.get_id())
-        await self.manager.gitlab.http_post(path)
+        return self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineRetryError)
-    async def retry(self, **kwargs):
+    def retry(self, **kwargs):
         """Retry the job.
 
         Args:
@@ -3528,7 +3538,7 @@ class ProjectPipeline(RESTObject, RefreshMixin, ObjectDeleteMixin):
             GitlabPipelineRetryError: If the request failed
         """
         path = "%s/%s/retry" % (self.manager.path, self.get_id())
-        await self.manager.gitlab.http_post(path)
+        return self.manager.gitlab.http_post(path)
 
 
 class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
@@ -3548,7 +3558,7 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManage
     )
     _create_attrs = (("ref",), tuple())
 
-    async def create(self, data, **kwargs):
+    def create(self, data, **kwargs):
         """Creates a new object.
 
         Args:
@@ -3565,7 +3575,7 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManage
                 the data sent by the server
         """
         path = self.path[:-1]  # drop the 's'
-        return await CreateMixin.create(self, data, path=path, **kwargs)
+        return CreateMixin.create(self, data, path=path, **kwargs)
 
 
 class ProjectPipelineScheduleVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -3590,7 +3600,8 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("ProjectPipelineSchedule")
     @exc.on_http_error(exc.GitlabOwnershipError)
-    async def take_ownership(self, **kwargs):
+    @update_attrs
+    def take_ownership(self, **kwargs):
         """Update the owner of a pipeline schedule.
 
         Args:
@@ -3601,8 +3612,7 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabOwnershipError: If the request failed
         """
         path = "%s/%s/take_ownership" % (self.manager.path, self.get_id())
-        server_data = await self.manager.gitlab.http_post(path, **kwargs)
-        self._update_attrs(server_data)
+        server_data = return self.manager.gitlab.http_post(path, **kwargs)
 
 
 class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
@@ -3735,7 +3745,7 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
 
     @cli.register_custom_action("ProjectSnippet")
     @exc.on_http_error(exc.GitlabGetError)
-    async def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+    def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Return the content of a snippet.
 
         Args:
@@ -3755,10 +3765,10 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
             str: The snippet content
         """
         path = "%s/%s/raw" % (self.manager.path, self.get_id())
-        result = await self.manager.gitlab.http_get(
+        result =  self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return await utils.response_content(result, streamed, action)
+        return utils.response_content(result, streamed, action)  # TODO: ???
 
 
 class ProjectSnippetManager(CRUDMixin, RESTManager):
@@ -3775,7 +3785,8 @@ class ProjectSnippetManager(CRUDMixin, RESTManager):
 class ProjectTrigger(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("ProjectTrigger")
     @exc.on_http_error(exc.GitlabOwnershipError)
-    async def take_ownership(self, **kwargs):
+    @update_attrs
+    def take_ownership(self, **kwargs):
         """Update the owner of a trigger.
 
         Args:
@@ -3786,8 +3797,7 @@ class ProjectTrigger(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabOwnershipError: If the request failed
         """
         path = "%s/%s/take_ownership" % (self.manager.path, self.get_id())
-        server_data = await self.manager.gitlab.http_post(path, **kwargs)
-        self._update_attrs(server_data)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
 
 class ProjectTriggerManager(CRUDMixin, RESTManager):
@@ -3879,7 +3889,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
         "teamcity": (("teamcity_url", "build_type", "username", "password"), tuple()),
     }
 
-    async def get(self, id, **kwargs):
+    def get(self, id, **kwargs):
         """Retrieve a single object.
 
         Args:
@@ -3896,11 +3906,11 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        obj = await super(ProjectServiceManager, self).get(id, **kwargs)
+        obj =  super(ProjectServiceManager, self).get(id, **kwargs)
         obj.id = id
-        return obj
+        return obj  # TODO: ???
 
-    async def update(self, id=None, new_data=None, **kwargs):
+    def update(self, id=None, new_data=None, **kwargs):
         """Update an object on the server.
 
         Args:
@@ -3916,8 +3926,8 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
             GitlabUpdateError: If the server cannot perform the request
         """
         new_data = new_data or {}
-        await super(ProjectServiceManager, self).update(id, new_data, **kwargs)
-        self.id = id
+         super(ProjectServiceManager, self).update(id, new_data, **kwargs)
+        self.id = id  # TODO: ???
 
     @cli.register_custom_action("ProjectServiceManager")
     def available(self, **kwargs):
@@ -3960,7 +3970,7 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _update_uses_post = True
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    async def set_approvers(self, approver_ids=None, approver_group_ids=None, **kwargs):
+    def set_approvers(self, approver_ids=None, approver_group_ids=None, **kwargs):
         """Change project-level allowed approvers and approver groups.
 
         Args:
@@ -3976,7 +3986,7 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
 
         path = "/projects/%s/approvers" % self._parent.get_id()
         data = {"approver_ids": approver_ids, "approver_group_ids": approver_group_ids}
-        await self.gitlab.http_put(path, post_data=data, **kwargs)
+        return self.gitlab.http_put(path, post_data=data, **kwargs)
 
 
 class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -4055,7 +4065,7 @@ class ProjectExport(RefreshMixin, RESTObject):
 
     @cli.register_custom_action("ProjectExport")
     @exc.on_http_error(exc.GitlabGetError)
-    async def download(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+    def download(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Download the archive of a project export.
 
         Args:
@@ -4075,10 +4085,10 @@ class ProjectExport(RefreshMixin, RESTObject):
             str: The blob content if streamed is False, None otherwise
         """
         path = "/projects/%s/export/download" % self.project_id
-        result = await self.manager.gitlab.http_get(
+        result =  self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return await utils.response_content(result, streamed, action)
+        return utils.response_content(result, streamed, action)  # TODO: ???
 
 
 class ProjectExportManager(GetWithoutIdMixin, CreateMixin, RESTManager):
@@ -4169,7 +4179,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("Project", ("submodule", "branch", "commit_sha"))
     @exc.on_http_error(exc.GitlabUpdateError)
-    async def update_submodule(self, submodule, branch, commit_sha, **kwargs):
+    def update_submodule(self, submodule, branch, commit_sha, **kwargs):
         """Update a project submodule
 
         Args:
@@ -4188,11 +4198,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         data = {"branch": branch, "commit_sha": commit_sha}
         if "commit_message" in kwargs:
             data["commit_message"] = kwargs["commit_message"]
-        return await self.manager.gitlab.http_put(path, post_data=data)
+        return self.manager.gitlab.http_put(path, post_data=data)
 
     @cli.register_custom_action("Project", tuple(), ("path", "ref", "recursive"))
     @exc.on_http_error(exc.GitlabGetError)
-    async def repository_tree(self, path="", ref="", recursive=False, **kwargs):
+    def repository_tree(self, path="", ref="", recursive=False, **kwargs):
         """Return a list of files in the repository.
 
         Args:
@@ -4219,13 +4229,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             query_data["path"] = path
         if ref:
             query_data["ref"] = ref
-        return await self.manager.gitlab.http_list(
-            gl_path, query_data=query_data, **kwargs
-        )
+        return self.manager.gitlab.http_list(gl_path, query_data=query_data, **kwargs)
 
     @cli.register_custom_action("Project", ("sha",))
     @exc.on_http_error(exc.GitlabGetError)
-    async def repository_blob(self, sha, **kwargs):
+    def repository_blob(self, sha, **kwargs):
         """Return a file by blob SHA.
 
         Args:
@@ -4241,11 +4249,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
 
         path = "/projects/%s/repository/blobs/%s" % (self.get_id(), sha)
-        return await self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action("Project", ("sha",))
     @exc.on_http_error(exc.GitlabGetError)
-    async def repository_raw_blob(
+    def repository_raw_blob(
         self, sha, streamed=False, action=None, chunk_size=1024, **kwargs
     ):
         """Return the raw file contents for a blob.
@@ -4268,14 +4276,14 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             str: The blob content if streamed is False, None otherwise
         """
         path = "/projects/%s/repository/blobs/%s/raw" % (self.get_id(), sha)
-        result = await self.manager.gitlab.http_get(
+        result =  self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return await utils.response_content(result, streamed, action)
+        return utils.response_content(result, streamed, action)  # TODO: ???
 
     @cli.register_custom_action("Project", ("from_", "to"))
     @exc.on_http_error(exc.GitlabGetError)
-    async def repository_compare(self, from_, to, **kwargs):
+    def repository_compare(self, from_, to, **kwargs):
         """Return a diff between two branches/commits.
 
         Args:
@@ -4292,11 +4300,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = "/projects/%s/repository/compare" % self.get_id()
         query_data = {"from": from_, "to": to}
-        return await self.manager.gitlab.http_get(path, query_data=query_data, **kwargs)
+        return self.manager.gitlab.http_get(path, query_data=query_data, **kwargs)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabGetError)
-    async def repository_contributors(self, **kwargs):
+    def repository_contributors(self, **kwargs):
         """Return a list of contributors for the project.
 
         Args:
@@ -4315,11 +4323,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             list: The contributors
         """
         path = "/projects/%s/repository/contributors" % self.get_id()
-        return await self.manager.gitlab.http_list(path, **kwargs)
+        return self.manager.gitlab.http_list(path, **kwargs)
 
     @cli.register_custom_action("Project", tuple(), ("sha",))
     @exc.on_http_error(exc.GitlabListError)
-    async def repository_archive(
+    def repository_archive(
         self, sha=None, streamed=False, action=None, chunk_size=1024, **kwargs
     ):
         """Return a tarball of the repository.
@@ -4345,14 +4353,14 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         query_data = {}
         if sha:
             query_data["sha"] = sha
-        result = await self.manager.gitlab.http_get(
+        result =  self.manager.gitlab.http_get(
             path, query_data=query_data, raw=True, streamed=streamed, **kwargs
         )
-        return await utils.response_content(result, streamed, action)
+        return utils.response_content(result, streamed, action)  # TODO: ???
 
     @cli.register_custom_action("Project", ("forked_from_id",))
     @exc.on_http_error(exc.GitlabCreateError)
-    async def create_fork_relation(self, forked_from_id, **kwargs):
+    def create_fork_relation(self, forked_from_id, **kwargs):
         """Create a forked from/to relation between existing projects.
 
         Args:
@@ -4364,11 +4372,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabCreateError: If the relation could not be created
         """
         path = "/projects/%s/fork/%s" % (self.get_id(), forked_from_id)
-        await self.manager.gitlab.http_post(path, **kwargs)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabDeleteError)
-    async def delete_fork_relation(self, **kwargs):
+    def delete_fork_relation(self, **kwargs):
         """Delete a forked relation between existing projects.
 
         Args:
@@ -4379,11 +4387,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabDeleteError: If the server failed to perform the request
         """
         path = "/projects/%s/fork" % self.get_id()
-        await self.manager.gitlab.http_delete(path, **kwargs)
+        return self.manager.gitlab.http_delete(path, **kwargs)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabDeleteError)
-    async def delete_merged_branches(self, **kwargs):
+    def delete_merged_branches(self, **kwargs):
         """Delete merged branches.
 
         Args:
@@ -4394,11 +4402,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabDeleteError: If the server failed to perform the request
         """
         path = "/projects/%s/repository/merged_branches" % self.get_id()
-        await self.manager.gitlab.http_delete(path, **kwargs)
+        return self.manager.gitlab.http_delete(path, **kwargs)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabGetError)
-    async def languages(self, **kwargs):
+    def languages(self, **kwargs):
         """Get languages used in the project with percentage value.
 
         Args:
@@ -4409,11 +4417,12 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabGetError: If the server failed to perform the request
         """
         path = "/projects/%s/languages" % self.get_id()
-        return await self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabCreateError)
-    async def star(self, **kwargs):
+    @update_attrs
+    def star(self, **kwargs):
         """Star a project.
 
         Args:
@@ -4424,12 +4433,12 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabCreateError: If the server failed to perform the request
         """
         path = "/projects/%s/star" % self.get_id()
-        server_data = await self.manager.gitlab.http_post(path, **kwargs)
-        self._update_attrs(server_data)
+         return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabDeleteError)
-    async def unstar(self, **kwargs):
+    @update_attrs
+    def unstar(self, **kwargs):
         """Unstar a project.
 
         Args:
@@ -4440,12 +4449,12 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabDeleteError: If the server failed to perform the request
         """
         path = "/projects/%s/unstar" % self.get_id()
-        server_data = await self.manager.gitlab.http_post(path, **kwargs)
-        self._update_attrs(server_data)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabCreateError)
-    async def archive(self, **kwargs):
+    @update_attrs
+    def archive(self, **kwargs):
         """Archive a project.
 
         Args:
@@ -4456,12 +4465,12 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabCreateError: If the server failed to perform the request
         """
         path = "/projects/%s/archive" % self.get_id()
-        server_data = await self.manager.gitlab.http_post(path, **kwargs)
-        self._update_attrs(server_data)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabDeleteError)
-    async def unarchive(self, **kwargs):
+    @update_attrs
+    def unarchive(self, **kwargs):
         """Unarchive a project.
 
         Args:
@@ -4472,14 +4481,13 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabDeleteError: If the server failed to perform the request
         """
         path = "/projects/%s/unarchive" % self.get_id()
-        server_data = await self.manager.gitlab.http_post(path, **kwargs)
-        self._update_attrs(server_data)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action(
         "Project", ("group_id", "group_access"), ("expires_at",)
     )
     @exc.on_http_error(exc.GitlabCreateError)
-    async def share(self, group_id, group_access, expires_at=None, **kwargs):
+    def share(self, group_id, group_access, expires_at=None, **kwargs):
         """Share the project with a group.
 
         Args:
@@ -4497,11 +4505,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             "group_access": group_access,
             "expires_at": expires_at,
         }
-        await self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
     @cli.register_custom_action("Project", ("group_id",))
     @exc.on_http_error(exc.GitlabDeleteError)
-    async def unshare(self, group_id, **kwargs):
+    def unshare(self, group_id, **kwargs):
         """Delete a shared project link within a group.
 
         Args:
@@ -4513,12 +4521,12 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabDeleteError: If the server failed to perform the request
         """
         path = "/projects/%s/share/%s" % (self.get_id(), group_id)
-        await self.manager.gitlab.http_delete(path, **kwargs)
+        return self.manager.gitlab.http_delete(path, **kwargs)
 
     # variables not supported in CLI
     @cli.register_custom_action("Project", ("ref", "token"))
     @exc.on_http_error(exc.GitlabCreateError)
-    async def trigger_pipeline(self, ref, token, variables=None, **kwargs):
+    def trigger_pipeline(self, ref, token, variables=None, **kwargs):
         """Trigger a CI build.
 
         See https://gitlab.com/help/ci/triggers/README.md#trigger-a-build
@@ -4536,12 +4544,12 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         variables = variables or {}
         path = "/projects/%s/trigger/pipeline" % self.get_id()
         post_data = {"ref": ref, "token": token, "variables": variables}
-        attrs = await self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
-        return ProjectPipeline(self.pipelines, attrs)
+        attrs =  self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        return ProjectPipeline(self.pipelines, attrs)  # TODO: ???
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabHousekeepingError)
-    async def housekeeping(self, **kwargs):
+    def housekeeping(self, **kwargs):
         """Start the housekeeping task.
 
         Args:
@@ -4553,12 +4561,12 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
                                      request
         """
         path = "/projects/%s/housekeeping" % self.get_id()
-        await self.manager.gitlab.http_post(path, **kwargs)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
     # see #56 - add file attachment features
     @cli.register_custom_action("Project", ("filename", "filepath"))
     @exc.on_http_error(exc.GitlabUploadError)
-    async def upload(self, filename, filedata=None, filepath=None, **kwargs):
+    def upload(self, filename, filedata=None, filepath=None, **kwargs):
         """Upload the specified file into the project.
 
         .. note::
@@ -4596,13 +4604,13 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
 
         url = "/projects/%(id)s/uploads" % {"id": self.id}
         file_info = {"file": (filename, filedata)}
-        data = await self.manager.gitlab.http_post(url, files=file_info)
+        data =  self.manager.gitlab.http_post(url, files=file_info)
 
-        return {"alt": data["alt"], "url": data["url"], "markdown": data["markdown"]}
+        return {"alt": data["alt"], "url": data["url"], "markdown": data["markdown"]}  # TODO: ???
 
     @cli.register_custom_action("Project", optional=("wiki",))
     @exc.on_http_error(exc.GitlabGetError)
-    async def snapshot(
+    def snapshot(
         self, wiki=False, streamed=False, action=None, chunk_size=1024, **kwargs
     ):
         """Return a snapshot of the repository.
@@ -4625,14 +4633,14 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             str: The uncompressed tar archive of the repository
         """
         path = "/projects/%s/snapshot" % self.get_id()
-        result = await self.manager.gitlab.http_get(
+        result =  self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return await utils.response_content(result, streamed, action)
+        return utils.response_content(result, streamed, action)  # TODO:??? 
 
     @cli.register_custom_action("Project", ("scope", "search"))
     @exc.on_http_error(exc.GitlabSearchError)
-    async def search(self, scope, search, **kwargs):
+    def search(self, scope, search, **kwargs):
         """Search the project resources matching the provided string.'
 
         Args:
@@ -4649,11 +4657,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         data = {"scope": scope, "search": search}
         path = "/projects/%s/search" % self.get_id()
-        return await self.manager.gitlab.http_list(path, query_data=data, **kwargs)
+        return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabCreateError)
-    async def mirror_pull(self, **kwargs):
+    def mirror_pull(self, **kwargs):
         """Start the pull mirroring process for the project.
 
         Args:
@@ -4664,11 +4672,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabCreateError: If the server failed to perform the request
         """
         path = "/projects/%s/mirror/pull" % self.get_id()
-        await self.manager.gitlab.http_post(path, **kwargs)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("Project", ("to_namespace",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
-    async def transfer_project(self, to_namespace, **kwargs):
+    def transfer_project(self, to_namespace, **kwargs):
         """Transfer a project to the given namespace ID
 
         Args:
@@ -4681,13 +4689,13 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabTransferProjectError: If the project could not be transfered
         """
         path = "/projects/%s/transfer" % (self.id,)
-        await self.manager.gitlab.http_put(
+        return self.manager.gitlab.http_put(
             path, post_data={"namespace": to_namespace}, **kwargs
         )
 
     @cli.register_custom_action("Project", ("ref_name", "artifact_path", "job"))
     @exc.on_http_error(exc.GitlabGetError)
-    async def artifact(
+    def artifact(
         self, ref_name, artifact_path, job, streamed=False, action=None, **kwargs
     ):
         """Download a single artifact file from a specific tag or branch from within the job’s artifacts archive.
@@ -4718,10 +4726,10 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             artifact_path,
             job,
         )
-        result = await self.manager.gitlab.http_get(
+        result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return await utils.response_content(result, streamed, action)
+        return utils.response_content(result, streamed, action)  # TODO:??? 
 
 
 class ProjectManager(CRUDMixin, RESTManager):
@@ -4801,7 +4809,7 @@ class ProjectManager(CRUDMixin, RESTManager):
         "with_custom_attributes",
     )
 
-    async def import_project(
+    def import_project(
         self,
         file,
         path,
@@ -4836,11 +4844,11 @@ class ProjectManager(CRUDMixin, RESTManager):
                 data["override_params[%s]" % k] = v
         if namespace:
             data["namespace"] = namespace
-        return await self.gitlab.http_post(
+        return self.gitlab.http_post(
             "/projects/import", post_data=data, files=files, **kwargs
         )
 
-    async def import_github(
+    def import_github(
         self, personal_access_token, repo_id, target_namespace, new_name=None, **kwargs
     ):
         """Import a project from Github to Gitlab (schedule the import)
@@ -4900,8 +4908,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             # and this is too short for this API command, typically.
             # On the order of 24 seconds has been measured on a typical gitlab instance.
             kwargs["timeout"] = 60.0
-        result = await self.gitlab.http_post("/import/github", post_data=data, **kwargs)
-        return result
+        return self.gitlab.http_post("/import/github", post_data=data, **kwargs)
 
 
 class RunnerJob(RESTObject):
@@ -4950,7 +4957,7 @@ class RunnerManager(CRUDMixin, RESTManager):
 
     @cli.register_custom_action("RunnerManager", tuple(), ("scope",))
     @exc.on_http_error(exc.GitlabListError)
-    async def all(self, scope=None, **kwargs):
+    def all(self, scope=None, **kwargs):
         """List all the runners.
 
         Args:
@@ -4974,11 +4981,11 @@ class RunnerManager(CRUDMixin, RESTManager):
         query_data = {}
         if scope is not None:
             query_data["scope"] = scope
-        return await self.gitlab.http_list(path, query_data, **kwargs)
+        return self.gitlab.http_list(path, query_data, **kwargs)
 
     @cli.register_custom_action("RunnerManager", ("token",))
     @exc.on_http_error(exc.GitlabVerifyError)
-    async def verify(self, token, **kwargs):
+    def verify(self, token, **kwargs):
         """Validates authentication credentials for a registered Runner.
 
         Args:
@@ -4991,13 +4998,14 @@ class RunnerManager(CRUDMixin, RESTManager):
         """
         path = "/runners/verify"
         post_data = {"token": token}
-        await self.gitlab.http_post(path, post_data=post_data, **kwargs)
+        return self.gitlab.http_post(path, post_data=post_data, **kwargs)
 
 
 class Todo(ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("Todo")
     @exc.on_http_error(exc.GitlabTodoError)
-    async def mark_as_done(self, **kwargs):
+    @update_attrs
+    def mark_as_done(self, **kwargs):
         """Mark the todo as done.
 
         Args:
@@ -5008,8 +5016,7 @@ class Todo(ObjectDeleteMixin, RESTObject):
             GitlabTodoError: If the server failed to perform the request
         """
         path = "%s/%s/mark_as_done" % (self.manager.path, self.id)
-        server_data = await self.manager.gitlab.http_post(path, **kwargs)
-        self._update_attrs(server_data)
+        server_data = return self.manager.gitlab.http_post(path, **kwargs)
 
 
 class TodoManager(ListMixin, DeleteMixin, RESTManager):
@@ -5019,7 +5026,7 @@ class TodoManager(ListMixin, DeleteMixin, RESTManager):
 
     @cli.register_custom_action("TodoManager")
     @exc.on_http_error(exc.GitlabTodoError)
-    async def mark_all_as_done(self, **kwargs):
+    def mark_all_as_done(self, **kwargs):
         """Mark all the todos as done.
 
         Args:
@@ -5032,13 +5039,14 @@ class TodoManager(ListMixin, DeleteMixin, RESTManager):
         Returns:
             int: The number of todos maked done
         """
-        result = await self.gitlab.http_post("/todos/mark_as_done", **kwargs)
+        return self.gitlab.http_post("/todos/mark_as_done", **kwargs)
 
 
 class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("GeoNode")
     @exc.on_http_error(exc.GitlabRepairError)
-    async def repair(self, **kwargs):
+    @update_attrs
+    def repair(self, **kwargs):
         """Repair the OAuth authentication of the geo node.
 
         Args:
@@ -5049,12 +5057,11 @@ class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabRepairError: If the server failed to perform the request
         """
         path = "/geo_nodes/%s/repair" % self.get_id()
-        server_data = await self.manager.gitlab.http_post(path, **kwargs)
-        self._update_attrs(server_data)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("GeoNode")
     @exc.on_http_error(exc.GitlabGetError)
-    async def status(self, **kwargs):
+    def status(self, **kwargs):
         """Get the status of the geo node.
 
         Args:
@@ -5068,7 +5075,7 @@ class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
             dict: The status of the geo node
         """
         path = "/geo_nodes/%s/status" % self.get_id()
-        return await self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_get(path, **kwargs)
 
 
 class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
@@ -5081,7 +5088,7 @@ class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
 
     @cli.register_custom_action("GeoNodeManager")
     @exc.on_http_error(exc.GitlabGetError)
-    async def status(self, **kwargs):
+    def status(self, **kwargs):
         """Get the status of all the geo nodes.
 
         Args:
@@ -5094,11 +5101,11 @@ class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
         Returns:
             list: The status of all the geo nodes
         """
-        return await self.gitlab.http_list("/geo_nodes/status", **kwargs)
+        return self.gitlab.http_list("/geo_nodes/status", **kwargs)
 
     @cli.register_custom_action("GeoNodeManager")
     @exc.on_http_error(exc.GitlabGetError)
-    async def current_failures(self, **kwargs):
+    def current_failures(self, **kwargs):
         """Get the list of failures on the current geo node.
 
         Args:
@@ -5111,4 +5118,4 @@ class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
         Returns:
             list: The list of failures
         """
-        return await self.gitlab.http_list("/geo_nodes/current/failures", **kwargs)
+        return self.gitlab.http_list("/geo_nodes/current/failures", **kwargs)
