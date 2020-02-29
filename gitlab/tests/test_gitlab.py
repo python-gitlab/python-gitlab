@@ -29,9 +29,18 @@ from gitlab import AsyncGitlab, Gitlab
 from gitlab import exceptions as exc
 from gitlab.client import _sanitize
 from gitlab.types import GitlabList
-from gitlab.v4.objects import (CurrentUser, Group, Hook, Project,
-                               ProjectAdditionalStatistics, ProjectEnvironment,
-                               ProjectIssuesStatistics, Todo, User, UserStatus)
+from gitlab.v4.objects import (
+    CurrentUser,
+    Group,
+    Hook,
+    Project,
+    ProjectAdditionalStatistics,
+    ProjectEnvironment,
+    ProjectIssuesStatistics,
+    Todo,
+    User,
+    UserStatus,
+)
 
 sync_gitlab = Gitlab("http://localhost", private_token="private_token", api_version=4)
 async_gitlab = AsyncGitlab(
@@ -48,19 +57,19 @@ private_token = ABCDEF
 """
 
 
-class TestSanitize(unittest.TestCase):
+class TestSanitize:
     def test_do_nothing(self):
-        assert 1, _sanitize(1))
-        assert 1.5, _sanitize(1.5))
-        assert "foo", _sanitize("foo"))
+        assert 1 == _sanitize(1)
+        assert 1.5 == _sanitize(1.5)
+        assert "foo" == _sanitize("foo")
 
     def test_slash(self):
-        assert "foo%2Fbar", _sanitize("foo/bar"))
+        assert "foo%2Fbar" == _sanitize("foo/bar")
 
     def test_dict(self):
         source = {"url": "foo/bar", "id": 1}
         expected = {"url": "foo%2Fbar", "id": 1}
-        assert expected, _sanitize(source))
+        assert expected == _sanitize(source)
 
 
 @pytest.mark.parametrize(
@@ -100,36 +109,38 @@ class TestGitlabAuth:
             )
 
     def test_private_token_auth(self, gitlab_class):
-        gl = gitlab_class("http://localhost", private_token="private_token", api_version="4")
-        assert gl.private_token, "private_token")
-        assert gl.oauth_token, None)
-        assert gl.job_token, None)
-        assert gl.client.auth, None)
-        self.assertNotIn("Authorization", gl.headers)
-        assert gl.headers["PRIVATE-TOKEN"], "private_token")
-        self.assertNotIn("JOB-TOKEN", gl.headers)
+        gl = gitlab_class(
+            "http://localhost", private_token="private_token", api_version="4"
+        )
+        assert gl.private_token == "private_token"
+        assert gl.oauth_token is None
+        assert gl.job_token is None
+        assert gl.client.auth is None
+        assert "Authorization" not in gl.headers
+        assert gl.headers["PRIVATE-TOKEN"] == "private_token"
+        assert "JOB-TOKEN" not in gl.headers
 
-    def test_oauth_token_auth(self):
+    def test_oauth_token_auth(self, gitlab_class):
         gl = Gitlab("http://localhost", oauth_token="oauth_token", api_version="4")
-        assert gl.private_token, None)
-        assert gl.oauth_token, "oauth_token")
-        assert gl.job_token, None)
-        assert gl.client.auth, None)
-        assert gl.headers["Authorization"], "Bearer oauth_token")
-        self.assertNotIn("PRIVATE-TOKEN", gl.headers)
-        self.assertNotIn("JOB-TOKEN", gl.headers)
+        assert gl.private_token is None
+        assert gl.oauth_token == "oauth_token"
+        assert gl.job_token is None
+        assert gl.client.auth is None
+        assert gl.headers["Authorization"] == "Bearer oauth_token"
+        assert "PRIVATE-TOKEN" not in gl.headers
+        assert "JOB-TOKEN" not in gl.headers
 
-    def test_job_token_auth(self):
+    def test_job_token_auth(self, gitlab_class):
         gl = Gitlab("http://localhost", job_token="CI_JOB_TOKEN", api_version="4")
-        assert gl.private_token, None)
-        assert gl.oauth_token, None)
-        assert gl.job_token, "CI_JOB_TOKEN")
-        assert gl.client.auth, None)
-        self.assertNotIn("Authorization", gl.headers)
-        self.assertNotIn("PRIVATE-TOKEN", gl.headers)
-        assert gl.headers["JOB-TOKEN"], "CI_JOB_TOKEN")
+        assert gl.private_token is None
+        assert gl.oauth_token is None
+        assert gl.job_token == "CI_JOB_TOKEN"
+        assert gl.client.auth is None
+        assert "Authorization" not in gl.headers
+        assert "PRIVATE-TOKEN" not in gl.headers
+        assert gl.headers["JOB-TOKEN"] == "CI_JOB_TOKEN"
 
-    def test_http_auth(self):
+    def test_http_auth(self, gitlab_class):
         gl = Gitlab(
             "http://localhost",
             private_token="private_token",
@@ -137,12 +148,12 @@ class TestGitlabAuth:
             http_password="bar",
             api_version="4",
         )
-        assert gl.private_token== "private_token"
+        assert gl.private_token == "private_token"
         assert gl.oauth_token is None
-        assert gl.job_token is  None
+        assert gl.job_token is None
         assert isinstance(gl.client.auth, httpx.auth.BasicAuth)
-        assert gl.headers["PRIVATE-TOKEN"], "private_token")
-        self.assertNotIn("Authorization", gl.headers)
+        assert gl.headers["PRIVATE-TOKEN"] == "private_token"
+        assert "Authorization" not in gl.headers
 
 
 @pytest.mark.parametrize(
