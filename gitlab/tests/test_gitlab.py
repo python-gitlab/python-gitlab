@@ -42,10 +42,6 @@ from gitlab.v4.objects import (
     UserStatus,
 )
 
-sync_gitlab = Gitlab("http://localhost", private_token="private_token", api_version=4)
-async_gitlab = AsyncGitlab(
-    "http://localhost", private_token="private_token", api_version=4
-)
 valid_config = b"""[global]
 default = one
 ssl_verify = true
@@ -72,9 +68,6 @@ class TestSanitize:
         assert expected == _sanitize(source)
 
 
-@pytest.mark.parametrize(
-    "gitlab_class", [Gitlab, AsyncGitlab],
-)
 class TestGitlabAuth:
     def test_invalid_auth_args(self, gitlab_class):
         with pytest.raises(ValueError):
@@ -233,11 +226,8 @@ class TestGitlabList:
         assert isinstance(result, GitlabList)
 
 
-@pytest.mark.parametrize(
-    "gl, sync", [(sync_gitlab, True), (async_gitlab, False),],
-)
 class TestGitlabHttpMethods:
-    def test_build_url(self, gl, sync):
+    def test_build_url(self, gl):
         r = gl._build_url("http://localhost/api/v4")
         assert r == "http://localhost/api/v4"
         r = gl._build_url("https://localhost/api/v4")
@@ -247,7 +237,7 @@ class TestGitlabHttpMethods:
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_http_request(self, gl, sync):
+    async def test_http_request(self, gl, gl_get_value):
         request = respx.get(
             "http://localhost/api/v4/projects",
             headers={"content-type": "application/json"},
@@ -256,14 +246,14 @@ class TestGitlabHttpMethods:
         )
 
         http_r = gl.http_request("get", "/projects")
-        if not sync:
-            http_r = await http_r
+        http_r = await gl_get_value(http_r)
+
         http_r.json()
         assert http_r.status_code == StatusCode.OK
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_get_request(self, gl, sync):
+    async def test_get_request(self, gl, gl_get_value):
         request = respx.get(
             "http://localhost/api/v4/projects",
             headers={"content-type": "application/json"},
@@ -272,14 +262,14 @@ class TestGitlabHttpMethods:
         )
 
         result = gl.http_get("/projects")
-        if not sync:
-            result = await result
+        result = await gl_get_value(result)
+
         assert isinstance(result, dict)
         assert result["name"] == "project1"
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_get_request_raw(self, gl, sync):
+    async def test_get_request_raw(self, gl, gl_get_value):
         request = respx.get(
             "http://localhost/api/v4/projects",
             headers={"content-type": "application/octet-stream"},
@@ -288,8 +278,7 @@ class TestGitlabHttpMethods:
         )
 
         result = gl.http_get("/projects")
-        if not sync:
-            result = await result
+        result = await gl_get_value(result)
         assert result.content.decode("utf-8") == "content"
 
     @respx.mock
@@ -328,18 +317,18 @@ class TestGitlabHttpMethods:
         ],
     )
     async def test_errors(
-        self, gl, sync, http_method, gl_method, respx_params, gl_exc, path
+        self, gl, is_gl_sync, http_method, gl_method, respx_params, gl_exc, path
     ):
         request = getattr(respx, http_method)(**respx_params)
 
         with pytest.raises(gl_exc):
             http_r = getattr(gl, gl_method)(path)
-            if not sync:
+            if not is_gl_sync:
                 await http_r
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_list_request(self, gl, sync):
+    async def test_list_request(self, gl, gl_get_value):
         request = respx.get(
             "http://localhost/api/v4/projects",
             headers={"content-type": "application/json", "X-Total": "1"},
@@ -348,26 +337,23 @@ class TestGitlabHttpMethods:
         )
 
         result = gl.http_list("/projects", as_list=True)
-        if not sync:
-            result = await result
+        result = await gl_get_value(result)
         assert isinstance(result, list)
         assert len(result) == 1
 
         result = gl.http_list("/projects", as_list=False)
-        if not sync:
-            result = await result
+        result = await gl_get_value(result)
         assert isinstance(result, GitlabList)
         assert len(result) == 1
 
         result = gl.http_list("/projects", all=True)
-        if not sync:
-            result = await result
+        result = await gl_get_value(result)
         assert isinstance(result, list)
         assert len(result) == 1
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_post_request(self, gl, sync):
+    async def test_post_request(self, gl, gl_get_value):
         request = respx.post(
             "http://localhost/api/v4/projects",
             headers={"content-type": "application/json"},
@@ -376,15 +362,14 @@ class TestGitlabHttpMethods:
         )
 
         result = gl.http_post("/projects")
-        if not sync:
-            result = await result
+        result = await gl_get_value(result)
 
         assert isinstance(result, dict)
         assert result["name"] == "project1"
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_put_request(self, gl, sync):
+    async def test_put_request(self, gl, gl_get_value):
         request = respx.put(
             "http://localhost/api/v4/projects",
             headers={"content-type": "application/json"},
@@ -392,15 +377,14 @@ class TestGitlabHttpMethods:
             status_code=StatusCode.OK,
         )
         result = gl.http_put("/projects")
-        if not sync:
-            result = await result
+        result = await gl_get_value(result)
 
         assert isinstance(result, dict)
         assert result["name"] == "project1"
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_delete_request(self, gl, sync):
+    async def test_delete_request(self, gl, gl_get_value):
         request = respx.delete(
             "http://localhost/api/v4/projects",
             headers={"content-type": "application/json"},
@@ -409,15 +393,14 @@ class TestGitlabHttpMethods:
         )
 
         result = gl.http_delete("/projects")
-        if not sync:
-            result = await result
+        result = await gl_get_value(result)
 
         assert isinstance(result, httpx.Response)
         assert result.json() is True
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_delete_request_404(self, gl, sync):
+    async def test_delete_request_404(self, gl, is_gl_sync):
         result = respx.delete(
             "http://localhost/api/v4/not_there",
             content="Here is why it failed",
@@ -426,39 +409,30 @@ class TestGitlabHttpMethods:
 
         with pytest.raises(exc.GitlabHttpError):
             r = gl.http_delete("/not_there")
-            if not sync:
+            if not is_gl_sync:
                 await r
 
 
-@pytest.mark.parametrize(
-    "gl, sync", [(sync_gitlab, True), (async_gitlab, False),],
-)
 class TestGitlab:
     @pytest.fixture
     def default_config(self, tmpdir):
         p = tmpdir.join("config.cfg")
         p.write(valid_config)
-        # fd, temp_path = tempfile.mkstemp()
-        # os.write(fd, valid_config)
-        # os.close(fd)
         return p
 
-    def test_from_config(self, gl, sync, default_config):
-        type(gl).from_config("one", [default_config])
-        # os.unlink(config_path)
+    def test_from_config(self, gitlab_class, default_config):
+        gitlab_class.from_config("one", [default_config])
 
-    def test_subclass_from_config(self, gl, sync, default_config):
-        class MyGitlab(type(gl)):
+    def test_subclass_from_config(self, gitlab_class, default_config):
+        class MyGitlab(gitlab_class):
             pass
 
         gl = MyGitlab.from_config("one", [default_config])
         assert isinstance(gl, MyGitlab)
 
-        # os.unlink(default_config)
-
     @respx.mock
     @pytest.mark.asyncio
-    async def test_token_auth(self, gl, sync):
+    async def test_token_auth(self, gl, is_gl_sync):
         name = "username"
         id_ = 1
 
@@ -471,7 +445,7 @@ class TestGitlab:
             status_code=StatusCode.OK,
         )
 
-        if sync:
+        if is_gl_sync:
             gl.auth()
         else:
             await gl.auth()
@@ -481,7 +455,7 @@ class TestGitlab:
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_hooks(self, gl, sync):
+    async def test_hooks(self, gl, gl_get_value):
         request = respx.get(
             "http://localhost/api/v4/hooks/1",
             headers={"content-type": "application/json"},
@@ -490,15 +464,15 @@ class TestGitlab:
         )
 
         data = gl.hooks.get(1)
-        if not sync:
-            data = await data
+        data = await gl_get_value(data)
+
         assert isinstance(data, Hook)
         assert data.url == "testurl"
         assert data.id == 1
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_projects(self, gl, sync):
+    async def test_projects(self, gl, gl_get_value):
         request = respx.get(
             "http://localhost/api/v4/projects/1",
             headers={"content-type": "application/json"},
@@ -507,15 +481,14 @@ class TestGitlab:
         )
 
         data = gl.projects.get(1)
-        if not sync:
-            data = await data
+        data = await gl_get_value(data)
         assert isinstance(data, Project)
         assert data.name == "name"
         assert data.id == 1
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_project_environments(self, gl, sync):
+    async def test_project_environments(self, gl, gl_get_value):
         request_get_project = respx.get(
             "http://localhost/api/v4/projects/1",
             headers={"content-type": "application/json"},
@@ -532,11 +505,9 @@ class TestGitlab:
         )
 
         project = gl.projects.get(1)
-        if not sync:
-            project = await project
+        project = await gl_get_value(project)
         environment = project.environments.get(1)
-        if not sync:
-            environment = await environment
+        environment = await gl_get_value(environment)
 
         assert isinstance(environment, ProjectEnvironment)
         assert environment.id == 1
@@ -545,7 +516,7 @@ class TestGitlab:
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_project_additional_statistics(self, gl, sync):
+    async def test_project_additional_statistics(self, gl, gl_get_value):
         request_get_project = respx.get(
             "http://localhost/api/v4/projects/1",
             headers={"content-type": "application/json"},
@@ -561,17 +532,15 @@ class TestGitlab:
             status_code=StatusCode.OK,
         )
         project = gl.projects.get(1)
-        if not sync:
-            project = await project
+        project = await gl_get_value(project)
         statistics = project.additionalstatistics.get()
-        if not sync:
-            statistics = await statistics
+        statistics = await gl_get_value(statistics)
         assert isinstance(statistics, ProjectAdditionalStatistics)
         assert statistics.fetches["total"] == 50
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_project_issues_statistics(self, gl, sync):
+    async def test_project_issues_statistics(self, gl, gl_get_value):
         request_get_project = respx.get(
             "http://localhost/api/v4/projects/1",
             headers={"content-type": "application/json"},
@@ -588,18 +557,16 @@ class TestGitlab:
         )
 
         project = gl.projects.get(1)
-        if not sync:
-            project = await project
+        project = await gl_get_value(project)
         statistics = project.issuesstatistics.get()
-        if not sync:
-            statistics = await statistics
+        statistics = await gl_get_value(statistics)
 
         assert isinstance(statistics, ProjectIssuesStatistics)
         assert statistics.statistics["counts"]["all"] == 20
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_groups(self, gl, sync):
+    async def test_groups(self, gl, gl_get_value):
         request = respx.get(
             "http://localhost/api/v4/groups/1",
             headers={"content-type": "application/json"},
@@ -608,8 +575,7 @@ class TestGitlab:
         )
 
         data = gl.groups.get(1)
-        if not sync:
-            data = await data
+        data = await gl_get_value(data)
         assert isinstance(data, Group)
         assert data.name == "name"
         assert data.path == "path"
@@ -617,7 +583,7 @@ class TestGitlab:
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_issues(self, gl, sync):
+    async def test_issues(self, gl, gl_get_value):
         request = respx.get(
             "http://localhost/api/v4/issues",
             headers={"content-type": "application/json"},
@@ -627,8 +593,7 @@ class TestGitlab:
         )
 
         data = gl.issues.list()
-        if not sync:
-            data = await data
+        data = await gl_get_value(data)
         assert data[1].id == 2
         assert data[1].name == "other_name"
 
@@ -646,12 +611,11 @@ class TestGitlab:
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_users(self, gl, sync, respx_get_user_params):
+    async def test_users(self, gl, gl_get_value, respx_get_user_params):
         request = respx.get(**respx_get_user_params)
 
         user = gl.users.get(1)
-        if not sync:
-            user = await user
+        user = await gl_get_value(user)
 
         assert isinstance(user, User)
         assert user.name == "name"
@@ -659,7 +623,7 @@ class TestGitlab:
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_user_status(self, gl, sync, respx_get_user_params):
+    async def test_user_status(self, gl, gl_get_value, respx_get_user_params):
         request_user_status = respx.get(
             "http://localhost/api/v4/users/1/status",
             headers={"content-type": "application/json"},
@@ -671,11 +635,9 @@ class TestGitlab:
         request_user = respx.get(**respx_get_user_params)
 
         user = gl.users.get(1)
-        if not sync:
-            user = await user
+        user = await gl_get_value(user)
         status = user.status.get()
-        if not sync:
-            status = await status
+        status = await gl_get_value(status)
 
         assert isinstance(status, UserStatus)
         assert status.message == "test"
@@ -683,7 +645,7 @@ class TestGitlab:
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_todo(self, gl, sync):
+    async def test_todo(self, gl, gl_get_value, is_gl_sync):
         with open(os.path.dirname(__file__) + "/data/todo.json", "r") as json_file:
             todo_content = json_file.read()
             json_content = json.loads(todo_content)
@@ -703,35 +665,34 @@ class TestGitlab:
         )
 
         todo_list = gl.todos.list()
-        if not sync:
-            todo_list = await todo_list
+        todo_list = await gl_get_value(todo_list)
         todo = todo_list[0]
         assert isinstance(todo, Todo)
         assert todo.id == 102
         assert todo.target_type == "MergeRequest"
         assert todo.target["assignee"]["username"] == "root"
-        if sync:
+        if is_gl_sync:
             todo.mark_as_done()
         else:
             await todo.mark_as_done()
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_todo_mark_all_as_done(self, gl, sync):
+    async def test_todo_mark_all_as_done(self, gl, is_gl_sync):
         request = respx.post(
             "http://localhost/api/v4/todos/mark_as_done",
             headers={"content-type": "application/json"},
             content={},
         )
 
-        if sync:
+        if is_gl_sync:
             gl.todos.mark_all_as_done()
         else:
             await gl.todos.mark_all_as_done()
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_deployment(self, gl, sync):
+    async def test_deployment(self, gl, gl_get_value, is_gl_sync):
 
         content = '{"id": 42, "status": "success", "ref": "master"}'
         json_content = json.loads(content)
@@ -753,8 +714,7 @@ class TestGitlab:
                 "status": "created",
             }
         )
-        if not sync:
-            deployment = await deployment
+        deployment = await gl_get_value(deployment)
         assert deployment.id == 42
         assert deployment.status == "success"
         assert deployment.ref == "master"
@@ -768,7 +728,7 @@ class TestGitlab:
         )
         deployment.status = "failed"
 
-        if sync:
+        if is_gl_sync:
             deployment.save()
         else:
             await deployment.save()
@@ -777,7 +737,7 @@ class TestGitlab:
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_user_activate_deactivate(self, gl, sync):
+    async def test_user_activate_deactivate(self, gl, is_gl_sync):
         request_activate = respx.post(
             "http://localhost/api/v4/users/1/activate",
             headers={"content-type": "application/json"},
@@ -792,7 +752,7 @@ class TestGitlab:
         )
 
         user = gl.users.get(1, lazy=True)
-        if sync:
+        if is_gl_sync:
             user.activate()
             user.deactivate()
         else:
@@ -801,7 +761,7 @@ class TestGitlab:
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_update_submodule(self, gl, sync):
+    async def test_update_submodule(self, gl, gl_get_value):
         request_get_project = respx.get(
             "http://localhost/api/v4/projects/1",
             headers={"content-type": "application/json"},
@@ -830,8 +790,7 @@ class TestGitlab:
             status_code=StatusCode.OK,
         )
         project = gl.projects.get(1)
-        if not sync:
-            project = await project
+        project = await gl_get_value(project)
         assert isinstance(project, Project)
         assert project.name == "name"
         assert project.id == 1
@@ -842,15 +801,14 @@ class TestGitlab:
             commit_sha="4c3674f66071e30b3311dac9b9ccc90502a72664",
             commit_message="Message",
         )
-        if not sync:
-            ret = await ret
+        ret = await gl_get_value(ret)
         assert isinstance(ret, dict)
         assert ret["message"] == "Message"
         assert ret["id"] == "ed899a2f4b50b4370feeea94676502b42383c746"
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_import_github(self, gl, sync):
+    async def test_import_github(self, gl, gl_get_value):
         request = respx.post(
             re.compile(r"^http://localhost/api/v4/import/github"),
             headers={"content-type": "application/json"},
@@ -867,8 +825,7 @@ class TestGitlab:
         base_path = "/root"
         name = "my-repo"
         ret = gl.projects.import_github("githubkey", 1234, base_path, name)
-        if not sync:
-            ret = await ret
+        ret = await gl_get_value(ret)
         assert isinstance(ret, dict)
         assert ret["name"] == name
         assert ret["full_path"] == "/".join((base_path, name))

@@ -4,19 +4,17 @@ import pytest
 
 from gitlab import AsyncGitlab, Gitlab
 
-gitlab_kwargs = {
-    "url": "http://localhost",
-    "private_token": "private_token",
-    "api_version": 4,
-}
 
-
-@pytest.fixture(
-    params=[Gitlab(**gitlab_kwargs), AsyncGitlab(**gitlab_kwargs)],
-    ids=["sync", "async"],
-)
-def gl(request):
+@pytest.fixture(params=[Gitlab, AsyncGitlab], ids=["sync", "async"])
+def gitlab_class(request):
     return request.param
+
+
+@pytest.fixture
+def gl(gitlab_class):
+    return gitlab_class(
+        "http://localhost", private_token="private_token", api_version=4
+    )
 
 
 async def awaiter(v):
@@ -33,6 +31,10 @@ async def returner(v):
 @pytest.fixture
 def gl_get_value(gl):
     """Fixture that returns async function that either return input value or awaits it
+    
+    Result function is based on client not the value of function argument, 
+    so if we accidentally mess up with return gitlab client value, then 
+    we will know
 
     Usage::
 
