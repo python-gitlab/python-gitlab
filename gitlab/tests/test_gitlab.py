@@ -156,13 +156,10 @@ class TestGitlabAuth:
         assert "Authorization" not in gl.headers
 
 
-@pytest.mark.parametrize(
-    "gl, sync", [(sync_gitlab, True), (async_gitlab, False),],
-)
 class TestGitlabList:
     @respx.mock
     @pytest.mark.asyncio
-    async def test_build_list(self, gl, sync):
+    async def test_build_list(self, gl, gl_get_value, is_gl_sync):
         request_1 = respx.get(
             "http://localhost/api/v4/tests",
             headers={
@@ -193,8 +190,7 @@ class TestGitlabList:
             status_code=StatusCode.OK,
         )
         obj = gl.http_list("/tests", as_list=False)
-        if not sync:
-            obj = await obj
+        obj = await gl_get_value(obj)
 
         assert len(obj) == 2
         assert obj._next_url == "http://localhost/api/v4/tests?per_page=1&page=2"
@@ -205,10 +201,10 @@ class TestGitlabList:
         assert obj.total_pages == 2
         assert obj.total == 2
 
-        if not sync:
-            l = await obj.as_list()
-        else:
+        if is_gl_sync:
             l = list(obj)
+        else:
+            l = await obj.as_list()
 
         assert len(l) == 2
         assert l[0]["a"] == "b"
@@ -216,7 +212,7 @@ class TestGitlabList:
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_all_ommited_when_as_list(self, gl, sync):
+    async def test_all_ommited_when_as_list(self, gl, gl_get_value):
         request = respx.get(
             "http://localhost/api/v4/tests",
             headers={
@@ -232,8 +228,7 @@ class TestGitlabList:
         )
 
         result = gl.http_list("/tests", as_list=False, all=True)
-        if not sync:
-            result = await result
+        result = await gl_get_value(result)
 
         assert isinstance(result, GitlabList)
 
