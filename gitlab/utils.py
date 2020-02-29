@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 from urllib.parse import urlparse
 
 
@@ -23,7 +24,7 @@ class _StdoutStream(object):
         print(chunk)
 
 
-async def response_content(response, streamed, action):
+async def aresponse_content(response, streamed, action):
     if streamed is False:
         return response.content
 
@@ -31,6 +32,21 @@ async def response_content(response, streamed, action):
         action = _StdoutStream()
 
     async for chunk in response.aiter_bytes():
+        if chunk:
+            action(chunk)
+
+
+def response_content(response, streamed, action):
+    if asyncio.iscoroutine(response):
+        return aresponse_content(response, streamed, action)
+
+    if streamed is False:
+        return response.content
+
+    if action is None:
+        action = _StdoutStream()
+
+    for chunk in response.iter_bytes():
         if chunk:
             action(chunk)
 
