@@ -1182,7 +1182,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
             RESTObjectList: The list of merge requests
         """
         path = "%s/%s/merge_requests" % (self.manager.path, self.get_id())
-        data_list =  self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, GroupMergeRequest, data_list)  # TODO: ???
@@ -1494,7 +1494,7 @@ class LDAPGroupManager(RESTManager):
         else:
             path = self._path
 
-        obj =  self.gitlab.http_list(path, **data)  # TODO: ???
+        obj = self.gitlab.http_list(path, **data)  # TODO: ???
         if isinstance(obj, list):
             return [self._obj_cls(self, item) for item in obj]
         else:
@@ -1567,10 +1567,10 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
             str: The snippet content
         """
         path = "/snippets/%s/raw" % self.get_id()
-        result =  self.manager.gitlab.http_get(
+        result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action)  
+        return utils.response_content(result, streamed, action)
 
 
 class SnippetManager(CRUDMixin, RESTManager):
@@ -1736,7 +1736,7 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
         """
         id = self.get_id().replace("/", "%2F")
         path = "%s/%s/unprotect" % (self.manager.path, id)
-        server_data self.manager.gitlab.http_put(path, **kwargs)
+        server_data = self.manager.gitlab.http_put(path, **kwargs)
         return self._change_protected(False, server_data)
 
 
@@ -1915,7 +1915,7 @@ class ProjectJob(RESTObject, RefreshMixin):
             str: The artifacts if `streamed` is False, None otherwise.
         """
         path = "%s/%s/artifacts" % (self.manager.path, self.get_id())
-        result =  self.manager.gitlab.http_get(
+        result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
         return utils.response_content(result, streamed, action)
@@ -1943,7 +1943,7 @@ class ProjectJob(RESTObject, RefreshMixin):
             str: The artifacts if `streamed` is False, None otherwise.
         """
         path = "%s/%s/artifacts/%s" % (self.manager.path, self.get_id(), path)
-        result =  self.manager.gitlab.http_get(
+        result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
         return utils.response_content(result, streamed, action)
@@ -1970,10 +1970,10 @@ class ProjectJob(RESTObject, RefreshMixin):
             str: The trace
         """
         path = "%s/%s/trace" % (self.manager.path, self.get_id())
-        result =  self.manager.gitlab.http_get(
+        result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action)  
+        return utils.response_content(result, streamed, action)
 
 
 class ProjectJobManager(RetrieveMixin, RESTManager):
@@ -2423,7 +2423,7 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
             GitlabCreateError: If the server cannot perform the request
         """
         self._check_missing_create_attrs(data)
-        server_data =  self.gitlab.http_post(self.path, post_data=data, **kwargs)
+        server_data = self.gitlab.http_post(self.path, post_data=data, **kwargs)
         source_issue = ProjectIssue(self._parent.manager, server_data["source_issue"])
         target_issue = ProjectIssue(self._parent.manager, server_data["target_issue"])
         return source_issue, target_issue  # TODO: ???
@@ -2475,9 +2475,7 @@ class ProjectIssue(
         """
         path = "%s/%s/move" % (self.manager.path, self.get_id())
         data = {"to_project_id": to_project_id}
-        return  self.manager.gitlab.http_post(
-            path, post_data=data, **kwargs
-        )
+        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
     @cli.register_custom_action("ProjectIssue")
     @exc.on_http_error(exc.GitlabGetError)
@@ -2939,7 +2937,7 @@ class ProjectMergeRequest(
         """
 
         path = "%s/%s/commits" % (self.manager.path, self.get_id())
-        data_list =  self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = ProjectCommitManager(self.manager.gitlab, parent=self.manager._parent)
         return RESTObjectList(manager, ProjectCommit, data_list)  # TODO: ???
 
@@ -2999,9 +2997,7 @@ class ProjectMergeRequest(
         if sha:
             data["sha"] = sha
 
-        return self.manager.gitlab.http_post(
-            path, post_data=data, **kwargs
-        )
+        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMRApprovalError)
@@ -3019,9 +3015,7 @@ class ProjectMergeRequest(
         path = "%s/%s/unapprove" % (self.manager.path, self.get_id())
         data = {}
 
-        return self.manager.gitlab.http_post(
-            path, post_data=data, **kwargs
-        )
+        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMRRebaseError)
@@ -3163,7 +3157,7 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
 
         path = "%s/%s/issues" % (self.manager.path, self.get_id())
-        data_list =  self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, ProjectIssue, data_list)  # TODO: ???
@@ -3189,7 +3183,7 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
             RESTObjectList: The list of merge requests
         """
         path = "%s/%s/merge_requests" % (self.manager.path, self.get_id())
-        data_list =  self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = ProjectMergeRequestManager(
             self.manager.gitlab, parent=self.manager._parent
         )
@@ -3455,10 +3449,10 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         file_path = file_path.replace("/", "%2F").replace(".", "%2E")
         path = "%s/%s/raw" % (self.path, file_path)
         query_data = {"ref": ref}
-        result =  self.gitlab.http_get(
+        result = self.gitlab.http_get(
             path, query_data=query_data, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action)  
+        return utils.response_content(result, streamed, action)
 
     @cli.register_custom_action("ProjectFileManager", ("file_path", "ref"))
     @exc.on_http_error(exc.GitlabListError)
@@ -3612,7 +3606,7 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabOwnershipError: If the request failed
         """
         path = "%s/%s/take_ownership" % (self.manager.path, self.get_id())
-        server_data = return self.manager.gitlab.http_post(path, **kwargs)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
 
 class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
@@ -3765,10 +3759,10 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
             str: The snippet content
         """
         path = "%s/%s/raw" % (self.manager.path, self.get_id())
-        result =  self.manager.gitlab.http_get(
+        result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action)  
+        return utils.response_content(result, streamed, action)
 
 
 class ProjectSnippetManager(CRUDMixin, RESTManager):
@@ -3906,7 +3900,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        obj =  super(ProjectServiceManager, self).get(id, **kwargs)
+        obj = super(ProjectServiceManager, self).get(id, **kwargs)
         obj.id = id
         return obj  # TODO: ???
 
@@ -3926,7 +3920,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
             GitlabUpdateError: If the server cannot perform the request
         """
         new_data = new_data or {}
-         super(ProjectServiceManager, self).update(id, new_data, **kwargs)
+        super(ProjectServiceManager, self).update(id, new_data, **kwargs)
         self.id = id  # TODO: ???
 
     @cli.register_custom_action("ProjectServiceManager")
@@ -4085,10 +4079,10 @@ class ProjectExport(RefreshMixin, RESTObject):
             str: The blob content if streamed is False, None otherwise
         """
         path = "/projects/%s/export/download" % self.project_id
-        result =  self.manager.gitlab.http_get(
+        result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action)  
+        return utils.response_content(result, streamed, action)
 
 
 class ProjectExportManager(GetWithoutIdMixin, CreateMixin, RESTManager):
@@ -4276,10 +4270,10 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             str: The blob content if streamed is False, None otherwise
         """
         path = "/projects/%s/repository/blobs/%s/raw" % (self.get_id(), sha)
-        result =  self.manager.gitlab.http_get(
+        result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action)  
+        return utils.response_content(result, streamed, action)
 
     @cli.register_custom_action("Project", ("from_", "to"))
     @exc.on_http_error(exc.GitlabGetError)
@@ -4353,10 +4347,10 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         query_data = {}
         if sha:
             query_data["sha"] = sha
-        result =  self.manager.gitlab.http_get(
+        result = self.manager.gitlab.http_get(
             path, query_data=query_data, raw=True, streamed=streamed, **kwargs
         )
-        return utils.response_content(result, streamed, action)  
+        return utils.response_content(result, streamed, action)
 
     @cli.register_custom_action("Project", ("forked_from_id",))
     @exc.on_http_error(exc.GitlabCreateError)
@@ -4433,7 +4427,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabCreateError: If the server failed to perform the request
         """
         path = "/projects/%s/star" % self.get_id()
-         return self.manager.gitlab.http_post(path, **kwargs)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabDeleteError)
@@ -4544,7 +4538,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         variables = variables or {}
         path = "/projects/%s/trigger/pipeline" % self.get_id()
         post_data = {"ref": ref, "token": token, "variables": variables}
-        attrs =  self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        attrs = self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
         return ProjectPipeline(self.pipelines, attrs)  # TODO: ???
 
     @cli.register_custom_action("Project")
@@ -4604,9 +4598,13 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
 
         url = "/projects/%(id)s/uploads" % {"id": self.id}
         file_info = {"file": (filename, filedata)}
-        data =  self.manager.gitlab.http_post(url, files=file_info)
+        data = self.manager.gitlab.http_post(url, files=file_info)
 
-        return {"alt": data["alt"], "url": data["url"], "markdown": data["markdown"]}  # TODO: ???
+        return {
+            "alt": data["alt"],
+            "url": data["url"],
+            "markdown": data["markdown"],
+        }  # TODO: ???
 
     @cli.register_custom_action("Project", optional=("wiki",))
     @exc.on_http_error(exc.GitlabGetError)
@@ -4633,10 +4631,10 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             str: The uncompressed tar archive of the repository
         """
         path = "/projects/%s/snapshot" % self.get_id()
-        result =  self.manager.gitlab.http_get(
+        result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action)  
+        return utils.response_content(result, streamed, action)
 
     @cli.register_custom_action("Project", ("scope", "search"))
     @exc.on_http_error(exc.GitlabSearchError)
@@ -4729,7 +4727,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action)  
+        return utils.response_content(result, streamed, action)
 
 
 class ProjectManager(CRUDMixin, RESTManager):
@@ -5016,7 +5014,7 @@ class Todo(ObjectDeleteMixin, RESTObject):
             GitlabTodoError: If the server failed to perform the request
         """
         path = "%s/%s/mark_as_done" % (self.manager.path, self.id)
-        server_data = return self.manager.gitlab.http_post(path, **kwargs)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
 
 class TodoManager(ListMixin, DeleteMixin, RESTManager):

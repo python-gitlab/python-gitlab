@@ -8,18 +8,9 @@ from gitlab import AsyncGitlab
 
 
 class TestApplicationAppearance:
-    @pytest.fixture
-    def gl(self):
-        return AsyncGitlab(
-            "http://localhost",
-            private_token="private_token",
-            ssl_verify=True,
-            api_version="4",
-        )
-
     @respx.mock
     @pytest.mark.asyncio
-    async def test_get_update_appearance(self, gl):
+    async def test_get_update_appearance(self, gl, gl_get_value, is_gl_sync):
         title = "GitLab Test Instance"
         new_title = "new-title"
         description = "gitlab-test.example.com"
@@ -60,18 +51,23 @@ class TestApplicationAppearance:
             status_code=StatusCode.OK,
         )
 
-        appearance = await gl.appearance.get()
+        appearance = gl.appearance.get()
+        appearance = await gl_get_value(appearance)
+
         assert appearance.title == title
         assert appearance.description == description
         appearance.title = new_title
         appearance.description = new_description
-        await appearance.save()
+        if is_gl_sync:
+            appearance.save()
+        else:
+            await appearance.save()
         assert appearance.title == new_title
         assert appearance.description == new_description
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_update_appearance(self, gl):
+    async def test_update_appearance(self, gl, is_gl_sync):
         new_title = "new-title"
         new_description = "new-description"
 
@@ -93,4 +89,7 @@ class TestApplicationAppearance:
             status_code=StatusCode.OK,
         )
 
-        await gl.appearance.update(title=new_title, description=new_description)
+        if is_gl_sync:
+            gl.appearance.update(title=new_title, description=new_description)
+        else:
+            await gl.appearance.update(title=new_title, description=new_description)
