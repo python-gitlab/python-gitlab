@@ -964,6 +964,33 @@ class TestGitlab(unittest.TestCase):
             self.assertEqual(ret["full_path"], "/".join((base_path, name)))
             self.assertTrue(ret["full_name"].endswith(name))
 
+    def test_applications(self):
+        content = '{"name": "test_app", "redirect_uri": "http://localhost:8080", "scopes": ["api", "email"]}'
+        json_content = json.loads(content)
+
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/applications",
+            method="post",
+        )
+        def resp_application_create(url, request):
+            headers = {"content-type": "application/json"}
+            return response(200, json_content, headers, None, 5, request)
+
+        with HTTMock(resp_application_create):
+            application = self.gl.applications.create(
+                {
+                    "name": "test_app",
+                    "redirect_uri": "http://localhost:8080",
+                    "scopes": ["api", "email"],
+                    "confidential": False,
+                }
+            )
+            self.assertEqual(application.name, "test_app")
+            self.assertEqual(application.redirect_uri, "http://localhost:8080")
+            self.assertEqual(application.scopes, ["api", "email"])
+
     def _default_config(self):
         fd, temp_path = tempfile.mkstemp()
         os.write(fd, valid_config)
