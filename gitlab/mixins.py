@@ -25,39 +25,6 @@ from gitlab import types as g_types
 from gitlab import utils
 
 
-async def async_postprocess(self, awaitable, callback, *args, **kwargs):
-    obj = await awaitable
-    return callback(self, obj, *args, **kwargs)
-
-
-def awaitable_postprocess(f):
-    @functools.wraps(f)
-    def wrapped_f(self, obj, *args, **kwargs):
-        if asyncio.iscoroutine(obj):
-            return async_postprocess(self, obj, f, *args, **kwarsg)
-        else:
-            return f(self, obj, *args, **kwargs)
-
-    return wrapped_f
-
-
-def update_attrs(f):
-    """Update attrs with returned server_data
-
-    Updates object if data returned or coroutine
-    """
-
-    @functools.wraps(f)
-    def wrapped_f(self, *args, **kwargs):
-        server_data = f(self, *args, **kwargs)
-        if asyncio.iscoroutine(server_data):
-            return self._aupdate_attrs(server_data)
-        else:
-            return self._update_attrs(server_data)
-
-    return wrapped_f
-
-
 class GetMixin:
     @exc.on_http_error(exc.GitlabGetError)
     def get(self, id, lazy=False, **kwargs):
@@ -110,7 +77,6 @@ class GetWithoutIdMixin:
 
 class RefreshMixin:
     @exc.on_http_error(exc.GitlabGetError)
-    @update_attrs
     def refresh(self, **kwargs):
         """Refresh a single object from server.
 
@@ -127,7 +93,8 @@ class RefreshMixin:
             path = "%s/%s" % (self.manager.path, self.id)
         else:
             path = self.manager.path
-        return self.manager.gitlab.http_get(path, **kwargs)
+        server_data = self.manager.gitlab.http_get(path, **kwargs)
+        return self._update_attrs(server_data)
 
 
 class ListMixin:
@@ -405,7 +372,6 @@ class SaveMixin:
 
         return updated_data
 
-    @update_attrs
     def save(self, **kwargs):
         """Save the changes made to the object to the server.
 
@@ -425,7 +391,8 @@ class SaveMixin:
 
         # call the manager
         obj_id = self.get_id()
-        return self.manager.update(obj_id, updated_data, **kwargs)
+        server_data = self.manager.update(obj_id, updated_data, **kwargs)
+        return self._update_attrs(server_data)
 
 
 class ObjectDeleteMixin(object):
@@ -466,7 +433,6 @@ class AccessRequestMixin(object):
         ("ProjectAccessRequest", "GroupAccessRequest"), tuple(), ("access_level",)
     )
     @exc.on_http_error(exc.GitlabUpdateError)
-    @update_attrs
     def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
         """Approve an access request.
 
@@ -481,7 +447,8 @@ class AccessRequestMixin(object):
 
         path = "%s/%s/approve" % (self.manager.path, self.id)
         data = {"access_level": access_level}
-        return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+        server_data = self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+        return self._update_attrs(server_data)
 
 
 class SubscribableMixin(object):
@@ -489,7 +456,6 @@ class SubscribableMixin(object):
         ("ProjectIssue", "ProjectMergeRequest", "ProjectLabel", "GroupLabel")
     )
     @exc.on_http_error(exc.GitlabSubscribeError)
-    @update_attrs
     def subscribe(self, **kwargs):
         """Subscribe to the object notifications.
 
@@ -501,13 +467,13 @@ class SubscribableMixin(object):
             GitlabSubscribeError: If the subscription cannot be done
         """
         path = "%s/%s/subscribe" % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_post(path, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return self._update_attrs(server_data)
 
     @cli.register_custom_action(
         ("ProjectIssue", "ProjectMergeRequest", "ProjectLabel", "GroupLabel")
     )
     @exc.on_http_error(exc.GitlabUnsubscribeError)
-    @update_attrs
     def unsubscribe(self, **kwargs):
         """Unsubscribe from the object notifications.
 
@@ -519,7 +485,8 @@ class SubscribableMixin(object):
             GitlabUnsubscribeError: If the unsubscription cannot be done
         """
         path = "%s/%s/unsubscribe" % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_post(path, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return self._update_attrs(server_data)
 
 
 class TodoMixin(object):

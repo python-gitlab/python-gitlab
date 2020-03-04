@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
+import functools
 from urllib.parse import urlparse
 
 
@@ -75,3 +76,19 @@ def sanitized_url(url):
 
 def remove_none_from_dict(data):
     return {k: v for k, v in data.items() if v is not None}
+
+
+async def async_postprocess(self, awaitable, callback, *args, **kwargs):
+    obj = await awaitable
+    return callback(self, obj, *args, **kwargs)
+
+
+def awaitable_postprocess(f):
+    @functools.wraps(f)
+    def wrapped_f(self, obj, *args, **kwargs):
+        if asyncio.iscoroutine(obj):
+            return async_postprocess(self, obj, f, *args, **kwargs)
+        else:
+            return f(self, obj, *args, **kwargs)
+
+    return wrapped_f

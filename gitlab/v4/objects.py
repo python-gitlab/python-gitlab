@@ -23,7 +23,7 @@ from gitlab import cli, types, utils
 from gitlab.base import *  # noqa
 from gitlab.exceptions import *  # noqa
 from gitlab.mixins import *  # noqa
-from gitlab.mixins import awaitable_postprocess, update_attrs
+from gitlab.utils import awaitable_postprocess
 
 VISIBILITY_PRIVATE = "private"
 VISIBILITY_INTERNAL = "internal"
@@ -1010,7 +1010,6 @@ class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
     # Update without ID, but we need an ID to get from list.
     @exc.on_http_error(exc.GitlabUpdateError)
-    @update_attrs
     def save(self, **kwargs):
         """Saves the changes made to the object to the server.
 
@@ -1025,7 +1024,8 @@ class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         updated_data = self._get_updated_data()
 
-        return self.manager.update(None, updated_data, **kwargs)
+        server_data = self.manager.update(None, updated_data, **kwargs)
+        return self._update_attrs(server_data)
 
 
 class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
@@ -2481,7 +2481,6 @@ class ProjectIssue(
 
     @cli.register_custom_action("ProjectIssue", ("to_project_id",))
     @exc.on_http_error(exc.GitlabUpdateError)
-    @update_attrs
     def move(self, to_project_id, **kwargs):
         """Move the issue to another project.
 
@@ -2495,7 +2494,8 @@ class ProjectIssue(
         """
         path = "%s/%s/move" % (self.manager.path, self.get_id())
         data = {"to_project_id": to_project_id}
-        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        return self._update_attrs(server_data)
 
     @cli.register_custom_action("ProjectIssue")
     @exc.on_http_error(exc.GitlabGetError)
@@ -2893,7 +2893,6 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMROnBuildSuccessError)
-    @update_attrs
     def cancel_merge_when_pipeline_succeeds(self, **kwargs):
         """Cancel merge when the pipeline succeeds.
 
@@ -2910,7 +2909,8 @@ class ProjectMergeRequest(
             self.manager.path,
             self.get_id(),
         )
-        return self.manager.gitlab.http_put(path, **kwargs)
+        server_data = self.manager.gitlab.http_put(path, **kwargs)
+        return self._update_attrs(server_data)
 
     @awaitable_postprocess
     def _close_issues_postprocess(self, data_list):
@@ -3010,7 +3010,6 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action("ProjectMergeRequest", tuple(), ("sha"))
     @exc.on_http_error(exc.GitlabMRApprovalError)
-    @update_attrs
     def approve(self, sha=None, **kwargs):
         """Approve the merge request.
 
@@ -3027,11 +3026,11 @@ class ProjectMergeRequest(
         if sha:
             data["sha"] = sha
 
-        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        return self._update_attrs(server_data)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMRApprovalError)
-    @update_attrs
     def unapprove(self, **kwargs):
         """Unapprove the merge request.
 
@@ -3045,7 +3044,8 @@ class ProjectMergeRequest(
         path = "%s/%s/unapprove" % (self.manager.path, self.get_id())
         data = {}
 
-        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        return self._update_attrs(server_data)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMRRebaseError)
@@ -3073,7 +3073,6 @@ class ProjectMergeRequest(
         ),
     )
     @exc.on_http_error(exc.GitlabMRClosedError)
-    @update_attrs
     def merge(
         self,
         merge_commit_message=None,
@@ -3104,7 +3103,8 @@ class ProjectMergeRequest(
         if merge_when_pipeline_succeeds:
             data["merge_when_pipeline_succeeds"] = True
 
-        return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+        server_data = self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+        return self._update_attrs(server_data)
 
 
 class ProjectMergeRequestManager(CRUDMixin, RESTManager):
@@ -3249,7 +3249,6 @@ class ProjectLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
     # Update without ID, but we need an ID to get from list.
     @exc.on_http_error(exc.GitlabUpdateError)
-    @update_attrs
     def save(self, **kwargs):
         """Saves the changes made to the object to the server.
 
@@ -3264,7 +3263,8 @@ class ProjectLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         updated_data = self._get_updated_data()
 
-        return self.manager.update(None, updated_data, **kwargs)
+        server_data = self.manager.update(None, updated_data, **kwargs)
+        return self._update_attrs(server_data)
 
 
 class ProjectLabelManager(
@@ -3632,7 +3632,6 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("ProjectPipelineSchedule")
     @exc.on_http_error(exc.GitlabOwnershipError)
-    @update_attrs
     def take_ownership(self, **kwargs):
         """Update the owner of a pipeline schedule.
 
@@ -3644,7 +3643,8 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabOwnershipError: If the request failed
         """
         path = "%s/%s/take_ownership" % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_post(path, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return self._update_attrs(server_data)
 
 
 class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
@@ -3817,7 +3817,6 @@ class ProjectSnippetManager(CRUDMixin, RESTManager):
 class ProjectTrigger(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("ProjectTrigger")
     @exc.on_http_error(exc.GitlabOwnershipError)
-    @update_attrs
     def take_ownership(self, **kwargs):
         """Update the owner of a trigger.
 
@@ -3829,7 +3828,8 @@ class ProjectTrigger(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabOwnershipError: If the request failed
         """
         path = "%s/%s/take_ownership" % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_post(path, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return self._update_attrs(server_data)
 
 
 class ProjectTriggerManager(CRUDMixin, RESTManager):
@@ -4461,7 +4461,6 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabCreateError)
-    @update_attrs
     def star(self, **kwargs):
         """Star a project.
 
@@ -4473,11 +4472,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabCreateError: If the server failed to perform the request
         """
         path = "/projects/%s/star" % self.get_id()
-        return self.manager.gitlab.http_post(path, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return self._update_attrs(server_data)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabDeleteError)
-    @update_attrs
     def unstar(self, **kwargs):
         """Unstar a project.
 
@@ -4489,11 +4488,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabDeleteError: If the server failed to perform the request
         """
         path = "/projects/%s/unstar" % self.get_id()
-        return self.manager.gitlab.http_post(path, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return self._update_attrs(server_data)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabCreateError)
-    @update_attrs
     def archive(self, **kwargs):
         """Archive a project.
 
@@ -4505,11 +4504,11 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabCreateError: If the server failed to perform the request
         """
         path = "/projects/%s/archive" % self.get_id()
-        return self.manager.gitlab.http_post(path, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return self._update_attrs(server_data)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabDeleteError)
-    @update_attrs
     def unarchive(self, **kwargs):
         """Unarchive a project.
 
@@ -4521,7 +4520,8 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabDeleteError: If the server failed to perform the request
         """
         path = "/projects/%s/unarchive" % self.get_id()
-        return self.manager.gitlab.http_post(path, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return self._update_attrs(server_data)
 
     @cli.register_custom_action(
         "Project", ("group_id", "group_access"), ("expires_at",)
@@ -5052,7 +5052,6 @@ class RunnerManager(CRUDMixin, RESTManager):
 class Todo(ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("Todo")
     @exc.on_http_error(exc.GitlabTodoError)
-    @update_attrs
     def mark_as_done(self, **kwargs):
         """Mark the todo as done.
 
@@ -5064,7 +5063,8 @@ class Todo(ObjectDeleteMixin, RESTObject):
             GitlabTodoError: If the server failed to perform the request
         """
         path = "%s/%s/mark_as_done" % (self.manager.path, self.id)
-        return self.manager.gitlab.http_post(path, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return self._update_attrs(server_data)
 
 
 class TodoManager(ListMixin, DeleteMixin, RESTManager):
@@ -5093,7 +5093,6 @@ class TodoManager(ListMixin, DeleteMixin, RESTManager):
 class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("GeoNode")
     @exc.on_http_error(exc.GitlabRepairError)
-    @update_attrs
     def repair(self, **kwargs):
         """Repair the OAuth authentication of the geo node.
 
@@ -5105,7 +5104,8 @@ class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabRepairError: If the server failed to perform the request
         """
         path = "/geo_nodes/%s/repair" % self.get_id()
-        return self.manager.gitlab.http_post(path, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return self._update_attrs(server_data)
 
     @cli.register_custom_action("GeoNode")
     @exc.on_http_error(exc.GitlabGetError)

@@ -18,6 +18,8 @@
 import asyncio
 import importlib
 
+from gitlab.utils import awaitable_postprocess
+
 
 class RESTObject:
     """Represents an object built from server data.
@@ -139,16 +141,13 @@ class RESTObject:
             manager = cls(self.manager.gitlab, parent=self)
             self.__dict__[attr] = manager
 
+    @awaitable_postprocess
     def _update_attrs(self, new_attrs):
         if new_attrs is None:
             return
 
         self.__dict__["_updated_attrs"] = {}
         self.__dict__["_attrs"].update(new_attrs)
-
-    async def _aupdate_attrs(self, new_attrs):
-        new_attrs = await new_attrs
-        self._update_attrs(new_attrs)
 
     def get_id(self):
         """Returns the id of the resource."""
