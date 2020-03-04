@@ -26,6 +26,7 @@ class _StdoutStream(object):
 
 
 async def aresponse_content(response, streamed, action):
+    response = await response
     if streamed is False:
         return response.content
 

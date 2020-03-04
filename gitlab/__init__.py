@@ -19,6 +19,7 @@ import warnings
 
 from .client import AsyncGitlab, Gitlab
 from .const import *
+from .exceptions import *
 
 __title__ = "python-gitlab"
 __version__ = "2.0.1"

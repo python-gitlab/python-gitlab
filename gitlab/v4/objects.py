@@ -356,7 +356,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = "/users/%s/unblock" % self.id
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        return self._change_state( server_data, "active")
+        return self._change_state(server_data, "active")
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabDeactivateError)
@@ -1070,7 +1070,7 @@ class GroupMemberManager(CRUDMixin, RESTManager):
     _update_attrs = (("access_level",), ("expires_at",))
 
     @awaitable_postprocess
-    def _all_postprocess(self, sever_data):
+    def _all_postprocess(self, server_data):
         return [self._obj_cls(self, item) for item in server_data]
 
     @cli.register_custom_action("GroupMemberManager")
@@ -1724,7 +1724,7 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
             "developers_can_merge": developers_can_merge,
         }
         server_data = self.manager.gitlab.http_put(path, post_data=post_data, **kwargs)
-        return self._change_protected( server_data, True)
+        return self._change_protected(server_data, True)
 
     @cli.register_custom_action("ProjectBranch")
     @exc.on_http_error(exc.GitlabProtectError)
@@ -1741,7 +1741,7 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
         id = self.get_id().replace("/", "%2F")
         path = "%s/%s/unprotect" % (self.manager.path, id)
         server_data = self.manager.gitlab.http_put(path, **kwargs)
-        return self._change_protected( server_data, False)
+        return self._change_protected(server_data, False)
 
 
 class ProjectBranchManager(NoUpdateMixin, RESTManager):
@@ -2957,7 +2957,7 @@ class ProjectMergeRequest(
 
         path = "%s/%s/commits" % (self.manager.path, self.get_id())
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
-        return self._commits_postprocess(server_data)
+        return self._commits_postprocess(data_list)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
@@ -3214,7 +3214,7 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = "%s/%s/merge_requests" % (self.manager.path, self.get_id())
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
-        return self._merge_requests_postprocess(server_data)
+        return self._merge_requests_postprocess(data_list)
 
 
 class ProjectMilestoneManager(CRUDMixin, RESTManager):
@@ -4592,7 +4592,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         return self.manager.gitlab.http_post(path, **kwargs)
 
     @awaitable_postprocess
-    def _upload_postprocess(self, sever_data):
+    def _upload_postprocess(self, server_data):
         return {
             "alt": server_data["alt"],
             "url": server_data["url"],
@@ -4642,7 +4642,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         file_info = {"file": (filename, filedata)}
         data = self.manager.gitlab.http_post(url, files=file_info)
 
-        return self._upload_post_process(data)
+        return self._upload_postprocess(data)
 
     @cli.register_custom_action("Project", optional=("wiki",))
     @exc.on_http_error(exc.GitlabGetError)

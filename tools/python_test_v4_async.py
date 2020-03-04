@@ -628,7 +628,7 @@ async def main():
     assert len(await admin_project.issues.list(state="closed")) == 1
     assert len(await admin_project.issues.list(state="opened")) == 2
     assert len(await admin_project.issues.list(milestone="milestone1")) == 1
-    assert (await (await m1.issues()).next()).title == "my issue 1"
+    assert (await (await m1.issues()).anext()).title == "my issue 1"
     size = len(await issue1.notes.list())
     note = await issue1.notes.create({"body": "This is an issue note"})
     assert len(await issue1.notes.list()) == size + 1
