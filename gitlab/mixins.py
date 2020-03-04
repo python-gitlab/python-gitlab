@@ -25,6 +25,22 @@ from gitlab import types as g_types
 from gitlab import utils
 
 
+async def async_postprocess(self, awaitable, callback, *args, **kwargs):
+    obj = await awaitable
+    return callback(self, obj, *args, **kwargs)
+
+
+def awaitable_postprocess(f):
+    @functools.wraps(f)
+    def wrapped_f(self, obj, *args, **kwargs):
+        if asyncio.iscoroutine(obj):
+            return async_postprocess(self, obj, f, *args, **kwarsg)
+        else:
+            return f(self, obj, *args, **kwargs)
+
+    return wrapped_f
+
+
 def update_attrs(f):
     """Update attrs with returned server_data
 

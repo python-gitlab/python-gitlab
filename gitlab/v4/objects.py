@@ -23,7 +23,7 @@ from gitlab import cli, types, utils
 from gitlab.base import *  # noqa
 from gitlab.exceptions import *  # noqa
 from gitlab.mixins import *  # noqa
-from gitlab.mixins import update_attrs
+from gitlab.mixins import awaitable_postprocess, update_attrs
 
 VISIBILITY_PRIVATE = "private"
 VISIBILITY_INTERNAL = "internal"
@@ -1075,6 +1075,10 @@ class GroupMemberManager(CRUDMixin, RESTManager):
     _create_attrs = (("access_level", "user_id"), ("expires_at",))
     _update_attrs = (("access_level",), ("expires_at",))
 
+    @awaitable_postprocess
+    def _all_postprocess(self, sever_data):
+        return [self._obj_cls(self, item) for item in server_data]
+
     @cli.register_custom_action("GroupMemberManager")
     @exc.on_http_error(exc.GitlabListError)
     def all(self, **kwargs):
@@ -1098,7 +1102,7 @@ class GroupMemberManager(CRUDMixin, RESTManager):
 
         path = "%s/all" % self.path
         obj = self.gitlab.http_list(path, **kwargs)
-        return [self._obj_cls(self, item) for item in obj]  # TODO???
+        return self._all_postprocess(obj)
 
 
 class GroupMergeRequest(RESTObject):
@@ -1134,6 +1138,12 @@ class GroupMergeRequestManager(ListMixin, RESTManager):
 class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "title"
 
+    @awaitable_postprocess
+    def _issues_postprocess(self, server_data):
+        manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
+        # FIXME(gpocentek): the computed manager path is not correct
+        return RESTObjectList(manager, GroupIssue, server_data)
+
     @cli.register_custom_action("GroupMilestone")
     @exc.on_http_error(exc.GitlabListError)
     def issues(self, **kwargs):
@@ -1157,9 +1167,13 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
 
         path = "%s/%s/issues" % (self.manager.path, self.get_id())
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        return self._issues_postprocess(data_list)
+
+    @awaitable_postprocess
+    def _merge_requests_postprocess(self, server_data):
         manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
-        return RESTObjectList(manager, GroupIssue, data_list)  # TODO: ???
+        return RESTObjectList(manager, GroupMergeRequest, server_data)
 
     @cli.register_custom_action("GroupMilestone")
     @exc.on_http_error(exc.GitlabListError)
@@ -1183,9 +1197,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = "%s/%s/merge_requests" % (self.manager.path, self.get_id())
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
-        manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
-        # FIXME(gpocentek): the computed manager path is not correct
-        return RESTObjectList(manager, GroupMergeRequest, data_list)  # TODO: ???
+        return self._merge_requests_postprocess(data_list)
 
 
 class GroupMilestoneManager(CRUDMixin, RESTManager):
@@ -1466,6 +1478,13 @@ class LDAPGroupManager(RESTManager):
     _obj_cls = LDAPGroup
     _list_filters = ("search", "provider")
 
+    @awaitable_postprocess
+    def _list_postprocess(self, server_data):
+        if isinstance(obj, list):
+            return [self._obj_cls(self, item) for item in server_data]
+        else:
+            return base.RESTObjectList(self, self._obj_cls, server_data)
+
     @exc.on_http_error(exc.GitlabListError)
     def list(self, **kwargs):
         """Retrieve a list of objects.
@@ -1494,11 +1513,8 @@ class LDAPGroupManager(RESTManager):
         else:
             path = self._path
 
-        obj = self.gitlab.http_list(path, **data)  # TODO: ???
-        if isinstance(obj, list):
-            return [self._obj_cls(self, item) for item in obj]
-        else:
-            return base.RESTObjectList(self, self._obj_cls, obj)
+        obj = self.gitlab.http_list(path, **data)
+        return self._list_postprocess(server_data)
 
 
 class License(RESTObject):
@@ -2406,6 +2422,12 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
     _create_attrs = (("target_project_id", "target_issue_iid"), tuple())
 
+    @awaitable_postprocess
+    def _create_postprocess(self, server_data):
+        source_issue = ProjectIssue(self._parent.manager, server_data["source_issue"])
+        target_issue = ProjectIssue(self._parent.manager, server_data["target_issue"])
+        return source_issue, target_issue
+
     @exc.on_http_error(exc.GitlabCreateError)
     def create(self, data, **kwargs):
         """Create a new object.
@@ -2424,9 +2446,7 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
         """
         self._check_missing_create_attrs(data)
         server_data = self.gitlab.http_post(self.path, post_data=data, **kwargs)
-        source_issue = ProjectIssue(self._parent.manager, server_data["source_issue"])
-        target_issue = ProjectIssue(self._parent.manager, server_data["target_issue"])
-        return source_issue, target_issue  # TODO: ???
+        return self._create_postprocess(server_data)
 
 
 class ProjectIssueResourceLabelEvent(RESTObject):
@@ -2654,6 +2674,18 @@ class ProjectTag(ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
     _short_print_attr = "name"
 
+    @exc.on_http_error(exc.GitlabCreateError)
+    def _create_release_description(self, path, data, **kwargs):
+        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+
+    @exc.on_http_error(exc.GitlabUpdateError)
+    def _update_release_description(self, path, data, **kwargs):
+        return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+
+    @awaitable_postprocess
+    def _set_release_description_postprocess(self, server_data):
+        self.release = server_data
+
     @cli.register_custom_action("ProjectTag", ("description",))
     def set_release_description(self, description, **kwargs):
         """Set the release notes on the tag.
@@ -2674,20 +2706,10 @@ class ProjectTag(ObjectDeleteMixin, RESTObject):
         path = "%s/%s/release" % (self.manager.path, id)
         data = {"description": description}
         if self.release is None:
-            try:
-                server_data = self.manager.gitlab.http_post(
-                    path, post_data=data, **kwargs
-                )
-            except exc.GitlabHttpError as e:
-                raise exc.GitlabCreateError(e.response_code, e.error_message)
+            server_data = self._create_release_description(path, data, **kwargs)
         else:
-            try:
-                server_data = self.manager.gitlab.http_put(
-                    path, post_data=data, **kwargs
-                )
-            except exc.GitlabHttpError as e:
-                raise exc.GitlabUpdateError(e.response_code, e.error_message)
-        self.release = server_data  # TODO: ???
+            server_data = self._update_release_description(path, data, **kwargs)
+        return self._set_release_description_postprocess(server_data)
 
 
 class ProjectTagManager(NoUpdateMixin, RESTManager):
@@ -2890,6 +2912,11 @@ class ProjectMergeRequest(
         )
         return self.manager.gitlab.http_put(path, **kwargs)
 
+    @awaitable_postprocess
+    def _close_issues_postprocess(self, data_list):
+        manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
+        return RESTObjectList(manager, ProjectIssue, data_list)
+
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
     def closes_issues(self, **kwargs):
@@ -2912,8 +2939,12 @@ class ProjectMergeRequest(
         """
         path = "%s/%s/closes_issues" % (self.manager.path, self.get_id())
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
-        manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
-        return RESTObjectList(manager, ProjectIssue, data_list)  # TODO: ???
+        return self._close_issues_postprocess(data_list)
+
+    @awaitable_postprocess
+    def _commits_postprocess(self, data_list):
+        manager = ProjectCommitManager(self.manager.gitlab, parent=self.manager._parent)
+        return RESTObjectList(manager, ProjectCommit, data_list)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
@@ -2938,8 +2969,7 @@ class ProjectMergeRequest(
 
         path = "%s/%s/commits" % (self.manager.path, self.get_id())
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
-        manager = ProjectCommitManager(self.manager.gitlab, parent=self.manager._parent)
-        return RESTObjectList(manager, ProjectCommit, data_list)  # TODO: ???
+        return self._commits_postprocess(server_data)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
@@ -3135,6 +3165,12 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
 class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "title"
 
+    @awaitable_postprocess
+    def _issues_postprocess(self, data_list):
+        manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
+        # FIXME(gpocentek): the computed manager path is not correct
+        return RESTObjectList(manager, ProjectIssue, data_list)
+
     @cli.register_custom_action("ProjectMilestone")
     @exc.on_http_error(exc.GitlabListError)
     def issues(self, **kwargs):
@@ -3158,9 +3194,15 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
 
         path = "%s/%s/issues" % (self.manager.path, self.get_id())
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
-        manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
+        return self._issues_postprocess(data_list)
+
+    @awaitable_postprocess
+    def _merge_requests_postprocess(self, data_list):
+        manager = ProjectMergeRequestManager(
+            self.manager.gitlab, parent=self.manager._parent
+        )
         # FIXME(gpocentek): the computed manager path is not correct
-        return RESTObjectList(manager, ProjectIssue, data_list)  # TODO: ???
+        return RESTObjectList(manager, ProjectMergeRequest, data_list)
 
     @cli.register_custom_action("ProjectMilestone")
     @exc.on_http_error(exc.GitlabListError)
@@ -3184,11 +3226,7 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = "%s/%s/merge_requests" % (self.manager.path, self.get_id())
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
-        manager = ProjectMergeRequestManager(
-            self.manager.gitlab, parent=self.manager._parent
-        )
-        # FIXME(gpocentek): the computed manager path is not correct
-        return RESTObjectList(manager, ProjectMergeRequest, data_list)  # TODO: ???
+        return self._merge_requests_postprocess(server_data)
 
 
 class ProjectMilestoneManager(CRUDMixin, RESTManager):
@@ -3883,6 +3921,11 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
         "teamcity": (("teamcity_url", "build_type", "username", "password"), tuple()),
     }
 
+    @awaitable_postprocess
+    def _get_postprocess(self, obj, id):
+        obj.id = id
+        return obj
+
     def get(self, id, **kwargs):
         """Retrieve a single object.
 
@@ -3901,8 +3944,11 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
             GitlabGetError: If the server cannot perform the request
         """
         obj = super(ProjectServiceManager, self).get(id, **kwargs)
-        obj.id = id
-        return obj  # TODO: ???
+        return self._get_postprocess(obj, id)
+
+    @awaitable_postprocess
+    def _update_postprocess(self, server_data, id):
+        self.id = id
 
     def update(self, id=None, new_data=None, **kwargs):
         """Update an object on the server.
@@ -3920,8 +3966,8 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
             GitlabUpdateError: If the server cannot perform the request
         """
         new_data = new_data or {}
-        super(ProjectServiceManager, self).update(id, new_data, **kwargs)
-        self.id = id  # TODO: ???
+        server_data = super(ProjectServiceManager, self).update(id, new_data, **kwargs)
+        return self._update_postprocess(server_data, id)
 
     @cli.register_custom_action("ProjectServiceManager")
     def available(self, **kwargs):
@@ -4557,6 +4603,14 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = "/projects/%s/housekeeping" % self.get_id()
         return self.manager.gitlab.http_post(path, **kwargs)
 
+    @awaitable_postprocess
+    def _upload_postprocess(self, sever_data):
+        return {
+            "alt": server_data["alt"],
+            "url": server_data["url"],
+            "markdown": server_data["markdown"],
+        }
+
     # see #56 - add file attachment features
     @cli.register_custom_action("Project", ("filename", "filepath"))
     @exc.on_http_error(exc.GitlabUploadError)
@@ -4600,11 +4654,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         file_info = {"file": (filename, filedata)}
         data = self.manager.gitlab.http_post(url, files=file_info)
 
-        return {
-            "alt": data["alt"],
-            "url": data["url"],
-            "markdown": data["markdown"],
-        }  # TODO: ???
+        return self._upload_post_process(data)
 
     @cli.register_custom_action("Project", optional=("wiki",))
     @exc.on_http_error(exc.GitlabGetError)
