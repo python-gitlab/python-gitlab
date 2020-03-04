@@ -62,7 +62,6 @@ AVATAR_PATH = os.path.join(os.path.dirname(__file__), "avatar.png")
 async def main():
     # token authentication from config file
     gl = gitlab.AsyncGitlab.from_config(config_files=["/tmp/python-gitlab.cfg"])
-    gl.enable_debug()
     await gl.auth()
     assert isinstance(gl.user, gitlab.v4.objects.CurrentUser)
 
