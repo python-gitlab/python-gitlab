@@ -15,10 +15,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import importlib
 
+from gitlab.utils import awaitable_postprocess
 
-class RESTObject(object):
+
+class RESTObject:
     """Represents an object built from server data.
 
     It holds the attributes know from the server, and the updated attributes in
@@ -42,6 +45,18 @@ class RESTObject(object):
         )
         self.__dict__["_parent_attrs"] = self.manager.parent_attrs
         self._create_managers()
+
+    @classmethod
+    def create(cls, manager, attrs):
+        if asyncio.iscoroutine(attrs):
+            return cls._acreate(manager, attrs)
+        else:
+            return cls(manager, attrs)
+
+    @classmethod
+    async def _acreate(cls, manager, attrs):
+        attrs = await attrs
+        return cls(manager, attrs)
 
     def __getstate__(self):
         state = self.__dict__.copy()
@@ -126,7 +141,11 @@ class RESTObject(object):
             manager = cls(self.manager.gitlab, parent=self)
             self.__dict__[attr] = manager
 
+    @awaitable_postprocess
     def _update_attrs(self, new_attrs):
+        if new_attrs is None:
+            return
+
         self.__dict__["_updated_attrs"] = {}
         self.__dict__["_attrs"].update(new_attrs)
 
@@ -144,7 +163,7 @@ class RESTObject(object):
         return d
 
 
-class RESTObjectList(object):
+class RESTObjectList:
     """Generator object representing a list of RESTObject's.
 
     This generator uses the Gitlab pagination system to fetch new data when
@@ -174,17 +193,39 @@ class RESTObjectList(object):
         self._obj_cls = obj_cls
         self._list = _list
 
-    def __aiter__(self):
-        return self
+    @classmethod
+    def create(cls, manager, obj_cls, _list):
+        if asyncio.iscoroutine(_list):
+            return cls._acreate(manager, obj_cls, _list)
+        else:
+            return cls(manager, obj_cls, _list)
+
+    @classmethod
+    async def _from_coroutine(cls, manager, obj_cls, _list):
+        _list = await _list
+        return cls(manager, obj_cls, _list)
 
     def __len__(self):
         return len(self._list)
 
-    async def __anext__(self):
-        return await self.next()
+    def __iter__(self):
+        return self
 
-    async def next(self):
-        data = await self._list.next()
+    def __next__(self):
+        return self.next()
+
+    def next(self):
+        data = self._list.next()
+        return self._obj_cls(self.manager, data)
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        return await self.anext()
+
+    async def anext(self):
+        data = await self._list.anext()
         return self._obj_cls(self.manager, data)
 
     @property
@@ -224,7 +265,7 @@ class RESTObjectList(object):
         return self._list.total
 
 
-class RESTManager(object):
+class RESTManager:
     """Base class for CRUD operations on objects.
 
     Derived class must define ``_path`` and ``_obj_cls``.

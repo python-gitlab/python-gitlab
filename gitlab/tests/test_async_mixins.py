@@ -2,7 +2,7 @@ import pytest
 import respx
 from httpx.status_codes import StatusCode
 
-from gitlab import Gitlab
+from gitlab import AsyncGitlab
 from gitlab.base import RESTObject, RESTObjectList
 from gitlab.mixins import (
     CreateMixin,
@@ -22,7 +22,9 @@ from .test_mixins import FakeManager, FakeObject
 class TestMixinMethods:
     @pytest.fixture
     def gl(self):
-        return Gitlab("http://localhost", private_token="private_token", api_version=4)
+        return AsyncGitlab(
+            "http://localhost", private_token="private_token", api_version=4
+        )
 
     @respx.mock
     @pytest.mark.asyncio
@@ -123,11 +125,11 @@ class TestMixinMethods:
         mgr = M(gl)
         obj_list = await mgr.list(path="/others", as_list=False)
         assert isinstance(obj_list, RESTObjectList)
-        obj = await obj_list.next()
+        obj = await obj_list.anext()
         assert obj.id == 42
         assert obj.foo == "bar"
         with pytest.raises(StopAsyncIteration):
-            await obj_list.next()
+            await obj_list.anext()
 
     @respx.mock
     @pytest.mark.asyncio

@@ -2,22 +2,13 @@ import pytest
 import respx
 from httpx.status_codes import StatusCode
 
-from gitlab import Gitlab
+from gitlab import AsyncGitlab
 
 
 class TestProjectSnippets:
-    @pytest.fixture
-    def gl(self):
-        return Gitlab(
-            "http://localhost",
-            private_token="private_token",
-            ssl_verify=True,
-            api_version=4,
-        )
-
     @respx.mock
     @pytest.mark.asyncio
-    async def test_list_project_snippets(self, gl):
+    async def test_list_project_snippets(self, gl, gl_get_value):
         title = "Example Snippet Title"
         visibility = "private"
         request = respx.get(
@@ -34,15 +25,17 @@ class TestProjectSnippets:
             status_code=StatusCode.OK,
         )
 
-        project = await gl.projects.get(1, lazy=True)
-        snippets = await project.snippets.list()
+        project = gl.projects.get(1, lazy=True)
+        snippets = project.snippets.list()
+        snippets = await gl_get_value(snippets)
+
         assert len(snippets) == 1
         assert snippets[0].title == title
         assert snippets[0].visibility == visibility
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_get_project_snippet(self, gl):
+    async def test_get_project_snippet(self, gl, gl_get_value):
         title = "Example Snippet Title"
         visibility = "private"
         request = respx.get(
@@ -57,14 +50,15 @@ class TestProjectSnippets:
             status_code=StatusCode.OK,
         )
 
-        project = await gl.projects.get(1, lazy=True)
-        snippet = await project.snippets.get(1)
+        project = gl.projects.get(1, lazy=True)
+        snippet = project.snippets.get(1)
+        snippet = await gl_get_value(snippet)
         assert snippet.title == title
         assert snippet.visibility == visibility
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_create_update_project_snippets(self, gl):
+    async def test_create_update_project_snippets(self, gl, gl_get_value, is_gl_sync):
         title = "Example Snippet Title"
         new_title = "new-title"
         visibility = "private"
@@ -92,8 +86,8 @@ class TestProjectSnippets:
             status_code=StatusCode.OK,
         )
 
-        project = await gl.projects.get(1, lazy=True)
-        snippet = await project.snippets.create(
+        project = gl.projects.get(1, lazy=True)
+        snippet = project.snippets.create(
             {
                 "title": title,
                 "file_name": title,
@@ -101,10 +95,14 @@ class TestProjectSnippets:
                 "visibility": visibility,
             }
         )
+        snippet = await gl_get_value(snippet)
         assert snippet.title == title
         assert snippet.visibility == visibility
 
         snippet.title = new_title
-        await snippet.save()
+        if is_gl_sync:
+            snippet.save()
+        else:
+            await snippet.save()
         assert snippet.title == new_title
         assert snippet.visibility == visibility

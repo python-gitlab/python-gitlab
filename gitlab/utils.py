@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
+import functools
 from urllib.parse import urlparse
 
 
@@ -23,7 +25,8 @@ class _StdoutStream(object):
         print(chunk)
 
 
-async def response_content(response, streamed, action):
+async def aresponse_content(response, streamed, action):
+    response = await response
     if streamed is False:
         return response.content
 
@@ -31,6 +34,21 @@ async def response_content(response, streamed, action):
         action = _StdoutStream()
 
     async for chunk in response.aiter_bytes():
+        if chunk:
+            action(chunk)
+
+
+def response_content(response, streamed, action):
+    if asyncio.iscoroutine(response):
+        return aresponse_content(response, streamed, action)
+
+    if streamed is False:
+        return response.content
+
+    if action is None:
+        action = _StdoutStream()
+
+    for chunk in response.iter_bytes():
         if chunk:
             action(chunk)
 
@@ -59,3 +77,19 @@ def sanitized_url(url):
 
 def remove_none_from_dict(data):
     return {k: v for k, v in data.items() if v is not None}
+
+
+async def async_postprocess(self, awaitable, callback, *args, **kwargs):
+    obj = await awaitable
+    return callback(self, obj, *args, **kwargs)
+
+
+def awaitable_postprocess(f):
+    @functools.wraps(f)
+    def wrapped_f(self, obj, *args, **kwargs):
+        if asyncio.iscoroutine(obj):
+            return async_postprocess(self, obj, f, *args, **kwargs)
+        else:
+            return f(self, obj, *args, **kwargs)
+
+    return wrapped_f
