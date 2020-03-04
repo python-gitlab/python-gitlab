@@ -314,17 +314,11 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("status", "UserStatusManager"),
     )
 
-    def _change_state(self, dest, server_data):
-        if asyncio.iscoroutine(server_data):
-            return self._achange_state(dest, server_data)
-
+    @awaitable_postprocess
+    def _change_state(self, server_data, dest):
         if server_data:
             self._attrs["state"] = dest
         return server_data
-
-    async def _achange_state(self, dest, server_data):
-        server_data = await server_data
-        return self._change_state(dest, server_data)
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabBlockError)
@@ -343,7 +337,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = "/users/%s/block" % self.id
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        return self._change_state("blocked", server_data)
+        return self._change_state(server_data, "blocked")
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUnblockError)
@@ -362,7 +356,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = "/users/%s/unblock" % self.id
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        return self._change_state("active", server_data)
+        return self._change_state( server_data, "active")
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabDeactivateError)
@@ -381,7 +375,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = "/users/%s/deactivate" % self.id
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        return self._change_state("deactivated", server_data)
+        return self._change_state(server_data, "deactivated")
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabActivateError)
@@ -400,7 +394,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = "/users/%s/activate" % self.id
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        return self._change_state("active", server_data)
+        return self._change_state(server_data, "active")
 
 
 class UserManager(CRUDMixin, RESTManager):
@@ -1700,14 +1694,8 @@ class ProjectBoardManager(CRUDMixin, RESTManager):
 class ProjectBranch(ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
 
-    async def _achange_protected(self, dest, server_data):
-        server_data = await server_data
-        return self._change_protected(dest, server_data)
-
-    def _change_protected(self, dest, server_data):
-        if asyncio.iscoroutine(server_data):
-            return self._achange_protected(dest, server_data)
-
+    @awaitable_postprocess
+    def _change_protected(self, server_data, dest):
         self._attrs["protected"] = dest
         return server_data
 
@@ -1736,7 +1724,7 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
             "developers_can_merge": developers_can_merge,
         }
         server_data = self.manager.gitlab.http_put(path, post_data=post_data, **kwargs)
-        return self._change_protected(True, server_data)
+        return self._change_protected( server_data, True)
 
     @cli.register_custom_action("ProjectBranch")
     @exc.on_http_error(exc.GitlabProtectError)
@@ -1753,7 +1741,7 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
         id = self.get_id().replace("/", "%2F")
         path = "%s/%s/unprotect" % (self.manager.path, id)
         server_data = self.manager.gitlab.http_put(path, **kwargs)
-        return self._change_protected(False, server_data)
+        return self._change_protected( server_data, False)
 
 
 class ProjectBranchManager(NoUpdateMixin, RESTManager):
