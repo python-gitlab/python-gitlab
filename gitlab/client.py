@@ -29,6 +29,7 @@ from gitlab import exceptions as exc
 from gitlab import utils
 from gitlab.exceptions import GitlabHttpError, GitlabParsingError, on_http_error
 from gitlab.types import GitlabList
+from gitlab.utils import inherit_docstrings
 
 REDIRECT_MSG = (
     "python-gitlab detected an http to https redirection. You "
@@ -572,6 +573,7 @@ class BaseGitlab:
         return self.http_list("/search", query_data=data, **kwargs)
 
 
+@inherit_docstrings
 class Gitlab(BaseGitlab):
     _httpx_client_class = httpx.Client
 
@@ -781,6 +783,7 @@ class Gitlab(BaseGitlab):
             raise GitlabParsingError(error_message="Failed to parse the server message")
 
 
+@inherit_docstrings
 class AsyncGitlab(BaseGitlab):
     _httpx_client_class = httpx.AsyncClient
 

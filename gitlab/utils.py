@@ -17,6 +17,7 @@
 
 import asyncio
 import functools
+from inspect import getmembers, isfunction
 from urllib.parse import urlparse
 
 
@@ -93,3 +94,17 @@ def awaitable_postprocess(f):
             return f(self, obj, *args, **kwargs)
 
     return wrapped_f
+
+
+def inherit_docstrings(cls):
+    """Inherit docstrings for methods which doesn't have its' own
+    """
+    for name, func in getmembers(cls, isfunction):
+        if func.__doc__:
+            continue
+
+        for parent in cls.__mro__[1:]:
+            if hasattr(parent, name):
+                func.__doc__ = getattr(parent, name).__doc__
+                break
+    return cls
