@@ -170,7 +170,7 @@ class CreateMixin(object):
         return getattr(self, "_create_attrs", (tuple(), tuple()))
 
     @exc.on_http_error(exc.GitlabCreateError)
-    def create(self, data, **kwargs):
+    def create(self, data=None, **kwargs):
         """Create a new object.
 
         Args:
@@ -186,6 +186,9 @@ class CreateMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server cannot perform the request
         """
+        if data is None:
+            data = {}
+
         self._check_missing_create_attrs(data)
         files = {}
 

@@ -949,7 +949,7 @@ settings.save()
 [current_project.delete() for current_project in projects]
 
 # project import/export
-ex = admin_project.exports.create({})
+ex = admin_project.exports.create()
 ex.refresh()
 count = 0
 while ex.export_status != "finished":

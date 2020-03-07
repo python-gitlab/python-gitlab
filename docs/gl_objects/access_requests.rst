@@ -37,8 +37,8 @@ List access requests from projects and groups::
 
 Create an access request::
 
-    p_ar = project.accessrequests.create({})
-    g_ar = group.accessrequests.create({})
+    p_ar = project.accessrequests.create()
+    g_ar = group.accessrequests.create()
 
 Approve an access request::
 
