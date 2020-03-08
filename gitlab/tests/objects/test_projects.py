@@ -253,8 +253,6 @@ def resp_import_status(url, request):
 
 
 class TestProjectImport(TestProject):
-    # import_github is tested in test_gitlab.py
-
     @with_httmock(resp_import_project)
     def test_import_project(self):
         project_import = self.gl.projects.import_project("file", "api-project")
@@ -265,3 +263,30 @@ class TestProjectImport(TestProject):
         project_import = self.project.imports.get()
         project_import.refresh()
         self.assertEqual(project_import.import_status, "finished")
+
+    def test_import_github(self):
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/import/github",
+            method="post",
+        )
+        def resp_import_github(url, request):
+            headers = {"content-type": "application/json"}
+            content = """{
+            "id": 27,
+            "name": "my-repo",
+            "full_path": "/root/my-repo",
+            "full_name": "Administrator / my-repo"
+            }"""
+            content = content.encode("utf-8")
+            return response(200, content, headers, None, 25, request)
+
+        with HTTMock(resp_import_github):
+            base_path = "/root"
+            name = "my-repo"
+            ret = self.gl.projects.import_github("githubkey", 1234, base_path, name)
+            self.assertIsInstance(ret, dict)
+            self.assertEqual(ret["name"], name)
+            self.assertEqual(ret["full_path"], "/".join((base_path, name)))
+            self.assertTrue(ret["full_name"].endswith(name))

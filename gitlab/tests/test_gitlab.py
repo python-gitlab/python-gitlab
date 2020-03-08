@@ -937,33 +937,6 @@ class TestGitlab(unittest.TestCase):
             self.assertEqual(ret["message"], "Message")
             self.assertEqual(ret["id"], "ed899a2f4b50b4370feeea94676502b42383c746")
 
-    def test_import_github(self):
-        @urlmatch(
-            scheme="http",
-            netloc="localhost",
-            path="/api/v4/import/github",
-            method="post",
-        )
-        def resp_import_github(url, request):
-            headers = {"content-type": "application/json"}
-            content = """{
-            "id": 27,
-            "name": "my-repo",
-            "full_path": "/root/my-repo",
-            "full_name": "Administrator / my-repo"
-            }"""
-            content = content.encode("utf-8")
-            return response(200, content, headers, None, 25, request)
-
-        with HTTMock(resp_import_github):
-            base_path = "/root"
-            name = "my-repo"
-            ret = self.gl.projects.import_github("githubkey", 1234, base_path, name)
-            self.assertIsInstance(ret, dict)
-            self.assertEqual(ret["name"], name)
-            self.assertEqual(ret["full_path"], "/".join((base_path, name)))
-            self.assertTrue(ret["full_name"].endswith(name))
-
     def test_applications(self):
         content = '{"name": "test_app", "redirect_uri": "http://localhost:8080", "scopes": ["api", "email"]}'
         json_content = json.loads(content)
