@@ -56,12 +56,12 @@ assert approval.approvers[0]["user"]["id"] == 1
 
 ars = project1.approvalrules.list(all=True)
 assert len(ars) == 0
-project.approvalrules.create(
+project1.approvalrules.create(
     {"name": "approval-rule", "approvals_required": 1, "group_ids": [group1.id]}
 )
 ars = project1.approvalrules.list(all=True)
 assert len(ars) == 1
-ars[0].approvals_required == 2
+assert ars[0].approvals_required == 2
 ars[0].save()
 ars = project1.approvalrules.list(all=True)
 assert len(ars) == 1
