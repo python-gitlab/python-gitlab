@@ -8,10 +8,11 @@ import unittest
 import requests
 from gitlab import *  # noqa
 from gitlab.v4.objects import *  # noqa
-from httmock import HTTMock, urlmatch, response  # noqa
+from httmock import HTTMock, urlmatch, response, with_httmock  # noqa
 
 
 headers = {"content-type": "application/json"}
+binary_content = b"binary content"
 
 
 class TestProject(unittest.TestCase):
@@ -143,3 +144,71 @@ class TestProjectSnippets(TestProject):
             snippet.save()
             self.assertEqual(snippet.title, title)
             self.assertEqual(snippet.visibility, visibility)
+
+
+@urlmatch(
+    scheme="http", netloc="localhost", path="/api/v4/projects/1/export", method="post",
+)
+def resp_create_export(url, request):
+    """Common mock for Project Export tests"""
+    content = """{
+    "message": "202 Accepted"
+    }"""
+    content = content.encode("utf-8")
+    return response(202, content, headers, None, 25, request)
+
+
+@urlmatch(
+    scheme="http", netloc="localhost", path="/api/v4/projects/1/export", method="get",
+)
+def resp_export_status(url, request):
+    """mock for Project Export GET response"""
+    content = """{
+      "id": 1,
+      "description": "Itaque perspiciatis minima aspernatur",
+      "name": "Gitlab Test",
+      "name_with_namespace": "Gitlab Org / Gitlab Test",
+      "path": "gitlab-test",
+      "path_with_namespace": "gitlab-org/gitlab-test",
+      "created_at": "2017-08-29T04:36:44.383Z",
+      "export_status": "finished",
+      "_links": {
+        "api_url": "https://gitlab.test/api/v4/projects/1/export/download",
+        "web_url": "https://gitlab.test/gitlab-test/download_export"
+      }
+    }
+    """
+    content = content.encode("utf-8")
+    return response(200, content, headers, None, 25, request)
+
+
+@urlmatch(
+    scheme="http",
+    netloc="localhost",
+    path="/api/v4/projects/1/export/download",
+    method="get",
+)
+def resp_download_export(url, request):
+    headers = {"content-type": "application/octet-stream"}
+    content = binary_content
+    return response(200, content, headers, None, 25, request)
+
+
+class TestProjectExport(TestProject):
+    @with_httmock(resp_create_export)
+    def test_create_project_export(self):
+        export = self.project.exports.create()
+        self.assertEqual(export.message, "202 Accepted")
+
+    @with_httmock(resp_create_export, resp_export_status)
+    def test_refresh_project_export_status(self):
+        export = self.project.exports.create()
+        export.refresh()
+        self.assertEqual(export.export_status, "finished")
+
+    @with_httmock(resp_create_export, resp_download_export)
+    def test_download_project_export(self):
+        export = self.project.exports.create()
+        download = export.download()
+        self.assertIsInstance(download, bytes)
+        self.assertEqual(download, binary_content)
