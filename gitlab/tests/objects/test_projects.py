@@ -14,7 +14,9 @@ from httmock import HTTMock, urlmatch, response  # noqa
 headers = {"content-type": "application/json"}
 
 
-class TestProjectSnippets(unittest.TestCase):
+class TestProject(unittest.TestCase):
+    """Base class for GitLab Project tests"""
+
     def setUp(self):
         self.gl = Gitlab(
             "http://localhost",
@@ -22,7 +24,10 @@ class TestProjectSnippets(unittest.TestCase):
             ssl_verify=True,
             api_version=4,
         )
+        self.project = self.gl.projects.get(1, lazy=True)
 
+
+class TestProjectSnippets(TestProject):
     def test_list_project_snippets(self):
         title = "Example Snippet Title"
         visibility = "private"
@@ -47,7 +52,7 @@ class TestProjectSnippets(unittest.TestCase):
             return response(200, content, headers, None, 25, request)
 
         with HTTMock(resp_list_snippet):
-            snippets = self.gl.projects.get(1, lazy=True).snippets.list()
+            snippets = self.project.snippets.list()
             self.assertEqual(len(snippets), 1)
             self.assertEqual(snippets[0].title, title)
             self.assertEqual(snippets[0].visibility, visibility)
@@ -76,7 +81,7 @@ class TestProjectSnippets(unittest.TestCase):
             return response(200, content, headers, None, 25, request)
 
         with HTTMock(resp_get_snippet):
-            snippet = self.gl.projects.get(1, lazy=True).snippets.get(1)
+            snippet = self.project.snippets.get(1)
             self.assertEqual(snippet.title, title)
             self.assertEqual(snippet.visibility, visibility)
 
@@ -123,7 +128,7 @@ class TestProjectSnippets(unittest.TestCase):
             return response(200, content, headers, None, 25, request)
 
         with HTTMock(resp_create_snippet, resp_update_snippet):
-            snippet = self.gl.projects.get(1, lazy=True).snippets.create(
+            snippet = self.project.snippets.create(
                 {
                     "title": title,
                     "file_name": title,
