@@ -16,7 +16,7 @@ binary_content = b"binary content"
 
 
 class TestProject(unittest.TestCase):
-    """Base class for GitLab Project tests"""
+    """Base class for GitLab Project tests."""
 
     def setUp(self):
         self.gl = Gitlab(
@@ -150,7 +150,7 @@ class TestProjectSnippets(TestProject):
     scheme="http", netloc="localhost", path="/api/v4/projects/1/export", method="post",
 )
 def resp_create_export(url, request):
-    """Common mock for Project Export tests"""
+    """Common mock for Project Export tests."""
     content = """{
     "message": "202 Accepted"
     }"""
@@ -162,7 +162,7 @@ def resp_create_export(url, request):
     scheme="http", netloc="localhost", path="/api/v4/projects/1/export", method="get",
 )
 def resp_export_status(url, request):
-    """mock for Project Export GET response"""
+    """Mock for Project Export GET response."""
     content = """{
       "id": 1,
       "description": "Itaque perspiciatis minima aspernatur",
@@ -218,7 +218,7 @@ class TestProjectExport(TestProject):
     scheme="http", netloc="localhost", path="/api/v4/projects/import", method="post",
 )
 def resp_import_project(url, request):
-    """Mock for Project Import POST response"""
+    """Mock for Project Import POST response."""
     content = """{
       "id": 1,
       "description": null,
@@ -237,7 +237,7 @@ def resp_import_project(url, request):
     scheme="http", netloc="localhost", path="/api/v4/projects/1/import", method="get",
 )
 def resp_import_status(url, request):
-    """Mock for Project Import GET response"""
+    """Mock for Project Import GET response."""
     content = """{
       "id": 1,
       "description": "Itaque perspiciatis minima aspernatur corporis consequatur.",
@@ -253,13 +253,9 @@ def resp_import_status(url, request):
 
 
 @urlmatch(
-    scheme="http",
-    netloc="localhost",
-    path="/api/v4/import/github",
-    method="post",
+    scheme="http", netloc="localhost", path="/api/v4/import/github", method="post",
 )
 def resp_import_github(url, request):
-    headers = {"content-type": "application/json"}
     content = """{
     "id": 27,
     "name": "my-repo",
@@ -276,7 +272,7 @@ class TestProjectImport(TestProject):
         project_import = self.gl.projects.import_project("file", "api-project")
         self.assertEqual(project_import["import_status"], "scheduled")
 
-    @with_httmock(resp_import_project, resp_import_status)
+    @with_httmock(resp_import_status)
     def test_refresh_project_import_status(self):
         project_import = self.project.imports.get()
         project_import.refresh()
