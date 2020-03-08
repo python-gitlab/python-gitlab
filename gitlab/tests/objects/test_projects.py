@@ -212,3 +212,56 @@ class TestProjectExport(TestProject):
         download = export.download()
         self.assertIsInstance(download, bytes)
         self.assertEqual(download, binary_content)
+
+
+@urlmatch(
+    scheme="http", netloc="localhost", path="/api/v4/projects/import", method="post",
+)
+def resp_import_project(url, request):
+    """Mock for Project Import POST response"""
+    content = """{
+      "id": 1,
+      "description": null,
+      "name": "api-project",
+      "name_with_namespace": "Administrator / api-project",
+      "path": "api-project",
+      "path_with_namespace": "root/api-project",
+      "created_at": "2018-02-13T09:05:58.023Z",
+      "import_status": "scheduled"
+    }"""
+    content = content.encode("utf-8")
+    return response(200, content, headers, None, 25, request)
+
+
+@urlmatch(
+    scheme="http", netloc="localhost", path="/api/v4/projects/1/import", method="get",
+)
+def resp_import_status(url, request):
+    """Mock for Project Import GET response"""
+    content = """{
+      "id": 1,
+      "description": "Itaque perspiciatis minima aspernatur corporis consequatur.",
+      "name": "Gitlab Test",
+      "name_with_namespace": "Gitlab Org / Gitlab Test",
+      "path": "gitlab-test",
+      "path_with_namespace": "gitlab-org/gitlab-test",
+      "created_at": "2017-08-29T04:36:44.383Z",
+      "import_status": "finished"
+    }"""
+    content = content.encode("utf-8")
+    return response(200, content, headers, None, 25, request)
+
+
+class TestProjectImport(TestProject):
+    # import_github is tested in test_gitlab.py
+
+    @with_httmock(resp_import_project)
+    def test_import_project(self):
+        project_import = self.gl.projects.import_project("file", "api-project")
+        self.assertEqual(project_import["import_status"], "scheduled")
+
+    @with_httmock(resp_import_project, resp_import_status)
+    def test_refresh_project_import_status(self):
+        project_import = self.project.imports.get()
+        project_import.refresh()
+        self.assertEqual(project_import.import_status, "finished")
