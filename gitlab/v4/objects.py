@@ -2708,7 +2708,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
         )
         data = {
             "name": "name",
-            "self.assertEqual(expected, actual, 'message')pprovals_required": approvals_required,
+            "approvals_required": approvals_required,
             "rule_type": "regular",
             "user_ids": approver_ids,
             "group_ids": approver_group_ids,
