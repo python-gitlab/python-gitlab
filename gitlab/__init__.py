@@ -641,12 +641,6 @@ class Gitlab(object):
         get_all = kwargs.pop("all", False)
         url = self._build_url(path)
 
-        # use keyset pagination automatically, if all=True
-        order_by = kwargs.get("order_by")
-        if get_all and (not order_by or order_by == "id"):
-            kwargs["pagination"] = "keyset"
-            kwargs["order_by"] = "id"
-
         if get_all is True and as_list is True:
             return list(GitlabList(self, url, query_data, **kwargs))
 
