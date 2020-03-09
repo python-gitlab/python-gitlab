@@ -453,6 +453,8 @@ class UserManager(CRUDMixin, RESTManager):
             "avatar",
             "public_email",
             "private_profile",
+            "color_scheme_id",
+            "theme_id",
         ),
     )
     _update_attrs = (
@@ -476,6 +478,8 @@ class UserManager(CRUDMixin, RESTManager):
             "avatar",
             "public_email",
             "private_profile",
+            "color_scheme_id",
+            "theme_id",
         ),
     )
     _types = {"confirm": types.LowercaseStringAttribute, "avatar": types.ImageAttribute}
