@@ -785,7 +785,7 @@ Get all additional statistics of a project::
 
 Get total fetches in last 30 days of a project::
 
-    total_fetches = project.additionalstatistics.get()['fetches']['total']
+    total_fetches = project.additionalstatistics.get().fetches['total']
 
 Project issues statistics
 =========================
