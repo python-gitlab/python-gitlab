@@ -4839,6 +4839,7 @@ class ProjectManager(CRUDMixin, RESTManager):
         self,
         file,
         path,
+        name=None,
         namespace=None,
         overwrite=False,
         override_params=None,
@@ -4868,6 +4869,8 @@ class ProjectManager(CRUDMixin, RESTManager):
         if override_params:
             for k, v in override_params.items():
                 data["override_params[%s]" % k] = v
+        if name is not None:
+            data["name"] = name
         if namespace:
             data["namespace"] = namespace
         return self.gitlab.http_post(
