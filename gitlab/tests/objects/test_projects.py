@@ -15,6 +15,108 @@ headers = {"content-type": "application/json"}
 binary_content = b"binary content"
 
 
+@urlmatch(
+    scheme="http", netloc="localhost", path="/api/v4/projects/1/export", method="post",
+)
+def resp_create_export(url, request):
+    """Common mock for Project Export tests."""
+    content = """{
+    "message": "202 Accepted"
+    }"""
+    content = content.encode("utf-8")
+    return response(202, content, headers, None, 25, request)
+
+
+@urlmatch(
+    scheme="http", netloc="localhost", path="/api/v4/projects/1/export", method="get",
+)
+def resp_export_status(url, request):
+    """Mock for Project Export GET response."""
+    content = """{
+      "id": 1,
+      "description": "Itaque perspiciatis minima aspernatur",
+      "name": "Gitlab Test",
+      "name_with_namespace": "Gitlab Org / Gitlab Test",
+      "path": "gitlab-test",
+      "path_with_namespace": "gitlab-org/gitlab-test",
+      "created_at": "2017-08-29T04:36:44.383Z",
+      "export_status": "finished",
+      "_links": {
+        "api_url": "https://gitlab.test/api/v4/projects/1/export/download",
+        "web_url": "https://gitlab.test/gitlab-test/download_export"
+      }
+    }
+    """
+    content = content.encode("utf-8")
+    return response(200, content, headers, None, 25, request)
+
+
+@urlmatch(
+    scheme="http",
+    netloc="localhost",
+    path="/api/v4/projects/1/export/download",
+    method="get",
+)
+def resp_download_export(url, request):
+    """Mock for Project Export Download GET response."""
+    headers = {"content-type": "application/octet-stream"}
+    content = binary_content
+    return response(200, content, headers, None, 25, request)
+
+
+@urlmatch(
+    scheme="http", netloc="localhost", path="/api/v4/projects/import", method="post",
+)
+def resp_import_project(url, request):
+    """Mock for Project Import POST response."""
+    content = """{
+      "id": 1,
+      "description": null,
+      "name": "api-project",
+      "name_with_namespace": "Administrator / api-project",
+      "path": "api-project",
+      "path_with_namespace": "root/api-project",
+      "created_at": "2018-02-13T09:05:58.023Z",
+      "import_status": "scheduled"
+    }"""
+    content = content.encode("utf-8")
+    return response(200, content, headers, None, 25, request)
+
+
+@urlmatch(
+    scheme="http", netloc="localhost", path="/api/v4/projects/1/import", method="get",
+)
+def resp_import_status(url, request):
+    """Mock for Project Import GET response."""
+    content = """{
+      "id": 1,
+      "description": "Itaque perspiciatis minima aspernatur corporis consequatur.",
+      "name": "Gitlab Test",
+      "name_with_namespace": "Gitlab Org / Gitlab Test",
+      "path": "gitlab-test",
+      "path_with_namespace": "gitlab-org/gitlab-test",
+      "created_at": "2017-08-29T04:36:44.383Z",
+      "import_status": "finished"
+    }"""
+    content = content.encode("utf-8")
+    return response(200, content, headers, None, 25, request)
+
+
+@urlmatch(
+    scheme="http", netloc="localhost", path="/api/v4/import/github", method="post",
+)
+def resp_import_github(url, request):
+    """Mock for GitHub Project Import POST response."""
+    content = """{
+    "id": 27,
+    "name": "my-repo",
+    "full_path": "/root/my-repo",
+    "full_name": "Administrator / my-repo"
+    }"""
+    content = content.encode("utf-8")
+    return response(200, content, headers, None, 25, request)
+
+
 class TestProject(unittest.TestCase):
     """Base class for GitLab Project tests."""
 
@@ -146,54 +248,6 @@ class TestProjectSnippets(TestProject):
             self.assertEqual(snippet.visibility, visibility)
 
 
-@urlmatch(
-    scheme="http", netloc="localhost", path="/api/v4/projects/1/export", method="post",
-)
-def resp_create_export(url, request):
-    """Common mock for Project Export tests."""
-    content = """{
-    "message": "202 Accepted"
-    }"""
-    content = content.encode("utf-8")
-    return response(202, content, headers, None, 25, request)
-
-
-@urlmatch(
-    scheme="http", netloc="localhost", path="/api/v4/projects/1/export", method="get",
-)
-def resp_export_status(url, request):
-    """Mock for Project Export GET response."""
-    content = """{
-      "id": 1,
-      "description": "Itaque perspiciatis minima aspernatur",
-      "name": "Gitlab Test",
-      "name_with_namespace": "Gitlab Org / Gitlab Test",
-      "path": "gitlab-test",
-      "path_with_namespace": "gitlab-org/gitlab-test",
-      "created_at": "2017-08-29T04:36:44.383Z",
-      "export_status": "finished",
-      "_links": {
-        "api_url": "https://gitlab.test/api/v4/projects/1/export/download",
-        "web_url": "https://gitlab.test/gitlab-test/download_export"
-      }
-    }
-    """
-    content = content.encode("utf-8")
-    return response(200, content, headers, None, 25, request)
-
-
-@urlmatch(
-    scheme="http",
-    netloc="localhost",
-    path="/api/v4/projects/1/export/download",
-    method="get",
-)
-def resp_download_export(url, request):
-    headers = {"content-type": "application/octet-stream"}
-    content = binary_content
-    return response(200, content, headers, None, 25, request)
-
-
 class TestProjectExport(TestProject):
     @with_httmock(resp_create_export)
     def test_create_project_export(self):
@@ -212,58 +266,6 @@ class TestProjectExport(TestProject):
         download = export.download()
         self.assertIsInstance(download, bytes)
         self.assertEqual(download, binary_content)
-
-
-@urlmatch(
-    scheme="http", netloc="localhost", path="/api/v4/projects/import", method="post",
-)
-def resp_import_project(url, request):
-    """Mock for Project Import POST response."""
-    content = """{
-      "id": 1,
-      "description": null,
-      "name": "api-project",
-      "name_with_namespace": "Administrator / api-project",
-      "path": "api-project",
-      "path_with_namespace": "root/api-project",
-      "created_at": "2018-02-13T09:05:58.023Z",
-      "import_status": "scheduled"
-    }"""
-    content = content.encode("utf-8")
-    return response(200, content, headers, None, 25, request)
-
-
-@urlmatch(
-    scheme="http", netloc="localhost", path="/api/v4/projects/1/import", method="get",
-)
-def resp_import_status(url, request):
-    """Mock for Project Import GET response."""
-    content = """{
-      "id": 1,
-      "description": "Itaque perspiciatis minima aspernatur corporis consequatur.",
-      "name": "Gitlab Test",
-      "name_with_namespace": "Gitlab Org / Gitlab Test",
-      "path": "gitlab-test",
-      "path_with_namespace": "gitlab-org/gitlab-test",
-      "created_at": "2017-08-29T04:36:44.383Z",
-      "import_status": "finished"
-    }"""
-    content = content.encode("utf-8")
-    return response(200, content, headers, None, 25, request)
-
-
-@urlmatch(
-    scheme="http", netloc="localhost", path="/api/v4/import/github", method="post",
-)
-def resp_import_github(url, request):
-    content = """{
-    "id": 27,
-    "name": "my-repo",
-    "full_path": "/root/my-repo",
-    "full_name": "Administrator / my-repo"
-    }"""
-    content = content.encode("utf-8")
-    return response(200, content, headers, None, 25, request)
 
 
 class TestProjectImport(TestProject):
