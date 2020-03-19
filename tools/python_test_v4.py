@@ -962,9 +962,13 @@ with open("/tmp/gitlab-export.tgz", "wb") as f:
     ex.download(streamed=True, action=f.write)
 
 output = gl.projects.import_project(
-    open("/tmp/gitlab-export.tgz", "rb"), "imported_project"
+    open("/tmp/gitlab-export.tgz", "rb"), "imported_project", name="Imported Project"
 )
 project_import = gl.projects.get(output["id"], lazy=True).imports.get()
+
+assert project_import.path == "imported_project"
+assert project_import.name == "Imported Project"
+
 count = 0
 while project_import.import_status != "finished":
     time.sleep(1)
