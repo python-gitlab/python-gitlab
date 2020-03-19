@@ -625,6 +625,56 @@ assert len(sudo_project.keys.list()) == 1
 sudo_project.keys.delete(deploy_key.id)
 assert len(sudo_project.keys.list()) == 0
 
+# deploy tokens
+deploy_token = admin_project.deploytokens.create(
+    {
+        "name": "foo",
+        "username": "bar",
+        "expires_at": "2022-01-01",
+        "scopes": ["read_registry"],
+    }
+)
+assert len(admin_project.deploytokens.list()) == 1
+assert gl.deploytokens.list() == admin_project.deploytokens.list()
+
+assert admin_project.deploytokens.list()[0].name == "foo"
+assert admin_project.deploytokens.list()[0].expires_at == "2022-01-01T00:00:00.000Z"
+assert admin_project.deploytokens.list()[0].scopes == ["read_registry"]
+# Uncomment once https://gitlab.com/gitlab-org/gitlab/-/issues/211963 is fixed
+# assert admin_project.deploytokens.list()[0].username == "bar"
+deploy_token.delete()
+assert len(admin_project.deploytokens.list()) == 0
+# Uncomment once https://gitlab.com/gitlab-org/gitlab/-/issues/212523 is fixed
+# assert len(gl.deploytokens.list()) == 0
+
+
+deploy_token_group = gl.groups.create(
+    {"name": "deploy_token_group", "path": "deploy_token_group"}
+)
+
+# Uncomment once https://gitlab.com/gitlab-org/gitlab/-/issues/211878 is fixed
+# deploy_token = group_deploy_token.deploytokens.create(
+#     {
+#         "name": "foo",
+#         "scopes": ["read_registry"],
+#     }
+# )
+
+# Remove once https://gitlab.com/gitlab-org/gitlab/-/issues/211878 is fixed
+deploy_token = deploy_token_group.deploytokens.create(
+    {"name": "foo", "username": "", "expires_at": "", "scopes": ["read_repository"],}
+)
+
+assert len(deploy_token_group.deploytokens.list()) == 1
+# Uncomment once https://gitlab.com/gitlab-org/gitlab/-/issues/212523 is fixed
+# assert gl.deploytokens.list() == deploy_token_group.deploytokens.list()
+deploy_token.delete()
+assert len(deploy_token_group.deploytokens.list()) == 0
+# Uncomment once https://gitlab.com/gitlab-org/gitlab/-/issues/212523 is fixed
+# assert len(gl.deploytokens.list()) == 0
+
+deploy_token_group.delete()
+
 # labels
 # label1 = admin_project.labels.create({"name": "label1", "color": "#778899"})
 # label1 = admin_project.labels.list()[0]

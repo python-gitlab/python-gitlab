@@ -920,6 +920,40 @@ class TestGitlab(unittest.TestCase):
             self.assertEqual(application.redirect_uri, "http://localhost:8080")
             self.assertEqual(application.scopes, ["api", "email"])
 
+    def test_deploy_tokens(self):
+        @urlmatch(
+            scheme="http",
+            netloc="localhost",
+            path="/api/v4/projects/1/deploy_tokens",
+            method="post",
+        )
+        def resp_deploy_token_create(url, request):
+            headers = {"content-type": "application/json"}
+            content = """{
+            "id": 1,
+            "name": "test_deploy_token",
+            "username": "custom-user",
+            "expires_at": "2022-01-01T00:00:00.000Z",
+            "token": "jMRvtPNxrn3crTAGukpZ",
+            "scopes": [ "read_repository" ]}"""
+            content = content.encode("utf-8")
+            return response(200, content, headers, None, 5, request)
+
+        with HTTMock(resp_deploy_token_create):
+            deploy_token = self.gl.projects.get(1, lazy=True).deploytokens.create(
+                {
+                    "name": "test_deploy_token",
+                    "expires_at": "2022-01-01T00:00:00.000Z",
+                    "username": "custom-user",
+                    "scopes": ["read_repository"],
+                }
+            )
+            self.assertIsInstance(deploy_token, ProjectDeployToken)
+            self.assertEqual(deploy_token.id, 1),
+            self.assertEqual(deploy_token.expires_at, "2022-01-01T00:00:00.000Z"),
+            self.assertEqual(deploy_token.username, "custom-user")
+            self.assertEqual(deploy_token.scopes, ["read_repository"])
+
     def _default_config(self):
         fd, temp_path = tempfile.mkstemp()
         os.write(fd, valid_config)
