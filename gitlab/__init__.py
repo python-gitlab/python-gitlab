@@ -800,9 +800,9 @@ class GitlabList(object):
 
     @property
     def prev_page(self):
-        """The next page number.
+        """The previous page number.
 
-        If None, the current page is the last.
+        If None, the current page is the first.
         """
         return int(self._prev_page) if self._prev_page else None
 

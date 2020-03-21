@@ -194,9 +194,9 @@ class RESTObjectList(object):
 
     @property
     def prev_page(self):
-        """The next page number.
+        """The previous page number.
 
-        If None, the current page is the last.
+        If None, the current page is the first.
         """
         return self._list.prev_page
 
