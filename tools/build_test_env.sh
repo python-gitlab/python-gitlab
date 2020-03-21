@@ -28,14 +28,15 @@ try() { "$@" || fatal "'$@' failed"; }
 REUSE_CONTAINER=
 NOVENV=
 API_VER=4
-GITLAB_IMAGE="gitlab/gitlab-ce"
-GITLAB_TAG="latest"
+GITLAB_IMAGE="${GITLAB_IMAGE:-gitlab/gitlab-ce}"
+GITLAB_TAG="${GITLAB_TAG:-latest}"
 VENV_CMD="python3 -m venv"
-while getopts :knp:a: opt "$@"; do
+while getopts :knp:a:i:t: opt "$@"; do
     case $opt in
         k) REUSE_CONTAINER=1;;
         n) NOVENV=1;;
         a) API_VER=$OPTARG;;
+        i) GITLAB_IMAGE=$OPTARG;;
         t) GITLAB_TAG=$OPTARG;;
         :) fatal "Option -${OPTARG} requires a value";;
         '?') fatal "Unknown option: -${OPTARG}";;

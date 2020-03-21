@@ -156,6 +156,26 @@ To run these tests:
    # run the python API tests:
    ./tools/py_functional_tests.sh
 
+By default, the tests run against the ``gitlab/gitlab-ce:latest`` image. You can
+override both the image and tag with the ``-i`` and ``-t`` options, or by providing
+either the ``GITLAB_IMAGE`` or ``GITLAB_TAG`` environment variables.
+
+This way you can run tests against different versions, such as ``nightly`` for
+features in an upcoming release, or an older release (e.g. ``12.8.0-ce.0``).
+The tag must match an exact tag on Docker Hub:
+
+.. code-block:: bash
+
+   # run tests against `nightly` or specific tag
+   ./tools/py_functional_tests.sh -t nightly
+   ./tools/py_functional_tests.sh -t 12.8.0-ce.0
+
+   # run tests against the latest gitlab EE image
+   ./tools/py_functional_tests.sh -i gitlab/gitlab-ee
+
+   # override tags with environment variables
+   GITLAB_TAG=nightly ./tools/py_functional_tests.sh
+
 You can also build a test environment using the following command:
 
 .. code-block:: bash
