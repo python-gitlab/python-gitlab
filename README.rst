@@ -129,11 +129,11 @@ You need to install ``tox`` to run unit tests and documentation builds locally:
 
 .. code-block:: bash
 
-   # run the unit tests for python 2/3, and the pep8 tests:
+   # run the unit tests for all supported python3 versions, and the pep8 tests:
    tox
 
    # run tests in one environment only:
-   tox -epy35
+   tox -epy36
 
    # build the documentation, the result will be generated in
    # build/sphinx/html/
