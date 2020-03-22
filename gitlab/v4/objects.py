@@ -2172,6 +2172,24 @@ class ProjectCommit(RESTObject):
         post_data = {"branch": branch}
         return self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
+    @cli.register_custom_action("ProjectCommit")
+    @exc.on_http_error(exc.GitlabGetError)
+    def signature(self, **kwargs):
+        """Get the GPG signature of the commit.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the signature could not be retrieved
+
+        Returns:
+            dict: The commit's GPG signature data
+        """
+        path = "%s/%s/signature" % (self.manager.path, self.get_id())
+        return self.manager.gitlab.http_get(path, **kwargs)
+
 
 class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
     _path = "/projects/%(project_id)s/repository/commits"

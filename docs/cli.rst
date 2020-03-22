@@ -236,6 +236,18 @@ Create a snippet:
    $ gitlab project-snippet create --project-id 2 --title "the title" \
        --file-name "the name" --code "the code"
 
+Get a specific project commit by its SHA id:
+
+.. code-block:: console
+
+   $ gitlab project-commit get --project-id 2 --id a43290c
+
+Get the GPG signature of a signed commit:
+
+.. code-block:: console
+
+   $ gitlab project-commit signature --project-id 2 --id a43290c
+
 Define the status of a commit (as would be done from a CI tool for example):
 
 .. code-block:: console

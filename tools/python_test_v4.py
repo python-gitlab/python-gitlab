@@ -473,6 +473,14 @@ commit = admin_project.commits.list()[0]
 # assert commit.refs()
 # assert commit.merge_requests()
 
+# commit GPG signature (for unsigned commits)
+# TODO: reasonable tests for signed commits?
+try:
+    signature = commit.signature()
+except gitlab.GitlabGetError as e:
+    error_message = e.error_message
+assert error_message == "404 GPG Signature Not Found"
+
 # commit comment
 commit.comments.create({"note": "This is a commit comment"})
 # assert len(commit.comments.list()) == 1
