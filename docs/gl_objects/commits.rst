@@ -82,6 +82,10 @@ Get the references the commit has been pushed to (branches and tags)::
     commit.refs('tag')  # only tags
     commit.refs('branch')  # only branches
 
+Get the GPG signature of the commit (if the commit was signed)::
+
+    commit.signature()
+
 List the merge requests related to a commit::
 
     commit.merge_requests()

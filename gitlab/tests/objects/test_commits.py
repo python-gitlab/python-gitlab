@@ -48,6 +48,26 @@ def resp_revert_commit(url, request):
     return response(200, content, headers, None, 5, request)
 
 
+@urlmatch(
+    scheme="http",
+    netloc="localhost",
+    path="/api/v4/projects/1/repository/commits/6b2257ea/signature",
+    method="get",
+)
+def resp_get_commit_gpg_signature(url, request):
+    """Mock for commit GPG signature GET response."""
+    content = """{
+    "gpg_key_id": 1,
+    "gpg_key_primary_keyid": "8254AAB3FBD54AC9",
+    "gpg_key_user_name": "John Doe",
+    "gpg_key_user_email": "johndoe@example.com",
+    "verification_status": "verified",
+    "gpg_key_subkey_id": null
+    }"""
+    content = content.encode("utf-8")
+    return response(200, content, headers, None, 5, request)
+
+
 class TestCommit(TestProject):
     """
     Base class for commit tests. Inherits from TestProject,
@@ -77,3 +97,10 @@ class TestCommit(TestProject):
         revert_commit = commit.revert(branch="master")
         self.assertEqual(revert_commit["short_id"], "8b090c1b")
         self.assertEqual(revert_commit["title"], 'Revert "Initial commit"')
+
+    @with_httmock(resp_get_commit_gpg_signature)
+    def test_get_commit_gpg_signature(self):
+        commit = self.project.commits.get("6b2257ea", lazy=True)
+        signature = commit.signature()
+        self.assertEqual(signature["gpg_key_primary_keyid"], "8254AAB3FBD54AC9")
+        self.assertEqual(signature["verification_status"], "verified")
