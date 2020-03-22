@@ -84,4 +84,4 @@ jobs:
         - pip3 install tox
         - tox -e py38
   allow_failures:
-    - env: IMAGE_TAG=nightly
+    - env: GITLAB_TAG=nightly
