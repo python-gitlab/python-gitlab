@@ -40,6 +40,22 @@ jobs:
         - pip3 install tox
         - tox -e py_func_v4
     - stage: test
+      name: cli_func_nightly
+      dist: bionic
+      python: 3.8
+      env: GITLAB_TAG=nightly
+      script:
+        - pip3 install tox
+        - tox -e cli_func_v4
+    - stage: test
+      name: py_func_nightly
+      dist: bionic
+      python: 3.8
+      env: GITLAB_TAG=nightly
+      script:
+        - pip3 install tox
+        - tox -e py_func_v4
+    - stage: test
       name: docs
       dist: bionic
       python: 3.8
@@ -67,3 +83,5 @@ jobs:
       script:
         - pip3 install tox
         - tox -e py38
+  allow_failures:
+    - env: GITLAB_TAG=nightly
