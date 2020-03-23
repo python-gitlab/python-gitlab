@@ -4806,6 +4806,10 @@ class ProjectManager(CRUDMixin, RESTManager):
             "avatar",
             "printing_merge_request_link_enabled",
             "ci_config_path",
+            "template_name",
+            "template_project_id",
+            "use_custom_template",
+            "group_with_project_templates_id",
         ),
     )
     _update_attrs = (
