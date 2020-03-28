@@ -51,10 +51,18 @@ class TestListAttribute(unittest.TestCase):
         o.set_from_cli("  ")
         self.assertEqual([], o.get())
 
-    def test_get_for_api(self):
+    def test_get_for_api_from_cli(self):
         o = types.ListAttribute()
         o.set_from_cli("foo,bar,baz")
         self.assertEqual("foo,bar,baz", o.get_for_api())
+
+    def test_get_for_api_from_list(self):
+        o = types.ListAttribute(["foo", "bar", "baz"])
+        self.assertEqual("foo,bar,baz", o.get_for_api())
+
+    def test_get_for_api_does_not_split_string(self):
+        o = types.ListAttribute("foo")
+        self.assertEqual("foo", o.get_for_api())
 
 
 class TestLowercaseStringAttribute(unittest.TestCase):
