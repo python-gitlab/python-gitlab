@@ -2720,14 +2720,14 @@ class ProjectTag(ObjectDeleteMixin, RESTObject):
                     path, post_data=data, **kwargs
                 )
             except exc.GitlabHttpError as e:
-                raise exc.GitlabCreateError(e.response_code, e.error_message)
+                raise exc.GitlabCreateError(e.response_code, e.error_message) from e
         else:
             try:
                 server_data = self.manager.gitlab.http_put(
                     path, post_data=data, **kwargs
                 )
             except exc.GitlabHttpError as e:
-                raise exc.GitlabUpdateError(e.response_code, e.error_message)
+                raise exc.GitlabUpdateError(e.response_code, e.error_message) from e
         self.release = server_data
 
 

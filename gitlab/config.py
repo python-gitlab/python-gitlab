@@ -60,18 +60,18 @@ class GitlabConfigParser(object):
         if self.gitlab_id is None:
             try:
                 self.gitlab_id = self._config.get("global", "default")
-            except Exception:
+            except Exception as e:
                 raise GitlabIDError(
                     "Impossible to get the gitlab id (not specified in config file)"
-                )
+                ) from e
 
         try:
             self.url = self._config.get(self.gitlab_id, "url")
-        except Exception:
+        except Exception as e:
             raise GitlabDataError(
                 "Impossible to get gitlab informations from "
                 "configuration (%s)" % self.gitlab_id
-            )
+            ) from e
 
         self.ssl_verify = True
         try:

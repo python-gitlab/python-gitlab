@@ -270,7 +270,7 @@ def on_http_error(error):
             try:
                 return f(*args, **kwargs)
             except GitlabHttpError as e:
-                raise error(e.error_message, e.response_code, e.response_body)
+                raise error(e.error_message, e.response_code, e.response_body) from e
 
         return wrapped_f
 
