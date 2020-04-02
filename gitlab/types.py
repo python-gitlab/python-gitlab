@@ -38,6 +38,10 @@ class ListAttribute(GitlabAttribute):
             self._value = [item.strip() for item in cli_value.split(",")]
 
     def get_for_api(self):
+        # Do not comma-split single value passed as string
+        if isinstance(self._value, str):
+            return self._value
+
         return ",".join(self._value)
 
 

@@ -677,10 +677,17 @@ assert issue1.participants()
 assert type(issue1.closed_by()) == list
 assert type(issue1.related_merge_requests()) == list
 
-# issues labels and events
+# issue labels
 label2 = admin_project.labels.create({"name": "label2", "color": "#aabbcc"})
 issue1.labels = ["label2"]
 issue1.save()
+
+assert issue1 in admin_project.issues.list(labels=["label2"])
+assert issue1 in admin_project.issues.list(labels="label2")
+assert issue1 in admin_project.issues.list(labels="Any")
+assert issue1 not in admin_project.issues.list(labels="None")
+
+# issue events
 events = issue1.resourcelabelevents.list()
 assert events
 event = issue1.resourcelabelevents.get(events[0].id)
