@@ -444,7 +444,7 @@ class AccessRequestMixin(object):
 
 
 class ExportMixin(object):
-    @cli.register_custom_action("ProjectExport")
+    @cli.register_custom_action(("GroupExport", "ProjectExport"))
     @exc.on_http_error(exc.GitlabGetError)
     def download(self, streamed=False, action=None, chunk_size=1024, **kwargs):
         """Download the archive of a resource export.

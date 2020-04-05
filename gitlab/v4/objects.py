@@ -991,6 +991,26 @@ class GroupEpicManager(CRUDMixin, RESTManager):
     _types = {"labels": types.ListAttribute}
 
 
+class GroupExport(ExportMixin, RESTObject):
+    _id_attr = None
+
+
+class GroupExportManager(GetWithoutIdMixin, CreateMixin, RESTManager):
+    _path = "/groups/%(group_id)s/export"
+    _obj_cls = GroupExport
+    _from_parent_attrs = {"group_id": "id"}
+
+
+class GroupImport(RESTObject):
+    _id_attr = None
+
+
+class GroupImportManager(GetWithoutIdMixin, RESTManager):
+    _path = "/groups/%(group_id)s/import"
+    _obj_cls = GroupImport
+    _from_parent_attrs = {"group_id": "id"}
+
+
 class GroupIssue(RESTObject):
     pass
 
@@ -1290,7 +1310,9 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("badges", "GroupBadgeManager"),
         ("boards", "GroupBoardManager"),
         ("customattributes", "GroupCustomAttributeManager"),
+        ("exports", "GroupExportManager"),
         ("epics", "GroupEpicManager"),
+        ("imports", "GroupImportManager"),
         ("issues", "GroupIssueManager"),
         ("labels", "GroupLabelManager"),
         ("members", "GroupMemberManager"),
@@ -1430,6 +1452,34 @@ class GroupManager(CRUDMixin, RESTManager):
             "request_access_enabled",
         ),
     )
+
+    @exc.on_http_error(exc.GitlabImportError)
+    def import_group(self, file, path, name, parent_id=None, **kwargs):
+        """Import a group from an archive file.
+
+        Args:
+            file: Data or file object containing the group
+            path (str): The path for the new group to be imported.
+            name (str): The name for the new group.
+            parent_id (str): ID of a parent group that the group will
+                be imported into.
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabImportError: If the server failed to perform the request
+
+        Returns:
+            dict: A representation of the import status.
+        """
+        files = {"file": ("file.tar.gz", file)}
+        data = {"path": path, "name": name}
+        if parent_id is not None:
+            data["parent_id"] = parent_id
+
+        return self.gitlab.http_post(
+            "/groups/import", post_data=data, files=files, **kwargs
+        )
 
 
 class Hook(ObjectDeleteMixin, RESTObject):
