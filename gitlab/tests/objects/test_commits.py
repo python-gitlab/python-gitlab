@@ -1,6 +1,7 @@
 from httmock import urlmatch, response, with_httmock
 
-from .test_projects import headers, TestProject
+from .mocks import headers
+from .test_projects import TestProject
 
 
 @urlmatch(

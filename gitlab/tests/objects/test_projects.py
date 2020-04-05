@@ -10,21 +10,7 @@ from gitlab import *  # noqa
 from gitlab.v4.objects import *  # noqa
 from httmock import HTTMock, urlmatch, response, with_httmock  # noqa
 
-
-headers = {"content-type": "application/json"}
-binary_content = b"binary content"
-
-
-@urlmatch(
-    scheme="http", netloc="localhost", path="/api/v4/projects/1/export", method="post",
-)
-def resp_create_export(url, request):
-    """Common mock for Project Export tests."""
-    content = """{
-    "message": "202 Accepted"
-    }"""
-    content = content.encode("utf-8")
-    return response(202, content, headers, None, 25, request)
+from .mocks import *  # noqa
 
 
 @urlmatch(
@@ -48,19 +34,6 @@ def resp_export_status(url, request):
     }
     """
     content = content.encode("utf-8")
-    return response(200, content, headers, None, 25, request)
-
-
-@urlmatch(
-    scheme="http",
-    netloc="localhost",
-    path="/api/v4/projects/1/export/download",
-    method="get",
-)
-def resp_download_export(url, request):
-    """Mock for Project Export Download GET response."""
-    headers = {"content-type": "application/octet-stream"}
-    content = binary_content
     return response(200, content, headers, None, 25, request)
 
 
