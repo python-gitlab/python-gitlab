@@ -991,7 +991,7 @@ class GroupEpicManager(CRUDMixin, RESTManager):
     _types = {"labels": types.ListAttribute}
 
 
-class GroupExport(ExportMixin, RESTObject):
+class GroupExport(DownloadMixin, RESTObject):
     _id_attr = None
 
 
@@ -4147,7 +4147,7 @@ class ProjectWikiManager(CRUDMixin, RESTManager):
     _list_filters = ("with_content",)
 
 
-class ProjectExport(ExportMixin, RefreshMixin, RESTObject):
+class ProjectExport(DownloadMixin, RefreshMixin, RESTObject):
     _id_attr = None
 
 

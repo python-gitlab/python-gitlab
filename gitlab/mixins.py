@@ -443,7 +443,7 @@ class AccessRequestMixin(object):
         self._update_attrs(server_data)
 
 
-class ExportMixin(object):
+class DownloadMixin(object):
     @cli.register_custom_action(("GroupExport", "ProjectExport"))
     @exc.on_http_error(exc.GitlabGetError)
     def download(self, streamed=False, action=None, chunk_size=1024, **kwargs):
