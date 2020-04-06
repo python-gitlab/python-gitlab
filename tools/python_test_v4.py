@@ -1047,6 +1047,23 @@ release_test_project.releases.delete(release_tag_name)
 assert len(release_test_project.releases.list()) == 0
 release_test_project.delete()
 
+# project remote mirrors
+mirror_url = "http://gitlab.test/root/mirror.git"
+
+# create remote mirror
+mirror = admin_project.remote_mirrors.create({"url": mirror_url})
+assert mirror.url == mirror_url
+
+# update remote mirror
+mirror.enabled = True
+mirror.save()
+
+# list remote mirrors
+mirror = admin_project.remote_mirrors.list()[0]
+assert isinstance(mirror, gitlab.v4.objects.ProjectRemoteMirror)
+assert mirror.url == mirror_url
+assert mirror.enabled is True
+
 # status
 message = "Test"
 emoji = "thumbsup"
