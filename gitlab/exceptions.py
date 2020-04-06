@@ -209,6 +209,10 @@ class GitlabAttachFileError(GitlabOperationError):
     pass
 
 
+class GitlabImportError(GitlabOperationError):
+    pass
+
+
 class GitlabCherryPickError(GitlabOperationError):
     pass
 

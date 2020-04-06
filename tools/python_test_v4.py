@@ -380,6 +380,33 @@ assert len(group1.variables.list()) == 0
 # g_l.delete()
 # assert len(group1.labels.list()) == 0
 
+
+# group import/export
+export = group1.exports.create()
+assert export.message == "202 Accepted"
+
+# We cannot check for export_status with group export API
+time.sleep(10)
+
+import_archive = "/tmp/gitlab-group-export.tgz"
+import_path = "imported_group"
+import_name = "Imported Group"
+
+with open(import_archive, "wb") as f:
+    export.download(streamed=True, action=f.write)
+
+with open(import_archive, "rb") as f:
+    output = gl.groups.import_group(f, import_path, import_name)
+assert output["message"] == "202 Accepted"
+
+# We cannot check for returned ID with group import API
+time.sleep(10)
+group_import = gl.groups.get(import_path)
+
+assert group_import.path == import_path
+assert group_import.name == import_name
+
+
 # hooks
 hook = gl.hooks.create({"url": "http://whatever.com"})
 assert len(gl.hooks.list()) == 1

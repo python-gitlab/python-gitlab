@@ -991,6 +991,26 @@ class GroupEpicManager(CRUDMixin, RESTManager):
     _types = {"labels": types.ListAttribute}
 
 
+class GroupExport(DownloadMixin, RESTObject):
+    _id_attr = None
+
+
+class GroupExportManager(GetWithoutIdMixin, CreateMixin, RESTManager):
+    _path = "/groups/%(group_id)s/export"
+    _obj_cls = GroupExport
+    _from_parent_attrs = {"group_id": "id"}
+
+
+class GroupImport(RESTObject):
+    _id_attr = None
+
+
+class GroupImportManager(GetWithoutIdMixin, RESTManager):
+    _path = "/groups/%(group_id)s/import"
+    _obj_cls = GroupImport
+    _from_parent_attrs = {"group_id": "id"}
+
+
 class GroupIssue(RESTObject):
     pass
 
@@ -1290,7 +1310,9 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("badges", "GroupBadgeManager"),
         ("boards", "GroupBoardManager"),
         ("customattributes", "GroupCustomAttributeManager"),
+        ("exports", "GroupExportManager"),
         ("epics", "GroupEpicManager"),
+        ("imports", "GroupImportManager"),
         ("issues", "GroupIssueManager"),
         ("labels", "GroupLabelManager"),
         ("members", "GroupMemberManager"),
@@ -1453,6 +1475,34 @@ class GroupManager(CRUDMixin, RESTManager):
             "default_branch_protection",
         ),
     )
+
+    @exc.on_http_error(exc.GitlabImportError)
+    def import_group(self, file, path, name, parent_id=None, **kwargs):
+        """Import a group from an archive file.
+
+        Args:
+            file: Data or file object containing the group
+            path (str): The path for the new group to be imported.
+            name (str): The name for the new group.
+            parent_id (str): ID of a parent group that the group will
+                be imported into.
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabImportError: If the server failed to perform the request
+
+        Returns:
+            dict: A representation of the import status.
+        """
+        files = {"file": ("file.tar.gz", file)}
+        data = {"path": path, "name": name}
+        if parent_id is not None:
+            data["parent_id"] = parent_id
+
+        return self.gitlab.http_post(
+            "/groups/import", post_data=data, files=files, **kwargs
+        )
 
 
 class Hook(ObjectDeleteMixin, RESTObject):
@@ -4120,35 +4170,8 @@ class ProjectWikiManager(CRUDMixin, RESTManager):
     _list_filters = ("with_content",)
 
 
-class ProjectExport(RefreshMixin, RESTObject):
+class ProjectExport(DownloadMixin, RefreshMixin, RESTObject):
     _id_attr = None
-
-    @cli.register_custom_action("ProjectExport")
-    @exc.on_http_error(exc.GitlabGetError)
-    def download(self, streamed=False, action=None, chunk_size=1024, **kwargs):
-        """Download the archive of a project export.
-
-        Args:
-            streamed (bool): If True the data will be processed by chunks of
-                `chunk_size` and each chunk is passed to `action` for
-                reatment
-            action (callable): Callable responsible of dealing with chunk of
-                data
-            chunk_size (int): Size of each chunk
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabGetError: If the server failed to perform the request
-
-        Returns:
-            str: The blob content if streamed is False, None otherwise
-        """
-        path = "/projects/%s/export/download" % self.project_id
-        result = self.manager.gitlab.http_get(
-            path, streamed=streamed, raw=True, **kwargs
-        )
-        return utils.response_content(result, streamed, action, chunk_size)
 
 
 class ProjectExportManager(GetWithoutIdMixin, CreateMixin, RESTManager):

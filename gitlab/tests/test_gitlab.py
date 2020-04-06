@@ -626,23 +626,6 @@ class TestGitlab(unittest.TestCase):
             self.assertIsInstance(statistics, ProjectIssuesStatistics)
             self.assertEqual(statistics.statistics["counts"]["all"], 20)
 
-    def test_groups(self):
-        @urlmatch(
-            scheme="http", netloc="localhost", path="/api/v4/groups/1", method="get"
-        )
-        def resp_get_group(url, request):
-            headers = {"content-type": "application/json"}
-            content = '{"name": "name", "id": 1, "path": "path"}'
-            content = content.encode("utf-8")
-            return response(200, content, headers, None, 5, request)
-
-        with HTTMock(resp_get_group):
-            data = self.gl.groups.get(1)
-            self.assertIsInstance(data, Group)
-            self.assertEqual(data.name, "name")
-            self.assertEqual(data.path, "path")
-            self.assertEqual(data.id, 1)
-
     def test_issues(self):
         @urlmatch(
             scheme="http", netloc="localhost", path="/api/v4/issues", method="get"
