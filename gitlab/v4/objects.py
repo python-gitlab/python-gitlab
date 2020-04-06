@@ -1440,8 +1440,6 @@ class GroupManager(CRUDMixin, RESTManager):
             "membership_lock",
             "share_with_group_lock",
             "visibility",
-            "request_access_enabled",
-            "mentions_disabled",
             "require_two_factor_authentication",
             "two_factor_grace_period",
             "project_creation_level",
