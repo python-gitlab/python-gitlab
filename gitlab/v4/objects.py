@@ -1745,6 +1745,18 @@ class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
         self.gitlab.http_delete(self.path, query_data=data, **kwargs)
 
 
+class ProjectRemoteMirror(SaveMixin, RESTObject):
+    pass
+
+
+class ProjectRemoteMirrorManager(ListMixin, CreateMixin, UpdateMixin, RESTManager):
+    _path = "/projects/%(project_id)s/remote_mirrors"
+    _obj_cls = ProjectRemoteMirror
+    _from_parent_attrs = {"project_id": "id"}
+    _create_attrs = (("url",), ("enabled", "only_protected_branches"))
+    _update_attrs = (tuple(), ("enabled", "only_protected_branches"))
+
+
 class ProjectBoardList(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
@@ -4246,6 +4258,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("pipelineschedules", "ProjectPipelineScheduleManager"),
         ("pushrules", "ProjectPushRulesManager"),
         ("releases", "ProjectReleaseManager"),
+        ("remote_mirrors", "ProjectRemoteMirrorManager"),
         ("repositories", "ProjectRegistryRepositoryManager"),
         ("runners", "ProjectRunnerManager"),
         ("services", "ProjectServiceManager"),

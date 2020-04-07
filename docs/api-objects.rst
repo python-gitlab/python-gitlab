@@ -37,6 +37,7 @@ API examples
    gl_objects/projects
    gl_objects/protected_branches
    gl_objects/runners
+   gl_objects/remote_mirrors
    gl_objects/repositories
    gl_objects/repository_tags
    gl_objects/search
