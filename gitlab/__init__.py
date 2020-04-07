@@ -606,10 +606,10 @@ class Gitlab(object):
         ):
             try:
                 return result.json()
-            except Exception:
+            except Exception as e:
                 raise GitlabParsingError(
                     error_message="Failed to parse the server message"
-                )
+                ) from e
         else:
             return result
 
@@ -686,8 +686,10 @@ class Gitlab(object):
         try:
             if result.headers.get("Content-Type", None) == "application/json":
                 return result.json()
-        except Exception:
-            raise GitlabParsingError(error_message="Failed to parse the server message")
+        except Exception as e:
+            raise GitlabParsingError(
+                error_message="Failed to parse the server message"
+            ) from e
         return result
 
     def http_put(self, path, query_data=None, post_data=None, files=None, **kwargs):
@@ -722,8 +724,10 @@ class Gitlab(object):
         )
         try:
             return result.json()
-        except Exception:
-            raise GitlabParsingError(error_message="Failed to parse the server message")
+        except Exception as e:
+            raise GitlabParsingError(
+                error_message="Failed to parse the server message"
+            ) from e
 
     def http_delete(self, path, **kwargs):
         """Make a PUT request to the Gitlab server.
@@ -789,8 +793,10 @@ class GitlabList(object):
 
         try:
             self._data = result.json()
-        except Exception:
-            raise GitlabParsingError(error_message="Failed to parse the server message")
+        except Exception as e:
+            raise GitlabParsingError(
+                error_message="Failed to parse the server message"
+            ) from e
 
         self._current = 0
 
