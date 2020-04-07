@@ -207,6 +207,19 @@ Get a specific user by id:
 
    $ gitlab user get --id 3
 
+Create a deploy token for a project:
+
+.. code-block:: console
+
+   $ gitlab -v project-deploy-token create --project-id 2 \
+        --name bar --username root --expires-at "2021-09-09" --scopes "read_repository"
+
+List deploy tokens for a group:
+
+.. code-block:: console
+
+   $ gitlab -v group-deploy-token list --group-id 3
+
 Get a list of snippets for this project:
 
 .. code-block:: console

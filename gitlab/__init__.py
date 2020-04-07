@@ -119,6 +119,7 @@ class Gitlab(object):
 
         self.broadcastmessages = objects.BroadcastMessageManager(self)
         self.deploykeys = objects.DeployKeyManager(self)
+        self.deploytokens = objects.DeployTokenManager(self)
         self.geonodes = objects.GeoNodeManager(self)
         self.gitlabciymls = objects.GitlabciymlManager(self)
         self.gitignores = objects.GitignoreManager(self)

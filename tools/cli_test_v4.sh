@@ -195,14 +195,6 @@ testcase "project upload" '
         --filename '$(basename $0)' --filepath '$0' >/dev/null 2>&1
 '
 
-testcase "project deletion" '
-    GITLAB project delete --id "$PROJECT_ID"
-'
-
-testcase "group deletion" '
-    OUTPUT=$(try GITLAB group delete --id $GROUP_ID)
-'
-
 testcase "application settings get" '
     GITLAB application-settings get >/dev/null 2>&1
 '
@@ -222,3 +214,83 @@ testcase "values from files" '
     echo $OUTPUT | grep -q "Multi line"
 '
 
+# Test deploy tokens
+CREATE_PROJECT_DEPLOY_TOKEN_OUTPUT=$(GITLAB -v project-deploy-token create --project-id $PROJECT_ID \
+        --name foo --username root --expires-at "2021-09-09" --scopes "read_registry")
+CREATED_DEPLOY_TOKEN_ID=$(echo "$CREATE_PROJECT_DEPLOY_TOKEN_OUTPUT" | grep ^id: | cut -d" " -f2)
+testcase "create project deploy token" '
+    echo $CREATE_PROJECT_DEPLOY_TOKEN_OUTPUT | grep -q "name: foo"
+'
+testcase "create project deploy token" '
+    echo $CREATE_PROJECT_DEPLOY_TOKEN_OUTPUT | grep -q "expires-at: 2021-09-09T00:00:00.000Z"
+'
+testcase "create project deploy token" '
+    echo $CREATE_PROJECT_DEPLOY_TOKEN_OUTPUT | grep "scopes: " | grep -q "read_registry"
+'
+# Uncomment once https://gitlab.com/gitlab-org/gitlab/-/issues/211963 is fixed
+#testcase "create project deploy token" '
+#    echo $CREATE_PROJECT_DEPLOY_TOKEN_OUTPUT | grep -q "username: root"
+#'
+
+# Remove once https://gitlab.com/gitlab-org/gitlab/-/issues/211963 is fixed
+testcase "create project deploy token" '
+    echo $CREATE_PROJECT_DEPLOY_TOKEN_OUTPUT | grep -q "gitlab+deploy-token"
+'
+
+LIST_DEPLOY_TOKEN_OUTPUT=$(GITLAB -v deploy-token list)
+testcase "list all deploy tokens" '
+    echo $LIST_DEPLOY_TOKEN_OUTPUT | grep -q "name: foo"
+'
+testcase "list all deploy tokens" '
+    echo $LIST_DEPLOY_TOKEN_OUTPUT | grep -q "id: $CREATED_DEPLOY_TOKEN_ID"
+'
+testcase "list all deploy tokens" '
+    echo $LIST_DEPLOY_TOKEN_OUTPUT | grep -q "expires-at: 2021-09-09T00:00:00.000Z"
+'
+testcase "list all deploy tokens" '
+    echo $LIST_DEPLOY_TOKEN_OUTPUT | grep "scopes: " | grep -q "read_registry"
+'
+
+testcase "list project deploy tokens" '
+    OUTPUT=$(GITLAB -v project-deploy-token list --project-id $PROJECT_ID)
+    echo $OUTPUT | grep -q "id: $CREATED_DEPLOY_TOKEN_ID"
+'
+testcase "delete project deploy token" '
+    GITLAB -v project-deploy-token delete  --project-id $PROJECT_ID --id $CREATED_DEPLOY_TOKEN_ID
+    LIST_PROJECT_DEPLOY_TOKEN_OUTPUT=$(GITLAB -v project-deploy-token list --project-id $PROJECT_ID)
+    echo $LIST_PROJECT_DEPLOY_TOKEN_OUTPUT | grep -qv "id: $CREATED_DEPLOY_TOKEN_ID"
+'
+# Uncomment once https://gitlab.com/gitlab-org/gitlab/-/issues/212523 is fixed
+#testcase "delete project deploy token" '
+#    LIST_DEPLOY_TOKEN_OUTPUT=$(GITLAB -v deploy-token list)
+#    echo $LIST_DEPLOY_TOKEN_OUTPUT | grep -qv "id: $CREATED_DEPLOY_TOKEN_ID"
+#'
+
+CREATE_GROUP_DEPLOY_TOKEN_OUTPUT=$(GITLAB -v group-deploy-token create --group-id $GROUP_ID \
+        --name bar --username root --expires-at "2021-09-09" --scopes "read_repository")
+CREATED_DEPLOY_TOKEN_ID=$(echo "$CREATE_GROUP_DEPLOY_TOKEN_OUTPUT" | grep ^id: | cut -d" " -f2)
+testcase "create group deploy token" '
+    echo $CREATE_GROUP_DEPLOY_TOKEN_OUTPUT | grep -q "name: bar"
+'
+testcase "list group deploy tokens" '
+    OUTPUT=$(GITLAB -v group-deploy-token list --group-id $GROUP_ID)
+    echo $OUTPUT | grep -q "id: $CREATED_DEPLOY_TOKEN_ID"
+'
+testcase "delete group deploy token" '
+    GITLAB -v group-deploy-token delete  --group-id $GROUP_ID --id $CREATED_DEPLOY_TOKEN_ID
+    LIST_GROUP_DEPLOY_TOKEN_OUTPUT=$(GITLAB -v group-deploy-token list --group-id $GROUP_ID)
+    echo $LIST_GROUP_DEPLOY_TOKEN_OUTPUT | grep -qv "id: $CREATED_DEPLOY_TOKEN_ID"
+'
+# Uncomment once https://gitlab.com/gitlab-org/gitlab/-/issues/212523 is fixed
+#testcase "delete group deploy token" '
+#    LIST_DEPLOY_TOKEN_OUTPUT=$(GITLAB -v deploy-token list)
+#    echo $LIST_DEPLOY_TOKEN_OUTPUT | grep -qv "id: $CREATED_DEPLOY_TOKEN_ID"
+#'
+
+testcase "project deletion" '
+    GITLAB project delete --id "$PROJECT_ID"
+'
+
+testcase "group deletion" '
+    OUTPUT=$(try GITLAB group delete --id $GROUP_ID)
+'

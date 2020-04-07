@@ -695,6 +695,43 @@ class DeployKeyManager(ListMixin, RESTManager):
     _obj_cls = DeployKey
 
 
+class DeployToken(ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class DeployTokenManager(ListMixin, RESTManager):
+    _path = "/deploy_tokens"
+    _obj_cls = DeployToken
+
+
+class ProjectDeployToken(ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class ProjectDeployTokenManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
+    _path = "/projects/%(project_id)s/deploy_tokens"
+    _from_parent_attrs = {"project_id": "id"}
+    _obj_cls = ProjectDeployToken
+    _create_attrs = (
+        ("name", "scopes",),
+        ("expires_at", "username",),
+    )
+
+
+class GroupDeployToken(ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class GroupDeployTokenManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
+    _path = "/groups/%(group_id)s/deploy_tokens"
+    _from_parent_attrs = {"group_id": "id"}
+    _obj_cls = GroupDeployToken
+    _create_attrs = (
+        ("name", "scopes",),
+        ("expires_at", "username",),
+    )
+
+
 class NotificationSettings(SaveMixin, RESTObject):
     _id_attr = None
 
@@ -1323,6 +1360,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("subgroups", "GroupSubgroupManager"),
         ("variables", "GroupVariableManager"),
         ("clusters", "GroupClusterManager"),
+        ("deploytokens", "GroupDeployTokenManager"),
     )
 
     @cli.register_custom_action("Group", ("to_project_id",))
@@ -4271,6 +4309,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("clusters", "ProjectClusterManager"),
         ("additionalstatistics", "ProjectAdditionalStatisticsManager"),
         ("issuesstatistics", "ProjectIssuesStatisticsManager"),
+        ("deploytokens", "ProjectDeployTokenManager"),
     )
 
     @cli.register_custom_action("Project", ("submodule", "branch", "commit_sha"))
