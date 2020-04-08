@@ -30,6 +30,7 @@ import requests
 import gitlab
 from gitlab import *  # noqa
 from gitlab.v4.objects import *  # noqa
+import pytest
 
 
 valid_config = b"""[global]
@@ -45,17 +46,17 @@ private_token = ABCDEF
 
 class TestSanitize(unittest.TestCase):
     def test_do_nothing(self):
-        self.assertEqual(1, gitlab._sanitize(1))
-        self.assertEqual(1.5, gitlab._sanitize(1.5))
-        self.assertEqual("foo", gitlab._sanitize("foo"))
+        assert 1 == gitlab._sanitize(1)
+        assert 1.5 == gitlab._sanitize(1.5)
+        assert "foo" == gitlab._sanitize("foo")
 
     def test_slash(self):
-        self.assertEqual("foo%2Fbar", gitlab._sanitize("foo/bar"))
+        assert "foo%2Fbar" == gitlab._sanitize("foo/bar")
 
     def test_dict(self):
         source = {"url": "foo/bar", "id": 1}
         expected = {"url": "foo%2Fbar", "id": 1}
-        self.assertEqual(expected, gitlab._sanitize(source))
+        assert expected == gitlab._sanitize(source)
 
 
 class TestGitlabList(unittest.TestCase):
@@ -102,22 +103,20 @@ class TestGitlabList(unittest.TestCase):
 
         with HTTMock(resp_1):
             obj = self.gl.http_list("/tests", as_list=False)
-            self.assertEqual(len(obj), 2)
-            self.assertEqual(
-                obj._next_url, "http://localhost/api/v4/tests?per_page=1&page=2"
-            )
-            self.assertEqual(obj.current_page, 1)
-            self.assertEqual(obj.prev_page, None)
-            self.assertEqual(obj.next_page, 2)
-            self.assertEqual(obj.per_page, 1)
-            self.assertEqual(obj.total_pages, 2)
-            self.assertEqual(obj.total, 2)
+            assert len(obj) == 2
+            assert obj._next_url == "http://localhost/api/v4/tests?per_page=1&page=2"
+            assert obj.current_page == 1
+            assert obj.prev_page == None
+            assert obj.next_page == 2
+            assert obj.per_page == 1
+            assert obj.total_pages == 2
+            assert obj.total == 2
 
             with HTTMock(resp_2):
                 l = list(obj)
-                self.assertEqual(len(l), 2)
-                self.assertEqual(l[0]["a"], "b")
-                self.assertEqual(l[1]["c"], "d")
+                assert len(l) == 2
+                assert l[0]["a"] == "b"
+                assert l[1]["c"] == "d"
 
     def test_all_omitted_when_as_list(self):
         @urlmatch(scheme="http", netloc="localhost", path="/api/v4/tests", method="get")
@@ -135,7 +134,7 @@ class TestGitlabList(unittest.TestCase):
 
         with HTTMock(resp):
             result = self.gl.http_list("/tests", as_list=False, all=True)
-            self.assertIsInstance(result, GitlabList)
+            assert isinstance(result, GitlabList)
 
 
 class TestGitlabHttpMethods(unittest.TestCase):
@@ -146,11 +145,11 @@ class TestGitlabHttpMethods(unittest.TestCase):
 
     def test_build_url(self):
         r = self.gl._build_url("http://localhost/api/v4")
-        self.assertEqual(r, "http://localhost/api/v4")
+        assert r == "http://localhost/api/v4"
         r = self.gl._build_url("https://localhost/api/v4")
-        self.assertEqual(r, "https://localhost/api/v4")
+        assert r == "https://localhost/api/v4"
         r = self.gl._build_url("/projects")
-        self.assertEqual(r, "http://localhost/api/v4/projects")
+        assert r == "http://localhost/api/v4/projects"
 
     def test_http_request(self):
         @urlmatch(
@@ -164,7 +163,7 @@ class TestGitlabHttpMethods(unittest.TestCase):
         with HTTMock(resp_cont):
             http_r = self.gl.http_request("get", "/projects")
             http_r.json()
-            self.assertEqual(http_r.status_code, 200)
+            assert http_r.status_code == 200
 
     def test_http_request_404(self):
         @urlmatch(
@@ -175,9 +174,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
             return response(404, content, {}, None, 5, request)
 
         with HTTMock(resp_cont):
-            self.assertRaises(
-                GitlabHttpError, self.gl.http_request, "get", "/not_there"
-            )
+            with pytest.raises(GitlabHttpError):
+                self.gl.http_request("get", "/not_there")
 
     def test_get_request(self):
         @urlmatch(
@@ -190,8 +188,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
 
         with HTTMock(resp_cont):
             result = self.gl.http_get("/projects")
-            self.assertIsInstance(result, dict)
-            self.assertEqual(result["name"], "project1")
+            assert isinstance(result, dict)
+            assert result["name"] == "project1"
 
     def test_get_request_raw(self):
         @urlmatch(
@@ -204,7 +202,7 @@ class TestGitlabHttpMethods(unittest.TestCase):
 
         with HTTMock(resp_cont):
             result = self.gl.http_get("/projects")
-            self.assertEqual(result.content.decode("utf-8"), "content")
+            assert result.content.decode("utf-8") == "content"
 
     def test_get_request_404(self):
         @urlmatch(
@@ -215,7 +213,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
             return response(404, content, {}, None, 5, request)
 
         with HTTMock(resp_cont):
-            self.assertRaises(GitlabHttpError, self.gl.http_get, "/not_there")
+            with pytest.raises(GitlabHttpError):
+                self.gl.http_get("/not_there")
 
     def test_get_request_invalid_data(self):
         @urlmatch(
@@ -227,7 +226,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
-            self.assertRaises(GitlabParsingError, self.gl.http_get, "/projects")
+            with pytest.raises(GitlabParsingError):
+                self.gl.http_get("/projects")
 
     def test_list_request(self):
         @urlmatch(
@@ -240,18 +240,18 @@ class TestGitlabHttpMethods(unittest.TestCase):
 
         with HTTMock(resp_cont):
             result = self.gl.http_list("/projects", as_list=True)
-            self.assertIsInstance(result, list)
-            self.assertEqual(len(result), 1)
+            assert isinstance(result, list)
+            assert len(result) == 1
 
         with HTTMock(resp_cont):
             result = self.gl.http_list("/projects", as_list=False)
-            self.assertIsInstance(result, GitlabList)
-            self.assertEqual(len(result), 1)
+            assert isinstance(result, GitlabList)
+            assert len(result) == 1
 
         with HTTMock(resp_cont):
             result = self.gl.http_list("/projects", all=True)
-            self.assertIsInstance(result, list)
-            self.assertEqual(len(result), 1)
+            assert isinstance(result, list)
+            assert len(result) == 1
 
     def test_list_request_404(self):
         @urlmatch(
@@ -262,7 +262,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
             return response(404, content, {}, None, 5, request)
 
         with HTTMock(resp_cont):
-            self.assertRaises(GitlabHttpError, self.gl.http_list, "/not_there")
+            with pytest.raises(GitlabHttpError):
+                self.gl.http_list("/not_there")
 
     def test_list_request_invalid_data(self):
         @urlmatch(
@@ -274,7 +275,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
-            self.assertRaises(GitlabParsingError, self.gl.http_list, "/projects")
+            with pytest.raises(GitlabParsingError):
+                self.gl.http_list("/projects")
 
     def test_post_request(self):
         @urlmatch(
@@ -287,8 +289,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
 
         with HTTMock(resp_cont):
             result = self.gl.http_post("/projects")
-            self.assertIsInstance(result, dict)
-            self.assertEqual(result["name"], "project1")
+            assert isinstance(result, dict)
+            assert result["name"] == "project1"
 
     def test_post_request_404(self):
         @urlmatch(
@@ -299,7 +301,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
             return response(404, content, {}, None, 5, request)
 
         with HTTMock(resp_cont):
-            self.assertRaises(GitlabHttpError, self.gl.http_post, "/not_there")
+            with pytest.raises(GitlabHttpError):
+                self.gl.http_post("/not_there")
 
     def test_post_request_invalid_data(self):
         @urlmatch(
@@ -311,7 +314,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
-            self.assertRaises(GitlabParsingError, self.gl.http_post, "/projects")
+            with pytest.raises(GitlabParsingError):
+                self.gl.http_post("/projects")
 
     def test_put_request(self):
         @urlmatch(
@@ -324,8 +328,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
 
         with HTTMock(resp_cont):
             result = self.gl.http_put("/projects")
-            self.assertIsInstance(result, dict)
-            self.assertEqual(result["name"], "project1")
+            assert isinstance(result, dict)
+            assert result["name"] == "project1"
 
     def test_put_request_404(self):
         @urlmatch(
@@ -336,7 +340,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
             return response(404, content, {}, None, 5, request)
 
         with HTTMock(resp_cont):
-            self.assertRaises(GitlabHttpError, self.gl.http_put, "/not_there")
+            with pytest.raises(GitlabHttpError):
+                self.gl.http_put("/not_there")
 
     def test_put_request_invalid_data(self):
         @urlmatch(
@@ -348,7 +353,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
             return response(200, content, headers, None, 5, request)
 
         with HTTMock(resp_cont):
-            self.assertRaises(GitlabParsingError, self.gl.http_put, "/projects")
+            with pytest.raises(GitlabParsingError):
+                self.gl.http_put("/projects")
 
     def test_delete_request(self):
         @urlmatch(
@@ -361,8 +367,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
 
         with HTTMock(resp_cont):
             result = self.gl.http_delete("/projects")
-            self.assertIsInstance(result, requests.Response)
-            self.assertEqual(result.json(), True)
+            assert isinstance(result, requests.Response)
+            assert result.json() == True
 
     def test_delete_request_404(self):
         @urlmatch(
@@ -373,7 +379,8 @@ class TestGitlabHttpMethods(unittest.TestCase):
             return response(404, content, {}, None, 5, request)
 
         with HTTMock(resp_cont):
-            self.assertRaises(GitlabHttpError, self.gl.http_delete, "/not_there")
+            with pytest.raises(GitlabHttpError):
+                self.gl.http_delete("/not_there")
 
 
 class TestGitlabStripBaseUrl(unittest.TestCase):
@@ -383,81 +390,77 @@ class TestGitlabStripBaseUrl(unittest.TestCase):
         )
 
     def test_strip_base_url(self):
-        self.assertEqual(self.gl.url, "http://localhost")
+        assert self.gl.url == "http://localhost"
 
     def test_strip_api_url(self):
-        self.assertEqual(self.gl.api_url, "http://localhost/api/v4")
+        assert self.gl.api_url == "http://localhost/api/v4"
 
     def test_build_url(self):
         r = self.gl._build_url("/projects")
-        self.assertEqual(r, "http://localhost/api/v4/projects")
+        assert r == "http://localhost/api/v4/projects"
 
 
 class TestGitlabAuth(unittest.TestCase):
     def test_invalid_auth_args(self):
-        self.assertRaises(
-            ValueError,
-            Gitlab,
-            "http://localhost",
-            api_version="4",
-            private_token="private_token",
-            oauth_token="bearer",
-        )
-        self.assertRaises(
-            ValueError,
-            Gitlab,
-            "http://localhost",
-            api_version="4",
-            oauth_token="bearer",
-            http_username="foo",
-            http_password="bar",
-        )
-        self.assertRaises(
-            ValueError,
-            Gitlab,
-            "http://localhost",
-            api_version="4",
-            private_token="private_token",
-            http_password="bar",
-        )
-        self.assertRaises(
-            ValueError,
-            Gitlab,
-            "http://localhost",
-            api_version="4",
-            private_token="private_token",
-            http_username="foo",
-        )
+        with pytest.raises(ValueError):
+            Gitlab(
+                "http://localhost",
+                api_version="4",
+                private_token="private_token",
+                oauth_token="bearer",
+            )
+        with pytest.raises(ValueError):
+            Gitlab(
+                "http://localhost",
+                api_version="4",
+                oauth_token="bearer",
+                http_username="foo",
+                http_password="bar",
+            )
+        with pytest.raises(ValueError):
+            Gitlab(
+                "http://localhost",
+                api_version="4",
+                private_token="private_token",
+                http_password="bar",
+            )
+        with pytest.raises(ValueError):
+            Gitlab(
+                "http://localhost",
+                api_version="4",
+                private_token="private_token",
+                http_username="foo",
+            )
 
     def test_private_token_auth(self):
         gl = Gitlab("http://localhost", private_token="private_token", api_version="4")
-        self.assertEqual(gl.private_token, "private_token")
-        self.assertEqual(gl.oauth_token, None)
-        self.assertEqual(gl.job_token, None)
-        self.assertEqual(gl._http_auth, None)
-        self.assertNotIn("Authorization", gl.headers)
-        self.assertEqual(gl.headers["PRIVATE-TOKEN"], "private_token")
-        self.assertNotIn("JOB-TOKEN", gl.headers)
+        assert gl.private_token == "private_token"
+        assert gl.oauth_token == None
+        assert gl.job_token == None
+        assert gl._http_auth == None
+        assert "Authorization" not in gl.headers
+        assert gl.headers["PRIVATE-TOKEN"] == "private_token"
+        assert "JOB-TOKEN" not in gl.headers
 
     def test_oauth_token_auth(self):
         gl = Gitlab("http://localhost", oauth_token="oauth_token", api_version="4")
-        self.assertEqual(gl.private_token, None)
-        self.assertEqual(gl.oauth_token, "oauth_token")
-        self.assertEqual(gl.job_token, None)
-        self.assertEqual(gl._http_auth, None)
-        self.assertEqual(gl.headers["Authorization"], "Bearer oauth_token")
-        self.assertNotIn("PRIVATE-TOKEN", gl.headers)
-        self.assertNotIn("JOB-TOKEN", gl.headers)
+        assert gl.private_token == None
+        assert gl.oauth_token == "oauth_token"
+        assert gl.job_token == None
+        assert gl._http_auth == None
+        assert gl.headers["Authorization"] == "Bearer oauth_token"
+        assert "PRIVATE-TOKEN" not in gl.headers
+        assert "JOB-TOKEN" not in gl.headers
 
     def test_job_token_auth(self):
         gl = Gitlab("http://localhost", job_token="CI_JOB_TOKEN", api_version="4")
-        self.assertEqual(gl.private_token, None)
-        self.assertEqual(gl.oauth_token, None)
-        self.assertEqual(gl.job_token, "CI_JOB_TOKEN")
-        self.assertEqual(gl._http_auth, None)
-        self.assertNotIn("Authorization", gl.headers)
-        self.assertNotIn("PRIVATE-TOKEN", gl.headers)
-        self.assertEqual(gl.headers["JOB-TOKEN"], "CI_JOB_TOKEN")
+        assert gl.private_token == None
+        assert gl.oauth_token == None
+        assert gl.job_token == "CI_JOB_TOKEN"
+        assert gl._http_auth == None
+        assert "Authorization" not in gl.headers
+        assert "PRIVATE-TOKEN" not in gl.headers
+        assert gl.headers["JOB-TOKEN"] == "CI_JOB_TOKEN"
 
     def test_http_auth(self):
         gl = Gitlab(
@@ -467,12 +470,12 @@ class TestGitlabAuth(unittest.TestCase):
             http_password="bar",
             api_version="4",
         )
-        self.assertEqual(gl.private_token, "private_token")
-        self.assertEqual(gl.oauth_token, None)
-        self.assertEqual(gl.job_token, None)
-        self.assertIsInstance(gl._http_auth, requests.auth.HTTPBasicAuth)
-        self.assertEqual(gl.headers["PRIVATE-TOKEN"], "private_token")
-        self.assertNotIn("Authorization", gl.headers)
+        assert gl.private_token == "private_token"
+        assert gl.oauth_token == None
+        assert gl.job_token == None
+        assert isinstance(gl._http_auth, requests.auth.HTTPBasicAuth)
+        assert gl.headers["PRIVATE-TOKEN"] == "private_token"
+        assert "Authorization" not in gl.headers
 
 
 class TestGitlab(unittest.TestCase):
@@ -488,9 +491,9 @@ class TestGitlab(unittest.TestCase):
         original_gl_objects = self.gl._objects
         pickled = pickle.dumps(self.gl)
         unpickled = pickle.loads(pickled)
-        self.assertIsInstance(unpickled, Gitlab)
-        self.assertTrue(hasattr(unpickled, "_objects"))
-        self.assertEqual(unpickled._objects, original_gl_objects)
+        assert isinstance(unpickled, Gitlab)
+        assert hasattr(unpickled, "_objects")
+        assert unpickled._objects == original_gl_objects
 
     def test_token_auth(self, callback=None):
         name = "username"
@@ -506,9 +509,9 @@ class TestGitlab(unittest.TestCase):
 
         with HTTMock(resp_cont):
             self.gl.auth()
-        self.assertEqual(self.gl.user.username, name)
-        self.assertEqual(self.gl.user.id, id_)
-        self.assertIsInstance(self.gl.user, CurrentUser)
+        assert self.gl.user.username == name
+        assert self.gl.user.id == id_
+        assert isinstance(self.gl.user, CurrentUser)
 
     def test_hooks(self):
         @urlmatch(
@@ -521,9 +524,9 @@ class TestGitlab(unittest.TestCase):
 
         with HTTMock(resp_get_hook):
             data = self.gl.hooks.get(1)
-            self.assertIsInstance(data, Hook)
-            self.assertEqual(data.url, "testurl")
-            self.assertEqual(data.id, 1)
+            assert isinstance(data, Hook)
+            assert data.url == "testurl"
+            assert data.id == 1
 
     def test_projects(self):
         @urlmatch(
@@ -536,9 +539,9 @@ class TestGitlab(unittest.TestCase):
 
         with HTTMock(resp_get_project):
             data = self.gl.projects.get(1)
-            self.assertIsInstance(data, Project)
-            self.assertEqual(data.name, "name")
-            self.assertEqual(data.id, 1)
+            assert isinstance(data, Project)
+            assert data.name == "name"
+            assert data.id == 1
 
     def test_project_environments(self):
         @urlmatch(
@@ -565,10 +568,10 @@ class TestGitlab(unittest.TestCase):
         with HTTMock(resp_get_project, resp_get_environment):
             project = self.gl.projects.get(1)
             environment = project.environments.get(1)
-            self.assertIsInstance(environment, ProjectEnvironment)
-            self.assertEqual(environment.id, 1)
-            self.assertEqual(environment.last_deployment, "sometime")
-            self.assertEqual(environment.name, "environment_name")
+            assert isinstance(environment, ProjectEnvironment)
+            assert environment.id == 1
+            assert environment.last_deployment == "sometime"
+            assert environment.name == "environment_name"
 
     def test_project_additional_statistics(self):
         @urlmatch(
@@ -595,8 +598,8 @@ class TestGitlab(unittest.TestCase):
         with HTTMock(resp_get_project, resp_get_environment):
             project = self.gl.projects.get(1)
             statistics = project.additionalstatistics.get()
-            self.assertIsInstance(statistics, ProjectAdditionalStatistics)
-            self.assertEqual(statistics.fetches["total"], 50)
+            assert isinstance(statistics, ProjectAdditionalStatistics)
+            assert statistics.fetches["total"] == 50
 
     def test_project_issues_statistics(self):
         @urlmatch(
@@ -623,8 +626,8 @@ class TestGitlab(unittest.TestCase):
         with HTTMock(resp_get_project, resp_get_environment):
             project = self.gl.projects.get(1)
             statistics = project.issuesstatistics.get()
-            self.assertIsInstance(statistics, ProjectIssuesStatistics)
-            self.assertEqual(statistics.statistics["counts"]["all"], 20)
+            assert isinstance(statistics, ProjectIssuesStatistics)
+            assert statistics.statistics["counts"]["all"] == 20
 
     def test_issues(self):
         @urlmatch(
@@ -638,8 +641,8 @@ class TestGitlab(unittest.TestCase):
 
         with HTTMock(resp_get_issue):
             data = self.gl.issues.list()
-            self.assertEqual(data[1].id, 2)
-            self.assertEqual(data[1].name, "other_name")
+            assert data[1].id == 2
+            assert data[1].name == "other_name"
 
     @urlmatch(scheme="http", netloc="localhost", path="/api/v4/users/1", method="get")
     def resp_get_user(self, url, request):
@@ -654,9 +657,9 @@ class TestGitlab(unittest.TestCase):
     def test_users(self):
         with HTTMock(self.resp_get_user):
             user = self.gl.users.get(1)
-            self.assertIsInstance(user, User)
-            self.assertEqual(user.name, "name")
-            self.assertEqual(user.id, 1)
+            assert isinstance(user, User)
+            assert user.name == "name"
+            assert user.id == 1
 
     def test_user_memberships(self):
         @urlmatch(
@@ -687,8 +690,8 @@ class TestGitlab(unittest.TestCase):
         with HTTMock(resp_get_user_memberships):
             user = self.gl.users.get(1, lazy=True)
             memberships = user.memberships.list()
-            self.assertIsInstance(memberships[0], UserMembership)
-            self.assertEqual(memberships[0].source_type, "Project")
+            assert isinstance(memberships[0], UserMembership)
+            assert memberships[0].source_type == "Project"
 
     def test_user_status(self):
         @urlmatch(
@@ -707,9 +710,9 @@ class TestGitlab(unittest.TestCase):
             user = self.gl.users.get(1)
         with HTTMock(resp_get_user_status):
             status = user.status.get()
-            self.assertIsInstance(status, UserStatus)
-            self.assertEqual(status.message, "test")
-            self.assertEqual(status.emoji, "thumbsup")
+            assert isinstance(status, UserStatus)
+            assert status.message == "test"
+            assert status.emoji == "thumbsup"
 
     def test_todo(self):
         with open(os.path.dirname(__file__) + "/data/todo.json", "r") as json_file:
@@ -736,10 +739,10 @@ class TestGitlab(unittest.TestCase):
 
         with HTTMock(resp_get_todo):
             todo = self.gl.todos.list()[0]
-            self.assertIsInstance(todo, Todo)
-            self.assertEqual(todo.id, 102)
-            self.assertEqual(todo.target_type, "MergeRequest")
-            self.assertEqual(todo.target["assignee"]["username"], "root")
+            assert isinstance(todo, Todo)
+            assert todo.id == 102
+            assert todo.target_type == "MergeRequest"
+            assert todo.target["assignee"]["username"] == "root"
             with HTTMock(resp_mark_as_done):
                 todo.mark_as_done()
 
@@ -791,15 +794,15 @@ class TestGitlab(unittest.TestCase):
                     "status": "created",
                 }
             )
-            self.assertEqual(deployment.id, 42)
-            self.assertEqual(deployment.status, "success")
-            self.assertEqual(deployment.ref, "master")
+            assert deployment.id == 42
+            assert deployment.status == "success"
+            assert deployment.ref == "master"
 
         with HTTMock(resp_deployment_update):
             json_content["status"] = "failed"
             deployment.status = "failed"
             deployment.save()
-            self.assertEqual(deployment.status, "failed")
+            assert deployment.status == "failed"
 
     def test_user_activate_deactivate(self):
         @urlmatch(
@@ -862,9 +865,9 @@ class TestGitlab(unittest.TestCase):
 
         with HTTMock(resp_get_project):
             project = self.gl.projects.get(1)
-            self.assertIsInstance(project, Project)
-            self.assertEqual(project.name, "name")
-            self.assertEqual(project.id, 1)
+            assert isinstance(project, Project)
+            assert project.name == "name"
+            assert project.id == 1
         with HTTMock(resp_update_submodule):
             ret = project.update_submodule(
                 submodule="foo/bar",
@@ -872,9 +875,9 @@ class TestGitlab(unittest.TestCase):
                 commit_sha="4c3674f66071e30b3311dac9b9ccc90502a72664",
                 commit_message="Message",
             )
-            self.assertIsInstance(ret, dict)
-            self.assertEqual(ret["message"], "Message")
-            self.assertEqual(ret["id"], "ed899a2f4b50b4370feeea94676502b42383c746")
+            assert isinstance(ret, dict)
+            assert ret["message"] == "Message"
+            assert ret["id"] == "ed899a2f4b50b4370feeea94676502b42383c746"
 
     def test_applications(self):
         content = '{"name": "test_app", "redirect_uri": "http://localhost:8080", "scopes": ["api", "email"]}'
@@ -899,9 +902,9 @@ class TestGitlab(unittest.TestCase):
                     "confidential": False,
                 }
             )
-            self.assertEqual(application.name, "test_app")
-            self.assertEqual(application.redirect_uri, "http://localhost:8080")
-            self.assertEqual(application.scopes, ["api", "email"])
+            assert application.name == "test_app"
+            assert application.redirect_uri == "http://localhost:8080"
+            assert application.scopes == ["api", "email"]
 
     def test_deploy_tokens(self):
         @urlmatch(
@@ -931,11 +934,11 @@ class TestGitlab(unittest.TestCase):
                     "scopes": ["read_repository"],
                 }
             )
-            self.assertIsInstance(deploy_token, ProjectDeployToken)
-            self.assertEqual(deploy_token.id, 1),
-            self.assertEqual(deploy_token.expires_at, "2022-01-01T00:00:00.000Z"),
-            self.assertEqual(deploy_token.username, "custom-user")
-            self.assertEqual(deploy_token.scopes, ["read_repository"])
+            assert isinstance(deploy_token, ProjectDeployToken)
+            assert deploy_token.id == 1
+            assert deploy_token.expires_at == "2022-01-01T00:00:00.000Z"
+            assert deploy_token.username == "custom-user"
+            assert deploy_token.scopes == ["read_repository"]
 
     def _default_config(self):
         fd, temp_path = tempfile.mkstemp()
@@ -954,5 +957,5 @@ class TestGitlab(unittest.TestCase):
 
         config_path = self._default_config()
         gl = MyGitlab.from_config("one", [config_path])
-        self.assertIsInstance(gl, MyGitlab)
+        assert isinstance(gl, MyGitlab)
         os.unlink(config_path)

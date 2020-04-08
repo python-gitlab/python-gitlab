@@ -80,13 +80,13 @@ class TestApplicationAppearance(unittest.TestCase):
 
         with HTTMock(resp_get_appearance), HTTMock(resp_update_appearance):
             appearance = self.gl.appearance.get()
-            self.assertEqual(appearance.title, self.title)
-            self.assertEqual(appearance.description, self.description)
+            assert appearance.title == self.title
+            assert appearance.description == self.description
             appearance.title = self.new_title
             appearance.description = self.new_description
             appearance.save()
-            self.assertEqual(appearance.title, self.new_title)
-            self.assertEqual(appearance.description, self.new_description)
+            assert appearance.title == self.new_title
+            assert appearance.description == self.new_description
 
     def test_update_appearance(self):
         @urlmatch(

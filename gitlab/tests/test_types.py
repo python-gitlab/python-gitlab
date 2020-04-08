@@ -23,49 +23,49 @@ from gitlab import types
 class TestGitlabAttribute(unittest.TestCase):
     def test_all(self):
         o = types.GitlabAttribute("whatever")
-        self.assertEqual("whatever", o.get())
+        assert "whatever" == o.get()
 
         o.set_from_cli("whatever2")
-        self.assertEqual("whatever2", o.get())
+        assert "whatever2" == o.get()
 
-        self.assertEqual("whatever2", o.get_for_api())
+        assert "whatever2" == o.get_for_api()
 
         o = types.GitlabAttribute()
-        self.assertEqual(None, o._value)
+        assert None == o._value
 
 
 class TestListAttribute(unittest.TestCase):
     def test_list_input(self):
         o = types.ListAttribute()
         o.set_from_cli("foo,bar,baz")
-        self.assertEqual(["foo", "bar", "baz"], o.get())
+        assert ["foo", "bar", "baz"] == o.get()
 
         o.set_from_cli("foo")
-        self.assertEqual(["foo"], o.get())
+        assert ["foo"] == o.get()
 
     def test_empty_input(self):
         o = types.ListAttribute()
         o.set_from_cli("")
-        self.assertEqual([], o.get())
+        assert [] == o.get()
 
         o.set_from_cli("  ")
-        self.assertEqual([], o.get())
+        assert [] == o.get()
 
     def test_get_for_api_from_cli(self):
         o = types.ListAttribute()
         o.set_from_cli("foo,bar,baz")
-        self.assertEqual("foo,bar,baz", o.get_for_api())
+        assert "foo,bar,baz" == o.get_for_api()
 
     def test_get_for_api_from_list(self):
         o = types.ListAttribute(["foo", "bar", "baz"])
-        self.assertEqual("foo,bar,baz", o.get_for_api())
+        assert "foo,bar,baz" == o.get_for_api()
 
     def test_get_for_api_does_not_split_string(self):
         o = types.ListAttribute("foo")
-        self.assertEqual("foo", o.get_for_api())
+        assert "foo" == o.get_for_api()
 
 
 class TestLowercaseStringAttribute(unittest.TestCase):
     def test_get_for_api(self):
         o = types.LowercaseStringAttribute("FOO")
-        self.assertEqual("foo", o.get_for_api())
+        assert "foo" == o.get_for_api()

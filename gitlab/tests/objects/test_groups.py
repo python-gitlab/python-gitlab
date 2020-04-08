@@ -48,18 +48,18 @@ class TestGroup(unittest.TestCase):
     @with_httmock(resp_get_group)
     def test_get_group(self):
         data = self.gl.groups.get(1)
-        self.assertIsInstance(data, gitlab.v4.objects.Group)
-        self.assertEqual(data.name, "name")
-        self.assertEqual(data.path, "path")
-        self.assertEqual(data.id, 1)
+        assert isinstance(data, gitlab.v4.objects.Group)
+        assert data.name == "name"
+        assert data.path == "path"
+        assert data.id == 1
 
     @with_httmock(resp_create_group)
     def test_create_group(self):
         name, path = "name", "path"
         data = self.gl.groups.create({"name": name, "path": path})
-        self.assertIsInstance(data, gitlab.v4.objects.Group)
-        self.assertEqual(data.name, name)
-        self.assertEqual(data.path, path)
+        assert isinstance(data, gitlab.v4.objects.Group)
+        assert data.name == name
+        assert data.path == path
 
 
 class TestGroupExport(TestGroup):
@@ -70,32 +70,32 @@ class TestGroupExport(TestGroup):
     @with_httmock(resp_create_export)
     def test_create_group_export(self):
         export = self.group.exports.create()
-        self.assertEqual(export.message, "202 Accepted")
+        assert export.message == "202 Accepted"
 
     @unittest.skip("GitLab API endpoint not implemented")
     @with_httmock(resp_create_export)
     def test_refresh_group_export_status(self):
         export = self.group.exports.create()
         export.refresh()
-        self.assertEqual(export.export_status, "finished")
+        assert export.export_status == "finished"
 
     @with_httmock(resp_create_export, resp_download_export)
     def test_download_group_export(self):
         export = self.group.exports.create()
         download = export.download()
-        self.assertIsInstance(download, bytes)
-        self.assertEqual(download, binary_content)
+        assert isinstance(download, bytes)
+        assert download == binary_content
 
 
 class TestGroupImport(TestGroup):
     @with_httmock(resp_create_import)
     def test_import_group(self):
         group_import = self.gl.groups.import_group("file", "api-group", "API Group")
-        self.assertEqual(group_import["message"], "202 Accepted")
+        assert group_import["message"] == "202 Accepted"
 
     @unittest.skip("GitLab API endpoint not implemented")
     @with_httmock(resp_create_import)
     def test_refresh_group_import_status(self):
         group_import = self.group.imports.get()
         group_import.refresh()
-        self.assertEqual(group_import.import_status, "finished")
+        assert group_import.import_status == "finished"

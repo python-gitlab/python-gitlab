@@ -341,9 +341,9 @@ class TestProjectSnippets(TestProject):
 
         with HTTMock(resp_list_snippet):
             snippets = self.project.snippets.list()
-            self.assertEqual(len(snippets), 1)
-            self.assertEqual(snippets[0].title, title)
-            self.assertEqual(snippets[0].visibility, visibility)
+            assert len(snippets) == 1
+            assert snippets[0].title == title
+            assert snippets[0].visibility == visibility
 
     def test_get_project_snippets(self):
         title = "Example Snippet Title"
@@ -370,8 +370,8 @@ class TestProjectSnippets(TestProject):
 
         with HTTMock(resp_get_snippet):
             snippet = self.project.snippets.get(1)
-            self.assertEqual(snippet.title, title)
-            self.assertEqual(snippet.visibility, visibility)
+            assert snippet.title == title
+            assert snippet.visibility == visibility
 
     def test_create_update_project_snippets(self):
         title = "Example Snippet Title"
@@ -424,107 +424,107 @@ class TestProjectSnippets(TestProject):
                     "visibility": visibility,
                 }
             )
-            self.assertEqual(snippet.title, title)
-            self.assertEqual(snippet.visibility, visibility)
+            assert snippet.title == title
+            assert snippet.visibility == visibility
             title = "new-title"
             snippet.title = title
             snippet.save()
-            self.assertEqual(snippet.title, title)
-            self.assertEqual(snippet.visibility, visibility)
+            assert snippet.title == title
+            assert snippet.visibility == visibility
 
 
 class TestProjectExport(TestProject):
     @with_httmock(resp_create_export)
     def test_create_project_export(self):
         export = self.project.exports.create()
-        self.assertEqual(export.message, "202 Accepted")
+        assert export.message == "202 Accepted"
 
     @with_httmock(resp_create_export, resp_export_status)
     def test_refresh_project_export_status(self):
         export = self.project.exports.create()
         export.refresh()
-        self.assertEqual(export.export_status, "finished")
+        assert export.export_status == "finished"
 
     @with_httmock(resp_create_export, resp_download_export)
     def test_download_project_export(self):
         export = self.project.exports.create()
         download = export.download()
-        self.assertIsInstance(download, bytes)
-        self.assertEqual(download, binary_content)
+        assert isinstance(download, bytes)
+        assert download == binary_content
 
 
 class TestProjectImport(TestProject):
     @with_httmock(resp_import_project)
     def test_import_project(self):
         project_import = self.gl.projects.import_project("file", "api-project")
-        self.assertEqual(project_import["import_status"], "scheduled")
+        assert project_import["import_status"] == "scheduled"
 
     @with_httmock(resp_import_status)
     def test_refresh_project_import_status(self):
         project_import = self.project.imports.get()
         project_import.refresh()
-        self.assertEqual(project_import.import_status, "finished")
+        assert project_import.import_status == "finished"
 
     @with_httmock(resp_import_github)
     def test_import_github(self):
         base_path = "/root"
         name = "my-repo"
         ret = self.gl.projects.import_github("githubkey", 1234, base_path, name)
-        self.assertIsInstance(ret, dict)
-        self.assertEqual(ret["name"], name)
-        self.assertEqual(ret["full_path"], "/".join((base_path, name)))
-        self.assertTrue(ret["full_name"].endswith(name))
+        assert isinstance(ret, dict)
+        assert ret["name"] == name
+        assert ret["full_path"] == "/".join((base_path, name))
+        assert ret["full_name"].endswith(name)
 
 
 class TestProjectRemoteMirrors(TestProject):
     @with_httmock(resp_get_remote_mirrors)
     def test_list_project_remote_mirrors(self):
         mirrors = self.project.remote_mirrors.list()
-        self.assertIsInstance(mirrors, list)
-        self.assertIsInstance(mirrors[0], ProjectRemoteMirror)
-        self.assertTrue(mirrors[0].enabled)
+        assert isinstance(mirrors, list)
+        assert isinstance(mirrors[0], ProjectRemoteMirror)
+        assert mirrors[0].enabled
 
     @with_httmock(resp_create_remote_mirror)
     def test_create_project_remote_mirror(self):
         mirror = self.project.remote_mirrors.create({"url": "https://example.com"})
-        self.assertIsInstance(mirror, ProjectRemoteMirror)
-        self.assertEqual(mirror.update_status, "none")
+        assert isinstance(mirror, ProjectRemoteMirror)
+        assert mirror.update_status == "none"
 
     @with_httmock(resp_create_remote_mirror, resp_update_remote_mirror)
     def test_update_project_remote_mirror(self):
         mirror = self.project.remote_mirrors.create({"url": "https://example.com"})
         mirror.only_protected_branches = True
         mirror.save()
-        self.assertEqual(mirror.update_status, "finished")
-        self.assertTrue(mirror.only_protected_branches)
+        assert mirror.update_status == "finished"
+        assert mirror.only_protected_branches
 
 
 class TestProjectServices(TestProject):
     @with_httmock(resp_get_active_services)
     def test_list_active_services(self):
         services = self.project.services.list()
-        self.assertIsInstance(services, list)
-        self.assertIsInstance(services[0], ProjectService)
-        self.assertTrue(services[0].active)
-        self.assertTrue(services[0].push_events)
+        assert isinstance(services, list)
+        assert isinstance(services[0], ProjectService)
+        assert services[0].active
+        assert services[0].push_events
 
     def test_list_available_services(self):
         services = self.project.services.available()
-        self.assertIsInstance(services, list)
-        self.assertIsInstance(services[0], str)
+        assert isinstance(services, list)
+        assert isinstance(services[0], str)
 
     @with_httmock(resp_get_service)
     def test_get_service(self):
         service = self.project.services.get("pipelines-email")
-        self.assertIsInstance(service, ProjectService)
-        self.assertEqual(service.push_events, True)
+        assert isinstance(service, ProjectService)
+        assert service.push_events == True
 
     @with_httmock(resp_get_service, resp_update_service)
     def test_update_service(self):
         service = self.project.services.get("pipelines-email")
         service.issues_events = True
         service.save()
-        self.assertEqual(service.issues_events, True)
+        assert service.issues_events == True
 
 
 class TestProjectPipelineSchedule(TestProject):

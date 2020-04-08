@@ -1,6 +1,7 @@
 import unittest
 
 from gitlab import exceptions
+import pytest
 
 
 class TestExceptions(unittest.TestCase):
@@ -14,6 +15,6 @@ class TestExceptions(unittest.TestCase):
         def raise_error_from_http_error():
             raise exceptions.GitlabHttpError
 
-        with self.assertRaises(TestError) as context:
+        with pytest.raises(TestError) as context:
             raise_error_from_http_error()
-        self.assertIsInstance(context.exception.__cause__, exceptions.GitlabHttpError)
+        assert isinstance(context.value.__cause__, exceptions.GitlabHttpError)

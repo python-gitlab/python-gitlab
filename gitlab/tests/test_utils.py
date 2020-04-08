@@ -24,17 +24,17 @@ class TestUtils(unittest.TestCase):
     def test_clean_str_id(self):
         src = "nothing_special"
         dest = "nothing_special"
-        self.assertEqual(dest, utils.clean_str_id(src))
+        assert dest == utils.clean_str_id(src)
 
         src = "foo#bar/baz/"
         dest = "foo%23bar%2Fbaz%2F"
-        self.assertEqual(dest, utils.clean_str_id(src))
+        assert dest == utils.clean_str_id(src)
 
     def test_sanitized_url(self):
         src = "http://localhost/foo/bar"
         dest = "http://localhost/foo/bar"
-        self.assertEqual(dest, utils.sanitized_url(src))
+        assert dest == utils.sanitized_url(src)
 
         src = "http://localhost/foo.bar.baz"
         dest = "http://localhost/foo%2Ebar%2Ebaz"
-        self.assertEqual(dest, utils.sanitized_url(src))
+        assert dest == utils.sanitized_url(src)

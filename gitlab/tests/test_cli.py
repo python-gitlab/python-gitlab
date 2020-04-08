@@ -37,12 +37,13 @@ except ImportError:
 
 from gitlab import cli
 import gitlab.v4.cli
+import pytest
 
 
 class TestCLI(unittest.TestCase):
     def test_what_to_cls(self):
-        self.assertEqual("Foo", cli.what_to_cls("foo"))
-        self.assertEqual("FooBar", cli.what_to_cls("foo-bar"))
+        assert "Foo" == cli.what_to_cls("foo")
+        assert "FooBar" == cli.what_to_cls("foo-bar")
 
     def test_cls_to_what(self):
         class Class(object):
@@ -51,64 +52,63 @@ class TestCLI(unittest.TestCase):
         class TestClass(object):
             pass
 
-        self.assertEqual("test-class", cli.cls_to_what(TestClass))
-        self.assertEqual("class", cli.cls_to_what(Class))
+        assert "test-class" == cli.cls_to_what(TestClass)
+        assert "class" == cli.cls_to_what(Class)
 
     def test_die(self):
         fl = io.StringIO()
         with redirect_stderr(fl):
-            with self.assertRaises(SystemExit) as test:
+            with pytest.raises(SystemExit) as test:
                 cli.die("foobar")
-        self.assertEqual(fl.getvalue(), "foobar\n")
-        self.assertEqual(test.exception.code, 1)
+        assert fl.getvalue() == "foobar\n"
+        assert test.value.code == 1
 
     def test_parse_value(self):
         ret = cli._parse_value("foobar")
-        self.assertEqual(ret, "foobar")
+        assert ret == "foobar"
 
         ret = cli._parse_value(True)
-        self.assertEqual(ret, True)
+        assert ret == True
 
         ret = cli._parse_value(1)
-        self.assertEqual(ret, 1)
+        assert ret == 1
 
         ret = cli._parse_value(None)
-        self.assertEqual(ret, None)
+        assert ret == None
 
         fd, temp_path = tempfile.mkstemp()
         os.write(fd, b"content")
         os.close(fd)
         ret = cli._parse_value("@%s" % temp_path)
-        self.assertEqual(ret, "content")
+        assert ret == "content"
         os.unlink(temp_path)
 
         fl = io.StringIO()
         with redirect_stderr(fl):
-            with self.assertRaises(SystemExit) as exc:
+            with pytest.raises(SystemExit) as exc:
                 cli._parse_value("@/thisfileprobablydoesntexist")
-            self.assertEqual(
-                fl.getvalue(),
-                "[Errno 2] No such file or directory:"
-                " '/thisfileprobablydoesntexist'\n",
+            assert (
+                fl.getvalue() == "[Errno 2] No such file or directory:"
+                " '/thisfileprobablydoesntexist'\n"
             )
-            self.assertEqual(exc.exception.code, 1)
+            assert exc.value.code == 1
 
     def test_base_parser(self):
         parser = cli._get_base_parser()
         args = parser.parse_args(
             ["-v", "-g", "gl_id", "-c", "foo.cfg", "-c", "bar.cfg"]
         )
-        self.assertTrue(args.verbose)
-        self.assertEqual(args.gitlab, "gl_id")
-        self.assertEqual(args.config_file, ["foo.cfg", "bar.cfg"])
+        assert args.verbose
+        assert args.gitlab == "gl_id"
+        assert args.config_file == ["foo.cfg", "bar.cfg"]
 
 
 class TestV4CLI(unittest.TestCase):
     def test_parse_args(self):
         parser = cli._get_parser(gitlab.v4.cli)
         args = parser.parse_args(["project", "list"])
-        self.assertEqual(args.what, "project")
-        self.assertEqual(args.whaction, "list")
+        assert args.what == "project"
+        assert args.whaction == "list"
 
     def test_parser(self):
         parser = cli._get_parser(gitlab.v4.cli)
@@ -117,25 +117,25 @@ class TestV4CLI(unittest.TestCase):
             for action in parser._actions
             if isinstance(action, argparse._SubParsersAction)
         )
-        self.assertIsNotNone(subparsers)
-        self.assertIn("project", subparsers.choices)
+        assert subparsers is not None
+        assert "project" in subparsers.choices
 
         user_subparsers = next(
             action
             for action in subparsers.choices["project"]._actions
             if isinstance(action, argparse._SubParsersAction)
         )
-        self.assertIsNotNone(user_subparsers)
-        self.assertIn("list", user_subparsers.choices)
-        self.assertIn("get", user_subparsers.choices)
-        self.assertIn("delete", user_subparsers.choices)
-        self.assertIn("update", user_subparsers.choices)
-        self.assertIn("create", user_subparsers.choices)
-        self.assertIn("archive", user_subparsers.choices)
-        self.assertIn("unarchive", user_subparsers.choices)
+        assert user_subparsers is not None
+        assert "list" in user_subparsers.choices
+        assert "get" in user_subparsers.choices
+        assert "delete" in user_subparsers.choices
+        assert "update" in user_subparsers.choices
+        assert "create" in user_subparsers.choices
+        assert "archive" in user_subparsers.choices
+        assert "unarchive" in user_subparsers.choices
 
         actions = user_subparsers.choices["create"]._option_string_actions
-        self.assertFalse(actions["--description"].required)
+        assert not actions["--description"].required
 
         user_subparsers = next(
             action
@@ -143,4 +143,4 @@ class TestV4CLI(unittest.TestCase):
             if isinstance(action, argparse._SubParsersAction)
         )
         actions = user_subparsers.choices["create"]._option_string_actions
-        self.assertTrue(actions["--name"].required)
+        assert actions["--name"].required

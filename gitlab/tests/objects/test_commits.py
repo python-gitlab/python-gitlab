@@ -78,8 +78,8 @@ class TestCommit(TestProject):
     @with_httmock(resp_get_commit)
     def test_get_commit(self):
         commit = self.project.commits.get("6b2257ea")
-        self.assertEqual(commit.short_id, "6b2257ea")
-        self.assertEqual(commit.title, "Initial commit")
+        assert commit.short_id == "6b2257ea"
+        assert commit.title == "Initial commit"
 
     @with_httmock(resp_create_commit)
     def test_create_commit(self):
@@ -89,19 +89,19 @@ class TestCommit(TestProject):
             "actions": [{"action": "create", "file_path": "README", "content": "",}],
         }
         commit = self.project.commits.create(data)
-        self.assertEqual(commit.short_id, "ed899a2f")
-        self.assertEqual(commit.title, data["commit_message"])
+        assert commit.short_id == "ed899a2f"
+        assert commit.title == data["commit_message"]
 
     @with_httmock(resp_revert_commit)
     def test_revert_commit(self):
         commit = self.project.commits.get("6b2257ea", lazy=True)
         revert_commit = commit.revert(branch="master")
-        self.assertEqual(revert_commit["short_id"], "8b090c1b")
-        self.assertEqual(revert_commit["title"], 'Revert "Initial commit"')
+        assert revert_commit["short_id"] == "8b090c1b"
+        assert revert_commit["title"] == 'Revert "Initial commit"'
 
     @with_httmock(resp_get_commit_gpg_signature)
     def test_get_commit_gpg_signature(self):
         commit = self.project.commits.get("6b2257ea", lazy=True)
         signature = commit.signature()
-        self.assertEqual(signature["gpg_key_primary_keyid"], "8254AAB3FBD54AC9")
-        self.assertEqual(signature["verification_status"], "verified")
+        assert signature["gpg_key_primary_keyid"] == "8254AAB3FBD54AC9"
+        assert signature["verification_status"] == "verified"

@@ -19,6 +19,7 @@ import pickle
 import unittest
 
 from gitlab import base
+import pytest
 
 
 class FakeGitlab(object):
@@ -41,7 +42,7 @@ class TestRESTManager(unittest.TestCase):
             _obj_cls = object
 
         mgr = MGR(FakeGitlab())
-        self.assertEqual(mgr._computed_path, "/tests")
+        assert mgr._computed_path == "/tests"
 
     def test_computed_path_with_parent(self):
         class MGR(base.RESTManager):
@@ -53,7 +54,7 @@ class TestRESTManager(unittest.TestCase):
             id = 42
 
         mgr = MGR(FakeGitlab(), parent=Parent())
-        self.assertEqual(mgr._computed_path, "/tests/42/cases")
+        assert mgr._computed_path == "/tests/42/cases"
 
     def test_path_property(self):
         class MGR(base.RESTManager):
@@ -61,7 +62,7 @@ class TestRESTManager(unittest.TestCase):
             _obj_cls = object
 
         mgr = MGR(FakeGitlab())
-        self.assertEqual(mgr.path, "/tests")
+        assert mgr.path == "/tests"
 
 
 class TestRESTObject(unittest.TestCase):
@@ -72,54 +73,55 @@ class TestRESTObject(unittest.TestCase):
     def test_instanciate(self):
         obj = FakeObject(self.manager, {"foo": "bar"})
 
-        self.assertDictEqual({"foo": "bar"}, obj._attrs)
-        self.assertDictEqual({}, obj._updated_attrs)
-        self.assertEqual(None, obj._create_managers())
-        self.assertEqual(self.manager, obj.manager)
-        self.assertEqual(self.gitlab, obj.manager.gitlab)
+        assert {"foo": "bar"} == obj._attrs
+        assert {} == obj._updated_attrs
+        assert None == obj._create_managers()
+        assert self.manager == obj.manager
+        assert self.gitlab == obj.manager.gitlab
 
     def test_pickability(self):
         obj = FakeObject(self.manager, {"foo": "bar"})
         original_obj_module = obj._module
         pickled = pickle.dumps(obj)
         unpickled = pickle.loads(pickled)
-        self.assertIsInstance(unpickled, FakeObject)
-        self.assertTrue(hasattr(unpickled, "_module"))
-        self.assertEqual(unpickled._module, original_obj_module)
+        assert isinstance(unpickled, FakeObject)
+        assert hasattr(unpickled, "_module")
+        assert unpickled._module == original_obj_module
         pickled2 = pickle.dumps(unpickled)
 
     def test_attrs(self):
         obj = FakeObject(self.manager, {"foo": "bar"})
 
-        self.assertEqual("bar", obj.foo)
-        self.assertRaises(AttributeError, getattr, obj, "bar")
+        assert "bar" == obj.foo
+        with pytest.raises(AttributeError):
+            getattr(obj, "bar")
 
         obj.bar = "baz"
-        self.assertEqual("baz", obj.bar)
-        self.assertDictEqual({"foo": "bar"}, obj._attrs)
-        self.assertDictEqual({"bar": "baz"}, obj._updated_attrs)
+        assert "baz" == obj.bar
+        assert {"foo": "bar"} == obj._attrs
+        assert {"bar": "baz"} == obj._updated_attrs
 
     def test_get_id(self):
         obj = FakeObject(self.manager, {"foo": "bar"})
         obj.id = 42
-        self.assertEqual(42, obj.get_id())
+        assert 42 == obj.get_id()
 
         obj.id = None
-        self.assertEqual(None, obj.get_id())
+        assert None == obj.get_id()
 
     def test_custom_id_attr(self):
         class OtherFakeObject(FakeObject):
             _id_attr = "foo"
 
         obj = OtherFakeObject(self.manager, {"foo": "bar"})
-        self.assertEqual("bar", obj.get_id())
+        assert "bar" == obj.get_id()
 
     def test_update_attrs(self):
         obj = FakeObject(self.manager, {"foo": "bar"})
         obj.bar = "baz"
         obj._update_attrs({"foo": "foo", "bar": "bar"})
-        self.assertDictEqual({"foo": "foo", "bar": "bar"}, obj._attrs)
-        self.assertDictEqual({}, obj._updated_attrs)
+        assert {"foo": "foo", "bar": "bar"} == obj._attrs
+        assert {} == obj._updated_attrs
 
     def test_create_managers(self):
         class ObjectWithManager(FakeObject):
@@ -127,14 +129,14 @@ class TestRESTObject(unittest.TestCase):
 
         obj = ObjectWithManager(self.manager, {"foo": "bar"})
         obj.id = 42
-        self.assertIsInstance(obj.fakes, FakeManager)
-        self.assertEqual(obj.fakes.gitlab, self.gitlab)
-        self.assertEqual(obj.fakes._parent, obj)
+        assert isinstance(obj.fakes, FakeManager)
+        assert obj.fakes.gitlab == self.gitlab
+        assert obj.fakes._parent == obj
 
     def test_equality(self):
         obj1 = FakeObject(self.manager, {"id": "foo"})
         obj2 = FakeObject(self.manager, {"id": "foo", "other_attr": "bar"})
-        self.assertEqual(obj1, obj2)
+        assert obj1 == obj2
 
     def test_equality_custom_id(self):
         class OtherFakeObject(FakeObject):
@@ -142,14 +144,14 @@ class TestRESTObject(unittest.TestCase):
 
         obj1 = OtherFakeObject(self.manager, {"foo": "bar"})
         obj2 = OtherFakeObject(self.manager, {"foo": "bar", "other_attr": "baz"})
-        self.assertEqual(obj1, obj2)
+        assert obj1 == obj2
 
     def test_inequality(self):
         obj1 = FakeObject(self.manager, {"id": "foo"})
         obj2 = FakeObject(self.manager, {"id": "bar"})
-        self.assertNotEqual(obj1, obj2)
+        assert obj1 != obj2
 
     def test_inequality_no_id(self):
         obj1 = FakeObject(self.manager, {"attr1": "foo"})
         obj2 = FakeObject(self.manager, {"attr1": "bar"})
-        self.assertNotEqual(obj1, obj2)
+        assert obj1 != obj2

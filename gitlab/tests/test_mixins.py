@@ -25,6 +25,7 @@ from httmock import urlmatch  # noqa
 from gitlab import *  # noqa
 from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
+import pytest
 
 
 class TestObjectMixinsAttributes(unittest.TestCase):
@@ -33,47 +34,47 @@ class TestObjectMixinsAttributes(unittest.TestCase):
             pass
 
         obj = O()
-        self.assertTrue(hasattr(obj, "approve"))
+        assert hasattr(obj, "approve")
 
     def test_subscribable_mixin(self):
         class O(SubscribableMixin):
             pass
 
         obj = O()
-        self.assertTrue(hasattr(obj, "subscribe"))
-        self.assertTrue(hasattr(obj, "unsubscribe"))
+        assert hasattr(obj, "subscribe")
+        assert hasattr(obj, "unsubscribe")
 
     def test_todo_mixin(self):
         class O(TodoMixin):
             pass
 
         obj = O()
-        self.assertTrue(hasattr(obj, "todo"))
+        assert hasattr(obj, "todo")
 
     def test_time_tracking_mixin(self):
         class O(TimeTrackingMixin):
             pass
 
         obj = O()
-        self.assertTrue(hasattr(obj, "time_stats"))
-        self.assertTrue(hasattr(obj, "time_estimate"))
-        self.assertTrue(hasattr(obj, "reset_time_estimate"))
-        self.assertTrue(hasattr(obj, "add_spent_time"))
-        self.assertTrue(hasattr(obj, "reset_spent_time"))
+        assert hasattr(obj, "time_stats")
+        assert hasattr(obj, "time_estimate")
+        assert hasattr(obj, "reset_time_estimate")
+        assert hasattr(obj, "add_spent_time")
+        assert hasattr(obj, "reset_spent_time")
 
     def test_set_mixin(self):
         class O(SetMixin):
             pass
 
         obj = O()
-        self.assertTrue(hasattr(obj, "set"))
+        assert hasattr(obj, "set")
 
     def test_user_agent_detail_mixin(self):
         class O(UserAgentDetailMixin):
             pass
 
         obj = O()
-        self.assertTrue(hasattr(obj, "user_agent_detail"))
+        assert hasattr(obj, "user_agent_detail")
 
 
 class TestMetaMixins(unittest.TestCase):
@@ -82,45 +83,45 @@ class TestMetaMixins(unittest.TestCase):
             pass
 
         obj = M()
-        self.assertTrue(hasattr(obj, "list"))
-        self.assertTrue(hasattr(obj, "get"))
-        self.assertFalse(hasattr(obj, "create"))
-        self.assertFalse(hasattr(obj, "update"))
-        self.assertFalse(hasattr(obj, "delete"))
-        self.assertIsInstance(obj, ListMixin)
-        self.assertIsInstance(obj, GetMixin)
+        assert hasattr(obj, "list")
+        assert hasattr(obj, "get")
+        assert not hasattr(obj, "create")
+        assert not hasattr(obj, "update")
+        assert not hasattr(obj, "delete")
+        assert isinstance(obj, ListMixin)
+        assert isinstance(obj, GetMixin)
 
     def test_crud_mixin(self):
         class M(CRUDMixin):
             pass
 
         obj = M()
-        self.assertTrue(hasattr(obj, "get"))
-        self.assertTrue(hasattr(obj, "list"))
-        self.assertTrue(hasattr(obj, "create"))
-        self.assertTrue(hasattr(obj, "update"))
-        self.assertTrue(hasattr(obj, "delete"))
-        self.assertIsInstance(obj, ListMixin)
-        self.assertIsInstance(obj, GetMixin)
-        self.assertIsInstance(obj, CreateMixin)
-        self.assertIsInstance(obj, UpdateMixin)
-        self.assertIsInstance(obj, DeleteMixin)
+        assert hasattr(obj, "get")
+        assert hasattr(obj, "list")
+        assert hasattr(obj, "create")
+        assert hasattr(obj, "update")
+        assert hasattr(obj, "delete")
+        assert isinstance(obj, ListMixin)
+        assert isinstance(obj, GetMixin)
+        assert isinstance(obj, CreateMixin)
+        assert isinstance(obj, UpdateMixin)
+        assert isinstance(obj, DeleteMixin)
 
     def test_no_update_mixin(self):
         class M(NoUpdateMixin):
             pass
 
         obj = M()
-        self.assertTrue(hasattr(obj, "get"))
-        self.assertTrue(hasattr(obj, "list"))
-        self.assertTrue(hasattr(obj, "create"))
-        self.assertFalse(hasattr(obj, "update"))
-        self.assertTrue(hasattr(obj, "delete"))
-        self.assertIsInstance(obj, ListMixin)
-        self.assertIsInstance(obj, GetMixin)
-        self.assertIsInstance(obj, CreateMixin)
-        self.assertNotIsInstance(obj, UpdateMixin)
-        self.assertIsInstance(obj, DeleteMixin)
+        assert hasattr(obj, "get")
+        assert hasattr(obj, "list")
+        assert hasattr(obj, "create")
+        assert not hasattr(obj, "update")
+        assert hasattr(obj, "delete")
+        assert isinstance(obj, ListMixin)
+        assert isinstance(obj, GetMixin)
+        assert isinstance(obj, CreateMixin)
+        assert not isinstance(obj, UpdateMixin)
+        assert isinstance(obj, DeleteMixin)
 
 
 class FakeObject(base.RESTObject):
@@ -153,9 +154,9 @@ class TestMixinMethods(unittest.TestCase):
         with HTTMock(resp_cont):
             mgr = M(self.gl)
             obj = mgr.get(42)
-            self.assertIsInstance(obj, FakeObject)
-            self.assertEqual(obj.foo, "bar")
-            self.assertEqual(obj.id, 42)
+            assert isinstance(obj, FakeObject)
+            assert obj.foo == "bar"
+            assert obj.id == 42
 
     def test_refresh_mixin(self):
         class O(RefreshMixin, FakeObject):
@@ -173,9 +174,9 @@ class TestMixinMethods(unittest.TestCase):
             mgr = FakeManager(self.gl)
             obj = O(mgr, {"id": 42})
             res = obj.refresh()
-            self.assertIsNone(res)
-            self.assertEqual(obj.foo, "bar")
-            self.assertEqual(obj.id, 42)
+            assert res is None
+            assert obj.foo == "bar"
+            assert obj.id == 42
 
     def test_get_without_id_mixin(self):
         class M(GetWithoutIdMixin, FakeManager):
@@ -190,9 +191,9 @@ class TestMixinMethods(unittest.TestCase):
         with HTTMock(resp_cont):
             mgr = M(self.gl)
             obj = mgr.get()
-            self.assertIsInstance(obj, FakeObject)
-            self.assertEqual(obj.foo, "bar")
-            self.assertFalse(hasattr(obj, "id"))
+            assert isinstance(obj, FakeObject)
+            assert obj.foo == "bar"
+            assert not hasattr(obj, "id")
 
     def test_list_mixin(self):
         class M(ListMixin, FakeManager):
@@ -208,18 +209,18 @@ class TestMixinMethods(unittest.TestCase):
             # test RESTObjectList
             mgr = M(self.gl)
             obj_list = mgr.list(as_list=False)
-            self.assertIsInstance(obj_list, base.RESTObjectList)
+            assert isinstance(obj_list, base.RESTObjectList)
             for obj in obj_list:
-                self.assertIsInstance(obj, FakeObject)
-                self.assertIn(obj.id, (42, 43))
+                assert isinstance(obj, FakeObject)
+                assert obj.id in (42, 43)
 
             # test list()
             obj_list = mgr.list(all=True)
-            self.assertIsInstance(obj_list, list)
-            self.assertEqual(obj_list[0].id, 42)
-            self.assertEqual(obj_list[1].id, 43)
-            self.assertIsInstance(obj_list[0], FakeObject)
-            self.assertEqual(len(obj_list), 2)
+            assert isinstance(obj_list, list)
+            assert obj_list[0].id == 42
+            assert obj_list[1].id == 43
+            assert isinstance(obj_list[0], FakeObject)
+            assert len(obj_list) == 2
 
     def test_list_other_url(self):
         class M(ListMixin, FakeManager):
@@ -236,11 +237,12 @@ class TestMixinMethods(unittest.TestCase):
         with HTTMock(resp_cont):
             mgr = M(self.gl)
             obj_list = mgr.list(path="/others", as_list=False)
-            self.assertIsInstance(obj_list, base.RESTObjectList)
+            assert isinstance(obj_list, base.RESTObjectList)
             obj = obj_list.next()
-            self.assertEqual(obj.id, 42)
-            self.assertEqual(obj.foo, "bar")
-            self.assertRaises(StopIteration, obj_list.next)
+            assert obj.id == 42
+            assert obj.foo == "bar"
+            with pytest.raises(StopIteration):
+                obj_list.next()
 
     def test_create_mixin_get_attrs(self):
         class M1(CreateMixin, FakeManager):
@@ -252,15 +254,15 @@ class TestMixinMethods(unittest.TestCase):
 
         mgr = M1(self.gl)
         required, optional = mgr.get_create_attrs()
-        self.assertEqual(len(required), 0)
-        self.assertEqual(len(optional), 0)
+        assert len(required) == 0
+        assert len(optional) == 0
 
         mgr = M2(self.gl)
         required, optional = mgr.get_create_attrs()
-        self.assertIn("foo", required)
-        self.assertIn("bar", optional)
-        self.assertIn("baz", optional)
-        self.assertNotIn("bam", optional)
+        assert "foo" in required
+        assert "bar" in optional
+        assert "baz" in optional
+        assert "bam" not in optional
 
     def test_create_mixin_missing_attrs(self):
         class M(CreateMixin, FakeManager):
@@ -271,9 +273,9 @@ class TestMixinMethods(unittest.TestCase):
         mgr._check_missing_create_attrs(data)
 
         data = {"baz": "blah"}
-        with self.assertRaises(AttributeError) as error:
+        with pytest.raises(AttributeError) as error:
             mgr._check_missing_create_attrs(data)
-        self.assertIn("foo", str(error.exception))
+        assert "foo" in str(error.value)
 
     def test_create_mixin(self):
         class M(CreateMixin, FakeManager):
@@ -291,9 +293,9 @@ class TestMixinMethods(unittest.TestCase):
         with HTTMock(resp_cont):
             mgr = M(self.gl)
             obj = mgr.create({"foo": "bar"})
-            self.assertIsInstance(obj, FakeObject)
-            self.assertEqual(obj.id, 42)
-            self.assertEqual(obj.foo, "bar")
+            assert isinstance(obj, FakeObject)
+            assert obj.id == 42
+            assert obj.foo == "bar"
 
     def test_create_mixin_custom_path(self):
         class M(CreateMixin, FakeManager):
@@ -311,9 +313,9 @@ class TestMixinMethods(unittest.TestCase):
         with HTTMock(resp_cont):
             mgr = M(self.gl)
             obj = mgr.create({"foo": "bar"}, path="/others")
-            self.assertIsInstance(obj, FakeObject)
-            self.assertEqual(obj.id, 42)
-            self.assertEqual(obj.foo, "bar")
+            assert isinstance(obj, FakeObject)
+            assert obj.id == 42
+            assert obj.foo == "bar"
 
     def test_update_mixin_get_attrs(self):
         class M1(UpdateMixin, FakeManager):
@@ -325,15 +327,15 @@ class TestMixinMethods(unittest.TestCase):
 
         mgr = M1(self.gl)
         required, optional = mgr.get_update_attrs()
-        self.assertEqual(len(required), 0)
-        self.assertEqual(len(optional), 0)
+        assert len(required) == 0
+        assert len(optional) == 0
 
         mgr = M2(self.gl)
         required, optional = mgr.get_update_attrs()
-        self.assertIn("foo", required)
-        self.assertIn("bam", optional)
-        self.assertNotIn("bar", optional)
-        self.assertNotIn("baz", optional)
+        assert "foo" in required
+        assert "bam" in optional
+        assert "bar" not in optional
+        assert "baz" not in optional
 
     def test_update_mixin_missing_attrs(self):
         class M(UpdateMixin, FakeManager):
@@ -344,9 +346,9 @@ class TestMixinMethods(unittest.TestCase):
         mgr._check_missing_update_attrs(data)
 
         data = {"baz": "blah"}
-        with self.assertRaises(AttributeError) as error:
+        with pytest.raises(AttributeError) as error:
             mgr._check_missing_update_attrs(data)
-        self.assertIn("foo", str(error.exception))
+        assert "foo" in str(error.value)
 
     def test_update_mixin(self):
         class M(UpdateMixin, FakeManager):
@@ -364,9 +366,9 @@ class TestMixinMethods(unittest.TestCase):
         with HTTMock(resp_cont):
             mgr = M(self.gl)
             server_data = mgr.update(42, {"foo": "baz"})
-            self.assertIsInstance(server_data, dict)
-            self.assertEqual(server_data["id"], 42)
-            self.assertEqual(server_data["foo"], "baz")
+            assert isinstance(server_data, dict)
+            assert server_data["id"] == 42
+            assert server_data["foo"] == "baz"
 
     def test_update_mixin_no_id(self):
         class M(UpdateMixin, FakeManager):
@@ -382,8 +384,8 @@ class TestMixinMethods(unittest.TestCase):
         with HTTMock(resp_cont):
             mgr = M(self.gl)
             server_data = mgr.update(new_data={"foo": "baz"})
-            self.assertIsInstance(server_data, dict)
-            self.assertEqual(server_data["foo"], "baz")
+            assert isinstance(server_data, dict)
+            assert server_data["foo"] == "baz"
 
     def test_delete_mixin(self):
         class M(DeleteMixin, FakeManager):
@@ -421,8 +423,8 @@ class TestMixinMethods(unittest.TestCase):
             obj = O(mgr, {"id": 42, "foo": "bar"})
             obj.foo = "baz"
             obj.save()
-            self.assertEqual(obj._attrs["foo"], "baz")
-            self.assertDictEqual(obj._updated_attrs, {})
+            assert obj._attrs["foo"] == "baz"
+            assert obj._updated_attrs == {}
 
     def test_set_mixin(self):
         class M(SetMixin, FakeManager):
@@ -439,6 +441,6 @@ class TestMixinMethods(unittest.TestCase):
         with HTTMock(resp_cont):
             mgr = M(self.gl)
             obj = mgr.set("foo", "bar")
-            self.assertIsInstance(obj, FakeObject)
-            self.assertEqual(obj.key, "foo")
-            self.assertEqual(obj.value, "bar")
+            assert isinstance(obj, FakeObject)
+            assert obj.key == "foo"
+            assert obj.value == "bar"
