@@ -1,5 +1,5 @@
 include COPYING AUTHORS ChangeLog.rst RELEASE_NOTES.rst requirements.txt test-requirements.txt rtd-requirements.txt
-include tox.ini .testr.conf .travis.yml
+include tox.ini .travis.yml
 recursive-include tools *
 recursive-include docs *j2 *.py *.rst api/*.rst Makefile make.bat
 recursive-include gitlab/tests/data *
