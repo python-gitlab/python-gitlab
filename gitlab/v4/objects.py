@@ -3790,7 +3790,13 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = "%s/%s/play" % (self.manager.path, self.get_id())
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
-        return server_data
+        split_server_message = server_data.split()
+        if split_server_message[0] == 'message:':
+            return_data = {'message': server_data,
+                           'pipeline_id': split_server_message[1]}
+        else:
+            return_data = server_data
+        return return_data
 
 
 class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
