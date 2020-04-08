@@ -3774,6 +3774,23 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
+    @cli.register_custom_action("ProjectPipelineSchedule")
+    @exc.on_http_error(exc.GitlabOwnershipError)
+    def play(self, **kwargs):
+        # https://docs.gitlab.com/ee/api/pipeline_schedules.html#run-a-scheduled-pipeline-immediately  # noqa
+        """Play a pipeline schedule immediately.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabOwnershipError: If the request failed
+        """
+        path = "%s/%s/play" % (self.manager.path, self.get_id())
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        self._update_attrs(server_data)
+
 
 class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/pipeline_schedules"
