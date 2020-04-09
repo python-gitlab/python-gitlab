@@ -155,6 +155,11 @@ Update a schedule::
     sched.cron = '1 2 * * *'
     sched.save()
 
+Trigger a pipeline schedule immediately::
+
+    sched = projects.pipelineschedules.get(schedule_id)
+    sched.play()
+
 Delete a schedule::
 
     sched.delete()

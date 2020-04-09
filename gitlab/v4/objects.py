@@ -3775,6 +3775,24 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 
+    @cli.register_custom_action("ProjectPipelineSchedule")
+    @exc.on_http_error(exc.GitlabPipelinePlayError)
+    def play(self, **kwargs):
+        """Trigger a new scheduled pipeline, which runs immediately.
+        The next scheduled run of this pipeline is not affected.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabPipelinePlayError: If the request failed
+        """
+        path = "%s/%s/play" % (self.manager.path, self.get_id())
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        self._update_attrs(server_data)
+        return server_data
+
 
 class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/pipeline_schedules"
