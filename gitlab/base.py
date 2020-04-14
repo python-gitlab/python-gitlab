@@ -111,6 +111,9 @@ class RESTObject(object):
             return self.get_id() != other.get_id()
         return super(RESTObject, self) != other
 
+    def __dir__(self):
+        return super(RESTObject, self).__dir__() + list(self.attributes)
+
     def __hash__(self):
         if not self.get_id():
             return super(RESTObject, self).__hash__()
