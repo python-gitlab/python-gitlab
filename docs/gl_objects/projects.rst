@@ -608,6 +608,10 @@ Get a service::
     # display its status (enabled/disabled)
     print(service.active)
 
+List active project services::
+
+    service = project.services.list()
+
 List the code names of available services (doesn't return objects)::
 
     services = project.services.available()
