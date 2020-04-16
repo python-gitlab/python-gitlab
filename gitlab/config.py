@@ -18,7 +18,17 @@
 import os
 import configparser
 
-_DEFAULT_FILES = ["/etc/python-gitlab.cfg", os.path.expanduser("~/.python-gitlab.cfg")]
+
+def _env_config():
+    if "PYTHON_GITLAB_CFG" in os.environ:
+        return [os.environ["PYTHON_GITLAB_CFG"]]
+    return []
+
+
+_DEFAULT_FILES = _env_config() + [
+    "/etc/python-gitlab.cfg",
+    os.path.expanduser("~/.python-gitlab.cfg"),
+]
 
 
 class ConfigError(Exception):

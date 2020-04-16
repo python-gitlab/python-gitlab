@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import unittest
 
 import mock
@@ -70,6 +71,16 @@ url = http://four.url
 private_token = ABCDEF
 per_page = 200
 """
+
+
+class TestEnvConfig(unittest.TestCase):
+    def test_env_present(self):
+        with mock.patch.dict(os.environ, {"PYTHON_GITLAB_CFG": "/some/path"}):
+            self.assertEqual(["/some/path"], config._env_config())
+
+    def test_env_missing(self):
+        with mock.patch.dict(os.environ, {}, clear=True):
+            self.assertEqual([], config._env_config())
 
 
 class TestConfigParser(unittest.TestCase):

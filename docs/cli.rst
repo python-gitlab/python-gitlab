@@ -14,7 +14,10 @@ Configuration
 Files
 -----
 
-``gitlab`` looks up 2 configuration files by default:
+``gitlab`` looks up 3 configuration files by default:
+
+``PYTHON_GITLAB_CFG`` environment variable
+    An environment variable that contains the path to a configuration file
 
 ``/etc/python-gitlab.cfg``
     System-wide configuration file
