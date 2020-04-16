@@ -231,7 +231,7 @@ def resp_get_service(url, request):
     scheme="http", netloc="localhost", path="/api/v4/projects/1/services", method="get",
 )
 def resp_get_active_services(url, request):
-    """Mock for Service update PUT response."""
+    """Mock for active Services GET response."""
     content = """[{
         "id": 100152,
         "title": "Pipelines emails",
