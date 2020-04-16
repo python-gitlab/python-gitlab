@@ -161,6 +161,102 @@ def resp_update_remote_mirror(url, request):
     return response(200, content, headers, None, 5, request)
 
 
+@urlmatch(
+    scheme="http",
+    netloc="localhost",
+    path="/api/v4/projects/1/services/pipelines-email",
+    method="put",
+)
+def resp_update_service(url, request):
+    """Mock for Service update PUT response."""
+    content = """{
+        "id": 100152,
+        "title": "Pipelines emails",
+        "slug": "pipelines-email",
+        "created_at": "2019-01-14T08:46:43.637+01:00",
+        "updated_at": "2019-07-01T14:10:36.156+02:00",
+        "active": true,
+        "commit_events": true,
+        "push_events": true,
+        "issues_events": true,
+        "confidential_issues_events": true,
+        "merge_requests_events": true,
+        "tag_push_events": true,
+        "note_events": true,
+        "confidential_note_events": true,
+        "pipeline_events": true,
+        "wiki_page_events": true,
+        "job_events": true,
+        "comment_on_event_enabled": true,
+        "project_id": 1
+    }"""
+    content = content.encode("utf-8")
+    return response(200, content, headers, None, 5, request)
+
+
+@urlmatch(
+    scheme="http",
+    netloc="localhost",
+    path="/api/v4/projects/1/services/pipelines-email",
+    method="get",
+)
+def resp_get_service(url, request):
+    """Mock for Service GET response."""
+    content = """{
+        "id": 100152,
+        "title": "Pipelines emails",
+        "slug": "pipelines-email",
+        "created_at": "2019-01-14T08:46:43.637+01:00",
+        "updated_at": "2019-07-01T14:10:36.156+02:00",
+        "active": true,
+        "commit_events": true,
+        "push_events": true,
+        "issues_events": true,
+        "confidential_issues_events": true,
+        "merge_requests_events": true,
+        "tag_push_events": true,
+        "note_events": true,
+        "confidential_note_events": true,
+        "pipeline_events": true,
+        "wiki_page_events": true,
+        "job_events": true,
+        "comment_on_event_enabled": true,
+        "project_id": 1
+    }"""
+    content = content.encode("utf-8")
+    return response(200, content, headers, None, 5, request)
+
+
+@urlmatch(
+    scheme="http", netloc="localhost", path="/api/v4/projects/1/services", method="get",
+)
+def resp_get_active_services(url, request):
+    """Mock for Service update PUT response."""
+    content = """[{
+        "id": 100152,
+        "title": "Pipelines emails",
+        "slug": "pipelines-email",
+        "created_at": "2019-01-14T08:46:43.637+01:00",
+        "updated_at": "2019-07-01T14:10:36.156+02:00",
+        "active": true,
+        "commit_events": true,
+        "push_events": true,
+        "issues_events": true,
+        "confidential_issues_events": true,
+        "merge_requests_events": true,
+        "tag_push_events": true,
+        "note_events": true,
+        "confidential_note_events": true,
+        "pipeline_events": true,
+        "wiki_page_events": true,
+        "job_events": true,
+        "comment_on_event_enabled": true,
+        "project_id": 1
+    }]"""
+    content = content.encode("utf-8")
+    return response(200, content, headers, None, 5, request)
+
+
 class TestProject(unittest.TestCase):
     """Base class for GitLab Project tests."""
 
@@ -169,7 +265,7 @@ class TestProject(unittest.TestCase):
             "http://localhost",
             private_token="private_token",
             ssl_verify=True,
-            api_version=4,
+            api_version="4",
         )
         self.project = self.gl.projects.get(1, lazy=True)
 
@@ -356,3 +452,31 @@ class TestProjectRemoteMirrors(TestProject):
         mirror.save()
         self.assertEqual(mirror.update_status, "finished")
         self.assertTrue(mirror.only_protected_branches)
+
+
+class TestProjectServices(TestProject):
+    @with_httmock(resp_get_active_services)
+    def test_list_active_services(self):
+        services = self.project.services.list()
+        self.assertIsInstance(services, list)
+        self.assertIsInstance(services[0], ProjectService)
+        self.assertTrue(services[0].active)
+        self.assertTrue(services[0].push_events)
+
+    def test_list_available_services(self):
+        services = self.project.services.available()
+        self.assertIsInstance(services, list)
+        self.assertIsInstance(services[0], str)
+
+    @with_httmock(resp_get_service)
+    def test_get_service(self):
+        service = self.project.services.get("pipelines-email")
+        self.assertIsInstance(service, ProjectService)
+        self.assertEqual(service.push_events, True)
+
+    @with_httmock(resp_get_service, resp_update_service)
+    def test_update_service(self):
+        service = self.project.services.get("pipelines-email")
+        service.issues_events = True
+        service.save()
+        self.assertEqual(service.issues_events, True)

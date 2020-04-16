@@ -3995,7 +3995,7 @@ class ProjectService(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, RESTManager):
+class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTManager):
     _path = "/projects/%(project_id)s/services"
     _from_parent_attrs = {"project_id": "id"}
     _obj_cls = ProjectService
