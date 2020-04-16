@@ -133,7 +133,7 @@ You need to install ``tox`` to run unit tests and documentation builds locally:
    tox
 
    # run tests in one environment only:
-   tox -epy36
+   tox -epy38
 
    # build the documentation, the result will be generated in
    # build/sphinx/html/
@@ -151,10 +151,10 @@ To run these tests:
 .. code-block:: bash
 
    # run the CLI tests:
-   ./tools/functional_tests.sh
+   tox -e cli_func_v4
 
    # run the python API tests:
-   ./tools/py_functional_tests.sh
+   tox -e py_func_v4
 
 By default, the tests run against the ``gitlab/gitlab-ce:latest`` image. You can
 override both the image and tag with the ``-i`` and ``-t`` options, or by providing
