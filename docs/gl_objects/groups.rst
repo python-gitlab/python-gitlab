@@ -61,6 +61,13 @@ Update a group::
     group.description = 'My awesome group'
     group.save()
 
+Set the avatar image for a group::
+
+    # the avatar image can be passed as data (content of the file) or as a file
+    # object opened in binary mode
+    group.avatar = open('path/to/file.png', 'rb')
+    group.save()
+
 Remove a group::
 
     gl.groups.delete(group_id)
