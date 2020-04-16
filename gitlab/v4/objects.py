@@ -4055,7 +4055,6 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
                 "branches_to_be_notified",
             ),
         ),
-        "builds-email": (("recipients",), ("add_pusher", "notify_only_broken_builds")),
         "pipelines-email": (
             ("recipients",),
             (
