@@ -1513,6 +1513,7 @@ class GroupManager(CRUDMixin, RESTManager):
             "default_branch_protection",
         ),
     )
+    _types = {"avatar": types.ImageAttribute}
 
     @exc.on_http_error(exc.GitlabImportError)
     def import_group(self, file, path, name, parent_id=None, **kwargs):
