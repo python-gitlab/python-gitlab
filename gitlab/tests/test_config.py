@@ -74,105 +74,107 @@ per_page = 200
 """
 
 
-class TestEnvConfig(unittest.TestCase):
-    def test_env_present(self):
-        with mock.patch.dict(os.environ, {"PYTHON_GITLAB_CFG": "/some/path"}):
-            assert ["/some/path"] == config._env_config()
-
-    def test_env_missing(self):
-        with mock.patch.dict(os.environ, {}, clear=True):
-            assert [] == config._env_config()
+@mock.patch.dict(os.environ, {"PYTHON_GITLAB_CFG": "/some/path"})
+def test_env_config_present():
+    assert ["/some/path"] == config._env_config()
 
 
-class TestConfigParser(unittest.TestCase):
-    @mock.patch("os.path.exists")
-    def test_missing_config(self, path_exists):
-        path_exists.return_value = False
-        with pytest.raises(config.GitlabConfigMissingError):
-            config.GitlabConfigParser("test")
+@mock.patch.dict(os.environ, {}, clear=True)
+def test_env_config_missing():
+    assert [] == config._env_config()
 
-    @mock.patch("os.path.exists")
-    @mock.patch("builtins.open")
-    def test_invalid_id(self, m_open, path_exists):
-        fd = io.StringIO(no_default_config)
-        fd.close = mock.Mock(return_value=None)
-        m_open.return_value = fd
-        path_exists.return_value = True
-        config.GitlabConfigParser("there")
-        with pytest.raises(config.GitlabIDError):
-            config.GitlabConfigParser()
 
-        fd = io.StringIO(valid_config)
-        fd.close = mock.Mock(return_value=None)
-        m_open.return_value = fd
-        with pytest.raises(config.GitlabDataError):
-            config.GitlabConfigParser(gitlab_id="not_there")
+@mock.patch("os.path.exists")
+def test_missing_config(path_exists):
+    path_exists.return_value = False
+    with pytest.raises(config.GitlabConfigMissingError):
+        config.GitlabConfigParser("test")
 
-    @mock.patch("os.path.exists")
-    @mock.patch("builtins.open")
-    def test_invalid_data(self, m_open, path_exists):
-        fd = io.StringIO(missing_attr_config)
-        fd.close = mock.Mock(return_value=None, side_effect=lambda: fd.seek(0))
-        m_open.return_value = fd
-        path_exists.return_value = True
 
-        config.GitlabConfigParser("one")
-        config.GitlabConfigParser("one")
-        with pytest.raises(config.GitlabDataError):
-            config.GitlabConfigParser(gitlab_id="two")
-        with pytest.raises(config.GitlabDataError):
-            config.GitlabConfigParser(gitlab_id="three")
-        with pytest.raises(config.GitlabDataError) as emgr:
-            config.GitlabConfigParser("four")
-        assert "Unsupported per_page number: 200" == emgr.value.args[0]
+@mock.patch("os.path.exists")
+@mock.patch("builtins.open")
+def test_invalid_id(m_open, path_exists):
+    fd = io.StringIO(no_default_config)
+    fd.close = mock.Mock(return_value=None)
+    m_open.return_value = fd
+    path_exists.return_value = True
+    config.GitlabConfigParser("there")
+    with pytest.raises(config.GitlabIDError):
+        config.GitlabConfigParser()
 
-    @mock.patch("os.path.exists")
-    @mock.patch("builtins.open")
-    def test_valid_data(self, m_open, path_exists):
-        fd = io.StringIO(valid_config)
-        fd.close = mock.Mock(return_value=None)
-        m_open.return_value = fd
-        path_exists.return_value = True
+    fd = io.StringIO(valid_config)
+    fd.close = mock.Mock(return_value=None)
+    m_open.return_value = fd
+    with pytest.raises(config.GitlabDataError):
+        config.GitlabConfigParser(gitlab_id="not_there")
 
-        cp = config.GitlabConfigParser()
-        assert "one" == cp.gitlab_id
-        assert "http://one.url" == cp.url
-        assert "ABCDEF" == cp.private_token
-        assert None == cp.oauth_token
-        assert 2 == cp.timeout
-        assert True == cp.ssl_verify
-        assert cp.per_page is None
 
-        fd = io.StringIO(valid_config)
-        fd.close = mock.Mock(return_value=None)
-        m_open.return_value = fd
-        cp = config.GitlabConfigParser(gitlab_id="two")
-        assert "two" == cp.gitlab_id
-        assert "https://two.url" == cp.url
-        assert "GHIJKL" == cp.private_token
-        assert None == cp.oauth_token
-        assert 10 == cp.timeout
-        assert False == cp.ssl_verify
+@mock.patch("os.path.exists")
+@mock.patch("builtins.open")
+def test_invalid_data(m_open, path_exists):
+    fd = io.StringIO(missing_attr_config)
+    fd.close = mock.Mock(return_value=None, side_effect=lambda: fd.seek(0))
+    m_open.return_value = fd
+    path_exists.return_value = True
 
-        fd = io.StringIO(valid_config)
-        fd.close = mock.Mock(return_value=None)
-        m_open.return_value = fd
-        cp = config.GitlabConfigParser(gitlab_id="three")
-        assert "three" == cp.gitlab_id
-        assert "https://three.url" == cp.url
-        assert "MNOPQR" == cp.private_token
-        assert None == cp.oauth_token
-        assert 2 == cp.timeout
-        assert "/path/to/CA/bundle.crt" == cp.ssl_verify
-        assert 50 == cp.per_page
+    config.GitlabConfigParser("one")
+    config.GitlabConfigParser("one")
+    with pytest.raises(config.GitlabDataError):
+        config.GitlabConfigParser(gitlab_id="two")
+    with pytest.raises(config.GitlabDataError):
+        config.GitlabConfigParser(gitlab_id="three")
+    with pytest.raises(config.GitlabDataError) as emgr:
+        config.GitlabConfigParser("four")
+    assert "Unsupported per_page number: 200" == emgr.value.args[0]
 
-        fd = io.StringIO(valid_config)
-        fd.close = mock.Mock(return_value=None)
-        m_open.return_value = fd
-        cp = config.GitlabConfigParser(gitlab_id="four")
-        assert "four" == cp.gitlab_id
-        assert "https://four.url" == cp.url
-        assert None == cp.private_token
-        assert "STUV" == cp.oauth_token
-        assert 2 == cp.timeout
-        assert True == cp.ssl_verify
+
+@mock.patch("os.path.exists")
+@mock.patch("builtins.open")
+def test_valid_data(m_open, path_exists):
+    fd = io.StringIO(valid_config)
+    fd.close = mock.Mock(return_value=None)
+    m_open.return_value = fd
+    path_exists.return_value = True
+
+    cp = config.GitlabConfigParser()
+    assert "one" == cp.gitlab_id
+    assert "http://one.url" == cp.url
+    assert "ABCDEF" == cp.private_token
+    assert None == cp.oauth_token
+    assert 2 == cp.timeout
+    assert True == cp.ssl_verify
+    assert cp.per_page is None
+
+    fd = io.StringIO(valid_config)
+    fd.close = mock.Mock(return_value=None)
+    m_open.return_value = fd
+    cp = config.GitlabConfigParser(gitlab_id="two")
+    assert "two" == cp.gitlab_id
+    assert "https://two.url" == cp.url
+    assert "GHIJKL" == cp.private_token
+    assert None == cp.oauth_token
+    assert 10 == cp.timeout
+    assert False == cp.ssl_verify
+
+    fd = io.StringIO(valid_config)
+    fd.close = mock.Mock(return_value=None)
+    m_open.return_value = fd
+    cp = config.GitlabConfigParser(gitlab_id="three")
+    assert "three" == cp.gitlab_id
+    assert "https://three.url" == cp.url
+    assert "MNOPQR" == cp.private_token
+    assert None == cp.oauth_token
+    assert 2 == cp.timeout
+    assert "/path/to/CA/bundle.crt" == cp.ssl_verify
+    assert 50 == cp.per_page
+
+    fd = io.StringIO(valid_config)
+    fd.close = mock.Mock(return_value=None)
+    m_open.return_value = fd
+    cp = config.GitlabConfigParser(gitlab_id="four")
+    assert "four" == cp.gitlab_id
+    assert "https://four.url" == cp.url
+    assert None == cp.private_token
+    assert "STUV" == cp.oauth_token
+    assert 2 == cp.timeout
+    assert True == cp.ssl_verify

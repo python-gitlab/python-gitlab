@@ -15,57 +15,55 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import unittest
-
 from gitlab import types
 
 
-class TestGitlabAttribute(unittest.TestCase):
-    def test_all(self):
-        o = types.GitlabAttribute("whatever")
-        assert "whatever" == o.get()
+def test_gitlab_attribute_get():
+    o = types.GitlabAttribute("whatever")
+    assert o.get() == "whatever"
 
-        o.set_from_cli("whatever2")
-        assert "whatever2" == o.get()
+    o.set_from_cli("whatever2")
+    assert o.get() == "whatever2"
+    assert o.get_for_api() == "whatever2"
 
-        assert "whatever2" == o.get_for_api()
-
-        o = types.GitlabAttribute()
-        assert None == o._value
+    o = types.GitlabAttribute()
+    assert o._value is None
 
 
-class TestListAttribute(unittest.TestCase):
-    def test_list_input(self):
-        o = types.ListAttribute()
-        o.set_from_cli("foo,bar,baz")
-        assert ["foo", "bar", "baz"] == o.get()
+def test_list_attribute_input():
+    o = types.ListAttribute()
+    o.set_from_cli("foo,bar,baz")
+    assert o.get() == ["foo", "bar", "baz"]
 
-        o.set_from_cli("foo")
-        assert ["foo"] == o.get()
-
-    def test_empty_input(self):
-        o = types.ListAttribute()
-        o.set_from_cli("")
-        assert [] == o.get()
-
-        o.set_from_cli("  ")
-        assert [] == o.get()
-
-    def test_get_for_api_from_cli(self):
-        o = types.ListAttribute()
-        o.set_from_cli("foo,bar,baz")
-        assert "foo,bar,baz" == o.get_for_api()
-
-    def test_get_for_api_from_list(self):
-        o = types.ListAttribute(["foo", "bar", "baz"])
-        assert "foo,bar,baz" == o.get_for_api()
-
-    def test_get_for_api_does_not_split_string(self):
-        o = types.ListAttribute("foo")
-        assert "foo" == o.get_for_api()
+    o.set_from_cli("foo")
+    assert o.get() == ["foo"]
 
 
-class TestLowercaseStringAttribute(unittest.TestCase):
-    def test_get_for_api(self):
-        o = types.LowercaseStringAttribute("FOO")
-        assert "foo" == o.get_for_api()
+def test_list_attribute_empty_input():
+    o = types.ListAttribute()
+    o.set_from_cli("")
+    assert o.get() == []
+
+    o.set_from_cli("  ")
+    assert o.get() == []
+
+
+def test_list_attribute_get_for_api_from_cli():
+    o = types.ListAttribute()
+    o.set_from_cli("foo,bar,baz")
+    assert o.get_for_api() == "foo,bar,baz"
+
+
+def test_list_attribute_get_for_api_from_list():
+    o = types.ListAttribute(["foo", "bar", "baz"])
+    assert o.get_for_api() == "foo,bar,baz"
+
+
+def test_list_attribute_does_not_split_string():
+    o = types.ListAttribute("foo")
+    assert o.get_for_api() == "foo"
+
+
+def test_lowercase_string_attribute_get_for_api():
+    o = types.LowercaseStringAttribute("FOO")
+    assert o.get_for_api() == "foo"

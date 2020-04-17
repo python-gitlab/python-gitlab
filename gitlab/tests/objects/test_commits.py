@@ -1,7 +1,10 @@
+"""
+GitLab API: https://docs.gitlab.com/ce/api/commits.html
+"""
+
 from httmock import urlmatch, response, with_httmock
 
 from .mocks import headers
-from .test_projects import TestProject
 
 
 @urlmatch(
@@ -69,39 +72,36 @@ def resp_get_commit_gpg_signature(url, request):
     return response(200, content, headers, None, 5, request)
 
 
-class TestCommit(TestProject):
-    """
-    Base class for commit tests. Inherits from TestProject,
-    since currently all commit methods are under projects.
-    """
+@with_httmock(resp_get_commit)
+def test_get_commit(project):
+    commit = project.commits.get("6b2257ea")
+    assert commit.short_id == "6b2257ea"
+    assert commit.title == "Initial commit"
 
-    @with_httmock(resp_get_commit)
-    def test_get_commit(self):
-        commit = self.project.commits.get("6b2257ea")
-        assert commit.short_id == "6b2257ea"
-        assert commit.title == "Initial commit"
 
-    @with_httmock(resp_create_commit)
-    def test_create_commit(self):
-        data = {
-            "branch": "master",
-            "commit_message": "Commit message",
-            "actions": [{"action": "create", "file_path": "README", "content": "",}],
-        }
-        commit = self.project.commits.create(data)
-        assert commit.short_id == "ed899a2f"
-        assert commit.title == data["commit_message"]
+@with_httmock(resp_create_commit)
+def test_create_commit(project):
+    data = {
+        "branch": "master",
+        "commit_message": "Commit message",
+        "actions": [{"action": "create", "file_path": "README", "content": "",}],
+    }
+    commit = project.commits.create(data)
+    assert commit.short_id == "ed899a2f"
+    assert commit.title == data["commit_message"]
 
-    @with_httmock(resp_revert_commit)
-    def test_revert_commit(self):
-        commit = self.project.commits.get("6b2257ea", lazy=True)
-        revert_commit = commit.revert(branch="master")
-        assert revert_commit["short_id"] == "8b090c1b"
-        assert revert_commit["title"] == 'Revert "Initial commit"'
 
-    @with_httmock(resp_get_commit_gpg_signature)
-    def test_get_commit_gpg_signature(self):
-        commit = self.project.commits.get("6b2257ea", lazy=True)
-        signature = commit.signature()
-        assert signature["gpg_key_primary_keyid"] == "8254AAB3FBD54AC9"
-        assert signature["verification_status"] == "verified"
+@with_httmock(resp_revert_commit)
+def test_revert_commit(project):
+    commit = project.commits.get("6b2257ea", lazy=True)
+    revert_commit = commit.revert(branch="master")
+    assert revert_commit["short_id"] == "8b090c1b"
+    assert revert_commit["title"] == 'Revert "Initial commit"'
+
+
+@with_httmock(resp_get_commit_gpg_signature)
+def test_get_commit_gpg_signature(project):
+    commit = project.commits.get("6b2257ea", lazy=True)
+    signature = commit.signature()
+    assert signature["gpg_key_primary_keyid"] == "8254AAB3FBD54AC9"
+    assert signature["verification_status"] == "verified"
