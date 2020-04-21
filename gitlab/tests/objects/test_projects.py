@@ -258,7 +258,10 @@ def resp_get_active_services(url, request):
 
 
 @urlmatch(
-    scheme="http", netloc="localhost", path="/api/v4/projects/1/pipeline_schedules$", method="post",
+    scheme="http",
+    netloc="localhost",
+    path="/api/v4/projects/1/pipeline_schedules$",
+    method="post",
 )
 def resp_create_project_pipeline_schedule(url, request):
     """Mock for creating project pipeline Schedules POST response."""
@@ -287,7 +290,10 @@ def resp_create_project_pipeline_schedule(url, request):
 
 
 @urlmatch(
-    scheme="http", netloc="localhost", path="/api/v4/projects/1/pipeline_schedules/14/play", method="post",
+    scheme="http",
+    netloc="localhost",
+    path="/api/v4/projects/1/pipeline_schedules/14/play",
+    method="post",
 )
 def resp_play_project_pipeline_schedule(url, request):
     """Mock for playing a project pipeline schedule POST response."""
@@ -522,22 +528,20 @@ class TestProjectServices(TestProject):
 
 
 class TestProjectPipelineSchedule(TestProject):
-
-    @with_httmock(resp_create_project_pipeline_schedule,
-                  resp_play_project_pipeline_schedule)
+    @with_httmock(
+        resp_create_project_pipeline_schedule, resp_play_project_pipeline_schedule
+    )
     def test_project_pipeline_schedule_play(self):
-        description = 'Build packages'
-        cronline = '0 1 * * 5'
-        sched = self.project.pipelineschedules.create({
-            'ref': 'master',
-            'description': description,
-            'cron': cronline})
+        description = "Build packages"
+        cronline = "0 1 * * 5"
+        sched = self.project.pipelineschedules.create(
+            {"ref": "master", "description": description, "cron": cronline}
+        )
         self.assertIsNotNone(sched)
         self.assertEqual(description, sched.description)
         self.assertEqual(cronline, sched.cron)
 
         play_result = sched.play()
         self.assertIsNotNone(play_result)
-        self.assertIn('message', play_result)
-        self.assertEqual('201 Created', play_result['message'])
-
+        self.assertIn("message", play_result)
+        self.assertEqual("201 Created", play_result["message"])
