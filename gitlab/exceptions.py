@@ -145,6 +145,10 @@ class GitlabJobEraseError(GitlabRetryError):
     pass
 
 
+class GitlabPipelinePlayError(GitlabRetryError):
+    pass
+
+
 class GitlabPipelineRetryError(GitlabRetryError):
     pass
 
