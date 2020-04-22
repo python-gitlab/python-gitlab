@@ -2299,7 +2299,7 @@ class ProjectCommit(RESTObject):
     @cli.register_custom_action("ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
     def signature(self, **kwargs):
-        """Get the GPG signature of the commit.
+        """Get the signature of the commit.
 
         Args:
             **kwargs: Extra options to send to the server (e.g. sudo)
@@ -2309,7 +2309,7 @@ class ProjectCommit(RESTObject):
             GitlabGetError: If the signature could not be retrieved
 
         Returns:
-            dict: The commit's GPG signature data
+            dict: The commit's signature data
         """
         path = "%s/%s/signature" % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)

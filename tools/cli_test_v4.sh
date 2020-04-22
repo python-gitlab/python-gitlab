@@ -113,11 +113,11 @@ testcase "revert commit" '
         --id "$COMMIT_ID" --branch master
 '
 
-# Test commit GPG signature
-testcase "attempt to get GPG signature of unsigned commit" '
+# Test commit signature
+testcase "attempt to get signature of unsigned commit" '
     OUTPUT=$(GITLAB project-commit signature --project-id "$PROJECT_ID" \
         --id "$COMMIT_ID" 2>&1 || exit 0)
-    echo "$OUTPUT" | grep -q "404 GPG Signature Not Found"
+    echo "$OUTPUT" | grep -q "404 Signature Not Found"
 '
 
 # Test project labels

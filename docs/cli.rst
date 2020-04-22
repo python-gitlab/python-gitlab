@@ -258,7 +258,7 @@ Get a specific project commit by its SHA id:
 
    $ gitlab project-commit get --project-id 2 --id a43290c
 
-Get the GPG signature of a signed commit:
+Get the signature (e.g. GPG or x509) of a signed commit:
 
 .. code-block:: console
 
