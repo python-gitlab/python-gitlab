@@ -218,23 +218,18 @@ testcase "values from files" '
 CREATE_PROJECT_DEPLOY_TOKEN_OUTPUT=$(GITLAB -v project-deploy-token create --project-id $PROJECT_ID \
         --name foo --username root --expires-at "2021-09-09" --scopes "read_registry")
 CREATED_DEPLOY_TOKEN_ID=$(echo "$CREATE_PROJECT_DEPLOY_TOKEN_OUTPUT" | grep ^id: | cut -d" " -f2)
-testcase "create project deploy token" '
+testcase "create project deploy token (name)" '
     echo $CREATE_PROJECT_DEPLOY_TOKEN_OUTPUT | grep -q "name: foo"
 '
-testcase "create project deploy token" '
+testcase "create project deploy token (expires-at)" '
     echo $CREATE_PROJECT_DEPLOY_TOKEN_OUTPUT | grep -q "expires-at: 2021-09-09T00:00:00.000Z"
 '
-testcase "create project deploy token" '
+testcase "create project deploy token (scopes)" '
     echo $CREATE_PROJECT_DEPLOY_TOKEN_OUTPUT | grep "scopes: " | grep -q "read_registry"
 '
-# Uncomment once https://gitlab.com/gitlab-org/gitlab/-/issues/211963 is fixed
-#testcase "create project deploy token" '
-#    echo $CREATE_PROJECT_DEPLOY_TOKEN_OUTPUT | grep -q "username: root"
-#'
 
-# Remove once https://gitlab.com/gitlab-org/gitlab/-/issues/211963 is fixed
-testcase "create project deploy token" '
-    echo $CREATE_PROJECT_DEPLOY_TOKEN_OUTPUT | grep -q "gitlab+deploy-token"
+testcase "create project deploy token (username)" '
+   echo $CREATE_PROJECT_DEPLOY_TOKEN_OUTPUT | grep -q "username: root"
 '
 
 LIST_DEPLOY_TOKEN_OUTPUT=$(GITLAB -v deploy-token list)
