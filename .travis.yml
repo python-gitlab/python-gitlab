@@ -87,8 +87,11 @@ jobs:
       dist: bionic
       name: coverage
       python: 3.8
+      install:
+        - pip3 install tox codecov
       script:
-        - pip3 install tox
         - tox -e cover
+      after_success:
+        - codecov
   allow_failures:
     - env: GITLAB_TAG=nightly
