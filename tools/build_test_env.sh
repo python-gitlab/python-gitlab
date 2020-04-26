@@ -104,20 +104,6 @@ letsencrypt['enable'] = false
         "$GITLAB_IMAGE:$GITLAB_TAG" >/dev/null
 fi
 
-LOGIN='root'
-PASSWORD='5iveL!fe'
-GITLAB() { gitlab --config-file "$CONFIG" "$@"; }
-GREEN='\033[0;32m'
-NC='\033[0m'
-OK() { printf "${GREEN}OK${NC}\\n"; }
-testcase() {
-    testname=$1; shift
-    testscript=$1; shift
-    printf %s "Testing ${testname}... "
-    eval "${testscript}" || fatal "test failed"
-    OK
-}
-
 if [ -z "$NOVENV" ]; then
     log "Creating Python virtualenv..."
     try $VENV_CMD "$VENV"
@@ -130,7 +116,7 @@ if [ -z "$NOVENV" ]; then
     try pip install -e .
 
     # to run generate_token.py
-    pip install requests-html
+    pip install requests-html pytest-console-scripts
 fi
 
 log "Waiting for gitlab to come online... "
