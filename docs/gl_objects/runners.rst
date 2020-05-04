@@ -78,7 +78,7 @@ Verify a registered runner token::
     except GitlabVerifyError:
         print("Invalid token")
 
-Project runners
+Project/Group runners
 ===============
 
 Reference
@@ -89,6 +89,9 @@ Reference
   + :class:`gitlab.v4.objects.ProjectRunner`
   + :class:`gitlab.v4.objects.ProjectRunnerManager`
   + :attr:`gitlab.v4.objects.Project.runners`
+  + :class:`gitlab.v4.objects.GroupRunner`
+  + :class:`gitlab.v4.objects.GroupRunnerManager`
+  + :attr:`gitlab.v4.objects.Group.runners`
 
 * GitLab API: https://docs.gitlab.com/ce/api/runners.html
 
