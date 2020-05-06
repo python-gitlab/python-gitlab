@@ -301,16 +301,8 @@ Get the artifacts of a job::
 You can download artifacts as a stream. Provide a callable to handle the
 stream::
 
-    class Foo(object):
-        def __init__(self):
-            self._fd = open('artifacts.zip', 'wb')
-
-        def __call__(self, chunk):
-            self._fd.write(chunk)
-
-    target = Foo()
-    build_or_job.artifacts(streamed=True, action=target)
-    del(target)  # flushes data on disk
+    with open("archive.zip", "wb") as f:
+         build_or_job.artifacts(streamed=True, action=f.write)
 
 You can also directly stream the output into a file, and unzip it afterwards::
 
