@@ -24,7 +24,7 @@ Get the list of a project's remote mirrors::
 
 Create (and enable) a remote mirror for a project::
 
-    mirror = project.wikis.create({'url': 'https://gitlab.com/example.git',
+    mirror = project.remote_mirrors.create({'url': 'https://gitlab.com/example.git',
                                    'enabled': True})
 
 Update an existing remote mirror's attributes::
