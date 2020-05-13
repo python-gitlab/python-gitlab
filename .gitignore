@@ -9,6 +9,7 @@ MANIFEST
 coverage.xml
 docs/_build
 .coverage
+.python-version
 .tox
 .venv/
 venv/
