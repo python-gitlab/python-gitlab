@@ -36,6 +36,8 @@ __all__ = [
     "GroupMergeRequestManager",
     "ProjectMergeRequest",
     "ProjectMergeRequestManager",
+    "ProjectDeploymentMergeRequest",
+    "ProjectDeploymentMergeRequestManager",
     "ProjectMergeRequestDiff",
     "ProjectMergeRequestDiffManager",
 ]
@@ -48,7 +50,6 @@ class MergeRequest(RESTObject):
 class MergeRequestManager(ListMixin, RESTManager):
     _path = "/merge_requests"
     _obj_cls = MergeRequest
-    _from_parent_attrs = {"group_id": "id"}
     _list_filters = (
         "state",
         "order_by",
@@ -56,24 +57,35 @@ class MergeRequestManager(ListMixin, RESTManager):
         "milestone",
         "view",
         "labels",
+        "with_labels_details",
+        "with_merge_status_recheck",
         "created_after",
         "created_before",
         "updated_after",
         "updated_before",
         "scope",
         "author_id",
+        "author_username",
         "assignee_id",
         "approver_ids",
         "approved_by_ids",
+        "reviewer_id",
+        "reviewer_username",
         "my_reaction_emoji",
         "source_branch",
         "target_branch",
         "search",
+        "in",
         "wip",
+        "not",
+        "environment",
+        "deployed_before",
+        "deployed_after",
     )
     _types = {
         "approver_ids": types.ListAttribute,
         "approved_by_ids": types.ListAttribute,
+        "in": types.ListAttribute,
         "labels": types.ListAttribute,
     }
 
@@ -407,6 +419,16 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
         "iids": types.ListAttribute,
         "labels": types.ListAttribute,
     }
+
+
+class ProjectDeploymentMergeRequest(MergeRequest):
+    pass
+
+
+class ProjectDeploymentMergeRequestManager(MergeRequestManager):
+    _path = "/projects/%(project_id)s/deployments/%(deployment_id)s/merge_requests"
+    _obj_cls = ProjectDeploymentMergeRequest
+    _from_parent_attrs = {"deployment_id": "id", "project_id": "project_id"}
 
 
 class ProjectMergeRequestDiff(RESTObject):
