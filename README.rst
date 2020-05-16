@@ -128,6 +128,11 @@ Before submitting a pull request make sure that the tests still succeed with
 your change. Unit tests and functional tests run using the travis service and
 passing tests are mandatory to get merge requests accepted.
 
+We're currently in a restructing phase for the unit tests. If you're changing existing
+tests, feel free to keep the current format. Otherwise please write new tests with pytest and
+using `responses<https://github.com/getsentry/responses>`_. An example for new tests can be found in
+tests/objects/test_runner.py
+
 You need to install ``tox`` to run unit tests and documentation builds locally:
 
 .. code-block:: bash
