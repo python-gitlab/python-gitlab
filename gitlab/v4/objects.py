@@ -1308,6 +1308,17 @@ class GroupProjectManager(ListMixin, RESTManager):
     )
 
 
+class GroupRunner(ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class GroupRunnerManager(NoUpdateMixin, RESTManager):
+    _path = "/groups/%(group_id)s/runners"
+    _obj_cls = GroupRunner
+    _from_parent_attrs = {"group_id": "id"}
+    _create_attrs = (("runner_id",), tuple())
+
+
 class GroupSubgroup(RESTObject):
     pass
 
@@ -1357,6 +1368,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("milestones", "GroupMilestoneManager"),
         ("notificationsettings", "GroupNotificationSettingsManager"),
         ("projects", "GroupProjectManager"),
+        ("runners", "GroupRunnerManager"),
         ("subgroups", "GroupSubgroupManager"),
         ("variables", "GroupVariableManager"),
         ("clusters", "GroupClusterManager"),
@@ -5382,7 +5394,8 @@ class RunnerManager(CRUDMixin, RESTManager):
         query_data = {}
         if scope is not None:
             query_data["scope"] = scope
-        return self.gitlab.http_list(path, query_data, **kwargs)
+        obj = self.gitlab.http_list(path, query_data, **kwargs)
+        return [self._obj_cls(self, item) for item in obj]
 
     @cli.register_custom_action("RunnerManager", ("token",))
     @exc.on_http_error(exc.GitlabVerifyError)
