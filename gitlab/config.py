@@ -145,14 +145,6 @@ class GitlabConfigParser(object):
         except Exception:
             pass
 
-        self.http_username = None
-        self.http_password = None
-        try:
-            self.http_username = self._config.get(self.gitlab_id, "http_username")
-            self.http_password = self._config.get(self.gitlab_id, "http_password")
-        except Exception:
-            pass
-
         self.api_version = "4"
         try:
             self.api_version = self._config.get("global", "api_version")
