@@ -20,6 +20,7 @@ setup(
     version=get_version(),
     description="Interact with GitLab API",
     long_description=readme,
+    long_description_content_type="text/x-rst",
     author="Gauvain Pocentek",
     author_email="gauvain@pocentek.net",
     license="LGPLv3",

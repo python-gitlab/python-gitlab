@@ -85,6 +85,14 @@ jobs:
         - tox -e py38
     - stage: test
       dist: bionic
+      name: twine-check
+      python: 3.8
+      script:
+        - pip3 install tox wheel
+        - python3 setup.py sdist bdist_wheel
+        - tox -e twine-check
+    - stage: test
+      dist: bionic
       name: coverage
       python: 3.8
       install:
