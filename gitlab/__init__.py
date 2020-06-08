@@ -16,13 +16,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Wrapper for the GitLab API."""
 
-from __future__ import print_function
-from __future__ import absolute_import
 import importlib
 import time
 import warnings
 
 import requests
+import requests.utils
 
 import gitlab.config
 from gitlab.const import *  # noqa
@@ -42,6 +41,8 @@ REDIRECT_MSG = (
     "python-gitlab detected an http to https redirection. You "
     "must update your GitLab URL to use https:// to avoid issues."
 )
+
+ALLOWED_KEYSET_ENDPOINTS = ["/projects"]
 
 
 def _sanitize(value):
@@ -618,7 +619,7 @@ class Gitlab(object):
 
         Args:
             path (str): Path or full URL to query ('/projects' or
-                        'http://whatever/v4/api/projecs')
+                        'http://whatever/v4/api/projects')
             query_data (dict): Data to send as query parameters
             **kwargs: Extra options to send to the server (e.g. sudo, page,
                       per_page)
@@ -642,10 +643,22 @@ class Gitlab(object):
         get_all = kwargs.pop("all", False)
         url = self._build_url(path)
 
+        order_by = kwargs.get("order_by")
+        pagination = kwargs.get("pagination")
+        page = kwargs.get("page")
+        if (
+            path in ALLOWED_KEYSET_ENDPOINTS
+            and (not order_by or order_by == "id")
+            and (not pagination or pagination == "keyset")
+            and not page
+        ):
+            kwargs["pagination"] = "keyset"
+            kwargs["order_by"] = "id"
+
         if get_all is True and as_list is True:
             return list(GitlabList(self, url, query_data, **kwargs))
 
-        if "page" in kwargs or as_list is True:
+        if page or as_list is True:
             # pagination requested, we return a list
             return list(GitlabList(self, url, query_data, get_next=False, **kwargs))
 
@@ -781,7 +794,14 @@ class GitlabList(object):
         query_data = query_data or {}
         result = self._gl.http_request("get", url, query_data=query_data, **kwargs)
         try:
-            self._next_url = result.links["next"]["url"]
+            links = result.links
+            if links:
+                next_url = links["next"]["url"]
+            else:
+                next_url = requests.utils.parse_header_links(result.headers["links"])[
+                    0
+                ]["url"]
+            self._next_url = next_url
         except KeyError:
             self._next_url = None
         self._current_page = result.headers.get("X-Page")
