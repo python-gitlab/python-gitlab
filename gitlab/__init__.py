@@ -29,7 +29,7 @@ from gitlab.exceptions import *  # noqa
 from gitlab import utils  # noqa
 
 __title__ = "python-gitlab"
-__version__ = "2.3.0"
+__version__ = "2.3.1"
 __author__ = "Gauvain Pocentek"
 __email__ = "gauvainpocentek@gmail.com"
 __license__ = "LGPL3"
@@ -643,17 +643,7 @@ class Gitlab(object):
         get_all = kwargs.pop("all", False)
         url = self._build_url(path)
 
-        order_by = kwargs.get("order_by")
-        pagination = kwargs.get("pagination")
         page = kwargs.get("page")
-        if (
-            path in ALLOWED_KEYSET_ENDPOINTS
-            and (not order_by or order_by == "id")
-            and (not pagination or pagination == "keyset")
-            and not page
-        ):
-            kwargs["pagination"] = "keyset"
-            kwargs["order_by"] = "id"
 
         if get_all is True and as_list is True:
             return list(GitlabList(self, url, query_data, **kwargs))
