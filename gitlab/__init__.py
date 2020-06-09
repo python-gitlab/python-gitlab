@@ -29,7 +29,7 @@ from gitlab.exceptions import *  # noqa
 from gitlab import utils  # noqa
 
 __title__ = "python-gitlab"
-__version__ = "2.3.0"
+__version__ = "2.3.1"
 __author__ = "Gauvain Pocentek"
 __email__ = "gauvainpocentek@gmail.com"
 __license__ = "LGPL3"
