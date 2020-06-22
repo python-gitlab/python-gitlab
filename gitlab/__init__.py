@@ -777,14 +777,15 @@ class GitlabList(object):
 
     def __init__(self, gl, url, query_data, get_next=True, **kwargs):
         self._gl = gl
-        self._query(url, query_data, **kwargs)
-        self._get_next = get_next
 
         # Preserve kwargs for subsequent queries
         if kwargs is None:
             self._kwargs = {}
         else:
             self._kwargs = kwargs.copy()
+
+        self._query(url, query_data, **self._kwargs)
+        self._get_next = get_next
 
     def _query(self, url, query_data=None, **kwargs):
         query_data = query_data or {}
