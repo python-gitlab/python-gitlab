@@ -780,6 +780,12 @@ class GitlabList(object):
         self._query(url, query_data, **kwargs)
         self._get_next = get_next
 
+        # Preserve kwargs for subsequent queries
+        if kwargs is None:
+            self._kwargs = {}
+        else:
+            self._kwargs = kwargs.copy()
+
     def _query(self, url, query_data=None, **kwargs):
         query_data = query_data or {}
         result = self._gl.http_request("get", url, query_data=query_data, **kwargs)
@@ -864,7 +870,7 @@ class GitlabList(object):
             pass
 
         if self._next_url and self._get_next is True:
-            self._query(self._next_url)
+            self._query(self._next_url, **self._kwargs)
             return self.next()
 
         raise StopIteration
