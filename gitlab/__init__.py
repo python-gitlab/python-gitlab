@@ -779,10 +779,7 @@ class GitlabList(object):
         self._gl = gl
 
         # Preserve kwargs for subsequent queries
-        if kwargs is None:
-            self._kwargs = {}
-        else:
-            self._kwargs = kwargs.copy()
+        self._kwargs = kwargs.copy()
 
         self._query(url, query_data, **self._kwargs)
         self._get_next = get_next
