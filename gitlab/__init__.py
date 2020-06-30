@@ -777,7 +777,11 @@ class GitlabList(object):
 
     def __init__(self, gl, url, query_data, get_next=True, **kwargs):
         self._gl = gl
-        self._query(url, query_data, **kwargs)
+
+        # Preserve kwargs for subsequent queries
+        self._kwargs = kwargs.copy()
+
+        self._query(url, query_data, **self._kwargs)
         self._get_next = get_next
 
     def _query(self, url, query_data=None, **kwargs):
@@ -864,7 +868,7 @@ class GitlabList(object):
             pass
 
         if self._next_url and self._get_next is True:
-            self._query(self._next_url)
+            self._query(self._next_url, **self._kwargs)
             return self.next()
 
         raise StopIteration
