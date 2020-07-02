@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+NO_ACCESS = 0
 GUEST_ACCESS = 10
 REPORTER_ACCESS = 20
 DEVELOPER_ACCESS = 30
