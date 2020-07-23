@@ -74,6 +74,11 @@ Remove a group::
     # or
     group.delete()
 
+Share/unshare the group with a group::
+
+    group.share(group2.id, gitlab.DEVELOPER_ACCESS)
+    group.unshare(group2.id)
+
 Import / Export
 ===============
 
