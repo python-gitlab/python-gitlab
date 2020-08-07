@@ -270,6 +270,7 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
         "archived",
         "visibility",
         "order_by",
+        "pagination",
         "sort",
         "search",
         "simple",
@@ -1019,7 +1020,7 @@ class GroupEpicManager(CRUDMixin, RESTManager):
     _path = "/groups/%(group_id)s/epics"
     _obj_cls = GroupEpic
     _from_parent_attrs = {"group_id": "id"}
-    _list_filters = ("author_id", "labels", "order_by", "sort", "search")
+    _list_filters = ("author_id", "labels", "order_by", "pagination", "sort", "search")
     _create_attrs = (("title",), ("labels", "description", "start_date", "end_date"))
     _update_attrs = (
         tuple(),
@@ -1061,6 +1062,7 @@ class GroupIssueManager(ListMixin, RESTManager):
         "labels",
         "milestone",
         "order_by",
+        "pagination",
         "sort",
         "iids",
         "author_id",
@@ -1183,6 +1185,7 @@ class GroupMergeRequestManager(ListMixin, RESTManager):
     _list_filters = (
         "state",
         "order_by",
+        "pagination",
         "sort",
         "milestone",
         "view",
@@ -1293,6 +1296,7 @@ class GroupProjectManager(ListMixin, RESTManager):
         "archived",
         "visibility",
         "order_by",
+        "pagination",
         "sort",
         "search",
         "simple",
@@ -1332,6 +1336,7 @@ class GroupSubgroupManager(ListMixin, RESTManager):
         "all_available",
         "search",
         "order_by",
+        "pagination",
         "sort",
         "statistics",
         "owned",
@@ -1476,6 +1481,7 @@ class GroupManager(CRUDMixin, RESTManager):
         "all_available",
         "search",
         "order_by",
+        "pagination",
         "sort",
         "statistics",
         "owned",
@@ -1585,6 +1591,7 @@ class IssueManager(ListMixin, RESTManager):
         "my_reaction_emoji",
         "iids",
         "order_by",
+        "pagination",
         "sort",
         "search",
         "created_after",
@@ -1661,6 +1668,7 @@ class MergeRequestManager(ListMixin, RESTManager):
     _list_filters = (
         "state",
         "order_by",
+        "pagination",
         "sort",
         "milestone",
         "view",
@@ -2426,6 +2434,7 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
         "archived",
         "visibility",
         "order_by",
+        "pagination",
         "sort",
         "search",
         "simple",
@@ -2705,6 +2714,7 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
         "assignee_id",
         "my_reaction_emoji",
         "order_by",
+        "pagination",
         "sort",
         "search",
         "created_after",
@@ -3291,6 +3301,7 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
     _list_filters = (
         "state",
         "order_by",
+        "pagination",
         "sort",
         "milestone",
         "view",
@@ -3727,6 +3738,7 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManage
         "name",
         "username",
         "order_by",
+        "pagination",
         "sort",
     )
     _create_attrs = (("ref",), tuple())
@@ -4377,7 +4389,7 @@ class ProjectDeploymentManager(RetrieveMixin, CreateMixin, UpdateMixin, RESTMana
     _path = "/projects/%(project_id)s/deployments"
     _obj_cls = ProjectDeployment
     _from_parent_attrs = {"project_id": "id"}
-    _list_filters = ("order_by", "sort")
+    _list_filters = ("order_by", "pagination", "sort")
     _create_attrs = (("sha", "ref", "tag", "status", "environment"), tuple())
 
 
@@ -5209,6 +5221,7 @@ class ProjectManager(CRUDMixin, RESTManager):
         "archived",
         "visibility",
         "order_by",
+        "pagination",
         "sort",
         "simple",
         "membership",

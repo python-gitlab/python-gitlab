@@ -167,13 +167,15 @@ class GitlabConfigParser(object):
             raise GitlabDataError("Unsupported per_page number: %s" % self.per_page)
 
         self.pagination = None
-        try:
-            self.pagination = self._config.get(self.gitlab_id, "pagination")
-        except Exception:
-            pass
+        for section in ["global", self.gitlab_id]:
+            try:
+                self.pagination = self._config.get(section, "pagination")
+            except Exception:
+                pass
 
         self.order_by = None
-        try:
-            self.order_by = self._config.get(self.gitlab_id, "order_by")
-        except Exception:
-            pass
+        for section in ["global", self.gitlab_id]:
+            try:
+                self.order_by = self._config.get(section, "order_by")
+            except Exception:
+                pass
