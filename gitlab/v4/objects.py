@@ -1467,6 +1467,44 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = "/groups/%s/ldap_sync" % self.get_id()
         self.manager.gitlab.http_post(path, **kwargs)
 
+    @cli.register_custom_action("Group", ("group_id", "group_access"), ("expires_at",))
+    @exc.on_http_error(exc.GitlabCreateError)
+    def share(self, group_id, group_access, expires_at=None, **kwargs):
+        """Share the group with a group.
+
+        Args:
+            group_id (int): ID of the group.
+            group_access (int): Access level for the group.
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server failed to perform the request
+        """
+        path = "/groups/%s/share" % self.get_id()
+        data = {
+            "group_id": group_id,
+            "group_access": group_access,
+            "expires_at": expires_at,
+        }
+        self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+
+    @cli.register_custom_action("Group", ("group_id",))
+    @exc.on_http_error(exc.GitlabDeleteError)
+    def unshare(self, group_id, **kwargs):
+        """Delete a shared group link within a group.
+
+        Args:
+            group_id (int): ID of the group.
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the server failed to perform the request
+        """
+        path = "/groups/%s/share/%s" % (self.get_id(), group_id)
+        self.manager.gitlab.http_delete(path, **kwargs)
+
 
 class GroupManager(CRUDMixin, RESTManager):
     _path = "/groups"

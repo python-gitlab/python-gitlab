@@ -255,8 +255,9 @@ group2 = gl.groups.create({"name": "group2", "path": "group2"})
 
 p_id = gl.groups.list(search="group2")[0].id
 group3 = gl.groups.create({"name": "group3", "path": "group3", "parent_id": p_id})
+group4 = gl.groups.create({"name": "group4", "path": "group4"})
 
-assert len(gl.groups.list()) == 3
+assert len(gl.groups.list()) == 4
 assert len(gl.groups.list(search="oup1")) == 1
 assert group3.parent_id == p_id
 assert group2.subgroups.list()[0].id == group3.id
@@ -265,6 +266,16 @@ group1.members.create({"access_level": gitlab.const.OWNER_ACCESS, "user_id": use
 group1.members.create({"access_level": gitlab.const.GUEST_ACCESS, "user_id": user2.id})
 
 group2.members.create({"access_level": gitlab.const.OWNER_ACCESS, "user_id": user2.id})
+
+group4.share(group1.id, gitlab.const.DEVELOPER_ACCESS)
+group4.share(group2.id, gitlab.const.MAINTAINER_ACCESS)
+# Reload group4 to have updated shared_with_groups
+group4 = gl.groups.get(group4.id)
+assert len(group4.shared_with_groups) == 2
+group4.unshare(group1.id)
+# Reload group4 to have updated shared_with_groups
+group4 = gl.groups.get(group4.id)
+assert len(group4.shared_with_groups) == 1
 
 # User memberships (admin only)
 memberships1 = user1.memberships.list()
@@ -419,7 +430,7 @@ gr1_project = gl.projects.create({"name": "gr1_project", "namespace_id": group1.
 gr2_project = gl.projects.create({"name": "gr2_project", "namespace_id": group2.id})
 sudo_project = gl.projects.create({"name": "sudo_project"}, sudo=user1.name)
 
-assert len(gl.projects.list(owned=True)) == 2
+assert len(gl.projects.list(owned=True)) == 3
 assert len(gl.projects.list(search="admin")) == 1
 assert len(gl.projects.list(as_list=False)) == 4
 
