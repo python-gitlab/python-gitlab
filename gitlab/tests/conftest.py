@@ -16,9 +16,7 @@ def gl():
 @pytest.fixture
 def gl_trailing():
     return gitlab.Gitlab(
-        "http://localhost/",
-        private_token="private_token",
-        api_version=4
+        "http://localhost/", private_token="private_token", api_version=4
     )
 
 
@@ -37,6 +35,7 @@ def default_config(tmpdir):
     config_path = tmpdir.join("python-gitlab.cfg")
     config_path.write(valid_config)
     return str(config_path)
+
 
 @pytest.fixture
 def group(gl):

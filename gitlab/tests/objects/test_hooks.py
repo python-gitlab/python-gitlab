@@ -1,22 +1,28 @@
 """
 GitLab API: https://docs.gitlab.com/ce/api/system_hooks.html
 """
-
-from httmock import response, urlmatch, with_httmock
+import pytest
+import responses
 
 from gitlab.v4.objects import Hook
 
-from .mocks import headers
+
+@pytest.fixture
+def resp_get_hook():
+    content = {"url": "testurl", "id": 1}
+
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/hooks/1",
+            json=content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
 
 
-@urlmatch(scheme="http", netloc="localhost", path="/api/v4/hooks/1", method="get")
-def resp_get_hook(url, request):
-    content = '{"url": "testurl", "id": 1}'.encode("utf-8")
-    return response(200, content, headers, None, 5, request)
-
-
-@with_httmock(resp_get_hook)
-def test_hooks(gl):
+def test_hooks(gl, resp_get_hook):
     data = gl.hooks.get(1)
     assert isinstance(data, Hook)
     assert data.url == "testurl"

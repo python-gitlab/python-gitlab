@@ -1,34 +1,36 @@
 """
 GitLab API: https://docs.gitlab.com/ce/api/deploy_tokens.html
 """
-
-from httmock import response, urlmatch, with_httmock
+import pytest
+import responses
 
 from gitlab.v4.objects import ProjectDeployToken
 
-from .mocks import headers
 
-
-@urlmatch(
-    scheme="http",
-    netloc="localhost",
-    path="/api/v4/projects/1/deploy_tokens",
-    method="post",
-)
-def resp_deploy_token_create(url, request):
-    content = """{
+create_content = {
     "id": 1,
     "name": "test_deploy_token",
     "username": "custom-user",
     "expires_at": "2022-01-01T00:00:00.000Z",
     "token": "jMRvtPNxrn3crTAGukpZ",
-    "scopes": [ "read_repository" ]}"""
-    content = content.encode("utf-8")
-    return response(200, content, headers, None, 5, request)
+    "scopes": ["read_repository"],
+}
 
 
-@with_httmock(resp_deploy_token_create)
-def test_deploy_tokens(gl):
+@pytest.fixture
+def resp_deploy_token_create():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/deploy_tokens",
+            json=create_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+def test_deploy_tokens(gl, resp_deploy_token_create):
     deploy_token = gl.projects.get(1, lazy=True).deploytokens.create(
         {
             "name": "test_deploy_token",

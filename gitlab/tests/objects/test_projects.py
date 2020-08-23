@@ -3,31 +3,51 @@ GitLab API: https://docs.gitlab.com/ce/api/projects.html
 """
 
 import pytest
-
+import responses
 
 from gitlab.v4.objects import Project
-from httmock import urlmatch, response, with_httmock
-
-from .mocks import headers
 
 
-@urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects/1", method="get")
-def resp_get_project(url, request):
-    content = '{"name": "name", "id": 1}'.encode("utf-8")
-    return response(200, content, headers, None, 5, request)
+project_content = {"name": "name", "id": 1}
 
 
-@with_httmock(resp_get_project)
-def test_get_project(gl):
+@pytest.fixture
+def resp_get_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1",
+            json=project_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_list_projects():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects",
+            json=[project_content],
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+def test_get_project(gl, resp_get_project):
     data = gl.projects.get(1)
     assert isinstance(data, Project)
     assert data.name == "name"
     assert data.id == 1
 
 
-@pytest.mark.skip(reason="missing test")
-def test_list_projects(gl):
-    pass
+def test_list_projects(gl, resp_list_projects):
+    projects = gl.projects.list()
+    assert isinstance(projects[0], Project)
+    assert projects[0].name == "name"
 
 
 @pytest.mark.skip(reason="missing test")

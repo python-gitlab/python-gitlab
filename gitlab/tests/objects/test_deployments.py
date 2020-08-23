@@ -1,39 +1,37 @@
 """
 GitLab API: https://docs.gitlab.com/ce/api/deployments.html
 """
-
-import json
-
-from httmock import response, urlmatch, with_httmock
-
-from .mocks import headers
-
-content = '{"id": 42, "status": "success", "ref": "master"}'
-json_content = json.loads(content)
+import pytest
+import responses
 
 
-@urlmatch(
-    scheme="http",
-    netloc="localhost",
-    path="/api/v4/projects/1/deployments",
-    method="post",
-)
-def resp_deployment_create(url, request):
-    return response(200, json_content, headers, None, 5, request)
+@pytest.fixture
+def resp_deployment():
+    content = {"id": 42, "status": "success", "ref": "master"}
+
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/deployments",
+            json=content,
+            content_type="application/json",
+            status=200,
+        )
+
+        updated_content = dict(content)
+        updated_content["status"] = "failed"
+
+        rsps.add(
+            method=responses.PUT,
+            url="http://localhost/api/v4/projects/1/deployments/42",
+            json=updated_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
 
 
-@urlmatch(
-    scheme="http",
-    netloc="localhost",
-    path="/api/v4/projects/1/deployments/42",
-    method="put",
-)
-def resp_deployment_update(url, request):
-    return response(200, json_content, headers, None, 5, request)
-
-
-@with_httmock(resp_deployment_create, resp_deployment_update)
-def test_deployment(project):
+def test_deployment(project, resp_deployment):
     deployment = project.deployments.create(
         {
             "environment": "Test",
@@ -47,7 +45,6 @@ def test_deployment(project):
     assert deployment.status == "success"
     assert deployment.ref == "master"
 
-    json_content["status"] = "failed"
     deployment.status = "failed"
     deployment.save()
     assert deployment.status == "failed"

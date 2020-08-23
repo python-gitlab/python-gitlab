@@ -1,29 +1,28 @@
 """
 GitLab API: https://docs.gitlab.com/ce/api/project_statistics.html
 """
-
-from httmock import response, urlmatch, with_httmock
+import pytest
+import responses
 
 from gitlab.v4.objects import ProjectAdditionalStatistics
 
-from .mocks import headers
+
+@pytest.fixture
+def resp_project_statistics():
+    content = {"fetches": {"total": 50, "days": [{"count": 10, "date": "2018-01-10"}]}}
+
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/statistics",
+            json=content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
 
 
-@urlmatch(
-    scheme="http",
-    netloc="localhost",
-    path="/api/v4/projects/1/statistics",
-    method="get",
-)
-def resp_get_statistics(url, request):
-    content = """{"fetches": {"total": 50, "days": [{"count": 10, "date": "2018-01-10"}]}}""".encode(
-        "utf-8"
-    )
-    return response(200, content, headers, None, 5, request)
-
-
-@with_httmock(resp_get_statistics)
-def test_project_additional_statistics(project):
+def test_project_additional_statistics(project, resp_project_statistics):
     statistics = project.additionalstatistics.get()
     assert isinstance(statistics, ProjectAdditionalStatistics)
     assert statistics.fetches["total"] == 50
