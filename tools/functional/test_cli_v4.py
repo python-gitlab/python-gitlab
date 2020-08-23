@@ -177,7 +177,7 @@ def test_create_issue_note(gitlab_cli, issue):
         "--project-id",
         issue.project_id,
         "--issue-iid",
-        issue.id,
+        issue.iid,
         "--body",
         body,
     ]
