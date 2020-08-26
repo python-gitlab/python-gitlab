@@ -782,6 +782,11 @@ assert events
 event = issue1.resourcelabelevents.get(events[0].id)
 assert event
 
+# issue milestones
+milestones = issue1.resourcemilestoneevents.list()
+assert milestones
+milestone = issue1.resourcemilestoneevents.get(milestones[0].id)
+assert milestone
 
 size = len(issue1.discussions.list())
 discussion = issue1.discussions.create({"body": "Discussion body"})
@@ -890,6 +895,14 @@ events = mr.resourcelabelevents.list()
 assert events
 event = mr.resourcelabelevents.get(events[0].id)
 assert event
+
+# mr milestone events
+mr.milestone_id = m1.id
+mr.save()
+milestones = mr.resourcemilestoneevents.list()
+assert milestones
+milestone = mr.resourcemilestoneevents.get(milestones[0].id)
+assert milestone
 
 # rebasing
 assert mr.rebase()
