@@ -15,26 +15,40 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import unittest
-
 from gitlab import utils
 
 
-class TestUtils(unittest.TestCase):
-    def test_clean_str_id(self):
-        src = "nothing_special"
-        dest = "nothing_special"
-        self.assertEqual(dest, utils.clean_str_id(src))
+def test_clean_str_id():
+    src = "nothing_special"
+    dest = "nothing_special"
+    assert dest == utils.clean_str_id(src)
 
-        src = "foo#bar/baz/"
-        dest = "foo%23bar%2Fbaz%2F"
-        self.assertEqual(dest, utils.clean_str_id(src))
+    src = "foo#bar/baz/"
+    dest = "foo%23bar%2Fbaz%2F"
+    assert dest == utils.clean_str_id(src)
 
-    def test_sanitized_url(self):
-        src = "http://localhost/foo/bar"
-        dest = "http://localhost/foo/bar"
-        self.assertEqual(dest, utils.sanitized_url(src))
 
-        src = "http://localhost/foo.bar.baz"
-        dest = "http://localhost/foo%2Ebar%2Ebaz"
-        self.assertEqual(dest, utils.sanitized_url(src))
+def test_sanitized_url():
+    src = "http://localhost/foo/bar"
+    dest = "http://localhost/foo/bar"
+    assert dest == utils.sanitized_url(src)
+
+    src = "http://localhost/foo.bar.baz"
+    dest = "http://localhost/foo%2Ebar%2Ebaz"
+    assert dest == utils.sanitized_url(src)
+
+
+def test_sanitize_parameters_does_nothing():
+    assert 1 == utils.sanitize_parameters(1)
+    assert 1.5 == utils.sanitize_parameters(1.5)
+    assert "foo" == utils.sanitize_parameters("foo")
+
+
+def test_sanitize_parameters_slash():
+    assert "foo%2Fbar" == utils.sanitize_parameters("foo/bar")
+
+
+def test_sanitize_parameters_dict():
+    source = {"url": "foo/bar", "id": 1}
+    expected = {"url": "foo%2Fbar", "id": 1}
+    assert expected == utils.sanitize_parameters(source)
