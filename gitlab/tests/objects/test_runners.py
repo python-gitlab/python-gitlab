@@ -1,9 +1,9 @@
-import unittest
-import responses
-import gitlab
-import pytest
 import re
-from .mocks import *  # noqa
+
+import pytest
+import responses
+
+import gitlab
 
 
 runner_detail = {

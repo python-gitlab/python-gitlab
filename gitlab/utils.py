@@ -51,6 +51,14 @@ def clean_str_id(id):
     return id.replace("/", "%2F").replace("#", "%23")
 
 
+def sanitize_parameters(value):
+    if isinstance(value, dict):
+        return dict((k, sanitize_parameters(v)) for k, v in value.items())
+    if isinstance(value, str):
+        return value.replace("/", "%2F")
+    return value
+
+
 def sanitized_url(url):
     parsed = urlparse(url)
     new_path = parsed.path.replace(".", "%2E")

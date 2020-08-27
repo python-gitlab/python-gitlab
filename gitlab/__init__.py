@@ -45,14 +45,6 @@ REDIRECT_MSG = (
 ALLOWED_KEYSET_ENDPOINTS = ["/projects"]
 
 
-def _sanitize(value):
-    if isinstance(value, dict):
-        return dict((k, _sanitize(v)) for k, v in value.items())
-    if isinstance(value, str):
-        return value.replace("/", "%2F")
-    return value
-
-
 class Gitlab(object):
     """Represents a GitLab server connection.
 
@@ -322,7 +314,7 @@ class Gitlab(object):
     def _construct_url(self, id_, obj, parameters, action=None):
         if "next_url" in parameters:
             return parameters["next_url"]
-        args = _sanitize(parameters)
+        args = utils.sanitize_parameters(parameters)
 
         url_attr = "_url"
         if action is not None:
