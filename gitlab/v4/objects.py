@@ -1291,6 +1291,23 @@ class GroupNotificationSettingsManager(NotificationSettingsManager):
     _from_parent_attrs = {"group_id": "id"}
 
 
+class GroupPackage(RESTObject):
+    pass
+
+
+class GroupPackageManager(ListMixin, RESTManager):
+    _path = "/groups/%(group_id)s/packages"
+    _obj_cls = GroupPackage
+    _from_parent_attrs = {"group_id": "id"}
+    _list_filters = (
+        "exclude_subgroups",
+        "order_by",
+        "sort",
+        "package_type",
+        "package_name",
+    )
+
+
 class GroupProject(RESTObject):
     pass
 
@@ -1377,6 +1394,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("mergerequests", "GroupMergeRequestManager"),
         ("milestones", "GroupMilestoneManager"),
         ("notificationsettings", "GroupNotificationSettingsManager"),
+        ("packages", "GroupPackageManager"),
         ("projects", "GroupProjectManager"),
         ("runners", "GroupRunnerManager"),
         ("subgroups", "GroupSubgroupManager"),
@@ -2850,6 +2868,22 @@ class ProjectNotificationSettingsManager(NotificationSettingsManager):
     _path = "/projects/%(project_id)s/notification_settings"
     _obj_cls = ProjectNotificationSettings
     _from_parent_attrs = {"project_id": "id"}
+
+
+class ProjectPackage(ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class ProjectPackageManager(ListMixin, GetMixin, DeleteMixin, RESTManager):
+    _path = "/projects/%(project_id)s/packages"
+    _obj_cls = ProjectPackage
+    _from_parent_attrs = {"project_id": "id"}
+    _list_filters = (
+        "order_by",
+        "sort",
+        "package_type",
+        "package_name",
+    )
 
 
 class ProjectPagesDomain(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -4548,6 +4582,7 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("milestones", "ProjectMilestoneManager"),
         ("notes", "ProjectNoteManager"),
         ("notificationsettings", "ProjectNotificationSettingsManager"),
+        ("packages", "ProjectPackageManager"),
         ("pagesdomains", "ProjectPagesDomainManager"),
         ("pipelines", "ProjectPipelineManager"),
         ("protectedbranches", "ProjectProtectedBranchManager"),
