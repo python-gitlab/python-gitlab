@@ -88,7 +88,13 @@ def test_create_commit(project, resp_create_commit):
     data = {
         "branch": "master",
         "commit_message": "Commit message",
-        "actions": [{"action": "create", "file_path": "README", "content": "",}],
+        "actions": [
+            {
+                "action": "create",
+                "file_path": "README",
+                "content": "",
+            }
+        ],
     }
     commit = project.commits.create(data)
     assert commit.short_id == "ed899a2f"
