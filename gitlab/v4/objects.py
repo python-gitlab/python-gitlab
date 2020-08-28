@@ -5087,6 +5087,40 @@ class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
             path, post_data={"namespace": to_namespace}, **kwargs
         )
 
+    @cli.register_custom_action("Project", ("ref_name", "job"), ("job_token",))
+    @exc.on_http_error(exc.GitlabGetError)
+    def artifacts(
+        self, ref_name, job, streamed=False, action=None, chunk_size=1024, **kwargs
+    ):
+        """Get the job artifacts archive from a specific tag or branch.
+
+        Args:
+            ref_name (str): Branch or tag name in repository. HEAD or SHA references
+            are not supported.
+            artifact_path (str): Path to a file inside the artifacts archive.
+            job (str): The name of the job.
+            job_token (str): Job token for multi-project pipeline triggers.
+            streamed (bool): If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment
+            action (callable): Callable responsible of dealing with chunk of
+                data
+            chunk_size (int): Size of each chunk
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the artifacts could not be retrieved
+
+        Returns:
+            str: The artifacts if `streamed` is False, None otherwise.
+        """
+        path = "/projects/%s/jobs/artifacts/%s/download" % (self.get_id(), ref_name)
+        result = self.manager.gitlab.http_get(
+            path, job=job, streamed=streamed, raw=True, **kwargs
+        )
+        return utils.response_content(result, streamed, action, chunk_size)
+
     @cli.register_custom_action("Project", ("ref_name", "artifact_path", "job"))
     @exc.on_http_error(exc.GitlabGetError)
     def artifact(
