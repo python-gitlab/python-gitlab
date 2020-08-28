@@ -701,7 +701,12 @@ deploy_token_group = gl.groups.create(
 
 # Remove once https://gitlab.com/gitlab-org/gitlab/-/issues/211878 is fixed
 deploy_token = deploy_token_group.deploytokens.create(
-    {"name": "foo", "username": "", "expires_at": "", "scopes": ["read_repository"],}
+    {
+        "name": "foo",
+        "username": "",
+        "expires_at": "",
+        "scopes": ["read_repository"],
+    }
 )
 
 assert len(deploy_token_group.deploytokens.list()) == 1
