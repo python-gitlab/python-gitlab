@@ -19,3 +19,4 @@ BUILD_TEST_ENV_AUTO_CLEANUP=true
 . "$setenv_script" "$@" || exit 1
 
 try python "$(dirname "$0")"/python_test_v${API_VER}.py
+pytest "$(dirname "$0")/functional/api"
