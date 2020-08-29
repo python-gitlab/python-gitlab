@@ -139,6 +139,7 @@ class Gitlab(object):
         self.pagesdomains = objects.PagesDomainManager(self)
         self.user_activities = objects.UserActivitiesManager(self)
         self.applications = objects.ApplicationManager(self)
+        self.variables = objects.VariableManager(self)
 
     def __enter__(self):
         return self

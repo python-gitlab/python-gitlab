@@ -23,6 +23,8 @@ from gitlab.exceptions import *  # noqa
 from gitlab.mixins import *  # noqa
 from gitlab import types
 from gitlab import utils
+from gitlab.v4.objects.variables import *
+
 
 VISIBILITY_PRIVATE = "private"
 VISIBILITY_INTERNAL = "internal"
@@ -1364,18 +1366,6 @@ class GroupSubgroupManager(ListMixin, RESTManager):
         "owned",
         "with_custom_attributes",
     )
-
-
-class GroupVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _id_attr = "key"
-
-
-class GroupVariableManager(CRUDMixin, RESTManager):
-    _path = "/groups/%(group_id)s/variables"
-    _obj_cls = GroupVariable
-    _from_parent_attrs = {"group_id": "id"}
-    _create_attrs = (("key", "value"), ("protected", "variable_type", "masked"))
-    _update_attrs = (("key", "value"), ("protected", "variable_type", "masked"))
 
 
 class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -4114,18 +4104,6 @@ class ProjectUserManager(ListMixin, RESTManager):
     _obj_cls = ProjectUser
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = ("search",)
-
-
-class ProjectVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _id_attr = "key"
-
-
-class ProjectVariableManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/variables"
-    _obj_cls = ProjectVariable
-    _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (("key", "value"), ("protected", "variable_type", "masked"))
-    _update_attrs = (("key", "value"), ("protected", "variable_type", "masked"))
 
 
 class ProjectService(SaveMixin, ObjectDeleteMixin, RESTObject):
