@@ -711,8 +711,14 @@ class ProjectDeployTokenManager(ListMixin, CreateMixin, DeleteMixin, RESTManager
     _from_parent_attrs = {"project_id": "id"}
     _obj_cls = ProjectDeployToken
     _create_attrs = (
-        ("name", "scopes",),
-        ("expires_at", "username",),
+        (
+            "name",
+            "scopes",
+        ),
+        (
+            "expires_at",
+            "username",
+        ),
     )
 
 
@@ -725,8 +731,14 @@ class GroupDeployTokenManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     _from_parent_attrs = {"group_id": "id"}
     _obj_cls = GroupDeployToken
     _create_attrs = (
-        ("name", "scopes",),
-        ("expires_at", "username",),
+        (
+            "name",
+            "scopes",
+        ),
+        (
+            "expires_at",
+            "username",
+        ),
     )
 
 
@@ -4205,7 +4217,11 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
             ),
         ),
         "jira": (
-            ("url", "username", "password",),
+            (
+                "url",
+                "username",
+                "password",
+            ),
             (
                 "api_url",
                 "active",
