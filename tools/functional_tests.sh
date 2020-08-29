@@ -18,4 +18,4 @@ setenv_script=$(dirname "$0")/build_test_env.sh || exit 1
 BUILD_TEST_ENV_AUTO_CLEANUP=true
 . "$setenv_script" "$@" || exit 1
 
-pytest "$(dirname "$0")/functional/cli"
+pytest --script-launch-mode=subprocess "$(dirname "$0")/functional/cli"
