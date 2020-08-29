@@ -2682,6 +2682,16 @@ class ProjectIssueResourceLabelEventManager(RetrieveMixin, RESTManager):
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
 
 
+class ProjectIssueResourceMilestoneEvent(RESTObject):
+    pass
+
+
+class ProjectIssueResourceMilestoneEventManager(RetrieveMixin, RESTManager):
+    _path = "/projects/%(project_id)s/issues/%(issue_iid)s/resource_milestone_events"
+    _obj_cls = ProjectIssueResourceMilestoneEvent
+    _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
+
+
 class ProjectIssue(
     UserAgentDetailMixin,
     SubscribableMixin,
@@ -2700,6 +2710,7 @@ class ProjectIssue(
         ("links", "ProjectIssueLinkManager"),
         ("notes", "ProjectIssueNoteManager"),
         ("resourcelabelevents", "ProjectIssueResourceLabelEventManager"),
+        ("resourcemilestoneevents", "ProjectIssueResourceMilestoneEventManager"),
     )
 
     @cli.register_custom_action("ProjectIssue", ("to_project_id",))
@@ -3109,6 +3120,18 @@ class ProjectMergeRequestResourceLabelEventManager(RetrieveMixin, RESTManager):
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
 
 
+class ProjectMergeRequestResourceMilestoneEvent(RESTObject):
+    pass
+
+
+class ProjectMergeRequestResourceMilestoneEventManager(RetrieveMixin, RESTManager):
+    _path = (
+        "/projects/%(project_id)s/merge_requests/%(mr_iid)s/resource_milestone_events"
+    )
+    _obj_cls = ProjectMergeRequestResourceMilestoneEvent
+    _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
+
+
 class ProjectMergeRequest(
     SubscribableMixin,
     TodoMixin,
@@ -3127,6 +3150,7 @@ class ProjectMergeRequest(
         ("discussions", "ProjectMergeRequestDiscussionManager"),
         ("notes", "ProjectMergeRequestNoteManager"),
         ("resourcelabelevents", "ProjectMergeRequestResourceLabelEventManager"),
+        ("resourcemilestoneevents", "ProjectMergeRequestResourceMilestoneEventManager"),
     )
 
     @cli.register_custom_action("ProjectMergeRequest")
