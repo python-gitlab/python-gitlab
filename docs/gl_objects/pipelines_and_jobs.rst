@@ -292,6 +292,11 @@ Get the artifacts of a job::
 
     build_or_job.artifacts()
 
+Get the artifacts of a job by its name from the latest successful pipeline of
+a branch or tag:
+
+  project.artifacts(ref_name='master', job='build')
+
 .. warning::
 
    Artifacts are entirely stored in memory in this example.
