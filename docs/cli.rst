@@ -235,6 +235,30 @@ List deploy tokens for a group:
 
    $ gitlab -v group-deploy-token list --group-id 3
 
+List packages for a project:
+
+.. code-block:: console
+
+   $ gitlab -v project-package list --project-id 3
+
+List packages for a group:
+
+.. code-block:: console
+
+   $ gitlab -v group-package list --group-id 3
+
+Get a specific project package by id:
+
+.. code-block:: console
+
+   $ gitlab -v project-package get --id 1 --project-id 3
+
+Delete a specific project package by id:
+
+.. code-block:: console
+
+   $ gitlab -v project-package delete --id 1 --project-id 3
+
 Get a list of snippets for this project:
 
 .. code-block:: console
