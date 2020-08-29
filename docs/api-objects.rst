@@ -32,6 +32,7 @@ API examples
    gl_objects/milestones
    gl_objects/namespaces
    gl_objects/notes
+   gl_objects/packages
    gl_objects/pagesdomains
    gl_objects/pipelines_and_jobs
    gl_objects/projects
