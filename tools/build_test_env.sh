@@ -28,8 +28,10 @@ try() { "$@" || fatal "'$@' failed"; }
 REUSE_CONTAINER=
 NOVENV=
 API_VER=4
-GITLAB_IMAGE="${GITLAB_IMAGE:-gitlab/gitlab-ce}"
-GITLAB_TAG="${GITLAB_TAG:-latest}"
+DEFAULT_GITLAB_IMAGE=gitlab/gitlab-ce
+DEFAULT_GITLAB_TAG=13.3.0-ce.1
+GITLAB_IMAGE="${GITLAB_IMAGE:-$DEFAULT_GITLAB_IMAGE}"
+GITLAB_TAG="${GITLAB_TAG:-$DEFAULT_GITLAB_TAG}"
 VENV_CMD="python3 -m venv"
 while getopts :knp:a:i:t: opt "$@"; do
     case $opt in
