@@ -99,27 +99,42 @@ You can contribute to the project in multiple ways:
 * Add unit and functional tests
 * Everything else you can think of
 
+Development workflow
+--------------------
+
+Before contributing, please make sure you have `pre-commit <https://pre-commit.com>`_
+installed and configured. This will help automate adhering to code style and commit
+message guidelines described below:
+
+.. code-block:: bash
+
+  cd python-gitlab/
+  pip3 install --user pre-commit
+  pre-commit install -t pre-commit -t commit-msg --install-hooks
+
+Please provide your patches as GitHub pull requests. Thanks!
+
+Commit message guidelines
+-------------------------
+
 We enforce commit messages to be formatted using the `conventional-changelog <https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-guidelines>`_.
 This leads to more readable messages that are easy to follow when looking through the project history.
-
-Please provide your patches as github pull requests. Thanks!
 
 Code-Style
 ----------
 
 We use black as code formatter, so you'll need to format your changes using the
 `black code formatter
-<https://github.com/python/black>`_.
+<https://github.com/python/black>`_. Pre-commit hooks will validate/format your code
+when committing. You can then stage any changes ``black`` added if the commit failed.
 
-Just run
+To format your code according to our guidelines before committing, run:
 
 .. code-block:: bash
 
   cd python-gitlab/
   pip3 install --user black
   black .
-  
-to format your code according to our guidelines.
 
 Running unit tests
 ------------------

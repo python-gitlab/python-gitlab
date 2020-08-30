@@ -14,10 +14,13 @@ jobs:
   include:
     - stage: lint
       name: commitlint
+      python: 3.8
       script:
-        - npm install -g @commitlint/cli @commitlint/config-conventional
-        - 'echo "module.exports = {extends: [\"@commitlint/config-conventional\"]}" > commitlint.config.js'
-        - npx commitlint --from=origin/master
+        - pip3 install pre-commit
+        - pre-commit run --hook-stage manual commitlint-travis
+      cache:
+        directories:
+          - $HOME/.cache/pre-commit
     - stage: lint
       name: black_lint
       dist: bionic
