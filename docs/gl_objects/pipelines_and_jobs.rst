@@ -184,58 +184,6 @@ Delete a schedule variable::
 
     var.delete()
 
-Projects and groups variables
-=============================
-
-You can associate variables to projects and groups to modify the build/job
-scripts behavior.
-
-Reference
----------
-
-* v4 API
-
-  + :class:`gitlab.v4.objects.ProjectVariable`
-  + :class:`gitlab.v4.objects.ProjectVariableManager`
-  + :attr:`gitlab.v4.objects.Project.variables`
-  + :class:`gitlab.v4.objects.GroupVariable`
-  + :class:`gitlab.v4.objects.GroupVariableManager`
-  + :attr:`gitlab.v4.objects.Group.variables`
-
-* GitLab API
-
-  + https://docs.gitlab.com/ce/api/project_level_variables.html
-  + https://docs.gitlab.com/ce/api/group_level_variables.html
-
-Examples
---------
-
-List variables::
-
-    p_variables = project.variables.list()
-    g_variables = group.variables.list()
-
-Get a variable::
-
-    p_var = project.variables.get('key_name')
-    g_var = group.variables.get('key_name')
-
-Create a variable::
-
-    var = project.variables.create({'key': 'key1', 'value': 'value1'})
-    var = group.variables.create({'key': 'key1', 'value': 'value1'})
-
-Update a variable value::
-
-    var.value = 'new_value'
-    var.save()
-
-Remove a variable::
-
-    project.variables.delete('key_name')
-    group.variables.delete('key_name')
-    # or
-    var.delete()
 
 Jobs
 ====
