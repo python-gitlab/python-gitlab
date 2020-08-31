@@ -1,0 +1,11 @@
+{
+  "regexManagers": [
+    {
+      "fileMatch": ["^tools/build_test_env.sh$"],
+      "matchStrings": ["DEFAULT_GITLAB_TAG=(?<currentValue>.*?)\n"],
+      "depNameTemplate": "gitlab/gitlab-ce",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "loose"
+    }
+  ]
+}
