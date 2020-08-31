@@ -1,5 +1,5 @@
-import os
 import tempfile
+from pathlib import Path
 from random import randint
 
 import pytest
@@ -22,7 +22,7 @@ def random_id():
 
 @pytest.fixture(scope="session")
 def CONFIG():
-    return os.path.join(TEMP_DIR, "python-gitlab.cfg")
+    return Path(TEMP_DIR) / "python-gitlab.cfg"
 
 
 @pytest.fixture(scope="session")
