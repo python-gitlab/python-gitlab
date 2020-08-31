@@ -469,7 +469,7 @@ class UserManager(CRUDMixin, RESTManager):
             "admin",
             "can_create_group",
             "website_url",
-            "skip_confirmation",
+            "skip_reconfirmation",
             "external",
             "organization",
             "location",
