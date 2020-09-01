@@ -367,17 +367,6 @@ assert gm1.state == "closed"
 assert len(gm1.issues()) == 0
 assert len(gm1.merge_requests()) == 0
 
-# group variables
-group1.variables.create({"key": "foo", "value": "bar"})
-g_v = group1.variables.get("foo")
-assert g_v.value == "bar"
-g_v.value = "baz"
-g_v.save()
-g_v = group1.variables.get("foo")
-assert g_v.value == "baz"
-assert len(group1.variables.list()) == 1
-g_v.delete()
-assert len(group1.variables.list()) == 0
 
 # group labels
 # group1.labels.create({"name": "foo", "description": "bar", "color": "#112233"})
@@ -856,14 +845,6 @@ tr1 = admin_project.triggers.create({"description": "trigger1"})
 assert len(admin_project.triggers.list()) == 1
 tr1.delete()
 
-# variables
-v1 = admin_project.variables.create({"key": "key1", "value": "value1"})
-assert len(admin_project.variables.list()) == 1
-v1.value = "new_value1"
-v1.save()
-v1 = admin_project.variables.get(v1.key)
-assert v1.value == "new_value1"
-v1.delete()
 
 # branches and merges
 to_merge = admin_project.branches.create({"branch": "branch1", "ref": "master"})

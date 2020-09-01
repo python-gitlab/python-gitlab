@@ -48,5 +48,6 @@ API examples
    gl_objects/templates
    gl_objects/todos
    gl_objects/users
+   gl_objects/variables
    gl_objects/sidekiq
    gl_objects/wikis
