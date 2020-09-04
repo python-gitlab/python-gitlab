@@ -1,0 +1,4 @@
+-r requirements.txt
+-r test-requirements.txt
+pytest-console-scripts
+pytest-docker

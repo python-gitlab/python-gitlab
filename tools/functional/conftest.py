@@ -1,6 +1,8 @@
+import time
 import tempfile
 from pathlib import Path
 from random import randint
+from subprocess import check_output
 
 import pytest
 
@@ -8,6 +10,7 @@ import gitlab
 
 
 TEMP_DIR = tempfile.gettempdir()
+TEST_DIR = Path(__file__).resolve().parent
 
 
 def random_id():
@@ -20,15 +23,103 @@ def random_id():
     return randint(9, 9999)
 
 
-@pytest.fixture(scope="session")
-def CONFIG():
-    return Path(TEMP_DIR) / "python-gitlab.cfg"
+def reset_gitlab(gl):
+    # previously tools/reset_gitlab.py
+    for project in gl.projects.list():
+        project.delete()
+    for group in gl.groups.list():
+        group.delete()
+    for variable in gl.variables.list():
+        variable.delete()
+    for user in gl.users.list():
+        if user.username != "root":
+            user.delete()
+
+
+def set_token(container):
+    set_token_rb = TEST_DIR / "fixtures" / "set_token.rb"
+
+    with open(set_token_rb, "r") as f:
+        set_token_command = f.read().strip()
+
+    rails_command = [
+        "docker",
+        "exec",
+        container,
+        "gitlab-rails",
+        "runner",
+        set_token_command,
+    ]
+    output = check_output(rails_command).decode().strip()
+
+    return output
 
 
 @pytest.fixture(scope="session")
-def gl(CONFIG):
+def docker_compose_file():
+    return TEST_DIR / "fixtures" / "docker-compose.yml"
+
+
+@pytest.fixture(scope="session")
+def check_is_alive(request):
+    """
+    Return a healthcheck function fixture for the GitLab container spinup.
+    """
+    start = time.time()
+
+    # Temporary manager to disable capsys in a session-scoped fixture
+    # so people know it takes a while for GitLab to spin up
+    # https://github.com/pytest-dev/pytest/issues/2704
+    capmanager = request.config.pluginmanager.getplugin("capturemanager")
+
+    def _check(container):
+        delay = int(time.time() - start)
+
+        with capmanager.global_and_fixture_disabled():
+            print(f"Waiting for GitLab to reconfigure.. (~{delay}s)")
+
+        logs = ["docker", "logs", container]
+        output = check_output(logs).decode()
+
+        return "gitlab Reconfigured!" in output
+
+    return _check
+
+
+@pytest.fixture(scope="session")
+def gitlab_config(check_is_alive, docker_ip, docker_services):
+    config_file = Path(TEMP_DIR) / "python-gitlab.cfg"
+    port = docker_services.port_for("gitlab", 80)
+
+    docker_services.wait_until_responsive(
+        timeout=180, pause=5, check=lambda: check_is_alive("gitlab-test")
+    )
+
+    token = set_token("gitlab-test")
+
+    config = f"""[global]
+default = local
+timeout = 60
+
+[local]
+url = http://{docker_ip}:{port}
+private_token = {token}
+api_version = 4"""
+
+    with open(config_file, "w") as f:
+        f.write(config)
+
+    return config_file
+
+
+@pytest.fixture(scope="session")
+def gl(gitlab_config):
     """Helper instance to make fixtures and asserts directly via the API."""
-    return gitlab.Gitlab.from_config("local", [CONFIG])
+
+    instance = gitlab.Gitlab.from_config("local", [gitlab_config])
+    reset_gitlab(instance)
+
+    return instance
 
 
 @pytest.fixture(scope="module")

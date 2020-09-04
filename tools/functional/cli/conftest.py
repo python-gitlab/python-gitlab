@@ -2,7 +2,7 @@ import pytest
 
 
 @pytest.fixture
-def gitlab_cli(script_runner, CONFIG):
+def gitlab_cli(script_runner, gitlab_config):
     """Wrapper fixture to help make test cases less verbose."""
 
     def _gitlab_cli(subcommands):
@@ -10,7 +10,7 @@ def gitlab_cli(script_runner, CONFIG):
         Return a script_runner.run method that takes a default gitlab
         command, and subcommands passed as arguments inside test cases.
         """
-        command = ["gitlab", "--config-file", CONFIG]
+        command = ["gitlab", "--config-file", gitlab_config]
 
         for subcommand in subcommands:
             # ensure we get strings (e.g from IDs)
