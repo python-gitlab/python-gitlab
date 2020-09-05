@@ -1,5 +1,6 @@
-import time
 import tempfile
+import time
+import uuid
 from pathlib import Path
 from random import randint
 from subprocess import check_output
@@ -11,16 +12,6 @@ import gitlab
 
 TEMP_DIR = tempfile.gettempdir()
 TEST_DIR = Path(__file__).resolve().parent
-
-
-def random_id():
-    """
-    Helper to ensure new resource creation does not clash with
-    existing resources, for example when a previous test deleted a
-    resource but GitLab is still deleting it asynchronously in the
-    background. TODO: Expand to make it 100% safe.
-    """
-    return randint(9, 9999)
 
 
 def reset_gitlab(gl):
@@ -125,7 +116,7 @@ def gl(gitlab_config):
 @pytest.fixture(scope="module")
 def group(gl):
     """Group fixture for group API resource tests."""
-    _id = random_id()
+    _id = uuid.uuid4().hex
     data = {
         "name": f"test-group-{_id}",
         "path": f"group-{_id}",
@@ -143,7 +134,7 @@ def group(gl):
 @pytest.fixture(scope="module")
 def project(gl):
     """Project fixture for project API resource tests."""
-    _id = random_id()
+    _id = uuid.uuid4().hex
     name = f"test-project-{_id}"
 
     project = gl.projects.create(name=name)
@@ -159,7 +150,7 @@ def project(gl):
 @pytest.fixture(scope="module")
 def user(gl):
     """User fixture for user API resource tests."""
-    _id = random_id()
+    _id = uuid.uuid4().hex
     email = f"user{_id}@email.com"
     username = f"user{_id}"
     name = f"User {_id}"
@@ -178,7 +169,7 @@ def user(gl):
 @pytest.fixture(scope="module")
 def issue(project):
     """Issue fixture for issue API resource tests."""
-    _id = random_id()
+    _id = uuid.uuid4().hex
     data = {"title": f"Issue {_id}", "description": f"Issue {_id} description"}
 
     return project.issues.create(data)
@@ -187,7 +178,7 @@ def issue(project):
 @pytest.fixture(scope="module")
 def label(project):
     """Label fixture for project label API resource tests."""
-    _id = random_id()
+    _id = uuid.uuid4().hex
     data = {
         "name": f"prjlabel{_id}",
         "description": f"prjlabel1 {_id} description",
@@ -200,7 +191,7 @@ def label(project):
 @pytest.fixture(scope="module")
 def group_label(group):
     """Label fixture for group label API resource tests."""
-    _id = random_id()
+    _id = uuid.uuid4().hex
     data = {
         "name": f"grplabel{_id}",
         "description": f"grplabel1 {_id} description",
@@ -213,7 +204,7 @@ def group_label(group):
 @pytest.fixture(scope="module")
 def variable(project):
     """Variable fixture for project variable API resource tests."""
-    _id = random_id()
+    _id = uuid.uuid4().hex
     data = {"key": f"var{_id}", "value": f"Variable {_id}"}
 
     return project.variables.create(data)
@@ -222,7 +213,7 @@ def variable(project):
 @pytest.fixture(scope="module")
 def deploy_token(project):
     """Deploy token fixture for project deploy token API resource tests."""
-    _id = random_id()
+    _id = uuid.uuid4().hex
     data = {
         "name": f"token-{_id}",
         "username": "root",
@@ -236,7 +227,7 @@ def deploy_token(project):
 @pytest.fixture(scope="module")
 def group_deploy_token(group):
     """Deploy token fixture for group deploy token API resource tests."""
-    _id = random_id()
+    _id = uuid.uuid4().hex
     data = {
         "name": f"group-token-{_id}",
         "username": "root",
