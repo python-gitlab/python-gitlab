@@ -1,4 +1,7 @@
 {
+  "extends": [
+    "config:base"
+  ],
   "regexManagers": [
     {
       "fileMatch": ["^tools/build_test_env.sh$"],
@@ -6,6 +9,12 @@
       "depNameTemplate": "gitlab/gitlab-ce",
       "datasourceTemplate": "docker",
       "versioningTemplate": "loose"
+    }
+  ],
+  "packageRules": [
+    {
+      "packagePatterns": ["^gitlab\/gitlab-.+$"],
+      "automerge": true
     }
   ]
 }
