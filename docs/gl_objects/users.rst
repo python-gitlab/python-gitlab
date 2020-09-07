@@ -80,6 +80,10 @@ Set an external identity for a user::
     user.extern_uid = '3'
     user.save()
 
+Delete an external identity by provider name::
+
+    user.identityproviders.delete('oauth2_generic')
+
 User custom attributes
 ======================
 

@@ -217,6 +217,17 @@ class UserStatusManager(GetWithoutIdMixin, RESTManager):
     _from_parent_attrs = {"user_id": "id"}
 
 
+class UserIdentityProviderManager(DeleteMixin, RESTManager):
+    """Manager for user identities.
+
+    This manager does not actually manage objects but enables
+    functionality for deletion of user identities by provider.
+    """
+
+    _path = "/users/%(user_id)s/identities"
+    _from_parent_attrs = {"user_id": "id"}
+
+
 class UserImpersonationToken(ObjectDeleteMixin, RESTObject):
     pass
 
@@ -320,6 +331,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("emails", "UserEmailManager"),
         ("events", "UserEventManager"),
         ("gpgkeys", "UserGPGKeyManager"),
+        ("identityproviders", "UserIdentityProviderManager"),
         ("impersonationtokens", "UserImpersonationTokenManager"),
         ("keys", "UserKeyManager"),
         ("memberships", "UserMembershipManager"),
