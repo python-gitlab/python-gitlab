@@ -3404,6 +3404,7 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
         "source_branch",
         "target_branch",
         "search",
+        "wip",
     )
     _types = {"labels": types.ListAttribute}
 
