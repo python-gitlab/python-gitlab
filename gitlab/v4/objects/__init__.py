@@ -1222,6 +1222,7 @@ class GroupMergeRequestManager(ListMixin, RESTManager):
         "source_branch",
         "target_branch",
         "search",
+        "wip",
     )
     _types = {"labels": types.ListAttribute}
 
@@ -1744,6 +1745,7 @@ class MergeRequestManager(ListMixin, RESTManager):
         "source_branch",
         "target_branch",
         "search",
+        "wip",
     )
     _types = {"labels": types.ListAttribute}
 
@@ -3414,6 +3416,7 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
         "source_branch",
         "target_branch",
         "search",
+        "wip",
     )
     _types = {"labels": types.ListAttribute}
 
