@@ -95,6 +95,19 @@ def resp_get_user_status():
         yield rsps
 
 
+@pytest.fixture
+def resp_delete_user_identity(no_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.DELETE,
+            url="http://localhost/api/v4/users/1/identities/test_provider",
+            json=no_content,
+            content_type="application/json",
+            status=204,
+        )
+        yield rsps
+
+
 def test_get_user(gl, resp_get_user):
     user = gl.users.get(1)
     assert isinstance(user, User)
@@ -118,3 +131,7 @@ def test_user_status(user, resp_get_user_status):
 def test_user_activate_deactivate(user, resp_activate):
     user.activate()
     user.deactivate()
+
+
+def test_delete_user_identity(user, resp_delete_user_identity):
+    user.identityproviders.delete("test_provider")
