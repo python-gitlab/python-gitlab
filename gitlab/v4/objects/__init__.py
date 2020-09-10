@@ -5490,6 +5490,7 @@ class RunnerManager(CRUDMixin, RESTManager):
             "locked",
             "run_untagged",
             "tag_list",
+            "access_level",
             "maximum_timeout",
         ),
     )
