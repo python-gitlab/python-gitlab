@@ -221,7 +221,9 @@ Reference
 
   + :class:`gitlab.v4.objects.GroupMember`
   + :class:`gitlab.v4.objects.GroupMemberManager`
+  + :class:`gitlab.v4.objects.GroupMemberAllManager`
   + :attr:`gitlab.v4.objects.Group.members`
+  + :attr:`gitlab.v4.objects.Group.members_all`
 
 * GitLab API: https://docs.gitlab.com/ce/api/groups.html
 
@@ -229,18 +231,22 @@ Reference
 Examples
 --------
 
-List group members::
+List only direct group members::
 
     members = group.members.list()
 
 List the group members recursively (including inherited members through
 ancestor groups)::
 
-    members = group.members.all(all=True)
+    members = group.members_all.list(all=True)
 
-Get a group member::
+Get only direct group member::
 
     members = group.members.get(member_id)
+
+Get a member of a group, including members inherited through ancestor groups::
+
+    members = group.members_all.get(member_id)
 
 Add a member to the group::
 
