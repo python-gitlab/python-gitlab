@@ -166,7 +166,7 @@ You need to install ``tox`` to run unit tests and documentation builds locally:
 Running integration tests
 -------------------------
 
-Two scripts run tests against a running gitlab instance, using a docker
+Integration tests run against a running gitlab instance, using a docker
 container. You need to have docker installed on the test machine, and your user
 must have the correct permissions to talk to the docker daemon.
 
@@ -180,9 +180,9 @@ To run these tests:
    # run the python API tests:
    tox -e py_func_v4
 
-By default, the tests run against the ``gitlab/gitlab-ce:latest`` image. You can
-override both the image and tag with the ``-i`` and ``-t`` options, or by providing
-either the ``GITLAB_IMAGE`` or ``GITLAB_TAG`` environment variables.
+By default, the tests run against the latest version of the ``gitlab/gitlab-ce``
+image. You can override both the image and tag by providing either the
+``GITLAB_IMAGE`` or ``GITLAB_TAG`` environment variables.
 
 This way you can run tests against different versions, such as ``nightly`` for
 features in an upcoming release, or an older release (e.g. ``12.8.0-ce.0``).
@@ -191,20 +191,11 @@ The tag must match an exact tag on Docker Hub:
 .. code-block:: bash
 
    # run tests against `nightly` or specific tag
-   ./tools/py_functional_tests.sh -t nightly
-   ./tools/py_functional_tests.sh -t 12.8.0-ce.0
+   GITLAB_TAG=nightly tox -e py_func_v4
+   GITLAB_TAG=12.8.0-ce.0 tox -e py_func_v4
 
    # run tests against the latest gitlab EE image
-   ./tools/py_functional_tests.sh -i gitlab/gitlab-ee
-
-   # override tags with environment variables
-   GITLAB_TAG=nightly ./tools/py_functional_tests.sh
-
-You can also build a test environment using the following command:
-
-.. code-block:: bash
-
-   ./tools/build_test_env.sh
+   GITLAB_IMAGE=gitlab/gitlab-ee tox -e py_func_v4
 
 A freshly configured gitlab container will be available at
 http://localhost:8080 (login ``root`` / password ``5iveL!fe``). A configuration

@@ -1,7 +1,7 @@
 version: '3'
 services:
   gitlab:
-    image: 'gitlab/gitlab-ce:latest'
+    image: '${GITLAB_IMAGE}:${GITLAB_TAG}'
     container_name: 'gitlab-test'
     hostname: 'gitlab.test'
     privileged: true # Just in case https://gitlab.com/gitlab-org/omnibus-gitlab/-/issues/1350
