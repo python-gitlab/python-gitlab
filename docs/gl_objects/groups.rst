@@ -238,6 +238,8 @@ List only direct group members::
 List the group members recursively (including inherited members through
 ancestor groups)::
 
+    members = group.members.all(all=True) # Deprecated
+    # or
     members = group.members_all.list(all=True)
 
 Get only direct group member::

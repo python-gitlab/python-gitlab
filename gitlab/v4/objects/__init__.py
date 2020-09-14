@@ -1163,7 +1163,7 @@ class GroupMember(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "username"
 
 
-class GroupMemberManager(CRUDMixin, RESTManager):
+class GroupMemberManager(MemberAllMixin, CRUDMixin, RESTManager):
     _path = "/groups/%(group_id)s/members"
     _obj_cls = GroupMember
     _from_parent_attrs = {"group_id": "id"}
@@ -2813,7 +2813,7 @@ class ProjectMember(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "username"
 
 
-class ProjectMemberManager(CRUDMixin, RESTManager):
+class ProjectMemberManager(MemberAllMixin, CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/members"
     _obj_cls = ProjectMember
     _from_parent_attrs = {"project_id": "id"}

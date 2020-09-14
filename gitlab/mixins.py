@@ -22,6 +22,8 @@ from gitlab import exceptions as exc
 from gitlab import types as g_types
 from gitlab import utils
 
+import warnings
+
 
 class GetMixin(object):
     @exc.on_http_error(exc.GitlabGetError)
@@ -662,3 +664,39 @@ class BadgeRenderMixin(object):
         path = "%s/render" % self.path
         data = {"link_url": link_url, "image_url": image_url}
         return self.gitlab.http_get(path, data, **kwargs)
+
+
+class MemberAllMixin(object):
+    """This mixin is deprecated."""
+
+    @cli.register_custom_action(("GroupMemberManager", "ProjectMemberManager"))
+    @exc.on_http_error(exc.GitlabListError)
+    def all(self, **kwargs):
+        """List all the members, included inherited ones.
+
+        This Method is deprecated.
+
+        Args:
+            all (bool): If True, return all the items, without pagination
+            per_page (int): Number of items to retrieve per request
+            page (int): ID of the page to return (starts with page 1)
+            as_list (bool): If set to False and no pagination option is
+                defined, return a generator instead of a list
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
+
+        Returns:
+            RESTObjectList: The list of members
+        """
+
+        warnings.warn(
+            "The all() method for this object is deprecated "
+            "and will be removed in a future version.",
+            DeprecationWarning,
+        )
+        path = "%s/all" % self.path
+        obj = self.gitlab.http_list(path, **kwargs)
+        return [self._obj_cls(self, item) for item in obj]
