@@ -1,5 +1,4 @@
 coverage
-hacking>=0.9.2,<0.10
 httmock
 jinja2
 mock
