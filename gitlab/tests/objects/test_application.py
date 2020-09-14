@@ -2,9 +2,8 @@ import re
 
 import pytest
 import respx
-from httpx.status_codes import StatusCode
-
 from gitlab import AsyncGitlab
+from httpx import codes
 
 
 class TestApplicationAppearance:
@@ -31,7 +30,7 @@ class TestApplicationAppearance:
                 "message_font_color": "#ffffff",
                 "email_header_and_footer_enabled": False,
             },
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         request_update_appearance = respx.put(
             "http://localhost/api/v4/application/appearance",
@@ -48,7 +47,7 @@ class TestApplicationAppearance:
                 "message_font_color": "#ffffff",
                 "email_header_and_footer_enabled": False,
             },
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         appearance = gl.appearance.get()
@@ -86,7 +85,7 @@ class TestApplicationAppearance:
                 "message_font_color": "#ffffff",
                 "email_header_and_footer_enabled": False,
             },
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         if is_gl_sync:

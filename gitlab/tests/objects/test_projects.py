@@ -1,8 +1,7 @@
 import pytest
 import respx
-from httpx.status_codes import StatusCode
-
 from gitlab import AsyncGitlab
+from httpx import codes
 
 
 class TestProjectSnippets:
@@ -22,7 +21,7 @@ class TestProjectSnippets:
                     "visibility": visibility,
                 }
             ],
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         project = gl.projects.get(1, lazy=True)
@@ -47,7 +46,7 @@ class TestProjectSnippets:
                 "content": "source code with multiple lines",
                 "visibility": visibility,
             },
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         project = gl.projects.get(1, lazy=True)
@@ -71,7 +70,7 @@ class TestProjectSnippets:
                 "content": "source code with multiple lines",
                 "visibility": visibility,
             },
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         request_create = respx.post(
@@ -83,7 +82,7 @@ class TestProjectSnippets:
                 "content": "source code with multiple lines",
                 "visibility": visibility,
             },
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         project = gl.projects.get(1, lazy=True)

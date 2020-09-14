@@ -21,10 +21,9 @@ import importlib
 import time
 from typing import Union
 
-import httpx
-
 import gitlab
 import gitlab.config
+import httpx
 from gitlab import exceptions as exc
 from gitlab import utils
 from gitlab.exceptions import GitlabHttpError, GitlabParsingError, on_http_error
@@ -159,7 +158,7 @@ class BaseGitlab:
 
         auth = None
         if self.http_username:
-            auth = httpx.auth.BasicAuth(self.http_username, self.http_password)
+            auth = httpx.BasicAuth(self.http_username, self.http_password)
 
         return self._httpx_client_class(
             auth=auth, verify=self.ssl_verify, timeout=self.timeout,

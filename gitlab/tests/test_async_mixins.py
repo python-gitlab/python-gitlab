@@ -1,7 +1,5 @@
 import pytest
 import respx
-from httpx.status_codes import StatusCode
-
 from gitlab import AsyncGitlab
 from gitlab.base import RESTObject, RESTObjectList
 from gitlab.mixins import (
@@ -15,6 +13,7 @@ from gitlab.mixins import (
     SetMixin,
     UpdateMixin,
 )
+from httpx import codes
 
 from .test_mixins import FakeManager, FakeObject
 
@@ -36,7 +35,7 @@ class TestMixinMethods:
             "http://localhost/api/v4/tests/42",
             headers={"Content-Type": "application/json"},
             content={"id": 42, "foo": "bar"},
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         mgr = M(gl)
         obj = await mgr.get(42)
@@ -54,7 +53,7 @@ class TestMixinMethods:
             "http://localhost/api/v4/tests/42",
             headers={"Content-Type": "application/json"},
             content={"id": 42, "foo": "bar"},
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         mgr = FakeManager(gl)
         obj = O(mgr, {"id": 42})
@@ -73,7 +72,7 @@ class TestMixinMethods:
             "http://localhost/api/v4/tests",
             headers={"Content-Type": "application/json"},
             content='{"foo": "bar"}',
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         mgr = M(gl)
@@ -92,7 +91,7 @@ class TestMixinMethods:
             "http://localhost/api/v4/tests",
             headers={"Content-Type": "application/json"},
             content='[{"id": 42, "foo": "bar"},{"id": 43, "foo": "baz"}]',
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         mgr = M(gl)
@@ -119,7 +118,7 @@ class TestMixinMethods:
             "http://localhost/api/v4/others",
             headers={"Content-Type": "application/json"},
             content='[{"id": 42, "foo": "bar"}]',
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         mgr = M(gl)
@@ -142,7 +141,7 @@ class TestMixinMethods:
             "http://localhost/api/v4/tests",
             headers={"Content-Type": "application/json"},
             content='{"id": 42, "foo": "bar"}',
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         mgr = M(gl)
@@ -162,7 +161,7 @@ class TestMixinMethods:
             "http://localhost/api/v4/others",
             headers={"Content-Type": "application/json"},
             content='{"id": 42, "foo": "bar"}',
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         mgr = M(gl)
@@ -182,7 +181,7 @@ class TestMixinMethods:
             "http://localhost/api/v4/tests/42",
             headers={"Content-Type": "application/json"},
             content='{"id": 42, "foo": "baz"}',
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         mgr = M(gl)
@@ -202,7 +201,7 @@ class TestMixinMethods:
             "http://localhost/api/v4/tests",
             headers={"Content-Type": "application/json"},
             content='{"foo": "baz"}',
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         mgr = M(gl)
         server_data = await mgr.update(new_data={"foo": "baz"})
@@ -219,7 +218,7 @@ class TestMixinMethods:
             "http://localhost/api/v4/tests/42",
             headers={"Content-Type": "application/json"},
             content="",
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         mgr = M(gl)
@@ -238,7 +237,7 @@ class TestMixinMethods:
             "http://localhost/api/v4/tests/42",
             headers={"Content-Type": "application/json"},
             content='{"id": 42, "foo": "baz"}',
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         mgr = M(gl)
@@ -258,7 +257,7 @@ class TestMixinMethods:
             "http://localhost/api/v4/tests/foo",
             headers={"Content-Type": "application/json"},
             content='{"key": "foo", "value": "bar"}',
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         mgr = M(gl)

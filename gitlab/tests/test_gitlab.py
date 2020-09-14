@@ -23,8 +23,6 @@ import unittest
 import httpx
 import pytest
 import respx
-from httpx.status_codes import StatusCode
-
 from gitlab import AsyncGitlab, Gitlab
 from gitlab import exceptions as exc
 from gitlab.client import _sanitize
@@ -41,6 +39,7 @@ from gitlab.v4.objects import (
     User,
     UserStatus,
 )
+from httpx import codes
 
 valid_config = b"""[global]
 default = one
@@ -144,7 +143,7 @@ class TestGitlabAuth:
         assert gl.private_token == "private_token"
         assert gl.oauth_token is None
         assert gl.job_token is None
-        assert isinstance(gl.client.auth, httpx.auth.BasicAuth)
+        assert isinstance(gl.client.auth, httpx.BasicAuth)
         assert gl.headers["PRIVATE-TOKEN"] == "private_token"
         assert "Authorization" not in gl.headers
 
@@ -167,7 +166,7 @@ class TestGitlabList:
                 ),
             },
             content=[{"a": "b"}],
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         request_2 = respx.get(
             "http://localhost/api/v4/tests?per_page=1&page=2",
@@ -180,7 +179,7 @@ class TestGitlabList:
                 "X-Total": "2",
             },
             content=[{"c": "d"}],
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         obj = gl.http_list("/tests", as_list=False)
         obj = await gl_get_value(obj)
@@ -217,7 +216,7 @@ class TestGitlabList:
                 "X-Total": "2",
             },
             content=[{"c": "d"}],
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         result = gl.http_list("/tests", as_list=False, all=True)
@@ -242,14 +241,14 @@ class TestGitlabHttpMethods:
             "http://localhost/api/v4/projects",
             headers={"content-type": "application/json"},
             content=[{"name": "project1"}],
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         http_r = gl.http_request("get", "/projects")
         http_r = await gl_get_value(http_r)
 
         http_r.json()
-        assert http_r.status_code == StatusCode.OK
+        assert http_r.status_code == codes.OK
 
     @respx.mock
     @pytest.mark.asyncio
@@ -258,7 +257,7 @@ class TestGitlabHttpMethods:
             "http://localhost/api/v4/projects",
             headers={"content-type": "application/json"},
             content={"name": "project1"},
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         result = gl.http_get("/projects")
@@ -274,7 +273,7 @@ class TestGitlabHttpMethods:
             "http://localhost/api/v4/projects",
             headers={"content-type": "application/octet-stream"},
             content="content",
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         result = gl.http_get("/projects")
@@ -290,7 +289,7 @@ class TestGitlabHttpMethods:
                 {
                     "url": "http://localhost/api/v4/not_there",
                     "content": "Here is why it failed",
-                    "status_code": StatusCode.NOT_FOUND,
+                    "status_code": codes.NOT_FOUND,
                 },
                 exc.GitlabHttpError,
                 "/not_there",
@@ -300,7 +299,7 @@ class TestGitlabHttpMethods:
                     "url": "http://localhost/api/v4/projects",
                     "headers": {"content-type": "application/json"},
                     "content": '["name": "project1"]',
-                    "status_code": StatusCode.OK,
+                    "status_code": codes.OK,
                 },
                 exc.GitlabParsingError,
                 "/projects",
@@ -335,7 +334,7 @@ class TestGitlabHttpMethods:
             "http://localhost/api/v4/projects",
             headers={"content-type": "application/json", "X-Total": "1"},
             content=[{"name": "project1"}],
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         result = gl.http_list("/projects", as_list=True)
@@ -360,7 +359,7 @@ class TestGitlabHttpMethods:
             "http://localhost/api/v4/projects",
             headers={"content-type": "application/json"},
             content={"name": "project1"},
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         result = gl.http_post("/projects")
@@ -376,7 +375,7 @@ class TestGitlabHttpMethods:
             "http://localhost/api/v4/projects",
             headers={"content-type": "application/json"},
             content='{"name": "project1"}',
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         result = gl.http_put("/projects")
         result = await gl_get_value(result)
@@ -391,7 +390,7 @@ class TestGitlabHttpMethods:
             "http://localhost/api/v4/projects",
             headers={"content-type": "application/json"},
             content="true",
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         result = gl.http_delete("/projects")
@@ -406,7 +405,7 @@ class TestGitlabHttpMethods:
         result = respx.delete(
             "http://localhost/api/v4/not_there",
             content="Here is why it failed",
-            status_code=StatusCode.NOT_FOUND,
+            status_code=codes.NOT_FOUND,
         )
 
         with pytest.raises(exc.GitlabHttpError):
@@ -444,7 +443,7 @@ class TestGitlab:
             content='{{"id": {0:d}, "username": "{1:s}"}}'.format(id_, name).encode(
                 "utf-8"
             ),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         if is_gl_sync:
@@ -462,7 +461,7 @@ class TestGitlab:
             "http://localhost/api/v4/hooks/1",
             headers={"content-type": "application/json"},
             content='{"url": "testurl", "id": 1}'.encode("utf-8"),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         data = gl.hooks.get(1)
@@ -479,7 +478,7 @@ class TestGitlab:
             "http://localhost/api/v4/projects/1",
             headers={"content-type": "application/json"},
             content='{"name": "name", "id": 1}'.encode("utf-8"),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         data = gl.projects.get(1)
@@ -495,7 +494,7 @@ class TestGitlab:
             "http://localhost/api/v4/projects/1",
             headers={"content-type": "application/json"},
             content='{"name": "name", "id": 1}'.encode("utf-8"),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         request_get_environment = respx.get(
             "http://localhost/api/v4/projects/1/environments/1",
@@ -503,7 +502,7 @@ class TestGitlab:
             content='{"name": "environment_name", "id": 1, "last_deployment": "sometime"}'.encode(
                 "utf-8"
             ),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         project = gl.projects.get(1)
@@ -523,7 +522,7 @@ class TestGitlab:
             "http://localhost/api/v4/projects/1",
             headers={"content-type": "application/json"},
             content='{"name": "name", "id": 1}'.encode("utf-8"),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         request_get_environment = respx.get(
             "http://localhost/api/v4/projects/1/statistics",
@@ -531,7 +530,7 @@ class TestGitlab:
             content="""{"fetches": {"total": 50, "days": [{"count": 10, "date": "2018-01-10"}]}}""".encode(
                 "utf-8"
             ),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         project = gl.projects.get(1)
         project = await gl_get_value(project)
@@ -547,7 +546,7 @@ class TestGitlab:
             "http://localhost/api/v4/projects/1",
             headers={"content-type": "application/json"},
             content='{"name": "name", "id": 1}'.encode("utf-8"),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         request_get_environment = respx.get(
             "http://localhost/api/v4/projects/1/issues_statistics",
@@ -555,7 +554,7 @@ class TestGitlab:
             content="""{"statistics": {"counts": {"all": 20, "closed": 5, "opened": 15}}}""".encode(
                 "utf-8"
             ),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         project = gl.projects.get(1)
@@ -573,7 +572,7 @@ class TestGitlab:
             "http://localhost/api/v4/groups/1",
             headers={"content-type": "application/json"},
             content='{"name": "name", "id": 1, "path": "path"}'.encode("utf-8"),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         data = gl.groups.get(1)
@@ -591,7 +590,7 @@ class TestGitlab:
             headers={"content-type": "application/json"},
             content='[{"name": "name", "id": 1}, '
             '{"name": "other_name", "id": 2}]'.encode("utf-8"),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         data = gl.issues.list()
@@ -608,7 +607,7 @@ class TestGitlab:
                 '{"name": "name", "id": 1, "password": "password", '
                 '"username": "username", "email": "email"}'.encode("utf-8")
             ),
-            "status_code": StatusCode.OK,
+            "status_code": codes.OK,
         }
 
     @respx.mock
@@ -632,7 +631,7 @@ class TestGitlab:
             content='{"message": "test", "message_html": "<h1>Message</h1>", "emoji": "thumbsup"}'.encode(
                 "utf-8"
             ),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         request_user = respx.get(**respx_get_user_params)
 
@@ -657,13 +656,13 @@ class TestGitlab:
             "http://localhost/api/v4/todos",
             headers={"content-type": "application/json"},
             content=encoded_content,
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         request_mark_as_done = respx.post(
             "http://localhost/api/v4/todos/102/mark_as_done",
             headers={"content-type": "application/json"},
             content=json.dumps(json_content[0]).encode("utf-8"),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         todo_list = gl.todos.list()
@@ -703,7 +702,7 @@ class TestGitlab:
             "http://localhost/api/v4/projects/1/deployments",
             headers={"content-type": "application/json"},
             content=json_content,
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
 
         project = gl.projects.get(1, lazy=True)
@@ -726,7 +725,7 @@ class TestGitlab:
             "http://localhost/api/v4/projects/1/deployments/42",
             headers={"content-type": "application/json"},
             content=json_content,
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         deployment.status = "failed"
 
@@ -744,13 +743,13 @@ class TestGitlab:
             "http://localhost/api/v4/users/1/activate",
             headers={"content-type": "application/json"},
             content={},
-            status_code=StatusCode.CREATED,
+            status_code=codes.CREATED,
         )
         request_deactivate = respx.post(
             "http://localhost/api/v4/users/1/deactivate",
             headers={"content-type": "application/json"},
             content={},
-            status_code=StatusCode.CREATED,
+            status_code=codes.CREATED,
         )
 
         user = gl.users.get(1, lazy=True)
@@ -768,7 +767,7 @@ class TestGitlab:
             "http://localhost/api/v4/projects/1",
             headers={"content-type": "application/json"},
             content='{"name": "name", "id": 1}'.encode("utf-8"),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         request_update_submodule = respx.put(
             "http://localhost/api/v4/projects/1/repository/submodules/foo%2Fbar",
@@ -789,7 +788,7 @@ class TestGitlab:
             "status": null}""".encode(
                 "utf-8"
             ),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         project = gl.projects.get(1)
         project = await gl_get_value(project)
@@ -822,7 +821,7 @@ class TestGitlab:
             }""".encode(
                 "utf-8"
             ),
-            status_code=StatusCode.OK,
+            status_code=codes.OK,
         )
         base_path = "/root"
         name = "my-repo"

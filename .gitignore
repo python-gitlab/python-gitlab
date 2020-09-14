@@ -10,3 +10,4 @@ docs/_build
 .tox
 venv/
 tags
+.venv/
