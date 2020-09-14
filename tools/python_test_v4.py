@@ -312,7 +312,7 @@ assert len(group2.members.list()) == 2
 
 group1.members.delete(user1.id)
 assert len(group1.members.list()) == 2
-assert len(group1.members_all.list())
+assert len(group1.members.all())
 member = group1.members.get(user2.id)
 member.access_level = gitlab.const.OWNER_ACCESS
 member.save()
