@@ -57,7 +57,7 @@ nxs4TLO3kZjUTgWKdhpgRNF5hwaz51ZjpebaRf/ZqRuNyX4lIRolDxzOn/+O1o8L
 qG2ZdhHHmSK2LaQLFiSprUkikStNU9BqSQ==
 =5OGa
 -----END PGP PUBLIC KEY BLOCK-----"""
-AVATAR_PATH = Path(__file__).resolve().parent / "fixtures" / "avatar.png"
+AVATAR_PATH = Path(__file__).parent / "fixtures" / "avatar.png"
 TEMP_DIR = Path(tempfile.gettempdir())
 
 # token authentication from config file

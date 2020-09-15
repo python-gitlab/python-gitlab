@@ -10,10 +10,6 @@ import pytest
 import gitlab
 
 
-TEMP_DIR = tempfile.gettempdir()
-TEST_DIR = Path(__file__).resolve().parent
-
-
 def reset_gitlab(gl):
     # previously tools/reset_gitlab.py
     for project in gl.projects.list():
@@ -27,8 +23,8 @@ def reset_gitlab(gl):
             user.delete()
 
 
-def set_token(container):
-    set_token_rb = TEST_DIR / "fixtures" / "set_token.rb"
+def set_token(container, rootdir):
+    set_token_rb = rootdir / "fixtures" / "set_token.rb"
 
     with open(set_token_rb, "r") as f:
         set_token_command = f.read().strip()
@@ -47,8 +43,18 @@ def set_token(container):
 
 
 @pytest.fixture(scope="session")
-def docker_compose_file():
-    return TEST_DIR / "fixtures" / "docker-compose.yml"
+def temp_dir():
+    return Path(tempfile.gettempdir())
+
+
+@pytest.fixture(scope="session")
+def test_dir(pytestconfig):
+    return pytestconfig.rootdir / "tools" / "functional"
+
+
+@pytest.fixture(scope="session")
+def docker_compose_file(test_dir):
+    return test_dir / "fixtures" / "docker-compose.yml"
 
 
 @pytest.fixture(scope="session")
@@ -78,15 +84,15 @@ def check_is_alive(request):
 
 
 @pytest.fixture(scope="session")
-def gitlab_config(check_is_alive, docker_ip, docker_services):
-    config_file = Path(TEMP_DIR) / "python-gitlab.cfg"
+def gitlab_config(check_is_alive, docker_ip, docker_services, temp_dir, test_dir):
+    config_file = temp_dir / "python-gitlab.cfg"
     port = docker_services.port_for("gitlab", 80)
 
     docker_services.wait_until_responsive(
         timeout=180, pause=5, check=lambda: check_is_alive("gitlab-test")
     )
 
-    token = set_token("gitlab-test")
+    token = set_token("gitlab-test", rootdir=test_dir)
 
     config = f"""[global]
 default = local
