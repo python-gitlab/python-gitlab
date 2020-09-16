@@ -28,7 +28,7 @@ List badges::
 
     badges = group_or_project.badges.list()
 
-Get ad badge::
+Get a badge::
 
     badge = group_or_project.badges.get(badge_id)
 
