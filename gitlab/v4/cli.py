@@ -85,11 +85,7 @@ class GitlabCLI(object):
         try:
             project = self.gl.projects.get(int(self.args["project_id"]), lazy=True)
             data = project.exports.get().download()
-            if hasattr(sys.stdout, "buffer"):
-                # python3
-                sys.stdout.buffer.write(data)
-            else:
-                sys.stdout.write(data)
+            sys.stdout.buffer.write(data)
 
         except Exception as e:
             cli.die("Impossible to download the export", e)
