@@ -19,7 +19,7 @@
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/python/black
 
-Python GitLab
+An Amazing Python GitLab
 =============
 
 ``python-gitlab`` is a Python package providing access to the GitLab server API.
