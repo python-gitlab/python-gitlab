@@ -436,5 +436,7 @@ def run(gl, what, action, args, verbose, output, fields):
         printer.display(get_dict(data, fields), verbose=verbose, obj=data)
     elif isinstance(data, str):
         print(data)
+    elif isinstance(data, bytes):
+        sys.stdout.buffer.write(data)
     elif hasattr(data, "decode"):
         print(data.decode())
