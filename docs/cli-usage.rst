@@ -313,6 +313,12 @@ Define the status of a commit (as would be done from a CI tool for example):
        --target-url http://server/build/123 \
        --description "Jenkins build succeeded"
 
+Download the artifacts zip archive of a job:
+
+.. code-block:: console
+
+   $ gitlab project-job artifacts --id 10 --project-id 1 > artifacts.zip
+
 Use sudo to act as another user (admin only):
 
 .. code-block:: console
