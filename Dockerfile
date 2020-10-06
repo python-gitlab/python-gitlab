@@ -1,10 +1,10 @@
-FROM python:3.8-alpine AS build
+FROM python:3.9-alpine AS build
 
 WORKDIR /opt/python-gitlab
 COPY . .
 RUN python setup.py bdist_wheel
 
-FROM python:3.8-alpine
+FROM python:3.9-alpine
 
 WORKDIR /opt/python-gitlab
 COPY --from=build /opt/python-gitlab/dist dist/
