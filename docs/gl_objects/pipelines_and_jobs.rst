@@ -302,3 +302,27 @@ Play (trigger) a job::
 Erase a job (artifacts and trace)::
 
     build_or_job.erase()
+
+
+Pipeline bridges
+=====================
+
+Get a list of bridge jobs (including child pipelines) for a pipeline.
+
+Reference
+---------
+
+* v4 API
+
+  + :class:`gitlab.v4.objects.ProjectPipelineBridge`
+  + :class:`gitlab.v4.objects.ProjectPipelineBridgeManager`
+  + :attr:`gitlab.v4.objects.ProjectPipeline.bridges`
+
+* GitLab API: https://docs.gitlab.com/ee/api/jobs.html#list-pipeline-bridges
+
+Examples
+--------
+
+List bridges for the pipeline::
+
+    bridges = pipeline.bridges.list()
