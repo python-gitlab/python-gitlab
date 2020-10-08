@@ -5341,19 +5341,29 @@ class ProjectManager(CRUDMixin, RESTManager):
     )
     _types = {"avatar": types.ImageAttribute}
     _list_filters = (
-        "search",
-        "owned",
-        "starred",
         "archived",
-        "visibility",
-        "order_by",
-        "sort",
-        "simple",
+        "id_after",
+        "id_before",
+        "last_activity_after",
+        "last_activity_before",
         "membership",
+        "min_access_level",
+        "order_by",
+        "owned",
+        "repository_checksum_failed",
+        "repository_storage",
+        "search_namespaces",
+        "search",
+        "simple",
+        "sort",
+        "starred",
         "statistics",
+        "visibility",
+        "wiki_checksum_failed",
+        "with_custom_attributes",
         "with_issues_enabled",
         "with_merge_requests_enabled",
-        "with_custom_attributes",
+        "with_programming_language",
     )
 
     def import_project(
