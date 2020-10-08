@@ -3778,6 +3778,17 @@ class ProjectPipelineJobManager(ListMixin, RESTManager):
     _list_filters = ("scope",)
 
 
+class ProjectPipelineBridge(RESTObject):
+    pass
+
+
+class ProjectPipelineBridgeManager(ListMixin, RESTManager):
+    _path = "/projects/%(project_id)s/pipelines/%(pipeline_id)s/bridges"
+    _obj_cls = ProjectPipelineBridge
+    _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
+    _list_filters = ("scope",)
+
+
 class ProjectPipelineVariable(RESTObject):
     _id_attr = "key"
 
@@ -3791,6 +3802,7 @@ class ProjectPipelineVariableManager(ListMixin, RESTManager):
 class ProjectPipeline(RESTObject, RefreshMixin, ObjectDeleteMixin):
     _managers = (
         ("jobs", "ProjectPipelineJobManager"),
+        ("bridges", "ProjectPipelineBridgeManager"),
         ("variables", "ProjectPipelineVariableManager"),
     )
 
