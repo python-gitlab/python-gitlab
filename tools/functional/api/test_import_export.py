@@ -1,5 +1,7 @@
 import time
 
+import gitlab
+
 
 def test_group_import_export(gl, group, temp_dir):
     export = group.exports.create()
@@ -29,7 +31,10 @@ def test_group_import_export(gl, group, temp_dir):
 
 def test_project_import_export(gl, project, temp_dir):
     export = project.exports.create()
-    export.refresh()
+    assert export.message == "202 Accepted"
+
+    export = project.exports.get()
+    assert isinstance(export, gitlab.v4.objects.ProjectExport)
 
     count = 0
     while export.export_status != "finished":

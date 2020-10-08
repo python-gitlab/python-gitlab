@@ -1,7 +1,6 @@
 import tempfile
 import time
 import uuid
-from contextlib import contextmanager
 from pathlib import Path
 from random import randint
 from subprocess import check_output

@@ -110,7 +110,7 @@ def test_hooks(gl):
 
 def test_namespaces(gl):
     namespace = gl.namespaces.list(all=True)
-    assert len(namespace) != 0
+    assert namespace
 
     namespace = gl.namespaces.list(search="root", all=True)[0]
     assert namespace.kind == "user"

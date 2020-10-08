@@ -41,7 +41,7 @@ def test_repository_files(project):
 
 def test_repository_tree(project):
     tree = project.repository_tree()
-    assert len(tree) != 0
+    assert tree
     assert tree[0]["name"] == "README.rst"
 
     blob_id = tree[0]["id"]

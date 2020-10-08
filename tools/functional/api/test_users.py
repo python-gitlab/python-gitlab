@@ -63,12 +63,14 @@ def test_delete_user(gl, wait_for_sidekiq):
 
 def test_user_projects_list(gl, user):
     projects = user.projects.list()
-    assert len(projects) == 0
+    assert isinstance(projects, list)
+    assert not projects
 
 
 def test_user_events_list(gl, user):
     events = user.events.list()
-    assert len(events) == 0
+    assert isinstance(events, list)
+    assert not events
 
 
 def test_user_bio(gl, user):
