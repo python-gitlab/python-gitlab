@@ -1,4 +1,9 @@
 version: '3'
+
+networks:
+  gitlab-network:
+    name: gitlab-network
+
 services:
   gitlab:
     image: '${GITLAB_IMAGE}:${GITLAB_TAG}'
@@ -9,7 +14,7 @@ services:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://gitlab.test'
         gitlab_rails['initial_root_password'] = '5iveL!fe'
-        gitlab_rails['initial_shared_runners_registration_token'] = 'sTPNtWLEuSrHzoHP8oCU'
+        gitlab_rails['initial_shared_runners_registration_token'] = 'registration-token'
         registry['enable'] = false
         nginx['redirect_http_to_https'] = false
         nginx['listen_port'] = 80
@@ -29,3 +34,13 @@ services:
     ports:
       - '8080:80'
       - '2222:22'
+    networks:
+      - gitlab-network
+
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    container_name: 'gitlab-runner-test'
+    depends_on:
+      - gitlab
+    networks:
+      - gitlab-network
