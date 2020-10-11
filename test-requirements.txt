@@ -1,9 +1,6 @@
 coverage
 httmock
-jinja2
 mock
 pytest
 pytest-cov
-sphinx==3.2.1
-sphinx_rtd_theme
 responses

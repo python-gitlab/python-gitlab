@@ -180,6 +180,10 @@ Example:
 Examples
 ========
 
+    **Notice:**
+
+        For a complete list of objects and actions available, see :doc:`/cli-objects`.
+
 List the projects (paginated):
 
 .. code-block:: console
