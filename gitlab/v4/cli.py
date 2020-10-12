@@ -85,11 +85,7 @@ class GitlabCLI(object):
         try:
             project = self.gl.projects.get(int(self.args["project_id"]), lazy=True)
             data = project.exports.get().download()
-            if hasattr(sys.stdout, "buffer"):
-                # python3
-                sys.stdout.buffer.write(data)
-            else:
-                sys.stdout.write(data)
+            sys.stdout.buffer.write(data)
 
         except Exception as e:
             cli.die("Impossible to download the export", e)
@@ -440,5 +436,7 @@ def run(gl, what, action, args, verbose, output, fields):
         printer.display(get_dict(data, fields), verbose=verbose, obj=data)
     elif isinstance(data, str):
         print(data)
+    elif isinstance(data, bytes):
+        sys.stdout.buffer.write(data)
     elif hasattr(data, "decode"):
         print(data.decode())

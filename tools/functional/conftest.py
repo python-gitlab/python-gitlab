@@ -132,6 +132,36 @@ def gl(gitlab_config):
     return instance
 
 
+@pytest.fixture(scope="session")
+def gitlab_runner(gl):
+    container = "gitlab-runner-test"
+    runner_name = "python-gitlab-runner"
+    token = "registration-token"
+    url = "http://gitlab"
+
+    docker_exec = ["docker", "exec", container, "gitlab-runner"]
+    register = [
+        "register",
+        "--run-untagged",
+        "--non-interactive",
+        "--registration-token",
+        token,
+        "--name",
+        runner_name,
+        "--url",
+        url,
+        "--clone-url",
+        url,
+        "--executor",
+        "shell",
+    ]
+    unregister = ["unregister", "--name", runner_name]
+
+    yield check_output(docker_exec + register).decode()
+
+    check_output(docker_exec + unregister).decode()
+
+
 @pytest.fixture(scope="module")
 def group(gl):
     """Group fixture for group API resource tests."""
