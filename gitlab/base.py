@@ -131,7 +131,7 @@ class RESTObject(object):
 
     def _update_attrs(self, new_attrs):
         self.__dict__["_updated_attrs"] = {}
-        self.__dict__["_attrs"].update(new_attrs)
+        self.__dict__["_attrs"] = new_attrs
 
     def get_id(self):
         """Returns the id of the resource."""
