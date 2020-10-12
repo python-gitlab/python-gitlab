@@ -33,3 +33,20 @@ NOTIFICATION_LEVEL_WATCH = "watch"
 NOTIFICATION_LEVEL_GLOBAL = "global"
 NOTIFICATION_LEVEL_MENTION = "mention"
 NOTIFICATION_LEVEL_CUSTOM = "custom"
+
+# Search scopes
+# all scopes (global, group and  project)
+SEARCH_SCOPE_PROJECTS = "projects"
+SEARCH_SCOPE_ISSUES = "issues"
+SEARCH_SCOPE_MERGE_REQUESTS = "merge_requests"
+SEARCH_SCOPE_MILESTONES = "milestones"
+SEARCH_SCOPE_WIKI_BLOBS = "wiki_blobs"
+SEARCH_SCOPE_COMMITS = "commits"
+SEARCH_SCOPE_BLOBS = "blobs"
+SEARCH_SCOPE_USERS = "users"
+
+# specific global scope
+SEARCH_SCOPE_GLOBAL_SNIPPET_TITLES = "snippet_titles"
+
+# specific project scope
+SEARCH_SCOPE_PROJECT_NOTES = "notes"

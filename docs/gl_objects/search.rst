@@ -4,7 +4,30 @@ Search API
 
 You can search for resources at the top level, in a project or in a group.
 Searches are based on a scope (issues, merge requests, and so on) and a search
-string.
+string. The following constants are provided to represent the possible scopes:
+
+
+* Shared scopes (global, group and project):
+
+  + ``gitlab.SEARCH_SCOPE_PROJECTS``: ``projects``
+  + ``gitlab.SEARCH_SCOPE_ISSUES``: ``issues``
+  + ``gitlab.SEARCH_SCOPE_MERGE_REQUESTS``: ``merge_requests``
+  + ``gitlab.SEARCH_SCOPE_MILESTONES``: ``milestones``
+  + ``gitlab.SEARCH_SCOPE_WIKI_BLOBS``: ``wiki_blobs``
+  + ``gitlab.SEARCH_SCOPE_COMMITS``: ``commits``
+  + ``gitlab.SEARCH_SCOPE_BLOBS``: ``blobs``
+  + ``gitlab.SEARCH_SCOPE_USERS``: ``users``
+
+
+* specific global scope:
+
+  + ``gitlab.SEARCH_SCOPE_GLOBAL_SNIPPET_TITLES``: ``snippet_titles``
+
+
+* specific project scope:
+
+  + ``gitlab.SEARCH_SCOPE_PROJECT_NOTES``: ``notes``
+
 
 Reference
 ---------
@@ -23,31 +46,32 @@ Examples
 Search for issues matching a specific string::
 
     # global search
-    gl.search('issues', 'regression')
+    gl.search(gitlab.SEARCH_SCOPE_ISSUES, 'regression')
 
     # group search
     group = gl.groups.get('mygroup')
-    group.search('issues', 'regression')
+    group.search(gitlab.SEARCH_SCOPE_ISSUES, 'regression')
 
     # project search
     project = gl.projects.get('myproject')
-    project.search('issues', 'regression')
+    project.search(gitlab.SEARCH_SCOPE_ISSUES, 'regression')
 
 The ``search()`` methods implement the pagination support::
 
     # get lists of 10 items, and start at page 2
-    gl.search('issues', search_str, page=2, per_page=10)
+    gl.search(gitlab.SEARCH_SCOPE_ISSUES, search_str, page=2, per_page=10)
 
     # get a generator that will automatically make required API calls for
     # pagination
-    for item in gl.search('issues', search_str, as_list=False):
+    for item in gl.search(gitlab.SEARCH_SCOPE_ISSUES, search_str, as_list=False):
         do_something(item)
 
 The search API doesn't return objects, but dicts. If you need to act on
 objects, you need to create them explicitly::
 
-    for item in gl.search('issues', search_str, as_list=False):
+    for item in gl.search(gitlab.SEARCH_SCOPE_ISSUES, search_str, as_list=False):
         issue_project = gl.projects.get(item['project_id'], lazy=True)
         issue = issue_project.issues.get(item['iid'])
         issue.state = 'closed'
         issue.save()
+
