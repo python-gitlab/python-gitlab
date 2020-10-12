@@ -12,14 +12,15 @@ Contents:
    :maxdepth: 2
 
    install
-   cli
+   cli-usage
    api-usage
    faq
-   switching-to-v4
    api-objects
    api/gitlab
+   cli-objects
    release_notes
    changelog
+   switching-to-v4
 
 
 Indices and tables

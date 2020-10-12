@@ -149,6 +149,20 @@ def _parse_value(v):
     return v
 
 
+def docs():
+    """
+    Provide a statically generated parser for sphinx only, so we don't need
+    to provide dummy gitlab config for readthedocs.
+    """
+    if "sphinx" not in sys.modules:
+        sys.exit("Docs parser is only intended for build_sphinx")
+
+    parser = _get_base_parser(add_help=False)
+    cli_module = importlib.import_module("gitlab.v4.cli")
+
+    return _get_parser(cli_module)
+
+
 def main():
     if "--version" in sys.argv:
         print(gitlab.__version__)

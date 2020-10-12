@@ -1,5 +1,5 @@
-gitlab package
-==============
+API reference (``gitlab`` package)
+==================================
 
 Subpackages
 -----------
