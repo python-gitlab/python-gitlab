@@ -54,7 +54,7 @@ def test_delete_user(gl, wait_for_sidekiq):
             "password": "delete-user-pass",
         }
     )
-
+    time.sleep(10)
     new_user.delete()
     wait_for_sidekiq()
 
