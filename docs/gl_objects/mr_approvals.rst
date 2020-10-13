@@ -18,6 +18,9 @@ References
   + :class:`gitlab.v4.objects.ProjectMergeRequestApproval`
   + :class:`gitlab.v4.objects.ProjectMergeRequestApprovalManager`
   + :attr:`gitlab.v4.objects.ProjectMergeRequest.approvals`
+  + :class:`gitlab.v4.objects.ProjectMergeRequestApprovalRule`
+  + :class:`gitlab.v4.objects.ProjectMergeRequestApprovalRuleManager`
+  + :attr:`gitlab.v4.objects.ProjectMergeRequest.approval_rules`
 
 * GitLab API: https://docs.gitlab.com/ee/api/merge_request_approvals.html
 
@@ -50,10 +53,35 @@ Change project-level or MR-level MR approvals settings::
 
     mr_mras.set_approvers(approvals_required = 1)
 
-Change project-level or MR-level MR allowed approvers::
+Change project-level MR allowed approvers::
 
 	project.approvals.set_approvers(approver_ids=[105],
-                                    approver_group_ids=[653, 654])
+	                                 approver_group_ids=[653, 654])
+
+Create a new MR-level approval rule or Change existing MR-level approval rule::
 
 	mr.approvals.set_approvers(approvals_required = 1, approver_ids=[105],
-                               approver_group_ids=[653, 654])
+	                            approver_group_ids=[653, 654],
+	                            approval_rule_name="my MR custom approval rule")
+
+List MR-level MR approval rules::
+
+	mr.approval_rules.list()
+
+Change MR-level MR approval rule::
+
+	mr_approvalrule.user_ids = [105]
+	mr_approvalrule.approvals_required = 2
+	mr_approvalrule.group_ids = [653, 654]
+	mr_approvalrule.save()
+
+Create a MR-level MR approval rule::
+
+	data = {
+	     "name": "my MR custom approval rule",
+	     "approvals_required": 2,
+	     "rule_type": "regular",
+	     "user_ids": [105],
+	     "group_ids": [653, 654],
+	       }
+	mr.approval_rules.create(data=data)
