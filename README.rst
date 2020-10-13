@@ -206,3 +206,5 @@ To cleanup the environment delete the container:
 .. code-block:: bash
 
    docker rm -f gitlab-test
+   docker rm -f gitlab-runner-test
+
