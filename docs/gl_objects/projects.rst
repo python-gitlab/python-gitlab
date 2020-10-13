@@ -103,7 +103,7 @@ Delete a project::
 
 Fork a project::
 
-    fork = project.forks.create()
+    fork = project.forks.create({})
 
     # fork to a specific namespace
     fork = project.forks.create({'namespace': 'myteam'})
