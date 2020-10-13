@@ -128,6 +128,13 @@ class TestRESTObject:
         assert {"foo": "foo", "bar": "bar"} == obj._attrs
         assert {} == obj._updated_attrs
 
+    def test_update_attrs_deleted(self, fake_manager):
+        obj = FakeObject(fake_manager, {"foo": "foo", "bar": "bar"})
+        obj.bar = "baz"
+        obj._update_attrs({"foo": "foo"})
+        assert {"foo": "foo"} == obj._attrs
+        assert {} == obj._updated_attrs
+
     def test_create_managers(self, fake_gitlab, fake_manager):
         class ObjectWithManager(FakeObject):
             _managers = (("fakes", "FakeManager"),)
