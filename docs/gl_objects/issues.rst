@@ -127,7 +127,7 @@ Close / reopen an issue::
     issue.state_event = 'reopen'
     issue.save()
 
-Delete an issue::
+Delete an issue (admin or project owner only)::
 
     project.issues.delete(issue_id)
     # pr
