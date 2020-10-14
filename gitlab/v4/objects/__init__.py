@@ -3033,9 +3033,9 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
                 ar.approvals_required = data["approvals_required"]
                 ar.group_ids = data["group_ids"]
                 ar.save()
-                return
+                return ar
         """ if there was no rule matching the rule name, create a new one"""
-        approval_rules.create(data=data)
+        return approval_rules.create(data=data)
 
 
 class ProjectMergeRequestApprovalRule(SaveMixin, RESTObject):
