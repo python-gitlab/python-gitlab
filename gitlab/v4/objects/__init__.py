@@ -1641,7 +1641,7 @@ class Issue(RESTObject):
     _short_print_attr = "title"
 
 
-class IssueManager(ListMixin, RESTManager):
+class IssueManager(RetrieveMixin, RESTManager):
     _path = "/issues"
     _obj_cls = Issue
     _list_filters = (
