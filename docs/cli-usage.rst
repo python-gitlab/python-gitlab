@@ -263,7 +263,7 @@ Delete a specific project package by id:
 
    $ gitlab -v project-package delete --id 1 --project-id 3
 
-Get a list of snippets for this project:
+Get a list of issues for this project:
 
 .. code-block:: console
 
