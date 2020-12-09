@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 NO_ACCESS = 0
+MINIMAL_ACCESS = 5
 GUEST_ACCESS = 10
 REPORTER_ACCESS = 20
 DEVELOPER_ACCESS = 30
