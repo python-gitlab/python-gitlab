@@ -326,3 +326,26 @@ Examples
 List bridges for the pipeline::
 
     bridges = pipeline.bridges.list()
+
+Pipeline test report
+====================
+
+Get a pipeline's complete test report.
+
+Reference
+---------
+
+* v4 API
+
+  + :class:`gitlab.v4.objects.ProjectPipelineTestReport`
+  + :class:`gitlab.v4.objects.ProjectPipelineTestReportManager`
+  + :attr:`gitlab.v4.objects.ProjectPipeline.test_report`
+
+* GitLab API: https://docs.gitlab.com/ee/api/pipelines.html#get-a-pipelines-test-report
+
+Examples
+--------
+
+Get the test report for a pipeline::
+
+    test_report = pipeline.test_report.get()

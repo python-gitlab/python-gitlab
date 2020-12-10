@@ -4,7 +4,7 @@ GitLab API: https://docs.gitlab.com/ee/api/pipelines.html
 import pytest
 import responses
 
-from gitlab.v4.objects import ProjectPipeline
+from gitlab.v4.objects import ProjectPipeline, ProjectPipelineTestReport
 
 pipeline_content = {
     "id": 46,
@@ -32,6 +32,37 @@ pipeline_content = {
     "queued_duration": 0.010,
     "coverage": None,
     "web_url": "https://example.com/foo/bar/pipelines/46",
+}
+
+
+test_report_content = {
+    "total_time": 5,
+    "total_count": 1,
+    "success_count": 1,
+    "failed_count": 0,
+    "skipped_count": 0,
+    "error_count": 0,
+    "test_suites": [
+        {
+            "name": "Secure",
+            "total_time": 5,
+            "total_count": 1,
+            "success_count": 1,
+            "failed_count": 0,
+            "skipped_count": 0,
+            "error_count": 0,
+            "test_cases": [
+                {
+                    "status": "success",
+                    "name": "Security Reports can create an auto-remediation MR",
+                    "classname": "vulnerability_management_spec",
+                    "execution_time": 5,
+                    "system_output": None,
+                    "stack_trace": None,
+                }
+            ],
+        }
+    ],
 }
 
 
@@ -74,6 +105,19 @@ def resp_retry_pipeline():
         yield rsps
 
 
+@pytest.fixture
+def resp_get_pipeline_test_report():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/pipelines/1/test_report",
+            json=test_report_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
 def test_get_project_pipeline(project, resp_get_pipeline):
     pipeline = project.pipelines.get(1)
     assert isinstance(pipeline, ProjectPipeline)
@@ -92,3 +136,11 @@ def test_retry_project_pipeline(project, resp_retry_pipeline):
 
     output = pipeline.retry()
     assert output["ref"] == "master"
+
+
+def test_get_project_pipeline_test_report(project, resp_get_pipeline_test_report):
+    pipeline = project.pipelines.get(1, lazy=True)
+    test_report = pipeline.test_report.get()
+    assert isinstance(test_report, ProjectPipelineTestReport)
+    assert test_report.total_time == 5
+    assert test_report.test_suites[0]["name"] == "Secure"
