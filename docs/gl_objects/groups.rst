@@ -56,6 +56,10 @@ Create a group::
 
     group = gl.groups.create({'name': 'group1', 'path': 'group1'})
 
+Create a subgroup under an existing group::
+
+    subgroup = gl.groups.create({'name': 'subgroup1', 'path': 'subgroup1', 'parent_id': parent_group_id})
+
 Update a group::
 
     group.description = 'My awesome group'
