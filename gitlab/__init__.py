@@ -27,9 +27,11 @@ import gitlab.config
 from gitlab.const import *  # noqa
 from gitlab.exceptions import *  # noqa
 from gitlab import utils  # noqa
+from requests_toolbelt.multipart.encoder import MultipartEncoder
+
 
 __title__ = "python-gitlab"
-__version__ = "2.5.0"
+__version__ = "2.6.0"
 __author__ = "Gauvain Pocentek"
 __email__ = "gauvainpocentek@gmail.com"
 __license__ = "LGPL3"
@@ -496,9 +498,11 @@ class Gitlab(object):
 
         # We need to deal with json vs. data when uploading files
         if files:
-            data = post_data
             json = None
-            del opts["headers"]["Content-type"]
+            post_data["file"] = files.get("file")
+            post_data["avatar"] = files.get("avatar")
+            data = MultipartEncoder(post_data)
+            opts["headers"]["Content-type"] = data.content_type
         else:
             json = post_data
             data = None
@@ -509,9 +513,7 @@ class Gitlab(object):
         # The Requests behavior is right but it seems that web servers don't
         # always agree with this decision (this is the case with a default
         # gitlab installation)
-        req = requests.Request(
-            verb, url, json=json, data=data, params=params, files=files, **opts
-        )
+        req = requests.Request(verb, url, json=json, data=data, params=params, **opts)
         prepped = self.session.prepare_request(req)
         prepped.url = utils.sanitized_url(prepped.url)
         settings = self.session.merge_environment_settings(
