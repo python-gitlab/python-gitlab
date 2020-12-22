@@ -62,6 +62,7 @@ class Gitlab(object):
         api_version (str): Gitlab API version to use (support for 4 only)
         pagination (str): Can be set to 'keyset' to use keyset pagination
         order_by (str): Set order_by globally
+        retry_transient_errors (bool): Retry transient errors, defaults to False
     """
 
     def __init__(
@@ -79,6 +80,7 @@ class Gitlab(object):
         per_page=None,
         pagination=None,
         order_by=None,
+        retry_transient_errors=False,
     ):
 
         self._api_version = str(api_version)
@@ -106,6 +108,7 @@ class Gitlab(object):
         self.per_page = per_page
         self.pagination = pagination
         self.order_by = order_by
+        self.retry_transient_errors = retry_transient_errors
 
         objects = importlib.import_module("gitlab.v%s.objects" % self._api_version)
         self._objects = objects
@@ -202,6 +205,7 @@ class Gitlab(object):
             per_page=config.per_page,
             pagination=config.pagination,
             order_by=config.order_by,
+            retry_transient_errors=retry_transient_errors,
         )
 
     def auth(self):
