@@ -3601,7 +3601,7 @@ class ProjectLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectLabelManager(
-    ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
 ):
     _path = "/projects/%(project_id)s/labels"
     _obj_cls = ProjectLabel

@@ -139,8 +139,11 @@ def test_project_housekeeping(project):
 
 def test_project_labels(project):
     label = project.labels.create({"name": "label", "color": "#778899"})
-    label = project.labels.list()[0]
-    assert len(project.labels.list()) == 1
+    labels = project.labels.list()
+    assert len(labels) == 1
+
+    label = project.labels.get("label")
+    assert label == labels[0]
 
     label.new_name = "labelupdated"
     label.save()
