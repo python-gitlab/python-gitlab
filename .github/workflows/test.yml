@@ -2,6 +2,9 @@ name: Test
 
 on: [push, pull_request]
 
+env:
+  PY_COLORS: 1
+
 jobs:
   unit:
     runs-on: ubuntu-20.04

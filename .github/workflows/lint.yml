@@ -2,6 +2,9 @@ name: Lint
 
 on: [push, pull_request]
 
+env:
+  PY_COLORS: 1
+
 jobs:
   black:
     runs-on: ubuntu-latest
