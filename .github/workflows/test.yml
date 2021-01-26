@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        toxenv: [py_func_v4, py_func_cli]
+        toxenv: [py_func_v4, cli_func_v4]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
