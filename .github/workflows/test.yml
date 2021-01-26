@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   unit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         include:
@@ -27,7 +27,7 @@ jobs:
           TOXENV: ${{ matrix.toxenv }}
         run: tox
   functional:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         toxenv: [py_func_v4, cli_func_v4]
