@@ -29,6 +29,7 @@ jobs:
         env:
           TOXENV: ${{ matrix.toxenv }}
         run: tox
+
   functional:
     runs-on: ubuntu-20.04
     strategy:
@@ -46,3 +47,25 @@ jobs:
         env:
           TOXENV: ${{ matrix.toxenv }}
         run: tox
+
+  coverage:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: pip install tox pytest-github-actions-annotate-failures
+      - name: Run tests
+        env:
+          PY_COLORS: 1
+          TOXENV: cover
+        run: tox
+      - name: Upload codecov coverage
+        uses: codecov/codecov-action@v1
+        with:
+          files: ./coverage.xml
+          flags: unit
+          fail_ci_if_error: true
