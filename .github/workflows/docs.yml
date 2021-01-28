@@ -1,0 +1,39 @@
+name: Docs
+
+on: [push, pull_request]
+
+env:
+  PY_COLORS: 1
+
+jobs:
+  sphinx:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: pip install tox
+      - name: Build docs
+        env:
+          TOXENV: docs
+        run: tox
+
+  twine-check:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: pip install tox twine wheel
+      - name: Check twine readme rendering
+        env:
+          TOXENV: twine-check
+        run: |
+          python3 setup.py sdist bdist_wheel
+          tox
