@@ -3438,7 +3438,7 @@ class ProjectMergeRequest(
         if merge_commit_message:
             data["merge_commit_message"] = merge_commit_message
         if should_remove_source_branch:
-            data["should_remove_source_branch"] = True
+            data["should_remove_source_branch"] = str(should_remove_source_branch).lower() != 'false'
         if merge_when_pipeline_succeeds:
             data["merge_when_pipeline_succeeds"] = True
 
