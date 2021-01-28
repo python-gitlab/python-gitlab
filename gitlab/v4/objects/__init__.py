@@ -1615,7 +1615,7 @@ class GroupManager(CRUDMixin, RESTManager):
         Returns:
             dict: A representation of the import status.
         """
-        files = {"file": ("file.tar.gz", file)}
+        files = {"file": ("file.tar.gz", file, "application/octet-stream")}
         data = {"path": path, "name": name}
         if parent_id is not None:
             data["parent_id"] = parent_id
@@ -5488,8 +5488,8 @@ class ProjectManager(CRUDMixin, RESTManager):
         Returns:
             dict: A representation of the import status.
         """
-        files = {"file": ("file.tar.gz", file)}
-        data = {"path": path, "overwrite": overwrite}
+        files = {"file": ("file.tar.gz", file, "application/octet-stream")}
+        data = {"path": path, "overwrite": str(overwrite)}
         if override_params:
             for k, v in override_params.items():
                 data["override_params[%s]" % k] = v
