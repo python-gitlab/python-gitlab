@@ -86,6 +86,7 @@ def test_merge_request_rebase(project):
     assert mr.rebase()
 
 
+@pytest.mark.skip(reason="flaky test")
 def test_merge_request_merge(project):
     mr = project.mergerequests.list()[0]
     mr.merge()
