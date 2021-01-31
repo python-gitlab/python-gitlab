@@ -65,6 +65,7 @@ class Gitlab(object):
         api_version (str): Gitlab API version to use (support for 4 only)
         pagination (str): Can be set to 'keyset' to use keyset pagination
         order_by (str): Set order_by globally
+        user_agent (str): A custom user agent to use for making HTTP requests.
     """
 
     def __init__(

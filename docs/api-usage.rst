@@ -26,6 +26,9 @@ To connect to a GitLab server, create a ``gitlab.Gitlab`` object:
    # anonymous gitlab instance, read-only for public resources
    gl = gitlab.Gitlab('http://10.0.0.1')
 
+   # Define your own custom user agent for requests
+   gl = gitlab.Gitlab('http://10.0.0.1', user_agent='my-package/1.0.0')
+
    # make an API request to create the gl.user object. This is mandatory if you
    # use the username/password authentication.
    gl.auth()
