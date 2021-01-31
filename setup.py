@@ -6,7 +6,7 @@ from setuptools import find_packages
 
 
 def get_version():
-    with open("gitlab/__init__.py") as f:
+    with open("gitlab/__version__.py") as f:
         for line in f:
             if line.startswith("__version__"):
                 return eval(line.split("=")[-1])

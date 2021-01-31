@@ -24,18 +24,19 @@ import requests
 import requests.utils
 
 import gitlab.config
+from gitlab.__version__ import (
+    __author__,
+    __copyright__,
+    __email__,
+    __license__,
+    __title__,
+    __version__,
+)
 from gitlab.const import *  # noqa
 from gitlab.exceptions import *  # noqa
 from gitlab import utils  # noqa
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
-
-__title__ = "python-gitlab"
-__version__ = "2.6.0"
-__author__ = "Gauvain Pocentek"
-__email__ = "gauvainpocentek@gmail.com"
-__license__ = "LGPL3"
-__copyright__ = "Copyright 2013-2019 Gauvain Pocentek"
 
 warnings.filterwarnings("default", category=DeprecationWarning, module="^gitlab")
 
@@ -81,6 +82,7 @@ class Gitlab(object):
         per_page=None,
         pagination=None,
         order_by=None,
+        user_agent=USER_AGENT,
     ):
 
         self._api_version = str(api_version)
@@ -90,7 +92,7 @@ class Gitlab(object):
         #: Timeout to use for requests to gitlab server
         self.timeout = timeout
         #: Headers that will be used in request to GitLab
-        self.headers = {"User-Agent": "%s/%s" % (__title__, __version__)}
+        self.headers = {"User-Agent": user_agent}
 
         #: Whether SSL certificates should be validated
         self.ssl_verify = ssl_verify
@@ -204,6 +206,7 @@ class Gitlab(object):
             per_page=config.per_page,
             pagination=config.pagination,
             order_by=config.order_by,
+            user_agent=config.user_agent,
         )
 
     def auth(self):
