@@ -18,9 +18,10 @@
 
 import pickle
 
+import pytest
 from httmock import HTTMock, response, urlmatch, with_httmock  # noqa
 
-from gitlab import Gitlab, GitlabList
+from gitlab import Gitlab, GitlabList, USER_AGENT
 from gitlab.v4.objects import CurrentUser
 
 
@@ -139,3 +140,15 @@ def test_gitlab_subclass_from_config(default_config):
     config_path = default_config
     gl = MyGitlab.from_config("one", [config_path])
     assert isinstance(gl, MyGitlab)
+
+
+@pytest.mark.parametrize(
+    "kwargs,expected_agent",
+    [
+        ({}, USER_AGENT),
+        ({"user_agent": "my-package/1.0.0"}, "my-package/1.0.0"),
+    ],
+)
+def test_gitlab_user_agent(kwargs, expected_agent):
+    gl = Gitlab("http://localhost", **kwargs)
+    assert gl.headers["User-Agent"] == expected_agent
