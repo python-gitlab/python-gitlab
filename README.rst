@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/python-gitlab/python-gitlab.svg?branch=master
-   :target: https://travis-ci.org/python-gitlab/python-gitlab
+.. image:: https://github.com/python-gitlab/python-gitlab/workflows/Test/badge.svg
+   :target: https://github.com/python-gitlab/python-gitlab/actions
 
 .. image:: https://badge.fury.io/py/python-gitlab.svg
    :target: https://badge.fury.io/py/python-gitlab
