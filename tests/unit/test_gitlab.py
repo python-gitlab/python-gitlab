@@ -21,11 +21,13 @@ import pickle
 import pytest
 from httmock import HTTMock, response, urlmatch, with_httmock  # noqa
 
-from gitlab import Gitlab, GitlabList, USER_AGENT
+from gitlab import DEFAULT_URL, Gitlab, GitlabList, USER_AGENT
 from gitlab.v4.objects import CurrentUser
 
+localhost = "http://localhost"
 username = "username"
 user_id = 1
+token = "abc123"
 
 
 @urlmatch(scheme="http", netloc="localhost", path="/api/v4/user", method="get")
@@ -125,6 +127,47 @@ def test_gitlab_token_auth(gl, callback=None):
     assert gl.user.username == username
     assert gl.user.id == user_id
     assert isinstance(gl.user, CurrentUser)
+
+
+def test_gitlab_default_url():
+    gl = Gitlab()
+    assert gl.url == DEFAULT_URL
+
+
+@pytest.mark.parametrize(
+    "args, kwargs, expected_url, expected_private_token, expected_oauth_token",
+    [
+        ([], {}, DEFAULT_URL, None, None),
+        ([None, token], {}, DEFAULT_URL, token, None),
+        ([localhost], {}, localhost, None, None),
+        ([localhost, token], {}, localhost, token, None),
+        ([localhost, None, token], {}, localhost, None, token),
+        ([], {"private_token": token}, DEFAULT_URL, token, None),
+        ([], {"oauth_token": token}, DEFAULT_URL, None, token),
+        ([], {"url": localhost}, localhost, None, None),
+        ([], {"url": localhost, "private_token": token}, localhost, token, None),
+        ([], {"url": localhost, "oauth_token": token}, localhost, None, token),
+    ],
+    ids=[
+        "no_args",
+        "args_private_token",
+        "args_url",
+        "args_url_private_token",
+        "args_url_oauth_token",
+        "kwargs_private_token",
+        "kwargs_oauth_token",
+        "kwargs_url",
+        "kwargs_url_private_token",
+        "kwargs_url_oauth_token",
+    ],
+)
+def test_gitlab_args_kwargs(
+    args, kwargs, expected_url, expected_private_token, expected_oauth_token
+):
+    gl = Gitlab(*args, **kwargs)
+    assert gl.url == expected_url
+    assert gl.private_token == expected_private_token
+    assert gl.oauth_token == expected_oauth_token
 
 
 def test_gitlab_from_config(default_config):

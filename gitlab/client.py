@@ -39,7 +39,7 @@ class Gitlab(object):
     """Represents a GitLab server connection.
 
     Args:
-        url (str): The URL of the GitLab server.
+        url (str): The URL of the GitLab server (defaults to https://gitlab.com).
         private_token (str): The user private token
         oauth_token (str): An oauth token
         job_token (str): A CI job token
@@ -59,7 +59,7 @@ class Gitlab(object):
 
     def __init__(
         self,
-        url: str,
+        url: Optional[str] = None,
         private_token: Optional[str] = None,
         oauth_token: Optional[str] = None,
         job_token: Optional[str] = None,
@@ -79,7 +79,7 @@ class Gitlab(object):
         self._api_version = str(api_version)
         self._server_version: Optional[str] = None
         self._server_revision: Optional[str] = None
-        self._base_url = url.rstrip("/")
+        self._base_url = self._get_base_url(url)
         self._url = "%s/api/v%s" % (self._base_url, api_version)
         #: Timeout to use for requests to gitlab server
         self.timeout = timeout
@@ -441,6 +441,17 @@ class Gitlab(object):
             "timeout": self.timeout,
             "verify": self.ssl_verify,
         }
+
+    def _get_base_url(self, url: Optional[str] = None) -> str:
+        """Return the base URL with the trailing slash stripped.
+        If the URL is a Falsy value, return the default URL.
+        Returns:
+            str: The base URL
+        """
+        if not url:
+            return gitlab.const.DEFAULT_URL
+
+        return url.rstrip("/")
 
     def _build_url(self, path: str) -> str:
         """Returns the full url from path.

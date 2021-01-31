@@ -17,6 +17,8 @@
 
 from gitlab.__version__ import __title__, __version__
 
+DEFAULT_URL: str = "https://gitlab.com"
+
 NO_ACCESS: int = 0
 MINIMAL_ACCESS: int = 5
 GUEST_ACCESS: int = 10
