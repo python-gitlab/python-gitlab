@@ -86,15 +86,17 @@ You must define the ``url`` in each GitLab server section.
 
 .. warning::
 
-   If the GitLab server you are using redirects requests from http to https,
-   make sure to use the ``https://`` protocol in the ``url`` definition.
+   Note that a url that results in 301/302 redirects will raise an error,
+   so it is highly recommended to use the final destination in the ``url`` field.
+   For example, if the GitLab server you are using redirects requests from http
+   to https, make sure to use the ``https://`` protocol in the URL definition.
 
-.. note::
+   A URL that redirects using 301/302 (rather than 307/308) will most likely
+   `cause malformed POST and PUT requests <https://github.com/psf/requests/blob/c45a4dfe6bfc6017d4ea7e9f051d6cc30972b310/requests/sessions.py#L324-L332>`_.
 
-   It is highly recommended to use the final destination in the ``url`` field.
-   What this means is that you should not use a URL which redirects as it will
-   most likely cause errors. python-gitlab will raise a ``RedirectionError``
-   when it encounters a redirect which it believes will cause an error.
+   python-gitlab will therefore raise a ``RedirectionError`` when it encounters
+   a redirect which it believes will cause such an error, to avoid confusion
+   between successful GET and failing POST/PUT requests on the same instance.
 
 Only one of ``private_token``, ``oauth_token`` or ``job_token`` should be
 defined. If neither are defined an anonymous request will be sent to the Gitlab

@@ -2,34 +2,38 @@
 Getting started with the API
 ############################
 
-python-gitlab only supports GitLab APIs v4.
+python-gitlab only supports GitLab API v4.
 
 ``gitlab.Gitlab`` class
 =======================
 
-To connect to a GitLab server, create a ``gitlab.Gitlab`` object:
+To connect to GitLab.com or another GitLab instance, create a ``gitlab.Gitlab`` object:
 
 .. code-block:: python
 
    import gitlab
 
-   # private token or personal token authentication
-   # Note that a 'url' that results in 301/302 redirects will cause an error
-   # (see below for more information).
+   # anonymous read-only access for public resources (GitLab.com)
+   gl = gitlab.Gitlab()
+
+   # anonymous read-only access for public resources (self-hosted GitLab instance)
+   gl = gitlab.Gitlab('https://gitlab.example.com')
+
+   # private token or personal token authentication (GitLab.com)
+   gl = gitlab.Gitlab(private_token='JVNSESs8EwWRx5yDxM5q')
+
+   # private token or personal token authentication (self-hosted GitLab instance)
    gl = gitlab.Gitlab(url='https://gitlab.example.com', private_token='JVNSESs8EwWRx5yDxM5q')
 
    # oauth token authentication
-   gl = gitlab.Gitlab('http://10.0.0.1', oauth_token='my_long_token_here')
+   gl = gitlab.Gitlab('https://gitlab.example.com', oauth_token='my_long_token_here')
 
    # job token authentication (to be used in CI)
    import os
-   gl = gitlab.Gitlab('http://10.0.0.1', job_token=os.environ['CI_JOB_TOKEN'])
-
-   # anonymous gitlab instance, read-only for public resources
-   gl = gitlab.Gitlab('http://10.0.0.1')
+   gl = gitlab.Gitlab('https://gitlab.example.com', job_token=os.environ['CI_JOB_TOKEN'])
 
    # Define your own custom user agent for requests
-   gl = gitlab.Gitlab('http://10.0.0.1', user_agent='my-package/1.0.0')
+   gl = gitlab.Gitlab('https://gitlab.example.com', user_agent='my-package/1.0.0')
 
    # make an API request to create the gl.user object. This is mandatory if you
    # use the username/password authentication.
@@ -46,15 +50,17 @@ configuration files.
 
 .. warning::
 
-   If the GitLab server you are using redirects requests from http to https,
-   make sure to use the ``https://`` protocol in the URL definition.
+   Note that a url that results in 301/302 redirects will raise an error,
+   so it is highly recommended to use the final destination in the ``url`` field.
+   For example, if the GitLab server you are using redirects requests from http
+   to https, make sure to use the ``https://`` protocol in the URL definition.
 
-.. note::
+   A URL that redirects using 301/302 (rather than 307/308) will most likely
+   `cause malformed POST and PUT requests <https://github.com/psf/requests/blob/c45a4dfe6bfc6017d4ea7e9f051d6cc30972b310/requests/sessions.py#L324-L332>`_.
 
-   It is highly recommended to use the final destination in the ``url`` field.
-   What this means is that you should not use a URL which redirects as it will
-   most likely cause errors. python-gitlab will raise a ``RedirectionError``
-   when it encounters a redirect which it believes will cause an error.
+   python-gitlab will therefore raise a ``RedirectionError`` when it encounters
+   a redirect which it believes will cause such an error, to avoid confusion
+   between successful GET and failing POST/PUT requests on the same instance.
 
 Note on password authentication
 -------------------------------
