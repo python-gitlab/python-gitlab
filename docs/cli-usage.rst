@@ -78,6 +78,9 @@ parameters. You can override the values in each GitLab server section.
      - Integer between 1 and 100
      - The number of items to return in listing queries. GitLab limits the
        value at 100.
+   * - ``user_agent``
+     - ``str``
+     - A string defining a custom user agent to use when ``gitlab`` makes requests.
 
 You must define the ``url`` in each GitLab server section.
 

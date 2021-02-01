@@ -21,9 +21,11 @@ import unittest
 import mock
 import io
 
-from gitlab import config
+from gitlab import config, USER_AGENT
 import pytest
 
+
+custom_user_agent = "my-package/1.0.0"
 
 valid_config = u"""[global]
 default = one
@@ -50,6 +52,17 @@ per_page = 50
 url = https://four.url
 oauth_token = STUV
 """
+
+custom_user_agent_config = """[global]
+default = one
+user_agent = {}
+
+[one]
+url = http://one.url
+private_token = ABCDEF
+""".format(
+    custom_user_agent
+)
 
 no_default_config = u"""[global]
 [there]
@@ -178,3 +191,21 @@ def test_valid_data(m_open, path_exists):
     assert "STUV" == cp.oauth_token
     assert 2 == cp.timeout
     assert True == cp.ssl_verify
+
+
+@mock.patch("os.path.exists")
+@mock.patch("builtins.open")
+@pytest.mark.parametrize(
+    "config_string,expected_agent",
+    [
+        (valid_config, USER_AGENT),
+        (custom_user_agent_config, custom_user_agent),
+    ],
+)
+def test_config_user_agent(m_open, path_exists, config_string, expected_agent):
+    fd = io.StringIO(config_string)
+    fd.close = mock.Mock(return_value=None)
+    m_open.return_value = fd
+
+    cp = config.GitlabConfigParser()
+    assert cp.user_agent == expected_agent

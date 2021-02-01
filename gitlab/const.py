@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from gitlab.__version__ import __title__, __version__
+
+
 NO_ACCESS = 0
 MINIMAL_ACCESS = 5
 GUEST_ACCESS = 10
@@ -51,3 +54,5 @@ SEARCH_SCOPE_GLOBAL_SNIPPET_TITLES = "snippet_titles"
 
 # specific project scope
 SEARCH_SCOPE_PROJECT_NOTES = "notes"
+
+USER_AGENT = "{}/{}".format(__title__, __version__)

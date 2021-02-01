@@ -18,6 +18,8 @@
 import os
 import configparser
 
+from gitlab.const import USER_AGENT
+
 
 def _env_config():
     if "PYTHON_GITLAB_CFG" in os.environ:
@@ -175,5 +177,15 @@ class GitlabConfigParser(object):
         self.order_by = None
         try:
             self.order_by = self._config.get(self.gitlab_id, "order_by")
+        except Exception:
+            pass
+
+        self.user_agent = USER_AGENT
+        try:
+            self.user_agent = self._config.get("global", "user_agent")
+        except Exception:
+            pass
+        try:
+            self.user_agent = self._config.get(self.gitlab_id, "user_agent")
         except Exception:
             pass
