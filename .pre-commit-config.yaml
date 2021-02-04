@@ -8,14 +8,14 @@ repos:
       - id: black
 
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v3.0.0
+    rev: v4.1.0
     hooks:
       - id: commitlint
         additional_dependencies: ['@commitlint/config-conventional']
         stages: [commit-msg]
 
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v3.0.0
+    rev: v4.1.0
     hooks:
       - id: commitlint-travis
         additional_dependencies: ['@commitlint/config-conventional']
