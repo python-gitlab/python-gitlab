@@ -1,5 +1,5 @@
 -r requirements.txt
 jinja2
-sphinx==3.2.1
+sphinx==3.4.3
 sphinx_rtd_theme
 sphinxcontrib-autoprogram
