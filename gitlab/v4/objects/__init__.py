@@ -5501,6 +5501,94 @@ class ProjectManager(CRUDMixin, RESTManager):
             "/projects/import", post_data=data, files=files, **kwargs
         )
 
+    def import_bitbucket_server(
+        self,
+        bitbucket_server_url,
+        bitbucket_server_username,
+        personal_access_token,
+        bitbucket_server_project,
+        bitbucket_server_repo,
+        new_name=None,
+        target_namespace=None,
+        **kwargs
+    ):
+        """Import a project from BitBucket Server to Gitlab (schedule the import)
+
+        This method will return when an import operation has been safely queued,
+        or an error has occurred. After triggering an import, check the
+        `import_status` of the newly created project to detect when the import
+        operation has completed.
+
+        NOTE: this request may take longer than most other API requests.
+        So this method will specify a 60 second default timeout if none is specified.
+        A timeout can be specified via kwargs to override this functionality.
+
+        Args:
+            bitbucket_server_url (str): Bitbucket Server URL
+            bitbucket_server_username (str): Bitbucket Server Username
+            personal_access_token (str): Bitbucket Server personal access
+                token/password
+            bitbucket_server_project (str): Bitbucket Project Key
+            bitbucket_server_repo (str): Bitbucket Repository Name
+            new_name (str): New repository name (Optional)
+            target_namespace (str): Namespace to import repository into.
+                Supports subgroups like /namespace/subgroup (Optional)
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the server failed to perform the request
+
+        Returns:
+            dict: A representation of the import status.
+
+        Example:
+        ```
+            gl = gitlab.Gitlab_from_config()
+            print("Triggering import")
+            result = gl.projects.import_bitbucket_server(
+                bitbucket_server_url="https://some.server.url",
+                bitbucket_server_username="some_bitbucket_user",
+                personal_access_token="my_password_or_access_token",
+                bitbucket_server_project="my_project",
+                bitbucket_server_repo="my_repo",
+                new_name="gl_project_name",
+                target_namespace="gl_project_path"
+            )
+            project = gl.projects.get(ret['id'])
+            print("Waiting for import to complete")
+            while project.import_status == u'started':
+                time.sleep(1.0)
+                project = gl.projects.get(project.id)
+            print("BitBucket import complete")
+        ```
+        """
+        data = {
+            "bitbucket_server_url": bitbucket_server_url,
+            "bitbucket_server_username": bitbucket_server_username,
+            "personal_access_token": personal_access_token,
+            "bitbucket_server_project": bitbucket_server_project,
+            "bitbucket_server_repo": bitbucket_server_repo,
+        }
+        if new_name:
+            data["new_name"] = new_name
+        if target_namespace:
+            data["target_namespace"] = target_namespace
+        if (
+            "timeout" not in kwargs
+            or self.gitlab.timeout is None
+            or self.gitlab.timeout < 60.0
+        ):
+            # Ensure that this HTTP request has a longer-than-usual default timeout
+            # The base gitlab object tends to have a default that is <10 seconds,
+            # and this is too short for this API command, typically.
+            # On the order of 24 seconds has been measured on a typical gitlab instance.
+            kwargs["timeout"] = 60.0
+        result = self.gitlab.http_post(
+            "/import/bitbucket_server", post_data=data, **kwargs
+        )
+        return result
+
     def import_github(
         self, personal_access_token, repo_id, target_namespace, new_name=None, **kwargs
     ):
@@ -5532,16 +5620,16 @@ class ProjectManager(CRUDMixin, RESTManager):
         Example:
         ```
             gl = gitlab.Gitlab_from_config()
-            print "Triggering import"
+            print("Triggering import")
             result = gl.projects.import_github(ACCESS_TOKEN,
                                                123456,
                                                "my-group/my-subgroup")
             project = gl.projects.get(ret['id'])
-            print "Waiting for import to complete"
+            print("Waiting for import to complete")
             while project.import_status == u'started':
                 time.sleep(1.0)
                 project = gl.projects.get(project.id)
-            print "Github import complete"
+            print("Github import complete")
         ```
         """
         data = {
