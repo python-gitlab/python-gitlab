@@ -2,6 +2,14 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "Hook",
+    "HookManager",
+    "ProjectHook",
+    "ProjectHookManager",
+]
+
+
 class Hook(ObjectDeleteMixin, RESTObject):
     _url = "/hooks"
     _short_print_attr = "url"

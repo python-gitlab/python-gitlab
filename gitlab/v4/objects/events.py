@@ -3,6 +3,28 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "Event",
+    "EventManager",
+    "AuditEvent",
+    "AuditEventManager",
+    "GroupEpicResourceLabelEvent",
+    "GroupEpicResourceLabelEventManager",
+    "ProjectEvent",
+    "ProjectEventManager",
+    "ProjectIssueResourceLabelEvent",
+    "ProjectIssueResourceLabelEventManager",
+    "ProjectIssueResourceMilestoneEvent",
+    "ProjectIssueResourceMilestoneEventManager",
+    "ProjectMergeRequestResourceLabelEvent",
+    "ProjectMergeRequestResourceLabelEventManager",
+    "ProjectMergeRequestResourceMilestoneEvent",
+    "ProjectMergeRequestResourceMilestoneEventManager",
+    "UserEvent",
+    "UserEventManager",
+]
+
+
 class Event(RESTObject):
     _id_attr = None
     _short_print_attr = "target_title"

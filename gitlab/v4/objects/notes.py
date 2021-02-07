@@ -9,6 +9,26 @@ from .award_emojis import (
 )
 
 
+__all__ = [
+    "ProjectNote",
+    "ProjectNoteManager",
+    "ProjectCommitDiscussionNote",
+    "ProjectCommitDiscussionNoteManager",
+    "ProjectIssueNote",
+    "ProjectIssueNoteManager",
+    "ProjectIssueDiscussionNote",
+    "ProjectIssueDiscussionNoteManager",
+    "ProjectMergeRequestNote",
+    "ProjectMergeRequestNoteManager",
+    "ProjectMergeRequestDiscussionNote",
+    "ProjectMergeRequestDiscussionNoteManager",
+    "ProjectSnippetNote",
+    "ProjectSnippetNoteManager",
+    "ProjectSnippetDiscussionNote",
+    "ProjectSnippetDiscussionNoteManager",
+]
+
+
 class ProjectNote(RESTObject):
     pass
 

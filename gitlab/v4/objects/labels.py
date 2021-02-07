@@ -3,6 +3,14 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "GroupLabel",
+    "GroupLabelManager",
+    "ProjectLabel",
+    "ProjectLabelManager",
+]
+
+
 class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
 

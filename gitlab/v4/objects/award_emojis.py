@@ -2,6 +2,22 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "ProjectIssueAwardEmoji",
+    "ProjectIssueAwardEmojiManager",
+    "ProjectIssueNoteAwardEmoji",
+    "ProjectIssueNoteAwardEmojiManager",
+    "ProjectMergeRequestAwardEmoji",
+    "ProjectMergeRequestAwardEmojiManager",
+    "ProjectMergeRequestNoteAwardEmoji",
+    "ProjectMergeRequestNoteAwardEmojiManager",
+    "ProjectSnippetAwardEmoji",
+    "ProjectSnippetAwardEmojiManager",
+    "ProjectSnippetNoteAwardEmoji",
+    "ProjectSnippetNoteAwardEmojiManager",
+]
+
+
 class ProjectIssueAwardEmoji(ObjectDeleteMixin, RESTObject):
     pass
 

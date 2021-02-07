@@ -2,6 +2,12 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "Namespace",
+    "NamespaceManager",
+]
+
+
 class Namespace(RESTObject):
     pass
 

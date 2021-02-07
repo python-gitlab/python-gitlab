@@ -4,6 +4,12 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "GeoNode",
+    "GeoNodeManager",
+]
+
+
 class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("GeoNode")
     @exc.on_http_error(exc.GitlabRepairError)

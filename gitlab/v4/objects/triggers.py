@@ -1,7 +1,13 @@
-from gitlab import cli, types
+from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
+
+
+__all__ = [
+    "ProjectTrigger",
+    "ProjectTriggerManager",
+]
 
 
 class ProjectTrigger(SaveMixin, ObjectDeleteMixin, RESTObject):

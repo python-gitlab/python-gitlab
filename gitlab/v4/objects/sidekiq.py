@@ -4,6 +4,11 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "SidekiqManager",
+]
+
+
 class SidekiqManager(RESTManager):
     """Manager for the Sidekiq methods.
 

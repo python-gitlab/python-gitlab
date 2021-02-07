@@ -2,6 +2,14 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "GroupPackage",
+    "GroupPackageManager",
+    "ProjectPackage",
+    "ProjectPackageManager",
+]
+
+
 class GroupPackage(RESTObject):
     pass
 

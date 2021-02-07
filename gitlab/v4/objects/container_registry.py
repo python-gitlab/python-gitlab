@@ -4,6 +4,14 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "ProjectRegistryRepository",
+    "ProjectRegistryRepositoryManager",
+    "ProjectRegistryTag",
+    "ProjectRegistryTagManager",
+]
+
+
 class ProjectRegistryRepository(ObjectDeleteMixin, RESTObject):
     _managers = (("tags", "ProjectRegistryTagManager"),)
 

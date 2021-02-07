@@ -4,6 +4,14 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "ProjectBranch",
+    "ProjectBranchManager",
+    "ProjectProtectedBranch",
+    "ProjectProtectedBranchManager",
+]
+
+
 class ProjectBranch(ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
 

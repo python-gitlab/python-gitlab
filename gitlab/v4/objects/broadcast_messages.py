@@ -2,6 +2,12 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "BroadcastMessage",
+    "BroadcastMessageManager",
+]
+
+
 class BroadcastMessage(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 

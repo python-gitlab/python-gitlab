@@ -22,6 +22,14 @@ from .clusters import GroupClusterManager
 from .deploy_tokens import GroupDeployTokenManager
 
 
+__all__ = [
+    "Group",
+    "GroupManager",
+    "GroupSubgroup",
+    "GroupSubgroupManager",
+]
+
+
 class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "name"
     _managers = (

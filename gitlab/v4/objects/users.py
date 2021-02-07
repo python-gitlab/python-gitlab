@@ -7,6 +7,43 @@ from .custom_attributes import UserCustomAttributeManager
 from .events import UserEventManager
 
 
+__all__ = [
+    "CurrentUserEmail",
+    "CurrentUserEmailManager",
+    "CurrentUserGPGKey",
+    "CurrentUserGPGKeyManager",
+    "CurrentUserKey",
+    "CurrentUserKeyManager",
+    "CurrentUserStatus",
+    "CurrentUserStatusManager",
+    "CurrentUser",
+    "CurrentUserManager",
+    "User",
+    "UserManager",
+    "ProjectUser",
+    "ProjectUserManager",
+    "UserEmail",
+    "UserEmailManager",
+    "UserActivities",
+    "UserStatus",
+    "UserStatusManager",
+    "UserActivitiesManager",
+    "UserGPGKey",
+    "UserGPGKeyManager",
+    "UserKey",
+    "UserKeyManager",
+    "UserStatus",
+    "UserStatusManager",
+    "UserIdentityProviderManager",
+    "UserImpersonationToken",
+    "UserImpersonationTokenManager",
+    "UserMembership",
+    "UserMembershipManager",
+    "UserProject",
+    "UserProjectManager",
+]
+
+
 class CurrentUserEmail(ObjectDeleteMixin, RESTObject):
     _short_print_attr = "email"
 

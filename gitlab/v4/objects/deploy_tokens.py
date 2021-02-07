@@ -2,6 +2,16 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "DeployToken",
+    "DeployTokenManager",
+    "GroupDeployToken",
+    "GroupDeployTokenManager",
+    "ProjectDeployToken",
+    "ProjectDeployTokenManager",
+]
+
+
 class DeployToken(ObjectDeleteMixin, RESTObject):
     pass
 

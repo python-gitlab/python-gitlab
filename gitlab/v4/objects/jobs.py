@@ -1,7 +1,13 @@
-from gitlab import cli
+from gitlab import cli, utils
 from gitlab import exceptions as exc
 from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
+
+
+__all__ = [
+    "ProjectJob",
+    "ProjectJobManager",
+]
 
 
 class ProjectJob(RESTObject, RefreshMixin):

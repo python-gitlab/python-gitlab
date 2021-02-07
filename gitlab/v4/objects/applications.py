@@ -1,6 +1,11 @@
 from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
+__all__ = [
+    "Application",
+    "ApplicationManager",
+]
+
 
 class Application(ObjectDeleteMixin, RESTObject):
     _url = "/applications"

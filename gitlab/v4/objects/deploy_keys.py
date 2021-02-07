@@ -4,6 +4,14 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "DeployKey",
+    "DeployKeyManager",
+    "ProjectKey",
+    "ProjectKeyManager",
+]
+
+
 class DeployKey(RESTObject):
     pass
 

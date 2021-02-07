@@ -2,6 +2,12 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "ProjectWiki",
+    "ProjectWikiManager",
+]
+
+
 class ProjectWiki(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "slug"
     _short_print_attr = "slug"

@@ -2,6 +2,14 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "ProjectAdditionalStatistics",
+    "ProjectAdditionalStatisticsManager",
+    "ProjectIssuesStatistics",
+    "ProjectIssuesStatisticsManager",
+]
+
+
 class ProjectAdditionalStatistics(RefreshMixin, RESTObject):
     _id_attr = None
 

@@ -17,6 +17,18 @@ from .events import (
 )
 
 
+__all__ = [
+    "MergeRequest",
+    "MergeRequestManager",
+    "GroupMergeRequest",
+    "GroupMergeRequestManager",
+    "ProjectMergeRequest",
+    "ProjectMergeRequestManager",
+    "ProjectMergeRequestDiff",
+    "ProjectMergeRequestDiffManager",
+]
+
+
 class MergeRequest(RESTObject):
     pass
 

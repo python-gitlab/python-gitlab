@@ -4,6 +4,14 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "GroupMember",
+    "GroupMemberManager",
+    "ProjectMember",
+    "ProjectMemberManager",
+]
+
+
 class GroupMember(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "username"
 

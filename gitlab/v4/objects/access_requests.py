@@ -2,6 +2,14 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "GroupAccessRequest",
+    "GroupAccessRequestManager",
+    "ProjectAccessRequest",
+    "ProjectAccessRequestManager",
+]
+
+
 class GroupAccessRequest(AccessRequestMixin, ObjectDeleteMixin, RESTObject):
     pass
 

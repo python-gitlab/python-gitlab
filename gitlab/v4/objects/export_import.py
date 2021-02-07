@@ -2,6 +2,18 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "GroupExport",
+    "GroupExportManager",
+    "GroupImport",
+    "GroupImportManager",
+    "ProjectExport",
+    "ProjectExportManager",
+    "ProjectImport",
+    "ProjectImportManager",
+]
+
+
 class GroupExport(DownloadMixin, RESTObject):
     _id_attr = None
 

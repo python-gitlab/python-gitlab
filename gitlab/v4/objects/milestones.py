@@ -1,4 +1,4 @@
-from gitlab import cli, types
+from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
@@ -9,6 +9,14 @@ from .merge_requests import (
     GroupMergeRequest,
     GroupMergeRequestManager,
 )
+
+
+__all__ = [
+    "GroupMilestone",
+    "GroupMilestoneManager",
+    "ProjectMilestone",
+    "ProjectMilestoneManager",
+]
 
 
 class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):

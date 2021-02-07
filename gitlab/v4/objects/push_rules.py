@@ -2,6 +2,12 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "ProjectPushRules",
+    "ProjectPushRulesManager",
+]
+
+
 class ProjectPushRules(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = None
 

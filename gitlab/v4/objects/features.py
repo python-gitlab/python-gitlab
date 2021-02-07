@@ -1,6 +1,13 @@
+from gitlab import utils
 from gitlab import exceptions as exc
 from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
+
+
+__all__ = [
+    "Feature",
+    "FeatureManager",
+]
 
 
 class Feature(ObjectDeleteMixin, RESTObject):

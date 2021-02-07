@@ -5,6 +5,16 @@ from gitlab.mixins import *  # noqa
 from .discussions import ProjectCommitDiscussionManager
 
 
+__all__ = [
+    "ProjectCommit",
+    "ProjectCommitManager",
+    "ProjectCommitComment",
+    "ProjectCommitCommentManager",
+    "ProjectCommitStatus",
+    "ProjectCommitStatusManager",
+]
+
+
 class ProjectCommit(RESTObject):
     _short_print_attr = "title"
     _managers = (

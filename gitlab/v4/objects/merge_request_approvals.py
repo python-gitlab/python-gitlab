@@ -3,6 +3,18 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "ProjectApproval",
+    "ProjectApprovalManager",
+    "ProjectApprovalRule",
+    "ProjectApprovalRuleManager",
+    "ProjectMergeRequestApproval",
+    "ProjectMergeRequestApprovalManager",
+    "ProjectMergeRequestApprovalRule",
+    "ProjectMergeRequestApprovalRuleManager",
+]
+
+
 class ProjectApproval(SaveMixin, RESTObject):
     _id_attr = None
 

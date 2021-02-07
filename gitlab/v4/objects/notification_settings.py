@@ -2,6 +2,16 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "NotificationSettings",
+    "NotificationSettingsManager",
+    "GroupNotificationSettings",
+    "GroupNotificationSettingsManager",
+    "ProjectNotificationSettings",
+    "ProjectNotificationSettingsManager",
+]
+
+
 class NotificationSettings(SaveMixin, RESTObject):
     _id_attr = None
 

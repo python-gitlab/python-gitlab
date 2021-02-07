@@ -2,6 +2,16 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "GroupCustomAttribute",
+    "GroupCustomAttributeManager",
+    "ProjectCustomAttribute",
+    "ProjectCustomAttributeManager",
+    "UserCustomAttribute",
+    "UserCustomAttributeManager",
+]
+
+
 class GroupCustomAttribute(ObjectDeleteMixin, RESTObject):
     _id_attr = "key"
 

@@ -2,6 +2,18 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "GroupBoardList",
+    "GroupBoardListManager",
+    "GroupBoard",
+    "GroupBoardManager",
+    "ProjectBoardList",
+    "ProjectBoardListManager",
+    "ProjectBoard",
+    "ProjectBoardManager",
+]
+
+
 class GroupBoardList(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 

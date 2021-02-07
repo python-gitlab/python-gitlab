@@ -4,6 +4,16 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "ProjectTag",
+    "ProjectTagManager",
+    "ProjectProtectedTag",
+    "ProjectProtectedTagManager",
+    "ProjectRelease",
+    "ProjectReleaseManager",
+]
+
+
 class ProjectTag(ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
     _short_print_attr = "name"

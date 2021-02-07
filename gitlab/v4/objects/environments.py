@@ -4,6 +4,12 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "ProjectEnvironment",
+    "ProjectEnvironmentManager",
+]
+
+
 class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("ProjectEnvironment")
     @exc.on_http_error(exc.GitlabStopError)

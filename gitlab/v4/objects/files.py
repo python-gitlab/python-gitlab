@@ -1,9 +1,14 @@
 import base64
-
-from gitlab import cli, types
+from gitlab import cli, utils
 from gitlab import exceptions as exc
 from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
+
+
+__all__ = [
+    "ProjectFile",
+    "ProjectFileManager",
+]
 
 
 class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):

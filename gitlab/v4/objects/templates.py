@@ -2,6 +2,18 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "Dockerfile",
+    "DockerfileManager",
+    "Gitignore",
+    "GitignoreManager",
+    "Gitlabciyml",
+    "GitlabciymlManager",
+    "License",
+    "LicenseManager",
+]
+
+
 class Dockerfile(RESTObject):
     _id_attr = "name"
 

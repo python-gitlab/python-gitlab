@@ -5,6 +5,14 @@ from gitlab.mixins import *  # noqa
 from .events import GroupEpicResourceLabelEventManager
 
 
+__all__ = [
+    "GroupEpic",
+    "GroupEpicManager",
+    "GroupEpicIssue",
+    "GroupEpicIssueManager",
+]
+
+
 class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
     _id_attr = "iid"
     _managers = (

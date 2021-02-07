@@ -2,6 +2,14 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "GroupBadge",
+    "GroupBadgeManager",
+    "ProjectBadge",
+    "ProjectBadgeManager",
+]
+
+
 class GroupBadge(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 

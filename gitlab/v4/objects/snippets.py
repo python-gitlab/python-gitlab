@@ -1,4 +1,4 @@
-from gitlab import cli
+from gitlab import cli, utils
 from gitlab import exceptions as exc
 from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
@@ -6,6 +6,14 @@ from gitlab.mixins import *  # noqa
 from .award_emojis import ProjectSnippetAwardEmojiManager
 from .discussions import ProjectSnippetDiscussionManager
 from .notes import ProjectSnippetNoteManager, ProjectSnippetDiscussionNoteManager
+
+
+__all__ = [
+    "Snippet",
+    "SnippetManager",
+    "ProjectSnippet",
+    "ProjectSnippetManager",
+]
 
 
 class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):

@@ -2,6 +2,14 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "PagesDomain",
+    "PagesDomainManager",
+    "ProjectPagesDomain",
+    "ProjectPagesDomainManager",
+]
+
+
 class PagesDomain(RESTObject):
     _id_attr = "domain"
 

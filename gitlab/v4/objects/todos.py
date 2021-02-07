@@ -4,6 +4,12 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "Todo",
+    "TodoManager",
+]
+
+
 class Todo(ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("Todo")
     @exc.on_http_error(exc.GitlabTodoError)

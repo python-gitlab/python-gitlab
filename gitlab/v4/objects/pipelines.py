@@ -4,6 +4,22 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "ProjectPipeline",
+    "ProjectPipelineManager",
+    "ProjectPipelineJob",
+    "ProjectPipelineJobManager",
+    "ProjectPipelineBridge",
+    "ProjectPipelineBridgeManager",
+    "ProjectPipelineVariable",
+    "ProjectPipelineVariableManager",
+    "ProjectPipelineScheduleVariable",
+    "ProjectPipelineScheduleVariableManager",
+    "ProjectPipelineSchedule",
+    "ProjectPipelineScheduleManager",
+]
+
+
 class ProjectPipeline(RESTObject, RefreshMixin, ObjectDeleteMixin):
     _managers = (
         ("jobs", "ProjectPipelineJobManager"),

@@ -8,6 +8,18 @@ from .notes import (
 )
 
 
+__all__ = [
+    "ProjectCommitDiscussion",
+    "ProjectCommitDiscussionManager",
+    "ProjectIssueDiscussion",
+    "ProjectIssueDiscussionManager",
+    "ProjectMergeRequestDiscussion",
+    "ProjectMergeRequestDiscussionManager",
+    "ProjectSnippetDiscussion",
+    "ProjectSnippetDiscussionManager",
+]
+
+
 class ProjectCommitDiscussion(RESTObject):
     _managers = (("notes", "ProjectCommitDiscussionNoteManager"),)
 

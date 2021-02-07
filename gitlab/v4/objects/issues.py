@@ -1,4 +1,5 @@
-from gitlab import types
+from gitlab import cli, types
+from gitlab import exceptions as exc
 from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 from .award_emojis import ProjectIssueAwardEmojiManager
@@ -8,6 +9,18 @@ from .events import (
     ProjectIssueResourceMilestoneEventManager,
 )
 from .notes import ProjectIssueNoteManager
+
+
+__all__ = [
+    "Issue",
+    "IssueManager",
+    "GroupIssue",
+    "GroupIssueManager",
+    "ProjectIssue",
+    "ProjectIssueManager",
+    "ProjectIssueLink",
+    "ProjectIssueLinkManager",
+]
 
 
 class Issue(RESTObject):
