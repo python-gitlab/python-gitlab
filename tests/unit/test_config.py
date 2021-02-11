@@ -150,7 +150,7 @@ def test_default_config(mock_clean_env, monkeypatch):
     assert cp.retry_transient_errors is False
     assert cp.ssl_verify is True
     assert cp.timeout == 60
-    assert cp.url == const.DEFAULT_URL
+    assert cp.url is None
     assert cp.user_agent == const.USER_AGENT
 
 
