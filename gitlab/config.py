@@ -23,7 +23,7 @@ from os.path import expanduser, expandvars
 from pathlib import Path
 from typing import List, Optional, Union
 
-from gitlab.const import DEFAULT_URL, USER_AGENT
+from gitlab.const import USER_AGENT
 
 _DEFAULT_FILES: List[str] = [
     "/etc/python-gitlab.cfg",
@@ -119,7 +119,7 @@ class GitlabConfigParser(object):
         self.retry_transient_errors: bool = False
         self.ssl_verify: Union[bool, str] = True
         self.timeout: int = 60
-        self.url: str = DEFAULT_URL
+        self.url: Optional[str] = None
         self.user_agent: str = USER_AGENT
 
         self._files = _get_config_files(config_files)

@@ -1,22 +1,31 @@
+"""
+Some test cases are run in-process to intercept requests to gitlab.com
+and example servers.
+"""
+
+import copy
 import json
 
 import pytest
 import responses
 
 from gitlab import __version__, config
+from gitlab.const import DEFAULT_URL
+
+PRIVATE_TOKEN = "glpat-abc123"
+CI_JOB_TOKEN = "ci-job-token"
+CI_SERVER_URL = "https://gitlab.example.com"
 
 
 @pytest.fixture
 def resp_get_project():
-    with responses.RequestsMock() as rsps:
-        rsps.add(
-            method=responses.GET,
-            url="https://gitlab.com/api/v4/projects/1",
-            json={"name": "name", "path": "test-path", "id": 1},
-            content_type="application/json",
-            status=200,
-        )
-        yield rsps
+    return {
+        "method": responses.GET,
+        "url": f"{DEFAULT_URL}/api/v4/projects/1",
+        "json": {"name": "name", "path": "test-path", "id": 1},
+        "content_type": "application/json",
+        "status": 200,
+    }
 
 
 def test_main_entrypoint(script_runner, gitlab_config):
@@ -30,15 +39,65 @@ def test_version(script_runner):
 
 
 @pytest.mark.script_launch_mode("inprocess")
+@responses.activate
 def test_defaults_to_gitlab_com(script_runner, resp_get_project, monkeypatch):
+    responses.add(**resp_get_project)
     with monkeypatch.context() as m:
         # Ensure we don't pick up any config files that may already exist in the local
         # environment.
         m.setattr(config, "_DEFAULT_FILES", [])
-        # Runs in-process to intercept requests to gitlab.com
         ret = script_runner.run("gitlab", "project", "get", "--id", "1")
     assert ret.success
     assert "id: 1" in ret.stdout
+
+
+@pytest.mark.script_launch_mode("inprocess")
+@responses.activate
+def test_uses_ci_server_url(monkeypatch, script_runner, resp_get_project):
+    monkeypatch.setenv("CI_SERVER_URL", CI_SERVER_URL)
+    resp_get_project_in_ci = copy.deepcopy(resp_get_project)
+    resp_get_project_in_ci.update(url=f"{CI_SERVER_URL}/api/v4/projects/1")
+
+    responses.add(**resp_get_project_in_ci)
+    ret = script_runner.run("gitlab", "project", "get", "--id", "1")
+    assert ret.success
+
+
+@pytest.mark.script_launch_mode("inprocess")
+@responses.activate
+def test_uses_ci_job_token(monkeypatch, script_runner, resp_get_project):
+    monkeypatch.setenv("CI_JOB_TOKEN", CI_JOB_TOKEN)
+    resp_get_project_in_ci = copy.deepcopy(resp_get_project)
+    resp_get_project_in_ci.update(
+        match=[responses.matchers.header_matcher({"JOB-TOKEN": CI_JOB_TOKEN})],
+    )
+
+    responses.add(**resp_get_project_in_ci)
+    ret = script_runner.run("gitlab", "project", "get", "--id", "1")
+    assert ret.success
+
+
+@pytest.mark.script_launch_mode("inprocess")
+@responses.activate
+def test_private_token_overrides_job_token(
+    monkeypatch, script_runner, resp_get_project
+):
+    monkeypatch.setenv("GITLAB_PRIVATE_TOKEN", PRIVATE_TOKEN)
+    monkeypatch.setenv("CI_JOB_TOKEN", CI_JOB_TOKEN)
+
+    resp_get_project_with_token = copy.deepcopy(resp_get_project)
+    resp_get_project_with_token.update(
+        match=[responses.matchers.header_matcher({"PRIVATE-TOKEN": PRIVATE_TOKEN})],
+    )
+
+    # CLI first calls .auth() when private token is present
+    resp_auth_with_token = copy.deepcopy(resp_get_project_with_token)
+    resp_auth_with_token.update(url=f"{DEFAULT_URL}/api/v4/user")
+
+    responses.add(**resp_get_project_with_token)
+    responses.add(**resp_auth_with_token)
+    ret = script_runner.run("gitlab", "project", "get", "--id", "1")
+    assert ret.success
 
 
 def test_env_config_missing_file_raises(script_runner, monkeypatch):

@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Wrapper for the GitLab API."""
 
+import os
 import time
 from typing import Any, cast, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
 
@@ -255,6 +256,87 @@ class Gitlab(object):
             user_agent=config.user_agent,
             retry_transient_errors=config.retry_transient_errors,
         )
+
+    @classmethod
+    def merge_config(
+        cls,
+        options: dict,
+        gitlab_id: Optional[str] = None,
+        config_files: Optional[List[str]] = None,
+    ) -> "Gitlab":
+        """Create a Gitlab connection by merging configuration with
+        the following precedence:
+
+        1. Explicitly provided CLI arguments,
+        2. Environment variables,
+        3. Configuration files:
+            a. explicitly defined config files:
+                i. via the `--config-file` CLI argument,
+                ii. via the `PYTHON_GITLAB_CFG` environment variable,
+            b. user-specific config file,
+            c. system-level config file,
+        4. Environment variables always present in CI (CI_SERVER_URL, CI_JOB_TOKEN).
+
+        Args:
+            options: A dictionary of explicitly provided key-value options.
+            gitlab_id: ID of the configuration section.
+            config_files: List of paths to configuration files.
+        Returns:
+            (gitlab.Gitlab): A Gitlab connection.
+
+        Raises:
+            gitlab.config.GitlabDataError: If the configuration is not correct.
+        """
+        config = gitlab.config.GitlabConfigParser(
+            gitlab_id=gitlab_id, config_files=config_files
+        )
+        url = (
+            options.get("server_url")
+            or config.url
+            or os.getenv("CI_SERVER_URL")
+            or gitlab.const.DEFAULT_URL
+        )
+        private_token, oauth_token, job_token = cls._merge_auth(options, config)
+
+        return cls(
+            url=url,
+            private_token=private_token,
+            oauth_token=oauth_token,
+            job_token=job_token,
+            ssl_verify=options.get("ssl_verify") or config.ssl_verify,
+            timeout=options.get("timeout") or config.timeout,
+            api_version=options.get("api_version") or config.api_version,
+            per_page=options.get("per_page") or config.per_page,
+            pagination=options.get("pagination") or config.pagination,
+            order_by=options.get("order_by") or config.order_by,
+            user_agent=options.get("user_agent") or config.user_agent,
+        )
+
+    @staticmethod
+    def _merge_auth(options: dict, config: gitlab.config.GitlabConfigParser) -> Tuple:
+        """
+        Return a tuple where at most one of 3 token types ever has a value.
+        Since multiple types of tokens may be present in the environment,
+        options, or config files, this precedence ensures we don't
+        inadvertently cause errors when initializing the client.
+
+        This is especially relevant when executed in CI where user and
+        CI-provided values are both available.
+        """
+        private_token = options.get("private_token") or config.private_token
+        oauth_token = options.get("oauth_token") or config.oauth_token
+        job_token = (
+            options.get("job_token") or config.job_token or os.getenv("CI_JOB_TOKEN")
+        )
+
+        if private_token:
+            return (private_token, None, None)
+        if oauth_token:
+            return (None, oauth_token, None)
+        if job_token:
+            return (None, None, job_token)
+
+        return (None, None, None)
 
     def auth(self) -> None:
         """Performs an authentication using private token.

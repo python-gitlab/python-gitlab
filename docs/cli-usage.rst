@@ -3,17 +3,60 @@
 ####################
 
 ``python-gitlab`` provides a :command:`gitlab` command-line tool to interact
-with GitLab servers. It uses a configuration file to define how to connect to
-the servers. Without a configuration file, ``gitlab`` will default to
-https://gitlab.com and unauthenticated requests.
+with GitLab servers.
+
+This is especially convenient for running quick ad-hoc commands locally, easily
+interacting with the API inside GitLab CI, or with more advanced shell scripting
+when integrating with other tooling.
 
 .. _cli_configuration:
 
 Configuration
 =============
 
-Files
------
+``gitlab`` allows setting configuration options via command-line arguments,
+environment variables, and configuration files.
+
+For a complete list of global CLI options and their environment variable
+equivalents, see :doc:`/cli-objects`.
+
+With no configuration provided, ``gitlab`` will default to unauthenticated
+requests against `GitLab.com <https://gitlab.com>`__.
+
+With no configuration but running inside a GitLab CI job, it will default to
+authenticated requests using the current job token against the current instance
+(via ``CI_SERVER_URL`` and ``CI_JOB_TOKEN`` environment variables).
+
+.. warning::
+   Please note the job token has very limited permissions and can only be used
+   with certain endpoints. You may need to provide a personal access token instead.
+
+When you provide configuration, values are evaluated with the following precedence:
+
+1. Explicitly provided CLI arguments,
+2. Environment variables,
+3. Configuration files:
+
+   a. explicitly defined config files:
+
+      i. via the ``--config-file`` CLI argument,
+      ii. via the ``PYTHON_GITLAB_CFG`` environment variable,
+
+   b. user-specific config file,
+   c. system-level config file,
+
+4. Environment variables always present in CI (``CI_SERVER_URL``, ``CI_JOB_TOKEN``).
+
+Additionally, authentication will take the following precedence
+when multiple options or environment variables are present:
+
+1. Private token,
+2. OAuth token,
+3. CI job token.
+
+
+Configuration files
+-------------------
 
 ``gitlab`` looks up 3 configuration files by default:
 
@@ -35,8 +78,8 @@ You can use a different configuration file with the ``--config-file`` option.
     If the environment variable is defined and the target file cannot be accessed,
     ``gitlab`` will fail explicitly.
 
-Content
--------
+Configuration file format
+-------------------------
 
 The configuration file uses the ``INI`` format. It contains at least a
 ``[global]`` section, and a specific section for each GitLab server. For
