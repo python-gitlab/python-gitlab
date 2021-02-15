@@ -8,6 +8,16 @@ from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
 
+__all__ = [
+    "Variable",
+    "VariableManager",
+    "GroupVariable",
+    "GroupVariableManager",
+    "ProjectVariable",
+    "ProjectVariableManager",
+]
+
+
 class Variable(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "key"
 
