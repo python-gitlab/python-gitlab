@@ -1,4 +1,5 @@
 import pytest
+import requests
 
 from httmock import HTTMock, urlmatch, response
 
