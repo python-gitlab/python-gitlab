@@ -383,10 +383,7 @@ class Gitlab(object):
     def enable_debug(self):
         import logging
 
-        try:
-            from http.client import HTTPConnection  # noqa
-        except ImportError:
-            from httplib import HTTPConnection  # noqa
+        from http.client import HTTPConnection  # noqa
 
         HTTPConnection.debuglevel = 1
         logging.basicConfig()
