@@ -312,8 +312,8 @@ class ProjectMergeRequest(
         data = {}
         if merge_commit_message:
             data["merge_commit_message"] = merge_commit_message
-        if should_remove_source_branch:
-            data["should_remove_source_branch"] = True
+        if should_remove_source_branch is not None:
+            data["should_remove_source_branch"] = should_remove_source_branch
         if merge_when_pipeline_succeeds:
             data["merge_when_pipeline_succeeds"] = True
 
