@@ -25,7 +25,7 @@ import gitlab.config
 import gitlab.const
 import gitlab.exceptions
 from gitlab import utils
-from requests_toolbelt.multipart.encoder import MultipartEncoder
+from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
 
 
 REDIRECT_MSG = (

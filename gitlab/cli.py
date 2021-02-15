@@ -193,7 +193,7 @@ def main():
     # Now we build the entire set of subcommands and do the complete parsing
     parser = _get_parser(gitlab.v4.cli)
     try:
-        import argcomplete
+        import argcomplete  # type: ignore
 
         argcomplete.autocomplete(parser)
     except Exception:
