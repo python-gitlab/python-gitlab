@@ -45,8 +45,6 @@ REDIRECT_MSG = (
     "must update your GitLab URL to use https:// to avoid issues."
 )
 
-ALLOWED_KEYSET_ENDPOINTS = ["/projects"]
-
 
 class Gitlab(object):
     """Represents a GitLab server connection.
