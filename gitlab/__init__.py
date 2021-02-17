@@ -143,6 +143,7 @@ class Gitlab(object):
         self.user_activities = objects.UserActivitiesManager(self)
         self.applications = objects.ApplicationManager(self)
         self.variables = objects.VariableManager(self)
+        self.personal_access_tokens = objects.PersonalAccessTokenManager(self)
 
     def __enter__(self):
         return self

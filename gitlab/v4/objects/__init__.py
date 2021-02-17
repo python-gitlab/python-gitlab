@@ -69,6 +69,7 @@ from .triggers import *
 from .users import *
 from .variables import *
 from .wikis import *
+from .personal_access_tokens import *
 
 
 # TODO: deprecate these in favor of gitlab.const.*
