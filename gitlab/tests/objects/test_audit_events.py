@@ -32,11 +32,11 @@ audit_events_content = {
 }
 
 audit_events_url = re.compile(
-    r"http://localhost/api/v4/(((groups|projects)/1)|(admin/ci))/audit_events"
+    r"http://localhost/api/v4/((groups|projects)/1/)audit_events"
 )
 
 audit_events_url_id = re.compile(
-    rf"http://localhost/api/v4/(((groups|projects)/1)|(admin/ci))/audit_events/{id}"
+    rf"http://localhost/api/v4/((groups|projects)/1/)audit_events/{id}"
 )
 
 
