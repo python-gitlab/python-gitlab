@@ -56,6 +56,7 @@ from .pages import *
 from .pipelines import *
 from .projects import *
 from .push_rules import *
+from .releases import *
 from .runners import *
 from .services import *
 from .settings import *
