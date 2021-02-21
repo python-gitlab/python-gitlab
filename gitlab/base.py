@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import importlib
+from typing import Any, Dict
 
 
 __all__ = [
@@ -245,6 +246,7 @@ class RESTManager(object):
 
     _path = None
     _obj_cls = None
+    _from_parent_attrs: Dict[str, Any] = {}
 
     def __init__(self, gl, parent=None):
         """REST manager constructor.
@@ -266,7 +268,7 @@ class RESTManager(object):
         self._parent_attrs = {}
         if path is None:
             path = self._path
-        if self._parent is None or not hasattr(self, "_from_parent_attrs"):
+        if self._parent is None:
             return path
 
         data = {

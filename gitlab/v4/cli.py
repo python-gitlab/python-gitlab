@@ -70,9 +70,8 @@ class GitlabCLI(object):
         # Get the object (lazy), then act
         if in_obj:
             data = {}
-            if hasattr(self.mgr, "_from_parent_attrs"):
-                for k in self.mgr._from_parent_attrs:
-                    data[k] = self.args[k]
+            for k in self.mgr._from_parent_attrs:
+                data[k] = self.args[k]
             if gitlab.mixins.GetWithoutIdMixin not in inspect.getmro(self.cls):
                 data[self.cls._id_attr] = self.args.pop(self.cls._id_attr)
             o = self.cls(self.mgr, data)
@@ -139,13 +138,10 @@ def _populate_sub_parser_by_class(cls, sub_parser):
 
         sub_parser_action = sub_parser.add_parser(action_name)
         sub_parser_action.add_argument("--sudo", required=False)
-        if hasattr(mgr_cls, "_from_parent_attrs"):
-            [
-                sub_parser_action.add_argument(
-                    "--%s" % x.replace("_", "-"), required=True
-                )
-                for x in mgr_cls._from_parent_attrs
-            ]
+        [
+            sub_parser_action.add_argument("--%s" % x.replace("_", "-"), required=True)
+            for x in mgr_cls._from_parent_attrs
+        ]
 
         if action_name == "list":
             if hasattr(mgr_cls, "_list_filters"):
@@ -222,13 +218,13 @@ def _populate_sub_parser_by_class(cls, sub_parser):
         for action_name in cli.custom_actions[name]:
             sub_parser_action = sub_parser.add_parser(action_name)
             # Get the attributes for URL/path construction
-            if hasattr(mgr_cls, "_from_parent_attrs"):
-                [
-                    sub_parser_action.add_argument(
-                        "--%s" % x.replace("_", "-"), required=True
-                    )
-                    for x in mgr_cls._from_parent_attrs
-                ]
+            [
+                sub_parser_action.add_argument(
+                    "--%s" % x.replace("_", "-"), required=True
+                )
+                for x in mgr_cls._from_parent_attrs
+            ]
+            if mgr_cls._from_parent_attrs:
                 sub_parser_action.add_argument("--sudo", required=False)
 
             # We need to get the object somehow
@@ -257,13 +253,13 @@ def _populate_sub_parser_by_class(cls, sub_parser):
         name = mgr_cls.__name__
         for action_name in cli.custom_actions[name]:
             sub_parser_action = sub_parser.add_parser(action_name)
-            if hasattr(mgr_cls, "_from_parent_attrs"):
-                [
-                    sub_parser_action.add_argument(
-                        "--%s" % x.replace("_", "-"), required=True
-                    )
-                    for x in mgr_cls._from_parent_attrs
-                ]
+            [
+                sub_parser_action.add_argument(
+                    "--%s" % x.replace("_", "-"), required=True
+                )
+                for x in mgr_cls._from_parent_attrs
+            ]
+            if mgr_cls._from_parent_attrs:
                 sub_parser_action.add_argument("--sudo", required=False)
 
             required, optional, dummy = cli.custom_actions[name][action_name]
