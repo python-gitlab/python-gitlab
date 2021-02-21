@@ -42,7 +42,7 @@ def test_update_group(gitlab_cli, gl, group):
 
     assert ret.success
 
-    group = gl.groups.list(description=description)[0]
+    group = gl.groups.get(group.id)
     assert group.description == description
 
 
