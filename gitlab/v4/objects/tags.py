@@ -9,8 +9,6 @@ __all__ = [
     "ProjectTagManager",
     "ProjectProtectedTag",
     "ProjectProtectedTagManager",
-    "ProjectRelease",
-    "ProjectReleaseManager",
 ]
 
 
@@ -71,14 +69,3 @@ class ProjectProtectedTagManager(NoUpdateMixin, RESTManager):
     _obj_cls = ProjectProtectedTag
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = (("name",), ("create_access_level",))
-
-
-class ProjectRelease(RESTObject):
-    _id_attr = "tag_name"
-
-
-class ProjectReleaseManager(NoUpdateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/releases"
-    _obj_cls = ProjectRelease
-    _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (("name", "tag_name", "description"), ("ref", "assets"))

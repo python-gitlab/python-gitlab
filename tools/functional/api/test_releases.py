@@ -1,0 +1,36 @@
+release_name = "Demo Release"
+release_tag_name = "v1.2.3"
+release_description = "release notes go here"
+
+link_data = {"url": "https://example.com", "name": "link_name"}
+
+
+def test_create_project_release(project, project_file):
+    project.refresh()  # Gets us the current default branch
+    release = project.releases.create(
+        {
+            "name": release_name,
+            "tag_name": release_tag_name,
+            "description": release_description,
+            "ref": project.default_branch,
+        }
+    )
+
+    assert len(project.releases.list()) == 1
+    assert project.releases.get(release_tag_name)
+    assert release.name == release_name
+    assert release.tag_name == release_tag_name
+    assert release.description == release_description
+
+
+def test_delete_project_release(project, release):
+    project.releases.delete(release.tag_name)
+    assert release not in project.releases.list()
+
+
+def test_create_project_release_links(project, release):
+    link = release.links.create(link_data)
+
+    release = project.releases.get(release.tag_name)
+    assert release.assets["links"][0]["url"] == link_data["url"]
+    assert release.assets["links"][0]["name"] == link_data["name"]

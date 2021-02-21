@@ -197,32 +197,6 @@ def test_project_protected_branches(project):
     assert len(project.protectedbranches.list()) == 0
 
 
-def test_project_releases(gl):
-    project = gl.projects.create(
-        {"name": "release-test-project", "initialize_with_readme": True}
-    )
-    release_name = "Demo Release"
-    release_tag_name = "v1.2.3"
-    release_description = "release notes go here"
-    release = project.releases.create(
-        {
-            "name": release_name,
-            "tag_name": release_tag_name,
-            "description": release_description,
-            "ref": "master",
-        }
-    )
-    assert len(project.releases.list()) == 1
-    assert project.releases.get(release_tag_name)
-    assert release.name == release_name
-    assert release.tag_name == release_tag_name
-    assert release.description == release_description
-
-    project.releases.delete(release_tag_name)
-    assert len(project.releases.list()) == 0
-    project.delete()
-
-
 def test_project_remote_mirrors(project):
     mirror_url = "http://gitlab.test/root/mirror.git"
 
@@ -260,15 +234,7 @@ def test_project_stars(project):
     assert project.star_count == 0
 
 
-def test_project_tags(project):
-    project.files.create(
-        {
-            "file_path": "README",
-            "branch": "master",
-            "content": "Initial content",
-            "commit_message": "Initial commit",
-        }
-    )
+def test_project_tags(project, project_file):
     tag = project.tags.create({"tag_name": "v1.0", "ref": "master"})
     assert len(project.tags.list()) == 1
 

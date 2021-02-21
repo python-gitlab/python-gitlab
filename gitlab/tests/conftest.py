@@ -38,6 +38,11 @@ def default_config(tmpdir):
 
 
 @pytest.fixture
+def tag_name():
+    return "v1.0.0"
+
+
+@pytest.fixture
 def group(gl):
     return gl.groups.get(1, lazy=True)
 
@@ -45,6 +50,11 @@ def group(gl):
 @pytest.fixture
 def project(gl):
     return gl.projects.get(1, lazy=True)
+
+
+@pytest.fixture
+def release(project, tag_name):
+    return project.releases.get(tag_name, lazy=True)
 
 
 @pytest.fixture

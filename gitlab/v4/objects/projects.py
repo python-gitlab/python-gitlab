@@ -33,6 +33,7 @@ from .packages import ProjectPackageManager
 from .pages import ProjectPagesDomainManager
 from .pipelines import ProjectPipelineManager, ProjectPipelineScheduleManager
 from .push_rules import ProjectPushRulesManager
+from .releases import ProjectReleaseManager
 from .runners import ProjectRunnerManager
 from .services import ProjectServiceManager
 from .snippets import ProjectSnippetManager
@@ -40,7 +41,7 @@ from .statistics import (
     ProjectAdditionalStatisticsManager,
     ProjectIssuesStatisticsManager,
 )
-from .tags import ProjectProtectedTagManager, ProjectReleaseManager, ProjectTagManager
+from .tags import ProjectProtectedTagManager, ProjectTagManager
 from .triggers import ProjectTriggerManager
 from .users import ProjectUserManager
 from .variables import ProjectVariableManager
@@ -86,7 +87,7 @@ class GroupProjectManager(ListMixin, RESTManager):
     )
 
 
-class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
+class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "path"
     _managers = (
         ("accessrequests", "ProjectAccessRequestManager"),
