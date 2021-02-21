@@ -89,9 +89,15 @@ def wait_for_sidekiq(gl):
 
     def _wait(timeout=30, step=0.5):
         for _ in range(timeout):
-            if not gl.sidekiq.process_metrics()["processes"][0]["busy"]:
-                return
             time.sleep(step)
+            busy = False
+            processes = gl.sidekiq.process_metrics()["processes"]
+            for process in processes:
+                if process["busy"]:
+                    busy = True
+            if not busy:
+                return True
+        return False
 
     return _wait
 
