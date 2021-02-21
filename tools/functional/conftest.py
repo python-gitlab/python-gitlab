@@ -197,6 +197,39 @@ def project(gl):
 
 
 @pytest.fixture(scope="module")
+def project_file(project):
+    """File fixture for tests requiring a project with files and branches."""
+    project_file = project.files.create(
+        {
+            "file_path": "README",
+            "branch": "master",
+            "content": "Initial content",
+            "commit_message": "Initial commit",
+        }
+    )
+
+    return project_file
+
+
+@pytest.fixture(scope="function")
+def release(project, project_file):
+    _id = uuid.uuid4().hex
+    name = f"test-release-{_id}"
+
+    project.refresh()  # Gets us the current default branch
+    release = project.releases.create(
+        {
+            "name": name,
+            "tag_name": _id,
+            "description": "description",
+            "ref": project.default_branch,
+        }
+    )
+
+    return release
+
+
+@pytest.fixture(scope="module")
 def user(gl):
     """User fixture for user API resource tests."""
     _id = uuid.uuid4().hex
