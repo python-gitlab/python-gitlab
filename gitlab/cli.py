@@ -19,7 +19,6 @@
 
 import argparse
 import functools
-import importlib
 import re
 import sys
 
@@ -158,12 +157,18 @@ def docs():
         sys.exit("Docs parser is only intended for build_sphinx")
 
     parser = _get_base_parser(add_help=False)
-    cli_module = importlib.import_module("gitlab.v4.cli")
+    # NOTE: We must delay import of gitlab.v4.cli until now or
+    # otherwise it will cause circular import errors
+    import gitlab.v4.cli
 
-    return _get_parser(cli_module)
+    return _get_parser(gitlab.v4.cli)
 
 
 def main():
+    # NOTE: We must delay import of gitlab.v4.cli until now or
+    # otherwise it will cause circular import errors
+    import gitlab.v4.cli
+
     if "--version" in sys.argv:
         print(gitlab.__version__)
         sys.exit(0)
@@ -181,10 +186,12 @@ def main():
             parser.print_help()
             sys.exit(0)
         sys.exit(e)
-    cli_module = importlib.import_module("gitlab.v%s.cli" % config.api_version)
+    # We only support v4 API at this time
+    if config.api_version not in ("4",):
+        raise ModuleNotFoundError(name="gitlab.v%s.cli" % self._api_version)
 
     # Now we build the entire set of subcommands and do the complete parsing
-    parser = _get_parser(cli_module)
+    parser = _get_parser(gitlab.v4.cli)
     try:
         import argcomplete
 
@@ -229,6 +236,6 @@ def main():
     if debug:
         gl.enable_debug()
 
-    cli_module.run(gl, what, action, args, verbose, output, fields)
+    gitlab.v4.cli.run(gl, what, action, args, verbose, output, fields)
 
     sys.exit(0)
