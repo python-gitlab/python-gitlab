@@ -87,7 +87,7 @@ class GroupProjectManager(ListMixin, RESTManager):
     )
 
 
-class Project(SaveMixin, ObjectDeleteMixin, RESTObject):
+class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "path"
     _managers = (
         ("accessrequests", "ProjectAccessRequestManager"),
