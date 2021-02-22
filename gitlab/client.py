@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Wrapper for the GitLab API."""
 
-import importlib
 import time
 
 import requests
@@ -99,7 +98,14 @@ class Gitlab(object):
         self.pagination = pagination
         self.order_by = order_by
 
-        objects = importlib.import_module("gitlab.v%s.objects" % self._api_version)
+        # We only support v4 API at this time
+        if self._api_version not in ("4",):
+            raise ModuleNotFoundError(name="gitlab.v%s.objects" % self._api_version)
+        # NOTE: We must delay import of gitlab.v4.objects until now or
+        # otherwise it will cause circular import errors
+        import gitlab.v4.objects
+
+        objects = gitlab.v4.objects
         self._objects = objects
 
         self.broadcastmessages = objects.BroadcastMessageManager(self)
@@ -147,8 +153,14 @@ class Gitlab(object):
 
     def __setstate__(self, state):
         self.__dict__.update(state)
-        objects = importlib.import_module("gitlab.v%s.objects" % self._api_version)
-        self._objects = objects
+        # We only support v4 API at this time
+        if self._api_version not in ("4",):
+            raise ModuleNotFoundError(name="gitlab.v%s.objects" % self._api_version)
+        # NOTE: We must delay import of gitlab.v4.objects until now or
+        # otherwise it will cause circular import errors
+        import gitlab.v4.objects
+
+        self._objects = gitlab.v4.objects
 
     @property
     def url(self):
