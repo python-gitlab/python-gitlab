@@ -22,9 +22,9 @@ import requests
 import requests.utils
 
 import gitlab.config
-from gitlab.const import *  # noqa
-from gitlab.exceptions import *  # noqa
-from gitlab import utils  # noqa
+import gitlab.const
+import gitlab.exceptions
+from gitlab import utils
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 
@@ -69,7 +69,7 @@ class Gitlab(object):
         per_page=None,
         pagination=None,
         order_by=None,
-        user_agent=USER_AGENT,
+        user_agent=gitlab.const.USER_AGENT,
     ):
 
         self._api_version = str(api_version)
@@ -239,7 +239,7 @@ class Gitlab(object):
 
         return self._server_version, self._server_revision
 
-    @on_http_error(GitlabVerifyError)
+    @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabVerifyError)
     def lint(self, content, **kwargs):
         """Validate a gitlab CI configuration.
 
@@ -259,7 +259,7 @@ class Gitlab(object):
         data = self.http_post("/ci/lint", post_data=post_data, **kwargs)
         return (data["status"] == "valid", data["errors"])
 
-    @on_http_error(GitlabMarkdownError)
+    @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabMarkdownError)
     def markdown(self, text, gfm=False, project=None, **kwargs):
         """Render an arbitrary Markdown document.
 
@@ -284,7 +284,7 @@ class Gitlab(object):
         data = self.http_post("/markdown", post_data=post_data, **kwargs)
         return data["html"]
 
-    @on_http_error(GitlabLicenseError)
+    @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabLicenseError)
     def get_license(self, **kwargs):
         """Retrieve information about the current license.
 
@@ -300,7 +300,7 @@ class Gitlab(object):
         """
         return self.http_get("/license", **kwargs)
 
-    @on_http_error(GitlabLicenseError)
+    @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabLicenseError)
     def set_license(self, license, **kwargs):
         """Add a new license.
 
@@ -438,7 +438,7 @@ class Gitlab(object):
                 # Did we end-up with an https:// URL?
                 location = item.headers.get("Location", None)
                 if location and location.startswith("https://"):
-                    raise RedirectError(REDIRECT_MSG)
+                    raise gitlab.exceptions.RedirectError(REDIRECT_MSG)
 
     def http_request(
         self,
@@ -559,13 +559,13 @@ class Gitlab(object):
                 pass
 
             if result.status_code == 401:
-                raise GitlabAuthenticationError(
+                raise gitlab.exceptions.GitlabAuthenticationError(
                     response_code=result.status_code,
                     error_message=error_message,
                     response_body=result.content,
                 )
 
-            raise GitlabHttpError(
+            raise gitlab.exceptions.GitlabHttpError(
                 response_code=result.status_code,
                 error_message=error_message,
                 response_body=result.content,
@@ -604,7 +604,7 @@ class Gitlab(object):
             try:
                 return result.json()
             except Exception as e:
-                raise GitlabParsingError(
+                raise gitlab.exceptions.GitlabParsingError(
                     error_message="Failed to parse the server message"
                 ) from e
         else:
@@ -686,7 +686,7 @@ class Gitlab(object):
             if result.headers.get("Content-Type", None) == "application/json":
                 return result.json()
         except Exception as e:
-            raise GitlabParsingError(
+            raise gitlab.exceptions.GitlabParsingError(
                 error_message="Failed to parse the server message"
             ) from e
         return result
@@ -724,7 +724,7 @@ class Gitlab(object):
         try:
             return result.json()
         except Exception as e:
-            raise GitlabParsingError(
+            raise gitlab.exceptions.GitlabParsingError(
                 error_message="Failed to parse the server message"
             ) from e
 
@@ -744,7 +744,7 @@ class Gitlab(object):
         """
         return self.http_request("delete", path, **kwargs)
 
-    @on_http_error(GitlabSearchError)
+    @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabSearchError)
     def search(self, scope, search, **kwargs):
         """Search GitLab resources matching the provided string.'
 
@@ -804,7 +804,7 @@ class GitlabList(object):
         try:
             self._data = result.json()
         except Exception as e:
-            raise GitlabParsingError(
+            raise gitlab.exceptions.GitlabParsingError(
                 error_message="Failed to parse the server message"
             ) from e
 
