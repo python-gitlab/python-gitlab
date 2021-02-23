@@ -4,8 +4,8 @@ https://docs.gitlab.com/ee/api/instance_level_ci_variables.html
 https://docs.gitlab.com/ee/api/project_level_variables.html
 https://docs.gitlab.com/ee/api/group_level_variables.html
 """
-from gitlab.base import *  # noqa
-from gitlab.mixins import *  # noqa
+from gitlab.base import RESTManager, RESTObject
+from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
 
 __all__ = [

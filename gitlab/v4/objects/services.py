@@ -1,7 +1,14 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import *  # noqa
-from gitlab.mixins import *  # noqa
+from gitlab.base import RESTManager, RESTObject
+from gitlab.mixins import (
+    DeleteMixin,
+    GetMixin,
+    ListMixin,
+    ObjectDeleteMixin,
+    SaveMixin,
+    UpdateMixin,
+)
 
 
 __all__ = [
