@@ -318,24 +318,6 @@ class Gitlab(object):
         data = {"license": license}
         return self.http_post("/license", post_data=data, **kwargs)
 
-    def _construct_url(self, id_, obj, parameters, action=None):
-        if "next_url" in parameters:
-            return parameters["next_url"]
-        args = utils.sanitize_parameters(parameters)
-
-        url_attr = "_url"
-        if action is not None:
-            attr = "_%s_url" % action
-            if hasattr(obj, attr):
-                url_attr = attr
-        obj_url = getattr(obj, url_attr)
-        url = obj_url % args
-
-        if id_ is not None:
-            return "%s/%s" % (url, str(id_))
-        else:
-            return url
-
     def _set_auth_info(self):
         tokens = [
             token
