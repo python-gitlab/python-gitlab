@@ -50,4 +50,4 @@ class LDAPGroupManager(RESTManager):
         if isinstance(obj, list):
             return [self._obj_cls(self, item) for item in obj]
         else:
-            return base.RESTObjectList(self, self._obj_cls, obj)
+            return RESTObjectList(self, self._obj_cls, obj)

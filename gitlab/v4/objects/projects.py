@@ -31,7 +31,11 @@ from .notes import ProjectNoteManager
 from .notification_settings import ProjectNotificationSettingsManager
 from .packages import ProjectPackageManager
 from .pages import ProjectPagesDomainManager
-from .pipelines import ProjectPipelineManager, ProjectPipelineScheduleManager
+from .pipelines import (
+    ProjectPipeline,
+    ProjectPipelineManager,
+    ProjectPipelineScheduleManager,
+)
 from .push_rules import ProjectPushRulesManager
 from .releases import ProjectReleaseManager
 from .runners import ProjectRunnerManager
@@ -556,10 +560,10 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
                 * ``markdown`` - Markdown for the uploaded file
         """
         if filepath is None and filedata is None:
-            raise GitlabUploadError("No file contents or path specified")
+            raise exc.GitlabUploadError("No file contents or path specified")
 
         if filedata is not None and filepath is not None:
-            raise GitlabUploadError("File contents and file path specified")
+            raise exc.GitlabUploadError("File contents and file path specified")
 
         if filepath is not None:
             with open(filepath, "rb") as f:
