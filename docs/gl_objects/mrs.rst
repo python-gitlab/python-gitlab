@@ -127,10 +127,6 @@ List the changes of a MR::
 
     changes = mr.changes()
 
-List the pipelines for a MR::
-
-    pipelines = mr.pipelines()
-
 List issues that will close on merge::
 
     mr.closes_issues()
@@ -185,3 +181,28 @@ Get user agent detail for the issue (admin only)::
 Attempt to rebase an MR::
 
     mr.rebase()
+
+Merge Request Pipelines
+=======================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectMergeRequestPipeline`
+  + :class:`gitlab.v4.objects.ProjectMergeRequestPipelineManager`
+  + :attr:`gitlab.v4.objects.ProjectMergeRequest.pipelines`
+
+* GitLab API: https://docs.gitlab.com/ee/api/merge_requests.html#list-mr-pipelines
+
+Examples
+--------
+
+List pipelines for a merge request::
+
+    pipelines = mr.pipelines.list()
+
+Create a pipeline for a merge request::
+
+    pipeline = mr.pipelines.create()

@@ -53,6 +53,7 @@ def register_custom_action(
     cls_names: Union[str, Tuple[str, ...]],
     mandatory: Tuple[str, ...] = tuple(),
     optional: Tuple[str, ...] = tuple(),
+    custom_action: Optional[str] = None,
 ) -> Callable[[__F], __F]:
     def wrap(f: __F) -> __F:
         @functools.wraps(f)
@@ -74,7 +75,7 @@ def register_custom_action(
             if final_name not in custom_actions:
                 custom_actions[final_name] = {}
 
-            action = f.__name__.replace("_", "-")
+            action = custom_action or f.__name__.replace("_", "-")
             custom_actions[final_name][action] = (mandatory, optional, in_obj)
 
         return cast(__F, wrapped_f)
