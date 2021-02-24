@@ -57,32 +57,6 @@ def resp_create_project_access_token():
 
 
 @pytest.fixture
-def resp_list_project_access_token():
-    content = [
-        {
-            "user_id": 141,
-            "scopes": ["api"],
-            "name": "token",
-            "expires_at": "2021-01-31",
-            "id": 42,
-            "active": True,
-            "created_at": "2021-01-20T22:11:48.151Z",
-            "revoked": False,
-        }
-    ]
-
-    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
-        rsps.add(
-            method=responses.GET,
-            url="http://localhost/api/v4/projects/1/access_tokens",
-            json=content,
-            content_type="application/json",
-            status=200,
-        )
-        yield rsps
-
-
-@pytest.fixture
 def resp_revoke_project_access_token():
     content = [
         {
