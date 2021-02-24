@@ -3,6 +3,7 @@ from gitlab import exceptions as exc
 from gitlab.base import *  # noqa
 from gitlab.mixins import *  # noqa
 
+from .project_access_tokens import ProjectAccessTokenManager
 from .access_requests import ProjectAccessRequestManager
 from .badges import ProjectBadgeManager
 from .boards import ProjectBoardManager
@@ -94,6 +95,7 @@ class GroupProjectManager(ListMixin, RESTManager):
 class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "path"
     _managers = (
+        ("access_tokens", "ProjectAccessTokenManager"),
         ("accessrequests", "ProjectAccessRequestManager"),
         ("approvals", "ProjectApprovalManager"),
         ("approvalrules", "ProjectApprovalRuleManager"),
