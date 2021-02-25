@@ -21,6 +21,7 @@ import argparse
 import functools
 import re
 import sys
+from typing import Any, Callable, Dict, Tuple
 
 import gitlab.config
 
@@ -31,11 +32,13 @@ camel_re = re.compile("(.)([A-Z])")
 #        action: (mandatory_args, optional_args, in_obj),
 #    },
 # }
-custom_actions = {}
+custom_actions: Dict[str, Dict[str, Tuple[Tuple[Any, ...], Tuple[Any, ...], bool]]] = {}
 
 
-def register_custom_action(cls_names, mandatory=tuple(), optional=tuple()):
-    def wrap(f):
+def register_custom_action(
+    cls_names, mandatory: Tuple[Any, ...] = tuple(), optional: Tuple[Any, ...] = tuple()
+) -> Callable:
+    def wrap(f) -> Callable:
         @functools.wraps(f)
         def wrapped_f(*args, **kwargs):
             return f(*args, **kwargs)
@@ -62,22 +65,22 @@ def register_custom_action(cls_names, mandatory=tuple(), optional=tuple()):
     return wrap
 
 
-def die(msg, e=None):
+def die(msg: str, e=None) -> None:
     if e:
         msg = "%s (%s)" % (msg, e)
     sys.stderr.write(msg + "\n")
     sys.exit(1)
 
 
-def what_to_cls(what):
+def what_to_cls(what: str) -> str:
     return "".join([s.capitalize() for s in what.split("-")])
 
 
-def cls_to_what(cls):
+def cls_to_what(cls) -> str:
     return camel_re.sub(r"\1-\2", cls.__name__).lower()
 
 
-def _get_base_parser(add_help=True):
+def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         add_help=add_help, description="GitLab API Command Line Interface"
     )
@@ -148,7 +151,7 @@ def _parse_value(v):
     return v
 
 
-def docs():
+def docs() -> argparse.ArgumentParser:
     """
     Provide a statically generated parser for sphinx only, so we don't need
     to provide dummy gitlab config for readthedocs.
