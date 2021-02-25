@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Any, Callable, Dict, Optional
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 
 import requests
 
@@ -57,14 +57,14 @@ def copy_dict(dest: Dict[str, Any], src: Dict[str, Any]) -> None:
 
 
 def clean_str_id(id: str) -> str:
-    return id.replace("/", "%2F").replace("#", "%23")
+    return quote(id, safe="")
 
 
 def sanitize_parameters(value):
     if isinstance(value, dict):
         return dict((k, sanitize_parameters(v)) for k, v in value.items())
     if isinstance(value, str):
-        return value.replace("/", "%2F")
+        return quote(value, safe="")
     return value
 
 
