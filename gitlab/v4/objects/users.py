@@ -106,6 +106,8 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
     _managers = (
         ("customattributes", "UserCustomAttributeManager"),
         ("emails", "UserEmailManager"),
+        ("followers_users", "UserFollowersManager"),
+        ("following_users", "UserFollowingManager"),
         ("events", "UserEventManager"),
         ("gpgkeys", "UserGPGKeyManager"),
         ("identityproviders", "UserIdentityProviderManager"),
@@ -136,6 +138,42 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         if server_data is True:
             self._attrs["state"] = "blocked"
         return server_data
+
+    @cli.register_custom_action("User")
+    @exc.on_http_error(exc.GitlabFollowError)
+    def follow(self, **kwargs):
+        """Follow the user.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabFollowError: If the user could not be followed
+
+        Returns:
+            dict: The new object data (*not* a RESTObject)
+        """
+        path = "/users/%s/follow" % self.id
+        return self.manager.gitlab.http_post(path, **kwargs)
+
+    @cli.register_custom_action("User")
+    @exc.on_http_error(exc.GitlabUnfollowError)
+    def unfollow(self, **kwargs):
+        """Unfollow the user.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUnfollowError: If the user could not be followed
+
+        Returns:
+            dict: The new object data (*not* a RESTObject)
+        """
+        path = "/users/%s/unfollow" % self.id
+        return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUnblockError)
@@ -454,3 +492,15 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
         else:
             path = "/users/%s/projects" % kwargs["user_id"]
         return ListMixin.list(self, path=path, **kwargs)
+
+
+class UserFollowersManager(ListMixin, RESTManager):
+    _path = "/users/%(user_id)s/followers"
+    _obj_cls = User
+    _from_parent_attrs = {"user_id": "id"}
+
+
+class UserFollowingManager(ListMixin, RESTManager):
+    _path = "/users/%(user_id)s/following"
+    _obj_cls = User
+    _from_parent_attrs = {"user_id": "id"}
