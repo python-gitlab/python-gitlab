@@ -18,41 +18,41 @@
 from gitlab.__version__ import __title__, __version__
 
 
-NO_ACCESS = 0
-MINIMAL_ACCESS = 5
-GUEST_ACCESS = 10
-REPORTER_ACCESS = 20
-DEVELOPER_ACCESS = 30
-MAINTAINER_ACCESS = 40
-MASTER_ACCESS = MAINTAINER_ACCESS
-OWNER_ACCESS = 50
+NO_ACCESS: int = 0
+MINIMAL_ACCESS: int = 5
+GUEST_ACCESS: int = 10
+REPORTER_ACCESS: int = 20
+DEVELOPER_ACCESS: int = 30
+MAINTAINER_ACCESS: int = 40
+MASTER_ACCESS: int = MAINTAINER_ACCESS
+OWNER_ACCESS: int = 50
 
-VISIBILITY_PRIVATE = 0
-VISIBILITY_INTERNAL = 10
-VISIBILITY_PUBLIC = 20
+VISIBILITY_PRIVATE: int = 0
+VISIBILITY_INTERNAL: int = 10
+VISIBILITY_PUBLIC: int = 20
 
-NOTIFICATION_LEVEL_DISABLED = "disabled"
-NOTIFICATION_LEVEL_PARTICIPATING = "participating"
-NOTIFICATION_LEVEL_WATCH = "watch"
-NOTIFICATION_LEVEL_GLOBAL = "global"
-NOTIFICATION_LEVEL_MENTION = "mention"
-NOTIFICATION_LEVEL_CUSTOM = "custom"
+NOTIFICATION_LEVEL_DISABLED: str = "disabled"
+NOTIFICATION_LEVEL_PARTICIPATING: str = "participating"
+NOTIFICATION_LEVEL_WATCH: str = "watch"
+NOTIFICATION_LEVEL_GLOBAL: str = "global"
+NOTIFICATION_LEVEL_MENTION: str = "mention"
+NOTIFICATION_LEVEL_CUSTOM: str = "custom"
 
 # Search scopes
 # all scopes (global, group and  project)
-SEARCH_SCOPE_PROJECTS = "projects"
-SEARCH_SCOPE_ISSUES = "issues"
-SEARCH_SCOPE_MERGE_REQUESTS = "merge_requests"
-SEARCH_SCOPE_MILESTONES = "milestones"
-SEARCH_SCOPE_WIKI_BLOBS = "wiki_blobs"
-SEARCH_SCOPE_COMMITS = "commits"
-SEARCH_SCOPE_BLOBS = "blobs"
-SEARCH_SCOPE_USERS = "users"
+SEARCH_SCOPE_PROJECTS: str = "projects"
+SEARCH_SCOPE_ISSUES: str = "issues"
+SEARCH_SCOPE_MERGE_REQUESTS: str = "merge_requests"
+SEARCH_SCOPE_MILESTONES: str = "milestones"
+SEARCH_SCOPE_WIKI_BLOBS: str = "wiki_blobs"
+SEARCH_SCOPE_COMMITS: str = "commits"
+SEARCH_SCOPE_BLOBS: str = "blobs"
+SEARCH_SCOPE_USERS: str = "users"
 
 # specific global scope
-SEARCH_SCOPE_GLOBAL_SNIPPET_TITLES = "snippet_titles"
+SEARCH_SCOPE_GLOBAL_SNIPPET_TITLES: str = "snippet_titles"
 
 # specific project scope
-SEARCH_SCOPE_PROJECT_NOTES = "notes"
+SEARCH_SCOPE_PROJECT_NOTES: str = "notes"
 
-USER_AGENT = "{}/{}".format(__title__, __version__)
+USER_AGENT: str = "{}/{}".format(__title__, __version__)
