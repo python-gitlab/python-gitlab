@@ -188,7 +188,7 @@ def main():
         sys.exit(e)
     # We only support v4 API at this time
     if config.api_version not in ("4",):
-        raise ModuleNotFoundError(name="gitlab.v%s.cli" % self._api_version)
+        raise ModuleNotFoundError(name="gitlab.v%s.cli" % config.api_version)
 
     # Now we build the entire set of subcommands and do the complete parsing
     parser = _get_parser(gitlab.v4.cli)
