@@ -15,15 +15,23 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Any, Callable, Dict, Optional
 from urllib.parse import urlparse
+
+import requests
 
 
 class _StdoutStream(object):
-    def __call__(self, chunk):
+    def __call__(self, chunk) -> None:
         print(chunk)
 
 
-def response_content(response, streamed, action, chunk_size):
+def response_content(
+    response: requests.Response,
+    streamed: bool,
+    action: Optional[Callable],
+    chunk_size: int,
+):
     if streamed is False:
         return response.content
 
@@ -35,7 +43,7 @@ def response_content(response, streamed, action, chunk_size):
             action(chunk)
 
 
-def copy_dict(dest, src):
+def copy_dict(dest: Dict[str, Any], src: Dict[str, Any]) -> None:
     for k, v in src.items():
         if isinstance(v, dict):
             # Transform dict values to new attributes. For example:
@@ -47,7 +55,7 @@ def copy_dict(dest, src):
             dest[k] = v
 
 
-def clean_str_id(id):
+def clean_str_id(id: str) -> str:
     return id.replace("/", "%2F").replace("#", "%23")
 
 
@@ -59,11 +67,11 @@ def sanitize_parameters(value):
     return value
 
 
-def sanitized_url(url):
+def sanitized_url(url: str) -> str:
     parsed = urlparse(url)
     new_path = parsed.path.replace(".", "%2E")
     return parsed._replace(path=new_path).geturl()
 
 
-def remove_none_from_dict(data):
+def remove_none_from_dict(data: Dict[str, Any]) -> Dict[str, Any]:
     return {k: v for k, v in data.items() if v is not None}
