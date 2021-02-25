@@ -1,7 +1,7 @@
 from gitlab import cli, utils
 from gitlab import exceptions as exc
-from gitlab.base import *  # noqa
-from gitlab.mixins import *  # noqa
+from gitlab.base import RESTManager, RESTObject
+from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin, UserAgentDetailMixin
 
 from .award_emojis import ProjectSnippetAwardEmojiManager
 from .discussions import ProjectSnippetDiscussionManager

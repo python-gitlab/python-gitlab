@@ -1,7 +1,17 @@
 from gitlab import cli, types
 from gitlab import exceptions as exc
-from gitlab.base import *  # noqa
-from gitlab.mixins import *  # noqa
+from gitlab.base import RESTManager, RESTObject, RESTObjectList
+from gitlab.mixins import (
+    CRUDMixin,
+    ListMixin,
+    ObjectDeleteMixin,
+    ParticipantsMixin,
+    RetrieveMixin,
+    SaveMixin,
+    SubscribableMixin,
+    TimeTrackingMixin,
+    TodoMixin,
+)
 from .commits import ProjectCommit, ProjectCommitManager
 from .issues import ProjectIssue, ProjectIssueManager
 from .merge_request_approvals import (

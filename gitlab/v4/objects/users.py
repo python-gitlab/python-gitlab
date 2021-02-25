@@ -1,7 +1,18 @@
 from gitlab import cli, types
 from gitlab import exceptions as exc
-from gitlab.base import *  # noqa
-from gitlab.mixins import *  # noqa
+from gitlab.base import RESTManager, RESTObject
+from gitlab.mixins import (
+    CRUDMixin,
+    CreateMixin,
+    DeleteMixin,
+    GetWithoutIdMixin,
+    ListMixin,
+    NoUpdateMixin,
+    ObjectDeleteMixin,
+    RetrieveMixin,
+    SaveMixin,
+    UpdateMixin,
+)
 
 from .custom_attributes import UserCustomAttributeManager
 from .events import UserEventManager

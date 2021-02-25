@@ -3,8 +3,8 @@ GitLab API:
 https://docs.gitlab.com/ee/api/audit_events.html#project-audit-events
 """
 
-from gitlab.base import *  # noqa
-from gitlab.mixins import *  # noqa
+from gitlab.base import RESTManager, RESTObject
+from gitlab.mixins import RetrieveMixin
 
 __all__ = [
     "ProjectAudit",
