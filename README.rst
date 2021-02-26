@@ -73,6 +73,11 @@ Bug reports
 Please report bugs and feature requests at
 https://github.com/python-gitlab/python-gitlab/issues.
 
+Gitter Community Chat
+=====================
+
+There is a `gitter <https://gitter.im/python-gitlab/Lobby>`_ community chat
+available at https://gitter.im/python-gitlab/Lobby
 
 Documentation
 =============
