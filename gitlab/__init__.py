@@ -30,7 +30,6 @@ from gitlab.__version__ import (
 from gitlab.client import Gitlab, GitlabList
 from gitlab.const import *  # noqa
 from gitlab.exceptions import *  # noqa
-from gitlab import utils  # noqa
 
 
 warnings.filterwarnings("default", category=DeprecationWarning, module="^gitlab")
