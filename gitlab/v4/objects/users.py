@@ -43,8 +43,6 @@ __all__ = [
     "UserGPGKeyManager",
     "UserKey",
     "UserKeyManager",
-    "UserStatus",
-    "UserStatusManager",
     "UserIdentityProviderManager",
     "UserImpersonationToken",
     "UserImpersonationTokenManager",
@@ -347,16 +345,6 @@ class UserKeyManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     _obj_cls = UserKey
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = (("title", "key"), tuple())
-
-
-class UserStatus(RESTObject):
-    pass
-
-
-class UserStatusManager(GetWithoutIdMixin, RESTManager):
-    _path = "/users/%(user_id)s/status"
-    _obj_cls = UserStatus
-    _from_parent_attrs = {"user_id": "id"}
 
 
 class UserIdentityProviderManager(DeleteMixin, RESTManager):
