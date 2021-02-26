@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import importlib
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Type
 
 from .client import Gitlab, GitlabList
 
@@ -171,7 +171,9 @@ class RESTObjectList(object):
         _list: A GitlabList object
     """
 
-    def __init__(self, manager: "RESTManager", obj_cls, _list: GitlabList) -> None:
+    def __init__(
+        self, manager: "RESTManager", obj_cls: Type[RESTObject], _list: GitlabList
+    ) -> None:
         """Creates an objects list from a GitlabList.
 
         You should not create objects of this type, but use managers list()
@@ -246,7 +248,7 @@ class RESTManager(object):
     """
 
     _path: Optional[str] = None
-    _obj_cls: Optional[Any] = None
+    _obj_cls: Optional[Type[RESTObject]] = None
     _from_parent_attrs: Dict[str, Any] = {}
 
     def __init__(self, gl: Gitlab, parent: Optional[RESTObject] = None) -> None:
