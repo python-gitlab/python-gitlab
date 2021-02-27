@@ -15,6 +15,21 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from types import ModuleType
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Type,
+    TYPE_CHECKING,
+    Union,
+)
+
+import requests
+
 import gitlab
 from gitlab import base
 from gitlab import cli
@@ -47,10 +62,28 @@ __all__ = [
     "BadgeRenderMixin",
 ]
 
+if TYPE_CHECKING:
+    # When running mypy we use these as the base classes
+    _RestManagerBase = base.RESTManager
+    _RestObjectBase = base.RESTObject
+else:
+    _RestManagerBase = object
+    _RestObjectBase = object
 
-class GetMixin(object):
+
+class GetMixin(_RestManagerBase):
+    _computed_path: Optional[str]
+    _from_parent_attrs: Dict[str, Any]
+    _obj_cls: Optional[Type[base.RESTObject]]
+    _parent = Optional[base.RESTObject]
+    _parent_attrs = Dict[str, Any]
+    _path: Optional[str]
+    gitlab: gitlab.Gitlab
+
     @exc.on_http_error(exc.GitlabGetError)
-    def get(self, id, lazy=False, **kwargs):
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> base.RESTObject:
         """Retrieve a single object.
 
         Args:
@@ -70,15 +103,31 @@ class GetMixin(object):
         if not isinstance(id, int):
             id = utils.clean_str_id(id)
         path = "%s/%s" % (self.path, id)
+        if TYPE_CHECKING:
+            assert self._obj_cls is not None
         if lazy is True:
+            if TYPE_CHECKING:
+                assert self._obj_cls._id_attr is not None
             return self._obj_cls(self, {self._obj_cls._id_attr: id})
         server_data = self.gitlab.http_get(path, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(server_data, requests.Response)
         return self._obj_cls(self, server_data)
 
 
-class GetWithoutIdMixin(object):
+class GetWithoutIdMixin(_RestManagerBase):
+    _computed_path: Optional[str]
+    _from_parent_attrs: Dict[str, Any]
+    _obj_cls: Optional[Type[base.RESTObject]]
+    _parent = Optional[base.RESTObject]
+    _parent_attrs = Dict[str, Any]
+    _path: Optional[str]
+    gitlab: gitlab.Gitlab
+
     @exc.on_http_error(exc.GitlabGetError)
-    def get(self, id=None, **kwargs):
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[base.RESTObject]:
         """Retrieve a single object.
 
         Args:
@@ -91,15 +140,27 @@ class GetWithoutIdMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
+        if TYPE_CHECKING:
+            assert self.path is not None
         server_data = self.gitlab.http_get(self.path, **kwargs)
         if server_data is None:
             return None
+        if TYPE_CHECKING:
+            assert not isinstance(server_data, requests.Response)
+            assert self._obj_cls is not None
         return self._obj_cls(self, server_data)
 
 
-class RefreshMixin(object):
+class RefreshMixin(_RestObjectBase):
+    _id_attr: Optional[str]
+    _attrs: Dict[str, Any]
+    _module: ModuleType
+    _parent_attrs: Dict[str, Any]
+    _updated_attrs: Dict[str, Any]
+    manager: base.RESTManager
+
     @exc.on_http_error(exc.GitlabGetError)
-    def refresh(self, **kwargs):
+    def refresh(self, **kwargs: Any) -> None:
         """Refresh a single object from server.
 
         Args:
@@ -114,14 +175,26 @@ class RefreshMixin(object):
         if self._id_attr:
             path = "%s/%s" % (self.manager.path, self.id)
         else:
+            if TYPE_CHECKING:
+                assert self.manager.path is not None
             path = self.manager.path
         server_data = self.manager.gitlab.http_get(path, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(server_data, requests.Response)
         self._update_attrs(server_data)
 
 
-class ListMixin(object):
+class ListMixin(_RestManagerBase):
+    _computed_path: Optional[str]
+    _from_parent_attrs: Dict[str, Any]
+    _obj_cls: Optional[Type[base.RESTObject]]
+    _parent = Optional[base.RESTObject]
+    _parent_attrs = Dict[str, Any]
+    _path: Optional[str]
+    gitlab: gitlab.Gitlab
+
     @exc.on_http_error(exc.GitlabListError)
-    def list(self, **kwargs):
+    def list(self, **kwargs: Any) -> Union[base.RESTObjectList, List[base.RESTObject]]:
         """Retrieve a list of objects.
 
         Args:
@@ -163,6 +236,8 @@ class ListMixin(object):
         # Allow to overwrite the path, handy for custom listings
         path = data.pop("path", self.path)
 
+        if TYPE_CHECKING:
+            assert self._obj_cls is not None
         obj = self.gitlab.http_list(path, **data)
         if isinstance(obj, list):
             return [self._obj_cls(self, item) for item in obj]
@@ -171,11 +246,27 @@ class ListMixin(object):
 
 
 class RetrieveMixin(ListMixin, GetMixin):
+    _computed_path: Optional[str]
+    _from_parent_attrs: Dict[str, Any]
+    _obj_cls: Optional[Type[base.RESTObject]]
+    _parent = Optional[base.RESTObject]
+    _parent_attrs = Dict[str, Any]
+    _path: Optional[str]
+    gitlab: gitlab.Gitlab
+
     pass
 
 
-class CreateMixin(object):
-    def _check_missing_create_attrs(self, data):
+class CreateMixin(_RestManagerBase):
+    _computed_path: Optional[str]
+    _from_parent_attrs: Dict[str, Any]
+    _obj_cls: Optional[Type[base.RESTObject]]
+    _parent = Optional[base.RESTObject]
+    _parent_attrs = Dict[str, Any]
+    _path: Optional[str]
+    gitlab: gitlab.Gitlab
+
+    def _check_missing_create_attrs(self, data: Dict[str, Any]) -> None:
         required, optional = self.get_create_attrs()
         missing = []
         for attr in required:
@@ -185,7 +276,7 @@ class CreateMixin(object):
         if missing:
             raise AttributeError("Missing attributes: %s" % ", ".join(missing))
 
-    def get_create_attrs(self):
+    def get_create_attrs(self) -> Tuple[Tuple[str, ...], Tuple[str, ...]]:
         """Return the required and optional arguments.
 
         Returns:
@@ -195,7 +286,9 @@ class CreateMixin(object):
         return getattr(self, "_create_attrs", (tuple(), tuple()))
 
     @exc.on_http_error(exc.GitlabCreateError)
-    def create(self, data=None, **kwargs):
+    def create(
+        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> base.RESTObject:
         """Create a new object.
 
         Args:
@@ -237,14 +330,27 @@ class CreateMixin(object):
         # Handle specific URL for creation
         path = kwargs.pop("path", self.path)
         server_data = self.gitlab.http_post(path, post_data=data, files=files, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(server_data, requests.Response)
+            assert self._obj_cls is not None
         return self._obj_cls(self, server_data)
 
 
-class UpdateMixin(object):
-    def _check_missing_update_attrs(self, data):
+class UpdateMixin(_RestManagerBase):
+    _computed_path: Optional[str]
+    _from_parent_attrs: Dict[str, Any]
+    _obj_cls: Optional[Type[base.RESTObject]]
+    _parent = Optional[base.RESTObject]
+    _parent_attrs = Dict[str, Any]
+    _path: Optional[str]
+    gitlab: gitlab.Gitlab
+
+    def _check_missing_update_attrs(self, data: Dict[str, Any]) -> None:
         required, optional = self.get_update_attrs()
+        if TYPE_CHECKING:
+            assert self._obj_cls is not None
         # Remove the id field from the required list as it was previously moved to the http path.
-        required = tuple(filter(lambda k: k != self._obj_cls._id_attr, required))
+        required = tuple([k for k in required if k != self._obj_cls._id_attr])
         missing = []
         for attr in required:
             if attr not in data:
@@ -253,7 +359,7 @@ class UpdateMixin(object):
         if missing:
             raise AttributeError("Missing attributes: %s" % ", ".join(missing))
 
-    def get_update_attrs(self):
+    def get_update_attrs(self) -> Tuple[Tuple[str, ...], Tuple[str, ...]]:
         """Return the required and optional arguments.
 
         Returns:
@@ -262,7 +368,9 @@ class UpdateMixin(object):
         """
         return getattr(self, "_update_attrs", (tuple(), tuple()))
 
-    def _get_update_method(self):
+    def _get_update_method(
+        self,
+    ) -> Callable[..., Union[Dict[str, Any], requests.Response]]:
         """Return the HTTP method to use.
 
         Returns:
@@ -275,7 +383,12 @@ class UpdateMixin(object):
         return http_method
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def update(self, id=None, new_data=None, **kwargs):
+    def update(
+        self,
+        id: Optional[Union[str, int]] = None,
+        new_data: Optional[Dict[str, Any]] = None,
+        **kwargs: Any
+    ) -> Dict[str, Any]:
         """Update an object on the server.
 
         Args:
@@ -318,12 +431,23 @@ class UpdateMixin(object):
                         new_data[attr_name] = type_obj.get_for_api()
 
         http_method = self._get_update_method()
-        return http_method(path, post_data=new_data, files=files, **kwargs)
+        result = http_method(path, post_data=new_data, files=files, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(result, requests.Response)
+        return result
 
 
-class SetMixin(object):
+class SetMixin(_RestManagerBase):
+    _computed_path: Optional[str]
+    _from_parent_attrs: Dict[str, Any]
+    _obj_cls: Optional[Type[base.RESTObject]]
+    _parent = Optional[base.RESTObject]
+    _parent_attrs = Dict[str, Any]
+    _path: Optional[str]
+    gitlab: gitlab.Gitlab
+
     @exc.on_http_error(exc.GitlabSetError)
-    def set(self, key, value, **kwargs):
+    def set(self, key: str, value: str, **kwargs: Any) -> base.RESTObject:
         """Create or update the object.
 
         Args:
@@ -341,12 +465,23 @@ class SetMixin(object):
         path = "%s/%s" % (self.path, utils.clean_str_id(key))
         data = {"value": value}
         server_data = self.gitlab.http_put(path, post_data=data, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(server_data, requests.Response)
+            assert self._obj_cls is not None
         return self._obj_cls(self, server_data)
 
 
-class DeleteMixin(object):
+class DeleteMixin(_RestManagerBase):
+    _computed_path: Optional[str]
+    _from_parent_attrs: Dict[str, Any]
+    _obj_cls: Optional[Type[base.RESTObject]]
+    _parent = Optional[base.RESTObject]
+    _parent_attrs = Dict[str, Any]
+    _path: Optional[str]
+    gitlab: gitlab.Gitlab
+
     @exc.on_http_error(exc.GitlabDeleteError)
-    def delete(self, id, **kwargs):
+    def delete(self, id: Union[str, int], **kwargs: Any) -> None:
         """Delete an object on the server.
 
         Args:
@@ -367,17 +502,41 @@ class DeleteMixin(object):
 
 
 class CRUDMixin(GetMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin):
+    _computed_path: Optional[str]
+    _from_parent_attrs: Dict[str, Any]
+    _obj_cls: Optional[Type[base.RESTObject]]
+    _parent = Optional[base.RESTObject]
+    _parent_attrs = Dict[str, Any]
+    _path: Optional[str]
+    gitlab: gitlab.Gitlab
+
     pass
 
 
 class NoUpdateMixin(GetMixin, ListMixin, CreateMixin, DeleteMixin):
+    _computed_path: Optional[str]
+    _from_parent_attrs: Dict[str, Any]
+    _obj_cls: Optional[Type[base.RESTObject]]
+    _parent = Optional[base.RESTObject]
+    _parent_attrs = Dict[str, Any]
+    _path: Optional[str]
+    gitlab: gitlab.Gitlab
+
     pass
 
 
-class SaveMixin(object):
+class SaveMixin(_RestObjectBase):
     """Mixin for RESTObject's that can be updated."""
 
-    def _get_updated_data(self):
+    manager: UpdateMixin
+
+    _id_attr: Optional[str]
+    _attrs: Dict[str, Any]
+    _module: ModuleType
+    _parent_attrs: Dict[str, Any]
+    _updated_attrs: Dict[str, Any]
+
+    def _get_updated_data(self) -> Dict[str, Any]:
         updated_data = {}
         required, optional = self.manager.get_update_attrs()
         for attr in required:
@@ -388,7 +547,7 @@ class SaveMixin(object):
 
         return updated_data
 
-    def save(self, **kwargs):
+    def save(self, **kwargs: Any) -> None:
         """Save the changes made to the object to the server.
 
         The object is updated to match what the server returns.
@@ -412,10 +571,18 @@ class SaveMixin(object):
             self._update_attrs(server_data)
 
 
-class ObjectDeleteMixin(object):
+class ObjectDeleteMixin(_RestObjectBase):
     """Mixin for RESTObject's that can be deleted."""
 
-    def delete(self, **kwargs):
+    manager: DeleteMixin
+
+    _id_attr: Optional[str]
+    _attrs: Dict[str, Any]
+    _module: ModuleType
+    _parent_attrs: Dict[str, Any]
+    _updated_attrs: Dict[str, Any]
+
+    def delete(self, **kwargs: Any) -> None:
         """Delete the object from the server.
 
         Args:
@@ -428,10 +595,17 @@ class ObjectDeleteMixin(object):
         self.manager.delete(self.get_id())
 
 
-class UserAgentDetailMixin(object):
+class UserAgentDetailMixin(_RestObjectBase):
+    _id_attr: Optional[str]
+    _attrs: Dict[str, Any]
+    _module: ModuleType
+    _parent_attrs: Dict[str, Any]
+    _updated_attrs: Dict[str, Any]
+    manager: base.RESTManager
+
     @cli.register_custom_action(("Snippet", "ProjectSnippet", "ProjectIssue"))
     @exc.on_http_error(exc.GitlabGetError)
-    def user_agent_detail(self, **kwargs):
+    def user_agent_detail(self, **kwargs: Any) -> Dict[str, Any]:
         """Get the user agent detail.
 
         Args:
@@ -442,15 +616,27 @@ class UserAgentDetailMixin(object):
             GitlabGetError: If the server cannot perform the request
         """
         path = "%s/%s/user_agent_detail" % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_get(path, **kwargs)
+        result = self.manager.gitlab.http_get(path, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(result, requests.Response)
+        return result
 
 
-class AccessRequestMixin(object):
+class AccessRequestMixin(_RestObjectBase):
+    _id_attr: Optional[str]
+    _attrs: Dict[str, Any]
+    _module: ModuleType
+    _parent_attrs: Dict[str, Any]
+    _updated_attrs: Dict[str, Any]
+    manager: base.RESTManager
+
     @cli.register_custom_action(
         ("ProjectAccessRequest", "GroupAccessRequest"), tuple(), ("access_level",)
     )
     @exc.on_http_error(exc.GitlabUpdateError)
-    def approve(self, access_level=gitlab.DEVELOPER_ACCESS, **kwargs):
+    def approve(
+        self, access_level: int = gitlab.DEVELOPER_ACCESS, **kwargs: Any
+    ) -> None:
         """Approve an access request.
 
         Args:
@@ -465,13 +651,28 @@ class AccessRequestMixin(object):
         path = "%s/%s/approve" % (self.manager.path, self.id)
         data = {"access_level": access_level}
         server_data = self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(server_data, requests.Response)
         self._update_attrs(server_data)
 
 
-class DownloadMixin(object):
+class DownloadMixin(_RestObjectBase):
+    _id_attr: Optional[str]
+    _attrs: Dict[str, Any]
+    _module: ModuleType
+    _parent_attrs: Dict[str, Any]
+    _updated_attrs: Dict[str, Any]
+    manager: base.RESTManager
+
     @cli.register_custom_action(("GroupExport", "ProjectExport"))
     @exc.on_http_error(exc.GitlabGetError)
-    def download(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+    def download(
+        self,
+        streamed: bool = False,
+        action: Optional[Callable] = None,
+        chunk_size: int = 1024,
+        **kwargs: Any
+    ) -> Optional[bytes]:
         """Download the archive of a resource export.
 
         Args:
@@ -494,15 +695,24 @@ class DownloadMixin(object):
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
+        if TYPE_CHECKING:
+            assert isinstance(result, requests.Response)
         return utils.response_content(result, streamed, action, chunk_size)
 
 
-class SubscribableMixin(object):
+class SubscribableMixin(_RestObjectBase):
+    _id_attr: Optional[str]
+    _attrs: Dict[str, Any]
+    _module: ModuleType
+    _parent_attrs: Dict[str, Any]
+    _updated_attrs: Dict[str, Any]
+    manager: base.RESTManager
+
     @cli.register_custom_action(
         ("ProjectIssue", "ProjectMergeRequest", "ProjectLabel", "GroupLabel")
     )
     @exc.on_http_error(exc.GitlabSubscribeError)
-    def subscribe(self, **kwargs):
+    def subscribe(self, **kwargs: Any) -> None:
         """Subscribe to the object notifications.
 
         Args:
@@ -514,13 +724,15 @@ class SubscribableMixin(object):
         """
         path = "%s/%s/subscribe" % (self.manager.path, self.get_id())
         server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(server_data, requests.Response)
         self._update_attrs(server_data)
 
     @cli.register_custom_action(
         ("ProjectIssue", "ProjectMergeRequest", "ProjectLabel", "GroupLabel")
     )
     @exc.on_http_error(exc.GitlabUnsubscribeError)
-    def unsubscribe(self, **kwargs):
+    def unsubscribe(self, **kwargs: Any) -> None:
         """Unsubscribe from the object notifications.
 
         Args:
@@ -532,13 +744,22 @@ class SubscribableMixin(object):
         """
         path = "%s/%s/unsubscribe" % (self.manager.path, self.get_id())
         server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(server_data, requests.Response)
         self._update_attrs(server_data)
 
 
-class TodoMixin(object):
+class TodoMixin(_RestObjectBase):
+    _id_attr: Optional[str]
+    _attrs: Dict[str, Any]
+    _module: ModuleType
+    _parent_attrs: Dict[str, Any]
+    _updated_attrs: Dict[str, Any]
+    manager: base.RESTManager
+
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTodoError)
-    def todo(self, **kwargs):
+    def todo(self, **kwargs: Any) -> None:
         """Create a todo associated to the object.
 
         Args:
@@ -552,10 +773,17 @@ class TodoMixin(object):
         self.manager.gitlab.http_post(path, **kwargs)
 
 
-class TimeTrackingMixin(object):
+class TimeTrackingMixin(_RestObjectBase):
+    _id_attr: Optional[str]
+    _attrs: Dict[str, Any]
+    _module: ModuleType
+    _parent_attrs: Dict[str, Any]
+    _updated_attrs: Dict[str, Any]
+    manager: base.RESTManager
+
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
-    def time_stats(self, **kwargs):
+    def time_stats(self, **kwargs: Any) -> Dict[str, Any]:
         """Get time stats for the object.
 
         Args:
@@ -571,11 +799,14 @@ class TimeTrackingMixin(object):
             return self.attributes["time_stats"]
 
         path = "%s/%s/time_stats" % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_get(path, **kwargs)
+        result = self.manager.gitlab.http_get(path, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(result, requests.Response)
+        return result
 
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"), ("duration",))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
-    def time_estimate(self, duration, **kwargs):
+    def time_estimate(self, duration: str, **kwargs: Any) -> Dict[str, Any]:
         """Set an estimated time of work for the object.
 
         Args:
@@ -588,11 +819,14 @@ class TimeTrackingMixin(object):
         """
         path = "%s/%s/time_estimate" % (self.manager.path, self.get_id())
         data = {"duration": duration}
-        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        result = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(result, requests.Response)
+        return result
 
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
-    def reset_time_estimate(self, **kwargs):
+    def reset_time_estimate(self, **kwargs: Any) -> Dict[str, Any]:
         """Resets estimated time for the object to 0 seconds.
 
         Args:
@@ -603,11 +837,14 @@ class TimeTrackingMixin(object):
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
         path = "%s/%s/reset_time_estimate" % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_post(path, **kwargs)
+        result = self.manager.gitlab.http_post(path, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(result, requests.Response)
+        return result
 
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"), ("duration",))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
-    def add_spent_time(self, duration, **kwargs):
+    def add_spent_time(self, duration: str, **kwargs: Any) -> Dict[str, Any]:
         """Add time spent working on the object.
 
         Args:
@@ -620,11 +857,14 @@ class TimeTrackingMixin(object):
         """
         path = "%s/%s/add_spent_time" % (self.manager.path, self.get_id())
         data = {"duration": duration}
-        return self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        result = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(result, requests.Response)
+        return result
 
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
-    def reset_spent_time(self, **kwargs):
+    def reset_spent_time(self, **kwargs: Any) -> Dict[str, Any]:
         """Resets the time spent working on the object.
 
         Args:
@@ -635,13 +875,23 @@ class TimeTrackingMixin(object):
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
         path = "%s/%s/reset_spent_time" % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_post(path, **kwargs)
+        result = self.manager.gitlab.http_post(path, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(result, requests.Response)
+        return result
 
 
-class ParticipantsMixin(object):
+class ParticipantsMixin(_RestObjectBase):
+    _id_attr: Optional[str]
+    _attrs: Dict[str, Any]
+    _module: ModuleType
+    _parent_attrs: Dict[str, Any]
+    _updated_attrs: Dict[str, Any]
+    manager: base.RESTManager
+
     @cli.register_custom_action(("ProjectMergeRequest", "ProjectIssue"))
     @exc.on_http_error(exc.GitlabListError)
-    def participants(self, **kwargs):
+    def participants(self, **kwargs: Any) -> Dict[str, Any]:
         """List the participants.
 
         Args:
@@ -661,15 +911,18 @@ class ParticipantsMixin(object):
         """
 
         path = "%s/%s/participants" % (self.manager.path, self.get_id())
-        return self.manager.gitlab.http_get(path, **kwargs)
+        result = self.manager.gitlab.http_get(path, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(result, requests.Response)
+        return result
 
 
-class BadgeRenderMixin(object):
+class BadgeRenderMixin(_RestManagerBase):
     @cli.register_custom_action(
         ("GroupBadgeManager", "ProjectBadgeManager"), ("link_url", "image_url")
     )
     @exc.on_http_error(exc.GitlabRenderError)
-    def render(self, link_url, image_url, **kwargs):
+    def render(self, link_url: str, image_url: str, **kwargs: Any) -> Dict[str, Any]:
         """Preview link_url and image_url after interpolation.
 
         Args:
@@ -686,4 +939,7 @@ class BadgeRenderMixin(object):
         """
         path = "%s/render" % self.path
         data = {"link_url": link_url, "image_url": image_url}
-        return self.gitlab.http_get(path, data, **kwargs)
+        result = self.gitlab.http_get(path, data, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(result, requests.Response)
+        return result
