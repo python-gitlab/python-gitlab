@@ -16,8 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import argparse
 import operator
 import sys
+from typing import Any, Dict, List, Optional, Type, TYPE_CHECKING, Union
 
 import gitlab
 import gitlab.base
@@ -26,18 +28,31 @@ from gitlab import cli
 
 
 class GitlabCLI(object):
-    def __init__(self, gl, what, action, args):
-        self.cls = cli.what_to_cls(what, namespace=gitlab.v4.objects)
+    def __init__(
+        self, gl: gitlab.Gitlab, what: str, action: str, args: Dict[str, str]
+    ) -> None:
+        self.cls: Type[gitlab.base.RESTObject] = cli.what_to_cls(
+            what, namespace=gitlab.v4.objects
+        )
         self.cls_name = self.cls.__name__
         self.what = what.replace("-", "_")
         self.action = action.lower()
         self.gl = gl
         self.args = args
-        self.mgr_cls = getattr(gitlab.v4.objects, self.cls.__name__ + "Manager")
+        self.mgr_cls: Union[
+            Type[gitlab.mixins.CreateMixin],
+            Type[gitlab.mixins.DeleteMixin],
+            Type[gitlab.mixins.GetMixin],
+            Type[gitlab.mixins.GetWithoutIdMixin],
+            Type[gitlab.mixins.ListMixin],
+            Type[gitlab.mixins.UpdateMixin],
+        ] = getattr(gitlab.v4.objects, self.cls.__name__ + "Manager")
         # We could do something smart, like splitting the manager name to find
         # parents, build the chain of managers to get to the final object.
         # Instead we do something ugly and efficient: interpolate variables in
         # the class _path attribute, and replace the value with the result.
+        if TYPE_CHECKING:
+            assert self.mgr_cls._path is not None
         self.mgr_cls._path = self.mgr_cls._path % self.args
         self.mgr = self.mgr_cls(gl)
 
@@ -48,7 +63,7 @@ class GitlabCLI(object):
                     obj.set_from_cli(self.args[attr_name])
                     self.args[attr_name] = obj.get()
 
-    def __call__(self):
+    def __call__(self) -> Any:
         # Check for a method that matches object + action
         method = "do_%s_%s" % (self.what, self.action)
         if hasattr(self, method):
@@ -62,7 +77,7 @@ class GitlabCLI(object):
         # Finally try to find custom methods
         return self.do_custom()
 
-    def do_custom(self):
+    def do_custom(self) -> Any:
         in_obj = cli.custom_actions[self.cls_name][self.action][2]
 
         # Get the object (lazy), then act
@@ -72,14 +87,16 @@ class GitlabCLI(object):
                 for k in self.mgr._from_parent_attrs:
                     data[k] = self.args[k]
             if not issubclass(self.cls, gitlab.mixins.GetWithoutIdMixin):
+                if TYPE_CHECKING:
+                    assert isinstance(self.cls._id_attr, str)
                 data[self.cls._id_attr] = self.args.pop(self.cls._id_attr)
-            o = self.cls(self.mgr, data)
+            obj = self.cls(self.mgr, data)
             method_name = self.action.replace("-", "_")
-            return getattr(o, method_name)(**self.args)
+            return getattr(obj, method_name)(**self.args)
         else:
             return getattr(self.mgr, self.action)(**self.args)
 
-    def do_project_export_download(self):
+    def do_project_export_download(self) -> None:
         try:
             project = self.gl.projects.get(int(self.args["project_id"]), lazy=True)
             data = project.exports.get().download()
@@ -88,46 +105,75 @@ class GitlabCLI(object):
         except Exception as e:
             cli.die("Impossible to download the export", e)
 
-    def do_create(self):
+    def do_create(self) -> gitlab.base.RESTObject:
+        if TYPE_CHECKING:
+            assert isinstance(self.mgr, gitlab.mixins.CreateMixin)
         try:
-            return self.mgr.create(self.args)
+            result = self.mgr.create(self.args)
         except Exception as e:
             cli.die("Impossible to create object", e)
+        return result
 
-    def do_list(self):
+    def do_list(
+        self,
+    ) -> Union[gitlab.base.RESTObjectList, List[gitlab.base.RESTObject]]:
+        if TYPE_CHECKING:
+            assert isinstance(self.mgr, gitlab.mixins.ListMixin)
         try:
-            return self.mgr.list(**self.args)
+            result = self.mgr.list(**self.args)
         except Exception as e:
             cli.die("Impossible to list objects", e)
+        return result
 
-    def do_get(self):
-        id = None
-        if not issubclass(self.mgr_cls, gitlab.mixins.GetWithoutIdMixin):
-            id = self.args.pop(self.cls._id_attr)
+    def do_get(self) -> Optional[gitlab.base.RESTObject]:
+        if isinstance(self.mgr, gitlab.mixins.GetWithoutIdMixin):
+            try:
+                result = self.mgr.get(id=None, **self.args)
+            except Exception as e:
+                cli.die("Impossible to get object", e)
+            return result
 
+        if TYPE_CHECKING:
+            assert isinstance(self.mgr, gitlab.mixins.GetMixin)
+            assert isinstance(self.cls._id_attr, str)
+
+        id = self.args.pop(self.cls._id_attr)
         try:
-            return self.mgr.get(id, **self.args)
+            result = self.mgr.get(id, lazy=False, **self.args)
         except Exception as e:
             cli.die("Impossible to get object", e)
+        return result
 
-    def do_delete(self):
+    def do_delete(self) -> None:
+        if TYPE_CHECKING:
+            assert isinstance(self.mgr, gitlab.mixins.DeleteMixin)
+            assert isinstance(self.cls._id_attr, str)
         id = self.args.pop(self.cls._id_attr)
         try:
             self.mgr.delete(id, **self.args)
         except Exception as e:
             cli.die("Impossible to destroy object", e)
 
-    def do_update(self):
-        id = None
-        if not issubclass(self.mgr_cls, gitlab.mixins.GetWithoutIdMixin):
+    def do_update(self) -> Dict[str, Any]:
+        if TYPE_CHECKING:
+            assert isinstance(self.mgr, gitlab.mixins.UpdateMixin)
+        if issubclass(self.mgr_cls, gitlab.mixins.GetWithoutIdMixin):
+            id = None
+        else:
+            if TYPE_CHECKING:
+                assert isinstance(self.cls._id_attr, str)
             id = self.args.pop(self.cls._id_attr)
+
         try:
-            return self.mgr.update(id, self.args)
+            result = self.mgr.update(id, self.args)
         except Exception as e:
             cli.die("Impossible to update object", e)
+        return result
 
 
-def _populate_sub_parser_by_class(cls, sub_parser):
+def _populate_sub_parser_by_class(
+    cls: Type[gitlab.base.RESTObject], sub_parser: argparse._SubParsersAction
+) -> None:
     mgr_cls_name = cls.__name__ + "Manager"
     mgr_cls = getattr(gitlab.v4.objects, mgr_cls_name)
 
@@ -258,7 +304,7 @@ def _populate_sub_parser_by_class(cls, sub_parser):
             ]
 
 
-def extend_parser(parser):
+def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(
         title="object", dest="what", help="Object to manipulate."
     )
@@ -287,7 +333,9 @@ def extend_parser(parser):
     return parser
 
 
-def get_dict(obj, fields):
+def get_dict(
+    obj: Union[str, gitlab.base.RESTObject], fields: List[str]
+) -> Union[str, Dict[str, Any]]:
     if isinstance(obj, str):
         return obj
 
@@ -297,19 +345,24 @@ def get_dict(obj, fields):
 
 
 class JSONPrinter(object):
-    def display(self, d, **kwargs):
+    def display(self, d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
         import json  # noqa
 
         print(json.dumps(d))
 
-    def display_list(self, data, fields, **kwargs):
+    def display_list(
+        self,
+        data: List[Union[str, gitlab.base.RESTObject]],
+        fields: List[str],
+        **kwargs: Any
+    ) -> None:
         import json  # noqa
 
         print(json.dumps([get_dict(obj, fields) for obj in data]))
 
 
 class YAMLPrinter(object):
-    def display(self, d, **kwargs):
+    def display(self, d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
         try:
             import yaml  # noqa
 
@@ -321,7 +374,12 @@ class YAMLPrinter(object):
                 "to use the yaml output feature"
             )
 
-    def display_list(self, data, fields, **kwargs):
+    def display_list(
+        self,
+        data: List[Union[str, gitlab.base.RESTObject]],
+        fields: List[str],
+        **kwargs: Any
+    ) -> None:
         try:
             import yaml  # noqa
 
@@ -339,12 +397,14 @@ class YAMLPrinter(object):
 
 
 class LegacyPrinter(object):
-    def display(self, d, **kwargs):
+    def display(self, d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
         verbose = kwargs.get("verbose", False)
         padding = kwargs.get("padding", 0)
-        obj = kwargs.get("obj")
+        obj: Optional[Union[Dict[str, Any], gitlab.base.RESTObject]] = kwargs.get("obj")
+        if TYPE_CHECKING:
+            assert obj is not None
 
-        def display_dict(d, padding):
+        def display_dict(d: Dict[str, Any], padding: int) -> None:
             for k in sorted(d.keys()):
                 v = d[k]
                 if isinstance(v, dict):
@@ -369,6 +429,8 @@ class LegacyPrinter(object):
             display_dict(attrs, padding)
 
         else:
+            if TYPE_CHECKING:
+                assert isinstance(obj, gitlab.base.RESTObject)
             if obj._id_attr:
                 id = getattr(obj, obj._id_attr)
                 print("%s: %s" % (obj._id_attr.replace("_", "-"), id))
@@ -383,7 +445,12 @@ class LegacyPrinter(object):
                     line = line[:76] + "..."
                 print(line)
 
-    def display_list(self, data, fields, **kwargs):
+    def display_list(
+        self,
+        data: List[Union[str, gitlab.base.RESTObject]],
+        fields: List[str],
+        **kwargs: Any
+    ) -> None:
         verbose = kwargs.get("verbose", False)
         for obj in data:
             if isinstance(obj, gitlab.base.RESTObject):
@@ -393,14 +460,28 @@ class LegacyPrinter(object):
             print("")
 
 
-PRINTERS = {"json": JSONPrinter, "legacy": LegacyPrinter, "yaml": YAMLPrinter}
+PRINTERS: Dict[
+    str, Union[Type[JSONPrinter], Type[LegacyPrinter], Type[YAMLPrinter]]
+] = {
+    "json": JSONPrinter,
+    "legacy": LegacyPrinter,
+    "yaml": YAMLPrinter,
+}
 
 
-def run(gl, what, action, args, verbose, output, fields):
-    g_cli = GitlabCLI(gl, what, action, args)
+def run(
+    gl: gitlab.Gitlab,
+    what: str,
+    action: str,
+    args: Dict[str, Any],
+    verbose: bool,
+    output: str,
+    fields: List[str],
+) -> None:
+    g_cli = GitlabCLI(gl=gl, what=what, action=action, args=args)
     data = g_cli()
 
-    printer = PRINTERS[output]()
+    printer: Union[JSONPrinter, LegacyPrinter, YAMLPrinter] = PRINTERS[output]()
 
     if isinstance(data, dict):
         printer.display(data, verbose=True, obj=data)
