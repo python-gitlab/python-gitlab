@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import importlib
+from types import ModuleType
 from typing import Any, Dict, Optional, Type
 
 from .client import Gitlab, GitlabList
@@ -38,7 +39,12 @@ class RESTObject(object):
     without ID in the url.
     """
 
-    _id_attr = "id"
+    _id_attr: Optional[str] = "id"
+    _attrs: Dict[str, Any]
+    _module: ModuleType
+    _parent_attrs: Dict[str, Any]
+    _updated_attrs: Dict[str, Any]
+    manager: "RESTManager"
 
     def __init__(self, manager: "RESTManager", attrs: Dict[str, Any]) -> None:
         self.__dict__.update(
