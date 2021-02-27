@@ -145,7 +145,7 @@ class Gitlab(object):
     def __enter__(self) -> "Gitlab":
         return self
 
-    def __exit__(self, *args) -> None:
+    def __exit__(self, *args: Any) -> None:
         self.session.close()
 
     def __getstate__(self) -> Dict[str, Any]:
@@ -180,7 +180,9 @@ class Gitlab(object):
         return self._api_version
 
     @classmethod
-    def from_config(cls, gitlab_id=None, config_files=None) -> "Gitlab":
+    def from_config(
+        cls, gitlab_id: Optional[str] = None, config_files: Optional[List[str]] = None
+    ) -> "Gitlab":
         """Create a Gitlab connection from configuration files.
 
         Args:
@@ -247,7 +249,7 @@ class Gitlab(object):
         return cast(str, self._server_version), cast(str, self._server_revision)
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabVerifyError)
-    def lint(self, content: str, **kwargs) -> Tuple[bool, List[str]]:
+    def lint(self, content: str, **kwargs: Any) -> Tuple[bool, List[str]]:
         """Validate a gitlab CI configuration.
 
         Args:
@@ -269,7 +271,7 @@ class Gitlab(object):
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabMarkdownError)
     def markdown(
-        self, text: str, gfm: bool = False, project: Optional[str] = None, **kwargs
+        self, text: str, gfm: bool = False, project: Optional[str] = None, **kwargs: Any
     ) -> str:
         """Render an arbitrary Markdown document.
 
@@ -296,7 +298,7 @@ class Gitlab(object):
         return data["html"]
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabLicenseError)
-    def get_license(self, **kwargs) -> Dict[str, Any]:
+    def get_license(self, **kwargs: Any) -> Dict[str, Any]:
         """Retrieve information about the current license.
 
         Args:
@@ -315,7 +317,7 @@ class Gitlab(object):
         return {}
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabLicenseError)
-    def set_license(self, license: str, **kwargs) -> Dict[str, Any]:
+    def set_license(self, license: str, **kwargs: Any) -> Dict[str, Any]:
         """Add a new license.
 
         Args:
@@ -446,7 +448,7 @@ class Gitlab(object):
         post_data: Optional[Dict[str, Any]] = None,
         streamed: bool = False,
         files: Optional[Dict[str, Any]] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> requests.Response:
         """Make an HTTP request to the Gitlab server.
 
@@ -577,7 +579,7 @@ class Gitlab(object):
         query_data: Optional[Dict[str, Any]] = None,
         streamed: bool = False,
         raw: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> Union[Dict[str, Any], requests.Response]:
         """Make a GET request to the Gitlab server.
 
@@ -621,8 +623,8 @@ class Gitlab(object):
         self,
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
-        as_list=None,
-        **kwargs,
+        as_list: Optional[bool] = None,
+        **kwargs: Any,
     ) -> Union["GitlabList", List[Dict[str, Any]]]:
         """Make a GET request to the Gitlab server for list-oriented queries.
 
@@ -670,7 +672,7 @@ class Gitlab(object):
         query_data: Optional[Dict[str, Any]] = None,
         post_data: Optional[Dict[str, Any]] = None,
         files: Optional[Dict[str, Any]] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Union[Dict[str, Any], requests.Response]:
         """Make a POST request to the Gitlab server.
 
@@ -717,7 +719,7 @@ class Gitlab(object):
         query_data: Optional[Dict[str, Any]] = None,
         post_data: Optional[Dict[str, Any]] = None,
         files: Optional[Dict[str, Any]] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Union[Dict[str, Any], requests.Response]:
         """Make a PUT request to the Gitlab server.
 
@@ -755,7 +757,7 @@ class Gitlab(object):
                 error_message="Failed to parse the server message"
             ) from e
 
-    def http_delete(self, path: str, **kwargs) -> requests.Response:
+    def http_delete(self, path: str, **kwargs: Any) -> requests.Response:
         """Make a PUT request to the Gitlab server.
 
         Args:
@@ -773,7 +775,7 @@ class Gitlab(object):
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabSearchError)
     def search(
-        self, scope: str, search: str, **kwargs
+        self, scope: str, search: str, **kwargs: Any
     ) -> Union["GitlabList", List[Dict[str, Any]]]:
         """Search GitLab resources matching the provided string.'
 
@@ -806,7 +808,7 @@ class GitlabList(object):
         url: str,
         query_data: Dict[str, Any],
         get_next: bool = True,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self._gl = gl
 
@@ -817,7 +819,7 @@ class GitlabList(object):
         self._get_next = get_next
 
     def _query(
-        self, url: str, query_data: Optional[Dict[str, Any]] = None, **kwargs
+        self, url: str, query_data: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> None:
         query_data = query_data or {}
         result = self._gl.http_request("get", url, query_data=query_data, **kwargs)
@@ -842,7 +844,7 @@ class GitlabList(object):
         self._total: Optional[Union[str, int]] = result.headers.get("X-Total")
 
         try:
-            self._data = result.json()
+            self._data: List[Dict[str, Any]] = result.json()
         except Exception as e:
             raise gitlab.exceptions.GitlabParsingError(
                 error_message="Failed to parse the server message"
