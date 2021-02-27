@@ -327,6 +327,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         path = "/projects/%s/trigger/pipeline" % self.get_id()
         post_data = {"ref": ref, "token": token, "variables": variables}
         attrs = self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        assert isinstance(attrs, dict)
+        reveal_type(ProjectPipeline)
         return ProjectPipeline(self.pipelines, attrs)
 
     @cli.register_custom_action("Project")

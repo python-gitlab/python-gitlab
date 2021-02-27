@@ -15,6 +15,19 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Protocol,
+    Tuple,
+    Type,
+    TYPE_CHECKING,
+    Union,
+)
+
 import gitlab
 from gitlab import base
 from gitlab import cli
@@ -50,7 +63,9 @@ __all__ = [
 
 class GetMixin(object):
     @exc.on_http_error(exc.GitlabGetError)
-    def get(self, id, lazy=False, **kwargs):
+    def get(
+        self: base.RESTManager, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> base.RESTObject:
         """Retrieve a single object.
 
         Args:
@@ -70,15 +85,20 @@ class GetMixin(object):
         if not isinstance(id, int):
             id = utils.clean_str_id(id)
         path = "%s/%s" % (self.path, id)
+        assert self._obj_cls is not None
         if lazy is True:
+            assert self._obj_cls._id_attr is not None
             return self._obj_cls(self, {self._obj_cls._id_attr: id})
         server_data = self.gitlab.http_get(path, **kwargs)
+        assert isinstance(server_data, dict)
         return self._obj_cls(self, server_data)
 
 
 class GetWithoutIdMixin(object):
     @exc.on_http_error(exc.GitlabGetError)
-    def get(self, id=None, **kwargs):
+    def get(
+        self: base.RESTManager, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[base.RESTObject]:
         """Retrieve a single object.
 
         Args:
@@ -91,15 +111,18 @@ class GetWithoutIdMixin(object):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        server_data = self.gitlab.http_get(self.path, **kwargs)
-        if server_data is None:
+        if self.path is None:
             return None
+        server_data = self.gitlab.http_get(self.path, **kwargs)
+        if server_data is None or not isinstance(server_data, dict):
+            return None
+        assert self._obj_cls is not None
         return self._obj_cls(self, server_data)
 
 
 class RefreshMixin(object):
     @exc.on_http_error(exc.GitlabGetError)
-    def refresh(self, **kwargs):
+    def refresh(self: base.RESTObject, **kwargs: Any) -> None:
         """Refresh a single object from server.
 
         Args:
@@ -114,14 +137,18 @@ class RefreshMixin(object):
         if self._id_attr:
             path = "%s/%s" % (self.manager.path, self.id)
         else:
+            assert self.manager.path is not None
             path = self.manager.path
         server_data = self.manager.gitlab.http_get(path, **kwargs)
+        assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
 
 class ListMixin(object):
     @exc.on_http_error(exc.GitlabListError)
-    def list(self, **kwargs):
+    def list(
+        self: base.RESTManager, **kwargs: Any
+    ) -> Union[base.RESTObjectList, List[base.RESTObject]]:
         """Retrieve a list of objects.
 
         Args:
@@ -163,6 +190,7 @@ class ListMixin(object):
         # Allow to overwrite the path, handy for custom listings
         path = data.pop("path", self.path)
 
+        assert self._obj_cls is not None
         obj = self.gitlab.http_list(path, **data)
         if isinstance(obj, list):
             return [self._obj_cls(self, item) for item in obj]
@@ -175,7 +203,10 @@ class RetrieveMixin(ListMixin, GetMixin):
 
 
 class CreateMixin(object):
-    def _check_missing_create_attrs(self, data):
+    def _check_missing_create_attrs(
+        self: base.RESTManager,
+        data: Dict[str, Any],
+    ) -> None:
         required, optional = self.get_create_attrs()
         missing = []
         for attr in required:
@@ -185,7 +216,9 @@ class CreateMixin(object):
         if missing:
             raise AttributeError("Missing attributes: %s" % ", ".join(missing))
 
-    def get_create_attrs(self):
+    def get_create_attrs(
+        self,
+    ) -> Tuple[Tuple[str, ...], Tuple[str, ...]]:
         """Return the required and optional arguments.
 
         Returns:
@@ -195,7 +228,9 @@ class CreateMixin(object):
         return getattr(self, "_create_attrs", (tuple(), tuple()))
 
     @exc.on_http_error(exc.GitlabCreateError)
-    def create(self, data=None, **kwargs):
+    def create(
+        self: base.RESTManager, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> base.RESTObject:
         """Create a new object.
 
         Args:
@@ -237,14 +272,19 @@ class CreateMixin(object):
         # Handle specific URL for creation
         path = kwargs.pop("path", self.path)
         server_data = self.gitlab.http_post(path, post_data=data, files=files, **kwargs)
+        assert isinstance(server_data, dict)
+        assert self._obj_cls is not None
         return self._obj_cls(self, server_data)
 
 
 class UpdateMixin(object):
-    def _check_missing_update_attrs(self, data):
+    def _check_missing_update_attrs(
+        self: base.RESTManager, data: Dict[str, Any]
+    ) -> None:
         required, optional = self.get_update_attrs()
+        assert self._obj_cls is not None
         # Remove the id field from the required list as it was previously moved to the http path.
-        required = tuple(filter(lambda k: k != self._obj_cls._id_attr, required))
+        required = tuple([k for k in required if k != self._obj_cls._id_attr])
         missing = []
         for attr in required:
             if attr not in data:
@@ -253,7 +293,7 @@ class UpdateMixin(object):
         if missing:
             raise AttributeError("Missing attributes: %s" % ", ".join(missing))
 
-    def get_update_attrs(self):
+    def get_update_attrs(self) -> Tuple[Tuple[str, ...], Tuple[str, ...]]:
         """Return the required and optional arguments.
 
         Returns:
@@ -262,7 +302,7 @@ class UpdateMixin(object):
         """
         return getattr(self, "_update_attrs", (tuple(), tuple()))
 
-    def _get_update_method(self):
+    def _get_update_method(self: base.RESTManager) -> Callable:
         """Return the HTTP method to use.
 
         Returns:
@@ -275,7 +315,12 @@ class UpdateMixin(object):
         return http_method
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def update(self, id=None, new_data=None, **kwargs):
+    def update(
+        self: base.RESTManager,
+        id: Optional[Union[str, int]] = None,
+        new_data: Optional[Dict[str, Any]] = None,
+        **kwargs: Any
+    ) -> Dict[str, Any]:
         """Update an object on the server.
 
         Args:
@@ -413,6 +458,7 @@ class SaveMixin(object):
 
 
 class ObjectDeleteMixin(object):
+    # class ObjectDeleteMixin(object):
     """Mixin for RESTObject's that can be deleted."""
 
     def delete(self, **kwargs):

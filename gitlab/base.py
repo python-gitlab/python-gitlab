@@ -17,7 +17,16 @@
 
 import importlib
 from types import ModuleType
-from typing import Any, Dict, Optional, Type
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Optional,
+    Protocol,
+    runtime_checkable,
+    Tuple,
+    Type,
+)
 
 from .client import Gitlab, GitlabList
 
@@ -28,7 +37,11 @@ __all__ = [
 ]
 
 
-class RESTObject(object):
+# NOTE(jlvillal): Use Protocol as the base class for RESTObject to work with
+# mixins. More info at:
+# https://mypy.readthedocs.io/en/latest/more_types.html#mixin-classes
+@runtime_checkable
+class RESTObject(Protocol):
     """Represents an object built from server data.
 
     It holds the attributes know from the server, and the updated attributes in
@@ -40,11 +53,26 @@ class RESTObject(object):
     """
 
     _id_attr: Optional[str] = "id"
-    _attrs: Dict[str, Any]
-    _module: ModuleType
-    _parent_attrs: Dict[str, Any]
-    _updated_attrs: Dict[str, Any]
-    manager: "RESTManager"
+
+    @property
+    def _attrs(self) -> Dict[str, Any]:
+        ...
+
+    @property
+    def manager(self) -> "RESTManager":
+        ...
+
+    @property
+    def _module(self) -> ModuleType:
+        ...
+
+    @property
+    def _parent_attrs(self) -> Dict[str, Any]:
+        ...
+
+    @property
+    def _updated_attrs(self) -> Dict[str, Any]:
+        ...
 
     def __init__(self, manager: "RESTManager", attrs: Dict[str, Any]) -> None:
         self.__dict__.update(
@@ -248,7 +276,10 @@ class RESTObjectList(object):
         return self._list.total
 
 
-class RESTManager(object):
+# NOTE(jlvillal): Use Protocol as the base class for RESTManager to work with
+# mixins. More info at:
+# https://mypy.readthedocs.io/en/latest/more_types.html#mixin-classes
+class RESTManager(Protocol):
     """Base class for CRUD operations on objects.
 
     Derived class must define ``_path`` and ``_obj_cls``.
@@ -260,6 +291,11 @@ class RESTManager(object):
     _path: Optional[str] = None
     _obj_cls: Optional[Type[RESTObject]] = None
     _from_parent_attrs: Dict[str, Any] = {}
+
+    _computed_path: Optional[str]
+    _parent: Optional[RESTObject]
+    _parent_attrs: Dict[str, Any]
+    gitlab: Gitlab
 
     def __init__(self, gl: Gitlab, parent: Optional[RESTObject] = None) -> None:
         """REST manager constructor.
@@ -296,3 +332,19 @@ class RESTManager(object):
     @property
     def path(self) -> Optional[str]:
         return self._computed_path
+
+    # abstract methods for type-checking to work with UpdateMixin class
+    def _check_missing_create_attrs(self, data: Dict[str, Any]) -> None:
+        ...
+
+    def _check_missing_update_attrs(self, data: Dict[str, Any]) -> None:
+        ...
+
+    def get_create_attrs(self) -> Tuple[Tuple[str, ...], Tuple[str, ...]]:
+        ...
+
+    def get_update_attrs(self) -> Tuple[Tuple[str, ...], Tuple[str, ...]]:
+        ...
+
+    def _get_update_method(self) -> Callable:
+        ...
