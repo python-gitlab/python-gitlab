@@ -1,6 +1,5 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     DeleteMixin,
     ObjectDeleteMixin,
@@ -16,7 +15,7 @@ __all__ = [
 ]
 
 
-class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
+class GeoNode(SaveMixin, ObjectDeleteMixin):
     @cli.register_custom_action("GeoNode")
     @exc.on_http_error(exc.GitlabRepairError)
     def repair(self, **kwargs):
@@ -52,7 +51,7 @@ class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
         return self.manager.gitlab.http_get(path, **kwargs)
 
 
-class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
+class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin):
     _path = "/geo_nodes"
     _obj_cls = GeoNode
     _update_attrs = (

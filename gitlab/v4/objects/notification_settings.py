@@ -1,4 +1,3 @@
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
 
 
@@ -12,11 +11,11 @@ __all__ = [
 ]
 
 
-class NotificationSettings(SaveMixin, RESTObject):
+class NotificationSettings(SaveMixin):
     _id_attr = None
 
 
-class NotificationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class NotificationSettingsManager(GetWithoutIdMixin, UpdateMixin):
     _path = "/notification_settings"
     _obj_cls = NotificationSettings
 

@@ -1,6 +1,5 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -10,7 +9,7 @@ __all__ = [
 ]
 
 
-class ProjectTrigger(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectTrigger(SaveMixin, ObjectDeleteMixin):
     @cli.register_custom_action("ProjectTrigger")
     @exc.on_http_error(exc.GitlabOwnershipError)
     def take_ownership(self, **kwargs):
@@ -28,7 +27,7 @@ class ProjectTrigger(SaveMixin, ObjectDeleteMixin, RESTObject):
         self._update_attrs(server_data)
 
 
-class ProjectTriggerManager(CRUDMixin, RESTManager):
+class ProjectTriggerManager(CRUDMixin):
     _path = "/projects/%(project_id)s/triggers"
     _obj_cls = ProjectTrigger
     _from_parent_attrs = {"project_id": "id"}

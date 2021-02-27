@@ -1,6 +1,5 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import NoUpdateMixin, ObjectDeleteMixin
 
 
@@ -12,7 +11,7 @@ __all__ = [
 ]
 
 
-class ProjectBranch(ObjectDeleteMixin, RESTObject):
+class ProjectBranch(ObjectDeleteMixin):
     _id_attr = "name"
 
     @cli.register_custom_action(
@@ -60,18 +59,18 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
         self._attrs["protected"] = False
 
 
-class ProjectBranchManager(NoUpdateMixin, RESTManager):
+class ProjectBranchManager(NoUpdateMixin):
     _path = "/projects/%(project_id)s/repository/branches"
     _obj_cls = ProjectBranch
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = (("branch", "ref"), tuple())
 
 
-class ProjectProtectedBranch(ObjectDeleteMixin, RESTObject):
+class ProjectProtectedBranch(ObjectDeleteMixin):
     _id_attr = "name"
 
 
-class ProjectProtectedBranchManager(NoUpdateMixin, RESTManager):
+class ProjectProtectedBranchManager(NoUpdateMixin):
     _path = "/projects/%(project_id)s/protected_branches"
     _obj_cls = ProjectProtectedBranch
     _from_parent_attrs = {"project_id": "id"}

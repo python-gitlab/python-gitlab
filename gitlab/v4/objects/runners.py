@@ -1,6 +1,6 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CRUDMixin,
     ListMixin,
@@ -26,18 +26,18 @@ class RunnerJob(RESTObject):
     pass
 
 
-class RunnerJobManager(ListMixin, RESTManager):
+class RunnerJobManager(ListMixin):
     _path = "/runners/%(runner_id)s/jobs"
     _obj_cls = RunnerJob
     _from_parent_attrs = {"runner_id": "id"}
     _list_filters = ("status",)
 
 
-class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):
+class Runner(SaveMixin, ObjectDeleteMixin):
     _managers = (("jobs", "RunnerJobManager"),)
 
 
-class RunnerManager(CRUDMixin, RESTManager):
+class RunnerManager(CRUDMixin):
     _path = "/runners"
     _obj_cls = Runner
     _list_filters = ("scope",)
@@ -114,22 +114,22 @@ class RunnerManager(CRUDMixin, RESTManager):
         self.gitlab.http_post(path, post_data=post_data, **kwargs)
 
 
-class GroupRunner(ObjectDeleteMixin, RESTObject):
+class GroupRunner(ObjectDeleteMixin):
     pass
 
 
-class GroupRunnerManager(NoUpdateMixin, RESTManager):
+class GroupRunnerManager(NoUpdateMixin):
     _path = "/groups/%(group_id)s/runners"
     _obj_cls = GroupRunner
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = (("runner_id",), tuple())
 
 
-class ProjectRunner(ObjectDeleteMixin, RESTObject):
+class ProjectRunner(ObjectDeleteMixin):
     pass
 
 
-class ProjectRunnerManager(NoUpdateMixin, RESTManager):
+class ProjectRunnerManager(NoUpdateMixin):
     _path = "/projects/%(project_id)s/runners"
     _obj_cls = ProjectRunner
     _from_parent_attrs = {"project_id": "id"}

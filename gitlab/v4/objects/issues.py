@@ -1,6 +1,6 @@
 from gitlab import cli, types
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CRUDMixin,
     CreateMixin,
@@ -41,7 +41,7 @@ class Issue(RESTObject):
     _short_print_attr = "title"
 
 
-class IssueManager(RetrieveMixin, RESTManager):
+class IssueManager(RetrieveMixin):
     _path = "/issues"
     _obj_cls = Issue
     _list_filters = (
@@ -68,7 +68,7 @@ class GroupIssue(RESTObject):
     pass
 
 
-class GroupIssueManager(ListMixin, RESTManager):
+class GroupIssueManager(ListMixin):
     _path = "/groups/%(group_id)s/issues"
     _obj_cls = GroupIssue
     _from_parent_attrs = {"group_id": "id"}
@@ -99,7 +99,6 @@ class ProjectIssue(
     ParticipantsMixin,
     SaveMixin,
     ObjectDeleteMixin,
-    RESTObject,
 ):
     _short_print_attr = "title"
     _id_attr = "iid"
@@ -167,7 +166,7 @@ class ProjectIssue(
         return self.manager.gitlab.http_get(path, **kwargs)
 
 
-class ProjectIssueManager(CRUDMixin, RESTManager):
+class ProjectIssueManager(CRUDMixin):
     _path = "/projects/%(project_id)s/issues"
     _obj_cls = ProjectIssue
     _from_parent_attrs = {"project_id": "id"}
@@ -222,11 +221,11 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
     _types = {"labels": types.ListAttribute}
 
 
-class ProjectIssueLink(ObjectDeleteMixin, RESTObject):
+class ProjectIssueLink(ObjectDeleteMixin):
     _id_attr = "issue_link_id"
 
 
-class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
+class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin):
     _path = "/projects/%(project_id)s/issues/%(issue_iid)s/links"
     _obj_cls = ProjectIssueLink
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}

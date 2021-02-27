@@ -1,5 +1,4 @@
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -20,7 +19,7 @@ __all__ = [
 ]
 
 
-class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
+class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin):
     _id_attr = "name"
 
     # Update without ID, but we need an ID to get from list.
@@ -44,7 +43,7 @@ class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         self._update_attrs(server_data)
 
 
-class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
+class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin):
     _path = "/groups/%(group_id)s/labels"
     _obj_cls = GroupLabel
     _from_parent_attrs = {"group_id": "id"}
@@ -80,7 +79,7 @@ class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         self.gitlab.http_delete(self.path, query_data={"name": name}, **kwargs)
 
 
-class ProjectLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin):
     _id_attr = "name"
 
     # Update without ID, but we need an ID to get from list.
@@ -104,9 +103,7 @@ class ProjectLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         self._update_attrs(server_data)
 
 
-class ProjectLabelManager(
-    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
-):
+class ProjectLabelManager(RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin):
     _path = "/projects/%(project_id)s/labels"
     _obj_cls = ProjectLabel
     _from_parent_attrs = {"project_id": "id"}

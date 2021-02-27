@@ -1,5 +1,4 @@
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -23,11 +22,11 @@ __all__ = [
 ]
 
 
-class ProjectApproval(SaveMixin, RESTObject):
+class ProjectApproval(SaveMixin):
     _id_attr = None
 
 
-class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin):
     _path = "/projects/%(project_id)s/approvals"
     _obj_cls = ProjectApproval
     _from_parent_attrs = {"project_id": "id"}
@@ -63,24 +62,22 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         self.gitlab.http_put(path, post_data=data, **kwargs)
 
 
-class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin):
     _id_attr = "id"
 
 
-class ProjectApprovalRuleManager(
-    ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
-):
+class ProjectApprovalRuleManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin):
     _path = "/projects/%(project_id)s/approval_rules"
     _obj_cls = ProjectApprovalRule
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = (("name", "approvals_required"), ("user_ids", "group_ids"))
 
 
-class ProjectMergeRequestApproval(SaveMixin, RESTObject):
+class ProjectMergeRequestApproval(SaveMixin):
     _id_attr = None
 
 
-class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin):
     _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/approvals"
     _obj_cls = ProjectMergeRequestApproval
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
@@ -131,7 +128,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
         return approval_rules.create(data=data)
 
 
-class ProjectMergeRequestApprovalRule(SaveMixin, RESTObject):
+class ProjectMergeRequestApprovalRule(SaveMixin):
     _id_attr = "approval_rule_id"
     _short_print_attr = "approval_rule"
 
@@ -158,9 +155,7 @@ class ProjectMergeRequestApprovalRule(SaveMixin, RESTObject):
         SaveMixin.save(self, **kwargs)
 
 
-class ProjectMergeRequestApprovalRuleManager(
-    ListMixin, UpdateMixin, CreateMixin, RESTManager
-):
+class ProjectMergeRequestApprovalRuleManager(ListMixin, UpdateMixin, CreateMixin):
     _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/approval_rules"
     _obj_cls = ProjectMergeRequestApprovalRule
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}

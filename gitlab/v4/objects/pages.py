@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -14,16 +14,16 @@ class PagesDomain(RESTObject):
     _id_attr = "domain"
 
 
-class PagesDomainManager(ListMixin, RESTManager):
+class PagesDomainManager(ListMixin):
     _path = "/pages/domains"
     _obj_cls = PagesDomain
 
 
-class ProjectPagesDomain(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectPagesDomain(SaveMixin, ObjectDeleteMixin):
     _id_attr = "domain"
 
 
-class ProjectPagesDomainManager(CRUDMixin, RESTManager):
+class ProjectPagesDomainManager(CRUDMixin):
     _path = "/projects/%(project_id)s/pages/domains"
     _obj_cls = ProjectPagesDomain
     _from_parent_attrs = {"project_id": "id"}

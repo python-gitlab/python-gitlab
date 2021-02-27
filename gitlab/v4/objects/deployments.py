@@ -1,4 +1,3 @@
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, RetrieveMixin, SaveMixin, UpdateMixin
 
 
@@ -8,11 +7,11 @@ __all__ = [
 ]
 
 
-class ProjectDeployment(RESTObject, SaveMixin):
+class ProjectDeployment(SaveMixin):
     pass
 
 
-class ProjectDeploymentManager(RetrieveMixin, CreateMixin, UpdateMixin, RESTManager):
+class ProjectDeploymentManager(RetrieveMixin, CreateMixin, UpdateMixin):
     _path = "/projects/%(project_id)s/deployments"
     _obj_cls = ProjectDeployment
     _from_parent_attrs = {"project_id": "id"}

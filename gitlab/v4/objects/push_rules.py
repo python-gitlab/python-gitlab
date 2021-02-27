@@ -1,4 +1,3 @@
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -15,13 +14,11 @@ __all__ = [
 ]
 
 
-class ProjectPushRules(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectPushRules(SaveMixin, ObjectDeleteMixin):
     _id_attr = None
 
 
-class ProjectPushRulesManager(
-    GetWithoutIdMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
-):
+class ProjectPushRulesManager(GetWithoutIdMixin, CreateMixin, UpdateMixin, DeleteMixin):
     _path = "/projects/%(project_id)s/push_rule"
     _obj_cls = ProjectPushRules
     _from_parent_attrs = {"project_id": "id"}

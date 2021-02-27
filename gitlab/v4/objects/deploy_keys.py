@@ -1,6 +1,6 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -16,16 +16,16 @@ class DeployKey(RESTObject):
     pass
 
 
-class DeployKeyManager(ListMixin, RESTManager):
+class DeployKeyManager(ListMixin):
     _path = "/deploy_keys"
     _obj_cls = DeployKey
 
 
-class ProjectKey(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectKey(SaveMixin, ObjectDeleteMixin):
     pass
 
 
-class ProjectKeyManager(CRUDMixin, RESTManager):
+class ProjectKeyManager(CRUDMixin):
     _path = "/projects/%(project_id)s/deploy_keys"
     _obj_cls = ProjectKey
     _from_parent_attrs = {"project_id": "id"}

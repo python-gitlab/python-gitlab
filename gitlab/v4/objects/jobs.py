@@ -1,6 +1,5 @@
 from gitlab import cli, utils
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import RefreshMixin, RetrieveMixin
 
 
@@ -10,7 +9,7 @@ __all__ = [
 ]
 
 
-class ProjectJob(RESTObject, RefreshMixin):
+class ProjectJob(RefreshMixin):
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobCancelError)
     def cancel(self, **kwargs):
@@ -184,7 +183,7 @@ class ProjectJob(RESTObject, RefreshMixin):
         return utils.response_content(result, streamed, action, chunk_size)
 
 
-class ProjectJobManager(RetrieveMixin, RESTManager):
+class ProjectJobManager(RetrieveMixin):
     _path = "/projects/%(project_id)s/jobs"
     _obj_cls = ProjectJob
     _from_parent_attrs = {"project_id": "id"}

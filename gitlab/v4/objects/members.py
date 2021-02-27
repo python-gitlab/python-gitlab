@@ -1,6 +1,5 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -12,11 +11,11 @@ __all__ = [
 ]
 
 
-class GroupMember(SaveMixin, ObjectDeleteMixin, RESTObject):
+class GroupMember(SaveMixin, ObjectDeleteMixin):
     _short_print_attr = "username"
 
 
-class GroupMemberManager(CRUDMixin, RESTManager):
+class GroupMemberManager(CRUDMixin):
     _path = "/groups/%(group_id)s/members"
     _obj_cls = GroupMember
     _from_parent_attrs = {"group_id": "id"}
@@ -49,11 +48,11 @@ class GroupMemberManager(CRUDMixin, RESTManager):
         return [self._obj_cls(self, item) for item in obj]
 
 
-class ProjectMember(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectMember(SaveMixin, ObjectDeleteMixin):
     _short_print_attr = "username"
 
 
-class ProjectMemberManager(CRUDMixin, RESTManager):
+class ProjectMemberManager(CRUDMixin):
     _path = "/projects/%(project_id)s/members"
     _obj_cls = ProjectMember
     _from_parent_attrs = {"project_id": "id"}

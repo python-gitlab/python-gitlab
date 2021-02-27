@@ -1,6 +1,5 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -17,7 +16,7 @@ __all__ = [
 ]
 
 
-class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectEnvironment(SaveMixin, ObjectDeleteMixin):
     @cli.register_custom_action("ProjectEnvironment")
     @exc.on_http_error(exc.GitlabStopError)
     def stop(self, **kwargs):
@@ -34,9 +33,7 @@ class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.manager.gitlab.http_post(path, **kwargs)
 
 
-class ProjectEnvironmentManager(
-    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
-):
+class ProjectEnvironmentManager(RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin):
     _path = "/projects/%(project_id)s/environments"
     _obj_cls = ProjectEnvironment
     _from_parent_attrs = {"project_id": "id"}

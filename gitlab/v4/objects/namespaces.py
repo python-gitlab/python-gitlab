@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import RetrieveMixin
 
 
@@ -12,7 +12,7 @@ class Namespace(RESTObject):
     pass
 
 
-class NamespaceManager(RetrieveMixin, RESTManager):
+class NamespaceManager(RetrieveMixin):
     _path = "/namespaces"
     _obj_cls = Namespace
     _list_filters = ("search",)

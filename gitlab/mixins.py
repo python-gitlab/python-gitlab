@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gitlab
-from gitlab import base
+from gitlab.base import RESTManager, RESTObject, RESTObjectList
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types as g_types
@@ -48,7 +48,7 @@ __all__ = [
 ]
 
 
-class GetMixin(object):
+class GetMixin(RESTManager):
     @exc.on_http_error(exc.GitlabGetError)
     def get(self, id, lazy=False, **kwargs):
         """Retrieve a single object.
@@ -76,7 +76,7 @@ class GetMixin(object):
         return self._obj_cls(self, server_data)
 
 
-class GetWithoutIdMixin(object):
+class GetWithoutIdMixin(RESTManager):
     @exc.on_http_error(exc.GitlabGetError)
     def get(self, id=None, **kwargs):
         """Retrieve a single object.
@@ -97,7 +97,8 @@ class GetWithoutIdMixin(object):
         return self._obj_cls(self, server_data)
 
 
-class RefreshMixin(object):
+# RESTObject derived mixins
+class RefreshMixin(RESTObject):
     @exc.on_http_error(exc.GitlabGetError)
     def refresh(self, **kwargs):
         """Refresh a single object from server.
@@ -119,7 +120,7 @@ class RefreshMixin(object):
         self._update_attrs(server_data)
 
 
-class ListMixin(object):
+class ListMixin(RESTManager):
     @exc.on_http_error(exc.GitlabListError)
     def list(self, **kwargs):
         """Retrieve a list of objects.
@@ -167,14 +168,14 @@ class ListMixin(object):
         if isinstance(obj, list):
             return [self._obj_cls(self, item) for item in obj]
         else:
-            return base.RESTObjectList(self, self._obj_cls, obj)
+            return RESTObjectList(self, self._obj_cls, obj)
 
 
 class RetrieveMixin(ListMixin, GetMixin):
     pass
 
 
-class CreateMixin(object):
+class CreateMixin(RESTManager):
     def _check_missing_create_attrs(self, data):
         required, optional = self.get_create_attrs()
         missing = []
@@ -240,7 +241,7 @@ class CreateMixin(object):
         return self._obj_cls(self, server_data)
 
 
-class UpdateMixin(object):
+class UpdateMixin(RESTManager):
     def _check_missing_update_attrs(self, data):
         required, optional = self.get_update_attrs()
         # Remove the id field from the required list as it was previously moved to the http path.
@@ -321,7 +322,7 @@ class UpdateMixin(object):
         return http_method(path, post_data=new_data, files=files, **kwargs)
 
 
-class SetMixin(object):
+class SetMixin(RESTManager):
     @exc.on_http_error(exc.GitlabSetError)
     def set(self, key, value, **kwargs):
         """Create or update the object.
@@ -344,7 +345,7 @@ class SetMixin(object):
         return self._obj_cls(self, server_data)
 
 
-class DeleteMixin(object):
+class DeleteMixin(RESTManager):
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete(self, id, **kwargs):
         """Delete an object on the server.
@@ -374,7 +375,7 @@ class NoUpdateMixin(GetMixin, ListMixin, CreateMixin, DeleteMixin):
     pass
 
 
-class SaveMixin(object):
+class SaveMixin(RESTObject):
     """Mixin for RESTObject's that can be updated."""
 
     def _get_updated_data(self):
@@ -412,7 +413,7 @@ class SaveMixin(object):
             self._update_attrs(server_data)
 
 
-class ObjectDeleteMixin(object):
+class ObjectDeleteMixin(RESTObject):
     """Mixin for RESTObject's that can be deleted."""
 
     def delete(self, **kwargs):
@@ -428,7 +429,7 @@ class ObjectDeleteMixin(object):
         self.manager.delete(self.get_id())
 
 
-class UserAgentDetailMixin(object):
+class UserAgentDetailMixin(RESTObject):
     @cli.register_custom_action(("Snippet", "ProjectSnippet", "ProjectIssue"))
     @exc.on_http_error(exc.GitlabGetError)
     def user_agent_detail(self, **kwargs):
@@ -445,7 +446,7 @@ class UserAgentDetailMixin(object):
         return self.manager.gitlab.http_get(path, **kwargs)
 
 
-class AccessRequestMixin(object):
+class AccessRequestMixin(RESTObject):
     @cli.register_custom_action(
         ("ProjectAccessRequest", "GroupAccessRequest"), tuple(), ("access_level",)
     )
@@ -468,7 +469,7 @@ class AccessRequestMixin(object):
         self._update_attrs(server_data)
 
 
-class DownloadMixin(object):
+class DownloadMixin(RESTObject):
     @cli.register_custom_action(("GroupExport", "ProjectExport"))
     @exc.on_http_error(exc.GitlabGetError)
     def download(self, streamed=False, action=None, chunk_size=1024, **kwargs):
@@ -497,7 +498,7 @@ class DownloadMixin(object):
         return utils.response_content(result, streamed, action, chunk_size)
 
 
-class SubscribableMixin(object):
+class SubscribableMixin(RESTObject):
     @cli.register_custom_action(
         ("ProjectIssue", "ProjectMergeRequest", "ProjectLabel", "GroupLabel")
     )
@@ -535,7 +536,7 @@ class SubscribableMixin(object):
         self._update_attrs(server_data)
 
 
-class TodoMixin(object):
+class TodoMixin(RESTObject):
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTodoError)
     def todo(self, **kwargs):
@@ -552,7 +553,7 @@ class TodoMixin(object):
         self.manager.gitlab.http_post(path, **kwargs)
 
 
-class TimeTrackingMixin(object):
+class TimeTrackingMixin(RESTObject):
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def time_stats(self, **kwargs):
@@ -638,7 +639,7 @@ class TimeTrackingMixin(object):
         return self.manager.gitlab.http_post(path, **kwargs)
 
 
-class ParticipantsMixin(object):
+class ParticipantsMixin(RESTObject):
     @cli.register_custom_action(("ProjectMergeRequest", "ProjectIssue"))
     @exc.on_http_error(exc.GitlabListError)
     def participants(self, **kwargs):
@@ -664,7 +665,7 @@ class ParticipantsMixin(object):
         return self.manager.gitlab.http_get(path, **kwargs)
 
 
-class BadgeRenderMixin(object):
+class BadgeRenderMixin(RESTManager):
     @cli.register_custom_action(
         ("GroupBadgeManager", "ProjectBadgeManager"), ("link_url", "image_url")
     )

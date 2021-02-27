@@ -12,7 +12,8 @@ from gitlab.mixins import (
 
 def test_retrieve_mixin():
     class M(RetrieveMixin):
-        pass
+        def __init__(self):
+            ...
 
     obj = M()
     assert hasattr(obj, "list")
@@ -26,6 +27,9 @@ def test_retrieve_mixin():
 
 def test_crud_mixin():
     class M(CRUDMixin):
+        def __init__(self):
+            ...
+
         pass
 
     obj = M()
@@ -43,7 +47,8 @@ def test_crud_mixin():
 
 def test_no_update_mixin():
     class M(NoUpdateMixin):
-        pass
+        def __init__(self):
+            ...
 
     obj = M()
     assert hasattr(obj, "get")

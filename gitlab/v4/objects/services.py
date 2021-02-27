@@ -1,6 +1,5 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     DeleteMixin,
     GetMixin,
@@ -17,11 +16,11 @@ __all__ = [
 ]
 
 
-class ProjectService(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectService(SaveMixin, ObjectDeleteMixin):
     pass
 
 
-class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTManager):
+class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin):
     _path = "/projects/%(project_id)s/services"
     _from_parent_attrs = {"project_id": "id"}
     _obj_cls = ProjectService

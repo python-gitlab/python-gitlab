@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import RetrieveMixin
 
 
@@ -18,7 +18,7 @@ class Dockerfile(RESTObject):
     _id_attr = "name"
 
 
-class DockerfileManager(RetrieveMixin, RESTManager):
+class DockerfileManager(RetrieveMixin):
     _path = "/templates/dockerfiles"
     _obj_cls = Dockerfile
 
@@ -27,7 +27,7 @@ class Gitignore(RESTObject):
     _id_attr = "name"
 
 
-class GitignoreManager(RetrieveMixin, RESTManager):
+class GitignoreManager(RetrieveMixin):
     _path = "/templates/gitignores"
     _obj_cls = Gitignore
 
@@ -36,7 +36,7 @@ class Gitlabciyml(RESTObject):
     _id_attr = "name"
 
 
-class GitlabciymlManager(RetrieveMixin, RESTManager):
+class GitlabciymlManager(RetrieveMixin):
     _path = "/templates/gitlab_ci_ymls"
     _obj_cls = Gitlabciyml
 
@@ -45,7 +45,7 @@ class License(RESTObject):
     _id_attr = "key"
 
 
-class LicenseManager(RetrieveMixin, RESTManager):
+class LicenseManager(RetrieveMixin):
     _path = "/templates/licenses"
     _obj_cls = License
     _list_filters = ("popular",)

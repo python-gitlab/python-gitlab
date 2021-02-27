@@ -1,6 +1,6 @@
 from gitlab import cli, types
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CRUDMixin,
     CreateMixin,
@@ -30,7 +30,7 @@ __all__ = [
 ]
 
 
-class ProjectPipeline(RESTObject, RefreshMixin, ObjectDeleteMixin):
+class ProjectPipeline(RefreshMixin, ObjectDeleteMixin):
     _managers = (
         ("jobs", "ProjectPipelineJobManager"),
         ("bridges", "ProjectPipelineBridgeManager"),
@@ -68,7 +68,7 @@ class ProjectPipeline(RESTObject, RefreshMixin, ObjectDeleteMixin):
         self.manager.gitlab.http_post(path)
 
 
-class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin):
     _path = "/projects/%(project_id)s/pipelines"
     _obj_cls = ProjectPipeline
     _from_parent_attrs = {"project_id": "id"}
@@ -109,7 +109,7 @@ class ProjectPipelineJob(RESTObject):
     pass
 
 
-class ProjectPipelineJobManager(ListMixin, RESTManager):
+class ProjectPipelineJobManager(ListMixin):
     _path = "/projects/%(project_id)s/pipelines/%(pipeline_id)s/jobs"
     _obj_cls = ProjectPipelineJob
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
@@ -120,7 +120,7 @@ class ProjectPipelineBridge(RESTObject):
     pass
 
 
-class ProjectPipelineBridgeManager(ListMixin, RESTManager):
+class ProjectPipelineBridgeManager(ListMixin):
     _path = "/projects/%(project_id)s/pipelines/%(pipeline_id)s/bridges"
     _obj_cls = ProjectPipelineBridge
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
@@ -131,19 +131,17 @@ class ProjectPipelineVariable(RESTObject):
     _id_attr = "key"
 
 
-class ProjectPipelineVariableManager(ListMixin, RESTManager):
+class ProjectPipelineVariableManager(ListMixin):
     _path = "/projects/%(project_id)s/pipelines/%(pipeline_id)s/variables"
     _obj_cls = ProjectPipelineVariable
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
 
 
-class ProjectPipelineScheduleVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectPipelineScheduleVariable(SaveMixin, ObjectDeleteMixin):
     _id_attr = "key"
 
 
-class ProjectPipelineScheduleVariableManager(
-    CreateMixin, UpdateMixin, DeleteMixin, RESTManager
-):
+class ProjectPipelineScheduleVariableManager(CreateMixin, UpdateMixin, DeleteMixin):
     _path = (
         "/projects/%(project_id)s/pipeline_schedules/"
         "%(pipeline_schedule_id)s/variables"
@@ -154,7 +152,7 @@ class ProjectPipelineScheduleVariableManager(
     _update_attrs = (("key", "value"), tuple())
 
 
-class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin):
     _managers = (("variables", "ProjectPipelineScheduleVariableManager"),)
 
     @cli.register_custom_action("ProjectPipelineSchedule")
@@ -192,7 +190,7 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
         return server_data
 
 
-class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
+class ProjectPipelineScheduleManager(CRUDMixin):
     _path = "/projects/%(project_id)s/pipeline_schedules"
     _obj_cls = ProjectPipelineSchedule
     _from_parent_attrs = {"project_id": "id"}

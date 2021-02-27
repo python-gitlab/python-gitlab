@@ -1,5 +1,4 @@
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, CreateMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -11,11 +10,11 @@ __all__ = [
 ]
 
 
-class GroupCluster(SaveMixin, ObjectDeleteMixin, RESTObject):
+class GroupCluster(SaveMixin, ObjectDeleteMixin):
     pass
 
 
-class GroupClusterManager(CRUDMixin, RESTManager):
+class GroupClusterManager(CRUDMixin):
     _path = "/groups/%(group_id)s/clusters"
     _obj_cls = GroupCluster
     _from_parent_attrs = {"group_id": "id"}
@@ -56,11 +55,11 @@ class GroupClusterManager(CRUDMixin, RESTManager):
         return CreateMixin.create(self, data, path=path, **kwargs)
 
 
-class ProjectCluster(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectCluster(SaveMixin, ObjectDeleteMixin):
     pass
 
 
-class ProjectClusterManager(CRUDMixin, RESTManager):
+class ProjectClusterManager(CRUDMixin):
     _path = "/projects/%(project_id)s/clusters"
     _obj_cls = ProjectCluster
     _from_parent_attrs = {"project_id": "id"}

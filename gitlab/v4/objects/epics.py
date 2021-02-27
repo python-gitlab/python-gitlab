@@ -1,6 +1,5 @@
 from gitlab import types
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CRUDMixin,
     CreateMixin,
@@ -21,7 +20,7 @@ __all__ = [
 ]
 
 
-class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
+class GroupEpic(ObjectDeleteMixin, SaveMixin):
     _id_attr = "iid"
     _managers = (
         ("issues", "GroupEpicIssueManager"),
@@ -29,7 +28,7 @@ class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
     )
 
 
-class GroupEpicManager(CRUDMixin, RESTManager):
+class GroupEpicManager(CRUDMixin):
     _path = "/groups/%(group_id)s/epics"
     _obj_cls = GroupEpic
     _from_parent_attrs = {"group_id": "id"}
@@ -42,7 +41,7 @@ class GroupEpicManager(CRUDMixin, RESTManager):
     _types = {"labels": types.ListAttribute}
 
 
-class GroupEpicIssue(ObjectDeleteMixin, SaveMixin, RESTObject):
+class GroupEpicIssue(ObjectDeleteMixin, SaveMixin):
     _id_attr = "epic_issue_id"
 
     def save(self, **kwargs):
@@ -67,9 +66,7 @@ class GroupEpicIssue(ObjectDeleteMixin, SaveMixin, RESTObject):
         self.manager.update(obj_id, updated_data, **kwargs)
 
 
-class GroupEpicIssueManager(
-    ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
-):
+class GroupEpicIssueManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin):
     _path = "/groups/%(group_id)s/epics/%(epic_iid)s/issues"
     _obj_cls = GroupEpicIssue
     _from_parent_attrs = {"group_id": "group_id", "epic_iid": "iid"}

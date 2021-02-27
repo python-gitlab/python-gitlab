@@ -1,6 +1,6 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CRUDMixin,
     CreateMixin,
@@ -42,19 +42,19 @@ class ProjectNote(RESTObject):
     pass
 
 
-class ProjectNoteManager(RetrieveMixin, RESTManager):
+class ProjectNoteManager(RetrieveMixin):
     _path = "/projects/%(project_id)s/notes"
     _obj_cls = ProjectNote
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = (("body",), tuple())
 
 
-class ProjectCommitDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectCommitDiscussionNote(SaveMixin, ObjectDeleteMixin):
     pass
 
 
 class ProjectCommitDiscussionNoteManager(
-    GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    GetMixin, CreateMixin, UpdateMixin, DeleteMixin
 ):
     _path = (
         "/projects/%(project_id)s/repository/commits/%(commit_id)s/"
@@ -70,11 +70,11 @@ class ProjectCommitDiscussionNoteManager(
     _update_attrs = (("body",), tuple())
 
 
-class ProjectIssueNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectIssueNote(SaveMixin, ObjectDeleteMixin):
     _managers = (("awardemojis", "ProjectIssueNoteAwardEmojiManager"),)
 
 
-class ProjectIssueNoteManager(CRUDMixin, RESTManager):
+class ProjectIssueNoteManager(CRUDMixin):
     _path = "/projects/%(project_id)s/issues/%(issue_iid)s/notes"
     _obj_cls = ProjectIssueNote
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
@@ -82,12 +82,12 @@ class ProjectIssueNoteManager(CRUDMixin, RESTManager):
     _update_attrs = (("body",), tuple())
 
 
-class ProjectIssueDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectIssueDiscussionNote(SaveMixin, ObjectDeleteMixin):
     pass
 
 
 class ProjectIssueDiscussionNoteManager(
-    GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    GetMixin, CreateMixin, UpdateMixin, DeleteMixin
 ):
     _path = (
         "/projects/%(project_id)s/issues/%(issue_iid)s/"
@@ -103,11 +103,11 @@ class ProjectIssueDiscussionNoteManager(
     _update_attrs = (("body",), tuple())
 
 
-class ProjectMergeRequestNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectMergeRequestNote(SaveMixin, ObjectDeleteMixin):
     _managers = (("awardemojis", "ProjectMergeRequestNoteAwardEmojiManager"),)
 
 
-class ProjectMergeRequestNoteManager(CRUDMixin, RESTManager):
+class ProjectMergeRequestNoteManager(CRUDMixin):
     _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/notes"
     _obj_cls = ProjectMergeRequestNote
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
@@ -115,12 +115,12 @@ class ProjectMergeRequestNoteManager(CRUDMixin, RESTManager):
     _update_attrs = (("body",), tuple())
 
 
-class ProjectMergeRequestDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectMergeRequestDiscussionNote(SaveMixin, ObjectDeleteMixin):
     pass
 
 
 class ProjectMergeRequestDiscussionNoteManager(
-    GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    GetMixin, CreateMixin, UpdateMixin, DeleteMixin
 ):
     _path = (
         "/projects/%(project_id)s/merge_requests/%(mr_iid)s/"
@@ -136,11 +136,11 @@ class ProjectMergeRequestDiscussionNoteManager(
     _update_attrs = (("body",), tuple())
 
 
-class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin):
     _managers = (("awardemojis", "ProjectSnippetNoteAwardEmojiManager"),)
 
 
-class ProjectSnippetNoteManager(CRUDMixin, RESTManager):
+class ProjectSnippetNoteManager(CRUDMixin):
     _path = "/projects/%(project_id)s/snippets/%(snippet_id)s/notes"
     _obj_cls = ProjectSnippetNote
     _from_parent_attrs = {"project_id": "project_id", "snippet_id": "id"}
@@ -148,12 +148,12 @@ class ProjectSnippetNoteManager(CRUDMixin, RESTManager):
     _update_attrs = (("body",), tuple())
 
 
-class ProjectSnippetDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectSnippetDiscussionNote(SaveMixin, ObjectDeleteMixin):
     pass
 
 
 class ProjectSnippetDiscussionNoteManager(
-    GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    GetMixin, CreateMixin, UpdateMixin, DeleteMixin
 ):
     _path = (
         "/projects/%(project_id)s/snippets/%(snippet_id)s/"

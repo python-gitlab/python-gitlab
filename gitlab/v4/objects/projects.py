@@ -1,6 +1,6 @@
 from gitlab import cli, types, utils
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CRUDMixin,
     CreateMixin,
@@ -78,7 +78,7 @@ class GroupProject(RESTObject):
     pass
 
 
-class GroupProjectManager(ListMixin, RESTManager):
+class GroupProjectManager(ListMixin):
     _path = "/groups/%(group_id)s/projects"
     _obj_cls = GroupProject
     _from_parent_attrs = {"group_id": "id"}
@@ -101,7 +101,7 @@ class GroupProjectManager(ListMixin, RESTManager):
     )
 
 
-class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTObject):
+class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin):
     _short_print_attr = "path"
     _managers = (
         ("access_tokens", "ProjectAccessTokenManager"),
@@ -555,7 +555,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         return utils.response_content(result, streamed, action, chunk_size)
 
 
-class ProjectManager(CRUDMixin, RESTManager):
+class ProjectManager(CRUDMixin):
     _path = "/projects"
     _obj_cls = Project
     _create_attrs = (
@@ -900,7 +900,7 @@ class ProjectFork(RESTObject):
     pass
 
 
-class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
+class ProjectForkManager(CreateMixin, ListMixin):
     _path = "/projects/%(project_id)s/forks"
     _obj_cls = ProjectFork
     _from_parent_attrs = {"project_id": "id"}
@@ -941,11 +941,11 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
         return CreateMixin.create(self, data, path=path, **kwargs)
 
 
-class ProjectRemoteMirror(SaveMixin, RESTObject):
+class ProjectRemoteMirror(SaveMixin):
     pass
 
 
-class ProjectRemoteMirrorManager(ListMixin, CreateMixin, UpdateMixin, RESTManager):
+class ProjectRemoteMirrorManager(ListMixin, CreateMixin, UpdateMixin):
     _path = "/projects/%(project_id)s/remote_mirrors"
     _obj_cls = ProjectRemoteMirror
     _from_parent_attrs = {"project_id": "id"}

@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import ListMixin
 
 
@@ -12,7 +12,7 @@ class PersonalAccessToken(RESTObject):
     pass
 
 
-class PersonalAccessTokenManager(ListMixin, RESTManager):
+class PersonalAccessTokenManager(ListMixin):
     _path = "/personal_access_tokens"
     _obj_cls = PersonalAccessToken
     _list_filters = ("user_id",)

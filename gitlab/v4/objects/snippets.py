@@ -1,6 +1,5 @@
 from gitlab import cli, utils
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin, UserAgentDetailMixin
 
 from .award_emojis import ProjectSnippetAwardEmojiManager
@@ -16,7 +15,7 @@ __all__ = [
 ]
 
 
-class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
+class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin):
     _short_print_attr = "title"
 
     @cli.register_custom_action("Snippet")
@@ -47,7 +46,7 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         return utils.response_content(result, streamed, action, chunk_size)
 
 
-class SnippetManager(CRUDMixin, RESTManager):
+class SnippetManager(CRUDMixin):
     _path = "/snippets"
     _obj_cls = Snippet
     _create_attrs = (("title", "file_name", "content"), ("lifetime", "visibility"))
@@ -70,7 +69,7 @@ class SnippetManager(CRUDMixin, RESTManager):
         return self.list(path="/snippets/public", **kwargs)
 
 
-class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin):
     _url = "/projects/%(project_id)s/snippets"
     _short_print_attr = "title"
     _managers = (
@@ -107,7 +106,7 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
         return utils.response_content(result, streamed, action, chunk_size)
 
 
-class ProjectSnippetManager(CRUDMixin, RESTManager):
+class ProjectSnippetManager(CRUDMixin):
     _path = "/projects/%(project_id)s/snippets"
     _obj_cls = ProjectSnippet
     _from_parent_attrs = {"project_id": "id"}

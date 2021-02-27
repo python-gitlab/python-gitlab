@@ -1,6 +1,5 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import DeleteMixin, ListMixin, ObjectDeleteMixin
 
 
@@ -10,7 +9,7 @@ __all__ = [
 ]
 
 
-class Todo(ObjectDeleteMixin, RESTObject):
+class Todo(ObjectDeleteMixin):
     @cli.register_custom_action("Todo")
     @exc.on_http_error(exc.GitlabTodoError)
     def mark_as_done(self, **kwargs):
@@ -28,7 +27,7 @@ class Todo(ObjectDeleteMixin, RESTObject):
         self._update_attrs(server_data)
 
 
-class TodoManager(ListMixin, DeleteMixin, RESTManager):
+class TodoManager(ListMixin, DeleteMixin):
     _path = "/todos"
     _obj_cls = Todo
     _list_filters = ("action", "author_id", "project_id", "state", "type")

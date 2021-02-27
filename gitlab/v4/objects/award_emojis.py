@@ -1,4 +1,3 @@
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import NoUpdateMixin, ObjectDeleteMixin
 
 
@@ -18,22 +17,22 @@ __all__ = [
 ]
 
 
-class ProjectIssueAwardEmoji(ObjectDeleteMixin, RESTObject):
+class ProjectIssueAwardEmoji(ObjectDeleteMixin):
     pass
 
 
-class ProjectIssueAwardEmojiManager(NoUpdateMixin, RESTManager):
+class ProjectIssueAwardEmojiManager(NoUpdateMixin):
     _path = "/projects/%(project_id)s/issues/%(issue_iid)s/award_emoji"
     _obj_cls = ProjectIssueAwardEmoji
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
     _create_attrs = (("name",), tuple())
 
 
-class ProjectIssueNoteAwardEmoji(ObjectDeleteMixin, RESTObject):
+class ProjectIssueNoteAwardEmoji(ObjectDeleteMixin):
     pass
 
 
-class ProjectIssueNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
+class ProjectIssueNoteAwardEmojiManager(NoUpdateMixin):
     _path = (
         "/projects/%(project_id)s/issues/%(issue_iid)s" "/notes/%(note_id)s/award_emoji"
     )
@@ -46,22 +45,22 @@ class ProjectIssueNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
     _create_attrs = (("name",), tuple())
 
 
-class ProjectMergeRequestAwardEmoji(ObjectDeleteMixin, RESTObject):
+class ProjectMergeRequestAwardEmoji(ObjectDeleteMixin):
     pass
 
 
-class ProjectMergeRequestAwardEmojiManager(NoUpdateMixin, RESTManager):
+class ProjectMergeRequestAwardEmojiManager(NoUpdateMixin):
     _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/award_emoji"
     _obj_cls = ProjectMergeRequestAwardEmoji
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
     _create_attrs = (("name",), tuple())
 
 
-class ProjectMergeRequestNoteAwardEmoji(ObjectDeleteMixin, RESTObject):
+class ProjectMergeRequestNoteAwardEmoji(ObjectDeleteMixin):
     pass
 
 
-class ProjectMergeRequestNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
+class ProjectMergeRequestNoteAwardEmojiManager(NoUpdateMixin):
     _path = (
         "/projects/%(project_id)s/merge_requests/%(mr_iid)s"
         "/notes/%(note_id)s/award_emoji"
@@ -75,22 +74,22 @@ class ProjectMergeRequestNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
     _create_attrs = (("name",), tuple())
 
 
-class ProjectSnippetAwardEmoji(ObjectDeleteMixin, RESTObject):
+class ProjectSnippetAwardEmoji(ObjectDeleteMixin):
     pass
 
 
-class ProjectSnippetAwardEmojiManager(NoUpdateMixin, RESTManager):
+class ProjectSnippetAwardEmojiManager(NoUpdateMixin):
     _path = "/projects/%(project_id)s/snippets/%(snippet_id)s/award_emoji"
     _obj_cls = ProjectSnippetAwardEmoji
     _from_parent_attrs = {"project_id": "project_id", "snippet_id": "id"}
     _create_attrs = (("name",), tuple())
 
 
-class ProjectSnippetNoteAwardEmoji(ObjectDeleteMixin, RESTObject):
+class ProjectSnippetNoteAwardEmoji(ObjectDeleteMixin):
     pass
 
 
-class ProjectSnippetNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
+class ProjectSnippetNoteAwardEmojiManager(NoUpdateMixin):
     _path = (
         "/projects/%(project_id)s/snippets/%(snippet_id)s"
         "/notes/%(note_id)s/award_emoji"

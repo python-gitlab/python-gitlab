@@ -1,4 +1,3 @@
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -14,11 +13,11 @@ __all__ = [
 ]
 
 
-class GroupBoardList(SaveMixin, ObjectDeleteMixin, RESTObject):
+class GroupBoardList(SaveMixin, ObjectDeleteMixin):
     pass
 
 
-class GroupBoardListManager(CRUDMixin, RESTManager):
+class GroupBoardListManager(CRUDMixin):
     _path = "/groups/%(group_id)s/boards/%(board_id)s/lists"
     _obj_cls = GroupBoardList
     _from_parent_attrs = {"group_id": "group_id", "board_id": "id"}
@@ -26,22 +25,22 @@ class GroupBoardListManager(CRUDMixin, RESTManager):
     _update_attrs = (("position",), tuple())
 
 
-class GroupBoard(SaveMixin, ObjectDeleteMixin, RESTObject):
+class GroupBoard(SaveMixin, ObjectDeleteMixin):
     _managers = (("lists", "GroupBoardListManager"),)
 
 
-class GroupBoardManager(CRUDMixin, RESTManager):
+class GroupBoardManager(CRUDMixin):
     _path = "/groups/%(group_id)s/boards"
     _obj_cls = GroupBoard
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = (("name",), tuple())
 
 
-class ProjectBoardList(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectBoardList(SaveMixin, ObjectDeleteMixin):
     pass
 
 
-class ProjectBoardListManager(CRUDMixin, RESTManager):
+class ProjectBoardListManager(CRUDMixin):
     _path = "/projects/%(project_id)s/boards/%(board_id)s/lists"
     _obj_cls = ProjectBoardList
     _from_parent_attrs = {"project_id": "project_id", "board_id": "id"}
@@ -49,11 +48,11 @@ class ProjectBoardListManager(CRUDMixin, RESTManager):
     _update_attrs = (("position",), tuple())
 
 
-class ProjectBoard(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectBoard(SaveMixin, ObjectDeleteMixin):
     _managers = (("lists", "ProjectBoardListManager"),)
 
 
-class ProjectBoardManager(CRUDMixin, RESTManager):
+class ProjectBoardManager(CRUDMixin):
     _path = "/projects/%(project_id)s/boards"
     _obj_cls = ProjectBoard
     _from_parent_attrs = {"project_id": "id"}

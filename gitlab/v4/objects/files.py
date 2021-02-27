@@ -1,7 +1,6 @@
 import base64
 from gitlab import cli, utils
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -18,7 +17,7 @@ __all__ = [
 ]
 
 
-class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectFile(SaveMixin, ObjectDeleteMixin):
     _id_attr = "file_path"
     _short_print_attr = "file_path"
 
@@ -65,7 +64,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.manager.delete(file_path, branch, commit_message, **kwargs)
 
 
-class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
+class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin):
     _path = "/projects/%(project_id)s/repository/files"
     _obj_cls = ProjectFile
     _from_parent_attrs = {"project_id": "id"}

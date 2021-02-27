@@ -1,6 +1,5 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import DeleteMixin, ListMixin, ObjectDeleteMixin, RetrieveMixin
 
 
@@ -12,21 +11,21 @@ __all__ = [
 ]
 
 
-class ProjectRegistryRepository(ObjectDeleteMixin, RESTObject):
+class ProjectRegistryRepository(ObjectDeleteMixin):
     _managers = (("tags", "ProjectRegistryTagManager"),)
 
 
-class ProjectRegistryRepositoryManager(DeleteMixin, ListMixin, RESTManager):
+class ProjectRegistryRepositoryManager(DeleteMixin, ListMixin):
     _path = "/projects/%(project_id)s/registry/repositories"
     _obj_cls = ProjectRegistryRepository
     _from_parent_attrs = {"project_id": "id"}
 
 
-class ProjectRegistryTag(ObjectDeleteMixin, RESTObject):
+class ProjectRegistryTag(ObjectDeleteMixin):
     _id_attr = "name"
 
 
-class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
+class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin):
     _obj_cls = ProjectRegistryTag
     _from_parent_attrs = {"project_id": "project_id", "repository_id": "id"}
     _path = "/projects/%(project_id)s/registry/repositories/%(repository_id)s/tags"

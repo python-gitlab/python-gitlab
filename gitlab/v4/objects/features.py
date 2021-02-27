@@ -1,6 +1,5 @@
 from gitlab import utils
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import DeleteMixin, ListMixin, ObjectDeleteMixin
 
 
@@ -10,11 +9,11 @@ __all__ = [
 ]
 
 
-class Feature(ObjectDeleteMixin, RESTObject):
+class Feature(ObjectDeleteMixin):
     _id_attr = "name"
 
 
-class FeatureManager(ListMixin, DeleteMixin, RESTManager):
+class FeatureManager(ListMixin, DeleteMixin):
     _path = "/features/"
     _obj_cls = Feature
 

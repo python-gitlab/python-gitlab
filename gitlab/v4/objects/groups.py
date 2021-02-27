@@ -1,6 +1,6 @@
 from gitlab import cli, types
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
 from .access_requests import GroupAccessRequestManager
 from .badges import GroupBadgeManager
@@ -30,7 +30,7 @@ __all__ = [
 ]
 
 
-class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
+class Group(SaveMixin, ObjectDeleteMixin):
     _short_print_attr = "name"
     _managers = (
         ("accessrequests", "GroupAccessRequestManager"),
@@ -186,7 +186,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.manager.gitlab.http_delete(path, **kwargs)
 
 
-class GroupManager(CRUDMixin, RESTManager):
+class GroupManager(CRUDMixin):
     _path = "/groups"
     _obj_cls = Group
     _list_filters = (
@@ -278,7 +278,7 @@ class GroupSubgroup(RESTObject):
     pass
 
 
-class GroupSubgroupManager(ListMixin, RESTManager):
+class GroupSubgroupManager(ListMixin):
     _path = "/groups/%(group_id)s/subgroups"
     _obj_cls = GroupSubgroup
     _from_parent_attrs = {"group_id": "id"}

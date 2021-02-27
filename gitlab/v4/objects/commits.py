@@ -1,6 +1,6 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CreateMixin, ListMixin, RefreshMixin, RetrieveMixin
 from .discussions import ProjectCommitDiscussionManager
 
@@ -135,7 +135,7 @@ class ProjectCommit(RESTObject):
         return self.manager.gitlab.http_get(path, **kwargs)
 
 
-class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
+class ProjectCommitManager(RetrieveMixin, CreateMixin):
     _path = "/projects/%(project_id)s/repository/commits"
     _obj_cls = ProjectCommit
     _from_parent_attrs = {"project_id": "id"}
@@ -150,18 +150,18 @@ class ProjectCommitComment(RESTObject):
     _short_print_attr = "note"
 
 
-class ProjectCommitCommentManager(ListMixin, CreateMixin, RESTManager):
+class ProjectCommitCommentManager(ListMixin, CreateMixin):
     _path = "/projects/%(project_id)s/repository/commits/%(commit_id)s" "/comments"
     _obj_cls = ProjectCommitComment
     _from_parent_attrs = {"project_id": "project_id", "commit_id": "id"}
     _create_attrs = (("note",), ("path", "line", "line_type"))
 
 
-class ProjectCommitStatus(RESTObject, RefreshMixin):
+class ProjectCommitStatus(RefreshMixin):
     pass
 
 
-class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
+class ProjectCommitStatusManager(ListMixin, CreateMixin):
     _path = "/projects/%(project_id)s/repository/commits/%(commit_id)s" "/statuses"
     _obj_cls = ProjectCommitStatus
     _from_parent_attrs = {"project_id": "project_id", "commit_id": "id"}

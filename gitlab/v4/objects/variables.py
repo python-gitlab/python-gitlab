@@ -4,7 +4,6 @@ https://docs.gitlab.com/ee/api/instance_level_ci_variables.html
 https://docs.gitlab.com/ee/api/project_level_variables.html
 https://docs.gitlab.com/ee/api/group_level_variables.html
 """
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -18,22 +17,22 @@ __all__ = [
 ]
 
 
-class Variable(SaveMixin, ObjectDeleteMixin, RESTObject):
+class Variable(SaveMixin, ObjectDeleteMixin):
     _id_attr = "key"
 
 
-class VariableManager(CRUDMixin, RESTManager):
+class VariableManager(CRUDMixin):
     _path = "/admin/ci/variables"
     _obj_cls = Variable
     _create_attrs = (("key", "value"), ("protected", "variable_type", "masked"))
     _update_attrs = (("key", "value"), ("protected", "variable_type", "masked"))
 
 
-class GroupVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
+class GroupVariable(SaveMixin, ObjectDeleteMixin):
     _id_attr = "key"
 
 
-class GroupVariableManager(CRUDMixin, RESTManager):
+class GroupVariableManager(CRUDMixin):
     _path = "/groups/%(group_id)s/variables"
     _obj_cls = GroupVariable
     _from_parent_attrs = {"group_id": "id"}
@@ -41,11 +40,11 @@ class GroupVariableManager(CRUDMixin, RESTManager):
     _update_attrs = (("key", "value"), ("protected", "variable_type", "masked"))
 
 
-class ProjectVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectVariable(SaveMixin, ObjectDeleteMixin):
     _id_attr = "key"
 
 
-class ProjectVariableManager(CRUDMixin, RESTManager):
+class ProjectVariableManager(CRUDMixin):
     _path = "/projects/%(project_id)s/variables"
     _obj_cls = ProjectVariable
     _from_parent_attrs = {"project_id": "id"}

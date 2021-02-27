@@ -1,6 +1,5 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import NoUpdateMixin, ObjectDeleteMixin
 
 
@@ -12,7 +11,7 @@ __all__ = [
 ]
 
 
-class ProjectTag(ObjectDeleteMixin, RESTObject):
+class ProjectTag(ObjectDeleteMixin):
     _id_attr = "name"
     _short_print_attr = "name"
 
@@ -52,19 +51,19 @@ class ProjectTag(ObjectDeleteMixin, RESTObject):
         self.release = server_data
 
 
-class ProjectTagManager(NoUpdateMixin, RESTManager):
+class ProjectTagManager(NoUpdateMixin):
     _path = "/projects/%(project_id)s/repository/tags"
     _obj_cls = ProjectTag
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = (("tag_name", "ref"), ("message",))
 
 
-class ProjectProtectedTag(ObjectDeleteMixin, RESTObject):
+class ProjectProtectedTag(ObjectDeleteMixin):
     _id_attr = "name"
     _short_print_attr = "name"
 
 
-class ProjectProtectedTagManager(NoUpdateMixin, RESTManager):
+class ProjectProtectedTagManager(NoUpdateMixin):
     _path = "/projects/%(project_id)s/protected_tags"
     _obj_cls = ProjectProtectedTag
     _from_parent_attrs = {"project_id": "id"}

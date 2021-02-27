@@ -1,6 +1,6 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject, RESTObjectList
+from gitlab.base import RESTObjectList
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from .issues import GroupIssue, GroupIssueManager, ProjectIssue, ProjectIssueManager
 from .merge_requests import (
@@ -19,7 +19,7 @@ __all__ = [
 ]
 
 
-class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
+class GroupMilestone(SaveMixin, ObjectDeleteMixin):
     _short_print_attr = "title"
 
     @cli.register_custom_action("GroupMilestone")
@@ -76,7 +76,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         return RESTObjectList(manager, GroupMergeRequest, data_list)
 
 
-class GroupMilestoneManager(CRUDMixin, RESTManager):
+class GroupMilestoneManager(CRUDMixin):
     _path = "/groups/%(group_id)s/milestones"
     _obj_cls = GroupMilestone
     _from_parent_attrs = {"group_id": "id"}
@@ -88,7 +88,7 @@ class GroupMilestoneManager(CRUDMixin, RESTManager):
     _list_filters = ("iids", "state", "search")
 
 
-class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectMilestone(SaveMixin, ObjectDeleteMixin):
     _short_print_attr = "title"
 
     @cli.register_custom_action("ProjectMilestone")
@@ -147,7 +147,7 @@ class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         return RESTObjectList(manager, ProjectMergeRequest, data_list)
 
 
-class ProjectMilestoneManager(CRUDMixin, RESTManager):
+class ProjectMilestoneManager(CRUDMixin):
     _path = "/projects/%(project_id)s/milestones"
     _obj_cls = ProjectMilestone
     _from_parent_attrs = {"project_id": "id"}

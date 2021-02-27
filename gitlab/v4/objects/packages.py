@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import DeleteMixin, GetMixin, ListMixin, ObjectDeleteMixin
 
 
@@ -14,7 +14,7 @@ class GroupPackage(RESTObject):
     pass
 
 
-class GroupPackageManager(ListMixin, RESTManager):
+class GroupPackageManager(ListMixin):
     _path = "/groups/%(group_id)s/packages"
     _obj_cls = GroupPackage
     _from_parent_attrs = {"group_id": "id"}
@@ -27,11 +27,11 @@ class GroupPackageManager(ListMixin, RESTManager):
     )
 
 
-class ProjectPackage(ObjectDeleteMixin, RESTObject):
+class ProjectPackage(ObjectDeleteMixin):
     pass
 
 
-class ProjectPackageManager(ListMixin, GetMixin, DeleteMixin, RESTManager):
+class ProjectPackageManager(ListMixin, GetMixin, DeleteMixin):
     _path = "/projects/%(project_id)s/packages"
     _obj_cls = ProjectPackage
     _from_parent_attrs = {"project_id": "id"}

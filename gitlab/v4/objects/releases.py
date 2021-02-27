@@ -1,6 +1,6 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, NoUpdateMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -17,18 +17,18 @@ class ProjectRelease(RESTObject):
     _managers = (("links", "ProjectReleaseLinkManager"),)
 
 
-class ProjectReleaseManager(NoUpdateMixin, RESTManager):
+class ProjectReleaseManager(NoUpdateMixin):
     _path = "/projects/%(project_id)s/releases"
     _obj_cls = ProjectRelease
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = (("name", "tag_name", "description"), ("ref", "assets"))
 
 
-class ProjectReleaseLink(RESTObject, ObjectDeleteMixin, SaveMixin):
+class ProjectReleaseLink(ObjectDeleteMixin, SaveMixin):
     pass
 
 
-class ProjectReleaseLinkManager(CRUDMixin, RESTManager):
+class ProjectReleaseLinkManager(CRUDMixin):
     _path = "/projects/%(project_id)s/releases/%(tag_name)s/assets/links"
     _obj_cls = ProjectReleaseLink
     _from_parent_attrs = {"project_id": "project_id", "tag_name": "tag_name"}

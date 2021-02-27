@@ -1,4 +1,3 @@
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -8,11 +7,11 @@ __all__ = [
 ]
 
 
-class BroadcastMessage(SaveMixin, ObjectDeleteMixin, RESTObject):
+class BroadcastMessage(SaveMixin, ObjectDeleteMixin):
     pass
 
 
-class BroadcastMessageManager(CRUDMixin, RESTManager):
+class BroadcastMessageManager(CRUDMixin):
     _path = "/broadcast_messages"
     _obj_cls = BroadcastMessage
 

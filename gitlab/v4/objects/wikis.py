@@ -1,4 +1,3 @@
-from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -8,12 +7,12 @@ __all__ = [
 ]
 
 
-class ProjectWiki(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectWiki(SaveMixin, ObjectDeleteMixin):
     _id_attr = "slug"
     _short_print_attr = "slug"
 
 
-class ProjectWikiManager(CRUDMixin, RESTManager):
+class ProjectWikiManager(CRUDMixin):
     _path = "/projects/%(project_id)s/wikis"
     _obj_cls = ProjectWiki
     _from_parent_attrs = {"project_id": "id"}

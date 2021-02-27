@@ -1,6 +1,6 @@
 from gitlab import cli, types
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CRUDMixin,
     CreateMixin,
@@ -53,42 +53,42 @@ __all__ = [
 ]
 
 
-class CurrentUserEmail(ObjectDeleteMixin, RESTObject):
+class CurrentUserEmail(ObjectDeleteMixin):
     _short_print_attr = "email"
 
 
-class CurrentUserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+class CurrentUserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin):
     _path = "/user/emails"
     _obj_cls = CurrentUserEmail
     _create_attrs = (("email",), tuple())
 
 
-class CurrentUserGPGKey(ObjectDeleteMixin, RESTObject):
+class CurrentUserGPGKey(ObjectDeleteMixin):
     pass
 
 
-class CurrentUserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+class CurrentUserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin):
     _path = "/user/gpg_keys"
     _obj_cls = CurrentUserGPGKey
     _create_attrs = (("key",), tuple())
 
 
-class CurrentUserKey(ObjectDeleteMixin, RESTObject):
+class CurrentUserKey(ObjectDeleteMixin):
     _short_print_attr = "title"
 
 
-class CurrentUserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+class CurrentUserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin):
     _path = "/user/keys"
     _obj_cls = CurrentUserKey
     _create_attrs = (("title", "key"), tuple())
 
 
-class CurrentUserStatus(SaveMixin, RESTObject):
+class CurrentUserStatus(SaveMixin):
     _id_attr = None
     _short_print_attr = "message"
 
 
-class CurrentUserStatusManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class CurrentUserStatusManager(GetWithoutIdMixin, UpdateMixin):
     _path = "/user/status"
     _obj_cls = CurrentUserStatus
     _update_attrs = (tuple(), ("emoji", "message"))
@@ -105,12 +105,12 @@ class CurrentUser(RESTObject):
     )
 
 
-class CurrentUserManager(GetWithoutIdMixin, RESTManager):
+class CurrentUserManager(GetWithoutIdMixin):
     _path = "/user"
     _obj_cls = CurrentUser
 
 
-class User(SaveMixin, ObjectDeleteMixin, RESTObject):
+class User(SaveMixin, ObjectDeleteMixin):
     _short_print_attr = "username"
     _managers = (
         ("customattributes", "UserCustomAttributeManager"),
@@ -248,7 +248,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         return server_data
 
 
-class UserManager(CRUDMixin, RESTManager):
+class UserManager(CRUDMixin):
     _path = "/users"
     _obj_cls = User
 
@@ -325,18 +325,18 @@ class ProjectUser(RESTObject):
     pass
 
 
-class ProjectUserManager(ListMixin, RESTManager):
+class ProjectUserManager(ListMixin):
     _path = "/projects/%(project_id)s/users"
     _obj_cls = ProjectUser
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = ("search",)
 
 
-class UserEmail(ObjectDeleteMixin, RESTObject):
+class UserEmail(ObjectDeleteMixin):
     _short_print_attr = "email"
 
 
-class UserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+class UserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin):
     _path = "/users/%(user_id)s/emails"
     _obj_cls = UserEmail
     _from_parent_attrs = {"user_id": "id"}
@@ -352,40 +352,40 @@ class UserStatus(RESTObject):
     _short_print_attr = "message"
 
 
-class UserStatusManager(GetWithoutIdMixin, RESTManager):
+class UserStatusManager(GetWithoutIdMixin):
     _path = "/users/%(user_id)s/status"
     _obj_cls = UserStatus
     _from_parent_attrs = {"user_id": "id"}
 
 
-class UserActivitiesManager(ListMixin, RESTManager):
+class UserActivitiesManager(ListMixin):
     _path = "/user/activities"
     _obj_cls = UserActivities
 
 
-class UserGPGKey(ObjectDeleteMixin, RESTObject):
+class UserGPGKey(ObjectDeleteMixin):
     pass
 
 
-class UserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+class UserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin):
     _path = "/users/%(user_id)s/gpg_keys"
     _obj_cls = UserGPGKey
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = (("key",), tuple())
 
 
-class UserKey(ObjectDeleteMixin, RESTObject):
+class UserKey(ObjectDeleteMixin):
     pass
 
 
-class UserKeyManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
+class UserKeyManager(ListMixin, CreateMixin, DeleteMixin):
     _path = "/users/%(user_id)s/keys"
     _obj_cls = UserKey
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = (("title", "key"), tuple())
 
 
-class UserIdentityProviderManager(DeleteMixin, RESTManager):
+class UserIdentityProviderManager(DeleteMixin):
     """Manager for user identities.
 
     This manager does not actually manage objects but enables
@@ -396,11 +396,11 @@ class UserIdentityProviderManager(DeleteMixin, RESTManager):
     _from_parent_attrs = {"user_id": "id"}
 
 
-class UserImpersonationToken(ObjectDeleteMixin, RESTObject):
+class UserImpersonationToken(ObjectDeleteMixin):
     pass
 
 
-class UserImpersonationTokenManager(NoUpdateMixin, RESTManager):
+class UserImpersonationTokenManager(NoUpdateMixin):
     _path = "/users/%(user_id)s/impersonation_tokens"
     _obj_cls = UserImpersonationToken
     _from_parent_attrs = {"user_id": "id"}
@@ -412,7 +412,7 @@ class UserMembership(RESTObject):
     _id_attr = "source_id"
 
 
-class UserMembershipManager(RetrieveMixin, RESTManager):
+class UserMembershipManager(RetrieveMixin):
     _path = "/users/%(user_id)s/memberships"
     _obj_cls = UserMembership
     _from_parent_attrs = {"user_id": "id"}
@@ -424,7 +424,7 @@ class UserProject(RESTObject):
     pass
 
 
-class UserProjectManager(ListMixin, CreateMixin, RESTManager):
+class UserProjectManager(ListMixin, CreateMixin):
     _path = "/projects/user/%(user_id)s"
     _obj_cls = UserProject
     _from_parent_attrs = {"user_id": "id"}
@@ -493,13 +493,13 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
         return ListMixin.list(self, path=path, **kwargs)
 
 
-class UserFollowersManager(ListMixin, RESTManager):
+class UserFollowersManager(ListMixin):
     _path = "/users/%(user_id)s/followers"
     _obj_cls = User
     _from_parent_attrs = {"user_id": "id"}
 
 
-class UserFollowingManager(ListMixin, RESTManager):
+class UserFollowingManager(ListMixin):
     _path = "/users/%(user_id)s/following"
     _obj_cls = User
     _from_parent_attrs = {"user_id": "id"}
