@@ -207,7 +207,7 @@ class RESTObjectList(object):
         return self._list.current_page
 
     @property
-    def prev_page(self) -> int:
+    def prev_page(self) -> Optional[int]:
         """The previous page number.
 
         If None, the current page is the first.
@@ -215,7 +215,7 @@ class RESTObjectList(object):
         return self._list.prev_page
 
     @property
-    def next_page(self) -> int:
+    def next_page(self) -> Optional[int]:
         """The next page number.
 
         If None, the current page is the last.

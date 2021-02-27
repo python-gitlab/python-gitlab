@@ -17,6 +17,7 @@
 """Wrapper for the GitLab API."""
 
 import time
+from typing import cast, Any, Dict, List, Optional, Tuple, Union
 
 import requests
 import requests.utils
@@ -56,24 +57,25 @@ class Gitlab(object):
 
     def __init__(
         self,
-        url,
-        private_token=None,
-        oauth_token=None,
-        job_token=None,
-        ssl_verify=True,
-        http_username=None,
-        http_password=None,
-        timeout=None,
-        api_version="4",
-        session=None,
-        per_page=None,
-        pagination=None,
-        order_by=None,
-        user_agent=gitlab.const.USER_AGENT,
-    ):
+        url: str,
+        private_token: Optional[str] = None,
+        oauth_token: Optional[str] = None,
+        job_token: Optional[str] = None,
+        ssl_verify: Union[bool, str] = True,
+        http_username: Optional[str] = None,
+        http_password: Optional[str] = None,
+        timeout: Optional[float] = None,
+        api_version: str = "4",
+        session: Optional[requests.Session] = None,
+        per_page: Optional[int] = None,
+        pagination: Optional[str] = None,
+        order_by: Optional[str] = None,
+        user_agent: str = gitlab.const.USER_AGENT,
+    ) -> None:
 
         self._api_version = str(api_version)
-        self._server_version = self._server_revision = None
+        self._server_version: Optional[str] = None
+        self._server_revision: Optional[str] = None
         self._base_url = url.rstrip("/")
         self._url = "%s/api/v%s" % (self._base_url, api_version)
         #: Timeout to use for requests to gitlab server
@@ -140,18 +142,18 @@ class Gitlab(object):
         self.variables = objects.VariableManager(self)
         self.personal_access_tokens = objects.PersonalAccessTokenManager(self)
 
-    def __enter__(self):
+    def __enter__(self) -> "Gitlab":
         return self
 
-    def __exit__(self, *args):
+    def __exit__(self, *args) -> None:
         self.session.close()
 
-    def __getstate__(self):
+    def __getstate__(self) -> Dict[str, Any]:
         state = self.__dict__.copy()
         state.pop("_objects")
         return state
 
-    def __setstate__(self, state):
+    def __setstate__(self, state: Dict[str, Any]) -> None:
         self.__dict__.update(state)
         # We only support v4 API at this time
         if self._api_version not in ("4",):
@@ -163,22 +165,22 @@ class Gitlab(object):
         self._objects = gitlab.v4.objects
 
     @property
-    def url(self):
+    def url(self) -> str:
         """The user-provided server URL."""
         return self._base_url
 
     @property
-    def api_url(self):
+    def api_url(self) -> str:
         """The computed API base URL."""
         return self._url
 
     @property
-    def api_version(self):
+    def api_version(self) -> str:
         """The API version used (4 only)."""
         return self._api_version
 
     @classmethod
-    def from_config(cls, gitlab_id=None, config_files=None):
+    def from_config(cls, gitlab_id=None, config_files=None) -> "Gitlab":
         """Create a Gitlab connection from configuration files.
 
         Args:
@@ -210,7 +212,7 @@ class Gitlab(object):
             user_agent=config.user_agent,
         )
 
-    def auth(self):
+    def auth(self) -> None:
         """Performs an authentication using private token.
 
         The `user` attribute will hold a `gitlab.objects.CurrentUser` object on
@@ -218,7 +220,7 @@ class Gitlab(object):
         """
         self.user = self._objects.CurrentUserManager(self).get()
 
-    def version(self):
+    def version(self) -> Tuple[str, str]:
         """Returns the version and revision of the gitlab server.
 
         Note that self.version and self.revision will be set on the gitlab
@@ -232,15 +234,20 @@ class Gitlab(object):
         if self._server_version is None:
             try:
                 data = self.http_get("/version")
-                self._server_version = data["version"]
-                self._server_revision = data["revision"]
+                if isinstance(data, dict):
+                    self._server_version = data["version"]
+                    self._server_revision = data["revision"]
+                else:
+                    self._server_version = "unknown"
+                    self._server_revision = "unknown"
             except Exception:
-                self._server_version = self._server_revision = "unknown"
+                self._server_version = "unknown"
+                self._server_revision = "unknown"
 
-        return self._server_version, self._server_revision
+        return cast(str, self._server_version), cast(str, self._server_revision)
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabVerifyError)
-    def lint(self, content, **kwargs):
+    def lint(self, content: str, **kwargs) -> Tuple[bool, List[str]]:
         """Validate a gitlab CI configuration.
 
         Args:
@@ -257,10 +264,13 @@ class Gitlab(object):
         """
         post_data = {"content": content}
         data = self.http_post("/ci/lint", post_data=post_data, **kwargs)
+        assert isinstance(data, dict)
         return (data["status"] == "valid", data["errors"])
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabMarkdownError)
-    def markdown(self, text, gfm=False, project=None, **kwargs):
+    def markdown(
+        self, text: str, gfm: bool = False, project: Optional[str] = None, **kwargs
+    ) -> str:
         """Render an arbitrary Markdown document.
 
         Args:
@@ -282,10 +292,11 @@ class Gitlab(object):
         if project is not None:
             post_data["project"] = project
         data = self.http_post("/markdown", post_data=post_data, **kwargs)
+        assert isinstance(data, dict)
         return data["html"]
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabLicenseError)
-    def get_license(self, **kwargs):
+    def get_license(self, **kwargs) -> Dict[str, Any]:
         """Retrieve information about the current license.
 
         Args:
@@ -298,10 +309,13 @@ class Gitlab(object):
         Returns:
             dict: The current license information
         """
-        return self.http_get("/license", **kwargs)
+        result = self.http_get("/license", **kwargs)
+        if isinstance(result, dict):
+            return result
+        return {}
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabLicenseError)
-    def set_license(self, license, **kwargs):
+    def set_license(self, license: str, **kwargs) -> Dict[str, Any]:
         """Add a new license.
 
         Args:
@@ -316,9 +330,11 @@ class Gitlab(object):
             dict: The new license information
         """
         data = {"license": license}
-        return self.http_post("/license", post_data=data, **kwargs)
+        result = self.http_post("/license", post_data=data, **kwargs)
+        assert isinstance(result, dict)
+        return result
 
-    def _set_auth_info(self):
+    def _set_auth_info(self) -> None:
         tokens = [
             token
             for token in [self.private_token, self.oauth_token, self.job_token]
@@ -362,25 +378,25 @@ class Gitlab(object):
                 self.http_username, self.http_password
             )
 
-    def enable_debug(self):
+    def enable_debug(self) -> None:
         import logging
 
         from http.client import HTTPConnection  # noqa
 
-        HTTPConnection.debuglevel = 1
+        HTTPConnection.debuglevel = 1  # type: ignore
         logging.basicConfig()
         logging.getLogger().setLevel(logging.DEBUG)
         requests_log = logging.getLogger("requests.packages.urllib3")
         requests_log.setLevel(logging.DEBUG)
         requests_log.propagate = True
 
-    def _create_headers(self, content_type=None):
+    def _create_headers(self, content_type: Optional[str] = None) -> Dict[str, Any]:
         request_headers = self.headers.copy()
         if content_type is not None:
             request_headers["Content-type"] = content_type
         return request_headers
 
-    def _get_session_opts(self, content_type):
+    def _get_session_opts(self, content_type: str) -> Dict[str, Any]:
         return {
             "headers": self._create_headers(content_type),
             "auth": self._http_auth,
@@ -388,7 +404,7 @@ class Gitlab(object):
             "verify": self.ssl_verify,
         }
 
-    def _build_url(self, path):
+    def _build_url(self, path: str) -> str:
         """Returns the full url from path.
 
         If path is already a url, return it unchanged. If it's a path, append
@@ -402,7 +418,7 @@ class Gitlab(object):
         else:
             return "%s%s" % (self._url, path)
 
-    def _check_redirects(self, result):
+    def _check_redirects(self, result: requests.Response) -> None:
         # Check the requests history to detect http to https redirections.
         # If the initial verb is POST, the next request will use a GET request,
         # leading to an unwanted behaviour.
@@ -424,14 +440,14 @@ class Gitlab(object):
 
     def http_request(
         self,
-        verb,
-        path,
-        query_data=None,
-        post_data=None,
-        streamed=False,
-        files=None,
-        **kwargs
-    ):
+        verb: str,
+        path: str,
+        query_data: Optional[Dict[str, Any]] = None,
+        post_data: Optional[Dict[str, Any]] = None,
+        streamed: bool = False,
+        files: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ) -> requests.Response:
         """Make an HTTP request to the Gitlab server.
 
         Args:
@@ -455,7 +471,7 @@ class Gitlab(object):
         query_data = query_data or {}
         url = self._build_url(path)
 
-        params = {}
+        params: Dict[str, Any] = {}
         utils.copy_dict(params, query_data)
 
         # Deal with kwargs: by default a user uses kwargs to send data to the
@@ -482,6 +498,8 @@ class Gitlab(object):
         # We need to deal with json vs. data when uploading files
         if files:
             json = None
+            if post_data is None:
+                post_data = {}
             post_data["file"] = files.get("file")
             post_data["avatar"] = files.get("avatar")
             data = MultipartEncoder(post_data)
@@ -553,7 +571,14 @@ class Gitlab(object):
                 response_body=result.content,
             )
 
-    def http_get(self, path, query_data=None, streamed=False, raw=False, **kwargs):
+    def http_get(
+        self,
+        path: str,
+        query_data: Optional[Dict[str, Any]] = None,
+        streamed: bool = False,
+        raw: bool = False,
+        **kwargs,
+    ) -> Union[Dict[str, Any], requests.Response]:
         """Make a GET request to the Gitlab server.
 
         Args:
@@ -592,7 +617,13 @@ class Gitlab(object):
         else:
             return result
 
-    def http_list(self, path, query_data=None, as_list=None, **kwargs):
+    def http_list(
+        self,
+        path: str,
+        query_data: Optional[Dict[str, Any]] = None,
+        as_list=None,
+        **kwargs,
+    ):
         """Make a GET request to the Gitlab server for list-oriented queries.
 
         Args:
@@ -633,7 +664,14 @@ class Gitlab(object):
         # No pagination, generator requested
         return GitlabList(self, url, query_data, **kwargs)
 
-    def http_post(self, path, query_data=None, post_data=None, files=None, **kwargs):
+    def http_post(
+        self,
+        path: str,
+        query_data: Optional[Dict[str, Any]] = None,
+        post_data: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ) -> Union[Dict[str, Any], requests.Response]:
         """Make a POST request to the Gitlab server.
 
         Args:
@@ -662,7 +700,7 @@ class Gitlab(object):
             query_data=query_data,
             post_data=post_data,
             files=files,
-            **kwargs
+            **kwargs,
         )
         try:
             if result.headers.get("Content-Type", None) == "application/json":
@@ -673,7 +711,14 @@ class Gitlab(object):
             ) from e
         return result
 
-    def http_put(self, path, query_data=None, post_data=None, files=None, **kwargs):
+    def http_put(
+        self,
+        path: str,
+        query_data: Optional[Dict[str, Any]] = None,
+        post_data: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ) -> Union[Dict[str, Any], requests.Response]:
         """Make a PUT request to the Gitlab server.
 
         Args:
@@ -701,7 +746,7 @@ class Gitlab(object):
             query_data=query_data,
             post_data=post_data,
             files=files,
-            **kwargs
+            **kwargs,
         )
         try:
             return result.json()
@@ -710,7 +755,7 @@ class Gitlab(object):
                 error_message="Failed to parse the server message"
             ) from e
 
-    def http_delete(self, path, **kwargs):
+    def http_delete(self, path: str, **kwargs) -> requests.Response:
         """Make a PUT request to the Gitlab server.
 
         Args:
@@ -727,7 +772,7 @@ class Gitlab(object):
         return self.http_request("delete", path, **kwargs)
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabSearchError)
-    def search(self, scope, search, **kwargs):
+    def search(self, scope: str, search: str, **kwargs) -> requests.Response:
         """Search GitLab resources matching the provided string.'
 
         Args:
@@ -753,7 +798,14 @@ class GitlabList(object):
     the API again when needed.
     """
 
-    def __init__(self, gl, url, query_data, get_next=True, **kwargs):
+    def __init__(
+        self,
+        gl: Gitlab,
+        url: str,
+        query_data: Dict[str, Any],
+        get_next: bool = True,
+        **kwargs,
+    ) -> None:
         self._gl = gl
 
         # Preserve kwargs for subsequent queries
@@ -762,7 +814,9 @@ class GitlabList(object):
         self._query(url, query_data, **self._kwargs)
         self._get_next = get_next
 
-    def _query(self, url, query_data=None, **kwargs):
+    def _query(
+        self, url: str, query_data: Optional[Dict[str, Any]] = None, **kwargs
+    ) -> None:
         query_data = query_data or {}
         result = self._gl.http_request("get", url, query_data=query_data, **kwargs)
         try:
@@ -776,12 +830,14 @@ class GitlabList(object):
             self._next_url = next_url
         except KeyError:
             self._next_url = None
-        self._current_page = result.headers.get("X-Page")
-        self._prev_page = result.headers.get("X-Prev-Page")
-        self._next_page = result.headers.get("X-Next-Page")
-        self._per_page = result.headers.get("X-Per-Page")
-        self._total_pages = result.headers.get("X-Total-Pages")
-        self._total = result.headers.get("X-Total")
+        self._current_page: Optional[Union[str, int]] = result.headers.get("X-Page")
+        self._prev_page: Optional[Union[str, int]] = result.headers.get("X-Prev-Page")
+        self._next_page: Optional[Union[str, int]] = result.headers.get("X-Next-Page")
+        self._per_page: Optional[Union[str, int]] = result.headers.get("X-Per-Page")
+        self._total_pages: Optional[Union[str, int]] = result.headers.get(
+            "X-Total-Pages"
+        )
+        self._total: Optional[Union[str, int]] = result.headers.get("X-Total")
 
         try:
             self._data = result.json()
@@ -793,12 +849,13 @@ class GitlabList(object):
         self._current = 0
 
     @property
-    def current_page(self):
+    def current_page(self) -> int:
         """The current page number."""
+        assert self._current_page is not None
         return int(self._current_page)
 
     @property
-    def prev_page(self):
+    def prev_page(self) -> Optional[int]:
         """The previous page number.
 
         If None, the current page is the first.
@@ -806,7 +863,7 @@ class GitlabList(object):
         return int(self._prev_page) if self._prev_page else None
 
     @property
-    def next_page(self):
+    def next_page(self) -> Optional[int]:
         """The next page number.
 
         If None, the current page is the last.
@@ -814,30 +871,35 @@ class GitlabList(object):
         return int(self._next_page) if self._next_page else None
 
     @property
-    def per_page(self):
+    def per_page(self) -> int:
         """The number of items per page."""
+        assert self._per_page is not None
         return int(self._per_page)
 
     @property
-    def total_pages(self):
+    def total_pages(self) -> int:
         """The total number of pages."""
+        assert self._total_pages is not None
         return int(self._total_pages)
 
     @property
-    def total(self):
+    def total(self) -> int:
         """The total number of items."""
+        assert self._total is not None
         return int(self._total)
 
-    def __iter__(self):
+    def __iter__(self) -> "GitlabList":
         return self
 
-    def __len__(self):
+    def __len__(self) -> int:
+        if self._total is None:
+            return 0
         return int(self._total)
 
     def __next__(self):
         return self.next()
 
-    def next(self):
+    def next(self) -> "Gitlab":
         try:
             item = self._data[self._current]
             self._current += 1
