@@ -623,7 +623,7 @@ class Gitlab(object):
         query_data: Optional[Dict[str, Any]] = None,
         as_list=None,
         **kwargs,
-    ):
+    ) -> Union["GitlabList", List[Dict[str, Any]]]:
         """Make a GET request to the Gitlab server for list-oriented queries.
 
         Args:
@@ -772,7 +772,9 @@ class Gitlab(object):
         return self.http_request("delete", path, **kwargs)
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabSearchError)
-    def search(self, scope: str, search: str, **kwargs) -> requests.Response:
+    def search(
+        self, scope: str, search: str, **kwargs
+    ) -> Union["GitlabList", List[Dict[str, Any]]]:
         """Search GitLab resources matching the provided string.'
 
         Args:
@@ -896,10 +898,10 @@ class GitlabList(object):
             return 0
         return int(self._total)
 
-    def __next__(self):
+    def __next__(self) -> Dict[str, Any]:
         return self.next()
 
-    def next(self) -> "Gitlab":
+    def next(self) -> Dict[str, Any]:
         try:
             item = self._data[self._current]
             self._current += 1
