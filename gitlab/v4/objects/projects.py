@@ -522,6 +522,10 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         path = "/projects/%s/trigger/pipeline" % self.get_id()
         post_data = {"ref": ref, "token": token, "variables": variables}
         attrs = self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        import pprint
+
+        print("JLV:", type(self.pipelines))
+        raise ValueError(f"JLV: {pprint.pformat(self.pipelines)}")
         return ProjectPipeline(self.pipelines, attrs)
 
     @cli.register_custom_action("Project")
@@ -714,7 +718,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         streamed=False,
         action=None,
         chunk_size=1024,
-        **kwargs
+        **kwargs,
     ):
         """Download a single artifact file from a specific tag or branch from within the job’s artifacts archive.
 
@@ -905,7 +909,7 @@ class ProjectManager(CRUDMixin, RESTManager):
         namespace=None,
         overwrite=False,
         override_params=None,
-        **kwargs
+        **kwargs,
     ):
         """Import a project from an archive file.
 
@@ -948,7 +952,7 @@ class ProjectManager(CRUDMixin, RESTManager):
         bitbucket_server_repo,
         new_name=None,
         target_namespace=None,
-        **kwargs
+        **kwargs,
     ):
         """Import a project from BitBucket Server to Gitlab (schedule the import)
 
