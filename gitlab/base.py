@@ -98,7 +98,7 @@ class RESTObject(object):
                 except KeyError:
                     raise AttributeError(name)
 
-    def __setattr__(self, name: str, value) -> None:
+    def __setattr__(self, name: str, value: Any) -> None:
         self.__dict__["_updated_attrs"][name] = value
 
     def __str__(self) -> str:
@@ -116,12 +116,16 @@ class RESTObject(object):
         else:
             return "<%s>" % self.__class__.__name__
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, RESTObject):
+            return NotImplemented
         if self.get_id() and other.get_id():
             return self.get_id() == other.get_id()
         return super(RESTObject, self) == other
 
-    def __ne__(self, other) -> bool:
+    def __ne__(self, other: object) -> bool:
+        if not isinstance(other, RESTObject):
+            return NotImplemented
         if self.get_id() and other.get_id():
             return self.get_id() != other.get_id()
         return super(RESTObject, self) != other
@@ -144,7 +148,7 @@ class RESTObject(object):
             manager = cls(self.manager.gitlab, parent=self)
             self.__dict__[attr] = manager
 
-    def _update_attrs(self, new_attrs) -> None:
+    def _update_attrs(self, new_attrs: Dict[str, Any]) -> None:
         self.__dict__["_updated_attrs"] = {}
         self.__dict__["_attrs"] = new_attrs
 

@@ -22,7 +22,7 @@ import requests
 
 
 class _StdoutStream(object):
-    def __call__(self, chunk) -> None:
+    def __call__(self, chunk: Any) -> None:
         print(chunk)
 
 
@@ -31,7 +31,7 @@ def response_content(
     streamed: bool,
     action: Optional[Callable],
     chunk_size: int,
-):
+) -> Optional[bytes]:
     if streamed is False:
         return response.content
 
@@ -41,6 +41,7 @@ def response_content(
     for chunk in response.iter_content(chunk_size=chunk_size):
         if chunk:
             action(chunk)
+    return None
 
 
 def copy_dict(dest: Dict[str, Any], src: Dict[str, Any]) -> None:

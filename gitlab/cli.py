@@ -21,7 +21,7 @@ import argparse
 import functools
 import re
 import sys
-from typing import Any, Callable, Dict, Tuple
+from typing import Any, Callable, Dict, Optional, Tuple, Union
 
 import gitlab.config
 
@@ -32,21 +32,24 @@ camel_re = re.compile("(.)([A-Z])")
 #        action: (mandatory_args, optional_args, in_obj),
 #    },
 # }
-custom_actions: Dict[str, Dict[str, Tuple[Tuple[Any, ...], Tuple[Any, ...], bool]]] = {}
+custom_actions: Dict[str, Dict[str, Tuple[Tuple[str, ...], Tuple[str, ...], bool]]] = {}
 
 
 def register_custom_action(
-    cls_names, mandatory: Tuple[Any, ...] = tuple(), optional: Tuple[Any, ...] = tuple()
+    cls_names: Union[str, Tuple[str, ...]],
+    mandatory: Tuple[str, ...] = tuple(),
+    optional: Tuple[str, ...] = tuple(),
 ) -> Callable:
-    def wrap(f) -> Callable:
+    def wrap(f: Callable) -> Callable:
         @functools.wraps(f)
         def wrapped_f(*args, **kwargs):
             return f(*args, **kwargs)
 
         # in_obj defines whether the method belongs to the obj or the manager
         in_obj = True
-        classes = cls_names
-        if type(cls_names) != tuple:
+        if isinstance(cls_names, tuple):
+            classes = cls_names
+        else:
             classes = (cls_names,)
 
         for cls_name in classes:
@@ -65,7 +68,7 @@ def register_custom_action(
     return wrap
 
 
-def die(msg: str, e=None) -> None:
+def die(msg: str, e: Optional[Exception] = None) -> None:
     if e:
         msg = "%s (%s)" % (msg, e)
     sys.stderr.write(msg + "\n")
@@ -76,7 +79,7 @@ def what_to_cls(what: str) -> str:
     return "".join([s.capitalize() for s in what.split("-")])
 
 
-def cls_to_what(cls) -> str:
+def cls_to_what(cls: Any) -> str:
     return camel_re.sub(r"\1-\2", cls.__name__).lower()
 
 
