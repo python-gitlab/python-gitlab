@@ -172,7 +172,7 @@ def main():
     # otherwise it will cause circular import errors
     import gitlab.v4.cli
 
-    if "--version" in sys.argv:
+    if "--version" == sys.argv[1]:
         print(gitlab.__version__)
         sys.exit(0)
 
