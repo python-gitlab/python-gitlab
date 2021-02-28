@@ -6,6 +6,13 @@ Currently this module only contains repository-related methods for projects.
 
 from gitlab import cli, types, utils
 from gitlab import exceptions as exc
+from gitlab.base import RESTManager, RESTObject
+from gitlab.mixins import CreateMixin
+
+__all__ = [
+    "ProjectRepositoryChangelog",
+    "ProjectRepositoryChangelogManager",
+]
 
 
 class RepositoryMixin:
@@ -205,24 +212,16 @@ class RepositoryMixin:
         path = "/projects/%s/repository/merged_branches" % self.get_id()
         self.manager.gitlab.http_delete(path, **kwargs)
 
-    @cli.register_custom_action(
-        "Project",
-        ("version_tag",),
-        ("from", "to", "date", "branch", "trailer", "file", "message"),
+
+class ProjectRepositoryChangelog(RESTObject):
+    pass
+
+
+class ProjectRepositoryChangelogManager(CreateMixin, RESTManager):
+    _obj_cls = ProjectRepositoryChangelog
+    _path = "/projects/%(project_id)s/repository/changelog"
+    _from_parent_attrs = {"project_id": "id"}
+    _create_attrs = (
+        ("version",),
+        ("from_commit", "to_commit", "date", "branch", "trailer", "file", "message"),
     )
-    @exc.on_http_error(exc.GitlabCreateError)
-    def changelog(self, data=None, **kwargs):
-        """Create a changelog entry in the repository.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabCreateError: If the server failed to perform the request
-        """
-        path = "/projects/%s/repository/changelog" % self.get_id()
-
-        # This is here to avoid clashing with the CLI's `--version` flag
-
-        self.manager.gitlab.http_post(path, data=data, **kwargs)

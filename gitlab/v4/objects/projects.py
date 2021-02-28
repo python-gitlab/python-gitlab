@@ -47,7 +47,11 @@ from .pipelines import (
 )
 from .push_rules import ProjectPushRulesManager
 from .releases import ProjectReleaseManager
-from .repositories import RepositoryMixin
+from .repositories import (
+    RepositoryMixin,
+    ProjectRepositoryChangelog,
+    ProjectRepositoryChangelogManager,
+)
 from .runners import ProjectRunnerManager
 from .services import ProjectServiceManager
 from .snippets import ProjectSnippetManager
@@ -112,6 +116,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         ("boards", "ProjectBoardManager"),
         ("branches", "ProjectBranchManager"),
         ("jobs", "ProjectJobManager"),
+        ("changelogs", "ProjectRepositoryChangelogManager"),
         ("commits", "ProjectCommitManager"),
         ("customattributes", "ProjectCustomAttributeManager"),
         ("deployments", "ProjectDeploymentManager"),
