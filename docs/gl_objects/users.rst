@@ -67,6 +67,11 @@ Activate/Deactivate a user::
     user.activate()
     user.deactivate()
 
+Follow/Unfollow a user::
+
+    user.follow()
+    user.unfollow()
+
 Set the avatar image for a user::
 
     # the avatar image can be passed as data (content of the file) or as a file
@@ -83,6 +88,15 @@ Set an external identity for a user::
 Delete an external identity by provider name::
 
     user.identityproviders.delete('oauth2_generic')
+
+Get the followers of a user
+
+    user.followers_users.list()
+
+Get the followings of a user
+
+    user.following_users.list()
+
 
 User custom attributes
 ======================

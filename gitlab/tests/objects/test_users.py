@@ -108,6 +108,72 @@ def resp_delete_user_identity(no_content):
         yield rsps
 
 
+@pytest.fixture
+def resp_follow_unfollow():
+    user = {
+        "id": 1,
+        "username": "john_smith",
+        "name": "John Smith",
+        "state": "active",
+        "avatar_url": "http://localhost:3000/uploads/user/avatar/1/cd8.jpeg",
+        "web_url": "http://localhost:3000/john_smith",
+    }
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/users/1/follow",
+            json=user,
+            content_type="application/json",
+            status=201,
+        )
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/users/1/unfollow",
+            json=user,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_followers_following():
+    content = [
+        {
+            "id": 2,
+            "name": "Lennie Donnelly",
+            "username": "evette.kilback",
+            "state": "active",
+            "avatar_url": "https://www.gravatar.com/avatar/7955171a55ac4997ed81e5976287890a?s=80&d=identicon",
+            "web_url": "http://127.0.0.1:3000/evette.kilback",
+        },
+        {
+            "id": 4,
+            "name": "Serena Bradtke",
+            "username": "cammy",
+            "state": "active",
+            "avatar_url": "https://www.gravatar.com/avatar/a2daad869a7b60d3090b7b9bef4baf57?s=80&d=identicon",
+            "web_url": "http://127.0.0.1:3000/cammy",
+        },
+    ]
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/users/1/followers",
+            json=content,
+            content_type="application/json",
+            status=200,
+        )
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/users/1/following",
+            json=content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
 def test_get_user(gl, resp_get_user):
     user = gl.users.get(1)
     assert isinstance(user, User)
@@ -135,3 +201,17 @@ def test_user_activate_deactivate(user, resp_activate):
 
 def test_delete_user_identity(user, resp_delete_user_identity):
     user.identityproviders.delete("test_provider")
+
+
+def test_user_follow_unfollow(user, resp_follow_unfollow):
+    user.follow()
+    user.unfollow()
+
+
+def test_list_followers(user, resp_followers_following):
+    followers = user.followers_users.list()
+    followings = user.following_users.list()
+    assert isinstance(followers[0], User)
+    assert followers[0].id == 2
+    assert isinstance(followings[0], User)
+    assert followings[1].id == 4
