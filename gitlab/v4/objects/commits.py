@@ -159,7 +159,7 @@ class ProjectCommitCommentManager(ListMixin, CreateMixin, RESTManager):
     )
 
 
-class ProjectCommitStatus(RESTObject, RefreshMixin):
+class ProjectCommitStatus(RefreshMixin, RESTObject):
     pass
 
 

@@ -30,7 +30,7 @@ __all__ = [
 ]
 
 
-class ProjectPipeline(RESTObject, RefreshMixin, ObjectDeleteMixin):
+class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
     _managers = (
         ("jobs", "ProjectPipelineJobManager"),
         ("bridges", "ProjectPipelineBridgeManager"),

@@ -8,7 +8,7 @@ __all__ = [
 ]
 
 
-class ProjectDeployment(RESTObject, SaveMixin):
+class ProjectDeployment(SaveMixin, RESTObject):
     pass
 
 

@@ -10,7 +10,7 @@ __all__ = [
 ]
 
 
-class ProjectJob(RESTObject, RefreshMixin):
+class ProjectJob(RefreshMixin, RESTObject):
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobCancelError)
     def cancel(self, **kwargs):
