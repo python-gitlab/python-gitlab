@@ -17,7 +17,7 @@
 """Wrapper for the GitLab API."""
 
 import time
-from typing import cast, Any, Dict, List, Optional, Tuple, Union
+from typing import cast, Any, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
 
 import requests
 import requests.utils
@@ -266,7 +266,8 @@ class Gitlab(object):
         """
         post_data = {"content": content}
         data = self.http_post("/ci/lint", post_data=post_data, **kwargs)
-        assert isinstance(data, dict)
+        if TYPE_CHECKING:
+            assert not isinstance(data, requests.Response)
         return (data["status"] == "valid", data["errors"])
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabMarkdownError)
@@ -294,7 +295,8 @@ class Gitlab(object):
         if project is not None:
             post_data["project"] = project
         data = self.http_post("/markdown", post_data=post_data, **kwargs)
-        assert isinstance(data, dict)
+        if TYPE_CHECKING:
+            assert not isinstance(data, requests.Response)
         return data["html"]
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabLicenseError)
@@ -333,7 +335,8 @@ class Gitlab(object):
         """
         data = {"license": license}
         result = self.http_post("/license", post_data=data, **kwargs)
-        assert isinstance(result, dict)
+        if TYPE_CHECKING:
+            assert not isinstance(result, requests.Response)
         return result
 
     def _set_auth_info(self) -> None:
@@ -855,7 +858,8 @@ class GitlabList(object):
     @property
     def current_page(self) -> int:
         """The current page number."""
-        assert self._current_page is not None
+        if TYPE_CHECKING:
+            assert self._current_page is not None
         return int(self._current_page)
 
     @property
@@ -877,19 +881,22 @@ class GitlabList(object):
     @property
     def per_page(self) -> int:
         """The number of items per page."""
-        assert self._per_page is not None
+        if TYPE_CHECKING:
+            assert self._per_page is not None
         return int(self._per_page)
 
     @property
     def total_pages(self) -> int:
         """The total number of pages."""
-        assert self._total_pages is not None
+        if TYPE_CHECKING:
+            assert self._total_pages is not None
         return int(self._total_pages)
 
     @property
     def total(self) -> int:
         """The total number of items."""
-        assert self._total is not None
+        if TYPE_CHECKING:
+            assert self._total is not None
         return int(self._total)
 
     def __iter__(self) -> "GitlabList":
