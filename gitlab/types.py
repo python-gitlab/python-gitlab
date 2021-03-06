@@ -45,6 +45,22 @@ class ListAttribute(GitlabAttribute):
         return ",".join(self._value)
 
 
+class ScopesListAttribute(ListAttribute):
+    def set_from_cli(self, cli_value):
+        if not cli_value.strip():
+            self._value = []
+        else:
+            self._value = [item.strip() for item in cli_value.split(",")]
+
+
+    def get_for_api(self):
+        # Do not comma-split single value passed as string
+        if isinstance(self._value, str):
+            return [self._value]
+
+        return self._value
+
+
 class LowercaseStringAttribute(GitlabAttribute):
     def get_for_api(self):
         return str(self._value).lower()

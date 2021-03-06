@@ -229,7 +229,7 @@ class UserIdentityProviderManager(DeleteMixin, RESTManager):
 
 
 class UserImpersonationToken(ObjectDeleteMixin, RESTObject):
-    pass
+    _short_print_attr = "token"
 
 
 class UserImpersonationTokenManager(NoUpdateMixin, RESTManager):
@@ -238,6 +238,7 @@ class UserImpersonationTokenManager(NoUpdateMixin, RESTManager):
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = (("name", "scopes"), ("expires_at",))
     _list_filters = ("state",)
+    _types = {"scopes": types.ScopesListAttribute}
 
 
 class UserMembership(RESTObject):
@@ -734,6 +735,7 @@ class ProjectDeployTokenManager(ListMixin, CreateMixin, DeleteMixin, RESTManager
             "username",
         ),
     )
+    _types = {"scopes": types.ScopesListAttribute}
 
 
 class GroupDeployToken(ObjectDeleteMixin, RESTObject):
@@ -754,6 +756,7 @@ class GroupDeployTokenManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
             "username",
         ),
     )
+    _types = {"scopes": types.ScopesListAttribute}
 
 
 class NotificationSettings(SaveMixin, RESTObject):
@@ -5786,3 +5789,4 @@ class ApplicationManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = "/applications"
     _obj_cls = Application
     _create_attrs = (("name", "redirect_uri", "scopes"), ("confidential",))
+    _types = {"scopes": types.ScopesListAttribute}
