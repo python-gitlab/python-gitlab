@@ -17,6 +17,7 @@
 
 import os
 import configparser
+import subprocess
 from typing import List, Optional, Union
 
 from gitlab.const import USER_AGENT
@@ -149,6 +150,16 @@ class GitlabConfigParser(object):
             self.http_password = self._config.get(self.gitlab_id, "http_password")
         except Exception:
             pass
+
+        for attr in ("job_token", "http_password", "private_token", "oauth_token"):
+            value = getattr(self, attr)
+            prefix = "lookup:"
+            if isinstance(value, str) and value.lower().strip().startswith(prefix):
+                helper = value[len(prefix) :].strip()
+                value = (
+                    subprocess.check_output(helper, shell=True).decode("utf-8").strip()
+                )
+                setattr(self, attr, value)
 
         self.api_version = "4"
         try:
