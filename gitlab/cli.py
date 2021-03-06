@@ -19,9 +19,9 @@
 
 import argparse
 import functools
-import importlib
 import re
 import sys
+from typing import Any, Callable, Dict, Optional, Tuple, Union
 
 import gitlab.config
 
@@ -32,19 +32,24 @@ camel_re = re.compile("(.)([A-Z])")
 #        action: (mandatory_args, optional_args, in_obj),
 #    },
 # }
-custom_actions = {}
+custom_actions: Dict[str, Dict[str, Tuple[Tuple[str, ...], Tuple[str, ...], bool]]] = {}
 
 
-def register_custom_action(cls_names, mandatory=tuple(), optional=tuple()):
-    def wrap(f):
+def register_custom_action(
+    cls_names: Union[str, Tuple[str, ...]],
+    mandatory: Tuple[str, ...] = tuple(),
+    optional: Tuple[str, ...] = tuple(),
+) -> Callable:
+    def wrap(f: Callable) -> Callable:
         @functools.wraps(f)
         def wrapped_f(*args, **kwargs):
             return f(*args, **kwargs)
 
         # in_obj defines whether the method belongs to the obj or the manager
         in_obj = True
-        classes = cls_names
-        if type(cls_names) != tuple:
+        if isinstance(cls_names, tuple):
+            classes = cls_names
+        else:
             classes = (cls_names,)
 
         for cls_name in classes:
@@ -63,22 +68,22 @@ def register_custom_action(cls_names, mandatory=tuple(), optional=tuple()):
     return wrap
 
 
-def die(msg, e=None):
+def die(msg: str, e: Optional[Exception] = None) -> None:
     if e:
         msg = "%s (%s)" % (msg, e)
     sys.stderr.write(msg + "\n")
     sys.exit(1)
 
 
-def what_to_cls(what):
+def what_to_cls(what: str) -> str:
     return "".join([s.capitalize() for s in what.split("-")])
 
 
-def cls_to_what(cls):
+def cls_to_what(cls: Any) -> str:
     return camel_re.sub(r"\1-\2", cls.__name__).lower()
 
 
-def _get_base_parser(add_help=True):
+def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         add_help=add_help, description="GitLab API Command Line Interface"
     )
@@ -149,7 +154,7 @@ def _parse_value(v):
     return v
 
 
-def docs():
+def docs() -> argparse.ArgumentParser:
     """
     Provide a statically generated parser for sphinx only, so we don't need
     to provide dummy gitlab config for readthedocs.
@@ -158,12 +163,18 @@ def docs():
         sys.exit("Docs parser is only intended for build_sphinx")
 
     parser = _get_base_parser(add_help=False)
-    cli_module = importlib.import_module("gitlab.v4.cli")
+    # NOTE: We must delay import of gitlab.v4.cli until now or
+    # otherwise it will cause circular import errors
+    import gitlab.v4.cli
 
-    return _get_parser(cli_module)
+    return _get_parser(gitlab.v4.cli)
 
 
 def main():
+    # NOTE: We must delay import of gitlab.v4.cli until now or
+    # otherwise it will cause circular import errors
+    import gitlab.v4.cli
+
     if "--version" in sys.argv:
         print(gitlab.__version__)
         sys.exit(0)
@@ -181,12 +192,14 @@ def main():
             parser.print_help()
             sys.exit(0)
         sys.exit(e)
-    cli_module = importlib.import_module("gitlab.v%s.cli" % config.api_version)
+    # We only support v4 API at this time
+    if config.api_version not in ("4",):
+        raise ModuleNotFoundError(name="gitlab.v%s.cli" % config.api_version)
 
     # Now we build the entire set of subcommands and do the complete parsing
-    parser = _get_parser(cli_module)
+    parser = _get_parser(gitlab.v4.cli)
     try:
-        import argcomplete
+        import argcomplete  # type: ignore
 
         argcomplete.autocomplete(parser)
     except Exception:
@@ -229,6 +242,6 @@ def main():
     if debug:
         gl.enable_debug()
 
-    cli_module.run(gl, what, action, args, verbose, output, fields)
+    gitlab.v4.cli.run(gl, what, action, args, verbose, output, fields)
 
     sys.exit(0)

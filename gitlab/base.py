@@ -16,6 +16,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import importlib
+from types import ModuleType
+from typing import Any, Dict, Optional, Type
+
+from .client import Gitlab, GitlabList
+
+__all__ = [
+    "RESTObject",
+    "RESTObjectList",
+    "RESTManager",
+]
 
 
 class RESTObject(object):
@@ -29,9 +39,14 @@ class RESTObject(object):
     without ID in the url.
     """
 
-    _id_attr = "id"
+    _id_attr: Optional[str] = "id"
+    _attrs: Dict[str, Any]
+    _module: ModuleType
+    _parent_attrs: Dict[str, Any]
+    _updated_attrs: Dict[str, Any]
+    manager: "RESTManager"
 
-    def __init__(self, manager, attrs):
+    def __init__(self, manager: "RESTManager", attrs: Dict[str, Any]) -> None:
         self.__dict__.update(
             {
                 "manager": manager,
@@ -43,18 +58,18 @@ class RESTObject(object):
         self.__dict__["_parent_attrs"] = self.manager.parent_attrs
         self._create_managers()
 
-    def __getstate__(self):
+    def __getstate__(self) -> Dict[str, Any]:
         state = self.__dict__.copy()
         module = state.pop("_module")
         state["_module_name"] = module.__name__
         return state
 
-    def __setstate__(self, state):
+    def __setstate__(self, state: Dict[str, Any]) -> None:
         module_name = state.pop("_module_name")
         self.__dict__.update(state)
         self.__dict__["_module"] = importlib.import_module(module_name)
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Any:
         try:
             return self.__dict__["_updated_attrs"][name]
         except KeyError:
@@ -83,15 +98,15 @@ class RESTObject(object):
                 except KeyError:
                     raise AttributeError(name)
 
-    def __setattr__(self, name, value):
+    def __setattr__(self, name: str, value: Any) -> None:
         self.__dict__["_updated_attrs"][name] = value
 
-    def __str__(self):
+    def __str__(self) -> str:
         data = self._attrs.copy()
         data.update(self._updated_attrs)
         return "%s => %s" % (type(self), data)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if self._id_attr:
             return "<%s %s:%s>" % (
                 self.__class__.__name__,
@@ -101,12 +116,16 @@ class RESTObject(object):
         else:
             return "<%s>" % self.__class__.__name__
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, RESTObject):
+            return NotImplemented
         if self.get_id() and other.get_id():
             return self.get_id() == other.get_id()
         return super(RESTObject, self) == other
 
-    def __ne__(self, other):
+    def __ne__(self, other: object) -> bool:
+        if not isinstance(other, RESTObject):
+            return NotImplemented
         if self.get_id() and other.get_id():
             return self.get_id() != other.get_id()
         return super(RESTObject, self) != other
@@ -114,12 +133,12 @@ class RESTObject(object):
     def __dir__(self):
         return super(RESTObject, self).__dir__() + list(self.attributes)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         if not self.get_id():
             return super(RESTObject, self).__hash__()
         return hash(self.get_id())
 
-    def _create_managers(self):
+    def _create_managers(self) -> None:
         managers = getattr(self, "_managers", None)
         if managers is None:
             return
@@ -129,7 +148,7 @@ class RESTObject(object):
             manager = cls(self.manager.gitlab, parent=self)
             self.__dict__[attr] = manager
 
-    def _update_attrs(self, new_attrs):
+    def _update_attrs(self, new_attrs: Dict[str, Any]) -> None:
         self.__dict__["_updated_attrs"] = {}
         self.__dict__["_attrs"] = new_attrs
 
@@ -140,7 +159,7 @@ class RESTObject(object):
         return getattr(self, self._id_attr)
 
     @property
-    def attributes(self):
+    def attributes(self) -> Dict[str, Any]:
         d = self.__dict__["_updated_attrs"].copy()
         d.update(self.__dict__["_attrs"])
         d.update(self.__dict__["_parent_attrs"])
@@ -162,7 +181,9 @@ class RESTObjectList(object):
         _list: A GitlabList object
     """
 
-    def __init__(self, manager, obj_cls, _list):
+    def __init__(
+        self, manager: "RESTManager", obj_cls: Type[RESTObject], _list: GitlabList
+    ) -> None:
         """Creates an objects list from a GitlabList.
 
         You should not create objects of this type, but use managers list()
@@ -177,10 +198,10 @@ class RESTObjectList(object):
         self._obj_cls = obj_cls
         self._list = _list
 
-    def __iter__(self):
+    def __iter__(self) -> "RESTObjectList":
         return self
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._list)
 
     def __next__(self):
@@ -191,12 +212,12 @@ class RESTObjectList(object):
         return self._obj_cls(self.manager, data)
 
     @property
-    def current_page(self):
+    def current_page(self) -> int:
         """The current page number."""
         return self._list.current_page
 
     @property
-    def prev_page(self):
+    def prev_page(self) -> Optional[int]:
         """The previous page number.
 
         If None, the current page is the first.
@@ -204,7 +225,7 @@ class RESTObjectList(object):
         return self._list.prev_page
 
     @property
-    def next_page(self):
+    def next_page(self) -> Optional[int]:
         """The next page number.
 
         If None, the current page is the last.
@@ -212,17 +233,17 @@ class RESTObjectList(object):
         return self._list.next_page
 
     @property
-    def per_page(self):
+    def per_page(self) -> int:
         """The number of items per page."""
         return self._list.per_page
 
     @property
-    def total_pages(self):
+    def total_pages(self) -> int:
         """The total number of pages."""
         return self._list.total_pages
 
     @property
-    def total(self):
+    def total(self) -> int:
         """The total number of items."""
         return self._list.total
 
@@ -236,10 +257,11 @@ class RESTManager(object):
     ``_obj_cls``: The class of objects that will be created
     """
 
-    _path = None
-    _obj_cls = None
+    _path: Optional[str] = None
+    _obj_cls: Optional[Type[RESTObject]] = None
+    _from_parent_attrs: Dict[str, Any] = {}
 
-    def __init__(self, gl, parent=None):
+    def __init__(self, gl: Gitlab, parent: Optional[RESTObject] = None) -> None:
         """REST manager constructor.
 
         Args:
@@ -252,23 +274,25 @@ class RESTManager(object):
         self._computed_path = self._compute_path()
 
     @property
-    def parent_attrs(self):
+    def parent_attrs(self) -> Optional[Dict[str, Any]]:
         return self._parent_attrs
 
-    def _compute_path(self, path=None):
+    def _compute_path(self, path: Optional[str] = None) -> Optional[str]:
         self._parent_attrs = {}
         if path is None:
             path = self._path
+        if path is None:
+            return None
         if self._parent is None or not hasattr(self, "_from_parent_attrs"):
             return path
 
         data = {
             self_attr: getattr(self._parent, parent_attr, None)
-            for self_attr, parent_attr in self._from_parent_attrs.items()
+            for self_attr, parent_attr in self._from_parent_attrs.items()  # type: ignore
         }
         self._parent_attrs = data
         return path % data
 
     @property
-    def path(self):
+    def path(self) -> Optional[str]:
         return self._computed_path

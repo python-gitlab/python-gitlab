@@ -6,7 +6,7 @@ from setuptools import find_packages
 
 
 def get_version():
-    with open("gitlab/__init__.py") as f:
+    with open("gitlab/__version__.py") as f:
         for line in f:
             if line.startswith("__version__"):
                 return eval(line.split("=")[-1])
@@ -26,7 +26,7 @@ setup(
     license="LGPLv3",
     url="https://github.com/python-gitlab/python-gitlab",
     packages=find_packages(),
-    install_requires=["requests>=2.22.0"],
+    install_requires=["requests>=2.22.0", "requests-toolbelt>=0.9.1"],
     python_requires=">=3.6.0",
     entry_points={"console_scripts": ["gitlab = gitlab.cli:main"]},
     classifiers=[
@@ -42,6 +42,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
     extras_require={
         "autocompletion": ["argcomplete>=1.10.0,<2"],

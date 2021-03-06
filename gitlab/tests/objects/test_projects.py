@@ -9,6 +9,11 @@ from gitlab.v4.objects import Project
 
 
 project_content = {"name": "name", "id": 1}
+import_content = {
+    "id": 1,
+    "name": "project",
+    "import_status": "scheduled",
+}
 
 
 @pytest.fixture
@@ -37,6 +42,19 @@ def resp_list_projects():
         yield rsps
 
 
+@pytest.fixture
+def resp_import_bitbucket_server():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/import/bitbucket_server",
+            json=import_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
 def test_get_project(gl, resp_get_project):
     data = gl.projects.get(1)
     assert isinstance(data, Project)
@@ -48,6 +66,21 @@ def test_list_projects(gl, resp_list_projects):
     projects = gl.projects.list()
     assert isinstance(projects[0], Project)
     assert projects[0].name == "name"
+
+
+def test_import_bitbucket_server(gl, resp_import_bitbucket_server):
+    res = gl.projects.import_bitbucket_server(
+        bitbucket_server_project="project",
+        bitbucket_server_repo="repo",
+        bitbucket_server_url="url",
+        bitbucket_server_username="username",
+        personal_access_token="token",
+        new_name="new_name",
+        target_namespace="namespace",
+    )
+    assert res["id"] == 1
+    assert res["name"] == "project"
+    assert res["import_status"] == "scheduled"
 
 
 @pytest.mark.skip(reason="missing test")
@@ -222,4 +255,9 @@ def test_project_pull_mirror(gl):
 
 @pytest.mark.skip(reason="missing test")
 def test_project_snapshot(gl):
+    pass
+
+
+@pytest.mark.skip(reason="missing test")
+def test_import_github(gl):
     pass

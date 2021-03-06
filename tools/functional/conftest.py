@@ -89,9 +89,15 @@ def wait_for_sidekiq(gl):
 
     def _wait(timeout=30, step=0.5):
         for _ in range(timeout):
-            if not gl.sidekiq.process_metrics()["processes"][0]["busy"]:
-                return
             time.sleep(step)
+            busy = False
+            processes = gl.sidekiq.process_metrics()["processes"]
+            for process in processes:
+                if process["busy"]:
+                    busy = True
+            if not busy:
+                return True
+        return False
 
     return _wait
 
@@ -194,6 +200,39 @@ def project(gl):
         project.delete()
     except gitlab.exceptions.GitlabDeleteError as e:
         print(f"Project already deleted: {e}")
+
+
+@pytest.fixture(scope="module")
+def project_file(project):
+    """File fixture for tests requiring a project with files and branches."""
+    project_file = project.files.create(
+        {
+            "file_path": "README",
+            "branch": "master",
+            "content": "Initial content",
+            "commit_message": "Initial commit",
+        }
+    )
+
+    return project_file
+
+
+@pytest.fixture(scope="function")
+def release(project, project_file):
+    _id = uuid.uuid4().hex
+    name = f"test-release-{_id}"
+
+    project.refresh()  # Gets us the current default branch
+    release = project.releases.create(
+        {
+            "name": name,
+            "tag_name": _id,
+            "description": "description",
+            "ref": project.default_branch,
+        }
+    )
+
+    return release
 
 
 @pytest.fixture(scope="module")

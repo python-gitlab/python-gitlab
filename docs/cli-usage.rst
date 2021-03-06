@@ -78,6 +78,9 @@ parameters. You can override the values in each GitLab server section.
      - Integer between 1 and 100
      - The number of items to return in listing queries. GitLab limits the
        value at 100.
+   * - ``user_agent``
+     - ``str``
+     - A string defining a custom user agent to use when ``gitlab`` makes requests.
 
 You must define the ``url`` in each GitLab server section.
 
@@ -98,22 +101,23 @@ server, with very limited permissions.
    * - ``url``
      - URL for the GitLab server
    * - ``private_token``
-     - Your user token. Login/password is not supported. Refer to `the official
-       documentation`_pat to learn how to obtain a token.
+     - Your user token. Login/password is not supported. Refer to `the
+       official documentation
+       <https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html>`__
+       to learn how to obtain a token.
    * - ``oauth_token``
      - An Oauth token for authentication. The Gitlab server must be configured
        to support this authentication method.
    * - ``job_token``
-     - Your job token. See `the official  documentation`_job-token to learn how to obtain a token.
+     - Your job token. See `the official documentation
+       <https://docs.gitlab.com/ce/api/jobs.html#get-job-artifacts>`__
+       to learn how to obtain a token.
    * - ``api_version``
      - GitLab API version to use. Only ``4`` is available since 1.5.0.
    * - ``http_username``
      - Username for optional HTTP authentication
    * - ``http_password``
      - Password for optional HTTP authentication
-
-.. _pat: https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html
-.. _job-token: https://docs.gitlab.com/ce/api/jobs.html#get-job-artifacts
 
 CLI
 ===
@@ -263,7 +267,7 @@ Delete a specific project package by id:
 
    $ gitlab -v project-package delete --id 1 --project-id 3
 
-Get a list of snippets for this project:
+Get a list of issues for this project:
 
 .. code-block:: console
 

@@ -2,7 +2,7 @@
 Installation
 ############
 
-``python-gitlab`` is compatible with Python 2.7 and 3.4+.
+``python-gitlab`` is compatible with Python 3.6+.
 
 Use :command:`pip` to install the latest stable version of ``python-gitlab``:
 

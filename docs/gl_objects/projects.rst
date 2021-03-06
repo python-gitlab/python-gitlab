@@ -702,39 +702,6 @@ Delete project push rules::
 
     pr.delete()
 
-Project releases
-================
-
-Reference
----------
-
-* v4 API:
-
-  + :class:`gitlab.v4.objects.ProjectRelease`
-  + :class:`gitlab.v4.objects.ProjectReleaseManager`
-  + :attr:`gitlab.v4.objects.Project.releases`
-
-* Gitlab API: https://docs.gitlab.com/ee/api/releases/index.html
-
-Examples
---------
-
-Get a list of releases from a project::
-
-    release = project.releases.list()
-
-Get a single release::
-
-    release = project.releases.get('v1.2.3')
-
-Create a release for a project tag::
-
-    release = project.releases.create({'name':'Demo Release', 'tag_name':'v1.2.3', 'description':'release notes go here'})
-
-Delete a release::
-
-    release = p.releases.delete('v1.2.3')
-
 Project protected tags
 ======================
 

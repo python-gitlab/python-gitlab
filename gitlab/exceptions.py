@@ -261,6 +261,14 @@ class GitlabLicenseError(GitlabOperationError):
     pass
 
 
+class GitlabFollowError(GitlabOperationError):
+    pass
+
+
+class GitlabUnfollowError(GitlabOperationError):
+    pass
+
+
 def on_http_error(error):
     """Manage GitlabHttpError exceptions.
 
