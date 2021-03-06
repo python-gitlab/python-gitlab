@@ -48,7 +48,7 @@ example:
 
    [elsewhere]
    url = http://else.whe.re:8080
-   private_token = lookup: pass show path/to/password
+   private_token = lookup: pass show path/to/password | head -n1
    timeout = 1
 
 The ``default`` option of the ``[global]`` section defines the GitLab server to
