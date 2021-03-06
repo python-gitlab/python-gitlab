@@ -27,6 +27,10 @@ def test_clean_str_id():
     dest = "foo%23bar%2Fbaz%2F"
     assert dest == utils.clean_str_id(src)
 
+    src = "foo%bar/baz/"
+    dest = "foo%25bar%2Fbaz%2F"
+    assert dest == utils.clean_str_id(src)
+
 
 def test_sanitized_url():
     src = "http://localhost/foo/bar"
@@ -46,6 +50,10 @@ def test_sanitize_parameters_does_nothing():
 
 def test_sanitize_parameters_slash():
     assert "foo%2Fbar" == utils.sanitize_parameters("foo/bar")
+
+
+def test_sanitize_parameters_slash_and_percent():
+    assert "foo%2Fbar%25quuz" == utils.sanitize_parameters("foo/bar%quuz")
 
 
 def test_sanitize_parameters_dict():
