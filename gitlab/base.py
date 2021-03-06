@@ -261,6 +261,11 @@ class RESTManager(object):
     _obj_cls: Optional[Type[RESTObject]] = None
     _from_parent_attrs: Dict[str, Any] = {}
 
+    _computed_path: Optional[str]
+    _parent: Optional[RESTObject]
+    _parent_attrs: Dict[str, Any]
+    gitlab: Gitlab
+
     def __init__(self, gl: Gitlab, parent: Optional[RESTObject] = None) -> None:
         """REST manager constructor.
 
