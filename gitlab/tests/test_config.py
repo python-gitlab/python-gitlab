@@ -196,6 +196,9 @@ def test_valid_data(m_open, path_exists):
     assert 2 == cp.timeout
     assert True == cp.ssl_verify
 
+    fd = io.StringIO(valid_config)
+    fd.close = mock.Mock(return_value=None)
+    m_open.return_value = fd
     cp = config.GitlabConfigParser(gitlab_id="five")
     assert "five" == cp.gitlab_id
     assert "https://five.url" == cp.url
@@ -203,6 +206,7 @@ def test_valid_data(m_open, path_exists):
     assert "foobar" == cp.oauth_token
     assert 2 == cp.timeout
     assert True == cp.ssl_verify
+
 
 @mock.patch("os.path.exists")
 @mock.patch("builtins.open")
