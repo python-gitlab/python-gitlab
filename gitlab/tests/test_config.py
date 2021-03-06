@@ -51,6 +51,10 @@ per_page = 50
 [four]
 url = https://four.url
 oauth_token = STUV
+
+[five]
+url = https://five.url
+oauth_token = lookup: echo "foobar"
 """
 
 custom_user_agent_config = """[global]
@@ -192,6 +196,13 @@ def test_valid_data(m_open, path_exists):
     assert 2 == cp.timeout
     assert True == cp.ssl_verify
 
+    cp = config.GitlabConfigParser(gitlab_id="five")
+    assert "five" == cp.gitlab_id
+    assert "https://five.url" == cp.url
+    assert None == cp.private_token
+    assert "foobar" == cp.oauth_token
+    assert 2 == cp.timeout
+    assert True == cp.ssl_verify
 
 @mock.patch("os.path.exists")
 @mock.patch("builtins.open")
