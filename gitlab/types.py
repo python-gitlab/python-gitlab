@@ -46,7 +46,6 @@ class ListAttribute(GitlabAttribute):
 
 
 class ScopesListAttribute(ListAttribute):
-
     def get_for_api(self):
         # scopes are expected to be a list of strings
         if isinstance(self._value, str):
