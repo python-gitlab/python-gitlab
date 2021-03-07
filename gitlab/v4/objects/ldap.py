@@ -9,6 +9,7 @@ __all__ = [
 
 
 class LDAPGroup(RESTObject):
+    _arg_name = "ldap-group"
     _id_attr = None
 
 

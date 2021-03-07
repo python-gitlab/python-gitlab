@@ -64,6 +64,7 @@ class CurrentUserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManag
 
 
 class CurrentUserGPGKey(ObjectDeleteMixin, RESTObject):
+    _arg_name = "current-user-gpg-key"
     pass
 
 
@@ -364,6 +365,7 @@ class UserActivitiesManager(ListMixin, RESTManager):
 
 
 class UserGPGKey(ObjectDeleteMixin, RESTObject):
+    _arg_name = "user-gpg-key"
     pass
 
 

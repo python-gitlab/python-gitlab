@@ -39,6 +39,8 @@ class RESTObject(object):
     without ID in the url.
     """
 
+    # If _arg_name is set, used by the CLI to determine the argument name
+    _arg_name: Optional[str] = None
     _id_attr: Optional[str] = "id"
     _attrs: Dict[str, Any]
     _module: ModuleType

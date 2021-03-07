@@ -301,7 +301,10 @@ def extend_parser(parser):
     classes.sort(key=operator.attrgetter("__name__"))
 
     for cls in classes:
-        arg_name = cli.cls_to_what(cls)
+        if cls._arg_name is not None:
+            arg_name = cls._arg_name
+        else:
+            arg_name = cli.cls_to_what(cls)
         object_group = subparsers.add_parser(arg_name)
 
         object_subparsers = object_group.add_subparsers(
