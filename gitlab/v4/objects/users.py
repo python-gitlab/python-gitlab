@@ -13,6 +13,7 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
+from gitlab.types import ScopesListAttribute
 
 from .custom_attributes import UserCustomAttributeManager
 from .events import UserEventManager
@@ -406,6 +407,7 @@ class UserImpersonationTokenManager(NoUpdateMixin, RESTManager):
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = (("name", "scopes"), ("expires_at",))
     _list_filters = ("state",)
+    _types = {"scopes": ScopesListAttribute}
 
 
 class UserMembership(RESTObject):
