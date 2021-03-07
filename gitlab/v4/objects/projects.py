@@ -25,7 +25,7 @@ from .deploy_tokens import ProjectDeployTokenManager
 from .deployments import ProjectDeploymentManager
 from .environments import ProjectEnvironmentManager
 from .events import ProjectEventManager
-from .audit_events import ProjectAuditManager
+from .audit_events import ProjectAuditEventManager
 from .export_import import ProjectExportManager, ProjectImportManager
 from .files import ProjectFileManager
 from .hooks import ProjectHookManager
@@ -117,7 +117,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         ("deployments", "ProjectDeploymentManager"),
         ("environments", "ProjectEnvironmentManager"),
         ("events", "ProjectEventManager"),
-        ("audit_events", "ProjectAuditManager"),
+        ("audit_events", "ProjectAuditEventManager"),
         ("exports", "ProjectExportManager"),
         ("files", "ProjectFileManager"),
         ("forks", "ProjectForkManager"),

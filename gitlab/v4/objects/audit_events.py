@@ -2,6 +2,7 @@
 GitLab API:
 https://docs.gitlab.com/ee/api/audit_events.html
 """
+import warnings
 
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import RetrieveMixin
@@ -9,6 +10,10 @@ from gitlab.mixins import RetrieveMixin
 __all__ = [
     "AuditEvent",
     "AuditEventManager",
+    "GroupAuditEvent",
+    "GroupAuditEventManager",
+    "ProjectAuditEvent",
+    "ProjectAuditEventManager",
     "ProjectAudit",
     "ProjectAuditManager",
 ]
@@ -24,12 +29,47 @@ class AuditEventManager(RetrieveMixin, RESTManager):
     _list_filters = ("created_after", "created_before", "entity_type", "entity_id")
 
 
-class ProjectAudit(RESTObject):
+class GroupAuditEvent(RESTObject):
     _id_attr = "id"
 
 
-class ProjectAuditManager(RetrieveMixin, RESTManager):
+class GroupAuditEventManager(RetrieveMixin, RESTManager):
+    _path = "/groups/%(group_id)s/audit_events"
+    _obj_cls = GroupAuditEvent
+    _from_parent_attrs = {"group_id": "id"}
+    _list_filters = ("created_after", "created_before")
+
+
+class ProjectAuditEvent(RESTObject):
+    _id_attr = "id"
+
+    def __init_subclass__(self):
+        warnings.warn(
+            "This class has been renamed to ProjectAuditEvent "
+            "and will be removed in a future release.",
+            DeprecationWarning,
+            2,
+        )
+
+
+class ProjectAuditEventManager(RetrieveMixin, RESTManager):
     _path = "/projects/%(project_id)s/audit_events"
-    _obj_cls = ProjectAudit
+    _obj_cls = ProjectAuditEvent
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = ("created_after", "created_before")
+
+    def __init_subclass__(self):
+        warnings.warn(
+            "This class has been renamed to ProjectAuditEventManager "
+            "and will be removed in a future release.",
+            DeprecationWarning,
+            2,
+        )
+
+
+class ProjectAudit(ProjectAuditEvent):
+    pass
+
+
+class ProjectAuditManager(ProjectAuditEventManager):
+    pass

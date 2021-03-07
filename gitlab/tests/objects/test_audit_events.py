@@ -8,7 +8,11 @@ import re
 import pytest
 import responses
 
-from gitlab.v4.objects.audit_events import AuditEvent, ProjectAudit
+from gitlab.v4.objects.audit_events import (
+    AuditEvent,
+    GroupAuditEvent,
+    ProjectAuditEvent,
+)
 
 id = 5
 
@@ -79,14 +83,27 @@ def test_get_instance_audit_events(gl, resp_get_audit_event):
     assert audit_event.id == id
 
 
+def test_list_group_audit_events(group, resp_list_audit_events):
+    audit_events = group.audit_events.list()
+    assert isinstance(audit_events, list)
+    assert isinstance(audit_events[0], GroupAuditEvent)
+    assert audit_events[0].id == id
+
+
+def test_get_group_audit_events(group, resp_get_audit_event):
+    audit_event = group.audit_events.get(id)
+    assert isinstance(audit_event, GroupAuditEvent)
+    assert audit_event.id == id
+
+
 def test_list_project_audit_events(project, resp_list_audit_events):
     audit_events = project.audit_events.list()
     assert isinstance(audit_events, list)
-    assert isinstance(audit_events[0], ProjectAudit)
+    assert isinstance(audit_events[0], ProjectAuditEvent)
     assert audit_events[0].id == id
 
 
 def test_get_project_audit_events(project, resp_get_audit_event):
     audit_event = project.audit_events.get(id)
-    assert isinstance(audit_event, ProjectAudit)
+    assert isinstance(audit_event, ProjectAuditEvent)
     assert audit_event.id == id

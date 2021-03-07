@@ -3,6 +3,7 @@ from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
 from .access_requests import GroupAccessRequestManager
+from .audit_events import GroupAuditEventManager
 from .badges import GroupBadgeManager
 from .boards import GroupBoardManager
 from .custom_attributes import GroupCustomAttributeManager
@@ -34,6 +35,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "name"
     _managers = (
         ("accessrequests", "GroupAccessRequestManager"),
+        ("audit_events", "GroupAuditEventManager"),
         ("badges", "GroupBadgeManager"),
         ("boards", "GroupBoardManager"),
         ("customattributes", "GroupCustomAttributeManager"),
