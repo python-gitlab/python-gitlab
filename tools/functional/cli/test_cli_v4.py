@@ -560,6 +560,7 @@ def test_create_project_with_values_from_file(gitlab_cli, tmpdir):
     assert ret.success
     assert description in ret.stdout
 
+
 def do_test_create_project_deploy_token(gitlab_cli, project, scopes):
     name = "project-token"
     username = "root"
