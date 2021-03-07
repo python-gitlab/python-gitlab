@@ -17,7 +17,7 @@
 
 import importlib
 from types import ModuleType
-from typing import Any, Dict, Optional, Type
+from typing import Any, Dict, Optional, Tuple, Type
 
 from .client import Gitlab, GitlabList
 from gitlab import types as g_types
@@ -258,6 +258,8 @@ class RESTManager(object):
     ``_obj_cls``: The class of objects that will be created
     """
 
+    _create_attrs: Tuple[Tuple[str, ...], Tuple[str, ...]] = (tuple(), tuple())
+    _update_attrs: Tuple[Tuple[str, ...], Tuple[str, ...]] = (tuple(), tuple())
     _path: Optional[str] = None
     _obj_cls: Optional[Type[RESTObject]] = None
     _from_parent_attrs: Dict[str, Any] = {}
