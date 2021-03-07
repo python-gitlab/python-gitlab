@@ -561,7 +561,7 @@ def test_create_project_with_values_from_file(gitlab_cli, tmpdir):
     assert description in ret.stdout
 
 
-def do_test_create_project_deploy_token(gitlab_cli, project, scopes):
+def do_test_create_project_deploy_token(gitlab_cli, project, scopes, expected_scopes):
     name = "project-token"
     username = "root"
     expires_at = "2021-09-09"
@@ -591,12 +591,18 @@ def do_test_create_project_deploy_token(gitlab_cli, project, scopes):
 
 
 def test_create_project_deploy_token_one_scope(gitlab_cli, project):
-    do_test_create_project_deploy_token(gitlab_cli, project, scopes="read_registry")
+    scopes = "read_registry"
+    expected_scopes = "['read_registry']"
+    do_test_create_project_deploy_token(
+        gitlab_cli, project, scopes, expected_scopes
+    )
 
 
 def test_create_project_deploy_token_many_scopes(gitlab_cli, project):
+    scopes = "read_registry,read_repository"
+    expected_scopes = "['read_repository', 'read_registry']"
     do_test_create_project_deploy_token(
-        gitlab_cli, project, scopes="read_registry,read_repository"
+        gitlab_cli, project, scopes, expected_scopes
     )
 
 
