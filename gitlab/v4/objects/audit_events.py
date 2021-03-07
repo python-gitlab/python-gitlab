@@ -18,7 +18,7 @@ class AuditEvent(RESTObject):
     _id_attr = "id"
 
 
-class AuditEventManager(ListMixin, RESTManager):
+class AuditEventManager(RetrieveMixin, RESTManager):
     _path = "/audit_events"
     _obj_cls = AuditEvent
     _list_filters = ("created_after", "created_before", "entity_type", "entity_id")
