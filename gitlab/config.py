@@ -36,9 +36,7 @@ _DEFAULT_FILES: List[str] = _env_config() + [
 
 HELPER_PREFIX = "helper:"
 
-HELPER_ATTRIBUTES = [
-    "job_token", "http_password", "private_token", "oauth_token"
-]
+HELPER_ATTRIBUTES = ["job_token", "http_password", "private_token", "oauth_token"]
 
 class ConfigError(Exception):
     pass
@@ -202,11 +200,11 @@ class GitlabConfigParser(object):
             pass
 
     def _get_values_from_helper(self):
-        """Update attributes, which may get values from an external helper program
-        """
+        """Update attributes, which may get values from an external helper program"""
         for attr in HELPER_ATTRIBUTES:
             value = getattr(self, attr)
-            if isinstance(value, str) and value.lower().strip().startswith(HELPER_PREFIX):
+            _value_lower = value.lower().strip()
+            if isinstance(value, str) and _value_lower.startswith(HELPER_PREFIX):
                 helper = value[len(HELPER_PREFIX) :].strip()
                 value = subprocess.check_output([helper]).decode("utf-8").strip()
                 setattr(self, attr, value)
