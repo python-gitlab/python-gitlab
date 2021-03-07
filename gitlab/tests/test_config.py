@@ -197,21 +197,30 @@ def test_valid_data(m_open, path_exists):
 @mock.patch("os.path.exists")
 @mock.patch("builtins.open")
 def test_data_from_helper(m_open, path_exists, tmp_path):
-    helper = (tmp_path / "helper.sh")
-    helper.write_text(dedent("""\
-        #!/bin/sh
-        echo "secret"
-    """))
+    helper = tmp_path / "helper.sh"
+    helper.write_text(
+        dedent(
+            """\
+            #!/bin/sh
+            echo "secret"
+            """
+        )
+    )
     helper.chmod(0o755)
 
-    fd = io.StringIO(dedent("""\
-        [global]
-        default = helper
+    fd = io.StringIO(
+        dedent(
+            """\
+            [global]
+            default = helper
 
-        [helper]
-        url = https://helper.url
-        oauth_token = helper: %s
-    """) % helper)
+            [helper]
+            url = https://helper.url
+            oauth_token = helper: %s
+            """
+        )
+        % helper
+    )
 
     fd.close = mock.Mock(return_value=None)
     m_open.return_value = fd
