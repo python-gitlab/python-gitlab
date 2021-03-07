@@ -593,17 +593,13 @@ def do_test_create_project_deploy_token(gitlab_cli, project, scopes, expected_sc
 def test_create_project_deploy_token_one_scope(gitlab_cli, project):
     scopes = "read_registry"
     expected_scopes = "['read_registry']"
-    do_test_create_project_deploy_token(
-        gitlab_cli, project, scopes, expected_scopes
-    )
+    do_test_create_project_deploy_token(gitlab_cli, project, scopes, expected_scopes)
 
 
 def test_create_project_deploy_token_many_scopes(gitlab_cli, project):
     scopes = "read_registry,read_repository"
     expected_scopes = "['read_repository', 'read_registry']"
-    do_test_create_project_deploy_token(
-        gitlab_cli, project, scopes, expected_scopes
-    )
+    do_test_create_project_deploy_token(gitlab_cli, project, scopes, expected_scopes)
 
 
 def test_list_all_deploy_tokens(gitlab_cli, deploy_token):
