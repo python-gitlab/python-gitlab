@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, DeleteMixin, ListMixin, ObjectDeleteMixin
 
 
@@ -29,12 +29,12 @@ class GroupDeployTokenManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = "/groups/%(group_id)s/deploy_tokens"
     _from_parent_attrs = {"group_id": "id"}
     _obj_cls = GroupDeployToken
-    _create_attrs = (
-        (
+    _create_attrs = RequiredOptional(
+        required=(
             "name",
             "scopes",
         ),
-        (
+        optional=(
             "expires_at",
             "username",
         ),
@@ -49,12 +49,12 @@ class ProjectDeployTokenManager(ListMixin, CreateMixin, DeleteMixin, RESTManager
     _path = "/projects/%(project_id)s/deploy_tokens"
     _from_parent_attrs = {"project_id": "id"}
     _obj_cls = ProjectDeployToken
-    _create_attrs = (
-        (
+    _create_attrs = RequiredOptional(
+        required=(
             "name",
             "scopes",
         ),
-        (
+        optional=(
             "expires_at",
             "username",
         ),

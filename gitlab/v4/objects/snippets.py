@@ -1,6 +1,6 @@
 from gitlab import cli, utils
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin, UserAgentDetailMixin
 
 from .award_emojis import ProjectSnippetAwardEmojiManager
@@ -50,8 +50,12 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 class SnippetManager(CRUDMixin, RESTManager):
     _path = "/snippets"
     _obj_cls = Snippet
-    _create_attrs = (("title", "file_name", "content"), ("lifetime", "visibility"))
-    _update_attrs = (tuple(), ("title", "file_name", "content", "visibility"))
+    _create_attrs = RequiredOptional(
+        required=("title", "file_name", "content"), optional=("lifetime", "visibility")
+    )
+    _update_attrs = RequiredOptional(
+        optional=("title", "file_name", "content", "visibility")
+    )
 
     @cli.register_custom_action("SnippetManager")
     def public(self, **kwargs):
@@ -111,8 +115,10 @@ class ProjectSnippetManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/snippets"
     _obj_cls = ProjectSnippet
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (("title", "file_name", "content", "visibility"), ("description",))
-    _update_attrs = (
-        tuple(),
-        ("title", "file_name", "content", "visibility", "description"),
+    _create_attrs = RequiredOptional(
+        required=("title", "file_name", "content", "visibility"),
+        optional=("description",),
+    )
+    _update_attrs = RequiredOptional(
+        optional=("title", "file_name", "content", "visibility", "description"),
     )

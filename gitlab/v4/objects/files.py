@@ -1,7 +1,7 @@
 import base64
 from gitlab import cli, utils
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -69,13 +69,13 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
     _path = "/projects/%(project_id)s/repository/files"
     _obj_cls = ProjectFile
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (
-        ("file_path", "branch", "content", "commit_message"),
-        ("encoding", "author_email", "author_name"),
+    _create_attrs = RequiredOptional(
+        required=("file_path", "branch", "content", "commit_message"),
+        optional=("encoding", "author_email", "author_name"),
     )
-    _update_attrs = (
-        ("file_path", "branch", "content", "commit_message"),
-        ("encoding", "author_email", "author_name"),
+    _update_attrs = RequiredOptional(
+        required=("file_path", "branch", "content", "commit_message"),
+        optional=("encoding", "author_email", "author_name"),
     )
 
     @cli.register_custom_action("ProjectFileManager", ("file_path", "ref"))

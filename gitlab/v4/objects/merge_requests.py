@@ -1,6 +1,6 @@
 from gitlab import cli, types
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject, RESTObjectList
+from gitlab.base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import (
     CRUDMixin,
     ListMixin,
@@ -335,9 +335,9 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/merge_requests"
     _obj_cls = ProjectMergeRequest
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (
-        ("source_branch", "target_branch", "title"),
-        (
+    _create_attrs = RequiredOptional(
+        required=("source_branch", "target_branch", "title"),
+        optional=(
             "assignee_id",
             "description",
             "target_project_id",
@@ -348,9 +348,8 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
             "squash",
         ),
     )
-    _update_attrs = (
-        tuple(),
-        (
+    _update_attrs = RequiredOptional(
+        optional=(
             "target_branch",
             "assignee_id",
             "title",

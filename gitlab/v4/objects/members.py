@@ -1,6 +1,6 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -20,8 +20,12 @@ class GroupMemberManager(CRUDMixin, RESTManager):
     _path = "/groups/%(group_id)s/members"
     _obj_cls = GroupMember
     _from_parent_attrs = {"group_id": "id"}
-    _create_attrs = (("access_level", "user_id"), ("expires_at",))
-    _update_attrs = (("access_level",), ("expires_at",))
+    _create_attrs = RequiredOptional(
+        required=("access_level", "user_id"), optional=("expires_at",)
+    )
+    _update_attrs = RequiredOptional(
+        required=("access_level",), optional=("expires_at",)
+    )
 
     @cli.register_custom_action("GroupMemberManager")
     @exc.on_http_error(exc.GitlabListError)
@@ -57,8 +61,12 @@ class ProjectMemberManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/members"
     _obj_cls = ProjectMember
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (("access_level", "user_id"), ("expires_at",))
-    _update_attrs = (("access_level",), ("expires_at",))
+    _create_attrs = RequiredOptional(
+        required=("access_level", "user_id"), optional=("expires_at",)
+    )
+    _update_attrs = RequiredOptional(
+        required=("access_level",), optional=("expires_at",)
+    )
 
     @cli.register_custom_action("ProjectMemberManager")
     @exc.on_http_error(exc.GitlabListError)

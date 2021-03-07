@@ -1,6 +1,6 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CRUDMixin,
     CreateMixin,
@@ -46,7 +46,7 @@ class ProjectNoteManager(RetrieveMixin, RESTManager):
     _path = "/projects/%(project_id)s/notes"
     _obj_cls = ProjectNote
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (("body",), tuple())
+    _create_attrs = RequiredOptional(required=("body",))
 
 
 class ProjectCommitDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -66,8 +66,10 @@ class ProjectCommitDiscussionNoteManager(
         "commit_id": "commit_id",
         "discussion_id": "id",
     }
-    _create_attrs = (("body",), ("created_at", "position"))
-    _update_attrs = (("body",), tuple())
+    _create_attrs = RequiredOptional(
+        required=("body",), optional=("created_at", "position")
+    )
+    _update_attrs = RequiredOptional(required=("body",))
 
 
 class ProjectIssueNote(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -78,8 +80,8 @@ class ProjectIssueNoteManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/issues/%(issue_iid)s/notes"
     _obj_cls = ProjectIssueNote
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
-    _create_attrs = (("body",), ("created_at",))
-    _update_attrs = (("body",), tuple())
+    _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
+    _update_attrs = RequiredOptional(required=("body",))
 
 
 class ProjectIssueDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -99,8 +101,8 @@ class ProjectIssueDiscussionNoteManager(
         "issue_iid": "issue_iid",
         "discussion_id": "id",
     }
-    _create_attrs = (("body",), ("created_at",))
-    _update_attrs = (("body",), tuple())
+    _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
+    _update_attrs = RequiredOptional(required=("body",))
 
 
 class ProjectMergeRequestNote(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -111,8 +113,8 @@ class ProjectMergeRequestNoteManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/notes"
     _obj_cls = ProjectMergeRequestNote
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
-    _create_attrs = (("body",), tuple())
-    _update_attrs = (("body",), tuple())
+    _create_attrs = RequiredOptional(required=("body",))
+    _update_attrs = RequiredOptional(required=("body",))
 
 
 class ProjectMergeRequestDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -132,8 +134,8 @@ class ProjectMergeRequestDiscussionNoteManager(
         "mr_iid": "mr_iid",
         "discussion_id": "id",
     }
-    _create_attrs = (("body",), ("created_at",))
-    _update_attrs = (("body",), tuple())
+    _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
+    _update_attrs = RequiredOptional(required=("body",))
 
 
 class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -144,8 +146,8 @@ class ProjectSnippetNoteManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/snippets/%(snippet_id)s/notes"
     _obj_cls = ProjectSnippetNote
     _from_parent_attrs = {"project_id": "project_id", "snippet_id": "id"}
-    _create_attrs = (("body",), tuple())
-    _update_attrs = (("body",), tuple())
+    _create_attrs = RequiredOptional(required=("body",))
+    _update_attrs = RequiredOptional(required=("body",))
 
 
 class ProjectSnippetDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -165,5 +167,5 @@ class ProjectSnippetDiscussionNoteManager(
         "snippet_id": "snippet_id",
         "discussion_id": "id",
     }
-    _create_attrs = (("body",), ("created_at",))
-    _update_attrs = (("body",), tuple())
+    _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
+    _update_attrs = RequiredOptional(required=("body",))

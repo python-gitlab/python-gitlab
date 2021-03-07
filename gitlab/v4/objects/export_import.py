@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, DownloadMixin, GetWithoutIdMixin, RefreshMixin
 
 
@@ -42,7 +42,7 @@ class ProjectExportManager(GetWithoutIdMixin, CreateMixin, RESTManager):
     _path = "/projects/%(project_id)s/export"
     _obj_cls = ProjectExport
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (tuple(), ("description",))
+    _create_attrs = RequiredOptional(optional=("description",))
 
 
 class ProjectImport(RefreshMixin, RESTObject):

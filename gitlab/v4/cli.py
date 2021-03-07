@@ -177,11 +177,11 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                 ]
 
         if action_name == "create":
-            for x in mgr_cls._create_attrs[0]:
+            for x in mgr_cls._create_attrs.required:
                 sub_parser_action.add_argument(
                     "--%s" % x.replace("_", "-"), required=True
                 )
-            for x in mgr_cls._create_attrs[1]:
+            for x in mgr_cls._create_attrs.optional:
                 sub_parser_action.add_argument(
                     "--%s" % x.replace("_", "-"), required=False
                 )
@@ -191,13 +191,13 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                 id_attr = cls._id_attr.replace("_", "-")
                 sub_parser_action.add_argument("--%s" % id_attr, required=True)
 
-            for x in mgr_cls._update_attrs[0]:
+            for x in mgr_cls._update_attrs.required:
                 if x != cls._id_attr:
                     sub_parser_action.add_argument(
                         "--%s" % x.replace("_", "-"), required=True
                     )
 
-            for x in mgr_cls._update_attrs[1]:
+            for x in mgr_cls._update_attrs.optional:
                 if x != cls._id_attr:
                     sub_parser_action.add_argument(
                         "--%s" % x.replace("_", "-"), required=False

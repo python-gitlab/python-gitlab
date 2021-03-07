@@ -1,6 +1,6 @@
 from gitlab import cli, types
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
 from .access_requests import GroupAccessRequestManager
 from .badges import GroupBadgeManager
@@ -200,9 +200,9 @@ class GroupManager(CRUDMixin, RESTManager):
         "with_custom_attributes",
         "min_access_level",
     )
-    _create_attrs = (
-        ("name", "path"),
-        (
+    _create_attrs = RequiredOptional(
+        required=("name", "path"),
+        optional=(
             "description",
             "membership_lock",
             "visibility",
@@ -221,9 +221,8 @@ class GroupManager(CRUDMixin, RESTManager):
             "default_branch_protection",
         ),
     )
-    _update_attrs = (
-        tuple(),
-        (
+    _update_attrs = RequiredOptional(
+        optional=(
             "name",
             "path",
             "description",

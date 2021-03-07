@@ -1,5 +1,5 @@
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
 
 
@@ -16,9 +16,8 @@ class ApplicationAppearance(SaveMixin, RESTObject):
 class ApplicationAppearanceManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _path = "/application/appearance"
     _obj_cls = ApplicationAppearance
-    _update_attrs = (
-        tuple(),
-        (
+    _update_attrs = RequiredOptional(
+        optional=(
             "title",
             "description",
             "logo",

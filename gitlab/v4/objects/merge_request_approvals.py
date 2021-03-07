@@ -1,5 +1,5 @@
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -31,9 +31,8 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _path = "/projects/%(project_id)s/approvals"
     _obj_cls = ProjectApproval
     _from_parent_attrs = {"project_id": "id"}
-    _update_attrs = (
-        tuple(),
-        (
+    _update_attrs = RequiredOptional(
+        optional=(
             "approvals_before_merge",
             "reset_approvals_on_push",
             "disable_overriding_approvers_per_merge_request",
@@ -73,7 +72,9 @@ class ProjectApprovalRuleManager(
     _path = "/projects/%(project_id)s/approval_rules"
     _obj_cls = ProjectApprovalRule
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (("name", "approvals_required"), ("user_ids", "group_ids"))
+    _create_attrs = RequiredOptional(
+        required=("name", "approvals_required"), optional=("user_ids", "group_ids")
+    )
 
 
 class ProjectMergeRequestApproval(SaveMixin, RESTObject):
@@ -84,7 +85,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
     _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/approvals"
     _obj_cls = ProjectMergeRequestApproval
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
-    _update_attrs = (("approvals_required",), tuple())
+    _update_attrs = RequiredOptional(required=("approvals_required",))
     _update_uses_post = True
 
     @exc.on_http_error(exc.GitlabUpdateError)
@@ -165,15 +166,21 @@ class ProjectMergeRequestApprovalRuleManager(
     _obj_cls = ProjectMergeRequestApprovalRule
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
     _list_filters = ("name", "rule_type")
-    _update_attrs = (
-        ("id", "merge_request_iid", "approval_rule_id", "name", "approvals_required"),
-        ("user_ids", "group_ids"),
+    _update_attrs = RequiredOptional(
+        required=(
+            "id",
+            "merge_request_iid",
+            "approval_rule_id",
+            "name",
+            "approvals_required",
+        ),
+        optional=("user_ids", "group_ids"),
     )
     # Important: When approval_project_rule_id is set, the name, users and groups of
     # project-level rule will be copied. The approvals_required specified will be used.  """
-    _create_attrs = (
-        ("id", "merge_request_iid", "name", "approvals_required"),
-        ("approval_project_rule_id", "user_ids", "group_ids"),
+    _create_attrs = RequiredOptional(
+        required=("id", "merge_request_iid", "name", "approvals_required"),
+        optional=("approval_project_rule_id", "user_ids", "group_ids"),
     )
 
     def create(self, data, **kwargs):

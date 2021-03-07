@@ -1,6 +1,6 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     DeleteMixin,
     ObjectDeleteMixin,
@@ -55,9 +55,8 @@ class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
 class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
     _path = "/geo_nodes"
     _obj_cls = GeoNode
-    _update_attrs = (
-        tuple(),
-        ("enabled", "url", "files_max_capacity", "repos_max_capacity"),
+    _update_attrs = RequiredOptional(
+        optional=("enabled", "url", "files_max_capacity", "repos_max_capacity"),
     )
 
     @cli.register_custom_action("GeoNodeManager")

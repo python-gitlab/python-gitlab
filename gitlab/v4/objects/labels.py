@@ -1,5 +1,5 @@
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -48,8 +48,12 @@ class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
     _path = "/groups/%(group_id)s/labels"
     _obj_cls = GroupLabel
     _from_parent_attrs = {"group_id": "id"}
-    _create_attrs = (("name", "color"), ("description", "priority"))
-    _update_attrs = (("name",), ("new_name", "color", "description", "priority"))
+    _create_attrs = RequiredOptional(
+        required=("name", "color"), optional=("description", "priority")
+    )
+    _update_attrs = RequiredOptional(
+        required=("name",), optional=("new_name", "color", "description", "priority")
+    )
 
     # Update without ID.
     def update(self, name, new_data=None, **kwargs):
@@ -110,8 +114,12 @@ class ProjectLabelManager(
     _path = "/projects/%(project_id)s/labels"
     _obj_cls = ProjectLabel
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (("name", "color"), ("description", "priority"))
-    _update_attrs = (("name",), ("new_name", "color", "description", "priority"))
+    _create_attrs = RequiredOptional(
+        required=("name", "color"), optional=("description", "priority")
+    )
+    _update_attrs = RequiredOptional(
+        required=("name",), optional=("new_name", "color", "description", "priority")
+    )
 
     # Update without ID.
     def update(self, name, new_data=None, **kwargs):

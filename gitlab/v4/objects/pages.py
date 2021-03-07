@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -27,5 +27,7 @@ class ProjectPagesDomainManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/pages/domains"
     _obj_cls = ProjectPagesDomain
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (("domain",), ("certificate", "key"))
-    _update_attrs = (tuple(), ("certificate", "key"))
+    _create_attrs = RequiredOptional(
+        required=("domain",), optional=("certificate", "key")
+    )
+    _update_attrs = RequiredOptional(optional=("certificate", "key"))
