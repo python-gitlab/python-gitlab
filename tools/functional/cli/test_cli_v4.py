@@ -587,7 +587,7 @@ def do_test_create_project_deploy_token(gitlab_cli, project, scopes, expected_sc
     assert name in ret.stdout
     assert username in ret.stdout
     assert expires_at in ret.stdout
-    assert scopes in ret.stdout
+    assert expected_scopes in ret.stdout
 
 
 def test_create_project_deploy_token_one_scope(gitlab_cli, project):
