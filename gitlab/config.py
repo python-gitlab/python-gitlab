@@ -204,8 +204,10 @@ class GitlabConfigParser(object):
         """Update attributes, which may get values from an external helper program"""
         for attr in HELPER_ATTRIBUTES:
             value = getattr(self, attr)
-            _value_lower = value.lower().strip()
-            if isinstance(value, str) and _value_lower.startswith(HELPER_PREFIX):
+            if not isinstance(value, str):
+                continue
+
+            if value.lower().strip().startswith(HELPER_PREFIX):
                 helper = expanduser(value[len(HELPER_PREFIX) :].strip())
                 value = subprocess.check_output([helper]).decode("utf-8").strip()
                 setattr(self, attr, value)
