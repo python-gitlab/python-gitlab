@@ -2,6 +2,9 @@
 Events
 ######
 
+Events
+======
+
 Reference
 ---------
 
@@ -39,3 +42,42 @@ List the issue events on a project::
 List the user events::
 
     events = project.events.list()
+
+Resource state events
+=====================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectIssueResourceStateEvent`
+  + :class:`gitlab.v4.objects.ProjectIssueResourceStateEventManager`
+  + :attr:`gitlab.v4.objects.ProjectIssue.resourcestateevents`
+  + :class:`gitlab.v4.objects.ProjectMergeRequestResourceStateEvent`
+  + :class:`gitlab.v4.objects.ProjectMergeRequestResourceStateEventManager`
+  + :attr:`gitlab.v4.objects.ProjectMergeRequest.resourcestateevents`
+
+* GitLab API: https://docs.gitlab.com/ee/api/resource_state_events.html
+
+Examples
+--------
+
+You can list and get specific resource state events (via their id) for project issues
+and project merge requests.
+
+List the state events of a project issue (paginated)::
+
+    state_events = issue.resourcestateevents.list()
+
+Get a specific state event of a project issue by its id::
+
+    state_event = issue.resourcestateevents.get(1)
+
+List the state events of a project merge request (paginated)::
+
+    state_events = mr.resourcestateevents.list()
+
+Get a specific state event of a project merge request by its id::
+
+    state_event = mr.resourcestateevents.get(1)
