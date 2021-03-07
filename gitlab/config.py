@@ -19,6 +19,7 @@ import os
 import configparser
 import subprocess
 from typing import List, Optional, Union
+from os.path import expanduser
 
 from gitlab.const import USER_AGENT
 
@@ -205,6 +206,6 @@ class GitlabConfigParser(object):
             value = getattr(self, attr)
             _value_lower = value.lower().strip()
             if isinstance(value, str) and _value_lower.startswith(HELPER_PREFIX):
-                helper = value[len(HELPER_PREFIX) :].strip()
+                helper = expanduser(value[len(HELPER_PREFIX) :].strip())
                 value = subprocess.check_output([helper]).decode("utf-8").strip()
                 setattr(self, attr, value)
