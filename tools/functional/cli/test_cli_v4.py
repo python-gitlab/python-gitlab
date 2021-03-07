@@ -588,11 +588,16 @@ def do_test_create_project_deploy_token(gitlab_cli, project, scopes):
     assert expires_at in ret.stdout
     assert scopes in ret.stdout
 
+
 def test_create_project_deploy_token_one_scope(gitlab_cli, project, scopes):
     do_test_create_project_deploy_token(gitlab_cli, project, scopes="read_registry")
 
+
 def test_create_project_deploy_token_many_scopes(gitlab_cli, project, scopes):
-    do_test_create_project_deploy_token(gitlab_cli, project, scopes="read_registry,read_repository")
+    do_test_create_project_deploy_token(
+        gitlab_cli, project, scopes="read_registry,read_repository"
+    )
+
 
 def test_list_all_deploy_tokens(gitlab_cli, deploy_token):
     cmd = ["-v", "deploy-token", "list"]
