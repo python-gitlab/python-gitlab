@@ -123,8 +123,9 @@ For all settings, which contain secrets (``http_password``,
 ``personal_token``, ``oauth_token``, ``job_token``), you can specify
 a helper program to retrieve the secret indicated by ``helper:`` 
 prefix.  You can only specify a path to a program without any 
-parameters.  It is expected, that the program prints the secret to 
-standard output.
+parameters.  You may use ``~`` for expanding your homedir in helper
+program's path.  It is expected, that the program prints the secret 
+to standard output.
 
 Example for a `keyring <https://github.com/jaraco/keyring>`_ helper:
 
