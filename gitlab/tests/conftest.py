@@ -53,6 +53,16 @@ def project(gl):
 
 
 @pytest.fixture
+def project_issue(project):
+    return project.issues.get(1, lazy=True)
+
+
+@pytest.fixture
+def project_merge_request(project):
+    return project.mergerequests.get(1, lazy=True)
+
+
+@pytest.fixture
 def release(project, tag_name):
     return project.releases.get(tag_name, lazy=True)
 
