@@ -20,6 +20,7 @@ from .discussions import ProjectIssueDiscussionManager
 from .events import (
     ProjectIssueResourceLabelEventManager,
     ProjectIssueResourceMilestoneEventManager,
+    ProjectIssueResourceStateEventManager,
 )
 from .notes import ProjectIssueNoteManager
 
@@ -110,6 +111,7 @@ class ProjectIssue(
         ("notes", "ProjectIssueNoteManager"),
         ("resourcelabelevents", "ProjectIssueResourceLabelEventManager"),
         ("resourcemilestoneevents", "ProjectIssueResourceMilestoneEventManager"),
+        ("resourcestateevents", "ProjectIssueResourceStateEventManager"),
     )
 
     @cli.register_custom_action("ProjectIssue", ("to_project_id",))

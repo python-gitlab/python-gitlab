@@ -24,6 +24,7 @@ from .notes import ProjectMergeRequestNoteManager
 from .events import (
     ProjectMergeRequestResourceLabelEventManager,
     ProjectMergeRequestResourceMilestoneEventManager,
+    ProjectMergeRequestResourceStateEventManager,
 )
 
 
@@ -121,6 +122,7 @@ class ProjectMergeRequest(
         ("notes", "ProjectMergeRequestNoteManager"),
         ("resourcelabelevents", "ProjectMergeRequestResourceLabelEventManager"),
         ("resourcemilestoneevents", "ProjectMergeRequestResourceMilestoneEventManager"),
+        ("resourcestateevents", "ProjectMergeRequestResourceStateEventManager"),
     )
 
     @cli.register_custom_action("ProjectMergeRequest")

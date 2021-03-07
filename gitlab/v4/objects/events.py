@@ -14,10 +14,14 @@ __all__ = [
     "ProjectIssueResourceLabelEventManager",
     "ProjectIssueResourceMilestoneEvent",
     "ProjectIssueResourceMilestoneEventManager",
+    "ProjectIssueResourceStateEvent",
+    "ProjectIssueResourceStateEventManager",
     "ProjectMergeRequestResourceLabelEvent",
     "ProjectMergeRequestResourceLabelEventManager",
     "ProjectMergeRequestResourceMilestoneEvent",
     "ProjectMergeRequestResourceMilestoneEventManager",
+    "ProjectMergeRequestResourceStateEvent",
+    "ProjectMergeRequestResourceStateEventManager",
     "UserEvent",
     "UserEventManager",
 ]
@@ -74,6 +78,16 @@ class ProjectIssueResourceMilestoneEventManager(RetrieveMixin, RESTManager):
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
 
 
+class ProjectIssueResourceStateEvent(RESTObject):
+    pass
+
+
+class ProjectIssueResourceStateEventManager(RetrieveMixin, RESTManager):
+    _path = "/projects/%(project_id)s/issues/%(issue_iid)s/resource_state_events"
+    _obj_cls = ProjectIssueResourceStateEvent
+    _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
+
+
 class ProjectMergeRequestResourceLabelEvent(RESTObject):
     pass
 
@@ -96,6 +110,18 @@ class ProjectMergeRequestResourceMilestoneEventManager(RetrieveMixin, RESTManage
     )
     _obj_cls = ProjectMergeRequestResourceMilestoneEvent
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
+
+
+class ProjectMergeRequestResourceStateEvent(RESTObject):
+    pass
+
+
+class ProjectMergeRequestResourceStateEventManager(RetrieveMixin, RESTManager):
+    _path = (
+        "/projects/%(project_id)s/merge_requests/%(issue_iid)s/resource_state_events"
+    )
+    _obj_cls = ProjectMergeRequestResourceStateEvent
+    _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
 
 
 class UserEvent(Event):
