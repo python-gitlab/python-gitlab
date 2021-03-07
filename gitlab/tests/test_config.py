@@ -17,6 +17,7 @@
 
 import os
 import unittest
+from textwrap import dedent
 
 import mock
 import io
@@ -51,10 +52,6 @@ per_page = 50
 [four]
 url = https://four.url
 oauth_token = STUV
-
-[five]
-url = https://five.url
-oauth_token = lookup: echo "foobar"
 """
 
 custom_user_agent_config = """[global]
@@ -196,16 +193,33 @@ def test_valid_data(m_open, path_exists):
     assert 2 == cp.timeout
     assert True == cp.ssl_verify
 
-    fd = io.StringIO(valid_config)
+
+@mock.patch("os.path.exists")
+@mock.patch("builtins.open")
+def test_data_from_helper(m_open, path_exists, tmp_path):
+    helper = (tmp_path / "helper.sh")
+    helper.write_text(dedent("""\
+        #!/bin/sh
+        echo "secret"
+    """))
+    helper.chmod(0o755)
+
+    fd = io.StringIO(dedent("""\
+        [global]
+        default = helper
+
+        [helper]
+        url = https://helper.url
+        oauth_token = helper: %s
+    """) % helper)
+
     fd.close = mock.Mock(return_value=None)
     m_open.return_value = fd
-    cp = config.GitlabConfigParser(gitlab_id="five")
-    assert "five" == cp.gitlab_id
-    assert "https://five.url" == cp.url
+    cp = config.GitlabConfigParser(gitlab_id="helper")
+    assert "helper" == cp.gitlab_id
+    assert "https://helper.url" == cp.url
     assert None == cp.private_token
-    assert "foobar" == cp.oauth_token
-    assert 2 == cp.timeout
-    assert True == cp.ssl_verify
+    assert "secret" == cp.oauth_token
 
 
 @mock.patch("os.path.exists")

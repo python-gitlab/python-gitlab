@@ -34,6 +34,11 @@ _DEFAULT_FILES: List[str] = _env_config() + [
     os.path.expanduser("~/.python-gitlab.cfg"),
 ]
 
+HELPER_PREFIX = "helper:"
+
+HELPER_ATTRIBUTES = [
+    "job_token", "http_password", "private_token", "oauth_token"
+]
 
 class ConfigError(Exception):
     pass
@@ -151,15 +156,7 @@ class GitlabConfigParser(object):
         except Exception:
             pass
 
-        for attr in ("job_token", "http_password", "private_token", "oauth_token"):
-            value = getattr(self, attr)
-            prefix = "lookup:"
-            if isinstance(value, str) and value.lower().strip().startswith(prefix):
-                helper = value[len(prefix) :].strip()
-                value = (
-                    subprocess.check_output(helper, shell=True).decode("utf-8").strip()
-                )
-                setattr(self, attr, value)
+        self._get_values_from_helper()
 
         self.api_version = "4"
         try:
@@ -203,3 +200,13 @@ class GitlabConfigParser(object):
             self.user_agent = self._config.get(self.gitlab_id, "user_agent")
         except Exception:
             pass
+
+    def _get_values_from_helper(self):
+        """Update attributes, which may get values from an external helper program
+        """
+        for attr in HELPER_ATTRIBUTES:
+            value = getattr(self, attr)
+            if isinstance(value, str) and value.lower().strip().startswith(HELPER_PREFIX):
+                helper = value[len(HELPER_PREFIX) :].strip()
+                value = subprocess.check_output([helper]).decode("utf-8").strip()
+                setattr(self, attr, value)

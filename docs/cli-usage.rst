@@ -48,7 +48,7 @@ example:
 
    [elsewhere]
    url = http://else.whe.re:8080
-   private_token = lookup: pass show path/to/password | head -n1
+   private_token = helper: path/to/helper.sh
    timeout = 1
 
 The ``default`` option of the ``[global]`` section defines the GitLab server to
@@ -118,6 +118,27 @@ server, with very limited permissions.
      - Username for optional HTTP authentication
    * - ``http_password``
      - Password for optional HTTP authentication
+
+For all settings, which contain secrets (``http_password``, 
+``personal_token``, ``oauth_token``, ``job_token``), you can specify
+a helper program to retrieve the secret indicated by ``helper:`` 
+prefix.  You can only specify a path to a program without any 
+parameters.  It is expected, that the program prints the secret to 
+standard output.
+
+Example for a `keyring <https://github.com/jaraco/keyring>`_ helper:
+
+.. code-block:: bash
+
+    #!/bin/bash
+    keyring get Service Username
+
+Example for a `pass <https://www.passwordstore.org>`_ helper:
+
+.. code-block:: bash
+
+    #!/bin/bash
+    pass show path/to/password | head -n 1
 
 CLI
 ===
