@@ -20,6 +20,7 @@ from types import ModuleType
 from typing import Any, Dict, Optional, Type
 
 from .client import Gitlab, GitlabList
+from gitlab import types as g_types
 
 __all__ = [
     "RESTObject",
@@ -260,6 +261,7 @@ class RESTManager(object):
     _path: Optional[str] = None
     _obj_cls: Optional[Type[RESTObject]] = None
     _from_parent_attrs: Dict[str, Any] = {}
+    _types: Dict[str, Type[g_types.GitlabAttribute]] = {}
 
     _computed_path: Optional[str]
     _parent: Optional[RESTObject]
