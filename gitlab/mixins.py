@@ -226,9 +226,8 @@ class ListMixin(_RestManagerBase):
             data.setdefault("order_by", self.gitlab.order_by)
 
         # We get the attributes that need some special transformation
-        types = getattr(self, "_types", {})
-        if types:
-            for attr_name, type_cls in types.items():
+        if self._types:
+            for attr_name, type_cls in self._types.items():
                 if attr_name in data.keys():
                     type_obj = type_cls(data[attr_name])
                     data[attr_name] = type_obj.get_for_api()
@@ -311,17 +310,16 @@ class CreateMixin(_RestManagerBase):
         files = {}
 
         # We get the attributes that need some special transformation
-        types = getattr(self, "_types", {})
-        if types:
+        if self._types:
             # Duplicate data to avoid messing with what the user sent us
             data = data.copy()
-            for attr_name, type_cls in types.items():
+            for attr_name, type_cls in self._types.items():
                 if attr_name in data.keys():
                     type_obj = type_cls(data[attr_name])
 
                     # if the type if FileAttribute we need to pass the data as
                     # file
-                    if issubclass(type_cls, g_types.FileAttribute):
+                    if isinstance(type_obj, g_types.FileAttribute):
                         k = type_obj.get_file_name(attr_name)
                         files[attr_name] = (k, data.pop(attr_name))
                     else:
@@ -414,17 +412,16 @@ class UpdateMixin(_RestManagerBase):
         files = {}
 
         # We get the attributes that need some special transformation
-        types = getattr(self, "_types", {})
-        if types:
+        if self._types:
             # Duplicate data to avoid messing with what the user sent us
             new_data = new_data.copy()
-            for attr_name, type_cls in types.items():
+            for attr_name, type_cls in self._types.items():
                 if attr_name in new_data.keys():
                     type_obj = type_cls(new_data[attr_name])
 
                     # if the type if FileAttribute we need to pass the data as
                     # file
-                    if issubclass(type_cls, g_types.FileAttribute):
+                    if isinstance(type_obj, g_types.FileAttribute):
                         k = type_obj.get_file_name(attr_name)
                         files[attr_name] = (k, new_data.pop(attr_name))
                     else:
