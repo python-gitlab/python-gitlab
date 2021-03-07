@@ -39,6 +39,7 @@ HELPER_PREFIX = "helper:"
 
 HELPER_ATTRIBUTES = ["job_token", "http_password", "private_token", "oauth_token"]
 
+
 class ConfigError(Exception):
     pass
 
