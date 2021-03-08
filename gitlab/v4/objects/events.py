@@ -117,11 +117,9 @@ class ProjectMergeRequestResourceStateEvent(RESTObject):
 
 
 class ProjectMergeRequestResourceStateEventManager(RetrieveMixin, RESTManager):
-    _path = (
-        "/projects/%(project_id)s/merge_requests/%(issue_iid)s/resource_state_events"
-    )
+    _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/resource_state_events"
     _obj_cls = ProjectMergeRequestResourceStateEvent
-    _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
+    _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
 
 
 class UserEvent(Event):
