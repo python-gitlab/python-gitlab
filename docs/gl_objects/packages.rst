@@ -66,3 +66,25 @@ Filter the results by ``package_type`` or ``package_name`` ::
 
     packages = group.packages.list(package_type='pypi')
 
+
+Project Package Files
+=====================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectPackageFile`
+  + :class:`gitlab.v4.objects.ProjectPackageFileManager`
+  + :attr:`gitlab.v4.objects.ProjectPackage.package_files`
+
+* GitLab API: https://docs.gitlab.com/ee/api/packages.html#list-package-files
+
+Examples
+--------
+
+List package files for package in project::
+
+    package = project.packages.get(1)
+    package_files = package.package_files.list()
