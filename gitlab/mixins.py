@@ -331,6 +331,7 @@ class UpdateMixin(_RestManagerBase):
     _parent = Optional[base.RESTObject]
     _parent_attrs = Dict[str, Any]
     _path: Optional[str]
+    _update_uses_post: bool = False
     gitlab: gitlab.Gitlab
 
     def _check_missing_update_attrs(self, data: Dict[str, Any]) -> None:
@@ -357,7 +358,7 @@ class UpdateMixin(_RestManagerBase):
         Returns:
             object: http_put (default) or http_post
         """
-        if getattr(self, "_update_uses_post", False):
+        if self._update_uses_post:
             http_method = self.gitlab.http_post
         else:
             http_method = self.gitlab.http_put
