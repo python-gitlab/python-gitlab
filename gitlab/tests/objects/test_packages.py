@@ -179,7 +179,7 @@ def test_delete_project_package(project, resp_delete_package):
     package.delete()
 
 
-def test_list_project_packages(project, resp_list_package_files):
+def test_list_project_package_files(project, resp_list_package_files):
     package = project.packages.get(1, lazy=True)
     package_files = package.package_files.list()
     assert isinstance(package_files, list)
