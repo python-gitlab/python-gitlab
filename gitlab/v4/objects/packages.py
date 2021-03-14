@@ -1,12 +1,13 @@
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import DeleteMixin, GetMixin, ListMixin, ObjectDeleteMixin
 
-
 __all__ = [
     "GroupPackage",
     "GroupPackageManager",
     "ProjectPackage",
     "ProjectPackageManager",
+    "ProjectPackageFile",
+    "ProjectPackageFileManager",
 ]
 
 
@@ -28,7 +29,7 @@ class GroupPackageManager(ListMixin, RESTManager):
 
 
 class ProjectPackage(ObjectDeleteMixin, RESTObject):
-    pass
+    _managers = (("package_files", "ProjectPackageFileManager"),)
 
 
 class ProjectPackageManager(ListMixin, GetMixin, DeleteMixin, RESTManager):
@@ -41,3 +42,13 @@ class ProjectPackageManager(ListMixin, GetMixin, DeleteMixin, RESTManager):
         "package_type",
         "package_name",
     )
+
+
+class ProjectPackageFile(RESTObject):
+    pass
+
+
+class ProjectPackageFileManager(ListMixin, RESTManager):
+    _path = "/projects/%(project_id)s/packages/%(package_id)s/package_files"
+    _obj_cls = ProjectPackageFile
+    _from_parent_attrs = {"project_id": "project_id", "package_id": "id"}
