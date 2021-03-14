@@ -266,23 +266,13 @@ class CreateMixin(_RestManagerBase):
     gitlab: gitlab.Gitlab
 
     def _check_missing_create_attrs(self, data: Dict[str, Any]) -> None:
-        required, optional = self.get_create_attrs()
         missing = []
-        for attr in required:
+        for attr in self._create_attrs[0]:
             if attr not in data:
                 missing.append(attr)
                 continue
         if missing:
             raise AttributeError("Missing attributes: %s" % ", ".join(missing))
-
-    def get_create_attrs(self) -> Tuple[Tuple[str, ...], Tuple[str, ...]]:
-        """Return the required and optional arguments.
-
-        Returns:
-            tuple: 2 items: list of required arguments and list of optional
-                   arguments for creation (in that order)
-        """
-        return getattr(self, "_create_attrs", (tuple(), tuple()))
 
     @exc.on_http_error(exc.GitlabCreateError)
     def create(
@@ -344,11 +334,13 @@ class UpdateMixin(_RestManagerBase):
     gitlab: gitlab.Gitlab
 
     def _check_missing_update_attrs(self, data: Dict[str, Any]) -> None:
-        required, optional = self.get_update_attrs()
         if TYPE_CHECKING:
             assert self._obj_cls is not None
-        # Remove the id field from the required list as it was previously moved to the http path.
-        required = tuple([k for k in required if k != self._obj_cls._id_attr])
+        # Remove the id field from the required list as it was previously moved
+        # to the http path.
+        required = tuple(
+            [k for k in self._update_attrs[0] if k != self._obj_cls._id_attr]
+        )
         missing = []
         for attr in required:
             if attr not in data:
@@ -356,15 +348,6 @@ class UpdateMixin(_RestManagerBase):
                 continue
         if missing:
             raise AttributeError("Missing attributes: %s" % ", ".join(missing))
-
-    def get_update_attrs(self) -> Tuple[Tuple[str, ...], Tuple[str, ...]]:
-        """Return the required and optional arguments.
-
-        Returns:
-            tuple: 2 items: list of required arguments and list of optional
-                   arguments for update (in that order)
-        """
-        return getattr(self, "_update_attrs", (tuple(), tuple()))
 
     def _get_update_method(
         self,
@@ -535,8 +518,7 @@ class SaveMixin(_RestObjectBase):
 
     def _get_updated_data(self) -> Dict[str, Any]:
         updated_data = {}
-        required, optional = self.manager.get_update_attrs()
-        for attr in required:
+        for attr in self.manager._update_attrs[0]:
             # Get everything required, no matter if it's been updated
             updated_data[attr] = getattr(self, attr)
         # Add the updated attributes

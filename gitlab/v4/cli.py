@@ -177,42 +177,31 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                 ]
 
         if action_name == "create":
-            if hasattr(mgr_cls, "_create_attrs"):
-                [
-                    sub_parser_action.add_argument(
-                        "--%s" % x.replace("_", "-"), required=True
-                    )
-                    for x in mgr_cls._create_attrs[0]
-                ]
-
-                [
-                    sub_parser_action.add_argument(
-                        "--%s" % x.replace("_", "-"), required=False
-                    )
-                    for x in mgr_cls._create_attrs[1]
-                ]
+            for x in mgr_cls._create_attrs[0]:
+                sub_parser_action.add_argument(
+                    "--%s" % x.replace("_", "-"), required=True
+                )
+            for x in mgr_cls._create_attrs[1]:
+                sub_parser_action.add_argument(
+                    "--%s" % x.replace("_", "-"), required=False
+                )
 
         if action_name == "update":
             if cls._id_attr is not None:
                 id_attr = cls._id_attr.replace("_", "-")
                 sub_parser_action.add_argument("--%s" % id_attr, required=True)
 
-            if hasattr(mgr_cls, "_update_attrs"):
-                [
+            for x in mgr_cls._update_attrs[0]:
+                if x != cls._id_attr:
                     sub_parser_action.add_argument(
                         "--%s" % x.replace("_", "-"), required=True
                     )
-                    for x in mgr_cls._update_attrs[0]
-                    if x != cls._id_attr
-                ]
 
-                [
+            for x in mgr_cls._update_attrs[1]:
+                if x != cls._id_attr:
                     sub_parser_action.add_argument(
                         "--%s" % x.replace("_", "-"), required=False
                     )
-                    for x in mgr_cls._update_attrs[1]
-                    if x != cls._id_attr
-                ]
 
     if cls.__name__ in cli.custom_actions:
         name = cls.__name__
