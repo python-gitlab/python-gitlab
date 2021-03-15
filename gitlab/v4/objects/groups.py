@@ -11,7 +11,7 @@ from .export_import import GroupExportManager, GroupImportManager  # noqa: F401
 from .epics import GroupEpicManager  # noqa: F401
 from .issues import GroupIssueManager  # noqa: F401
 from .labels import GroupLabelManager  # noqa: F401
-from .members import GroupMemberManager  # noqa: F401
+from .members import GroupMemberManager, GroupMemberAllManager  # noqa: F401
 from .merge_requests import GroupMergeRequestManager  # noqa: F401
 from .milestones import GroupMilestoneManager  # noqa: F401
 from .notification_settings import GroupNotificationSettingsManager  # noqa: F401
@@ -45,6 +45,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("issues", "GroupIssueManager"),
         ("labels", "GroupLabelManager"),
         ("members", "GroupMemberManager"),
+        ("members_all", "GroupMemberAllManager"),
         ("mergerequests", "GroupMergeRequestManager"),
         ("milestones", "GroupMilestoneManager"),
         ("notificationsettings", "GroupNotificationSettingsManager"),

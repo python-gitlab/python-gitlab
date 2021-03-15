@@ -32,7 +32,7 @@ from .hooks import ProjectHookManager  # noqa: F401
 from .issues import ProjectIssueManager  # noqa: F401
 from .jobs import ProjectJobManager  # noqa: F401
 from .labels import ProjectLabelManager  # noqa: F401
-from .members import ProjectMemberManager  # noqa: F401
+from .members import ProjectMemberManager, ProjectMemberAllManager  # noqa: F401
 from .merge_request_approvals import (  # noqa: F401
     ProjectApprovalManager,
     ProjectApprovalRuleManager,
@@ -130,6 +130,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         ("issues", "ProjectIssueManager"),
         ("labels", "ProjectLabelManager"),
         ("members", "ProjectMemberManager"),
+        ("members_all", "ProjectMemberAllManager"),
         ("mergerequests", "ProjectMergeRequestManager"),
         ("milestones", "ProjectMilestoneManager"),
         ("notes", "ProjectNoteManager"),

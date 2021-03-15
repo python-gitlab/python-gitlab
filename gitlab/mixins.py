@@ -36,7 +36,7 @@ from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types as g_types
 from gitlab import utils
-
+import warnings
 
 __all__ = [
     "GetMixin",
@@ -928,3 +928,50 @@ class BadgeRenderMixin(_RestManagerBase):
         if TYPE_CHECKING:
             assert not isinstance(result, requests.Response)
         return result
+
+
+class MemberAllMixin(_RestManagerBase):
+    """This mixin is deprecated."""
+
+    _computed_path: Optional[str]
+    _from_parent_attrs: Dict[str, Any]
+    _obj_cls: Optional[Type[base.RESTObject]]
+    _parent: Optional[base.RESTObject]
+    _parent_attrs: Dict[str, Any]
+    _path: Optional[str]
+    gitlab: gitlab.Gitlab
+
+    @cli.register_custom_action(("GroupMemberManager", "ProjectMemberManager"))
+    @exc.on_http_error(exc.GitlabListError)
+    def all(self, **kwargs: Any) -> List[base.RESTObject]:
+        """List all the members, included inherited ones.
+
+        This Method is deprecated.
+
+        Args:
+            all (bool): If True, return all the items, without pagination
+            per_page (int): Number of items to retrieve per request
+            page (int): ID of the page to return (starts with page 1)
+            as_list (bool): If set to False and no pagination option is
+                defined, return a generator instead of a list
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the list could not be retrieved
+
+        Returns:
+            RESTObjectList: The list of members
+        """
+
+        warnings.warn(
+            "The all() method for this object is deprecated "
+            "and will be removed in a future version.",
+            DeprecationWarning,
+        )
+        path = "%s/all" % self.path
+
+        if TYPE_CHECKING:
+            assert self._obj_cls is not None
+        obj = self.gitlab.http_list(path, **kwargs)
+        return [self._obj_cls(self, item) for item in obj]
