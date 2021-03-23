@@ -132,7 +132,7 @@ class RESTObject(object):
         return super(RESTObject, self) != other
 
     def __dir__(self):
-        return super(RESTObject, self).__dir__() + list(self.attributes)
+        return super(RESTObject, self).__dir__() | self.attributes.keys()
 
     def __hash__(self) -> int:
         if not self.get_id():
