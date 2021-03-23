@@ -1,5 +1,5 @@
 -r requirements.txt
 -r test-requirements.txt
-docker-compose==1.28.5 # prevent inconsistent .env behavior from system install
+docker-compose==1.28.6 # prevent inconsistent .env behavior from system install
 pytest-console-scripts
 pytest-docker
