@@ -18,6 +18,7 @@
 from .access_requests import *
 from .appearance import *
 from .applications import *
+from .audit_events import *
 from .award_emojis import *
 from .badges import *
 from .boards import *

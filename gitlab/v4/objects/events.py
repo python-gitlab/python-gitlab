@@ -6,8 +6,6 @@ from gitlab.mixins import ListMixin, RetrieveMixin
 __all__ = [
     "Event",
     "EventManager",
-    "AuditEvent",
-    "AuditEventManager",
     "GroupEpicResourceLabelEvent",
     "GroupEpicResourceLabelEventManager",
     "ProjectEvent",
@@ -34,16 +32,6 @@ class EventManager(ListMixin, RESTManager):
     _path = "/events"
     _obj_cls = Event
     _list_filters = ("action", "target_type", "before", "after", "sort")
-
-
-class AuditEvent(RESTObject):
-    _id_attr = "id"
-
-
-class AuditEventManager(ListMixin, RESTManager):
-    _path = "/audit_events"
-    _obj_cls = AuditEvent
-    _list_filters = ("created_after", "created_before", "entity_type", "entity_id")
 
 
 class GroupEpicResourceLabelEvent(RESTObject):
