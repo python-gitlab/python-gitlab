@@ -821,6 +821,9 @@ class GitlabList(object):
         self._query(url, query_data, **self._kwargs)
         self._get_next = get_next
 
+        # Remove query_parameters from kwargs, which are saved via the `next` URL
+        self._kwargs.pop("query_parameters", None)
+
     def _query(
         self, url: str, query_data: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> None:
