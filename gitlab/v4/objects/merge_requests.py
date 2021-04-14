@@ -138,6 +138,22 @@ class ProjectMergeRequest(
 ):
     _id_attr = "iid"
 
+    @property
+    def reviewer_ids(self):
+        return [reviewer["id"] for reviewer in self.reviewers]
+
+    @reviewer_ids.setter
+    def reviewer_ids(self, new_reviewer_ids):
+        new_reviewers = [{"id": id} for id in set(new_reviewer_ids)]
+        new_reviewers.extend(
+            [
+                reviewer
+                for reviewer in self.reviewers
+                if reviewer["id"] in new_reviewer_ids
+            ]
+        )
+        self.reviewers = new_reviewers
+
     _managers = (
         ("approvals", "ProjectMergeRequestApprovalManager"),
         ("approval_rules", "ProjectMergeRequestApprovalRuleManager"),
@@ -373,6 +389,7 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
             "remove_source_branch",
             "allow_maintainer_to_push",
             "squash",
+            "reviewer_ids",
         ),
     )
     _update_attrs = RequiredOptional(
@@ -388,6 +405,7 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
             "discussion_locked",
             "allow_maintainer_to_push",
             "squash",
+            "reviewer_ids",
         ),
     )
     _list_filters = (
