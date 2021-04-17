@@ -3,7 +3,7 @@ Packages
 ########
 
 Packages allow you to utilize GitLab as a private repository for a variety
-of common package managers.
+of common package managers, as well as GitLab's generic package registry.
 
 Project Packages
 =====================
@@ -88,3 +88,44 @@ List package files for package in project::
 
     package = project.packages.get(1)
     package_files = package.package_files.list()
+
+Generic Packages
+================
+
+You can use python-gitlab to upload and download generic packages.
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.GenericPackage`
+  + :class:`gitlab.v4.objects.GenericPackageManager`
+  + :attr:`gitlab.v4.objects.Project.generic_packages`
+
+* GitLab API: https://docs.gitlab.com/ee/user/packages/generic_packages
+
+Examples
+--------
+
+Upload a generic package to a project::
+
+    project = gl.projects.get(1, lazy=True)
+    package = project.generic_packages.upload(
+        package_name="hello-world",
+        package_version="v1.0.0",
+        file_name="hello.tar.gz",
+        path="/path/to/local/hello.tar.gz"
+    )
+
+Download a project's generic package::
+
+    project = gl.projects.get(1, lazy=True)
+    package = project.generic_packages.download(
+        package_name="hello-world",
+        package_version="v1.0.0",
+        file_name="hello.tar.gz",
+    )
+
+.. hint:: You can use the Packages API described above to find packages and
+    retrieve the metadata you need download them.

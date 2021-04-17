@@ -2,11 +2,17 @@
 GitLab API: https://docs.gitlab.com/ce/api/packages.html
 """
 import re
+from urllib.parse import quote_plus
 
 import pytest
 import responses
 
-from gitlab.v4.objects import GroupPackage, ProjectPackage, ProjectPackageFile
+from gitlab.v4.objects import (
+    GenericPackage,
+    GroupPackage,
+    ProjectPackage,
+    ProjectPackageFile,
+)
 
 package_content = {
     "id": 1,
@@ -98,6 +104,17 @@ package_file_content = [
     },
 ]
 
+package_name = "hello-world"
+package_version = "v1.0.0"
+file_name = "hello.tar.gz"
+file_content = "package content"
+package_url = "http://localhost/api/v4/projects/1/packages/generic/{}/{}/{}".format(
+    # https://datatracker.ietf.org/doc/html/rfc3986.html#section-2.3 :(
+    quote_plus(package_name).replace(".", "%2E"),
+    quote_plus(package_version).replace(".", "%2E"),
+    quote_plus(file_name).replace(".", "%2E"),
+)
+
 
 @pytest.fixture
 def resp_list_packages():
@@ -153,6 +170,32 @@ def resp_list_package_files():
         yield rsps
 
 
+@pytest.fixture
+def resp_upload_generic_package(created_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.PUT,
+            url=package_url,
+            json=created_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_download_generic_package(created_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url=package_url,
+            body=file_content,
+            content_type="application/octet-stream",
+            status=200,
+        )
+        yield rsps
+
+
 def test_list_project_packages(project, resp_list_packages):
     packages = project.packages.list()
     assert isinstance(packages, list)
@@ -184,3 +227,26 @@ def test_list_project_package_files(project, resp_list_package_files):
     assert isinstance(package_files, list)
     assert isinstance(package_files[0], ProjectPackageFile)
     assert package_files[0].id == 25
+
+
+def test_upload_generic_package(tmp_path, project, resp_upload_generic_package):
+    path = tmp_path / file_name
+    path.write_text(file_content)
+    package = project.generic_packages.upload(
+        package_name=package_name,
+        package_version=package_version,
+        file_name=file_name,
+        path=path,
+    )
+
+    assert isinstance(package, GenericPackage)
+
+
+def test_download_generic_package(project, resp_download_generic_package):
+    package = project.generic_packages.download(
+        package_name=package_name,
+        package_version=package_version,
+        file_name=file_name,
+    )
+
+    assert isinstance(package, bytes)
