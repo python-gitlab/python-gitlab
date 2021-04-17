@@ -154,7 +154,7 @@ def test_valid_data(m_open, path_exists):
     assert "one" == cp.gitlab_id
     assert "http://one.url" == cp.url
     assert "ABCDEF" == cp.private_token
-    assert None == cp.oauth_token
+    assert cp.oauth_token is None
     assert 2 == cp.timeout
     assert cp.ssl_verify is True
     assert cp.per_page is None
@@ -166,7 +166,7 @@ def test_valid_data(m_open, path_exists):
     assert "two" == cp.gitlab_id
     assert "https://two.url" == cp.url
     assert "GHIJKL" == cp.private_token
-    assert None == cp.oauth_token
+    assert cp.oauth_token is None
     assert 10 == cp.timeout
     assert cp.ssl_verify is False
 
@@ -177,7 +177,7 @@ def test_valid_data(m_open, path_exists):
     assert "three" == cp.gitlab_id
     assert "https://three.url" == cp.url
     assert "MNOPQR" == cp.private_token
-    assert None == cp.oauth_token
+    assert cp.oauth_token is None
     assert 2 == cp.timeout
     assert "/path/to/CA/bundle.crt" == cp.ssl_verify
     assert 50 == cp.per_page
@@ -188,7 +188,7 @@ def test_valid_data(m_open, path_exists):
     cp = config.GitlabConfigParser(gitlab_id="four")
     assert "four" == cp.gitlab_id
     assert "https://four.url" == cp.url
-    assert None == cp.private_token
+    assert cp.private_token is None
     assert "STUV" == cp.oauth_token
     assert 2 == cp.timeout
     assert cp.ssl_verify is True
@@ -227,7 +227,7 @@ def test_data_from_helper(m_open, path_exists, tmp_path):
     cp = config.GitlabConfigParser(gitlab_id="helper")
     assert "helper" == cp.gitlab_id
     assert "https://helper.url" == cp.url
-    assert None == cp.private_token
+    assert cp.private_token is None
     assert "secret" == cp.oauth_token
 
 
