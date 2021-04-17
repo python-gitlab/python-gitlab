@@ -1,6 +1,6 @@
 from gitlab import cli, types
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CRUDMixin,
     CreateMixin,
@@ -60,7 +60,7 @@ class CurrentUserEmail(ObjectDeleteMixin, RESTObject):
 class CurrentUserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = "/user/emails"
     _obj_cls = CurrentUserEmail
-    _create_attrs = (("email",), tuple())
+    _create_attrs = RequiredOptional(required=("email",))
 
 
 class CurrentUserGPGKey(ObjectDeleteMixin, RESTObject):
@@ -70,7 +70,7 @@ class CurrentUserGPGKey(ObjectDeleteMixin, RESTObject):
 class CurrentUserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = "/user/gpg_keys"
     _obj_cls = CurrentUserGPGKey
-    _create_attrs = (("key",), tuple())
+    _create_attrs = RequiredOptional(required=("key",))
 
 
 class CurrentUserKey(ObjectDeleteMixin, RESTObject):
@@ -80,7 +80,7 @@ class CurrentUserKey(ObjectDeleteMixin, RESTObject):
 class CurrentUserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = "/user/keys"
     _obj_cls = CurrentUserKey
-    _create_attrs = (("title", "key"), tuple())
+    _create_attrs = RequiredOptional(required=("title", "key"))
 
 
 class CurrentUserStatus(SaveMixin, RESTObject):
@@ -91,7 +91,7 @@ class CurrentUserStatus(SaveMixin, RESTObject):
 class CurrentUserStatusManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _path = "/user/status"
     _obj_cls = CurrentUserStatus
-    _update_attrs = (tuple(), ("emoji", "message"))
+    _update_attrs = RequiredOptional(optional=("emoji", "message"))
 
 
 class CurrentUser(RESTObject):
@@ -264,9 +264,8 @@ class UserManager(CRUDMixin, RESTManager):
         "status",
         "two_factor",
     )
-    _create_attrs = (
-        tuple(),
-        (
+    _create_attrs = RequiredOptional(
+        optional=(
             "email",
             "username",
             "name",
@@ -293,9 +292,9 @@ class UserManager(CRUDMixin, RESTManager):
             "theme_id",
         ),
     )
-    _update_attrs = (
-        ("email", "username", "name"),
-        (
+    _update_attrs = RequiredOptional(
+        required=("email", "username", "name"),
+        optional=(
             "password",
             "skype",
             "linkedin",
@@ -340,7 +339,7 @@ class UserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = "/users/%(user_id)s/emails"
     _obj_cls = UserEmail
     _from_parent_attrs = {"user_id": "id"}
-    _create_attrs = (("email",), tuple())
+    _create_attrs = RequiredOptional(required=("email",))
 
 
 class UserActivities(RESTObject):
@@ -371,7 +370,7 @@ class UserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = "/users/%(user_id)s/gpg_keys"
     _obj_cls = UserGPGKey
     _from_parent_attrs = {"user_id": "id"}
-    _create_attrs = (("key",), tuple())
+    _create_attrs = RequiredOptional(required=("key",))
 
 
 class UserKey(ObjectDeleteMixin, RESTObject):
@@ -382,7 +381,7 @@ class UserKeyManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = "/users/%(user_id)s/keys"
     _obj_cls = UserKey
     _from_parent_attrs = {"user_id": "id"}
-    _create_attrs = (("title", "key"), tuple())
+    _create_attrs = RequiredOptional(required=("title", "key"))
 
 
 class UserIdentityProviderManager(DeleteMixin, RESTManager):
@@ -404,7 +403,9 @@ class UserImpersonationTokenManager(NoUpdateMixin, RESTManager):
     _path = "/users/%(user_id)s/impersonation_tokens"
     _obj_cls = UserImpersonationToken
     _from_parent_attrs = {"user_id": "id"}
-    _create_attrs = (("name", "scopes"), ("expires_at",))
+    _create_attrs = RequiredOptional(
+        required=("name", "scopes"), optional=("expires_at",)
+    )
     _list_filters = ("state",)
 
 
@@ -428,9 +429,9 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
     _path = "/projects/user/%(user_id)s"
     _obj_cls = UserProject
     _from_parent_attrs = {"user_id": "id"}
-    _create_attrs = (
-        ("name",),
-        (
+    _create_attrs = RequiredOptional(
+        required=("name",),
+        optional=(
             "default_branch",
             "issues_enabled",
             "wall_enabled",

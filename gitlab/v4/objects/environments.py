@@ -1,6 +1,6 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -40,5 +40,5 @@ class ProjectEnvironmentManager(
     _path = "/projects/%(project_id)s/environments"
     _obj_cls = ProjectEnvironment
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (("name",), ("external_url",))
-    _update_attrs = (tuple(), ("name", "external_url"))
+    _create_attrs = RequiredOptional(required=("name",), optional=("external_url",))
+    _update_attrs = RequiredOptional(optional=("name", "external_url"))

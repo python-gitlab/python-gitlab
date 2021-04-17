@@ -1,6 +1,6 @@
 from gitlab import types
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CRUDMixin,
     CreateMixin,
@@ -34,10 +34,12 @@ class GroupEpicManager(CRUDMixin, RESTManager):
     _obj_cls = GroupEpic
     _from_parent_attrs = {"group_id": "id"}
     _list_filters = ("author_id", "labels", "order_by", "sort", "search")
-    _create_attrs = (("title",), ("labels", "description", "start_date", "end_date"))
-    _update_attrs = (
-        tuple(),
-        ("title", "labels", "description", "start_date", "end_date"),
+    _create_attrs = RequiredOptional(
+        required=("title",),
+        optional=("labels", "description", "start_date", "end_date"),
+    )
+    _update_attrs = RequiredOptional(
+        optional=("title", "labels", "description", "start_date", "end_date"),
     )
     _types = {"labels": types.ListAttribute}
 
@@ -73,8 +75,8 @@ class GroupEpicIssueManager(
     _path = "/groups/%(group_id)s/epics/%(epic_iid)s/issues"
     _obj_cls = GroupEpicIssue
     _from_parent_attrs = {"group_id": "group_id", "epic_iid": "iid"}
-    _create_attrs = (("issue_id",), tuple())
-    _update_attrs = (tuple(), ("move_before_id", "move_after_id"))
+    _create_attrs = RequiredOptional(required=("issue_id",))
+    _update_attrs = RequiredOptional(optional=("move_before_id", "move_after_id"))
 
     @exc.on_http_error(exc.GitlabCreateError)
     def create(self, data, **kwargs):

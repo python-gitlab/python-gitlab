@@ -1,6 +1,6 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject, RESTObjectList
+from gitlab.base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from .issues import GroupIssue, GroupIssueManager, ProjectIssue, ProjectIssueManager
 from .merge_requests import (
@@ -80,10 +80,11 @@ class GroupMilestoneManager(CRUDMixin, RESTManager):
     _path = "/groups/%(group_id)s/milestones"
     _obj_cls = GroupMilestone
     _from_parent_attrs = {"group_id": "id"}
-    _create_attrs = (("title",), ("description", "due_date", "start_date"))
-    _update_attrs = (
-        tuple(),
-        ("title", "description", "due_date", "start_date", "state_event"),
+    _create_attrs = RequiredOptional(
+        required=("title",), optional=("description", "due_date", "start_date")
+    )
+    _update_attrs = RequiredOptional(
+        optional=("title", "description", "due_date", "start_date", "state_event"),
     )
     _list_filters = ("iids", "state", "search")
 
@@ -151,12 +152,11 @@ class ProjectMilestoneManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/milestones"
     _obj_cls = ProjectMilestone
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (
-        ("title",),
-        ("description", "due_date", "start_date", "state_event"),
+    _create_attrs = RequiredOptional(
+        required=("title",),
+        optional=("description", "due_date", "start_date", "state_event"),
     )
-    _update_attrs = (
-        tuple(),
-        ("title", "description", "due_date", "start_date", "state_event"),
+    _update_attrs = RequiredOptional(
+        optional=("title", "description", "due_date", "start_date", "state_event"),
     )
     _list_filters = ("iids", "state", "search")

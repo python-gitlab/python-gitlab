@@ -1,6 +1,6 @@
 from gitlab import cli, types
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CRUDMixin,
     CreateMixin,
@@ -188,9 +188,9 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
         "updated_after",
         "updated_before",
     )
-    _create_attrs = (
-        ("title",),
-        (
+    _create_attrs = RequiredOptional(
+        required=("title",),
+        optional=(
             "description",
             "confidential",
             "assignee_ids",
@@ -203,9 +203,8 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
             "discussion_to_resolve",
         ),
     )
-    _update_attrs = (
-        tuple(),
-        (
+    _update_attrs = RequiredOptional(
+        optional=(
             "title",
             "description",
             "confidential",
@@ -230,7 +229,7 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = "/projects/%(project_id)s/issues/%(issue_iid)s/links"
     _obj_cls = ProjectIssueLink
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
-    _create_attrs = (("target_project_id", "target_issue_iid"), tuple())
+    _create_attrs = RequiredOptional(required=("target_project_id", "target_issue_iid"))
 
     @exc.on_http_error(exc.GitlabCreateError)
     def create(self, data, **kwargs):

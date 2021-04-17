@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, RetrieveMixin, SaveMixin, UpdateMixin
 
 
@@ -17,4 +17,6 @@ class ProjectDeploymentManager(RetrieveMixin, CreateMixin, UpdateMixin, RESTMana
     _obj_cls = ProjectDeployment
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = ("order_by", "sort")
-    _create_attrs = (("sha", "ref", "tag", "status", "environment"), tuple())
+    _create_attrs = RequiredOptional(
+        required=("sha", "ref", "tag", "status", "environment")
+    )

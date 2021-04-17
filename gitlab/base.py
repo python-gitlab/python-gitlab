@@ -17,12 +17,13 @@
 
 import importlib
 from types import ModuleType
-from typing import Any, Dict, Optional, Tuple, Type
+from typing import Any, Dict, NamedTuple, Optional, Tuple, Type
 
 from .client import Gitlab, GitlabList
 from gitlab import types as g_types
 
 __all__ = [
+    "RequiredOptional",
     "RESTObject",
     "RESTObjectList",
     "RESTManager",
@@ -249,6 +250,11 @@ class RESTObjectList(object):
         return self._list.total
 
 
+class RequiredOptional(NamedTuple):
+    required: Tuple[str, ...] = tuple()
+    optional: Tuple[str, ...] = tuple()
+
+
 class RESTManager(object):
     """Base class for CRUD operations on objects.
 
@@ -258,8 +264,8 @@ class RESTManager(object):
     ``_obj_cls``: The class of objects that will be created
     """
 
-    _create_attrs: Tuple[Tuple[str, ...], Tuple[str, ...]] = (tuple(), tuple())
-    _update_attrs: Tuple[Tuple[str, ...], Tuple[str, ...]] = (tuple(), tuple())
+    _create_attrs: RequiredOptional = RequiredOptional()
+    _update_attrs: RequiredOptional = RequiredOptional()
     _path: Optional[str] = None
     _obj_cls: Optional[Type[RESTObject]] = None
     _from_parent_attrs: Dict[str, Any] = {}

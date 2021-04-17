@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -16,5 +16,9 @@ class BroadcastMessageManager(CRUDMixin, RESTManager):
     _path = "/broadcast_messages"
     _obj_cls = BroadcastMessage
 
-    _create_attrs = (("message",), ("starts_at", "ends_at", "color", "font"))
-    _update_attrs = (tuple(), ("message", "starts_at", "ends_at", "color", "font"))
+    _create_attrs = RequiredOptional(
+        required=("message",), optional=("starts_at", "ends_at", "color", "font")
+    )
+    _update_attrs = RequiredOptional(
+        optional=("message", "starts_at", "ends_at", "color", "font")
+    )

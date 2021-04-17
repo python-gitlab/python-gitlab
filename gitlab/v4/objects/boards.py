@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -22,8 +22,8 @@ class GroupBoardListManager(CRUDMixin, RESTManager):
     _path = "/groups/%(group_id)s/boards/%(board_id)s/lists"
     _obj_cls = GroupBoardList
     _from_parent_attrs = {"group_id": "group_id", "board_id": "id"}
-    _create_attrs = (("label_id",), tuple())
-    _update_attrs = (("position",), tuple())
+    _create_attrs = RequiredOptional(required=("label_id",))
+    _update_attrs = RequiredOptional(required=("position",))
 
 
 class GroupBoard(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -34,7 +34,7 @@ class GroupBoardManager(CRUDMixin, RESTManager):
     _path = "/groups/%(group_id)s/boards"
     _obj_cls = GroupBoard
     _from_parent_attrs = {"group_id": "id"}
-    _create_attrs = (("name",), tuple())
+    _create_attrs = RequiredOptional(required=("name",))
 
 
 class ProjectBoardList(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -45,8 +45,8 @@ class ProjectBoardListManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/boards/%(board_id)s/lists"
     _obj_cls = ProjectBoardList
     _from_parent_attrs = {"project_id": "project_id", "board_id": "id"}
-    _create_attrs = (("label_id",), tuple())
-    _update_attrs = (("position",), tuple())
+    _create_attrs = RequiredOptional(required=("label_id",))
+    _update_attrs = RequiredOptional(required=("position",))
 
 
 class ProjectBoard(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -57,4 +57,4 @@ class ProjectBoardManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/boards"
     _obj_cls = ProjectBoard
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (("name",), tuple())
+    _create_attrs = RequiredOptional(required=("name",))

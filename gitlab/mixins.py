@@ -267,7 +267,7 @@ class CreateMixin(_RestManagerBase):
 
     def _check_missing_create_attrs(self, data: Dict[str, Any]) -> None:
         missing = []
-        for attr in self._create_attrs[0]:
+        for attr in self._create_attrs.required:
             if attr not in data:
                 missing.append(attr)
                 continue
@@ -339,7 +339,7 @@ class UpdateMixin(_RestManagerBase):
         # Remove the id field from the required list as it was previously moved
         # to the http path.
         required = tuple(
-            [k for k in self._update_attrs[0] if k != self._obj_cls._id_attr]
+            [k for k in self._update_attrs.required if k != self._obj_cls._id_attr]
         )
         missing = []
         for attr in required:
@@ -518,7 +518,7 @@ class SaveMixin(_RestObjectBase):
 
     def _get_updated_data(self) -> Dict[str, Any]:
         updated_data = {}
-        for attr in self.manager._update_attrs[0]:
+        for attr in self.manager._update_attrs.required:
             # Get everything required, no matter if it's been updated
             updated_data[attr] = getattr(self, attr)
         # Add the updated attributes

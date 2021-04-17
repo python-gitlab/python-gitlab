@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import NoUpdateMixin, ObjectDeleteMixin
 
 
@@ -26,7 +26,7 @@ class ProjectIssueAwardEmojiManager(NoUpdateMixin, RESTManager):
     _path = "/projects/%(project_id)s/issues/%(issue_iid)s/award_emoji"
     _obj_cls = ProjectIssueAwardEmoji
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
-    _create_attrs = (("name",), tuple())
+    _create_attrs = RequiredOptional(required=("name",))
 
 
 class ProjectIssueNoteAwardEmoji(ObjectDeleteMixin, RESTObject):
@@ -43,7 +43,7 @@ class ProjectIssueNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
         "issue_iid": "issue_iid",
         "note_id": "id",
     }
-    _create_attrs = (("name",), tuple())
+    _create_attrs = RequiredOptional(required=("name",))
 
 
 class ProjectMergeRequestAwardEmoji(ObjectDeleteMixin, RESTObject):
@@ -54,7 +54,7 @@ class ProjectMergeRequestAwardEmojiManager(NoUpdateMixin, RESTManager):
     _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/award_emoji"
     _obj_cls = ProjectMergeRequestAwardEmoji
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
-    _create_attrs = (("name",), tuple())
+    _create_attrs = RequiredOptional(required=("name",))
 
 
 class ProjectMergeRequestNoteAwardEmoji(ObjectDeleteMixin, RESTObject):
@@ -72,7 +72,7 @@ class ProjectMergeRequestNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
         "mr_iid": "mr_iid",
         "note_id": "id",
     }
-    _create_attrs = (("name",), tuple())
+    _create_attrs = RequiredOptional(required=("name",))
 
 
 class ProjectSnippetAwardEmoji(ObjectDeleteMixin, RESTObject):
@@ -83,7 +83,7 @@ class ProjectSnippetAwardEmojiManager(NoUpdateMixin, RESTManager):
     _path = "/projects/%(project_id)s/snippets/%(snippet_id)s/award_emoji"
     _obj_cls = ProjectSnippetAwardEmoji
     _from_parent_attrs = {"project_id": "project_id", "snippet_id": "id"}
-    _create_attrs = (("name",), tuple())
+    _create_attrs = RequiredOptional(required=("name",))
 
 
 class ProjectSnippetNoteAwardEmoji(ObjectDeleteMixin, RESTObject):
@@ -101,4 +101,4 @@ class ProjectSnippetNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
         "snippet_id": "snippet_id",
         "note_id": "id",
     }
-    _create_attrs = (("name",), tuple())
+    _create_attrs = RequiredOptional(required=("name",))

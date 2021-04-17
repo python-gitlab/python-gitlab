@@ -1,6 +1,6 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, ListMixin, RefreshMixin, RetrieveMixin
 from .discussions import ProjectCommitDiscussionManager
 
@@ -139,9 +139,9 @@ class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
     _path = "/projects/%(project_id)s/repository/commits"
     _obj_cls = ProjectCommit
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (
-        ("branch", "commit_message", "actions"),
-        ("author_email", "author_name"),
+    _create_attrs = RequiredOptional(
+        required=("branch", "commit_message", "actions"),
+        optional=("author_email", "author_name"),
     )
 
 
@@ -154,7 +154,9 @@ class ProjectCommitCommentManager(ListMixin, CreateMixin, RESTManager):
     _path = "/projects/%(project_id)s/repository/commits/%(commit_id)s" "/comments"
     _obj_cls = ProjectCommitComment
     _from_parent_attrs = {"project_id": "project_id", "commit_id": "id"}
-    _create_attrs = (("note",), ("path", "line", "line_type"))
+    _create_attrs = RequiredOptional(
+        required=("note",), optional=("path", "line", "line_type")
+    )
 
 
 class ProjectCommitStatus(RESTObject, RefreshMixin):
@@ -165,9 +167,9 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
     _path = "/projects/%(project_id)s/repository/commits/%(commit_id)s" "/statuses"
     _obj_cls = ProjectCommitStatus
     _from_parent_attrs = {"project_id": "project_id", "commit_id": "id"}
-    _create_attrs = (
-        ("state",),
-        ("description", "name", "context", "ref", "target_url", "coverage"),
+    _create_attrs = RequiredOptional(
+        required=("state",),
+        optional=("description", "name", "context", "ref", "target_url", "coverage"),
     )
 
     @exc.on_http_error(exc.GitlabCreateError)

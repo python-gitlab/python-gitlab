@@ -1,5 +1,5 @@
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, CreateMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -19,13 +19,12 @@ class GroupClusterManager(CRUDMixin, RESTManager):
     _path = "/groups/%(group_id)s/clusters"
     _obj_cls = GroupCluster
     _from_parent_attrs = {"group_id": "id"}
-    _create_attrs = (
-        ("name", "platform_kubernetes_attributes"),
-        ("domain", "enabled", "managed", "environment_scope"),
+    _create_attrs = RequiredOptional(
+        required=("name", "platform_kubernetes_attributes"),
+        optional=("domain", "enabled", "managed", "environment_scope"),
     )
-    _update_attrs = (
-        tuple(),
-        (
+    _update_attrs = RequiredOptional(
+        optional=(
             "name",
             "domain",
             "management_project_id",
@@ -64,13 +63,12 @@ class ProjectClusterManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/clusters"
     _obj_cls = ProjectCluster
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (
-        ("name", "platform_kubernetes_attributes"),
-        ("domain", "enabled", "managed", "environment_scope"),
+    _create_attrs = RequiredOptional(
+        required=("name", "platform_kubernetes_attributes"),
+        optional=("domain", "enabled", "managed", "environment_scope"),
     )
-    _update_attrs = (
-        tuple(),
-        (
+    _update_attrs = RequiredOptional(
+        optional=(
             "name",
             "domain",
             "management_project_id",

@@ -1,6 +1,6 @@
 from gitlab import cli, types
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CRUDMixin,
     CreateMixin,
@@ -83,7 +83,7 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManage
         "order_by",
         "sort",
     )
-    _create_attrs = (("ref",), tuple())
+    _create_attrs = RequiredOptional(required=("ref",))
 
     def create(self, data, **kwargs):
         """Creates a new object.
@@ -150,8 +150,8 @@ class ProjectPipelineScheduleVariableManager(
     )
     _obj_cls = ProjectPipelineScheduleVariable
     _from_parent_attrs = {"project_id": "project_id", "pipeline_schedule_id": "id"}
-    _create_attrs = (("key", "value"), tuple())
-    _update_attrs = (("key", "value"), tuple())
+    _create_attrs = RequiredOptional(required=("key", "value"))
+    _update_attrs = RequiredOptional(required=("key", "value"))
 
 
 class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -196,5 +196,9 @@ class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/pipeline_schedules"
     _obj_cls = ProjectPipelineSchedule
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (("description", "ref", "cron"), ("cron_timezone", "active"))
-    _update_attrs = (tuple(), ("description", "ref", "cron", "cron_timezone", "active"))
+    _create_attrs = RequiredOptional(
+        required=("description", "ref", "cron"), optional=("cron_timezone", "active")
+    )
+    _update_attrs = RequiredOptional(
+        optional=("description", "ref", "cron", "cron_timezone", "active"),
+    )

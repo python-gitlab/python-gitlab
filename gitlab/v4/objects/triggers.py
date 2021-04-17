@@ -1,6 +1,6 @@
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
 
@@ -32,5 +32,5 @@ class ProjectTriggerManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/triggers"
     _obj_cls = ProjectTrigger
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (("description",), tuple())
-    _update_attrs = (("description",), tuple())
+    _create_attrs = RequiredOptional(required=("description",))
+    _update_attrs = RequiredOptional(required=("description",))

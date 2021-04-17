@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -25,9 +25,8 @@ class ProjectPushRulesManager(
     _path = "/projects/%(project_id)s/push_rule"
     _obj_cls = ProjectPushRules
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = (
-        tuple(),
-        (
+    _create_attrs = RequiredOptional(
+        optional=(
             "deny_delete_tag",
             "member_check",
             "prevent_secrets",
@@ -38,9 +37,8 @@ class ProjectPushRulesManager(
             "max_file_size",
         ),
     )
-    _update_attrs = (
-        tuple(),
-        (
+    _update_attrs = RequiredOptional(
+        optional=(
             "deny_delete_tag",
             "member_check",
             "prevent_secrets",
