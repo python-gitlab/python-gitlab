@@ -23,7 +23,7 @@ import re
 import sys
 from typing import Any, Callable, Dict, Optional, Tuple, Union
 
-import gitlab.config
+import gitlab.config  # noqa: F401
 
 camel_re = re.compile("(.)([A-Z])")
 

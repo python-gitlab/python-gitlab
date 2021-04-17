@@ -15,13 +15,13 @@ from gitlab.mixins import (
     TodoMixin,
     UserAgentDetailMixin,
 )
-from .award_emojis import ProjectIssueAwardEmojiManager
-from .discussions import ProjectIssueDiscussionManager
-from .events import (
+from .award_emojis import ProjectIssueAwardEmojiManager  # noqa: F401
+from .discussions import ProjectIssueDiscussionManager  # noqa: F401
+from .events import (  # noqa: F401
     ProjectIssueResourceLabelEventManager,
     ProjectIssueResourceMilestoneEventManager,
 )
-from .notes import ProjectIssueNoteManager
+from .notes import ProjectIssueNoteManager  # noqa: F401
 
 
 __all__ = [

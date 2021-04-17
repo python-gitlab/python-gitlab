@@ -1,5 +1,3 @@
-from gitlab import cli
-from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CRUDMixin,
@@ -11,7 +9,7 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
-from .award_emojis import (
+from .award_emojis import (  # noqa: F401
     ProjectIssueNoteAwardEmojiManager,
     ProjectMergeRequestNoteAwardEmojiManager,
     ProjectSnippetNoteAwardEmojiManager,

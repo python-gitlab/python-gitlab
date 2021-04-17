@@ -3,7 +3,7 @@ import requests
 
 from httmock import HTTMock, urlmatch, response
 
-from gitlab import *
+from gitlab import GitlabHttpError, GitlabList, GitlabParsingError
 
 
 def test_build_url(gl):

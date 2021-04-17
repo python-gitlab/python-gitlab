@@ -2,25 +2,25 @@ from gitlab import cli, types
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
-from .access_requests import GroupAccessRequestManager
-from .audit_events import GroupAuditEventManager
-from .badges import GroupBadgeManager
-from .boards import GroupBoardManager
-from .custom_attributes import GroupCustomAttributeManager
-from .export_import import GroupExportManager, GroupImportManager
-from .epics import GroupEpicManager
-from .issues import GroupIssueManager
-from .labels import GroupLabelManager
-from .members import GroupMemberManager
-from .merge_requests import GroupMergeRequestManager
-from .milestones import GroupMilestoneManager
-from .notification_settings import GroupNotificationSettingsManager
-from .packages import GroupPackageManager
-from .projects import GroupProjectManager
-from .runners import GroupRunnerManager
-from .variables import GroupVariableManager
-from .clusters import GroupClusterManager
-from .deploy_tokens import GroupDeployTokenManager
+from .access_requests import GroupAccessRequestManager  # noqa: F401
+from .audit_events import GroupAuditEventManager  # noqa: F401
+from .badges import GroupBadgeManager  # noqa: F401
+from .boards import GroupBoardManager  # noqa: F401
+from .custom_attributes import GroupCustomAttributeManager  # noqa: F401
+from .export_import import GroupExportManager, GroupImportManager  # noqa: F401
+from .epics import GroupEpicManager  # noqa: F401
+from .issues import GroupIssueManager  # noqa: F401
+from .labels import GroupLabelManager  # noqa: F401
+from .members import GroupMemberManager  # noqa: F401
+from .merge_requests import GroupMergeRequestManager  # noqa: F401
+from .milestones import GroupMilestoneManager  # noqa: F401
+from .notification_settings import GroupNotificationSettingsManager  # noqa: F401
+from .packages import GroupPackageManager  # noqa: F401
+from .projects import GroupProjectManager  # noqa: F401
+from .runners import GroupRunnerManager  # noqa: F401
+from .variables import GroupVariableManager  # noqa: F401
+from .clusters import GroupClusterManager  # noqa: F401
+from .deploy_tokens import GroupDeployTokenManager  # noqa: F401
 
 
 __all__ = [

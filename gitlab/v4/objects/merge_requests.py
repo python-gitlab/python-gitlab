@@ -14,14 +14,14 @@ from gitlab.mixins import (
 )
 from .commits import ProjectCommit, ProjectCommitManager
 from .issues import ProjectIssue, ProjectIssueManager
-from .merge_request_approvals import (
+from .merge_request_approvals import (  # noqa: F401
     ProjectMergeRequestApprovalManager,
     ProjectMergeRequestApprovalRuleManager,
 )
-from .award_emojis import ProjectMergeRequestAwardEmojiManager
-from .discussions import ProjectMergeRequestDiscussionManager
-from .notes import ProjectMergeRequestNoteManager
-from .events import (
+from .award_emojis import ProjectMergeRequestAwardEmojiManager  # noqa: F401
+from .discussions import ProjectMergeRequestDiscussionManager  # noqa: F401
+from .notes import ProjectMergeRequestNoteManager  # noqa: F401
+from .events import (  # noqa: F401
     ProjectMergeRequestResourceLabelEventManager,
     ProjectMergeRequestResourceMilestoneEventManager,
 )

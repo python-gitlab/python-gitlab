@@ -14,8 +14,8 @@ from gitlab.mixins import (
     UpdateMixin,
 )
 
-from .custom_attributes import UserCustomAttributeManager
-from .events import UserEventManager
+from .custom_attributes import UserCustomAttributeManager  # noqa: F401
+from .events import UserEventManager  # noqa: F401
 
 
 __all__ = [

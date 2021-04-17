@@ -10,7 +10,7 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
-from .events import GroupEpicResourceLabelEventManager
+from .events import GroupEpicResourceLabelEventManager  # noqa: F401
 
 
 __all__ = [
