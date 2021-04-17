@@ -44,7 +44,7 @@ def test_get_mixin(gl):
 
 
 def test_refresh_mixin(gl):
-    class O(RefreshMixin, FakeObject):
+    class TestClass(RefreshMixin, FakeObject):
         pass
 
     @urlmatch(scheme="http", netloc="localhost", path="/api/v4/tests/42", method="get")
@@ -55,7 +55,7 @@ def test_refresh_mixin(gl):
 
     with HTTMock(resp_cont):
         mgr = FakeManager(gl)
-        obj = O(mgr, {"id": 42})
+        obj = TestClass(mgr, {"id": 42})
         res = obj.refresh()
         assert res is None
         assert obj.foo == "bar"
@@ -265,7 +265,7 @@ def test_save_mixin(gl):
     class M(UpdateMixin, FakeManager):
         pass
 
-    class O(SaveMixin, base.RESTObject):
+    class TestClass(SaveMixin, base.RESTObject):
         pass
 
     @urlmatch(scheme="http", netloc="localhost", path="/api/v4/tests/42", method="put")
@@ -276,7 +276,7 @@ def test_save_mixin(gl):
 
     with HTTMock(resp_cont):
         mgr = M(gl)
-        obj = O(mgr, {"id": 42, "foo": "bar"})
+        obj = TestClass(mgr, {"id": 42, "foo": "bar"})
         obj.foo = "baz"
         obj.save()
         assert obj._attrs["foo"] == "baz"
