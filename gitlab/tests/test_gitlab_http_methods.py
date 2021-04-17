@@ -219,7 +219,7 @@ def test_delete_request(gl):
     with HTTMock(resp_cont):
         result = gl.http_delete("/projects")
         assert isinstance(result, requests.Response)
-        assert result.json() == True
+        assert result.json() is True
 
 
 def test_delete_request_404(gl):

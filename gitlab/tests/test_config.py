@@ -156,7 +156,7 @@ def test_valid_data(m_open, path_exists):
     assert "ABCDEF" == cp.private_token
     assert None == cp.oauth_token
     assert 2 == cp.timeout
-    assert True == cp.ssl_verify
+    assert cp.ssl_verify is True
     assert cp.per_page is None
 
     fd = io.StringIO(valid_config)
@@ -168,7 +168,7 @@ def test_valid_data(m_open, path_exists):
     assert "GHIJKL" == cp.private_token
     assert None == cp.oauth_token
     assert 10 == cp.timeout
-    assert False == cp.ssl_verify
+    assert cp.ssl_verify is False
 
     fd = io.StringIO(valid_config)
     fd.close = mock.Mock(return_value=None)
@@ -191,7 +191,7 @@ def test_valid_data(m_open, path_exists):
     assert None == cp.private_token
     assert "STUV" == cp.oauth_token
     assert 2 == cp.timeout
-    assert True == cp.ssl_verify
+    assert cp.ssl_verify is True
 
 
 @mock.patch("os.path.exists")
