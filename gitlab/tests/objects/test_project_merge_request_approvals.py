@@ -2,9 +2,12 @@
 Gitlab API: https://docs.gitlab.com/ee/api/merge_request_approvals.html
 """
 
+import copy
+
 import pytest
 import responses
-import copy
+
+import gitlab
 
 
 approval_rule_id = 1
@@ -230,6 +233,17 @@ def resp_snippet():
         yield rsps
 
 
+def test_project_approval_manager_update_uses_post(project, resp_snippet):
+    """Ensure the
+    gitlab.v4.objects.merge_request_approvals.ProjectApprovalManager object has
+    _update_uses_post set to True"""
+    approvals = project.approvals
+    assert isinstance(
+        approvals, gitlab.v4.objects.merge_request_approvals.ProjectApprovalManager
+    )
+    assert approvals._update_uses_post == True
+
+
 def test_list_merge_request_approval_rules(project, resp_snippet):
     approval_rules = project.mergerequests.get(1).approval_rules.list()
     assert len(approval_rules) == 1
@@ -239,6 +253,11 @@ def test_list_merge_request_approval_rules(project, resp_snippet):
 
 def test_update_merge_request_approvals_set_approvers(project, resp_snippet):
     approvals = project.mergerequests.get(1).approvals
+    assert isinstance(
+        approvals,
+        gitlab.v4.objects.merge_request_approvals.ProjectMergeRequestApprovalManager,
+    )
+    assert approvals._update_uses_post == True
     response = approvals.set_approvers(
         updated_approval_rule_approvals_required,
         approver_ids=updated_approval_rule_user_ids,
@@ -254,6 +273,11 @@ def test_update_merge_request_approvals_set_approvers(project, resp_snippet):
 
 def test_create_merge_request_approvals_set_approvers(project, resp_snippet):
     approvals = project.mergerequests.get(1).approvals
+    assert isinstance(
+        approvals,
+        gitlab.v4.objects.merge_request_approvals.ProjectMergeRequestApprovalManager,
+    )
+    assert approvals._update_uses_post == True
     response = approvals.set_approvers(
         new_approval_rule_approvals_required,
         approver_ids=new_approval_rule_user_ids,
