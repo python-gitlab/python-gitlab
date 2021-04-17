@@ -48,4 +48,4 @@ class TodoManager(ListMixin, DeleteMixin, RESTManager):
         Returns:
             int: The number of todos maked done
         """
-        result = self.gitlab.http_post("/todos/mark_as_done", **kwargs)
+        self.gitlab.http_post("/todos/mark_as_done", **kwargs)

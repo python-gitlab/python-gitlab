@@ -92,7 +92,7 @@ class TestRESTObject:
         assert isinstance(unpickled, FakeObject)
         assert hasattr(unpickled, "_module")
         assert unpickled._module == original_obj_module
-        pickled2 = pickle.dumps(unpickled)
+        pickle.dumps(unpickled)
 
     def test_attrs(self, fake_manager):
         obj = FakeObject(fake_manager, {"foo": "bar"})

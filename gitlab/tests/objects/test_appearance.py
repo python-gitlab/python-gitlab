@@ -63,4 +63,4 @@ def test_get_update_appearance(gl, resp_application_appearance):
 
 
 def test_update_appearance(gl, resp_application_appearance):
-    resp = gl.appearance.update(title=new_title, description=new_description)
+    gl.appearance.update(title=new_title, description=new_description)
