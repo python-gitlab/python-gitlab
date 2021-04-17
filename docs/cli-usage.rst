@@ -319,6 +319,20 @@ Delete a specific project package by id:
 
    $ gitlab -v project-package delete --id 1 --project-id 3
 
+Upload a generic package to a project:
+
+.. code-block:: console
+
+   $ gitlab generic-package upload --project-id 1 --package-name hello-world \
+        --package-version v1.0.0 --file-name hello.tar.gz --path /path/to/hello.tar.gz
+
+Download a project's generic package:
+
+.. code-block:: console
+
+   $ gitlab generic-package download --project-id 1 --package-name hello-world \
+        --package-version v1.0.0 --file-name hello.tar.gz > /path/to/hello.tar.gz
+
 Get a list of issues for this project:
 
 .. code-block:: console

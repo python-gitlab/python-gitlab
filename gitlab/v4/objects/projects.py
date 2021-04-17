@@ -41,7 +41,7 @@ from .merge_requests import ProjectMergeRequestManager  # noqa: F401
 from .milestones import ProjectMilestoneManager  # noqa: F401
 from .notes import ProjectNoteManager  # noqa: F401
 from .notification_settings import ProjectNotificationSettingsManager  # noqa: F401
-from .packages import ProjectPackageManager  # noqa: F401
+from .packages import GenericPackageManager, ProjectPackageManager  # noqa: F401
 from .pages import ProjectPagesDomainManager  # noqa: F401
 from .pipelines import (  # noqa: F401
     ProjectPipeline,
@@ -124,6 +124,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         ("exports", "ProjectExportManager"),
         ("files", "ProjectFileManager"),
         ("forks", "ProjectForkManager"),
+        ("generic_packages", "GenericPackageManager"),
         ("hooks", "ProjectHookManager"),
         ("keys", "ProjectKeyManager"),
         ("imports", "ProjectImportManager"),

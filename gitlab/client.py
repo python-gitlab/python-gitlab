@@ -394,15 +394,9 @@ class Gitlab(object):
         requests_log.setLevel(logging.DEBUG)
         requests_log.propagate = True
 
-    def _create_headers(self, content_type: Optional[str] = None) -> Dict[str, Any]:
-        request_headers = self.headers.copy()
-        if content_type is not None:
-            request_headers["Content-type"] = content_type
-        return request_headers
-
-    def _get_session_opts(self, content_type: str) -> Dict[str, Any]:
+    def _get_session_opts(self) -> Dict[str, Any]:
         return {
-            "headers": self._create_headers(content_type),
+            "headers": self.headers.copy(),
             "auth": self._http_auth,
             "timeout": self.timeout,
             "verify": self.ssl_verify,
@@ -442,12 +436,39 @@ class Gitlab(object):
                 if location and location.startswith("https://"):
                     raise gitlab.exceptions.RedirectError(REDIRECT_MSG)
 
+    def _prepare_send_data(
+        self,
+        files: Dict[str, Any] = None,
+        post_data: Dict[str, Any] = None,
+        raw: Optional[bool] = False,
+    ) -> Tuple:
+        if files:
+            if post_data is None:
+                post_data = {}
+            else:
+                # booleans does not exists for data (neither for MultipartEncoder):
+                # cast to string int to avoid: 'bool' object has no attribute 'encode'
+                for k, v in post_data.items():
+                    if isinstance(v, bool):
+                        post_data[k] = str(int(v))
+            post_data["file"] = files.get("file")
+            post_data["avatar"] = files.get("avatar")
+
+            data = MultipartEncoder(post_data)
+            return (None, data, data.content_type)
+
+        if raw and post_data:
+            return (None, post_data, "application/octet-stream")
+
+        return (post_data, None, "application/json")
+
     def http_request(
         self,
         verb: str,
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
         post_data: Optional[Dict[str, Any]] = None,
+        raw: Optional[bool] = False,
         streamed: bool = False,
         files: Optional[Dict[str, Any]] = None,
         timeout: Optional[float] = None,
@@ -465,7 +486,8 @@ class Gitlab(object):
                         'http://whatever/v4/api/projecs')
             query_data (dict): Data to send as query parameters
             post_data (dict): Data to send in the body (will be converted to
-                              json)
+                              json by default)
+            raw (bool): If True, do not convert post_data to json
             streamed (bool): Whether the data should be streamed
             files (dict): The files to send to the server
             timeout (float): The timeout, in seconds, for the request
@@ -504,7 +526,7 @@ class Gitlab(object):
         else:
             utils.copy_dict(params, kwargs)
 
-        opts = self._get_session_opts(content_type="application/json")
+        opts = self._get_session_opts()
 
         verify = opts.pop("verify")
         opts_timeout = opts.pop("timeout")
@@ -513,23 +535,8 @@ class Gitlab(object):
             timeout = opts_timeout
 
         # We need to deal with json vs. data when uploading files
-        if files:
-            json = None
-            if post_data is None:
-                post_data = {}
-            else:
-                # booleans does not exists for data (neither for MultipartEncoder):
-                # cast to string int to avoid: 'bool' object has no attribute 'encode'
-                for k, v in post_data.items():
-                    if isinstance(v, bool):
-                        post_data[k] = str(int(v))
-            post_data["file"] = files.get("file")
-            post_data["avatar"] = files.get("avatar")
-            data = MultipartEncoder(post_data)
-            opts["headers"]["Content-type"] = data.content_type
-        else:
-            json = post_data
-            data = None
+        json, data, content_type = self._prepare_send_data(files, post_data, raw)
+        opts["headers"]["Content-type"] = content_type
 
         # Requests assumes that `.` should not be encoded as %2E and will make
         # changes to urls using this encoding. Using a prepped request we can
@@ -684,6 +691,7 @@ class Gitlab(object):
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
         post_data: Optional[Dict[str, Any]] = None,
+        raw: Optional[bool] = False,
         files: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> Union[Dict[str, Any], requests.Response]:
@@ -694,7 +702,8 @@ class Gitlab(object):
                         'http://whatever/v4/api/projecs')
             query_data (dict): Data to send as query parameters
             post_data (dict): Data to send in the body (will be converted to
-                              json)
+                              json by default)
+            raw (bool): If True, do not convert post_data to json
             files (dict): The files to send to the server
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -731,6 +740,7 @@ class Gitlab(object):
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
         post_data: Optional[Dict[str, Any]] = None,
+        raw: Optional[bool] = False,
         files: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> Union[Dict[str, Any], requests.Response]:
@@ -741,7 +751,8 @@ class Gitlab(object):
                         'http://whatever/v4/api/projecs')
             query_data (dict): Data to send as query parameters
             post_data (dict): Data to send in the body (will be converted to
-                              json)
+                              json by default)
+            raw (bool): If True, do not convert post_data to json
             files (dict): The files to send to the server
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -761,6 +772,7 @@ class Gitlab(object):
             query_data=query_data,
             post_data=post_data,
             files=files,
+            raw=raw,
             **kwargs,
         )
         try:
