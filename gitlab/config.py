@@ -17,7 +17,10 @@
 
 import os
 import configparser
+import shlex
+import subprocess
 from typing import List, Optional, Union
+from os.path import expanduser, expandvars
 
 from gitlab.const import USER_AGENT
 
@@ -33,6 +36,10 @@ _DEFAULT_FILES: List[str] = _env_config() + [
     os.path.expanduser("~/.python-gitlab.cfg"),
 ]
 
+HELPER_PREFIX = "helper:"
+
+HELPER_ATTRIBUTES = ["job_token", "http_password", "private_token", "oauth_token"]
+
 
 class ConfigError(Exception):
     pass
@@ -47,6 +54,10 @@ class GitlabDataError(ConfigError):
 
 
 class GitlabConfigMissingError(ConfigError):
+    pass
+
+
+class GitlabConfigHelperError(ConfigError):
     pass
 
 
@@ -150,6 +161,8 @@ class GitlabConfigParser(object):
         except Exception:
             pass
 
+        self._get_values_from_helper()
+
         self.api_version = "4"
         try:
             self.api_version = self._config.get("global", "api_version")
@@ -192,3 +205,31 @@ class GitlabConfigParser(object):
             self.user_agent = self._config.get(self.gitlab_id, "user_agent")
         except Exception:
             pass
+
+    def _get_values_from_helper(self):
+        """Update attributes that may get values from an external helper program"""
+        for attr in HELPER_ATTRIBUTES:
+            value = getattr(self, attr)
+            if not isinstance(value, str):
+                continue
+
+            if not value.lower().strip().startswith(HELPER_PREFIX):
+                continue
+
+            helper = value[len(HELPER_PREFIX) :].strip()
+            commmand = [expanduser(expandvars(token)) for token in shlex.split(helper)]
+
+            try:
+                value = (
+                    subprocess.check_output(commmand, stderr=subprocess.PIPE)
+                    .decode("utf-8")
+                    .strip()
+                )
+            except subprocess.CalledProcessError as e:
+                stderr = e.stderr.decode().strip()
+                raise GitlabConfigHelperError(
+                    f"Failed to read {attr} value from helper "
+                    f"for {self.gitlab_id}:\n{stderr}"
+                ) from e
+
+            setattr(self, attr, value)
