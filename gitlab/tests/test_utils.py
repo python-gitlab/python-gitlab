@@ -40,23 +40,3 @@ def test_sanitized_url():
     src = "http://localhost/foo.bar.baz"
     dest = "http://localhost/foo%2Ebar%2Ebaz"
     assert dest == utils.sanitized_url(src)
-
-
-def test_sanitize_parameters_does_nothing():
-    assert 1 == utils.sanitize_parameters(1)
-    assert 1.5 == utils.sanitize_parameters(1.5)
-    assert "foo" == utils.sanitize_parameters("foo")
-
-
-def test_sanitize_parameters_slash():
-    assert "foo%2Fbar" == utils.sanitize_parameters("foo/bar")
-
-
-def test_sanitize_parameters_slash_and_percent():
-    assert "foo%2Fbar%25quuz" == utils.sanitize_parameters("foo/bar%quuz")
-
-
-def test_sanitize_parameters_dict():
-    source = {"url": "foo/bar", "id": 1}
-    expected = {"url": "foo%2Fbar", "id": 1}
-    assert expected == utils.sanitize_parameters(source)
