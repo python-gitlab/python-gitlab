@@ -17,9 +17,10 @@
 
 import os
 import configparser
+import shlex
 import subprocess
 from typing import List, Optional, Union
-from os.path import expanduser
+from os.path import expanduser, expandvars
 
 from gitlab.const import USER_AGENT
 
@@ -53,6 +54,10 @@ class GitlabDataError(ConfigError):
 
 
 class GitlabConfigMissingError(ConfigError):
+    pass
+
+
+class GitlabConfigHelperError(ConfigError):
     pass
 
 
@@ -202,13 +207,29 @@ class GitlabConfigParser(object):
             pass
 
     def _get_values_from_helper(self):
-        """Update attributes, which may get values from an external helper program"""
+        """Update attributes that may get values from an external helper program"""
         for attr in HELPER_ATTRIBUTES:
             value = getattr(self, attr)
             if not isinstance(value, str):
                 continue
 
-            if value.lower().strip().startswith(HELPER_PREFIX):
-                helper = expanduser(value[len(HELPER_PREFIX) :].strip())
-                value = subprocess.check_output([helper]).decode("utf-8").strip()
-                setattr(self, attr, value)
+            if not value.lower().strip().startswith(HELPER_PREFIX):
+                continue
+
+            helper = value[len(HELPER_PREFIX) :].strip()
+            commmand = [expanduser(expandvars(token)) for token in shlex.split(helper)]
+
+            try:
+                value = (
+                    subprocess.check_output(commmand, stderr=subprocess.PIPE)
+                    .decode("utf-8")
+                    .strip()
+                )
+            except subprocess.CalledProcessError as e:
+                stderr = e.stderr.decode().strip()
+                raise GitlabConfigHelperError(
+                    f"Failed to read {attr} value from helper "
+                    f"for {self.gitlab_id}:\n{stderr}"
+                ) from e
+
+            setattr(self, attr, value)

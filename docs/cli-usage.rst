@@ -93,6 +93,8 @@ Only one of ``private_token``, ``oauth_token`` or ``job_token`` should be
 defined. If neither are defined an anonymous request will be sent to the Gitlab
 server, with very limited permissions.
 
+We recommend that you use `Credential helpers`_ to securely store your tokens.
+
 .. list-table:: GitLab server options
    :header-rows: 1
 
@@ -119,22 +121,50 @@ server, with very limited permissions.
    * - ``http_password``
      - Password for optional HTTP authentication
 
-For all settings, which contain secrets (``http_password``, 
+
+Credential helpers
+------------------
+
+For all configuration options that contain secrets (``http_password``,
 ``personal_token``, ``oauth_token``, ``job_token``), you can specify
-a helper program to retrieve the secret indicated by ``helper:`` 
-prefix.  You can only specify a path to a program without any 
-parameters.  You may use ``~`` for expanding your homedir in helper
-program's path.  It is expected, that the program prints the secret 
-to standard output.
+a helper program to retrieve the secret indicated by a ``helper:``
+prefix. This allows you to fetch values from a local keyring store
+or cloud-hosted vaults such as Bitwarden. Environment variables are
+expanded if they exist and ``~`` expands to your home directory.
+
+It is expected that the helper program prints the secret to standard output.
+To use shell features such as piping to retrieve the value, you will need
+to use a wrapper script; see below.
 
 Example for a `keyring <https://github.com/jaraco/keyring>`_ helper:
 
-.. code-block:: bash
+.. code-block:: ini
 
-    #!/bin/bash
-    keyring get Service Username
+   [global]
+   default = somewhere
+   ssl_verify = true
+   timeout = 5
 
-Example for a `pass <https://www.passwordstore.org>`_ helper:
+   [somewhere]
+   url = http://somewhe.re
+   private_token = helper: keyring get Service Username
+   timeout = 1
+
+Example for a `pass <https://www.passwordstore.org>`_ helper with a wrapper script:
+
+.. code-block:: ini
+
+   [global]
+   default = somewhere
+   ssl_verify = true
+   timeout = 5
+
+   [somewhere]
+   url = http://somewhe.re
+   private_token = helper: /path/to/helper.sh
+   timeout = 1
+
+In `/path/to/helper.sh`:
 
 .. code-block:: bash
 
