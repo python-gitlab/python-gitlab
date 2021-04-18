@@ -1,4 +1,5 @@
 import gitlab.cli
 
 
-__name__ == "__main__" and gitlab.cli.main()
+if __name__ == "__main__":
+    gitlab.cli.main()

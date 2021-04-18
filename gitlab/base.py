@@ -17,7 +17,7 @@
 
 import importlib
 from types import ModuleType
-from typing import Any, Dict, NamedTuple, Optional, Tuple, Type
+from typing import Any, Dict, Iterable, NamedTuple, Optional, Tuple, Type
 
 from .client import Gitlab, GitlabList
 from gitlab import types as g_types
@@ -133,8 +133,8 @@ class RESTObject(object):
             return self.get_id() != other.get_id()
         return super(RESTObject, self) != other
 
-    def __dir__(self):
-        return super(RESTObject, self).__dir__() | self.attributes.keys()
+    def __dir__(self) -> Iterable[str]:
+        return set(self.attributes).union(super(RESTObject, self).__dir__())
 
     def __hash__(self) -> int:
         if not self.get_id():
@@ -155,7 +155,7 @@ class RESTObject(object):
         self.__dict__["_updated_attrs"] = {}
         self.__dict__["_attrs"] = new_attrs
 
-    def get_id(self):
+    def get_id(self) -> Any:
         """Returns the id of the resource."""
         if self._id_attr is None or not hasattr(self, self._id_attr):
             return None
@@ -207,10 +207,10 @@ class RESTObjectList(object):
     def __len__(self) -> int:
         return len(self._list)
 
-    def __next__(self):
+    def __next__(self) -> RESTObject:
         return self.next()
 
-    def next(self):
+    def next(self) -> RESTObject:
         data = self._list.next()
         return self._obj_cls(self.manager, data)
 

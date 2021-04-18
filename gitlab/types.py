@@ -15,46 +15,50 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Any, Optional, TYPE_CHECKING
+
 
 class GitlabAttribute(object):
-    def __init__(self, value=None):
+    def __init__(self, value: Any = None) -> None:
         self._value = value
 
-    def get(self):
+    def get(self) -> Any:
         return self._value
 
-    def set_from_cli(self, cli_value):
+    def set_from_cli(self, cli_value: Any) -> None:
         self._value = cli_value
 
-    def get_for_api(self):
+    def get_for_api(self) -> Any:
         return self._value
 
 
 class ListAttribute(GitlabAttribute):
-    def set_from_cli(self, cli_value):
+    def set_from_cli(self, cli_value: str) -> None:
         if not cli_value.strip():
             self._value = []
         else:
             self._value = [item.strip() for item in cli_value.split(",")]
 
-    def get_for_api(self):
+    def get_for_api(self) -> str:
         # Do not comma-split single value passed as string
         if isinstance(self._value, str):
             return self._value
 
+        if TYPE_CHECKING:
+            assert isinstance(self._value, list)
         return ",".join([str(x) for x in self._value])
 
 
 class LowercaseStringAttribute(GitlabAttribute):
-    def get_for_api(self):
+    def get_for_api(self) -> str:
         return str(self._value).lower()
 
 
 class FileAttribute(GitlabAttribute):
-    def get_file_name(self, attr_name=None):
+    def get_file_name(self, attr_name: Optional[str] = None) -> Optional[str]:
         return attr_name
 
 
 class ImageAttribute(FileAttribute):
-    def get_file_name(self, attr_name=None):
+    def get_file_name(self, attr_name: Optional[str] = None) -> str:
         return "%s.png" % attr_name if attr_name else "image.png"
