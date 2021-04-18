@@ -75,8 +75,8 @@ class GetMixin(_RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _obj_cls: Optional[Type[base.RESTObject]]
-    _parent = Optional[base.RESTObject]
-    _parent_attrs = Dict[str, Any]
+    _parent: Optional[base.RESTObject]
+    _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
 
@@ -119,8 +119,8 @@ class GetWithoutIdMixin(_RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _obj_cls: Optional[Type[base.RESTObject]]
-    _parent = Optional[base.RESTObject]
-    _parent_attrs = Dict[str, Any]
+    _parent: Optional[base.RESTObject]
+    _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
 
@@ -188,8 +188,8 @@ class ListMixin(_RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _obj_cls: Optional[Type[base.RESTObject]]
-    _parent = Optional[base.RESTObject]
-    _parent_attrs = Dict[str, Any]
+    _parent: Optional[base.RESTObject]
+    _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
 
@@ -248,8 +248,8 @@ class RetrieveMixin(ListMixin, GetMixin):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _obj_cls: Optional[Type[base.RESTObject]]
-    _parent = Optional[base.RESTObject]
-    _parent_attrs = Dict[str, Any]
+    _parent: Optional[base.RESTObject]
+    _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
 
@@ -260,8 +260,8 @@ class CreateMixin(_RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _obj_cls: Optional[Type[base.RESTObject]]
-    _parent = Optional[base.RESTObject]
-    _parent_attrs = Dict[str, Any]
+    _parent: Optional[base.RESTObject]
+    _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
 
@@ -328,8 +328,8 @@ class UpdateMixin(_RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _obj_cls: Optional[Type[base.RESTObject]]
-    _parent = Optional[base.RESTObject]
-    _parent_attrs = Dict[str, Any]
+    _parent: Optional[base.RESTObject]
+    _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     _update_uses_post: bool = False
     gitlab: gitlab.Gitlab
@@ -422,8 +422,8 @@ class SetMixin(_RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _obj_cls: Optional[Type[base.RESTObject]]
-    _parent = Optional[base.RESTObject]
-    _parent_attrs = Dict[str, Any]
+    _parent: Optional[base.RESTObject]
+    _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
 
@@ -456,8 +456,8 @@ class DeleteMixin(_RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _obj_cls: Optional[Type[base.RESTObject]]
-    _parent = Optional[base.RESTObject]
-    _parent_attrs = Dict[str, Any]
+    _parent: Optional[base.RESTObject]
+    _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
 
@@ -486,8 +486,8 @@ class CRUDMixin(GetMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _obj_cls: Optional[Type[base.RESTObject]]
-    _parent = Optional[base.RESTObject]
-    _parent_attrs = Dict[str, Any]
+    _parent: Optional[base.RESTObject]
+    _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
 
@@ -498,8 +498,8 @@ class NoUpdateMixin(GetMixin, ListMixin, CreateMixin, DeleteMixin):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _obj_cls: Optional[Type[base.RESTObject]]
-    _parent = Optional[base.RESTObject]
-    _parent_attrs = Dict[str, Any]
+    _parent: Optional[base.RESTObject]
+    _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
 
@@ -509,13 +509,12 @@ class NoUpdateMixin(GetMixin, ListMixin, CreateMixin, DeleteMixin):
 class SaveMixin(_RestObjectBase):
     """Mixin for RESTObject's that can be updated."""
 
-    manager: UpdateMixin
-
     _id_attr: Optional[str]
     _attrs: Dict[str, Any]
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
+    manager: base.RESTManager
 
     def _get_updated_data(self) -> Dict[str, Any]:
         updated_data = {}
@@ -546,6 +545,8 @@ class SaveMixin(_RestObjectBase):
 
         # call the manager
         obj_id = self.get_id()
+        if TYPE_CHECKING:
+            assert isinstance(self.manager, UpdateMixin)
         server_data = self.manager.update(obj_id, updated_data, **kwargs)
         if server_data is not None:
             self._update_attrs(server_data)
@@ -554,13 +555,12 @@ class SaveMixin(_RestObjectBase):
 class ObjectDeleteMixin(_RestObjectBase):
     """Mixin for RESTObject's that can be deleted."""
 
-    manager: DeleteMixin
-
     _id_attr: Optional[str]
     _attrs: Dict[str, Any]
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
+    manager: base.RESTManager
 
     def delete(self, **kwargs: Any) -> None:
         """Delete the object from the server.
@@ -572,6 +572,8 @@ class ObjectDeleteMixin(_RestObjectBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
+        if TYPE_CHECKING:
+            assert isinstance(self.manager, DeleteMixin)
         self.manager.delete(self.get_id())
 
 
