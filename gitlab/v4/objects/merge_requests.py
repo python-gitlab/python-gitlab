@@ -234,7 +234,7 @@ class ProjectMergeRequest(
         path = "%s/%s/pipelines" % (self.manager.path, self.get_id())
         return self.manager.gitlab.http_get(path, **kwargs)
 
-    @cli.register_custom_action("ProjectMergeRequest", tuple(), ("sha"))
+    @cli.register_custom_action("ProjectMergeRequest", tuple(), ("sha",))
     @exc.on_http_error(exc.GitlabMRApprovalError)
     def approve(self, sha=None, **kwargs):
         """Approve the merge request.
