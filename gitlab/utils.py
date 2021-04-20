@@ -60,14 +60,6 @@ def clean_str_id(id: str) -> str:
     return quote(id, safe="")
 
 
-def sanitize_parameters(value):
-    if isinstance(value, dict):
-        return dict((k, sanitize_parameters(v)) for k, v in value.items())
-    if isinstance(value, str):
-        return quote(value, safe="")
-    return value
-
-
 def sanitized_url(url: str) -> str:
     parsed = urlparse(url)
     new_path = parsed.path.replace(".", "%2E")
