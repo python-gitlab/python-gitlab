@@ -135,6 +135,10 @@ class TestRESTObject:
         assert {"foo": "foo"} == obj._attrs
         assert {} == obj._updated_attrs
 
+    def test_dir_unique(self, fake_manager):
+        obj = FakeObject(fake_manager, {"manager": "foo"})
+        assert len(dir(obj)) == len(set(dir(obj)))
+
     def test_create_managers(self, fake_gitlab, fake_manager):
         class ObjectWithManager(FakeObject):
             _managers = (("fakes", "FakeManager"),)
