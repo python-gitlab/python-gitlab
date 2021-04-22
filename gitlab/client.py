@@ -505,6 +505,12 @@ class Gitlab(object):
             json = None
             if post_data is None:
                 post_data = {}
+            else:
+                # booleans does not exists for data (neither for MultipartEncoder):
+                # cast to string int to avoid: 'bool' object has no attribute 'encode'
+                for k, v in post_data.items():
+                    if isinstance(v, bool):
+                        post_data[k] = str(int(v))
             post_data["file"] = files.get("file")
             post_data["avatar"] = files.get("avatar")
             data = MultipartEncoder(post_data)
