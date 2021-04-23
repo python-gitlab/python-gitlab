@@ -451,6 +451,10 @@ class Gitlab(object):
         post_data: Optional[Dict[str, Any]] = None,
         streamed: bool = False,
         files: Optional[Dict[str, Any]] = None,
+        timeout: Optional[float] = None,
+        obey_rate_limit: bool = True,
+        retry_transient_errors: bool = False,
+        max_retries: int = 10,
         **kwargs: Any,
     ) -> requests.Response:
         """Make an HTTP request to the Gitlab server.
@@ -465,6 +469,14 @@ class Gitlab(object):
                               json)
             streamed (bool): Whether the data should be streamed
             files (dict): The files to send to the server
+            timeout (float): The timeout, in seconds, for the request
+            obey_rate_limit (bool): Whether to obey 429 Too Many Request
+                                    responses. Defaults to True.
+            retry_transient_errors (bool): Whether to retry after 500, 502,
+                                           503, or 504 responses. Defaults
+                                           to False.
+            max_retries (int): Max retries after 429 or transient errors,
+                               set to -1 to retry forever. Defaults to 10.
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
@@ -496,9 +508,10 @@ class Gitlab(object):
         opts = self._get_session_opts(content_type="application/json")
 
         verify = opts.pop("verify")
-        timeout = opts.pop("timeout")
+        opts_timeout = opts.pop("timeout")
         # If timeout was passed into kwargs, allow it to override the default
-        timeout = kwargs.get("timeout", timeout)
+        if timeout is None:
+            timeout = opts_timeout
 
         # We need to deal with json vs. data when uploading files
         if files:
@@ -532,15 +545,7 @@ class Gitlab(object):
             prepped.url, {}, streamed, verify, None
         )
 
-        # obey the rate limit by default
-        obey_rate_limit = kwargs.get("obey_rate_limit", True)
-        # do not retry transient errors by default
-        retry_transient_errors = kwargs.get("retry_transient_errors", False)
-
-        # set max_retries to 10 by default, disable by setting it to -1
-        max_retries = kwargs.get("max_retries", 10)
         cur_retries = 0
-
         while True:
             result = self.session.send(prepped, timeout=timeout, **settings)
 
@@ -826,6 +831,9 @@ class GitlabList(object):
 
         self._query(url, query_data, **self._kwargs)
         self._get_next = get_next
+
+        # Remove query_parameters from kwargs, which are saved via the `next` URL
+        self._kwargs.pop("query_parameters", None)
 
     def _query(
         self, url: str, query_data: Optional[Dict[str, Any]] = None, **kwargs: Any
