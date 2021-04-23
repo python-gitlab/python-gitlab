@@ -22,11 +22,11 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "file_path"
     _short_print_attr = "file_path"
 
-    def decode(self):
+    def decode(self) -> bytes:
         """Returns the decoded content of the file.
 
         Returns:
-            (str): the decoded content.
+            (bytes): the decoded content.
         """
         return base64.b64decode(self.content)
 
