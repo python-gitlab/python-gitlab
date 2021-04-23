@@ -12,14 +12,6 @@ env:
   PY_COLORS: 1
 
 jobs:
-  black:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - uses: psf/black@stable
-        with:
-          black_args: ". --check"
   commitlint:
     runs-on: ubuntu-latest
     steps:
@@ -28,10 +20,15 @@ jobs:
           fetch-depth: 0
       - uses: wagoid/commitlint-github-action@v3
 
-  mypy:
+  linters:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
       - run: pip install --upgrade tox
-      - run: tox -e mypy
+      - name: Run black code formatter (https://black.readthedocs.io/en/stable/)
+        run: tox -e black -- --check
+      - name: Run flake8 (https://flake8.pycqa.org/en/latest/)
+        run: tox -e pep8
+      - name: Run mypy static typing checker (http://mypy-lang.org/)
+        run: tox -e mypy

@@ -86,10 +86,10 @@ def test_gitlab_build_list(gl):
     assert obj.total == 2
 
     with HTTMock(resp_page_2):
-        l = list(obj)
-    assert len(l) == 2
-    assert l[0]["a"] == "b"
-    assert l[1]["c"] == "d"
+        test_list = list(obj)
+    assert len(test_list) == 2
+    assert test_list[0]["a"] == "b"
+    assert test_list[1]["c"] == "d"
 
 
 @with_httmock(resp_page_1, resp_page_2)

@@ -241,7 +241,7 @@ def test_project_approval_manager_update_uses_post(project, resp_snippet):
     assert isinstance(
         approvals, gitlab.v4.objects.merge_request_approvals.ProjectApprovalManager
     )
-    assert approvals._update_uses_post == True
+    assert approvals._update_uses_post is True
 
 
 def test_list_merge_request_approval_rules(project, resp_snippet):
@@ -257,7 +257,7 @@ def test_update_merge_request_approvals_set_approvers(project, resp_snippet):
         approvals,
         gitlab.v4.objects.merge_request_approvals.ProjectMergeRequestApprovalManager,
     )
-    assert approvals._update_uses_post == True
+    assert approvals._update_uses_post is True
     response = approvals.set_approvers(
         updated_approval_rule_approvals_required,
         approver_ids=updated_approval_rule_user_ids,
@@ -277,7 +277,7 @@ def test_create_merge_request_approvals_set_approvers(project, resp_snippet):
         approvals,
         gitlab.v4.objects.merge_request_approvals.ProjectMergeRequestApprovalManager,
     )
-    assert approvals._update_uses_post == True
+    assert approvals._update_uses_post is True
     response = approvals.set_approvers(
         new_approval_rule_approvals_required,
         approver_ids=new_approval_rule_user_ids,

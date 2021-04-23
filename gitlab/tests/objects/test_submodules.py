@@ -4,8 +4,6 @@ GitLab API: https://docs.gitlab.com/ce/api/repository_submodules.html
 import pytest
 import responses
 
-from gitlab.v4.objects import Project
-
 
 @pytest.fixture
 def resp_update_submodule():

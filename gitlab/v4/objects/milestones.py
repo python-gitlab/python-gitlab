@@ -7,7 +7,6 @@ from .merge_requests import (
     ProjectMergeRequest,
     ProjectMergeRequestManager,
     GroupMergeRequest,
-    GroupMergeRequestManager,
 )
 
 

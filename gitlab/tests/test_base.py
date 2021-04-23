@@ -80,7 +80,7 @@ class TestRESTObject:
 
         assert {"foo": "bar"} == obj._attrs
         assert {} == obj._updated_attrs
-        assert None == obj._create_managers()
+        assert obj._create_managers() is None
         assert fake_manager == obj.manager
         assert fake_gitlab == obj.manager.gitlab
 
@@ -92,7 +92,7 @@ class TestRESTObject:
         assert isinstance(unpickled, FakeObject)
         assert hasattr(unpickled, "_module")
         assert unpickled._module == original_obj_module
-        pickled2 = pickle.dumps(unpickled)
+        pickle.dumps(unpickled)
 
     def test_attrs(self, fake_manager):
         obj = FakeObject(fake_manager, {"foo": "bar"})
@@ -112,7 +112,7 @@ class TestRESTObject:
         assert 42 == obj.get_id()
 
         obj.id = None
-        assert None == obj.get_id()
+        assert obj.get_id() is None
 
     def test_custom_id_attr(self, fake_manager):
         class OtherFakeObject(FakeObject):

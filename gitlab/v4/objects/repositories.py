@@ -4,7 +4,7 @@ GitLab API: https://docs.gitlab.com/ee/api/repositories.html
 Currently this module only contains repository-related methods for projects.
 """
 
-from gitlab import cli, types, utils
+from gitlab import cli, utils
 from gitlab import exceptions as exc
 
 

@@ -1,4 +1,4 @@
-from gitlab import cli, types
+from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (

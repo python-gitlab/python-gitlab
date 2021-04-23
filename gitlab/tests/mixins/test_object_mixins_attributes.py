@@ -27,35 +27,35 @@ from gitlab.mixins import (
 
 
 def test_access_request_mixin():
-    class O(AccessRequestMixin):
+    class TestClass(AccessRequestMixin):
         pass
 
-    obj = O()
+    obj = TestClass()
     assert hasattr(obj, "approve")
 
 
 def test_subscribable_mixin():
-    class O(SubscribableMixin):
+    class TestClass(SubscribableMixin):
         pass
 
-    obj = O()
+    obj = TestClass()
     assert hasattr(obj, "subscribe")
     assert hasattr(obj, "unsubscribe")
 
 
 def test_todo_mixin():
-    class O(TodoMixin):
+    class TestClass(TodoMixin):
         pass
 
-    obj = O()
+    obj = TestClass()
     assert hasattr(obj, "todo")
 
 
 def test_time_tracking_mixin():
-    class O(TimeTrackingMixin):
+    class TestClass(TimeTrackingMixin):
         pass
 
-    obj = O()
+    obj = TestClass()
     assert hasattr(obj, "time_stats")
     assert hasattr(obj, "time_estimate")
     assert hasattr(obj, "reset_time_estimate")
@@ -64,16 +64,16 @@ def test_time_tracking_mixin():
 
 
 def test_set_mixin():
-    class O(SetMixin):
+    class TestClass(SetMixin):
         pass
 
-    obj = O()
+    obj = TestClass()
     assert hasattr(obj, "set")
 
 
 def test_user_agent_detail_mixin():
-    class O(UserAgentDetailMixin):
+    class TestClass(UserAgentDetailMixin):
         pass
 
-    obj = O()
+    obj = TestClass()
     assert hasattr(obj, "user_agent_detail")

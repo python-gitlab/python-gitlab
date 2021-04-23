@@ -200,7 +200,7 @@ def resp_runner_verify():
 
 def test_owned_runners_list(gl: gitlab.Gitlab, resp_get_runners_list):
     runners = gl.runners.list()
-    assert runners[0].active == True
+    assert runners[0].active is True
     assert runners[0].id == 6
     assert runners[0].name == "test-name"
     assert len(runners) == 1
@@ -208,7 +208,7 @@ def test_owned_runners_list(gl: gitlab.Gitlab, resp_get_runners_list):
 
 def test_project_runners_list(gl: gitlab.Gitlab, resp_get_runners_list):
     runners = gl.projects.get(1, lazy=True).runners.list()
-    assert runners[0].active == True
+    assert runners[0].active is True
     assert runners[0].id == 6
     assert runners[0].name == "test-name"
     assert len(runners) == 1
@@ -216,7 +216,7 @@ def test_project_runners_list(gl: gitlab.Gitlab, resp_get_runners_list):
 
 def test_group_runners_list(gl: gitlab.Gitlab, resp_get_runners_list):
     runners = gl.groups.get(1, lazy=True).runners.list()
-    assert runners[0].active == True
+    assert runners[0].active is True
     assert runners[0].id == 6
     assert runners[0].name == "test-name"
     assert len(runners) == 1
@@ -224,7 +224,7 @@ def test_group_runners_list(gl: gitlab.Gitlab, resp_get_runners_list):
 
 def test_all_runners_list(gl: gitlab.Gitlab, resp_get_runners_list):
     runners = gl.runners.all()
-    assert runners[0].active == True
+    assert runners[0].active is True
     assert runners[0].id == 6
     assert runners[0].name == "test-name"
     assert len(runners) == 1
@@ -238,7 +238,7 @@ def test_create_runner(gl: gitlab.Gitlab, resp_runner_register):
 
 def test_get_update_runner(gl: gitlab.Gitlab, resp_runner_detail):
     runner = gl.runners.get(6)
-    assert runner.active == True
+    assert runner.active is True
     runner.tag_list.append("new")
     runner.save()
 
@@ -259,14 +259,14 @@ def test_disable_group_runner(gl: gitlab.Gitlab, resp_runner_disable):
 
 def test_enable_project_runner(gl: gitlab.Gitlab, resp_runner_enable):
     runner = gl.projects.get(1, lazy=True).runners.create({"runner_id": 6})
-    assert runner.active == True
+    assert runner.active is True
     assert runner.id == 6
     assert runner.name == "test-name"
 
 
 def test_enable_group_runner(gl: gitlab.Gitlab, resp_runner_enable):
     runner = gl.groups.get(1, lazy=True).runners.create({"runner_id": 6})
-    assert runner.active == True
+    assert runner.active is True
     assert runner.id == 6
     assert runner.name == "test-name"
 

@@ -23,7 +23,7 @@ import re
 import sys
 from typing import Any, Callable, Dict, Optional, Tuple, Union
 
-import gitlab.config
+import gitlab.config  # noqa: F401
 
 camel_re = re.compile("(.)([A-Z])")
 
@@ -162,7 +162,6 @@ def docs() -> argparse.ArgumentParser:
     if "sphinx" not in sys.modules:
         sys.exit("Docs parser is only intended for build_sphinx")
 
-    parser = _get_base_parser(add_help=False)
     # NOTE: We must delay import of gitlab.v4.cli until now or
     # otherwise it will cause circular import errors
     import gitlab.v4.cli

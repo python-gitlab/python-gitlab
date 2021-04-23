@@ -18,8 +18,8 @@
 
 import warnings
 
-import gitlab.config
-from gitlab.__version__ import (
+import gitlab.config  # noqa: F401
+from gitlab.__version__ import (  # noqa: F401
     __author__,
     __copyright__,
     __email__,
@@ -27,9 +27,9 @@ from gitlab.__version__ import (
     __title__,
     __version__,
 )
-from gitlab.client import Gitlab, GitlabList
-from gitlab.const import *  # noqa
-from gitlab.exceptions import *  # noqa
+from gitlab.client import Gitlab, GitlabList  # noqa: F401
+from gitlab.const import *  # noqa: F401,F403
+from gitlab.exceptions import *  # noqa: F401,F403
 
 
 warnings.filterwarnings("default", category=DeprecationWarning, module="^gitlab")

@@ -1,12 +1,10 @@
 """
 GitLab API: https://docs.gitlab.com/ee/api/jobs.html#list-pipeline-bridges
 """
-import re
-
 import pytest
 import responses
 
-from gitlab.v4.objects import Project, ProjectPipelineBridge
+from gitlab.v4.objects import ProjectPipelineBridge
 
 
 @pytest.fixture
