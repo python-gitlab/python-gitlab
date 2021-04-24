@@ -380,7 +380,7 @@ class LegacyPrinter(object):
             if obj._id_attr:
                 id = getattr(obj, obj._id_attr)
                 print("%s: %s" % (obj._id_attr.replace("_", "-"), id))
-            if hasattr(obj, "_short_print_attr"):
+            if obj._short_print_attr:
                 value = getattr(obj, obj._short_print_attr) or "None"
                 value = value.replace("\r", "").replace("\n", " ")
                 # If the attribute is a note (ProjectCommitComment) then we do
