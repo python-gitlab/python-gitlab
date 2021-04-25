@@ -45,6 +45,7 @@ class RESTObject(object):
     _attrs: Dict[str, Any]
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
+    _short_print_attr: Optional[str] = None
     _updated_attrs: Dict[str, Any]
     manager: "RESTManager"
 
