@@ -2,8 +2,6 @@
 GitLab API:
 https://docs.gitlab.com/ee/api/audit_events.html
 """
-import warnings
-
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import RetrieveMixin
 
@@ -43,28 +41,12 @@ class GroupAuditEventManager(RetrieveMixin, RESTManager):
 class ProjectAuditEvent(RESTObject):
     _id_attr = "id"
 
-    def __init_subclass__(self):
-        warnings.warn(
-            "This class has been renamed to ProjectAuditEvent "
-            "and will be removed in a future release.",
-            DeprecationWarning,
-            2,
-        )
-
 
 class ProjectAuditEventManager(RetrieveMixin, RESTManager):
     _path = "/projects/%(project_id)s/audit_events"
     _obj_cls = ProjectAuditEvent
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = ("created_after", "created_before")
-
-    def __init_subclass__(self):
-        warnings.warn(
-            "This class has been renamed to ProjectAuditEventManager "
-            "and will be removed in a future release.",
-            DeprecationWarning,
-            2,
-        )
 
 
 class ProjectAudit(ProjectAuditEvent):
