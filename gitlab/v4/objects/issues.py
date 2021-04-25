@@ -220,7 +220,7 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
             "discussion_locked",
         ),
     )
-    _types = {"labels": types.ListAttribute}
+    _types = {"iids": types.ListAttribute, "labels": types.ListAttribute}
 
 
 class ProjectIssueLink(ObjectDeleteMixin, RESTObject):
