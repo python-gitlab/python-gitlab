@@ -145,13 +145,10 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                 )
 
         if action_name == "list":
-            if hasattr(mgr_cls, "_list_filters"):
-                [
-                    sub_parser_action.add_argument(
-                        "--%s" % x.replace("_", "-"), required=False
-                    )
-                    for x in mgr_cls._list_filters
-                ]
+            for x in mgr_cls._list_filters:
+                sub_parser_action.add_argument(
+                    "--%s" % x.replace("_", "-"), required=False
+                )
 
             sub_parser_action.add_argument("--page", required=False)
             sub_parser_action.add_argument("--per-page", required=False)

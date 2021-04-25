@@ -22,6 +22,7 @@ from typing import (
     Dict,
     List,
     Optional,
+    Tuple,
     Type,
     TYPE_CHECKING,
     Union,
@@ -186,6 +187,7 @@ class RefreshMixin(_RestObjectBase):
 class ListMixin(_RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
+    _list_filters: Tuple[str, ...] = ()
     _obj_cls: Optional[Type[base.RESTObject]]
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
