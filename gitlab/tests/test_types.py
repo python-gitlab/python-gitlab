@@ -59,6 +59,11 @@ def test_list_attribute_get_for_api_from_list():
     assert o.get_for_api() == "foo,bar,baz"
 
 
+def test_list_attribute_get_for_api_from_int_list():
+    o = types.ListAttribute([1, 9, 7])
+    assert o.get_for_api() == "1,9,7"
+
+
 def test_list_attribute_does_not_split_string():
     o = types.ListAttribute("foo")
     assert o.get_for_api() == "foo"

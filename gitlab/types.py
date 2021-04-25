@@ -42,7 +42,7 @@ class ListAttribute(GitlabAttribute):
         if isinstance(self._value, str):
             return self._value
 
-        return ",".join(self._value)
+        return ",".join([str(x) for x in self._value])
 
 
 class LowercaseStringAttribute(GitlabAttribute):
