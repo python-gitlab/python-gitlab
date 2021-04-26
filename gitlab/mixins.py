@@ -75,6 +75,7 @@ class GetMixin(_RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _obj_cls: Optional[Type[base.RESTObject]]
+    _optional_get_attrs: Tuple[str, ...] = ()
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
@@ -119,6 +120,7 @@ class GetWithoutIdMixin(_RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _obj_cls: Optional[Type[base.RESTObject]]
+    _optional_get_attrs: Tuple[str, ...] = ()
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
