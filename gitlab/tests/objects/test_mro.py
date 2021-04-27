@@ -106,7 +106,6 @@ def test_mros():
                 if obj.__module__ == "gitlab.base":
                     has_base = True
                     base_classname = obj.__name__
-                # print(f"\t{obj.__name__}: {obj.__module__}")
             if has_base:
                 filename = inspect.getfile(class_value)
                 # NOTE(jlvillal): The very last item 'mro[-1]' is always going
