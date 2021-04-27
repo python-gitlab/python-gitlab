@@ -24,7 +24,7 @@ class ProjectReleaseManager(NoUpdateMixin, RESTManager):
     )
 
 
-class ProjectReleaseLink(RESTObject, ObjectDeleteMixin, SaveMixin):
+class ProjectReleaseLink(ObjectDeleteMixin, SaveMixin, RESTObject):
     pass
 
 
