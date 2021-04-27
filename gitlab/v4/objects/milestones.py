@@ -1,4 +1,4 @@
-from gitlab import cli
+from gitlab import cli, types
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
@@ -86,6 +86,7 @@ class GroupMilestoneManager(CRUDMixin, RESTManager):
         optional=("title", "description", "due_date", "start_date", "state_event"),
     )
     _list_filters = ("iids", "state", "search")
+    _types = {"iids": types.ListAttribute}
 
 
 class ProjectMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -159,3 +160,4 @@ class ProjectMilestoneManager(CRUDMixin, RESTManager):
         optional=("title", "description", "due_date", "start_date", "state_event"),
     )
     _list_filters = ("iids", "state", "search")
+    _types = {"iids": types.ListAttribute}

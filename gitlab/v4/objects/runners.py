@@ -1,4 +1,4 @@
-from gitlab import cli
+from gitlab import cli, types
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
@@ -40,7 +40,6 @@ class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):
 class RunnerManager(CRUDMixin, RESTManager):
     _path = "/runners"
     _obj_cls = Runner
-    _list_filters = ("scope",)
     _create_attrs = RequiredOptional(
         required=("token",),
         optional=(
@@ -65,6 +64,8 @@ class RunnerManager(CRUDMixin, RESTManager):
             "maximum_timeout",
         ),
     )
+    _list_filters = ("scope", "tag_list")
+    _types = {"tag_list": types.ListAttribute}
 
     @cli.register_custom_action("RunnerManager", tuple(), ("scope",))
     @exc.on_http_error(exc.GitlabListError)
@@ -122,6 +123,8 @@ class GroupRunnerManager(NoUpdateMixin, RESTManager):
     _obj_cls = GroupRunner
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(required=("runner_id",))
+    _list_filters = ("scope", "tag_list")
+    _types = {"tag_list": types.ListAttribute}
 
 
 class ProjectRunner(ObjectDeleteMixin, RESTObject):
@@ -133,3 +136,5 @@ class ProjectRunnerManager(NoUpdateMixin, RESTManager):
     _obj_cls = ProjectRunner
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(required=("runner_id",))
+    _list_filters = ("scope", "tag_list")
+    _types = {"tag_list": types.ListAttribute}

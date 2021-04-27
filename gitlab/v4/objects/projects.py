@@ -676,7 +676,6 @@ class ProjectManager(CRUDMixin, RESTManager):
             "service_desk_enabled",
         ),
     )
-    _types = {"avatar": types.ImageAttribute}
     _list_filters = (
         "archived",
         "id_after",
@@ -695,6 +694,7 @@ class ProjectManager(CRUDMixin, RESTManager):
         "sort",
         "starred",
         "statistics",
+        "topic",
         "visibility",
         "wiki_checksum_failed",
         "with_custom_attributes",
@@ -702,6 +702,7 @@ class ProjectManager(CRUDMixin, RESTManager):
         "with_merge_requests_enabled",
         "with_programming_language",
     )
+    _types = {"avatar": types.ImageAttribute, "topic": types.ListAttribute}
 
     def import_project(
         self,

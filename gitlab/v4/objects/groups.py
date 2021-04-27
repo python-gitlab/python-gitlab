@@ -244,7 +244,7 @@ class GroupManager(CRUDMixin, RESTManager):
             "default_branch_protection",
         ),
     )
-    _types = {"avatar": types.ImageAttribute}
+    _types = {"avatar": types.ImageAttribute, "skip_groups": types.ListAttribute}
 
     @exc.on_http_error(exc.GitlabImportError)
     def import_group(self, file, path, name, parent_id=None, **kwargs):
@@ -293,3 +293,4 @@ class GroupSubgroupManager(ListMixin, RESTManager):
         "owned",
         "with_custom_attributes",
     )
+    _types = {"skip_groups": types.ListAttribute}
