@@ -29,6 +29,18 @@ def test_merge_requests(project):
     )
 
 
+def test_merge_requests_get(project):
+    """Test variations of mergerequests.get()"""
+    mr_iid = 1
+    mr = project.mergerequests.get(mr_iid)
+    assert mr.iid == mr_iid
+    mr = project.mergerequests.get("1")
+    assert mr.iid == mr_iid
+    # Make sure a 'lazy' get works
+    mr = project.mergerequests.get(mr_iid, lazy=True)
+    assert mr.iid == mr_iid
+
+
 def test_merge_request_discussion(project):
     mr = project.mergerequests.list()[0]
     size = len(mr.discussions.list())
