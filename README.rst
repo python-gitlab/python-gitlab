@@ -213,3 +213,27 @@ To cleanup the environment delete the container:
    docker rm -f gitlab-test
    docker rm -f gitlab-runner-test
 
+Releases
+--------
+
+A release is automatically published once a month on the 28th if any commits merged
+to the main branch contain commit message types that signal a semantic version bump
+(``fix``, ``feat``, ``BREAKING CHANGE:``).
+
+Additionally, the release workflow can be run manually by maintainers to publish urgent
+fixes, either on GitHub or using the ``gh`` CLI with ``gh workflow run release.yml``.
+
+**Note:** As a maintainer, this means you should carefully review commit messages
+used by contributors in their pull requests. If scopes such as ``fix`` and ``feat``
+are applied to trivial commits not relevant to end users, it's best to squash their
+pull requests and summarize the addition in a single conventional commit.
+This avoids triggering incorrect version bumps and releases without functional changes.
+
+The release workflow uses `python-semantic-release
+<https://python-semantic-release.readthedocs.io>`_ and does the following:
+
+* Bumps the version in ``__version__.py`` and adds an entry in ``CHANGELOG.md``,
+* Commits and tags the changes, then pushes to the main branch as the ``github-actions`` user,
+* Creates a release from the tag and adds the changelog entry to the release notes,
+* Uploads the package as assets to the GitHub release,
+* Uploads the package to PyPI using ``PYPI_TOKEN`` (configured as a secret).

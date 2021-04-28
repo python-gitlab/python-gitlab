@@ -1,0 +1,4 @@
+[tool.semantic_release]
+version_variable = "gitlab/__version__.py:__version__"
+commit_subject = "chore: release v{version}"
+commit_message = ""
