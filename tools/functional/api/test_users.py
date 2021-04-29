@@ -3,9 +3,6 @@ GitLab API:
 https://docs.gitlab.com/ee/api/users.html
 https://docs.gitlab.com/ee/api/users.html#delete-authentication-identity-from-user
 """
-import time
-from pathlib import Path
-
 import pytest
 import requests
 
@@ -57,7 +54,7 @@ def test_delete_user(gl, wait_for_sidekiq):
 
     new_user.delete()
     result = wait_for_sidekiq(timeout=60)
-    assert result == True, "sidekiq process should have terminated but did not"
+    assert result is True, "sidekiq process should have terminated but did not"
 
     assert new_user.id not in [user.id for user in gl.users.list()]
 

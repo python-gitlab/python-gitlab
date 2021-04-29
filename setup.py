@@ -27,7 +27,9 @@ setup(
     url="https://github.com/python-gitlab/python-gitlab",
     packages=find_packages(),
     install_requires=["requests>=2.22.0", "requests-toolbelt>=0.9.1"],
-    package_data = {'gitlab': ['py.typed'], },
+    package_data={
+        "gitlab": ["py.typed"],
+    },
     python_requires=">=3.6.0",
     entry_points={"console_scripts": ["gitlab = gitlab.cli:main"]},
     classifiers=[

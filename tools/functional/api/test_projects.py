@@ -150,10 +150,10 @@ def test_project_labels(project):
     assert label.name == "labelupdated"
 
     label.subscribe()
-    assert label.subscribed == True
+    assert label.subscribed is True
 
     label.unsubscribe()
-    assert label.subscribed == False
+    assert label.subscribed is False
 
     label.delete()
     assert len(project.labels.list()) == 0

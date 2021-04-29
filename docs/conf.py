@@ -18,11 +18,10 @@ from __future__ import unicode_literals
 import os
 import sys
 
-import sphinx
+import gitlab
 
 sys.path.append("../")
 sys.path.append(os.path.dirname(__file__))
-import gitlab
 
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 
@@ -207,11 +206,11 @@ htmlhelp_basename = "python-gitlabdoc"
 
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
-    #'papersize': 'letterpaper',
-    # The font size ('10pt', '11pt' or '12pt').
-    #'pointsize': '10pt',
-    # Additional stuff for the LaTeX preamble.
-    #'preamble': '',
+    # 'papersize': 'letterpaper',
+    #  The font size ('10pt', '11pt' or '12pt').
+    # 'pointsize': '10pt',
+    #  Additional stuff for the LaTeX preamble.
+    # 'preamble': '',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples

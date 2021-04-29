@@ -1,5 +1,4 @@
 import inspect
-import itertools
 import os
 
 import jinja2
@@ -14,7 +13,6 @@ def classref(value, short=True):
     if not inspect.isclass(value):
         return ":class:%s" % value
     tilde = "~" if short else ""
-    string = "%s.%s" % (value.__module__, value.__name__)
     return ":class:`%sgitlab.objects.%s`" % (tilde, value.__name__)
 
 

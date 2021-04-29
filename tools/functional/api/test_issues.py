@@ -39,7 +39,7 @@ def test_issue_notes(issue):
 
 
 def test_issue_labels(project, issue):
-    label = project.labels.create({"name": "label2", "color": "#aabbcc"})
+    project.labels.create({"name": "label2", "color": "#aabbcc"})
     issue.labels = ["label2"]
     issue.save()
 
