@@ -29,7 +29,7 @@ def test_delete_project_release(project, release):
 
 
 def test_create_project_release_links(project, release):
-    link = release.links.create(link_data)
+    release.links.create(link_data)
 
     release = project.releases.get(release.tag_name)
     assert release.assets["links"][0]["url"] == link_data["url"]

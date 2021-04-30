@@ -74,7 +74,7 @@ def test_create_commit(project):
 def test_create_commit_status(project):
     commit = project.commits.list()[0]
     size = len(commit.statuses.list())
-    status = commit.statuses.create({"state": "success", "sha": commit.id})
+    commit.statuses.create({"state": "success", "sha": commit.id})
     assert len(commit.statuses.list()) == size + 1
 
 
@@ -82,7 +82,7 @@ def test_commit_signature(project):
     commit = project.commits.list()[0]
 
     with pytest.raises(gitlab.GitlabGetError) as e:
-        signature = commit.signature()
+        commit.signature()
 
     assert "404 Signature Not Found" in str(e.value)
 

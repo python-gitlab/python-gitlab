@@ -125,13 +125,13 @@ pr.deny_delete_tag = False
 pr.save()
 pr = project1.pushrules.get()
 assert pr is not None
-assert pr.deny_delete_tag == False
+assert pr.deny_delete_tag is False
 pr.delete()
 end_log()
 
 start_log("license")
-l = gl.get_license()
-assert "user_limit" in l
+license = gl.get_license()
+assert "user_limit" in license
 try:
     gl.set_license("dummykey")
 except Exception as e:

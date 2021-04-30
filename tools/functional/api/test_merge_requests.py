@@ -14,7 +14,7 @@ def test_merge_requests(project):
     )
 
     source_branch = "branch1"
-    branch = project.branches.create({"branch": source_branch, "ref": "master"})
+    project.branches.create({"branch": source_branch, "ref": "master"})
 
     project.files.create(
         {
@@ -24,7 +24,7 @@ def test_merge_requests(project):
             "commit_message": "New commit in new branch",
         }
     )
-    mr = project.mergerequests.create(
+    project.mergerequests.create(
         {"source_branch": "branch1", "target_branch": "master", "title": "MR readme2"}
     )
 

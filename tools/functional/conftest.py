@@ -2,7 +2,6 @@ import tempfile
 import time
 import uuid
 from pathlib import Path
-from random import randint
 from subprocess import check_output
 
 import pytest
