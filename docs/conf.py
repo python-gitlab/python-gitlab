@@ -18,10 +18,9 @@ from __future__ import unicode_literals
 import os
 import sys
 
-import gitlab
-
 sys.path.append("../")
 sys.path.append(os.path.dirname(__file__))
+import gitlab  # noqa: E402. Needed purely for readthedocs' build
 
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 
