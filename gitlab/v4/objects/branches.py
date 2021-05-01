@@ -84,5 +84,6 @@ class ProjectProtectedBranchManager(NoUpdateMixin, RESTManager):
             "allowed_to_push",
             "allowed_to_merge",
             "allowed_to_unprotect",
+            "code_owner_approval_required",
         ),
     )
