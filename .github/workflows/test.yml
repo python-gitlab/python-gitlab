@@ -55,6 +55,12 @@ jobs:
         env:
           TOXENV: ${{ matrix.toxenv }}
         run: tox
+      - name: Upload codecov coverage
+        uses: codecov/codecov-action@v1
+        with:
+          files: ./coverage.xml
+          flags: ${{ matrix.toxenv }}
+          fail_ci_if_error: true
 
   coverage:
     runs-on: ubuntu-20.04
