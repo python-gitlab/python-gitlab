@@ -201,6 +201,7 @@ class GroupManager(CRUDMixin, RESTManager):
         "owned",
         "with_custom_attributes",
         "min_access_level",
+        "top_level_only",
     )
     _create_attrs = RequiredOptional(
         required=("name", "path"),
@@ -221,6 +222,8 @@ class GroupManager(CRUDMixin, RESTManager):
             "request_access_enabled",
             "parent_id",
             "default_branch_protection",
+            "shared_runners_minutes_limit",
+            "extra_shared_runners_minutes_limit",
         ),
     )
     _update_attrs = RequiredOptional(
@@ -242,6 +245,11 @@ class GroupManager(CRUDMixin, RESTManager):
             "lfs_enabled",
             "request_access_enabled",
             "default_branch_protection",
+            "file_template_project_id",
+            "shared_runners_minutes_limit",
+            "extra_shared_runners_minutes_limit",
+            "prevent_forking_outside_group",
+            "shared_runners_setting",
         ),
     )
     _types = {"avatar": types.ImageAttribute}
@@ -292,4 +300,5 @@ class GroupSubgroupManager(ListMixin, RESTManager):
         "statistics",
         "owned",
         "with_custom_attributes",
+        "min_access_level",
     )
