@@ -1,6 +1,6 @@
-##########
+######################
 Project Remote Mirrors
-##########
+######################
 
 Remote Mirrors allow you to set up push mirroring for a project.
 

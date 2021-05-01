@@ -76,6 +76,7 @@ Change MR-level MR approval rule::
 	mr_approvalrule.save()
 
 Create a MR-level MR approval rule::
+
    mr.approval_rules.create({
        "name": "my MR custom approval rule",
        "approvals_required": 2,

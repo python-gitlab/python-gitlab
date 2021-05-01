@@ -1,6 +1,6 @@
-#######
+#############
 Deploy tokens
-#######
+#############
 
 Deploy tokens allow read-only access to your repository and registry images
 without having a user and a password.

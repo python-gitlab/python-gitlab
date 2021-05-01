@@ -75,7 +75,7 @@ List the merge requests related to a milestone::
     merge_requests = milestone.merge_requests()
 
 Milestone events
-============
+================
 
 Resource milestone events keep track of what happens to GitLab issues and merge requests.
 

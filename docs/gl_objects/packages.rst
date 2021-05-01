@@ -1,6 +1,6 @@
-#######
+########
 Packages
-#######
+########
 
 Packages allow you to utilize GitLab as a private repository for a variety
 of common package managers.

@@ -403,7 +403,7 @@ command line. This is handy for values containing new lines for instance:
    $ gitlab project create --name SuperProject --description @/tmp/description
 
 Enabling shell autocompletion
-============================
+=============================
 
 To get autocompletion, you'll need to install the package with the extra
 "autocompletion":

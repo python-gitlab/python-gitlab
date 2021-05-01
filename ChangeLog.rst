@@ -26,8 +26,8 @@ Bug Fixes
 -  Make MemberManager.all() return a list of objects
 -  %d replaced by %s
 -  Re-enable command specific help messages
--  dont ask for id attr if this is *Manager originating custom action
--  fix -/_ replacament for *Manager custom actions
+-  dont ask for id attr if this is \*Manager originating custom action
+-  fix -/_ replacament for \*Manager custom actions
 -  fix repository_id marshaling in cli
 -  register cli action for delete_in_bulk
 
@@ -233,7 +233,7 @@ Version 1.2.0_ - 2018-01-01
 * Add support for features flags
 * Add support for project and group custom variables
 * Add support for user/group/project filter by custom attribute
-* Respect content of REQUESTS_CA_BUNDLE and *_proxy envvars
+* Respect content of REQUESTS_CA_BUNDLE and \*_proxy envvars
 
 Version 1.1.0_ - 2017-11-03
 ---------------------------
