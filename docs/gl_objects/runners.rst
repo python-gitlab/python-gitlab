@@ -79,7 +79,7 @@ Verify a registered runner token::
         print("Invalid token")
 
 Project/Group runners
-===============
+=====================
 
 Reference
 ---------

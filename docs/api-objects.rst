@@ -15,6 +15,7 @@ API examples
    gl_objects/messages
    gl_objects/commits
    gl_objects/deploy_keys
+   gl_objects/deploy_tokens
    gl_objects/deployments
    gl_objects/discussions
    gl_objects/environments
@@ -34,8 +35,10 @@ API examples
    gl_objects/notes
    gl_objects/packages
    gl_objects/pagesdomains
+   gl_objects/personal_access_tokens
    gl_objects/pipelines_and_jobs
    gl_objects/projects
+   gl_objects/project_access_tokens
    gl_objects/protected_branches
    gl_objects/releases
    gl_objects/runners
