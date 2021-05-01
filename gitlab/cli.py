@@ -21,7 +21,7 @@ import argparse
 import functools
 import re
 import sys
-from typing import Any, Callable, Dict, Optional, Tuple, Union
+from typing import Any, Callable, cast, Dict, Optional, Tuple, TypeVar, Union
 
 import gitlab.config  # noqa: F401
 
@@ -35,14 +35,21 @@ camel_re = re.compile("(.)([A-Z])")
 custom_actions: Dict[str, Dict[str, Tuple[Tuple[str, ...], Tuple[str, ...], bool]]] = {}
 
 
+# For an explanation of how these type-hints work see:
+# https://mypy.readthedocs.io/en/stable/generics.html#declaring-decorators
+#
+# The goal here is that functions which get decorated will retain their types.
+__F = TypeVar("__F", bound=Callable[..., Any])
+
+
 def register_custom_action(
     cls_names: Union[str, Tuple[str, ...]],
     mandatory: Tuple[str, ...] = tuple(),
     optional: Tuple[str, ...] = tuple(),
-) -> Callable:
-    def wrap(f: Callable) -> Callable:
+) -> Callable[[__F], __F]:
+    def wrap(f: __F) -> __F:
         @functools.wraps(f)
-        def wrapped_f(*args, **kwargs):
+        def wrapped_f(*args: Any, **kwargs: Any) -> Any:
             return f(*args, **kwargs)
 
         # in_obj defines whether the method belongs to the obj or the manager
@@ -63,7 +70,7 @@ def register_custom_action(
             action = f.__name__.replace("_", "-")
             custom_actions[final_name][action] = (mandatory, optional, in_obj)
 
-        return wrapped_f
+        return cast(__F, wrapped_f)
 
     return wrap
 
@@ -135,12 +142,16 @@ def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
     return parser
 
 
-def _get_parser(cli_module):
+def _get_parser() -> argparse.ArgumentParser:
+    # NOTE: We must delay import of gitlab.v4.cli until now or
+    # otherwise it will cause circular import errors
+    import gitlab.v4.cli
+
     parser = _get_base_parser()
-    return cli_module.extend_parser(parser)
+    return gitlab.v4.cli.extend_parser(parser)
 
 
-def _parse_value(v):
+def _parse_value(v: Any) -> Any:
     if isinstance(v, str) and v.startswith("@"):
         # If the user-provided value starts with @, we try to read the file
         # path provided after @ as the real value. Exit on any error.
@@ -162,18 +173,10 @@ def docs() -> argparse.ArgumentParser:
     if "sphinx" not in sys.modules:
         sys.exit("Docs parser is only intended for build_sphinx")
 
-    # NOTE: We must delay import of gitlab.v4.cli until now or
-    # otherwise it will cause circular import errors
-    import gitlab.v4.cli
-
-    return _get_parser(gitlab.v4.cli)
+    return _get_parser()
 
 
-def main():
-    # NOTE: We must delay import of gitlab.v4.cli until now or
-    # otherwise it will cause circular import errors
-    import gitlab.v4.cli
-
+def main() -> None:
     if "--version" in sys.argv:
         print(gitlab.__version__)
         sys.exit(0)
@@ -183,7 +186,7 @@ def main():
     # This first parsing step is used to find the gitlab config to use, and
     # load the propermodule (v3 or v4) accordingly. At that point we don't have
     # any subparser setup
-    (options, args) = parser.parse_known_args(sys.argv)
+    (options, _) = parser.parse_known_args(sys.argv)
     try:
         config = gitlab.config.GitlabConfigParser(options.gitlab, options.config_file)
     except gitlab.config.ConfigError as e:
@@ -196,14 +199,14 @@ def main():
         raise ModuleNotFoundError(name="gitlab.v%s.cli" % config.api_version)
 
     # Now we build the entire set of subcommands and do the complete parsing
-    parser = _get_parser(gitlab.v4.cli)
+    parser = _get_parser()
     try:
         import argcomplete  # type: ignore
 
         argcomplete.autocomplete(parser)
     except Exception:
         pass
-    args = parser.parse_args(sys.argv[1:])
+    args = parser.parse_args()
 
     config_files = args.config_file
     gitlab_id = args.gitlab
@@ -216,7 +219,7 @@ def main():
     action = args.whaction
     what = args.what
 
-    args = args.__dict__
+    args_dict = vars(args)
     # Remove CLI behavior-related args
     for item in (
         "gitlab",
@@ -228,8 +231,8 @@ def main():
         "version",
         "output",
     ):
-        args.pop(item)
-    args = {k: _parse_value(v) for k, v in args.items() if v is not None}
+        args_dict.pop(item)
+    args_dict = {k: _parse_value(v) for k, v in args_dict.items() if v is not None}
 
     try:
         gl = gitlab.Gitlab.from_config(gitlab_id, config_files)
@@ -241,6 +244,4 @@ def main():
     if debug:
         gl.enable_debug()
 
-    gitlab.v4.cli.run(gl, what, action, args, verbose, output, fields)
-
-    sys.exit(0)
+    gitlab.v4.cli.run(gl, what, action, args_dict, verbose, output, fields)

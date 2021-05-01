@@ -206,7 +206,7 @@ class GitlabConfigParser(object):
         except Exception:
             pass
 
-    def _get_values_from_helper(self):
+    def _get_values_from_helper(self) -> None:
         """Update attributes that may get values from an external helper program"""
         for attr in HELPER_ATTRIBUTES:
             value = getattr(self, attr)

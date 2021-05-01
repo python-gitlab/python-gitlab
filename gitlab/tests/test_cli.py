@@ -26,7 +26,6 @@ from contextlib import redirect_stderr  # noqa: H302
 import pytest
 
 from gitlab import cli
-import gitlab.v4.cli
 
 
 def test_what_to_cls():
@@ -94,14 +93,14 @@ def test_base_parser():
 
 
 def test_v4_parse_args():
-    parser = cli._get_parser(gitlab.v4.cli)
+    parser = cli._get_parser()
     args = parser.parse_args(["project", "list"])
     assert args.what == "project"
     assert args.whaction == "list"
 
 
 def test_v4_parser():
-    parser = cli._get_parser(gitlab.v4.cli)
+    parser = cli._get_parser()
     subparsers = next(
         action
         for action in parser._actions

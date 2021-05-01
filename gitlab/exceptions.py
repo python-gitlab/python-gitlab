@@ -16,10 +16,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import functools
+from typing import Any, Callable, cast, Optional, Type, TypeVar, TYPE_CHECKING, Union
 
 
 class GitlabError(Exception):
-    def __init__(self, error_message="", response_code=None, response_body=None):
+    def __init__(
+        self,
+        error_message: Union[str, bytes] = "",
+        response_code: Optional[int] = None,
+        response_body: Optional[bytes] = None,
+    ) -> None:
 
         Exception.__init__(self, error_message)
         # Http status code
@@ -30,11 +36,15 @@ class GitlabError(Exception):
         try:
             # if we receive str/bytes we try to convert to unicode/str to have
             # consistent message types (see #616)
+            if TYPE_CHECKING:
+                assert isinstance(error_message, bytes)
             self.error_message = error_message.decode()
         except Exception:
+            if TYPE_CHECKING:
+                assert isinstance(error_message, str)
             self.error_message = error_message
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.response_code is not None:
             return "{0}: {1}".format(self.response_code, self.error_message)
         else:
@@ -269,7 +279,14 @@ class GitlabUnfollowError(GitlabOperationError):
     pass
 
 
-def on_http_error(error):
+# For an explanation of how these type-hints work see:
+# https://mypy.readthedocs.io/en/stable/generics.html#declaring-decorators
+#
+# The goal here is that functions which get decorated will retain their types.
+__F = TypeVar("__F", bound=Callable[..., Any])
+
+
+def on_http_error(error: Type[Exception]) -> Callable[[__F], __F]:
     """Manage GitlabHttpError exceptions.
 
     This decorator function can be used to catch GitlabHttpError exceptions
@@ -280,14 +297,14 @@ def on_http_error(error):
             GitlabError
     """
 
-    def wrap(f):
+    def wrap(f: __F) -> __F:
         @functools.wraps(f)
-        def wrapped_f(*args, **kwargs):
+        def wrapped_f(*args: Any, **kwargs: Any) -> Any:
             try:
                 return f(*args, **kwargs)
             except GitlabHttpError as e:
                 raise error(e.error_message, e.response_code, e.response_body) from e
 
-        return wrapped_f
+        return cast(__F, wrapped_f)
 
     return wrap
