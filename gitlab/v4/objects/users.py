@@ -443,6 +443,7 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
             "description",
             "builds_enabled",
             "public_builds",
+            "public_jobs",
             "import_url",
             "only_allow_merge_if_build_succeeds",
         ),
