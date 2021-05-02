@@ -128,11 +128,25 @@ class TestRESTObject:
         assert {"foo": "foo", "bar": "bar"} == obj._attrs
         assert {} == obj._updated_attrs
 
-    def test_update_attrs_deleted(self, fake_manager):
-        obj = FakeObject(fake_manager, {"foo": "foo", "bar": "bar"})
-        obj.bar = "baz"
+    @pytest.mark.parametrize(
+        "initial_attrs,persist_attrs,assigned_attr,expected_attrs",
+        [
+            ({"foo": "foo", "bar": "bar"}, None, "baz", {"foo": "foo"}),
+            ({"foo": "foo", "bar": "bar"}, False, "baz", {"foo": "foo"}),
+            ({"foo": "foo", "bar": "bar"}, True, "baz", {"foo": "foo", "bar": "baz"}),
+        ],
+    )
+    def test_update_attrs_deleted(
+        self, fake_manager, initial_attrs, persist_attrs, assigned_attr, expected_attrs
+    ):
+        obj = FakeObject(fake_manager, initial_attrs)
+        obj._attrs["bar"] = assigned_attr
+
+        if persist_attrs is not None:
+            obj.__dict__["_persist_attrs"] = persist_attrs
+
         obj._update_attrs({"foo": "foo"})
-        assert {"foo": "foo"} == obj._attrs
+        assert expected_attrs == obj._attrs
         assert {} == obj._updated_attrs
 
     def test_dir_unique(self, fake_manager):

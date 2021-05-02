@@ -31,3 +31,8 @@ How can I clone the repository of a project?
         print(project.attributes)  # displays all the attributes
         git_url = project.ssh_url_to_repo
         subprocess.call(['git', 'clone', git_url])
+
+I get an ``AttributeError`` when accessing attributes after ``save()`` or ``refresh()``.
+    You are most likely trying to access an attribute that was not returned
+    by the server on the second request. Use the ``persist_attributes=True``
+    argument to override this - see :ref:`persist_attributes`.

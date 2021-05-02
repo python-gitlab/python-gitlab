@@ -142,6 +142,24 @@ def test_user_custom_attributes(gl, user):
     assert len(user.customattributes.list()) == 0
 
 
+@pytest.mark.parametrize(
+    "save_kwargs,hasattr_before,hasattr_after",
+    [
+        ({}, True, False),
+        ({"persist_attributes": True}, True, True),
+        ({"persist_attributes": False}, True, False),
+    ],
+)
+def test_user_custom_attributes_after_save(
+    gl, user, save_kwargs, hasattr_before, hasattr_after
+):
+    user = gl.users.get(user.id, with_custom_attributes=True)
+    assert hasattr(user, "custom_attributes") == hasattr_before
+
+    user.save(**save_kwargs)
+    assert hasattr(user, "custom_attributes") == hasattr_after
+
+
 def test_user_impersonation_tokens(gl, user):
     token = user.impersonationtokens.create(
         {"name": "token1", "scopes": ["api", "read_user"]}

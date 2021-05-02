@@ -45,6 +45,7 @@ class RESTObject(object):
     _attrs: Dict[str, Any]
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
+    _persist_attrs: bool
     _short_print_attr: Optional[str] = None
     _updated_attrs: Dict[str, Any]
     manager: "RESTManager"
@@ -59,6 +60,7 @@ class RESTObject(object):
             }
         )
         self.__dict__["_parent_attrs"] = self.manager.parent_attrs
+        self.__dict__["_persist_attrs"] = False
         self._create_managers()
 
     def __getstate__(self) -> Dict[str, Any]:
@@ -153,7 +155,11 @@ class RESTObject(object):
 
     def _update_attrs(self, new_attrs: Dict[str, Any]) -> None:
         self.__dict__["_updated_attrs"] = {}
-        self.__dict__["_attrs"] = new_attrs
+
+        if self.__dict__["_persist_attrs"] is True:
+            self.__dict__["_attrs"].update(new_attrs)
+        else:
+            self.__dict__["_attrs"] = new_attrs
 
     def get_id(self):
         """Returns the id of the resource."""

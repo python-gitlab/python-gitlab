@@ -234,6 +234,24 @@ def test_project_stars(project):
     assert project.star_count == 0
 
 
+@pytest.mark.parametrize(
+    "refresh_kwargs,hasattr_before,hasattr_after",
+    [
+        ({}, True, False),
+        ({"persist_attributes": True}, True, True),
+        ({"persist_attributes": False}, True, False),
+    ],
+)
+def test_project_statistics_after_refresh(
+    gl, project, refresh_kwargs, hasattr_before, hasattr_after
+):
+    project = gl.projects.get(project.id, statistics=True)
+    assert hasattr(project, "statistics") == hasattr_before
+
+    project.refresh(**refresh_kwargs)
+    assert hasattr(project, "statistics") == hasattr_after
+
+
 def test_project_tags(project, project_file):
     tag = project.tags.create({"tag_name": "v1.0", "ref": "master"})
     assert len(project.tags.list()) == 1

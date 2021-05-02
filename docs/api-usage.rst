@@ -190,6 +190,37 @@ a project (the previous example used 2 API calls):
    project = gl.projects.get(1, lazy=True)  # no API call
    project.star()  # API call
 
+.. _persist_attributes:
+
+Persisting local attributes
+===========================
+
+When methods manipulate an existing object, such as with ``refresh()`` and ``save()``,
+the object will only have attributes that were returned by the server. In some cases,
+such as when the initial request fetches attributes that are needed later for additional
+processing, this may not be desired:
+
+.. code-block:: python
+
+   project = gl.projects.get(1, statistics=True)
+   project.statistics
+
+   project.refresh()
+   project.statistics # AttributeError
+
+To avoid this, pass ``persist_attributes=True`` to ``refresh()``/``save()`` calls:
+
+.. code-block:: python
+
+   project = gl.projects.get(1, statistics=True)
+   project.statistics
+
+   project.refresh(persist_attributes=True)
+   project.statistics
+
+The ``persist_attributes`` setting is itself persisted in the object and can be reused
+for later ``refresh()`` and ``save()`` calls.
+
 Pagination
 ==========
 

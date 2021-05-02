@@ -162,10 +162,12 @@ class RefreshMixin(_RestObjectBase):
     manager: base.RESTManager
 
     @exc.on_http_error(exc.GitlabGetError)
-    def refresh(self, **kwargs: Any) -> None:
+    def refresh(self, persist_attributes: bool = None, **kwargs: Any) -> None:
         """Refresh a single object from server.
 
         Args:
+            persist_attributes: Whether to keep existing local attributes that
+            were not fetched from the server on refresh
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns None (updates the object)
@@ -174,6 +176,9 @@ class RefreshMixin(_RestObjectBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
+        if persist_attributes is not None:
+            self.__dict__["_persist_attrs"] = persist_attributes
+
         if self._id_attr:
             path = "%s/%s" % (self.manager.path, self.id)
         else:
@@ -529,18 +534,23 @@ class SaveMixin(_RestObjectBase):
 
         return updated_data
 
-    def save(self, **kwargs: Any) -> None:
+    def save(self, persist_attributes: bool = None, **kwargs: Any) -> None:
         """Save the changes made to the object to the server.
 
         The object is updated to match what the server returns.
 
         Args:
+            persist_attributes: Whether to keep existing local attributes that
+            were not fetched from the server on save
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raise:
             GitlabAuthenticationError: If authentication is not correct
             GitlabUpdateError: If the server cannot perform the request
         """
+        if persist_attributes is not None:
+            self.__dict__["_persist_attrs"] = persist_attributes
+
         updated_data = self._get_updated_data()
         # Nothing to update. Server fails if sent an empty dict.
         if not updated_data:
