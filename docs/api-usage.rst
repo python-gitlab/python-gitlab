@@ -407,3 +407,23 @@ parameter to that API invocation:
    gl = gitlab.gitlab(url, token, api_version=4)
    gl.projects.import_github(ACCESS_TOKEN, 123456, "root", timeout=120.0)
 
+.. _object_attributes:
+
+Attributes in updated objects
+=============================
+
+When methods manipulate an existing object, such as with ``refresh()`` and ``save()``,
+the object will only have attributes that were returned by the server. In some cases,
+such as when the initial request fetches attributes that are needed later for additional
+processing, this may not be desired:
+
+.. code-block:: python
+
+   project = gl.projects.get(1, statistics=True)
+   project.statistics
+
+   project.refresh()
+   project.statistics # AttributeError
+
+To avoid this, either copy the object/attributes before calling ``refresh()``/``save()``
+or subsequently perform another ``get()`` call as needed, to fetch the attributes you want.
