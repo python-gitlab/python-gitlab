@@ -50,7 +50,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
             GitlabPipelineCancelError: If the request failed
         """
         path = "%s/%s/cancel" % (self.manager.path, self.get_id())
-        self.manager.gitlab.http_post(path)
+        return self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineRetryError)
@@ -65,7 +65,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
             GitlabPipelineRetryError: If the request failed
         """
         path = "%s/%s/retry" % (self.manager.path, self.get_id())
-        self.manager.gitlab.http_post(path)
+        return self.manager.gitlab.http_post(path)
 
 
 class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
