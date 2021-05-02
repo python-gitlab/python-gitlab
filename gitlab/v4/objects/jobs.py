@@ -24,7 +24,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabJobCancelError: If the job could not be canceled
         """
         path = "%s/%s/cancel" % (self.manager.path, self.get_id())
-        self.manager.gitlab.http_post(path)
+        return self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobRetryError)
@@ -39,7 +39,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabJobRetryError: If the job could not be retried
         """
         path = "%s/%s/retry" % (self.manager.path, self.get_id())
-        self.manager.gitlab.http_post(path)
+        return self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobPlayError)
