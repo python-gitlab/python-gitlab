@@ -33,6 +33,10 @@ def test_groups(gl):
     assert group3.parent_id == p_id
     assert group2.subgroups.list()[0].id == group3.id
 
+    filtered_groups = gl.groups.list(skip_groups=[group3.id, group4.id])
+    assert group3 not in filtered_groups
+    assert group3 not in filtered_groups
+
     group1.members.create(
         {"access_level": gitlab.const.OWNER_ACCESS, "user_id": user.id}
     )
