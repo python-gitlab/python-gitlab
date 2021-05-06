@@ -62,13 +62,19 @@ class MergeRequestManager(ListMixin, RESTManager):
         "scope",
         "author_id",
         "assignee_id",
+        "approver_ids",
+        "approved_by_ids",
         "my_reaction_emoji",
         "source_branch",
         "target_branch",
         "search",
         "wip",
     )
-    _types = {"labels": types.ListAttribute}
+    _types = {
+        "approver_ids": types.ListAttribute,
+        "approved_by_ids": types.ListAttribute,
+        "labels": types.ListAttribute,
+    }
 
 
 class GroupMergeRequest(RESTObject):
@@ -93,13 +99,19 @@ class GroupMergeRequestManager(ListMixin, RESTManager):
         "scope",
         "author_id",
         "assignee_id",
+        "approver_ids",
+        "approved_by_ids",
         "my_reaction_emoji",
         "source_branch",
         "target_branch",
         "search",
         "wip",
     )
-    _types = {"labels": types.ListAttribute}
+    _types = {
+        "approver_ids": types.ListAttribute,
+        "approved_by_ids": types.ListAttribute,
+        "labels": types.ListAttribute,
+    }
 
 
 class ProjectMergeRequest(
@@ -377,15 +389,23 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
         "updated_after",
         "updated_before",
         "scope",
+        "iids",
         "author_id",
         "assignee_id",
+        "approver_ids",
+        "approved_by_ids",
         "my_reaction_emoji",
         "source_branch",
         "target_branch",
         "search",
         "wip",
     )
-    _types = {"labels": types.ListAttribute}
+    _types = {
+        "approver_ids": types.ListAttribute,
+        "approved_by_ids": types.ListAttribute,
+        "iids": types.ListAttribute,
+        "labels": types.ListAttribute,
+    }
 
 
 class ProjectMergeRequestDiff(RESTObject):

@@ -1,3 +1,4 @@
+from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, DeleteMixin, ListMixin, ObjectDeleteMixin
 
@@ -39,6 +40,7 @@ class GroupDeployTokenManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
             "username",
         ),
     )
+    _types = {"scopes": types.ListAttribute}
 
 
 class ProjectDeployToken(ObjectDeleteMixin, RESTObject):
@@ -59,3 +61,4 @@ class ProjectDeployTokenManager(ListMixin, CreateMixin, DeleteMixin, RESTManager
             "username",
         ),
     )
+    _types = {"scopes": types.ListAttribute}

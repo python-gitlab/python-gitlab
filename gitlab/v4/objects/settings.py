@@ -1,3 +1,4 @@
+from gitlab import types
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
@@ -35,13 +36,18 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
             "default_snippet_visibility",
             "default_group_visibility",
             "outbound_local_requests_whitelist",
+            "disabled_oauth_sign_in_sources",
             "domain_whitelist",
             "domain_blacklist_enabled",
             "domain_blacklist",
+            "domain_allowlist",
+            "domain_denylist_enabled",
+            "domain_denylist",
             "external_authorization_service_enabled",
             "external_authorization_service_url",
             "external_authorization_service_default_label",
             "external_authorization_service_timeout",
+            "import_sources",
             "user_oauth_applications",
             "after_sign_out_path",
             "container_registry_token_expire_delay",
@@ -65,12 +71,21 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
             "asset_proxy_enabled",
             "asset_proxy_url",
             "asset_proxy_whitelist",
+            "asset_proxy_allowlist",
             "geo_node_allowed_ips",
             "allow_local_requests_from_hooks_and_services",
             "allow_local_requests_from_web_hooks_and_services",
             "allow_local_requests_from_system_hooks",
         ),
     )
+    _types = {
+        "asset_proxy_allowlist": types.ListAttribute,
+        "disabled_oauth_sign_in_sources": types.ListAttribute,
+        "domain_allowlist": types.ListAttribute,
+        "domain_denylist": types.ListAttribute,
+        "import_sources": types.ListAttribute,
+        "restricted_visibility_levels": types.ListAttribute,
+    }
 
     @exc.on_http_error(exc.GitlabUpdateError)
     def update(self, id=None, new_data=None, **kwargs):

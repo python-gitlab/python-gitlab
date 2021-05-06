@@ -328,7 +328,8 @@ class ProjectUserManager(ListMixin, RESTManager):
     _path = "/projects/%(project_id)s/users"
     _obj_cls = ProjectUser
     _from_parent_attrs = {"project_id": "id"}
-    _list_filters = ("search",)
+    _list_filters = ("search", "skip_users")
+    _types = {"skip_users": types.ListAttribute}
 
 
 class UserEmail(ObjectDeleteMixin, RESTObject):

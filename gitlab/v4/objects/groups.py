@@ -252,7 +252,7 @@ class GroupManager(CRUDMixin, RESTManager):
             "shared_runners_setting",
         ),
     )
-    _types = {"avatar": types.ImageAttribute}
+    _types = {"avatar": types.ImageAttribute, "skip_groups": types.ListAttribute}
 
     @exc.on_http_error(exc.GitlabImportError)
     def import_group(self, file, path, name, parent_id=None, **kwargs):
@@ -302,3 +302,4 @@ class GroupSubgroupManager(ListMixin, RESTManager):
         "with_custom_attributes",
         "min_access_level",
     )
+    _types = {"skip_groups": types.ListAttribute}

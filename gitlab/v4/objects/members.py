@@ -1,4 +1,4 @@
-from gitlab import cli
+from gitlab import cli, types
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
@@ -26,6 +26,7 @@ class GroupMemberManager(CRUDMixin, RESTManager):
     _update_attrs = RequiredOptional(
         required=("access_level",), optional=("expires_at",)
     )
+    _types = {"user_ids": types.ListAttribute}
 
     @cli.register_custom_action("GroupMemberManager")
     @exc.on_http_error(exc.GitlabListError)
@@ -67,6 +68,7 @@ class ProjectMemberManager(CRUDMixin, RESTManager):
     _update_attrs = RequiredOptional(
         required=("access_level",), optional=("expires_at",)
     )
+    _types = {"user_ids": types.ListAttribute}
 
     @cli.register_custom_action("ProjectMemberManager")
     @exc.on_http_error(exc.GitlabListError)

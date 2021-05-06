@@ -62,7 +62,7 @@ class IssueManager(RetrieveMixin, RESTManager):
         "updated_after",
         "updated_before",
     )
-    _types = {"labels": types.ListAttribute}
+    _types = {"iids": types.ListAttribute, "labels": types.ListAttribute}
 
 
 class GroupIssue(RESTObject):
@@ -89,7 +89,7 @@ class GroupIssueManager(ListMixin, RESTManager):
         "updated_after",
         "updated_before",
     )
-    _types = {"labels": types.ListAttribute}
+    _types = {"iids": types.ListAttribute, "labels": types.ListAttribute}
 
 
 class ProjectIssue(
