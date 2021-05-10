@@ -4,21 +4,6 @@ stages:
   - deploy
   - deploy-latest
 
-deploy:
-  stage: deploy
-  script:
-    - pip install -U setuptools wheel twine
-    - python setup.py sdist bdist_wheel
-    # test package
-    - python3 -m venv test
-    - . test/bin/activate
-    - pip install -U dist/python_gitlab*.whl
-    - gitlab -h
-    - deactivate
-    - twine upload --skip-existing -u $TWINE_USERNAME -p $TWINE_PASSWORD dist/*
-  only:
-    - tags
-
 deploy_image:
   stage: deploy
   image:
