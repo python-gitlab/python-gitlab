@@ -2,6 +2,8 @@ from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CRUDMixin,
+    DeleteMixin,
+    ListMixin,
     MemberAllMixin,
     ObjectDeleteMixin,
     RetrieveMixin,
@@ -9,6 +11,10 @@ from gitlab.mixins import (
 )
 
 __all__ = [
+    "GroupBillableMember",
+    "GroupBillableMemberManager",
+    "GroupBillableMemberMembership",
+    "GroupBillableMemberMembershipManager",
     "GroupMember",
     "GroupMemberManager",
     "GroupMemberAllManager",
@@ -33,6 +39,28 @@ class GroupMemberManager(MemberAllMixin, CRUDMixin, RESTManager):
         required=("access_level",), optional=("expires_at",)
     )
     _types = {"user_ids": types.ListAttribute}
+
+
+class GroupBillableMember(ObjectDeleteMixin, RESTObject):
+    _short_print_attr = "username"
+    _managers = (("memberships", "GroupBillableMemberMembershipManager"),)
+
+
+class GroupBillableMemberManager(ListMixin, DeleteMixin, RESTManager):
+    _path = "/groups/%(group_id)s/billable_members"
+    _obj_cls = GroupBillableMember
+    _from_parent_attrs = {"group_id": "id"}
+    _list_filters = ("search", "sort")
+
+
+class GroupBillableMemberMembership(RESTObject):
+    _id_attr = "user_id"
+
+
+class GroupBillableMemberMembershipManager(ListMixin, RESTManager):
+    _path = "/groups/%(group_id)s/billable_members/%(user_id)s/memberships"
+    _obj_cls = GroupBillableMemberMembership
+    _from_parent_attrs = {"group_id": "group_id", "user_id": "id"}
 
 
 class GroupMemberAllManager(RetrieveMixin, RESTManager):
