@@ -1,14 +1,20 @@
-from gitlab import cli, types
-from gitlab import exceptions as exc
+from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
-
+from gitlab.mixins import (
+    CRUDMixin,
+    ObjectDeleteMixin,
+    SaveMixin,
+    RetrieveMixin,
+    MemberAllMixin,
+)
 
 __all__ = [
     "GroupMember",
     "GroupMemberManager",
+    "GroupMemberAllManager",
     "ProjectMember",
     "ProjectMemberManager",
+    "ProjectMemberAllManager",
 ]
 
 
@@ -16,7 +22,7 @@ class GroupMember(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "username"
 
 
-class GroupMemberManager(CRUDMixin, RESTManager):
+class GroupMemberManager(MemberAllMixin, CRUDMixin, RESTManager):
     _path = "/groups/%(group_id)s/members"
     _obj_cls = GroupMember
     _from_parent_attrs = {"group_id": "id"}
@@ -28,37 +34,18 @@ class GroupMemberManager(CRUDMixin, RESTManager):
     )
     _types = {"user_ids": types.ListAttribute}
 
-    @cli.register_custom_action("GroupMemberManager")
-    @exc.on_http_error(exc.GitlabListError)
-    def all(self, **kwargs):
-        """List all the members, included inherited ones.
 
-        Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
-                defined, return a generator instead of a list
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabListError: If the list could not be retrieved
-
-        Returns:
-            RESTObjectList: The list of members
-        """
-
-        path = "%s/all" % self.path
-        obj = self.gitlab.http_list(path, **kwargs)
-        return [self._obj_cls(self, item) for item in obj]
+class GroupMemberAllManager(RetrieveMixin, RESTManager):
+    _path = "/groups/%(group_id)s/members/all"
+    _obj_cls = GroupMember
+    _from_parent_attrs = {"group_id": "id"}
 
 
 class ProjectMember(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "username"
 
 
-class ProjectMemberManager(CRUDMixin, RESTManager):
+class ProjectMemberManager(MemberAllMixin, CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/members"
     _obj_cls = ProjectMember
     _from_parent_attrs = {"project_id": "id"}
@@ -70,27 +57,8 @@ class ProjectMemberManager(CRUDMixin, RESTManager):
     )
     _types = {"user_ids": types.ListAttribute}
 
-    @cli.register_custom_action("ProjectMemberManager")
-    @exc.on_http_error(exc.GitlabListError)
-    def all(self, **kwargs):
-        """List all the members, included inherited ones.
 
-        Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
-                defined, return a generator instead of a list
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabListError: If the list could not be retrieved
-
-        Returns:
-            RESTObjectList: The list of members
-        """
-
-        path = "%s/all" % self.path
-        obj = self.gitlab.http_list(path, **kwargs)
-        return [self._obj_cls(self, item) for item in obj]
+class ProjectMemberAllManager(RetrieveMixin, RESTManager):
+    _path = "/projects/%(project_id)s/members/all"
+    _obj_cls = ProjectMember
+    _from_parent_attrs = {"project_id": "id"}

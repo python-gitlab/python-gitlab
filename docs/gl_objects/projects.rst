@@ -502,29 +502,38 @@ Reference
 
   + :class:`gitlab.v4.objects.ProjectMember`
   + :class:`gitlab.v4.objects.ProjectMemberManager`
+  + :class:`gitlab.v4.objects.ProjectMemberAllManager`
   + :attr:`gitlab.v4.objects.Project.members`
+  + :attr:`gitlab.v4.objects.Project.members_all`
 
 * GitLab API: https://docs.gitlab.com/ce/api/members.html
 
 Examples
 --------
 
-List the project members::
+List only direct project members::
 
     members = project.members.list()
 
 List the project members recursively (including inherited members through
 ancestor groups)::
 
-    members = project.members.all(all=True)
+    members = project.members_all.list(all=True)
+    # or
+    members = project.members.all(all=True) # Deprecated
 
 Search project members matching a query string::
 
     members = project.members.list(query='bar')
 
-Get a single project member::
+Get only direct project member::
 
     member = project.members.get(user_id)
+
+Get a member of a project, including members inherited through ancestor groups::
+
+    members = project.members_all.get(member_id)
+
 
 Add a project member::
 
