@@ -28,20 +28,37 @@ import pytest
 from gitlab import cli
 
 
-def test_what_to_cls():
-    assert "Foo" == cli.what_to_cls("foo")
-    assert "FooBar" == cli.what_to_cls("foo-bar")
-
-
-def test_cls_to_what():
-    class Class(object):
+@pytest.mark.parametrize(
+    "what,expected_class",
+    [
+        ("class", "Class"),
+        ("test-class", "TestClass"),
+        ("test-longer-class", "TestLongerClass"),
+    ],
+)
+def test_what_to_cls(what, expected_class):
+    def _namespace():
         pass
 
-    class TestClass(object):
-        pass
+    ExpectedClass = type(expected_class, (), {})
+    _namespace.__dict__[expected_class] = ExpectedClass
 
-    assert "test-class" == cli.cls_to_what(TestClass)
-    assert "class" == cli.cls_to_what(Class)
+    assert cli.what_to_cls(what, _namespace) == ExpectedClass
+
+
+@pytest.mark.parametrize(
+    "class_name,expected_what",
+    [
+        ("Class", "class"),
+        ("TestClass", "test-class"),
+        ("TestUPPERCASEClass", "test-uppercase-class"),
+        ("UPPERCASETestClass", "uppercase-test-class"),
+    ],
+)
+def test_cls_to_what(class_name, expected_what):
+    TestClass = type(class_name, (), {})
+
+    assert cli.cls_to_what(TestClass) == expected_what
 
 
 def test_die():
