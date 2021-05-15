@@ -40,7 +40,7 @@ Results can also be sorted using the following parameters:
 ::
 
     # List all projects (default 20)
-    projects = gl.projects.list(all=True)
+    projects = gl.projects.list(get_all=True)
     # Archived projects
     projects = gl.projects.list(archived=1)
     # Limit to projects with a defined visibility
@@ -559,7 +559,7 @@ List only direct project members::
 List the project members recursively (including inherited members through
 ancestor groups)::
 
-    members = project.members_all.list(all=True)
+    members = project.members_all.list(get_all=True)
 
 Search project members matching a query string::
 

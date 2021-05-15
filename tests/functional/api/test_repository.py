@@ -105,6 +105,26 @@ def test_create_commit(project):
     assert isinstance(commit.merge_requests(), list)
 
 
+def test_list_all_commits(project):
+    data = {
+        "branch": "new-branch",
+        "start_branch": "main",
+        "commit_message": "New commit on new branch",
+        "actions": [
+            {"action": "create", "file_path": "new-file", "content": "new content"}
+        ],
+    }
+    commit = project.commits.create(data)
+
+    commits = project.commits.list(all=True)
+    assert commit not in commits
+
+    # Listing commits on other branches requires `all` parameter passed to the API
+    all_commits = project.commits.list(get_all=True, all=True)
+    assert commit in all_commits
+    assert len(all_commits) > len(commits)
+
+
 def test_create_commit_status(project):
     commit = project.commits.list()[0]
     status = commit.statuses.create({"state": "success", "sha": commit.id})

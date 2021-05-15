@@ -110,7 +110,7 @@ Examples:
 
 .. warning::
    Calling ``list()`` without any arguments will by default not return the complete list
-   of items. Use either the ``all=True`` or ``iterator=True`` parameters to get all the
+   of items. Use either the ``get_all=True`` or ``iterator=True`` parameters to get all the
    items when using listing methods. See the :ref:`pagination` section for more
    information.
 
@@ -144,7 +144,7 @@ Some objects also provide managers to access related GitLab resources:
 
    # list the issues for a project
    project = gl.projects.get(1)
-   issues = project.issues.list(all=True)
+   issues = project.issues.list(get_all=True)
 
 python-gitlab allows to send any data to the GitLab server when making queries.
 In case of invalid or missing arguments python-gitlab will raise an exception
@@ -314,13 +314,14 @@ listing methods support the ``page`` and ``per_page`` parameters:
 
    The first page is page 1, not page 0.
 
-By default GitLab does not return the complete list of items. Use the ``all``
+By default GitLab does not return the complete list of items. Use the ``get_all``
 parameter to get all the items when using listing methods:
 
 .. code-block:: python
 
-   all_groups = gl.groups.list(all=True)
-   all_owned_projects = gl.projects.list(owned=True, all=True)
+   all_groups = gl.groups.list(get_all=True)
+
+   all_owned_projects = gl.projects.list(owned=True, get_all=True)
 
 You can define the ``per_page`` value globally to avoid passing it to every
 ``list()`` method call:

@@ -857,7 +857,7 @@ class Gitlab:
         Returns:
             A list of the objects returned by the server. If `iterator` is
             True and no pagination-related arguments (`page`, `per_page`,
-            `all`) are defined then a GitlabList object (generator) is returned
+            `get_all`) are defined then a GitlabList object (generator) is returned
             instead. This object will make API calls when needed to fetch the
             next items from the server.
 
@@ -884,7 +884,13 @@ class Gitlab:
                 category=DeprecationWarning,
             )
 
-        get_all = kwargs.pop("all", None)
+        # Provide a `get_all`` param to avoid clashes with `all` API attributes.
+        get_all = kwargs.pop("get_all", None)
+
+        if get_all is None:
+            # For now, keep `all` without deprecation.
+            get_all = kwargs.pop("all", None)
+
         url = self._build_url(path)
 
         page = kwargs.get("page")
@@ -902,7 +908,7 @@ class Gitlab:
 
         def should_emit_warning() -> bool:
             # No warning is emitted if any of the following conditions apply:
-            # * `all=False` was set in the `list()` call.
+            # * `get_all=False` was set in the `list()` call.
             # * `page` was set in the `list()` call.
             # * GitLab did not return the `x-per-page` header.
             # * Number of items received is less than per-page value.
@@ -927,12 +933,12 @@ class Gitlab:
         total_items = "many" if gl_list.total is None else gl_list.total
         utils.warn(
             message=(
-                f"Calling a `list()` method without specifying `all=True` or "
+                f"Calling a `list()` method without specifying `get_all=True` or "
                 f"`iterator=True` will return a maximum of {gl_list.per_page} items. "
                 f"Your query returned {len(items)} of {total_items} items. See "
                 f"{_PAGINATION_URL} for more details. If this was done intentionally, "
                 f"then this warning can be supressed by adding the argument "
-                f"`all=False` to the `list()` call."
+                f"`get_all=False` to the `list()` call."
             ),
             category=UserWarning,
         )

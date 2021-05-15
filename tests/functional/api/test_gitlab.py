@@ -18,7 +18,7 @@ def test_broadcast_messages(gl):
     msg.save()
     msg_id = msg.id
 
-    msg = gl.broadcastmessages.list(all=True)[0]
+    msg = gl.broadcastmessages.list(get_all=True)[0]
     assert msg.color == "#444444"
 
     msg = gl.broadcastmessages.get(msg_id)
@@ -86,13 +86,13 @@ def test_template_dockerfile(gl):
 
 
 def test_template_gitignore(gl):
-    assert gl.gitignores.list(all=True)
+    assert gl.gitignores.list(get_all=True)
     gitignore = gl.gitignores.get("Node")
     assert gitignore.content is not None
 
 
 def test_template_gitlabciyml(gl):
-    assert gl.gitlabciymls.list(all=True)
+    assert gl.gitlabciymls.list(get_all=True)
     gitlabciyml = gl.gitlabciymls.get("Nodejs")
     assert gitlabciyml.content is not None
 
@@ -114,10 +114,10 @@ def test_hooks(gl):
 
 
 def test_namespaces(gl):
-    namespace = gl.namespaces.list(all=True)
+    namespace = gl.namespaces.list(get_all=True)
     assert namespace
 
-    namespace = gl.namespaces.list(search="root", all=True)[0]
+    namespace = gl.namespaces.list(search="root", get_all=True)[0]
     assert namespace.kind == "user"
 
 
@@ -217,8 +217,8 @@ def test_list_all_false_nowarning(gl, recwarn):
 
 
 def test_list_all_true_nowarning(gl, recwarn):
-    """Using `all=True` will disable the warning"""
-    items = gl.gitlabciymls.list(all=True)
+    """Using `get_all=True` will disable the warning"""
+    items = gl.gitlabciymls.list(get_all=True)
     assert not recwarn
     assert len(items) > 20
 

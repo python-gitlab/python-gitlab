@@ -97,7 +97,7 @@ supplying the ``obey_rate_limit`` argument.
    import requests
 
    gl = gitlab.gitlab(url, token, api_version=4)
-   gl.projects.list(all=True, obey_rate_limit=False)
+   gl.projects.list(get_all=True, obey_rate_limit=False)
 
 If you do not disable the rate-limiting feature, you can supply a custom value
 for ``max_retries``; by default, this is set to 10. To retry without bound when
@@ -110,7 +110,7 @@ throttled, you can set this parameter to -1. This parameter is ignored if
    import requests
 
    gl = gitlab.gitlab(url, token, api_version=4)
-   gl.projects.list(all=True, max_retries=12)
+   gl.projects.list(get_all=True, max_retries=12)
 
 .. warning::
 
@@ -133,7 +133,7 @@ is raised for these errors.
    import requests
 
    gl = gitlab.gitlab(url, token, api_version=4)
-   gl.projects.list(all=True, retry_transient_errors=True)
+   gl.projects.list(get_all=True, retry_transient_errors=True)
 
 The default ``retry_transient_errors`` can also be set on the ``Gitlab`` object
 and overridden by individual API calls.
@@ -143,8 +143,8 @@ and overridden by individual API calls.
    import gitlab
    import requests
    gl = gitlab.gitlab(url, token, api_version=4, retry_transient_errors=True)
-   gl.projects.list(all=True)                               # retries due to default value
-   gl.projects.list(all=True, retry_transient_errors=False) # does not retry
+   gl.projects.list(get_all=True)                               # retries due to default value
+   gl.projects.list(get_all=True, retry_transient_errors=False) # does not retry
 
 Timeout
 -------

@@ -48,3 +48,6 @@ I get an ``AttributeError`` when accessing attributes after ``save()`` or ``refr
     You are most likely trying to access an attribute that was not returned
     by the server on the second request. Please look at the documentation in
     :ref:`object_attributes` to see how to avoid this.
+
+I passed ``all=True`` (or ``--all`` via the CLI) to the API and I still cannot see all items returned.
+    Use ``get_all=True`` (or ``--get-all`` via the CLI). See :ref:`pagination` for more details.

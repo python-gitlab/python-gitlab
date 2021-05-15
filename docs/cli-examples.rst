@@ -76,19 +76,19 @@ List all the projects:
 
 .. code-block:: console
 
-   $ gitlab project list --all
+   $ gitlab project list --get-all
 
 List all projects of a group:
 
 .. code-block:: console
 
-   $ gitlab group-project list --all --group-id 1
+   $ gitlab group-project list --get-all --group-id 1
 
 List all projects of a group and its subgroups:
 
 .. code-block:: console
 
-   $ gitlab group-project list --all --include-subgroups true --group-id 1
+   $ gitlab group-project list --get-all --include-subgroups true --group-id 1
 
 Limit to 5 items per request, display the 1st page only
 
