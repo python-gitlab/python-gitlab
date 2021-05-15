@@ -21,6 +21,7 @@ from typing import cast, Any, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
 
 import requests
 import requests.utils
+from requests.structures import CaseInsensitiveDict
 
 import gitlab.config
 import gitlab.const
@@ -632,6 +633,32 @@ class Gitlab(object):
                 ) from e
         else:
             return result
+
+    def http_head(
+        self,
+        path: str,
+        query_data: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
+    ) -> CaseInsensitiveDict:
+        """Make a HEAD request to the Gitlab server.
+
+        Args:
+            path (str): Path or full URL to query ('/projects' or
+                        'http://whatever/v4/api/projecs')
+            query_data (dict): Data to send as query parameters
+            **kwargs: Extra options to send to the server (e.g. sudo, page,
+                      per_page)
+
+        Returns:
+            requests.structures.CaseInsensitiveDict: A requests.header object
+
+        Raises:
+            GitlabHttpError: When the return code is not 2xx
+        """
+
+        url = self._build_url(path)
+        result = self.http_request("head", url, query_data=query_data, **kwargs)
+        return result.headers
 
     def http_list(
         self,

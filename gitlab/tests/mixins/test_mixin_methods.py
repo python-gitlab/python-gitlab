@@ -107,6 +107,18 @@ def test_list_mixin(gl):
         assert isinstance(obj_list[0], FakeObject)
         assert len(obj_list) == 2
 
+    @urlmatch(scheme="http", netloc="localhost", path="/api/v4/tests", method="head")
+    def resp_count_cont(url, request):
+        headers = {"Content-Type": "application/json", "X-Total": 2}
+        content = ""
+        return response(200, content, headers, None, 5, request)
+
+    with HTTMock(resp_count_cont):
+        mgr = M(gl)
+        # test count()
+        res = mgr.count()
+        assert res == 2
+
 
 def test_list_other_url(gl):
     class M(ListMixin, FakeManager):

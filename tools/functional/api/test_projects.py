@@ -14,10 +14,12 @@ def test_create_project(gl, user):
     created = gl.projects.list()
     created_gen = gl.projects.list(as_list=False)
     owned = gl.projects.list(owned=True)
+    counter = gl.projects.count()
 
     assert admin_project in created and sudo_project in created
     assert admin_project in owned and sudo_project not in owned
     assert len(created) == len(list(created_gen))
+    assert len(created) == counter
 
     admin_project.delete()
     sudo_project.delete()

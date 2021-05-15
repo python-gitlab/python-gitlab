@@ -79,6 +79,10 @@ class GitlabListError(GitlabOperationError):
     pass
 
 
+class GitlabCountError(GitlabOperationError):
+    pass
+
+
 class GitlabGetError(GitlabOperationError):
     pass
 

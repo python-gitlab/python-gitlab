@@ -43,6 +43,18 @@ def resp_list_projects():
 
 
 @pytest.fixture
+def resp_count_projects():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.HEAD,
+            url="http://localhost/api/v4/projects",
+            headers={"X-Total": "1"},
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
 def resp_import_bitbucket_server():
     with responses.RequestsMock() as rsps:
         rsps.add(
@@ -66,6 +78,12 @@ def test_list_projects(gl, resp_list_projects):
     projects = gl.projects.list()
     assert isinstance(projects[0], Project)
     assert projects[0].name == "name"
+
+
+def test_count_projects(gl, resp_count_projects):
+    res = gl.projects.count()
+    assert isinstance(res, int)
+    assert res == 1
 
 
 def test_import_bitbucket_server(gl, resp_import_bitbucket_server):

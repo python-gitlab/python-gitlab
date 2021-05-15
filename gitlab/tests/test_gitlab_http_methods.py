@@ -2,6 +2,7 @@ import pytest
 import requests
 
 from httmock import HTTMock, urlmatch, response
+from requests.structures import CaseInsensitiveDict
 
 from gitlab import GitlabHttpError, GitlabList, GitlabParsingError
 
@@ -108,6 +109,18 @@ def test_list_request(gl):
         result = gl.http_list("/projects", all=True)
         assert isinstance(result, list)
         assert len(result) == 1
+
+
+def test_head_request(gl):
+    @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects", method="head")
+    def resp_cont(url, request):
+        headers = {"content-type": "application/json", "X-Total": 1}
+        content = ""
+        return response(200, content, headers, None, 5, request)
+
+    with HTTMock(resp_cont):
+        result = gl.http_head("/projects")
+        assert isinstance(result, CaseInsensitiveDict)
 
 
 def test_list_request_404(gl):
