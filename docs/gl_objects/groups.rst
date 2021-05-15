@@ -271,7 +271,7 @@ List only direct group members::
 List the group members recursively (including inherited members through
 ancestor groups)::
 
-    members = group.members_all.list(all=True)
+    members = group.members_all.list(get_all=True)
 
 Get only direct group member::
 

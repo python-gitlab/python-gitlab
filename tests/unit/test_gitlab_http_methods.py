@@ -461,7 +461,7 @@ def test_list_request(gl):
     assert isinstance(result, GitlabList)
     assert len(list(result)) == 1
 
-    result = gl.http_list("/projects", all=True)
+    result = gl.http_list("/projects", get_all=True)
     assert isinstance(result, list)
     assert len(result) == 1
     assert responses.assert_call_count(url, 3) is True
@@ -549,7 +549,7 @@ def test_list_request_iterator_true_nowarning(gl):
 def test_list_request_all_true_nowarning(gl):
     responses.add(**large_list_response)
     with warnings.catch_warnings(record=True) as caught_warnings:
-        result = gl.http_list("/projects", all=True)
+        result = gl.http_list("/projects", get_all=True)
     assert len(caught_warnings) == 0
     assert isinstance(result, list)
     assert len(result) == 20

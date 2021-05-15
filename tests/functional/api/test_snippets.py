@@ -2,7 +2,7 @@ import gitlab
 
 
 def test_snippets(gl):
-    snippets = gl.snippets.list(all=True)
+    snippets = gl.snippets.list(get_all=True)
     assert not snippets
 
     snippet = gl.snippets.create(
@@ -20,7 +20,7 @@ def test_snippets(gl):
     assert snippet.user_agent_detail()["user_agent"]
 
     snippet.delete()
-    assert snippet not in gl.snippets.list(all=True)
+    assert snippet not in gl.snippets.list(get_all=True)
 
 
 def test_project_snippets(project):

@@ -176,31 +176,6 @@ def test_list_user_memberships(gitlab_cli, user):
     assert ret.success
 
 
-def test_project_create_file(gitlab_cli, project):
-    file_path = "README"
-    branch = "main"
-    content = "CONTENT"
-    commit_message = "Initial commit"
-
-    cmd = [
-        "project-file",
-        "create",
-        "--project-id",
-        project.id,
-        "--file-path",
-        file_path,
-        "--branch",
-        branch,
-        "--content",
-        content,
-        "--commit-message",
-        commit_message,
-    ]
-    ret = gitlab_cli(cmd)
-
-    assert ret.success
-
-
 def test_create_project_issue(gitlab_cli, project):
     title = "my issue"
     description = "my issue description"
@@ -300,34 +275,6 @@ def test_accept_request_merge(gitlab_cli, project):
     ret = gitlab_cli(cmd)
 
     assert ret.success
-
-
-def test_revert_commit(gitlab_cli, project):
-    commit = project.commits.list()[0]
-
-    cmd = [
-        "project-commit",
-        "revert",
-        "--project-id",
-        project.id,
-        "--id",
-        commit.id,
-        "--branch",
-        "main",
-    ]
-    ret = gitlab_cli(cmd)
-
-    assert ret.success
-
-
-def test_get_commit_signature_not_found(gitlab_cli, project):
-    commit = project.commits.list()[0]
-
-    cmd = ["project-commit", "signature", "--project-id", project.id, "--id", commit.id]
-    ret = gitlab_cli(cmd)
-
-    assert not ret.success
-    assert "404 Signature Not Found" in ret.stderr
 
 
 def test_create_project_label(gitlab_cli, project):

@@ -153,7 +153,7 @@ def test_list_mixin(gl):
         assert obj.id in (42, 43)
 
     # test list()
-    obj_list = mgr.list(all=True)
+    obj_list = mgr.list(get_all=True)
     assert isinstance(obj_list, list)
     assert obj_list[0].id == 42
     assert obj_list[1].id == 43

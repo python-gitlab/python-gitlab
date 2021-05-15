@@ -215,10 +215,10 @@ def test_gitlab_build_list_missing_headers(gl, resp_page_1, resp_page_2):
 
 
 @responses.activate
-def test_gitlab_all_omitted_when_iterator(gl, resp_page_1, resp_page_2):
+def test_gitlab_get_all_omitted_when_iterator(gl, resp_page_1, resp_page_2):
     responses.add(**resp_page_1)
     responses.add(**resp_page_2)
-    result = gl.http_list("/tests", iterator=True, all=True)
+    result = gl.http_list("/tests", iterator=True, get_all=True)
     assert isinstance(result, gitlab.GitlabList)
 
 
