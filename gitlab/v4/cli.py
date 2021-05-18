@@ -28,8 +28,8 @@ import gitlab.v4.objects
 
 class GitlabCLI(object):
     def __init__(self, gl, what, action, args):
-        self.cls_name = cli.what_to_cls(what)
-        self.cls = gitlab.v4.objects.__dict__[self.cls_name]
+        self.cls = cli.what_to_cls(what, namespace=gitlab.v4.objects)
+        self.cls_name = self.cls.__name__
         self.what = what.replace("-", "_")
         self.action = action.lower()
         self.gl = gl

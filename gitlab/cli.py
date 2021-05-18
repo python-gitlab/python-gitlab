@@ -21,11 +21,18 @@ import argparse
 import functools
 import re
 import sys
-from typing import Any, Callable, cast, Dict, Optional, Tuple, TypeVar, Union
+from typing import Any, Callable, cast, Dict, Optional, Tuple, Type, TypeVar, Union
 
-import gitlab.config  # noqa: F401
+from requests.structures import CaseInsensitiveDict
 
-camel_re = re.compile("(.)([A-Z])")
+import gitlab.config
+from gitlab.base import RESTObject
+
+
+# This regex is based on:
+# https://github.com/jpvanhal/inflection/blob/master/inflection/__init__.py
+camel_upperlower_regex = re.compile(r"([A-Z]+)([A-Z][a-z])")
+camel_lowerupper_regex = re.compile(r"([a-z\d])([A-Z])")
 
 # custom_actions = {
 #    cls: {
@@ -82,12 +89,17 @@ def die(msg: str, e: Optional[Exception] = None) -> None:
     sys.exit(1)
 
 
-def what_to_cls(what: str) -> str:
-    return "".join([s.capitalize() for s in what.split("-")])
+def what_to_cls(what: str, namespace: Type) -> RESTObject:
+    classes = CaseInsensitiveDict(namespace.__dict__)
+    lowercase_class = what.replace("-", "")
+
+    return classes[lowercase_class]
 
 
-def cls_to_what(cls: Any) -> str:
-    return camel_re.sub(r"\1-\2", cls.__name__).lower()
+def cls_to_what(cls: RESTObject) -> str:
+    dasherized_uppercase = camel_upperlower_regex.sub(r"\1-\2", cls.__name__)
+    dasherized_lowercase = camel_lowerupper_regex.sub(r"\1-\2", dasherized_uppercase)
+    return dasherized_lowercase.lower()
 
 
 def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
