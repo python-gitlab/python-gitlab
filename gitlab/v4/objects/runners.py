@@ -1,5 +1,6 @@
-from gitlab import cli, types
+from gitlab import cli
 from gitlab import exceptions as exc
+from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CRUDMixin,
@@ -8,7 +9,6 @@ from gitlab.mixins import (
     ObjectDeleteMixin,
     SaveMixin,
 )
-
 
 __all__ = [
     "RunnerJob",

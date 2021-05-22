@@ -1,6 +1,8 @@
 import base64
-from gitlab import cli, utils
+
+from gitlab import cli
 from gitlab import exceptions as exc
+from gitlab import utils
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
@@ -10,7 +12,6 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
-
 
 __all__ = [
     "ProjectFile",

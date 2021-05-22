@@ -6,9 +6,9 @@ import pytest
 import responses
 
 from gitlab.v4.objects import (
+    GroupEpicResourceLabelEvent,
     ProjectIssueResourceLabelEvent,
     ProjectMergeRequestResourceLabelEvent,
-    GroupEpicResourceLabelEvent,
 )
 
 

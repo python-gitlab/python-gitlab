@@ -17,8 +17,9 @@
 
 import pickle
 
-from gitlab import base
 import pytest
+
+from gitlab import base
 
 
 class FakeGitlab(object):

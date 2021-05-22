@@ -2,8 +2,8 @@ from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, ListMixin, RefreshMixin, RetrieveMixin
-from .discussions import ProjectCommitDiscussionManager  # noqa: F401
 
+from .discussions import ProjectCommitDiscussionManager  # noqa: F401
 
 __all__ = [
     "ProjectCommit",

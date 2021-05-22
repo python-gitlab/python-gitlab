@@ -11,7 +11,6 @@ from gitlab.mixins import (
     UpdateMixin,
 )
 
-
 __all__ = [
     "GroupLabel",
     "GroupLabelManager",

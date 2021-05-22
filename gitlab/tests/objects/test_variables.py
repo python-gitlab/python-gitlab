@@ -12,7 +12,6 @@ import responses
 
 from gitlab.v4.objects import GroupVariable, ProjectVariable, Variable
 
-
 key = "TEST_VARIABLE_1"
 value = "TEST_1"
 new_value = "TEST_2"

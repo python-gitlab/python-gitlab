@@ -2,8 +2,8 @@ from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
-    CRUDMixin,
     CreateMixin,
+    CRUDMixin,
     DeleteMixin,
     ListMixin,
     ObjectDeleteMixin,
@@ -12,7 +12,6 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
-
 
 __all__ = [
     "ProjectPipeline",

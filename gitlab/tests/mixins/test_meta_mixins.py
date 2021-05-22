@@ -5,8 +5,8 @@ from gitlab.mixins import (
     GetMixin,
     ListMixin,
     NoUpdateMixin,
-    UpdateMixin,
     RetrieveMixin,
+    UpdateMixin,
 )
 
 

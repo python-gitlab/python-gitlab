@@ -7,7 +7,7 @@ import re
 import pytest
 import responses
 
-from gitlab.v4.objects import ProjectBadge, GroupBadge
+from gitlab.v4.objects import GroupBadge, ProjectBadge
 
 link_url = (
     "http://example.com/ci_status.svg?project=example-org/example-project&ref=master"

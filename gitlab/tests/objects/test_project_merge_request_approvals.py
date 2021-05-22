@@ -9,7 +9,6 @@ import responses
 
 import gitlab
 
-
 approval_rule_id = 1
 approval_rule_name = "security"
 approvals_required = 3

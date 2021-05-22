@@ -1,7 +1,7 @@
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
-    CRUDMixin,
     CreateMixin,
+    CRUDMixin,
     DeleteMixin,
     GetMixin,
     ObjectDeleteMixin,
@@ -9,12 +9,12 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
+
 from .award_emojis import (  # noqa: F401
     ProjectIssueNoteAwardEmojiManager,
     ProjectMergeRequestNoteAwardEmojiManager,
     ProjectSnippetNoteAwardEmojiManager,
 )
-
 
 __all__ = [
     "ProjectNote",

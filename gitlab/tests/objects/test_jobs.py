@@ -6,7 +6,6 @@ import responses
 
 from gitlab.v4.objects import ProjectJob
 
-
 job_content = {
     "commit": {
         "author_email": "admin@example.com",

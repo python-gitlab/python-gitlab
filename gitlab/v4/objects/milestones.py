@@ -1,14 +1,15 @@
-from gitlab import cli, types
+from gitlab import cli
 from gitlab import exceptions as exc
+from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
+
 from .issues import GroupIssue, GroupIssueManager, ProjectIssue, ProjectIssueManager
 from .merge_requests import (
+    GroupMergeRequest,
     ProjectMergeRequest,
     ProjectMergeRequestManager,
-    GroupMergeRequest,
 )
-
 
 __all__ = [
     "GroupMilestone",

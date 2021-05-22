@@ -6,7 +6,6 @@ import responses
 
 from gitlab.v4.objects import ProjectDeployToken
 
-
 create_content = {
     "id": 1,
     "name": "test_deploy_token",

@@ -1,17 +1,17 @@
-from gitlab import types
 from gitlab import exceptions as exc
+from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
-    CRUDMixin,
     CreateMixin,
+    CRUDMixin,
     DeleteMixin,
     ListMixin,
     ObjectDeleteMixin,
     SaveMixin,
     UpdateMixin,
 )
-from .events import GroupEpicResourceLabelEventManager  # noqa: F401
 
+from .events import GroupEpicResourceLabelEventManager  # noqa: F401
 
 __all__ = [
     "GroupEpic",

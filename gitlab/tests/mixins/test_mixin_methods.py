@@ -1,5 +1,4 @@
 import pytest
-
 from httmock import HTTMock, response, urlmatch  # noqa
 
 from gitlab import base

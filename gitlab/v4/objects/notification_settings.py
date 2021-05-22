@@ -1,7 +1,6 @@
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
 
-
 __all__ = [
     "NotificationSettings",
     "NotificationSettingsManager",

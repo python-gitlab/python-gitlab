@@ -1,12 +1,12 @@
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, RetrieveMixin, SaveMixin, UpdateMixin
+
 from .notes import (  # noqa: F401
     ProjectCommitDiscussionNoteManager,
     ProjectIssueDiscussionNoteManager,
     ProjectMergeRequestDiscussionNoteManager,
     ProjectSnippetDiscussionNoteManager,
 )
-
 
 __all__ = [
     "ProjectCommitDiscussion",

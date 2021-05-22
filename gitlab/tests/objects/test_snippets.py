@@ -6,7 +6,6 @@ GitLab API: https://docs.gitlab.com/ce/api/project_snippets.html
 import pytest
 import responses
 
-
 title = "Example Snippet Title"
 visibility = "private"
 new_title = "new-title"

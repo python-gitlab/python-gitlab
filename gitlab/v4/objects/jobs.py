@@ -1,8 +1,8 @@
-from gitlab import cli, utils
+from gitlab import cli
 from gitlab import exceptions as exc
+from gitlab import utils
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import RefreshMixin, RetrieveMixin
-
 
 __all__ = [
     "ProjectJob",

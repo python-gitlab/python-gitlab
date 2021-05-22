@@ -7,7 +7,6 @@ https://docs.gitlab.com/ee/api/group_level_variables.html
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
-
 __all__ = [
     "Variable",
     "VariableManager",

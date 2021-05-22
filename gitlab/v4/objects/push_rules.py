@@ -8,7 +8,6 @@ from gitlab.mixins import (
     UpdateMixin,
 )
 
-
 __all__ = [
     "ProjectPushRules",
     "ProjectPushRulesManager",

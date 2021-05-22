@@ -1,9 +1,10 @@
-from gitlab import cli, types
+from gitlab import cli
 from gitlab import exceptions as exc
+from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
-    CRUDMixin,
     CreateMixin,
+    CRUDMixin,
     DeleteMixin,
     GetWithoutIdMixin,
     ListMixin,
@@ -16,7 +17,6 @@ from gitlab.mixins import (
 
 from .custom_attributes import UserCustomAttributeManager  # noqa: F401
 from .events import UserEventManager  # noqa: F401
-
 
 __all__ = [
     "CurrentUserEmail",

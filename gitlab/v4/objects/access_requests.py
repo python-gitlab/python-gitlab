@@ -7,7 +7,6 @@ from gitlab.mixins import (
     ObjectDeleteMixin,
 )
 
-
 __all__ = [
     "GroupAccessRequest",
     "GroupAccessRequestManager",

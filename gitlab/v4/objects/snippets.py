@@ -1,12 +1,12 @@
-from gitlab import cli, utils
+from gitlab import cli
 from gitlab import exceptions as exc
+from gitlab import utils
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin, UserAgentDetailMixin
 
 from .award_emojis import ProjectSnippetAwardEmojiManager  # noqa: F401
 from .discussions import ProjectSnippetDiscussionManager  # noqa: F401
 from .notes import ProjectSnippetNoteManager  # noqa: F401
-
 
 __all__ = [
     "Snippet",

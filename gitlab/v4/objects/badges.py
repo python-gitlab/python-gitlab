@@ -1,7 +1,6 @@
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import BadgeRenderMixin, CRUDMixin, ObjectDeleteMixin, SaveMixin
 
-
 __all__ = [
     "GroupBadge",
     "GroupBadgeManager",

@@ -7,7 +7,6 @@ from zipfile import is_zipfile
 
 import pytest
 
-
 content = textwrap.dedent(
     """\
     test-artifact:

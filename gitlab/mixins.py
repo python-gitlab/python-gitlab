@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import warnings
 from types import ModuleType
 from typing import (
     Any,
@@ -31,12 +32,10 @@ from typing import (
 import requests
 
 import gitlab
-from gitlab import base
-from gitlab import cli
+from gitlab import base, cli
 from gitlab import exceptions as exc
 from gitlab import types as g_types
 from gitlab import utils
-import warnings
 
 __all__ = [
     "GetMixin",

@@ -1,9 +1,10 @@
-from gitlab import cli, types
+from gitlab import cli
 from gitlab import exceptions as exc
+from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
-    CRUDMixin,
     CreateMixin,
+    CRUDMixin,
     DeleteMixin,
     ListMixin,
     ObjectDeleteMixin,
@@ -15,6 +16,7 @@ from gitlab.mixins import (
     TodoMixin,
     UserAgentDetailMixin,
 )
+
 from .award_emojis import ProjectIssueAwardEmojiManager  # noqa: F401
 from .discussions import ProjectIssueDiscussionManager  # noqa: F401
 from .events import (  # noqa: F401
@@ -23,7 +25,6 @@ from .events import (  # noqa: F401
     ProjectIssueResourceStateEventManager,
 )
 from .notes import ProjectIssueNoteManager  # noqa: F401
-
 
 __all__ = [
     "Issue",

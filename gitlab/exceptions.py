@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import functools
-from typing import Any, Callable, cast, Optional, Type, TypeVar, TYPE_CHECKING, Union
+from typing import Any, Callable, cast, Optional, Type, TYPE_CHECKING, TypeVar, Union
 
 
 class GitlabError(Exception):

@@ -1,7 +1,6 @@
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, NoUpdateMixin, ObjectDeleteMixin, SaveMixin
 
-
 __all__ = [
     "ProjectRelease",
     "ProjectReleaseManager",

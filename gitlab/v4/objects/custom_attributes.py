@@ -1,7 +1,6 @@
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import DeleteMixin, ObjectDeleteMixin, RetrieveMixin, SetMixin
 
-
 __all__ = [
     "GroupCustomAttribute",
     "GroupCustomAttributeManager",

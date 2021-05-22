@@ -3,7 +3,6 @@ from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import DeleteMixin, ListMixin, ObjectDeleteMixin
 
-
 __all__ = [
     "Todo",
     "TodoManager",

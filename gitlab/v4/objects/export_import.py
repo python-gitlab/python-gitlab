@@ -1,7 +1,6 @@
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, DownloadMixin, GetWithoutIdMixin, RefreshMixin
 
-
 __all__ = [
     "GroupExport",
     "GroupExportManager",
