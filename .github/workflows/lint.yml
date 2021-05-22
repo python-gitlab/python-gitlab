@@ -32,3 +32,5 @@ jobs:
         run: tox -e pep8
       - name: Run mypy static typing checker (http://mypy-lang.org/)
         run: tox -e mypy
+      - name: Run isort import order checker (https://pycqa.github.io/isort/)
+        run: tox -e isort -- --check
