@@ -342,7 +342,7 @@ class ProjectMergeRequest(
         if merge_when_pipeline_succeeds:
             data["merge_when_pipeline_succeeds"] = True
 
-        server_data = self.manager.gitlab.http_put(path, query_data=data, **kwargs)
+        server_data = self.manager.gitlab.http_put(path, post_data=data, **kwargs)
         self._update_attrs(server_data)
 
 
