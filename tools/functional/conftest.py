@@ -201,6 +201,77 @@ def project(gl):
         print(f"Project already deleted: {e}")
 
 
+@pytest.fixture(scope="function")
+def merge_request(project, wait_for_sidekiq):
+    """Fixture used to create a merge_request.
+
+    It will create a branch, add a commit to the branch, and then create a
+    merge request against project.default_branch. The MR will be returned.
+
+    When finished any created merge requests and branches will be deleted.
+
+    NOTE: No attempt is made to restore project.default_branch to its previous
+    state. So if the merge request is merged then its content will be in the
+    project.default_branch branch.
+    """
+
+    to_delete = []
+
+    def _merge_request(*, source_branch: str):
+        # Wait for processes to be done before we start...
+        # NOTE(jlvillal): Sometimes the CI would give a "500 Internal Server
+        # Error". Hoping that waiting until all other processes are done will
+        # help with that.
+        result = wait_for_sidekiq(timeout=60)
+        assert result is True, "sidekiq process should have terminated but did not"
+
+        project.refresh()  # Gets us the current default branch
+        project.branches.create(
+            {"branch": source_branch, "ref": project.default_branch}
+        )
+        # NOTE(jlvillal): Must create a commit in the new branch before we can
+        # create an MR that will work.
+        project.files.create(
+            {
+                "file_path": f"README.{source_branch}",
+                "branch": source_branch,
+                "content": "Initial content",
+                "commit_message": "New commit in new branch",
+            }
+        )
+        mr = project.mergerequests.create(
+            {
+                "source_branch": source_branch,
+                "target_branch": project.default_branch,
+                "title": "Should remove source branch",
+                "remove_source_branch": True,
+            }
+        )
+        result = wait_for_sidekiq(timeout=60)
+        assert result is True, "sidekiq process should have terminated but did not"
+
+        mr_iid = mr.iid
+        for _ in range(60):
+            mr = project.mergerequests.get(mr_iid)
+            if mr.merge_status != "checking":
+                break
+            time.sleep(0.5)
+        assert mr.merge_status != "checking"
+
+        to_delete.append((mr.iid, source_branch))
+        return mr
+
+    yield _merge_request
+
+    for mr_iid, source_branch in to_delete:
+        project.mergerequests.delete(mr_iid)
+        try:
+            project.branches.delete(source_branch)
+        except gitlab.exceptions.GitlabDeleteError:
+            # Ignore if branch was already deleted
+            pass
+
+
 @pytest.fixture(scope="module")
 def project_file(project):
     """File fixture for tests requiring a project with files and branches."""

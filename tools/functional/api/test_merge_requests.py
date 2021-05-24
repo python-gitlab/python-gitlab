@@ -100,58 +100,18 @@ def test_merge_request_merge(project):
         mr.merge()
 
 
-def merge_request_create_helper(
-    *,
-    project: gitlab.v4.objects.Project,
-    source_branch: str,
-    wait_for_sidekiq,
-    branch_will_be_deleted: bool,
-    **kwargs,
-):
-    # Wait for processes to be done before we start...
-    # NOTE(jlvillal): Sometimes the CI would give a "500 Internal Server
-    # Error". Hoping that waiting until all other processes are done will help
-    # with that.
-    result = wait_for_sidekiq(timeout=60)
-    assert result is True, "sidekiq process should have terminated but did not"
+def test_merge_request_should_remove_source_branch(
+    project, merge_request, wait_for_sidekiq
+) -> None:
+    """Test to ensure
+    https://github.com/python-gitlab/python-gitlab/issues/1120 is fixed.
+    Bug reported that they could not use 'should_remove_source_branch' in
+    mr.merge() call"""
 
-    project.branches.create({"branch": source_branch, "ref": "master"})
+    source_branch = "remove_source_branch"
+    mr = merge_request(source_branch=source_branch)
 
-    # NOTE(jlvillal): Must create a commit in the new branch before we can
-    # create an MR that will work.
-    project.files.create(
-        {
-            "file_path": f"README.{source_branch}",
-            "branch": source_branch,
-            "content": "Initial content",
-            "commit_message": "New commit in new branch",
-        }
-    )
-
-    mr = project.mergerequests.create(
-        {
-            "source_branch": source_branch,
-            "target_branch": "master",
-            "title": "Should remove source branch",
-            "remove_source_branch": True,
-        }
-    )
-
-    result = wait_for_sidekiq(timeout=60)
-    assert result is True, "sidekiq process should have terminated but did not"
-
-    mr_iid = mr.iid
-    for _ in range(60):
-        mr = project.mergerequests.get(mr_iid)
-        if mr.merge_status != "checking":
-            break
-        time.sleep(0.5)
-    assert mr.merge_status != "checking"
-
-    # Ensure we can get the MR branch
-    project.branches.get(source_branch)
-
-    mr.merge(**kwargs)
+    mr.merge(should_remove_source_branch=True)
 
     result = wait_for_sidekiq(timeout=60)
     assert result is True, "sidekiq process should have terminated but did not"
@@ -166,48 +126,40 @@ def merge_request_create_helper(
     assert mr.merged_at is not None
     time.sleep(0.5)
 
-    if branch_will_be_deleted:
-        # Ensure we can NOT get the MR branch
-        with pytest.raises(gitlab.exceptions.GitlabGetError):
-            project.branches.get(source_branch)
-
-
-def test_merge_request_should_remove_source_branch(
-    project: gitlab.v4.objects.Project, wait_for_sidekiq
-):
-    """Test to ensure
-    https://github.com/python-gitlab/python-gitlab/issues/1120 is fixed.
-    Bug reported that they could not use 'should_remove_source_branch' in
-    mr.merge() call"""
-
-    source_branch = "remove_source_branch"
-
-    merge_request_create_helper(
-        project=project,
-        source_branch=source_branch,
-        wait_for_sidekiq=wait_for_sidekiq,
-        branch_will_be_deleted=True,
-        should_remove_source_branch=True,
-    )
+    # Ensure we can NOT get the MR branch
+    with pytest.raises(gitlab.exceptions.GitlabGetError):
+        project.branches.get(source_branch)
 
 
 def test_merge_request_large_commit_message(
-    project: gitlab.v4.objects.Project, wait_for_sidekiq
-):
+    project, merge_request, wait_for_sidekiq
+) -> None:
     """Test to ensure https://github.com/python-gitlab/python-gitlab/issues/1452
     is fixed.
     Bug reported that very long 'merge_commit_message' in mr.merge() would
     cause an error: 414 Request too large
     """
+
     source_branch = "large_commit_message"
+    mr = merge_request(source_branch=source_branch)
 
     merge_commit_message = "large_message\r\n" * 1_000
     assert len(merge_commit_message) > 10_000
 
-    merge_request_create_helper(
-        project=project,
-        source_branch=source_branch,
-        wait_for_sidekiq=wait_for_sidekiq,
-        branch_will_be_deleted=False,
-        merge_commit_message=merge_commit_message,
-    )
+    mr.merge(merge_commit_message=merge_commit_message)
+
+    result = wait_for_sidekiq(timeout=60)
+    assert result is True, "sidekiq process should have terminated but did not"
+
+    # Wait until it is merged
+    mr_iid = mr.iid
+    for _ in range(60):
+        mr = project.mergerequests.get(mr_iid)
+        if mr.merged_at is not None:
+            break
+        time.sleep(0.5)
+    assert mr.merged_at is not None
+    time.sleep(0.5)
+
+    # Ensure we can get the MR branch
+    project.branches.get(source_branch)
