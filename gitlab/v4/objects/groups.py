@@ -15,7 +15,11 @@ from .epics import GroupEpicManager  # noqa: F401
 from .export_import import GroupExportManager, GroupImportManager  # noqa: F401
 from .issues import GroupIssueManager  # noqa: F401
 from .labels import GroupLabelManager  # noqa: F401
-from .members import GroupMemberAllManager, GroupMemberManager  # noqa: F401
+from .members import (  # noqa: F401
+    GroupBillableMemberManager,
+    GroupMemberAllManager,
+    GroupMemberManager,
+)
 from .merge_requests import GroupMergeRequestManager  # noqa: F401
 from .milestones import GroupMilestoneManager  # noqa: F401
 from .notification_settings import GroupNotificationSettingsManager  # noqa: F401
@@ -38,6 +42,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("accessrequests", "GroupAccessRequestManager"),
         ("audit_events", "GroupAuditEventManager"),
         ("badges", "GroupBadgeManager"),
+        ("billable_members", "GroupBillableMemberManager"),
         ("boards", "GroupBoardManager"),
         ("customattributes", "GroupCustomAttributeManager"),
         ("exports", "GroupExportManager"),
