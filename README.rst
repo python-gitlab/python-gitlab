@@ -1,3 +1,6 @@
+python-gitlab
+=============
+
 .. image:: https://github.com/python-gitlab/python-gitlab/workflows/Test/badge.svg
    :target: https://github.com/python-gitlab/python-gitlab/actions
 
@@ -19,32 +22,39 @@
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/python/black
 
-Python GitLab
-=============
-
 ``python-gitlab`` is a Python package providing access to the GitLab server API.
 
 It supports the v4 API of GitLab, and provides a CLI tool (``gitlab``).
 
 Installation
-============
-
-Requirements
 ------------
 
-python-gitlab depends on:
+As of 3.0.0, ``python-gitlab`` is compatible with Python 3.7+.
 
-* `python-requests <https://2.python-requests.org/en/latest/>`_
-
-Install with pip
-----------------
+Use ``pip`` to install the latest stable version of ``python-gitlab``:
 
 .. code-block:: console
 
-   pip install python-gitlab
+   $ pip install --upgrade python-gitlab
+
+The current development version is available on both `GitHub.com
+<https://github.com/python-gitlab/python-gitlab>`__ and `GitLab.com
+<https://gitlab.com/python-gitlab/python-gitlab>`__, and can be
+installed directly from the git repository:
+
+.. code-block:: console
+
+   $ pip install git+https://github.com/python-gitlab/python-gitlab.git
+
+From GitLab:
+
+.. code-block:: console
+
+   $ pip install git+https://gitlab.com/python-gitlab/python-gitlab.git
+
 
 Using the docker image
-======================
+----------------------
 
 You can run the Docker image directly from the GitLab registry:
 
@@ -65,7 +75,7 @@ You can also mount your own config file:
    $ docker run -it --rm -v /path/to/python-gitlab.cfg:/etc/python-gitlab.cfg registry.gitlab.com/python-gitlab/python-gitlab:latest <command> ...
 
 Building the image
-------------------
+~~~~~~~~~~~~~~~~~~
 
 To build your own image from this repository, run:
 
@@ -80,32 +90,32 @@ Run your own image:
    $ docker run -it --rm -v python-gitlab:latest <command> ...
 
 Bug reports
-===========
+-----------
 
 Please report bugs and feature requests at
 https://github.com/python-gitlab/python-gitlab/issues.
 
 Gitter Community Chat
-=====================
+---------------------
 
 There is a `gitter <https://gitter.im/python-gitlab/Lobby>`_ community chat
 available at https://gitter.im/python-gitlab/Lobby
 
 Documentation
-=============
+-------------
 
 The full documentation for CLI and API is available on `readthedocs
 <http://python-gitlab.readthedocs.org/en/stable/>`_.
 
 Build the docs
---------------
-You can build the documentation using ``sphinx``::
+~~~~~~~~~~~~~~
 
-    pip install sphinx
-    python setup.py build_sphinx
+We use ``tox`` to manage our environment and build the documentation::
 
+    pip install tox
+    tox -e docs
 
 Contributing
-============
+------------
 
 For guidelines for contributing to ``python-gitlab``, refer to `CONTRIBUTING.rst <https://github.com/python-gitlab/python-gitlab/blob/main/CONTRIBUTING.rst>`_.

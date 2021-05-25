@@ -1,25 +1,18 @@
-.. python-gitlab documentation master file, created by
-   sphinx-quickstart on Mon Dec  8 15:17:39 2014.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to python-gitlab's documentation!
-=========================================
-
-Contents:
+.. include:: ../README.rst
 
 .. toctree::
-   :maxdepth: 2
+   :caption: Table of Contents
+   :hidden:
 
-   install
    cli-usage
    api-usage
-   faq
+   cli-examples
    api-objects
    api/gitlab
    cli-objects
    changelog
    release-notes
+   faq
 
 
 Indices and tables
