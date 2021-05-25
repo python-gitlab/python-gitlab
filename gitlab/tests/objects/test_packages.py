@@ -8,7 +8,6 @@ import responses
 
 from gitlab.v4.objects import GroupPackage, ProjectPackage, ProjectPackageFile
 
-
 package_content = {
     "id": 1,
     "name": "com/mycompany/my-app",

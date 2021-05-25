@@ -28,7 +28,6 @@ from requests.structures import CaseInsensitiveDict
 import gitlab.config
 from gitlab.base import RESTObject
 
-
 # This regex is based on:
 # https://github.com/jpvanhal/inflection/blob/master/inflection/__init__.py
 camel_upperlower_regex = re.compile(r"([A-Z]+)([A-Z][a-z])")

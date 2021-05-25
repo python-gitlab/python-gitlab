@@ -6,7 +6,6 @@ import responses
 
 from gitlab.v4.objects import ProjectPipeline
 
-
 pipeline_content = {
     "id": 46,
     "project_id": 1,

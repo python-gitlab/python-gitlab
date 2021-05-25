@@ -1,7 +1,6 @@
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import RetrieveMixin
 
-
 __all__ = [
     "Dockerfile",
     "DockerfileManager",

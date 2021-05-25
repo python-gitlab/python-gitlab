@@ -10,7 +10,6 @@ from gitlab.v4.objects import (
     ProjectMergeRequestResourceStateEvent,
 )
 
-
 issue_event_content = {"id": 1, "resource_type": "Issue"}
 mr_event_content = {"id": 1, "resource_type": "MergeRequest"}
 

@@ -24,7 +24,6 @@ from httmock import HTTMock, response, urlmatch, with_httmock  # noqa
 from gitlab import Gitlab, GitlabList, USER_AGENT
 from gitlab.v4.objects import CurrentUser
 
-
 username = "username"
 user_id = 1
 

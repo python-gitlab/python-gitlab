@@ -19,8 +19,9 @@ import importlib
 from types import ModuleType
 from typing import Any, Dict, Iterable, NamedTuple, Optional, Tuple, Type
 
-from .client import Gitlab, GitlabList
 from gitlab import types as g_types
+
+from .client import Gitlab, GitlabList
 
 __all__ = [
     "RequiredOptional",

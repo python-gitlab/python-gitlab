@@ -1,7 +1,6 @@
 import pytest
 import requests
-
-from httmock import HTTMock, urlmatch, response
+from httmock import HTTMock, response, urlmatch
 
 from gitlab import GitlabHttpError, GitlabList, GitlabParsingError
 

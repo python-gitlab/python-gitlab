@@ -1,9 +1,10 @@
-from gitlab import cli, types, utils
+from gitlab import cli
 from gitlab import exceptions as exc
+from gitlab import types, utils
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
-    CRUDMixin,
     CreateMixin,
+    CRUDMixin,
     ListMixin,
     ObjectDeleteMixin,
     RefreshMixin,
@@ -11,8 +12,8 @@ from gitlab.mixins import (
     UpdateMixin,
 )
 
-from .project_access_tokens import ProjectAccessTokenManager  # noqa: F401
 from .access_requests import ProjectAccessRequestManager  # noqa: F401
+from .audit_events import ProjectAuditEventManager  # noqa: F401
 from .badges import ProjectBadgeManager  # noqa: F401
 from .boards import ProjectBoardManager  # noqa: F401
 from .branches import ProjectBranchManager, ProjectProtectedBranchManager  # noqa: F401
@@ -25,14 +26,13 @@ from .deploy_tokens import ProjectDeployTokenManager  # noqa: F401
 from .deployments import ProjectDeploymentManager  # noqa: F401
 from .environments import ProjectEnvironmentManager  # noqa: F401
 from .events import ProjectEventManager  # noqa: F401
-from .audit_events import ProjectAuditEventManager  # noqa: F401
 from .export_import import ProjectExportManager, ProjectImportManager  # noqa: F401
 from .files import ProjectFileManager  # noqa: F401
 from .hooks import ProjectHookManager  # noqa: F401
 from .issues import ProjectIssueManager  # noqa: F401
 from .jobs import ProjectJobManager  # noqa: F401
 from .labels import ProjectLabelManager  # noqa: F401
-from .members import ProjectMemberManager, ProjectMemberAllManager  # noqa: F401
+from .members import ProjectMemberAllManager, ProjectMemberManager  # noqa: F401
 from .merge_request_approvals import (  # noqa: F401
     ProjectApprovalManager,
     ProjectApprovalRuleManager,
@@ -48,6 +48,7 @@ from .pipelines import (  # noqa: F401
     ProjectPipelineManager,
     ProjectPipelineScheduleManager,
 )
+from .project_access_tokens import ProjectAccessTokenManager  # noqa: F401
 from .push_rules import ProjectPushRulesManager  # noqa: F401
 from .releases import ProjectReleaseManager  # noqa: F401
 from .repositories import RepositoryMixin
@@ -63,7 +64,6 @@ from .triggers import ProjectTriggerManager  # noqa: F401
 from .users import ProjectUserManager  # noqa: F401
 from .variables import ProjectVariableManager  # noqa: F401
 from .wikis import ProjectWikiManager  # noqa: F401
-
 
 __all__ = [
     "GroupProject",

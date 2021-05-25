@@ -7,7 +7,6 @@ import responses
 
 from gitlab.v4.objects import Project
 
-
 project_content = {"name": "name", "id": 1}
 import_content = {
     "id": 1,

@@ -15,15 +15,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import io
 import os
 from textwrap import dedent
 
 import mock
-import io
-
-from gitlab import config, USER_AGENT
 import pytest
 
+from gitlab import config, USER_AGENT
 
 custom_user_agent = "my-package/1.0.0"
 

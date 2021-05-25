@@ -1,5 +1,6 @@
-from gitlab import cli, types
+from gitlab import cli
 from gitlab import exceptions as exc
+from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import (
     CRUDMixin,
@@ -12,21 +13,21 @@ from gitlab.mixins import (
     TimeTrackingMixin,
     TodoMixin,
 )
-from .commits import ProjectCommit, ProjectCommitManager
-from .issues import ProjectIssue, ProjectIssueManager
-from .merge_request_approvals import (  # noqa: F401
-    ProjectMergeRequestApprovalManager,
-    ProjectMergeRequestApprovalRuleManager,
-)
+
 from .award_emojis import ProjectMergeRequestAwardEmojiManager  # noqa: F401
+from .commits import ProjectCommit, ProjectCommitManager
 from .discussions import ProjectMergeRequestDiscussionManager  # noqa: F401
-from .notes import ProjectMergeRequestNoteManager  # noqa: F401
 from .events import (  # noqa: F401
     ProjectMergeRequestResourceLabelEventManager,
     ProjectMergeRequestResourceMilestoneEventManager,
     ProjectMergeRequestResourceStateEventManager,
 )
-
+from .issues import ProjectIssue, ProjectIssueManager
+from .merge_request_approvals import (  # noqa: F401
+    ProjectMergeRequestApprovalManager,
+    ProjectMergeRequestApprovalRuleManager,
+)
+from .notes import ProjectMergeRequestNoteManager  # noqa: F401
 
 __all__ = [
     "MergeRequest",

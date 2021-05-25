@@ -2,7 +2,6 @@ from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager
 
-
 __all__ = [
     "SidekiqManager",
 ]

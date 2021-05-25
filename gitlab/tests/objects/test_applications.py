@@ -5,7 +5,6 @@ GitLab API: https://docs.gitlab.com/ce/api/applications.html
 import pytest
 import responses
 
-
 title = "GitLab Test Instance"
 description = "gitlab-test.example.com"
 new_title = "new-title"

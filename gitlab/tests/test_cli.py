@@ -17,10 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import io
 import os
 import tempfile
-import io
-
 from contextlib import redirect_stderr  # noqa: H302
 
 import pytest

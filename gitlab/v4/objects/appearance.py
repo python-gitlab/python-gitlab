@@ -2,7 +2,6 @@ from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
 
-
 __all__ = [
     "ApplicationAppearance",
     "ApplicationAppearanceManager",

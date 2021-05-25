@@ -17,17 +17,16 @@
 """Wrapper for the GitLab API."""
 
 import time
-from typing import cast, Any, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
+from typing import Any, cast, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
 
 import requests
 import requests.utils
+from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
 
 import gitlab.config
 import gitlab.const
 import gitlab.exceptions
 from gitlab import utils
-from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
-
 
 REDIRECT_MSG = (
     "python-gitlab detected an http to https redirection. You "
@@ -385,7 +384,6 @@ class Gitlab(object):
 
     def enable_debug(self) -> None:
         import logging
-
         from http.client import HTTPConnection  # noqa
 
         HTTPConnection.debuglevel = 1  # type: ignore

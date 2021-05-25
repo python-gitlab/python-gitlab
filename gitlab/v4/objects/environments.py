@@ -10,7 +10,6 @@ from gitlab.mixins import (
     UpdateMixin,
 )
 
-
 __all__ = [
     "ProjectEnvironment",
     "ProjectEnvironmentManager",

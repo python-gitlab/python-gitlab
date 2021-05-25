@@ -1,7 +1,6 @@
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import GetWithoutIdMixin, RefreshMixin
 
-
 __all__ = [
     "ProjectAdditionalStatistics",
     "ProjectAdditionalStatisticsManager",

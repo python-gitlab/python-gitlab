@@ -5,7 +5,6 @@ import responses
 
 import gitlab
 
-
 runner_detail = {
     "active": True,
     "architecture": "amd64",

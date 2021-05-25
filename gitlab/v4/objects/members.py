@@ -2,10 +2,10 @@ from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CRUDMixin,
-    ObjectDeleteMixin,
-    SaveMixin,
-    RetrieveMixin,
     MemberAllMixin,
+    ObjectDeleteMixin,
+    RetrieveMixin,
+    SaveMixin,
 )
 
 __all__ = [

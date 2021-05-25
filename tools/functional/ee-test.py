@@ -2,7 +2,6 @@
 
 import gitlab
 
-
 P1 = "root/project1"
 P2 = "root/project2"
 MR_P1 = 1

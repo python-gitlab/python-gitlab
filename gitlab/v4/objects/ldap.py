@@ -1,7 +1,6 @@
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject, RESTObjectList
 
-
 __all__ = [
     "LDAPGroup",
     "LDAPGroupManager",
