@@ -225,3 +225,51 @@ Link issue ``i1`` to issue ``i2``::
 Delete a link::
 
     i1.links.delete(issue_link_id)
+
+Issues statistics
+=========================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.IssuesStatistics`
+  + :class:`gitlab.v4.objects.IssuesStatisticsManager`
+  + :attr:`gitlab.issuesstatistics`
+  + :class:`gitlab.v4.objects.GroupIssuesStatistics`
+  + :class:`gitlab.v4.objects.GroupIssuesStatisticsManager`
+  + :attr:`gitlab.v4.objects.Group.issuesstatistics`
+  + :class:`gitlab.v4.objects.ProjectIssuesStatistics`
+  + :class:`gitlab.v4.objects.ProjectIssuesStatisticsManager`
+  + :attr:`gitlab.v4.objects.Project.issuesstatistics`
+
+
+* GitLab API: https://docs.gitlab.com/ce/api/issues_statistics.htm
+
+Examples
+---------
+
+Get statistics of all issues the user has access to::
+
+    statistics = gl.issuesstatistics.get()
+
+Get statistics of issues for the user with ``foobar`` in ``title`` and ``description``::
+
+    statistics = gl.issuesstatistics.get(search='foobar')
+
+Get statistics of all issues in a group::
+
+    statistics = group.issuesstatistics.get()
+
+Get statistics of issues in a group with ``foobar`` in ``title`` and ``description``::
+
+    statistics = group.issuesstatistics.get(search='foobar')
+
+Get statistics of all issues in a project::
+
+    statistics = project.issuesstatistics.get()
+
+Get statistics of issues in a project with ``foobar`` in ``title`` and ``description``::
+
+    statistics = project.issuesstatistics.get(search='foobar')
