@@ -116,7 +116,7 @@ class ProjectPipelineJobManager(ListMixin, RESTManager):
     _path = "/projects/%(project_id)s/pipelines/%(pipeline_id)s/jobs"
     _obj_cls = ProjectPipelineJob
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
-    _list_filters = ("scope",)
+    _list_filters = ("scope", "include_retried")
 
 
 class ProjectPipelineBridge(RESTObject):
