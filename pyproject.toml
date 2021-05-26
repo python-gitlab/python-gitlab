@@ -1,3 +1,8 @@
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+order_by_type = false
+
 [tool.semantic_release]
 version_variable = "gitlab/__version__.py:__version__"
 commit_subject = "chore: release v{version}"

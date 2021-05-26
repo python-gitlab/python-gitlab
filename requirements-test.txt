@@ -1,7 +1,6 @@
 coverage
 httmock
 mock
-mypy
 pytest
 pytest-cov
 responses
