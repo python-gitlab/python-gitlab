@@ -40,6 +40,4 @@ jobs:
       - name: Check twine readme rendering
         env:
           TOXENV: twine-check
-        run: |
-          python3 setup.py sdist bdist_wheel
-          tox
+        run: tox

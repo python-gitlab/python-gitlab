@@ -6,17 +6,13 @@ repos:
     rev: 20.8b1
     hooks:
       - id: black
-
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
     rev: v5.0.0
     hooks:
       - id: commitlint
         additional_dependencies: ['@commitlint/config-conventional']
         stages: [commit-msg]
-
-  - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v5.0.0
+  - repo: https://github.com/pycqa/isort
+    rev: 5.8.0
     hooks:
-      - id: commitlint-travis
-        additional_dependencies: ['@commitlint/config-conventional']
-        stages: [manual]
+      - id: isort

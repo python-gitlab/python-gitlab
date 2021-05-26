@@ -144,21 +144,22 @@ To format your code according to our guidelines before committing, run:
 Running unit tests
 ------------------
 
-Before submitting a pull request make sure that the tests still succeed with
-your change. Unit tests and functional tests run using the travis service and
-passing tests are mandatory to get merge requests accepted.
+Before submitting a pull request make sure that the tests and lint checks still succeed with
+your change. Unit tests and functional tests run in GitHub Actions and
+passing checks are mandatory to get merge requests accepted.
 
-We're currently in a restructing phase for the unit tests. If you're changing existing
-tests, feel free to keep the current format. Otherwise please write new tests with pytest and
-using `responses
+Please write new unit tests with pytest and using `responses
 <https://github.com/getsentry/responses/>`_.
-An example for new tests can be found in tests/objects/test_runner.py
+An example can be found in ``tests/unit/objects/test_runner.py``
 
-You need to install ``tox`` to run unit tests and documentation builds locally:
+You need to install ``tox`` (``pip3 install tox``) to run tests and lint checks locally:
 
 .. code-block:: bash
 
-   # run the unit tests for all supported python3 versions, and the pep8 tests:
+   # run unit tests using your installed python3, and all lint checks:
+   tox -s
+
+   # run unit tests for all supported python3 versions, and all lint checks:
    tox
 
    # run tests in one environment only:
