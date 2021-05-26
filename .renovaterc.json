@@ -4,7 +4,7 @@
   ],
   "regexManagers": [
     {
-      "fileMatch": ["^tools/functional/fixtures/.env$"],
+      "fileMatch": ["^tests/functional/fixtures/.env$"],
       "matchStrings": ["GITLAB_TAG=(?<currentValue>.*?)\n"],
       "depNameTemplate": "gitlab/gitlab-ce",
       "datasourceTemplate": "docker",
