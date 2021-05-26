@@ -26,6 +26,7 @@ from .notification_settings import GroupNotificationSettingsManager  # noqa: F40
 from .packages import GroupPackageManager  # noqa: F401
 from .projects import GroupProjectManager  # noqa: F401
 from .runners import GroupRunnerManager  # noqa: F401
+from .statistics import GroupIssuesStatisticsManager  # noqa: F401
 from .variables import GroupVariableManager  # noqa: F401
 
 __all__ = [
@@ -52,6 +53,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("epics", "GroupEpicManager"),
         ("imports", "GroupImportManager"),
         ("issues", "GroupIssueManager"),
+        ("issuesstatistics", "GroupIssuesStatisticsManager"),
         ("labels", "GroupLabelManager"),
         ("members", "GroupMemberManager"),
         ("members_all", "GroupMemberAllManager"),
