@@ -57,7 +57,7 @@ def temp_dir():
 
 @pytest.fixture(scope="session")
 def test_dir(pytestconfig):
-    return pytestconfig.rootdir / "tools" / "functional"
+    return pytestconfig.rootdir / "tests" / "functional"
 
 
 @pytest.fixture(scope="session")
