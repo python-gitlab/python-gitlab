@@ -2,4 +2,4 @@ include COPYING AUTHORS ChangeLog.rst RELEASE_NOTES.rst requirements.txt test-re
 include tox.ini .travis.yml
 recursive-include tests *
 recursive-include docs *j2 *.py *.rst api/*.rst Makefile make.bat
-recursive-include gitlab/tests/data *
+recursive-include tests/unit/data *
