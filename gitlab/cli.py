@@ -21,6 +21,7 @@ import argparse
 import functools
 import re
 import sys
+from types import ModuleType
 from typing import Any, Callable, cast, Dict, Optional, Tuple, Type, TypeVar, Union
 
 from requests.structures import CaseInsensitiveDict
@@ -88,7 +89,7 @@ def die(msg: str, e: Optional[Exception] = None) -> None:
     sys.exit(1)
 
 
-def what_to_cls(what: str, namespace: Type) -> RESTObject:
+def what_to_cls(what: str, namespace: ModuleType) -> Type[RESTObject]:
     classes = CaseInsensitiveDict(namespace.__dict__)
     lowercase_class = what.replace("-", "")
 
