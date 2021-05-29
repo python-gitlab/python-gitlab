@@ -31,6 +31,8 @@ from .variables import GroupVariableManager  # noqa: F401
 __all__ = [
     "Group",
     "GroupManager",
+    "GroupDescendantGroup",
+    "GroupDescendantGroupManager",
     "GroupSubgroup",
     "GroupSubgroupManager",
 ]
@@ -45,6 +47,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("billable_members", "GroupBillableMemberManager"),
         ("boards", "GroupBoardManager"),
         ("customattributes", "GroupCustomAttributeManager"),
+        ("descendant_groups", "GroupDescendantGroupManager"),
         ("exports", "GroupExportManager"),
         ("epics", "GroupEpicManager"),
         ("imports", "GroupImportManager"),
@@ -310,3 +313,17 @@ class GroupSubgroupManager(ListMixin, RESTManager):
         "min_access_level",
     )
     _types = {"skip_groups": types.ListAttribute}
+
+
+class GroupDescendantGroup(RESTObject):
+    pass
+
+
+class GroupDescendantGroupManager(GroupSubgroupManager):
+    """
+    This manager inherits from GroupSubgroupManager as descendant groups
+    share all attributes with subgroups, except the path and object class.
+    """
+
+    _path = "/groups/%(group_id)s/descendant_groups"
+    _obj_cls = GroupDescendantGroup

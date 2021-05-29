@@ -2,10 +2,41 @@
 GitLab API: https://docs.gitlab.com/ce/api/groups.html
 """
 
+import re
+
 import pytest
 import responses
 
 import gitlab
+from gitlab.v4.objects import GroupDescendantGroup, GroupSubgroup
+
+subgroup_descgroup_content = [
+    {
+        "id": 2,
+        "name": "Bar Group",
+        "path": "foo/bar",
+        "description": "A subgroup of Foo Group",
+        "visibility": "public",
+        "share_with_group_lock": False,
+        "require_two_factor_authentication": False,
+        "two_factor_grace_period": 48,
+        "project_creation_level": "developer",
+        "auto_devops_enabled": None,
+        "subgroup_creation_level": "owner",
+        "emails_disabled": None,
+        "mentions_disabled": None,
+        "lfs_enabled": True,
+        "default_branch_protection": 2,
+        "avatar_url": "http://gitlab.example.com/uploads/group/avatar/1/bar.jpg",
+        "web_url": "http://gitlab.example.com/groups/foo/bar",
+        "request_access_enabled": False,
+        "full_name": "Bar Group",
+        "full_path": "foo/bar",
+        "file_template_project_id": 1,
+        "parent_id": 123,
+        "created_at": "2020-01-15T12:36:29.590Z",
+    },
+]
 
 
 @pytest.fixture
@@ -31,6 +62,21 @@ def resp_groups():
             method=responses.POST,
             url="http://localhost/api/v4/groups",
             json=content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_list_subgroups_descendant_groups():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url=re.compile(
+                r"http://localhost/api/v4/groups/1/(subgroups|descendant_groups)"
+            ),
+            json=subgroup_descgroup_content,
             content_type="application/json",
             status=200,
         )
@@ -69,6 +115,18 @@ def test_create_group(gl, resp_groups):
 def test_create_group_export(group, resp_export):
     export = group.exports.create()
     assert export.message == "202 Accepted"
+
+
+def test_list_group_subgroups(group, resp_list_subgroups_descendant_groups):
+    subgroups = group.subgroups.list()
+    assert isinstance(subgroups[0], GroupSubgroup)
+    assert subgroups[0].path == subgroup_descgroup_content[0]["path"]
+
+
+def test_list_group_descendant_groups(group, resp_list_subgroups_descendant_groups):
+    descendant_groups = group.descendant_groups.list()
+    assert isinstance(descendant_groups[0], GroupDescendantGroup)
+    assert descendant_groups[0].path == subgroup_descgroup_content[0]["path"]
 
 
 @pytest.mark.skip("GitLab API endpoint not implemented")

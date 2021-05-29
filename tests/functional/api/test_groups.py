@@ -32,6 +32,7 @@ def test_groups(gl):
     assert len(gl.groups.list(search="oup1")) == 1
     assert group3.parent_id == p_id
     assert group2.subgroups.list()[0].id == group3.id
+    assert group2.descendant_groups.list()[0].id == group3.id
 
     filtered_groups = gl.groups.list(skip_groups=[group3.id, group4.id])
     assert group3 not in filtered_groups

@@ -167,6 +167,31 @@ List the subgroups for a group::
         real_group = gl.groups.get(subgroup_id, lazy=True)
         real_group.issues.list()
 
+Descendant Groups
+=================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.GroupDescendantGroup`
+  + :class:`gitlab.v4.objects.GroupDescendantGroupManager`
+  + :attr:`gitlab.v4.objects.Group.descendant_groups`
+
+Examples
+--------
+
+List the descendant groups of a group::
+
+    descendant_groups = group.descendant_groups.list()
+
+.. note::
+
+    Like the ``GroupSubgroup`` objects described above, ``GroupDescendantGroup``
+    objects do not expose the same API as the ``Group`` objects. Create a new
+    ``Group`` object instead if needed, as shown in the subgroup example.
+
 Group custom attributes
 =======================
 
