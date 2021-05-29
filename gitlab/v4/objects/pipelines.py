@@ -5,6 +5,7 @@ from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
     DeleteMixin,
+    GetWithoutIdMixin,
     ListMixin,
     ObjectDeleteMixin,
     RefreshMixin,
@@ -26,6 +27,8 @@ __all__ = [
     "ProjectPipelineScheduleVariableManager",
     "ProjectPipelineSchedule",
     "ProjectPipelineScheduleManager",
+    "ProjectPipelineTestReport",
+    "ProjectPipelineTestReportManager",
 ]
 
 
@@ -34,6 +37,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
         ("jobs", "ProjectPipelineJobManager"),
         ("bridges", "ProjectPipelineBridgeManager"),
         ("variables", "ProjectPipelineVariableManager"),
+        ("test_report", "ProjectPipelineTestReportManager"),
     )
 
     @cli.register_custom_action("ProjectPipeline")
@@ -201,3 +205,13 @@ class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
     _update_attrs = RequiredOptional(
         optional=("description", "ref", "cron", "cron_timezone", "active"),
     )
+
+
+class ProjectPipelineTestReport(RESTObject):
+    _id_attr = None
+
+
+class ProjectPipelineTestReportManager(GetWithoutIdMixin, RESTManager):
+    _path = "/projects/%(project_id)s/pipelines/%(pipeline_id)s/test_report"
+    _obj_cls = ProjectPipelineTestReport
+    _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
