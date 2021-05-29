@@ -12,3 +12,14 @@ docs/_build
 .tox
 .venv/
 venv/
+
+# Include tracked hidden files and directories in search and diff tools
+!.commitlintrc.json
+!.dockerignore
+!.github/
+!.gitignore
+!.gitlab-ci.yml
+!.mypy.ini
+!.pre-commit-config.yaml
+!.readthedocs.yml
+!.renovaterc.json
