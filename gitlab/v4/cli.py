@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import inspect
 import operator
 import sys
 
@@ -72,7 +71,7 @@ class GitlabCLI(object):
             if self.mgr._from_parent_attrs:
                 for k in self.mgr._from_parent_attrs:
                     data[k] = self.args[k]
-            if gitlab.mixins.GetWithoutIdMixin not in inspect.getmro(self.cls):
+            if not issubclass(self.cls, gitlab.mixins.GetWithoutIdMixin):
                 data[self.cls._id_attr] = self.args.pop(self.cls._id_attr)
             o = self.cls(self.mgr, data)
             method_name = self.action.replace("-", "_")
@@ -103,7 +102,7 @@ class GitlabCLI(object):
 
     def do_get(self):
         id = None
-        if gitlab.mixins.GetWithoutIdMixin not in inspect.getmro(self.mgr_cls):
+        if not issubclass(self.mgr_cls, gitlab.mixins.GetWithoutIdMixin):
             id = self.args.pop(self.cls._id_attr)
 
         try:
@@ -120,7 +119,7 @@ class GitlabCLI(object):
 
     def do_update(self):
         id = None
-        if gitlab.mixins.GetWithoutIdMixin not in inspect.getmro(self.mgr_cls):
+        if not issubclass(self.mgr_cls, gitlab.mixins.GetWithoutIdMixin):
             id = self.args.pop(self.cls._id_attr)
         try:
             return self.mgr.update(id, self.args)
@@ -160,7 +159,7 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                 sub_parser_action.add_argument("--%s" % id_attr, required=True)
 
         if action_name == "get":
-            if gitlab.mixins.GetWithoutIdMixin not in inspect.getmro(cls):
+            if not issubclass(cls, gitlab.mixins.GetWithoutIdMixin):
                 if cls._id_attr is not None:
                     id_attr = cls._id_attr.replace("_", "-")
                     sub_parser_action.add_argument("--%s" % id_attr, required=True)
@@ -210,7 +209,7 @@ def _populate_sub_parser_by_class(cls, sub_parser):
                 sub_parser_action.add_argument("--sudo", required=False)
 
             # We need to get the object somehow
-            if gitlab.mixins.GetWithoutIdMixin not in inspect.getmro(cls):
+            if not issubclass(cls, gitlab.mixins.GetWithoutIdMixin):
                 if cls._id_attr is not None:
                     id_attr = cls._id_attr.replace("_", "-")
                     sub_parser_action.add_argument("--%s" % id_attr, required=True)
@@ -268,12 +267,11 @@ def extend_parser(parser):
     # populate argparse for all Gitlab Object
     classes = []
     for cls in gitlab.v4.objects.__dict__.values():
-        try:
-            if gitlab.base.RESTManager in inspect.getmro(cls):
-                if cls._obj_cls is not None:
-                    classes.append(cls._obj_cls)
-        except AttributeError:
-            pass
+        if not isinstance(cls, type):
+            continue
+        if issubclass(cls, gitlab.base.RESTManager):
+            if cls._obj_cls is not None:
+                classes.append(cls._obj_cls)
     classes.sort(key=operator.attrgetter("__name__"))
 
     for cls in classes:
