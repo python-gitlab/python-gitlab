@@ -236,13 +236,13 @@ Reference
 
   + :class:`gitlab.v4.objects.IssuesStatistics`
   + :class:`gitlab.v4.objects.IssuesStatisticsManager`
-  + :attr:`gitlab.issuesstatistics`
+  + :attr:`gitlab.issues_statistics`
   + :class:`gitlab.v4.objects.GroupIssuesStatistics`
   + :class:`gitlab.v4.objects.GroupIssuesStatisticsManager`
-  + :attr:`gitlab.v4.objects.Group.issuesstatistics`
+  + :attr:`gitlab.v4.objects.Group.issues_statistics`
   + :class:`gitlab.v4.objects.ProjectIssuesStatistics`
   + :class:`gitlab.v4.objects.ProjectIssuesStatisticsManager`
-  + :attr:`gitlab.v4.objects.Project.issuesstatistics`
+  + :attr:`gitlab.v4.objects.Project.issues_statistics`
 
 
 * GitLab API: https://docs.gitlab.com/ce/api/issues_statistics.htm
@@ -250,26 +250,30 @@ Reference
 Examples
 ---------
 
+Get statistics of all issues created by the current user::
+
+    statistics = gl.issues_statistics.get()
+
 Get statistics of all issues the user has access to::
 
-    statistics = gl.issuesstatistics.get()
+    statistics = gl.issues_statistics.get(scope='all')
 
-Get statistics of issues for the user with ``foobar`` in ``title`` and ``description``::
+Get statistics of issues for the user with ``foobar`` in the ``title`` or the ``description``::
 
-    statistics = gl.issuesstatistics.get(search='foobar')
+    statistics = gl.issues_statistics.get(search='foobar')
 
 Get statistics of all issues in a group::
 
-    statistics = group.issuesstatistics.get()
+    statistics = group.issues_statistics.get()
 
-Get statistics of issues in a group with ``foobar`` in ``title`` and ``description``::
+Get statistics of issues in a group with ``foobar`` in the ``title`` or the ``description``::
 
-    statistics = group.issuesstatistics.get(search='foobar')
+    statistics = group.issues_statistics.get(search='foobar')
 
 Get statistics of all issues in a project::
 
-    statistics = project.issuesstatistics.get()
+    statistics = project.issues_statistics.get()
 
-Get statistics of issues in a project with ``foobar`` in ``title`` and ``description``::
+Get statistics of issues in a project with ``foobar`` in the ``title`` or the ``description``::
 
-    statistics = project.issuesstatistics.get(search='foobar')
+    statistics = project.issues_statistics.get(search='foobar')

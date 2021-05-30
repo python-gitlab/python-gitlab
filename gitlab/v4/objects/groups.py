@@ -53,7 +53,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("epics", "GroupEpicManager"),
         ("imports", "GroupImportManager"),
         ("issues", "GroupIssueManager"),
-        ("issuesstatistics", "GroupIssuesStatisticsManager"),
+        ("issues_statistics", "GroupIssuesStatisticsManager"),
         ("labels", "GroupLabelManager"),
         ("members", "GroupMemberManager"),
         ("members_all", "GroupMemberAllManager"),
