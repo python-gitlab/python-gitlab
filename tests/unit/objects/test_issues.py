@@ -71,18 +71,22 @@ def test_get_issue(gl, resp_get_issue):
 
 
 def test_get_issues_statistics(gl, resp_issue_statistics):
-    statistics = gl.issuesstatistics.get()
+    statistics = gl.issues_statistics.get()
     assert isinstance(statistics, IssuesStatistics)
     assert statistics.statistics["counts"]["all"] == 20
 
 
 def test_get_group_issues_statistics(group, resp_issue_statistics):
-    statistics = group.issuesstatistics.get()
+    statistics = group.issues_statistics.get()
     assert isinstance(statistics, GroupIssuesStatistics)
     assert statistics.statistics["counts"]["all"] == 20
 
 
 def test_get_project_issues_statistics(project, resp_issue_statistics):
-    statistics = project.issuesstatistics.get()
+    statistics = project.issues_statistics.get()
     assert isinstance(statistics, ProjectIssuesStatistics)
     assert statistics.statistics["counts"]["all"] == 20
+
+    # Deprecated attribute
+    deprecated = project.issuesstatistics.get()
+    assert deprecated.statistics == statistics.statistics

@@ -155,7 +155,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         ("wikis", "ProjectWikiManager"),
         ("clusters", "ProjectClusterManager"),
         ("additionalstatistics", "ProjectAdditionalStatisticsManager"),
-        ("issuesstatistics", "ProjectIssuesStatisticsManager"),
+        ("issues_statistics", "ProjectIssuesStatisticsManager"),
+        ("issuesstatistics", "ProjectIssuesStatisticsManager"),  # Deprecated
         ("deploytokens", "ProjectDeployTokenManager"),
     )
 
