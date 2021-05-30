@@ -437,10 +437,14 @@ class Gitlab(object):
 
     def _prepare_send_data(
         self,
-        files: Dict[str, Any] = None,
-        post_data: Dict[str, Any] = None,
-        raw: Optional[bool] = False,
-    ) -> Tuple:
+        files: Optional[Dict[str, Any]] = None,
+        post_data: Optional[Dict[str, Any]] = None,
+        raw: bool = False,
+    ) -> Tuple[
+        Optional[Dict[str, Any]],
+        Optional[Union[Dict[str, Any], MultipartEncoder]],
+        str,
+    ]:
         if files:
             if post_data is None:
                 post_data = {}
@@ -467,7 +471,7 @@ class Gitlab(object):
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
         post_data: Optional[Dict[str, Any]] = None,
-        raw: Optional[bool] = False,
+        raw: bool = False,
         streamed: bool = False,
         files: Optional[Dict[str, Any]] = None,
         timeout: Optional[float] = None,
@@ -690,7 +694,7 @@ class Gitlab(object):
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
         post_data: Optional[Dict[str, Any]] = None,
-        raw: Optional[bool] = False,
+        raw: bool = False,
         files: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> Union[Dict[str, Any], requests.Response]:
@@ -739,7 +743,7 @@ class Gitlab(object):
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
         post_data: Optional[Dict[str, Any]] = None,
-        raw: Optional[bool] = False,
+        raw: bool = False,
         files: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> Union[Dict[str, Any], requests.Response]:
