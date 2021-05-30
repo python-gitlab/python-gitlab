@@ -73,7 +73,7 @@ class GenericPackageManager(RESTManager):
 
         return self._obj_cls(
             self,
-            {
+            attrs={
                 "package_name": package_name,
                 "package_version": package_version,
                 "file_name": file_name,
