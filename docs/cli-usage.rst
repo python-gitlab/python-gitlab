@@ -89,6 +89,13 @@ You must define the ``url`` in each GitLab server section.
    If the GitLab server you are using redirects requests from http to https,
    make sure to use the ``https://`` protocol in the ``url`` definition.
 
+.. note::
+
+   It is highly recommended to use the final destination in the ``url`` field.
+   What this means is that you should not use a URL which redirects as it will
+   most likely cause errors. python-gitlab will raise a ``RedirectionError``
+   when it encounters a redirect which it believes will cause an error.
+
 Only one of ``private_token``, ``oauth_token`` or ``job_token`` should be
 defined. If neither are defined an anonymous request will be sent to the Gitlab
 server, with very limited permissions.
@@ -101,7 +108,7 @@ We recommend that you use `Credential helpers`_ to securely store your tokens.
    * - Option
      - Description
    * - ``url``
-     - URL for the GitLab server
+     - URL for the GitLab server. Do **NOT** use a URL which redirects.
    * - ``private_token``
      - Your user token. Login/password is not supported. Refer to `the
        official documentation
