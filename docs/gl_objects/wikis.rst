@@ -11,6 +11,9 @@ References
   + :class:`gitlab.v4.objects.ProjectWiki`
   + :class:`gitlab.v4.objects.ProjectWikiManager`
   + :attr:`gitlab.v4.objects.Project.wikis`
+  + :class:`gitlab.v4.objects.GroupWiki`
+  + :class:`gitlab.v4.objects.GroupWikiManager`
+  + :attr:`gitlab.v4.objects.Group.wikis`
 
 * GitLab API: https://docs.gitlab.com/ce/api/wikis.html
 
@@ -20,6 +23,10 @@ Examples
 Get the list of wiki pages for a project::
 
     pages = project.wikis.list()
+
+Get the list of wiki pages for a group::
+
+    pages = group.wikis.list()
 
 Get a single wiki page::
 
