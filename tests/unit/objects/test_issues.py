@@ -1,11 +1,16 @@
 """
 GitLab API: https://docs.gitlab.com/ce/api/issues.html
 """
+import re
 
 import pytest
 import responses
 
-from gitlab.v4.objects import ProjectIssuesStatistics
+from gitlab.v4.objects import (
+    GroupIssuesStatistics,
+    IssuesStatistics,
+    ProjectIssuesStatistics,
+)
 
 
 @pytest.fixture
@@ -43,7 +48,9 @@ def resp_issue_statistics():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.GET,
-            url="http://localhost/api/v4/projects/1/issues_statistics",
+            url=re.compile(
+                r"http://localhost/api/v4/((groups|projects)/1/)?issues_statistics"
+            ),
             json=content,
             content_type="application/json",
             status=200,
@@ -63,7 +70,23 @@ def test_get_issue(gl, resp_get_issue):
     assert issue.name == "name"
 
 
-def test_project_issues_statistics(project, resp_issue_statistics):
-    statistics = project.issuesstatistics.get()
+def test_get_issues_statistics(gl, resp_issue_statistics):
+    statistics = gl.issues_statistics.get()
+    assert isinstance(statistics, IssuesStatistics)
+    assert statistics.statistics["counts"]["all"] == 20
+
+
+def test_get_group_issues_statistics(group, resp_issue_statistics):
+    statistics = group.issues_statistics.get()
+    assert isinstance(statistics, GroupIssuesStatistics)
+    assert statistics.statistics["counts"]["all"] == 20
+
+
+def test_get_project_issues_statistics(project, resp_issue_statistics):
+    statistics = project.issues_statistics.get()
     assert isinstance(statistics, ProjectIssuesStatistics)
     assert statistics.statistics["counts"]["all"] == 20
+
+    # Deprecated attribute
+    deprecated = project.issuesstatistics.get()
+    assert deprecated.statistics == statistics.statistics
