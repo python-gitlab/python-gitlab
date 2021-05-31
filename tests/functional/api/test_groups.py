@@ -194,3 +194,17 @@ def test_group_subgroups_projects(gl, user):
     assert group4.parent_id == group2.id
     assert gr1_project.namespace["id"] == group1.id
     assert gr2_project.namespace["parent_id"] == group1.id
+
+
+def test_group_wiki(group):
+    content = "Group Wiki page content"
+    wiki = group.wikis.create({"title": "groupwikipage", "content": content})
+    assert len(group.wikis.list()) == 1
+
+    wiki = group.wikis.get(wiki.slug)
+    assert wiki.content == content
+
+    wiki.content = "new content"
+    wiki.save()
+    wiki.delete()
+    assert len(group.wikis.list()) == 0
