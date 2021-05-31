@@ -195,6 +195,7 @@ def test_group_subgroups_projects(gl, user):
     assert gr1_project.namespace["id"] == group1.id
     assert gr2_project.namespace["parent_id"] == group1.id
 
+
 @pytest.mark.skip
 def test_group_wiki(group):
     content = "Group Wiki page content"
