@@ -12,8 +12,12 @@ import gitlab
 def reset_gitlab(gl):
     # previously tools/reset_gitlab.py
     for project in gl.projects.list():
+        for deploy_token in project.deploytokens.list():
+            deploy_token.delete()
         project.delete()
     for group in gl.groups.list():
+        for deploy_token in group.deploytokens.list():
+            deploy_token.delete()
         group.delete()
     for variable in gl.variables.list():
         variable.delete()
