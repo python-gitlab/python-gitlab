@@ -23,7 +23,7 @@ def reset_gitlab(gl):
         variable.delete()
     for user in gl.users.list():
         if user.username != "root":
-            user.delete()
+            user.delete(hard_delete=True)
 
 
 def set_token(container, rootdir):
