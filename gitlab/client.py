@@ -787,7 +787,7 @@ class Gitlab(object):
             ) from e
 
     def http_delete(self, path: str, **kwargs: Any) -> requests.Response:
-        """Make a PUT request to the Gitlab server.
+        """Make a DELETE request to the Gitlab server.
 
         Args:
             path (str): Path or full URL to query ('/projects' or
