@@ -186,6 +186,21 @@ To run these tests:
    # run the python API tests:
    tox -e py_func_v4
 
+When developing tests it can be a little frustrating to wait for GitLab to spin
+up every run. To prevent the containers from being cleaned up afterwards, pass
+`--keep-containers` to pytest, i.e.:
+
+.. code-block:: bash
+
+   tox -e py_func_v4 -- --keep-containers
+
+If you then wish to test against a clean slate, you may perform a manual clean
+up of the containers by running:
+
+.. code-block:: bash
+
+   docker-compose -f tests/functional/fixtures/docker-compose.yml -p pytest-python-gitlab down -v
+
 By default, the tests run against the latest version of the ``gitlab/gitlab-ce``
 image. You can override both the image and tag by providing either the
 ``GITLAB_IMAGE`` or ``GITLAB_TAG`` environment variables.

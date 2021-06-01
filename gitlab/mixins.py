@@ -576,7 +576,7 @@ class ObjectDeleteMixin(_RestObjectBase):
         """
         if TYPE_CHECKING:
             assert isinstance(self.manager, DeleteMixin)
-        self.manager.delete(self.get_id())
+        self.manager.delete(self.get_id(), **kwargs)
 
 
 class UserAgentDetailMixin(_RestObjectBase):

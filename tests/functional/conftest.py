@@ -12,14 +12,18 @@ import gitlab
 def reset_gitlab(gl):
     # previously tools/reset_gitlab.py
     for project in gl.projects.list():
+        for deploy_token in project.deploytokens.list():
+            deploy_token.delete()
         project.delete()
     for group in gl.groups.list():
+        for deploy_token in group.deploytokens.list():
+            deploy_token.delete()
         group.delete()
     for variable in gl.variables.list():
         variable.delete()
     for user in gl.users.list():
         if user.username != "root":
-            user.delete()
+            user.delete(hard_delete=True)
 
 
 def set_token(container, rootdir):
@@ -50,6 +54,14 @@ def pytest_report_collectionfinish(config, startdir, items):
     ]
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--keep-containers",
+        action="store_true",
+        help="Keep containers running after testing",
+    )
+
+
 @pytest.fixture(scope="session")
 def temp_dir():
     return Path(tempfile.gettempdir())
@@ -63,6 +75,21 @@ def test_dir(pytestconfig):
 @pytest.fixture(scope="session")
 def docker_compose_file(test_dir):
     return test_dir / "fixtures" / "docker-compose.yml"
+
+
+@pytest.fixture(scope="session")
+def docker_compose_project_name():
+    """Set a consistent project name to enable optional reuse of containers."""
+    return "pytest-python-gitlab"
+
+
+@pytest.fixture(scope="session")
+def docker_cleanup(request):
+    """Conditionally keep containers around by overriding the cleanup command."""
+    if request.config.getoption("--keep-containers"):
+        # Print version and exit.
+        return "-v"
+    return "down -v"
 
 
 @pytest.fixture(scope="session")

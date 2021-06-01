@@ -1,11 +1,8 @@
 import subprocess
-import sys
 import textwrap
 import time
 from io import BytesIO
 from zipfile import is_zipfile
-
-import pytest
 
 content = textwrap.dedent(
     """\
@@ -23,11 +20,12 @@ data = {
 }
 
 
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="I am the walrus")
 def test_cli_artifacts(capsysbinary, gitlab_config, gitlab_runner, project):
     project.files.create(data)
 
-    while not (jobs := project.jobs.list(scope="success")):
+    jobs = None
+    while not jobs:
+        jobs = project.jobs.list(scope="success")
         time.sleep(0.5)
 
     job = project.jobs.get(jobs[0].id)

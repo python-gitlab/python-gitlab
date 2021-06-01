@@ -4,11 +4,11 @@ import gitlab
 def test_create_issue(project):
     issue = project.issues.create({"title": "my issue 1"})
     issue2 = project.issues.create({"title": "my issue 2"})
-    issue_ids = [issue.id for issue in project.issues.list()]
-    assert len(issue_ids) == 2
+    issue_iids = [issue.iid for issue in project.issues.list()]
+    assert len(issue_iids) == 2
 
     # Test 'iids' as a list
-    assert len(project.issues.list(iids=issue_ids)) == 2
+    assert len(project.issues.list(iids=issue_iids)) == 2
 
     issue2.state_event = "close"
     issue2.save()
