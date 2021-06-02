@@ -2,6 +2,9 @@
   "extends": [
     "config:base"
   ],
+  "pip_requirements": {
+    "fileMatch": ["^requirements(-[\\w]*)?\\.txt$"]
+  },
   "regexManagers": [
     {
       "fileMatch": ["^tests/functional/fixtures/.env$"],
