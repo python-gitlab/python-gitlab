@@ -28,6 +28,7 @@ from .projects import GroupProjectManager  # noqa: F401
 from .runners import GroupRunnerManager  # noqa: F401
 from .statistics import GroupIssuesStatisticsManager  # noqa: F401
 from .variables import GroupVariableManager  # noqa: F401
+from .wikis import GroupWikiManager  # noqa: F401
 
 __all__ = [
     "Group",
@@ -67,6 +68,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("variables", "GroupVariableManager"),
         ("clusters", "GroupClusterManager"),
         ("deploytokens", "GroupDeployTokenManager"),
+        ("wikis", "GroupWikiManager"),
     )
 
     @cli.register_custom_action("Group", ("to_project_id",))
