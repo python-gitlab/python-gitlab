@@ -1,4 +1,4 @@
-black
-flake8
-isort
-mypy
+black==20.8b1
+flake8==3.9.2
+isort==5.8.0
+mypy==0.812

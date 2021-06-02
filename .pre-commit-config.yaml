@@ -12,7 +12,15 @@ repos:
       - id: commitlint
         additional_dependencies: ['@commitlint/config-conventional']
         stages: [commit-msg]
+  - repo: https://github.com/pycqa/flake8
+    rev: 3.9.2
+    hooks:
+      - id: flake8
   - repo: https://github.com/pycqa/isort
     rev: 5.8.0
     hooks:
       - id: isort
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.812
+    hooks:
+      - id: mypy
