@@ -43,6 +43,7 @@ from .groups import *
 from .hooks import *
 from .issues import *
 from .jobs import *
+from .keys import *
 from .labels import *
 from .ldap import *
 from .members import *

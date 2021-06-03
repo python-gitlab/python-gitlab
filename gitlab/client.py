@@ -119,6 +119,7 @@ class Gitlab(object):
         self.hooks = objects.HookManager(self)
         self.issues = objects.IssueManager(self)
         self.issues_statistics = objects.IssuesStatisticsManager(self)
+        self.keys = objects.KeyManager(self)
         self.ldapgroups = objects.LDAPGroupManager(self)
         self.licenses = objects.LicenseManager(self)
         self.namespaces = objects.NamespaceManager(self)
