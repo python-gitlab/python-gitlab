@@ -213,7 +213,12 @@ def test_project_remote_mirrors(project):
 
 
 def test_project_services(project):
+    # Use 'update' to create a service as we don't have a 'create' method and
+    # to add one is somewhat complicated so it hasn't been done yet.
+    project.services.update("asana", api_key="foo")
+
     service = project.services.get("asana")
+    assert service.active is True
     service.api_key = "whatever"
     service.save()
 
