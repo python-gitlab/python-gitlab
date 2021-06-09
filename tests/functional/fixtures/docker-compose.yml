@@ -11,10 +11,10 @@ services:
     hostname: 'gitlab.test'
     privileged: true # Just in case https://gitlab.com/gitlab-org/omnibus-gitlab/-/issues/1350
     environment:
+      GITLAB_ROOT_PASSWORD: 5iveL!fe
+      GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN: registration-token
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://gitlab.test'
-        gitlab_rails['initial_root_password'] = '5iveL!fe'
-        gitlab_rails['initial_shared_runners_registration_token'] = 'registration-token'
         registry['enable'] = false
         nginx['redirect_http_to_https'] = false
         nginx['listen_port'] = 80
