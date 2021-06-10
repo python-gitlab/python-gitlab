@@ -19,6 +19,7 @@ import pickle
 
 import pytest
 
+import gitlab
 from gitlab import base
 
 
@@ -84,6 +85,10 @@ class TestRESTObject:
         assert obj._create_managers() is None
         assert fake_manager == obj.manager
         assert fake_gitlab == obj.manager.gitlab
+
+    def test_instantiate_non_dict(self, fake_gitlab, fake_manager):
+        with pytest.raises(gitlab.exceptions.GitlabParsingError):
+            FakeObject(fake_manager, ["a", "list", "fails"])
 
     def test_picklability(self, fake_manager):
         obj = FakeObject(fake_manager, {"foo": "bar"})
