@@ -1,4 +1,8 @@
-from gitlab import cli
+from typing import Any, Callable, cast, Dict, List, Optional, TYPE_CHECKING, Union
+
+import requests
+
+from gitlab import cli, client
 from gitlab import exceptions as exc
 from gitlab import types, utils
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
@@ -163,7 +167,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
 
     @cli.register_custom_action("Project", ("forked_from_id",))
     @exc.on_http_error(exc.GitlabCreateError)
-    def create_fork_relation(self, forked_from_id, **kwargs):
+    def create_fork_relation(self, forked_from_id: int, **kwargs: Any) -> None:
         """Create a forked from/to relation between existing projects.
 
         Args:
@@ -179,7 +183,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabDeleteError)
-    def delete_fork_relation(self, **kwargs):
+    def delete_fork_relation(self, **kwargs: Any) -> None:
         """Delete a forked relation between existing projects.
 
         Args:
@@ -194,7 +198,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabGetError)
-    def languages(self, **kwargs):
+    def languages(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Get languages used in the project with percentage value.
 
         Args:
@@ -209,7 +213,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabCreateError)
-    def star(self, **kwargs):
+    def star(self, **kwargs: Any) -> None:
         """Star a project.
 
         Args:
@@ -221,11 +225,13 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """
         path = "/projects/%s/star" % self.get_id()
         server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabDeleteError)
-    def unstar(self, **kwargs):
+    def unstar(self, **kwargs: Any) -> None:
         """Unstar a project.
 
         Args:
@@ -237,11 +243,13 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """
         path = "/projects/%s/unstar" % self.get_id()
         server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabCreateError)
-    def archive(self, **kwargs):
+    def archive(self, **kwargs: Any) -> None:
         """Archive a project.
 
         Args:
@@ -253,11 +261,13 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """
         path = "/projects/%s/archive" % self.get_id()
         server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabDeleteError)
-    def unarchive(self, **kwargs):
+    def unarchive(self, **kwargs: Any) -> None:
         """Unarchive a project.
 
         Args:
@@ -269,13 +279,21 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """
         path = "/projects/%s/unarchive" % self.get_id()
         server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action(
         "Project", ("group_id", "group_access"), ("expires_at",)
     )
     @exc.on_http_error(exc.GitlabCreateError)
-    def share(self, group_id, group_access, expires_at=None, **kwargs):
+    def share(
+        self,
+        group_id: int,
+        group_access: int,
+        expires_at: Optional[str] = None,
+        **kwargs: Any
+    ) -> None:
         """Share the project with a group.
 
         Args:
@@ -297,7 +315,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
 
     @cli.register_custom_action("Project", ("group_id",))
     @exc.on_http_error(exc.GitlabDeleteError)
-    def unshare(self, group_id, **kwargs):
+    def unshare(self, group_id: int, **kwargs: Any) -> None:
         """Delete a shared project link within a group.
 
         Args:
@@ -314,7 +332,13 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     # variables not supported in CLI
     @cli.register_custom_action("Project", ("ref", "token"))
     @exc.on_http_error(exc.GitlabCreateError)
-    def trigger_pipeline(self, ref, token, variables=None, **kwargs):
+    def trigger_pipeline(
+        self,
+        ref: str,
+        token: str,
+        variables: Optional[Dict[str, Any]] = None,
+        **kwargs: Any
+    ) -> ProjectPipeline:
         """Trigger a CI build.
 
         See https://gitlab.com/help/ci/triggers/README.md#trigger-a-build
@@ -333,11 +357,13 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         path = "/projects/%s/trigger/pipeline" % self.get_id()
         post_data = {"ref": ref, "token": token, "variables": variables}
         attrs = self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(attrs, dict)
         return ProjectPipeline(self.pipelines, attrs)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabHousekeepingError)
-    def housekeeping(self, **kwargs):
+    def housekeeping(self, **kwargs: Any) -> None:
         """Start the housekeeping task.
 
         Args:
@@ -354,7 +380,13 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     # see #56 - add file attachment features
     @cli.register_custom_action("Project", ("filename", "filepath"))
     @exc.on_http_error(exc.GitlabUploadError)
-    def upload(self, filename, filedata=None, filepath=None, **kwargs):
+    def upload(
+        self,
+        filename: str,
+        filedata: Optional[bytes] = None,
+        filepath: Optional[str] = None,
+        **kwargs: Any
+    ) -> Dict[str, Any]:
         """Upload the specified file into the project.
 
         .. note::
@@ -394,13 +426,20 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         file_info = {"file": (filename, filedata)}
         data = self.manager.gitlab.http_post(url, files=file_info)
 
+        if TYPE_CHECKING:
+            assert isinstance(data, dict)
         return {"alt": data["alt"], "url": data["url"], "markdown": data["markdown"]}
 
     @cli.register_custom_action("Project", optional=("wiki",))
     @exc.on_http_error(exc.GitlabGetError)
     def snapshot(
-        self, wiki=False, streamed=False, action=None, chunk_size=1024, **kwargs
-    ):
+        self,
+        wiki: bool = False,
+        streamed: bool = False,
+        action: Optional[Callable] = None,
+        chunk_size: int = 1024,
+        **kwargs: Any
+    ) -> Optional[bytes]:
         """Return a snapshot of the repository.
 
         Args:
@@ -424,11 +463,15 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
+        if TYPE_CHECKING:
+            assert isinstance(result, requests.Response)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action("Project", ("scope", "search"))
     @exc.on_http_error(exc.GitlabSearchError)
-    def search(self, scope, search, **kwargs):
+    def search(
+        self, scope: str, search: str, **kwargs: Any
+    ) -> Union[client.GitlabList, List[Dict[str, Any]]]:
         """Search the project resources matching the provided string.'
 
         Args:
@@ -449,7 +492,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabCreateError)
-    def mirror_pull(self, **kwargs):
+    def mirror_pull(self, **kwargs: Any) -> None:
         """Start the pull mirroring process for the project.
 
         Args:
@@ -464,7 +507,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
 
     @cli.register_custom_action("Project", ("to_namespace",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
-    def transfer_project(self, to_namespace, **kwargs):
+    def transfer_project(self, to_namespace: str, **kwargs: Any) -> None:
         """Transfer a project to the given namespace ID
 
         Args:
@@ -484,8 +527,14 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     @cli.register_custom_action("Project", ("ref_name", "job"), ("job_token",))
     @exc.on_http_error(exc.GitlabGetError)
     def artifacts(
-        self, ref_name, job, streamed=False, action=None, chunk_size=1024, **kwargs
-    ):
+        self,
+        ref_name: str,
+        job: str,
+        streamed: bool = False,
+        action: Optional[Callable] = None,
+        chunk_size: int = 1024,
+        **kwargs: Any
+    ) -> Optional[bytes]:
         """Get the job artifacts archive from a specific tag or branch.
 
         Args:
@@ -513,20 +562,22 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         result = self.manager.gitlab.http_get(
             path, job=job, streamed=streamed, raw=True, **kwargs
         )
+        if TYPE_CHECKING:
+            assert isinstance(result, requests.Response)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action("Project", ("ref_name", "artifact_path", "job"))
     @exc.on_http_error(exc.GitlabGetError)
     def artifact(
         self,
-        ref_name,
-        artifact_path,
-        job,
-        streamed=False,
-        action=None,
-        chunk_size=1024,
-        **kwargs
-    ):
+        ref_name: str,
+        artifact_path: str,
+        job: str,
+        streamed: bool = False,
+        action: Optional[Callable] = None,
+        chunk_size: int = 1024,
+        **kwargs: Any
+    ) -> Optional[bytes]:
         """Download a single artifact file from a specific tag or branch from within the job’s artifacts archive.
 
         Args:
@@ -558,6 +609,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
+        if TYPE_CHECKING:
+            assert isinstance(result, requests.Response)
         return utils.response_content(result, streamed, action, chunk_size)
 
 
@@ -725,16 +778,19 @@ class ProjectManager(CRUDMixin, RESTManager):
     )
     _types = {"avatar": types.ImageAttribute, "topic": types.ListAttribute}
 
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Project:
+        return cast(Project, super().get(id=id, lazy=lazy, **kwargs))
+
     def import_project(
         self,
-        file,
-        path,
-        name=None,
-        namespace=None,
-        overwrite=False,
-        override_params=None,
-        **kwargs
-    ):
+        file: str,
+        path: str,
+        name: Optional[str] = None,
+        namespace: Optional[str] = None,
+        overwrite: bool = False,
+        override_params: Optional[Dict[str, Any]] = None,
+        **kwargs: Any
+    ) -> Union[Dict[str, Any], requests.Response]:
         """Import a project from an archive file.
 
         Args:
@@ -769,15 +825,15 @@ class ProjectManager(CRUDMixin, RESTManager):
 
     def import_bitbucket_server(
         self,
-        bitbucket_server_url,
-        bitbucket_server_username,
-        personal_access_token,
-        bitbucket_server_project,
-        bitbucket_server_repo,
-        new_name=None,
-        target_namespace=None,
-        **kwargs
-    ):
+        bitbucket_server_url: str,
+        bitbucket_server_username: str,
+        personal_access_token: str,
+        bitbucket_server_project: str,
+        bitbucket_server_repo: str,
+        new_name: Optional[str] = None,
+        target_namespace: Optional[str] = None,
+        **kwargs: Any
+    ) -> Union[Dict[str, Any], requests.Response]:
         """Import a project from BitBucket Server to Gitlab (schedule the import)
 
         This method will return when an import operation has been safely queued,
@@ -856,8 +912,13 @@ class ProjectManager(CRUDMixin, RESTManager):
         return result
 
     def import_github(
-        self, personal_access_token, repo_id, target_namespace, new_name=None, **kwargs
-    ):
+        self,
+        personal_access_token: str,
+        repo_id: int,
+        target_namespace: str,
+        new_name: Optional[str] = None,
+        **kwargs: Any
+    ) -> Union[Dict[str, Any], requests.Response]:
         """Import a project from Github to Gitlab (schedule the import)
 
         This method will return when an import operation has been safely queued,
@@ -944,7 +1005,9 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
     )
     _create_attrs = RequiredOptional(optional=("namespace",))
 
-    def create(self, data, **kwargs):
+    def create(
+        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> ProjectFork:
         """Creates a new object.
 
         Args:
@@ -960,8 +1023,10 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
             RESTObject: A new instance of the managed object class build with
                 the data sent by the server
         """
+        if TYPE_CHECKING:
+            assert self.path is not None
         path = self.path[:-1]  # drop the 's'
-        return CreateMixin.create(self, data, path=path, **kwargs)
+        return cast(ProjectFork, CreateMixin.create(self, data, path=path, **kwargs))
 
 
 class ProjectRemoteMirror(SaveMixin, RESTObject):
