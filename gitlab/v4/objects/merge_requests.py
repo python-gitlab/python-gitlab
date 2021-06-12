@@ -139,9 +139,19 @@ class ProjectMergeRequest(
 ):
     _id_attr = "iid"
 
+    approval_rules: ProjectMergeRequestApprovalRuleManager
+    approvals: ProjectMergeRequestApprovalManager
+    awardemojis: ProjectMergeRequestAwardEmojiManager
+    diffs: "ProjectMergeRequestDiffManager"
+    discussions: ProjectMergeRequestDiscussionManager
+    notes: ProjectMergeRequestNoteManager
+    pipelines: ProjectMergeRequestPipelineManager
+    resourcelabelevents: ProjectMergeRequestResourceLabelEventManager
+    resourcemilestoneevents: ProjectMergeRequestResourceMilestoneEventManager
+    resourcestateevents: ProjectMergeRequestResourceStateEventManager
     _managers = (
-        ("approvals", "ProjectMergeRequestApprovalManager"),
         ("approval_rules", "ProjectMergeRequestApprovalRuleManager"),
+        ("approvals", "ProjectMergeRequestApprovalManager"),
         ("awardemojis", "ProjectMergeRequestAwardEmojiManager"),
         ("diffs", "ProjectMergeRequestDiffManager"),
         ("discussions", "ProjectMergeRequestDiscussionManager"),

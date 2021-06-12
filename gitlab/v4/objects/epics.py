@@ -23,6 +23,9 @@ __all__ = [
 
 class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
     _id_attr = "iid"
+
+    issues: "GroupEpicIssueManager"
+    resourcelabelevents: GroupEpicResourceLabelEventManager
     _managers = (
         ("issues", "GroupEpicIssueManager"),
         ("resourcelabelevents", "GroupEpicResourceLabelEventManager"),

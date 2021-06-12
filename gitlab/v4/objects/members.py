@@ -43,6 +43,8 @@ class GroupMemberManager(MemberAllMixin, CRUDMixin, RESTManager):
 
 class GroupBillableMember(ObjectDeleteMixin, RESTObject):
     _short_print_attr = "username"
+
+    memberships: "GroupBillableMemberMembershipManager"
     _managers = (("memberships", "GroupBillableMemberMembershipManager"),)
 
 

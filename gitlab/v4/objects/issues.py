@@ -105,6 +105,14 @@ class ProjectIssue(
 ):
     _short_print_attr = "title"
     _id_attr = "iid"
+
+    awardemojis: ProjectIssueAwardEmojiManager
+    discussions: ProjectIssueDiscussionManager
+    links: "ProjectIssueLinkManager"
+    notes: ProjectIssueNoteManager
+    resourcelabelevents: ProjectIssueResourceLabelEventManager
+    resourcemilestoneevents: ProjectIssueResourceMilestoneEventManager
+    resourcestateevents: ProjectIssueResourceStateEventManager
     _managers = (
         ("awardemojis", "ProjectIssueAwardEmojiManager"),
         ("discussions", "ProjectIssueDiscussionManager"),

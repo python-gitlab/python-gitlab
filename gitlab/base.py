@@ -49,6 +49,7 @@ class RESTObject(object):
     _parent_attrs: Dict[str, Any]
     _short_print_attr: Optional[str] = None
     _updated_attrs: Dict[str, Any]
+    _managers: Optional[Iterable[Tuple[str, str]]] = None
     manager: "RESTManager"
 
     def __init__(self, manager: "RESTManager", attrs: Dict[str, Any]) -> None:
@@ -150,13 +151,13 @@ class RESTObject(object):
         return hash(self.get_id())
 
     def _create_managers(self) -> None:
-        managers = getattr(self, "_managers", None)
-        if managers is None:
+        if self._managers is None:
             return
 
         for attr, cls_name in self._managers:
             cls = getattr(self._module, cls_name)
             manager = cls(self.manager.gitlab, parent=self)
+            # Since we have our own __setattr__ method, we can't use setattr()
             self.__dict__[attr] = manager
 
     def _update_attrs(self, new_attrs: Dict[str, Any]) -> None:

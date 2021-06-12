@@ -21,6 +21,7 @@ __all__ = [
 
 
 class ProjectCommitDiscussion(RESTObject):
+    notes: ProjectCommitDiscussionNoteManager
     _managers = (("notes", "ProjectCommitDiscussionNoteManager"),)
 
 
@@ -32,6 +33,7 @@ class ProjectCommitDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
 
 
 class ProjectIssueDiscussion(RESTObject):
+    notes: ProjectIssueDiscussionNoteManager
     _managers = (("notes", "ProjectIssueDiscussionNoteManager"),)
 
 
@@ -43,6 +45,7 @@ class ProjectIssueDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
 
 
 class ProjectMergeRequestDiscussion(SaveMixin, RESTObject):
+    notes: ProjectMergeRequestDiscussionNoteManager
     _managers = (("notes", "ProjectMergeRequestDiscussionNoteManager"),)
 
 
@@ -59,6 +62,7 @@ class ProjectMergeRequestDiscussionManager(
 
 
 class ProjectSnippetDiscussion(RESTObject):
+    notes: ProjectSnippetDiscussionNoteManager
     _managers = (("notes", "ProjectSnippetDiscussionNoteManager"),)
 
 

@@ -17,6 +17,10 @@ __all__ = [
 
 class ProjectCommit(RESTObject):
     _short_print_attr = "title"
+
+    comments: "ProjectCommitCommentManager"
+    discussions: ProjectCommitDiscussionManager
+    statuses: "ProjectCommitStatusManager"
     _managers = (
         ("comments", "ProjectCommitCommentManager"),
         ("discussions", "ProjectCommitDiscussionManager"),

@@ -11,6 +11,8 @@ __all__ = [
 
 class ProjectRelease(SaveMixin, RESTObject):
     _id_attr = "tag_name"
+
+    links: "ProjectReleaseLinkManager"
     _managers = (("links", "ProjectReleaseLinkManager"),)
 
 

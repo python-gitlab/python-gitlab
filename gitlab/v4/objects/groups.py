@@ -43,6 +43,34 @@ __all__ = [
 
 class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "name"
+
+    accessrequests: GroupAccessRequestManager
+    audit_events: GroupAuditEventManager
+    badges: GroupBadgeManager
+    billable_members: GroupBillableMemberManager
+    boards: GroupBoardManager
+    clusters: GroupClusterManager
+    customattributes: GroupCustomAttributeManager
+    deploytokens: GroupDeployTokenManager
+    descendant_groups: "GroupDescendantGroupManager"
+    epics: GroupEpicManager
+    exports: GroupExportManager
+    hooks: GroupHookManager
+    imports: GroupImportManager
+    issues: GroupIssueManager
+    issues_statistics: GroupIssuesStatisticsManager
+    labels: GroupLabelManager
+    members: GroupMemberManager
+    members_all: GroupMemberAllManager
+    mergerequests: GroupMergeRequestManager
+    milestones: GroupMilestoneManager
+    notificationsettings: GroupNotificationSettingsManager
+    packages: GroupPackageManager
+    projects: GroupProjectManager
+    runners: GroupRunnerManager
+    subgroups: "GroupSubgroupManager"
+    variables: GroupVariableManager
+    wikis: GroupWikiManager
     _managers = (
         ("accessrequests", "GroupAccessRequestManager"),
         ("audit_events", "GroupAuditEventManager"),

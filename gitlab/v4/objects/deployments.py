@@ -10,6 +10,7 @@ __all__ = [
 
 
 class ProjectDeployment(SaveMixin, RESTObject):
+    mergerequests: ProjectDeploymentMergeRequestManager
     _managers = (("mergerequests", "ProjectDeploymentMergeRequestManager"),)
 
 

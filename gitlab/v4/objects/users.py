@@ -97,11 +97,16 @@ class CurrentUserStatusManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
 class CurrentUser(RESTObject):
     _id_attr = None
     _short_print_attr = "username"
+
+    emails: CurrentUserEmailManager
+    gpgkeys: CurrentUserGPGKeyManager
+    keys: CurrentUserKeyManager
+    status: CurrentUserStatusManager
     _managers = (
-        ("status", "CurrentUserStatusManager"),
         ("emails", "CurrentUserEmailManager"),
         ("gpgkeys", "CurrentUserGPGKeyManager"),
         ("keys", "CurrentUserKeyManager"),
+        ("status", "CurrentUserStatusManager"),
     )
 
 
@@ -112,12 +117,25 @@ class CurrentUserManager(GetWithoutIdMixin, RESTManager):
 
 class User(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "username"
+
+    customattributes: UserCustomAttributeManager
+    emails: "UserEmailManager"
+    events: UserEventManager
+    followers_users: "UserFollowersManager"
+    following_users: "UserFollowingManager"
+    gpgkeys: "UserGPGKeyManager"
+    identityproviders: "UserIdentityProviderManager"
+    impersonationtokens: "UserImpersonationTokenManager"
+    keys: "UserKeyManager"
+    memberships: "UserMembershipManager"
+    projects: "UserProjectManager"
+    status: "UserStatusManager"
     _managers = (
         ("customattributes", "UserCustomAttributeManager"),
         ("emails", "UserEmailManager"),
+        ("events", "UserEventManager"),
         ("followers_users", "UserFollowersManager"),
         ("following_users", "UserFollowingManager"),
-        ("events", "UserEventManager"),
         ("gpgkeys", "UserGPGKeyManager"),
         ("identityproviders", "UserIdentityProviderManager"),
         ("impersonationtokens", "UserImpersonationTokenManager"),

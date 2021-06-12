@@ -110,29 +110,88 @@ class GroupProjectManager(ListMixin, RESTManager):
 
 class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTObject):
     _short_print_attr = "path"
+
+    access_tokens: ProjectAccessTokenManager
+    accessrequests: ProjectAccessRequestManager
+    additionalstatistics: ProjectAdditionalStatisticsManager
+    approvalrules: ProjectApprovalRuleManager
+    approvals: ProjectApprovalManager
+    audit_events: ProjectAuditEventManager
+    badges: ProjectBadgeManager
+    boards: ProjectBoardManager
+    branches: ProjectBranchManager
+    clusters: ProjectClusterManager
+    commits: ProjectCommitManager
+    customattributes: ProjectCustomAttributeManager
+    deployments: ProjectDeploymentManager
+    deploytokens: ProjectDeployTokenManager
+    environments: ProjectEnvironmentManager
+    events: ProjectEventManager
+    exports: ProjectExportManager
+    files: ProjectFileManager
+    forks: "ProjectForkManager"
+    generic_packages: GenericPackageManager
+    hooks: ProjectHookManager
+    imports: ProjectImportManager
+    issues: ProjectIssueManager
+    issues_statistics: ProjectIssuesStatisticsManager
+    issuesstatistics: ProjectIssuesStatisticsManager
+    jobs: ProjectJobManager
+    keys: ProjectKeyManager
+    labels: ProjectLabelManager
+    members: ProjectMemberManager
+    members_all: ProjectMemberAllManager
+    mergerequests: ProjectMergeRequestManager
+    milestones: ProjectMilestoneManager
+    notes: ProjectNoteManager
+    notificationsettings: ProjectNotificationSettingsManager
+    packages: ProjectPackageManager
+    pagesdomains: ProjectPagesDomainManager
+    pipelines: ProjectPipelineManager
+    pipelineschedules: ProjectPipelineScheduleManager
+    protectedbranches: ProjectProtectedBranchManager
+    protectedtags: ProjectProtectedTagManager
+    pushrules: ProjectPushRulesManager
+    releases: ProjectReleaseManager
+    remote_mirrors: "ProjectRemoteMirrorManager"
+    repositories: ProjectRegistryRepositoryManager
+    runners: ProjectRunnerManager
+    services: ProjectServiceManager
+    snippets: ProjectSnippetManager
+    tags: ProjectTagManager
+    triggers: ProjectTriggerManager
+    users: ProjectUserManager
+    variables: ProjectVariableManager
+    wikis: ProjectWikiManager
+
     _managers = (
         ("access_tokens", "ProjectAccessTokenManager"),
         ("accessrequests", "ProjectAccessRequestManager"),
-        ("approvals", "ProjectApprovalManager"),
+        ("additionalstatistics", "ProjectAdditionalStatisticsManager"),
         ("approvalrules", "ProjectApprovalRuleManager"),
+        ("approvals", "ProjectApprovalManager"),
+        ("audit_events", "ProjectAuditEventManager"),
         ("badges", "ProjectBadgeManager"),
         ("boards", "ProjectBoardManager"),
         ("branches", "ProjectBranchManager"),
-        ("jobs", "ProjectJobManager"),
+        ("clusters", "ProjectClusterManager"),
         ("commits", "ProjectCommitManager"),
         ("customattributes", "ProjectCustomAttributeManager"),
         ("deployments", "ProjectDeploymentManager"),
+        ("deploytokens", "ProjectDeployTokenManager"),
         ("environments", "ProjectEnvironmentManager"),
         ("events", "ProjectEventManager"),
-        ("audit_events", "ProjectAuditEventManager"),
         ("exports", "ProjectExportManager"),
         ("files", "ProjectFileManager"),
         ("forks", "ProjectForkManager"),
         ("generic_packages", "GenericPackageManager"),
         ("hooks", "ProjectHookManager"),
-        ("keys", "ProjectKeyManager"),
         ("imports", "ProjectImportManager"),
         ("issues", "ProjectIssueManager"),
+        ("issues_statistics", "ProjectIssuesStatisticsManager"),
+        ("issuesstatistics", "ProjectIssuesStatisticsManager"),  # Deprecated
+        ("jobs", "ProjectJobManager"),
+        ("keys", "ProjectKeyManager"),
         ("labels", "ProjectLabelManager"),
         ("members", "ProjectMemberManager"),
         ("members_all", "ProjectMemberAllManager"),
@@ -143,9 +202,9 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         ("packages", "ProjectPackageManager"),
         ("pagesdomains", "ProjectPagesDomainManager"),
         ("pipelines", "ProjectPipelineManager"),
+        ("pipelineschedules", "ProjectPipelineScheduleManager"),
         ("protectedbranches", "ProjectProtectedBranchManager"),
         ("protectedtags", "ProjectProtectedTagManager"),
-        ("pipelineschedules", "ProjectPipelineScheduleManager"),
         ("pushrules", "ProjectPushRulesManager"),
         ("releases", "ProjectReleaseManager"),
         ("remote_mirrors", "ProjectRemoteMirrorManager"),
@@ -154,15 +213,10 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         ("services", "ProjectServiceManager"),
         ("snippets", "ProjectSnippetManager"),
         ("tags", "ProjectTagManager"),
-        ("users", "ProjectUserManager"),
         ("triggers", "ProjectTriggerManager"),
+        ("users", "ProjectUserManager"),
         ("variables", "ProjectVariableManager"),
         ("wikis", "ProjectWikiManager"),
-        ("clusters", "ProjectClusterManager"),
-        ("additionalstatistics", "ProjectAdditionalStatisticsManager"),
-        ("issues_statistics", "ProjectIssuesStatisticsManager"),
-        ("issuesstatistics", "ProjectIssuesStatisticsManager"),  # Deprecated
-        ("deploytokens", "ProjectDeployTokenManager"),
     )
 
     @cli.register_custom_action("Project", ("forked_from_id",))

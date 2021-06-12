@@ -74,11 +74,15 @@ class ProjectMergeRequestPipelineManager(CreateMixin, ListMixin, RESTManager):
 
 
 class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
+    bridges: "ProjectPipelineBridgeManager"
+    jobs: "ProjectPipelineJobManager"
+    test_report: "ProjectPipelineTestReportManager"
+    variables: "ProjectPipelineVariableManager"
     _managers = (
-        ("jobs", "ProjectPipelineJobManager"),
         ("bridges", "ProjectPipelineBridgeManager"),
-        ("variables", "ProjectPipelineVariableManager"),
+        ("jobs", "ProjectPipelineJobManager"),
         ("test_report", "ProjectPipelineTestReportManager"),
+        ("variables", "ProjectPipelineVariableManager"),
     )
 
     @cli.register_custom_action("ProjectPipeline")
@@ -199,6 +203,7 @@ class ProjectPipelineScheduleVariableManager(
 
 
 class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
+    variables: ProjectPipelineScheduleVariableManager
     _managers = (("variables", "ProjectPipelineScheduleVariableManager"),)
 
     @cli.register_custom_action("ProjectPipelineSchedule")
