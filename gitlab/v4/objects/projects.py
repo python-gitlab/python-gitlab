@@ -838,12 +838,13 @@ class ProjectManager(CRUDMixin, RESTManager):
 
         This method will return when an import operation has been safely queued,
         or an error has occurred. After triggering an import, check the
-        `import_status` of the newly created project to detect when the import
+        ``import_status`` of the newly created project to detect when the import
         operation has completed.
 
-        NOTE: this request may take longer than most other API requests.
-        So this method will specify a 60 second default timeout if none is specified.
-        A timeout can be specified via kwargs to override this functionality.
+        .. note::
+            This request may take longer than most other API requests.
+            So this method will specify a 60 second default timeout if none is specified.
+            A timeout can be specified via kwargs to override this functionality.
 
         Args:
             bitbucket_server_url (str): Bitbucket Server URL
@@ -865,7 +866,9 @@ class ProjectManager(CRUDMixin, RESTManager):
             dict: A representation of the import status.
 
         Example:
-        ```
+
+        .. code-block:: python
+
             gl = gitlab.Gitlab_from_config()
             print("Triggering import")
             result = gl.projects.import_bitbucket_server(
@@ -883,7 +886,7 @@ class ProjectManager(CRUDMixin, RESTManager):
                 time.sleep(1.0)
                 project = gl.projects.get(project.id)
             print("BitBucket import complete")
-        ```
+
         """
         data = {
             "bitbucket_server_url": bitbucket_server_url,
@@ -923,12 +926,13 @@ class ProjectManager(CRUDMixin, RESTManager):
 
         This method will return when an import operation has been safely queued,
         or an error has occurred. After triggering an import, check the
-        `import_status` of the newly created project to detect when the import
+        ``import_status`` of the newly created project to detect when the import
         operation has completed.
 
-        NOTE: this request may take longer than most other API requests.
-        So this method will specify a 60 second default timeout if none is specified.
-        A timeout can be specified via kwargs to override this functionality.
+        .. note::
+            This request may take longer than most other API requests.
+            So this method will specify a 60 second default timeout if none is specified.
+            A timeout can be specified via kwargs to override this functionality.
 
         Args:
             personal_access_token (str): GitHub personal access token
@@ -945,7 +949,9 @@ class ProjectManager(CRUDMixin, RESTManager):
             dict: A representation of the import status.
 
         Example:
-        ```
+
+        .. code-block:: python
+
             gl = gitlab.Gitlab_from_config()
             print("Triggering import")
             result = gl.projects.import_github(ACCESS_TOKEN,
@@ -957,7 +963,7 @@ class ProjectManager(CRUDMixin, RESTManager):
                 time.sleep(1.0)
                 project = gl.projects.get(project.id)
             print("Github import complete")
-        ```
+
         """
         data = {
             "personal_access_token": personal_access_token,

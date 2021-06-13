@@ -1,6 +1,25 @@
 API reference (``gitlab`` package)
 ==================================
 
+Module contents
+---------------
+
+.. automodule:: gitlab
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. autoclass:: gitlab.Gitlab
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. autoclass:: gitlab.GitlabList
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 Subpackages
 -----------
 
@@ -63,15 +82,6 @@ gitlab.utils module
 -------------------
 
 .. automodule:: gitlab.utils
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: gitlab
     :members:
     :undoc-members:
     :show-inheritance:
