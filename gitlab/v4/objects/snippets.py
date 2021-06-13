@@ -81,11 +81,6 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
     awardemojis: ProjectSnippetAwardEmojiManager
     discussions: ProjectSnippetDiscussionManager
     notes: ProjectSnippetNoteManager
-    _managers = (
-        ("awardemojis", "ProjectSnippetAwardEmojiManager"),
-        ("discussions", "ProjectSnippetDiscussionManager"),
-        ("notes", "ProjectSnippetNoteManager"),
-    )
 
     @cli.register_custom_action("ProjectSnippet")
     @exc.on_http_error(exc.GitlabGetError)

@@ -113,15 +113,6 @@ class ProjectIssue(
     resourcelabelevents: ProjectIssueResourceLabelEventManager
     resourcemilestoneevents: ProjectIssueResourceMilestoneEventManager
     resourcestateevents: ProjectIssueResourceStateEventManager
-    _managers = (
-        ("awardemojis", "ProjectIssueAwardEmojiManager"),
-        ("discussions", "ProjectIssueDiscussionManager"),
-        ("links", "ProjectIssueLinkManager"),
-        ("notes", "ProjectIssueNoteManager"),
-        ("resourcelabelevents", "ProjectIssueResourceLabelEventManager"),
-        ("resourcemilestoneevents", "ProjectIssueResourceMilestoneEventManager"),
-        ("resourcestateevents", "ProjectIssueResourceStateEventManager"),
-    )
 
     @cli.register_custom_action("ProjectIssue", ("to_project_id",))
     @exc.on_http_error(exc.GitlabUpdateError)

@@ -13,7 +13,6 @@ __all__ = [
 
 class ProjectRegistryRepository(ObjectDeleteMixin, RESTObject):
     tags: "ProjectRegistryTagManager"
-    _managers = (("tags", "ProjectRegistryTagManager"),)
 
 
 class ProjectRegistryRepositoryManager(DeleteMixin, ListMixin, RESTManager):

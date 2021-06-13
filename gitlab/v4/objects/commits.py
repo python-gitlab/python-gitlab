@@ -21,11 +21,6 @@ class ProjectCommit(RESTObject):
     comments: "ProjectCommitCommentManager"
     discussions: ProjectCommitDiscussionManager
     statuses: "ProjectCommitStatusManager"
-    _managers = (
-        ("comments", "ProjectCommitCommentManager"),
-        ("discussions", "ProjectCommitDiscussionManager"),
-        ("statuses", "ProjectCommitStatusManager"),
-    )
 
     @cli.register_custom_action("ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)

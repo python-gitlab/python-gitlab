@@ -26,10 +26,6 @@ class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
 
     issues: "GroupEpicIssueManager"
     resourcelabelevents: GroupEpicResourceLabelEventManager
-    _managers = (
-        ("issues", "GroupEpicIssueManager"),
-        ("resourcelabelevents", "GroupEpicResourceLabelEventManager"),
-    )
 
 
 class GroupEpicManager(CRUDMixin, RESTManager):

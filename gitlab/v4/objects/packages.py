@@ -144,7 +144,6 @@ class GroupPackageManager(ListMixin, RESTManager):
 
 class ProjectPackage(ObjectDeleteMixin, RESTObject):
     package_files: "ProjectPackageFileManager"
-    _managers = (("package_files", "ProjectPackageFileManager"),)
 
 
 class ProjectPackageManager(ListMixin, GetMixin, DeleteMixin, RESTManager):

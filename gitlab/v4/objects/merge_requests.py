@@ -149,18 +149,6 @@ class ProjectMergeRequest(
     resourcelabelevents: ProjectMergeRequestResourceLabelEventManager
     resourcemilestoneevents: ProjectMergeRequestResourceMilestoneEventManager
     resourcestateevents: ProjectMergeRequestResourceStateEventManager
-    _managers = (
-        ("approval_rules", "ProjectMergeRequestApprovalRuleManager"),
-        ("approvals", "ProjectMergeRequestApprovalManager"),
-        ("awardemojis", "ProjectMergeRequestAwardEmojiManager"),
-        ("diffs", "ProjectMergeRequestDiffManager"),
-        ("discussions", "ProjectMergeRequestDiscussionManager"),
-        ("notes", "ProjectMergeRequestNoteManager"),
-        ("pipelines", "ProjectMergeRequestPipelineManager"),
-        ("resourcelabelevents", "ProjectMergeRequestResourceLabelEventManager"),
-        ("resourcemilestoneevents", "ProjectMergeRequestResourceMilestoneEventManager"),
-        ("resourcestateevents", "ProjectMergeRequestResourceStateEventManager"),
-    )
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMROnBuildSuccessError)

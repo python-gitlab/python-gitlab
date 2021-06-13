@@ -49,7 +49,6 @@ class RESTObject(object):
     _parent_attrs: Dict[str, Any]
     _short_print_attr: Optional[str] = None
     _updated_attrs: Dict[str, Any]
-    _managers: Optional[Iterable[Tuple[str, str]]] = None
     manager: "RESTManager"
 
     def __init__(self, manager: "RESTManager", attrs: Dict[str, Any]) -> None:
@@ -151,10 +150,19 @@ class RESTObject(object):
         return hash(self.get_id())
 
     def _create_managers(self) -> None:
-        if self._managers is None:
-            return
-
-        for attr, cls_name in self._managers:
+        # NOTE(jlvillal): We are creating our managers by looking at the class
+        # annotations. If an attribute is annotated as being a *Manager type
+        # then we create the manager and assign it to the attribute.
+        for attr, annotation in sorted(self.__annotations__.items()):
+            if not isinstance(annotation, (type, str)):
+                continue
+            if isinstance(annotation, type):
+                cls_name = annotation.__name__
+            else:
+                cls_name = annotation
+            # All *Manager classes are used except for the base "RESTManager" class
+            if cls_name == "RESTManager" or not cls_name.endswith("Manager"):
+                continue
             cls = getattr(self._module, cls_name)
             manager = cls(self.manager.gitlab, parent=self)
             # Since we have our own __setattr__ method, we can't use setattr()

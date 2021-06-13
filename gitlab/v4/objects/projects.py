@@ -135,7 +135,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     imports: ProjectImportManager
     issues: ProjectIssueManager
     issues_statistics: ProjectIssuesStatisticsManager
-    issuesstatistics: ProjectIssuesStatisticsManager
+    issuesstatistics: ProjectIssuesStatisticsManager  # Deprecated
     jobs: ProjectJobManager
     keys: ProjectKeyManager
     labels: ProjectLabelManager
@@ -163,61 +163,6 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     users: ProjectUserManager
     variables: ProjectVariableManager
     wikis: ProjectWikiManager
-
-    _managers = (
-        ("access_tokens", "ProjectAccessTokenManager"),
-        ("accessrequests", "ProjectAccessRequestManager"),
-        ("additionalstatistics", "ProjectAdditionalStatisticsManager"),
-        ("approvalrules", "ProjectApprovalRuleManager"),
-        ("approvals", "ProjectApprovalManager"),
-        ("audit_events", "ProjectAuditEventManager"),
-        ("badges", "ProjectBadgeManager"),
-        ("boards", "ProjectBoardManager"),
-        ("branches", "ProjectBranchManager"),
-        ("clusters", "ProjectClusterManager"),
-        ("commits", "ProjectCommitManager"),
-        ("customattributes", "ProjectCustomAttributeManager"),
-        ("deployments", "ProjectDeploymentManager"),
-        ("deploytokens", "ProjectDeployTokenManager"),
-        ("environments", "ProjectEnvironmentManager"),
-        ("events", "ProjectEventManager"),
-        ("exports", "ProjectExportManager"),
-        ("files", "ProjectFileManager"),
-        ("forks", "ProjectForkManager"),
-        ("generic_packages", "GenericPackageManager"),
-        ("hooks", "ProjectHookManager"),
-        ("imports", "ProjectImportManager"),
-        ("issues", "ProjectIssueManager"),
-        ("issues_statistics", "ProjectIssuesStatisticsManager"),
-        ("issuesstatistics", "ProjectIssuesStatisticsManager"),  # Deprecated
-        ("jobs", "ProjectJobManager"),
-        ("keys", "ProjectKeyManager"),
-        ("labels", "ProjectLabelManager"),
-        ("members", "ProjectMemberManager"),
-        ("members_all", "ProjectMemberAllManager"),
-        ("mergerequests", "ProjectMergeRequestManager"),
-        ("milestones", "ProjectMilestoneManager"),
-        ("notes", "ProjectNoteManager"),
-        ("notificationsettings", "ProjectNotificationSettingsManager"),
-        ("packages", "ProjectPackageManager"),
-        ("pagesdomains", "ProjectPagesDomainManager"),
-        ("pipelines", "ProjectPipelineManager"),
-        ("pipelineschedules", "ProjectPipelineScheduleManager"),
-        ("protectedbranches", "ProjectProtectedBranchManager"),
-        ("protectedtags", "ProjectProtectedTagManager"),
-        ("pushrules", "ProjectPushRulesManager"),
-        ("releases", "ProjectReleaseManager"),
-        ("remote_mirrors", "ProjectRemoteMirrorManager"),
-        ("repositories", "ProjectRegistryRepositoryManager"),
-        ("runners", "ProjectRunnerManager"),
-        ("services", "ProjectServiceManager"),
-        ("snippets", "ProjectSnippetManager"),
-        ("tags", "ProjectTagManager"),
-        ("triggers", "ProjectTriggerManager"),
-        ("users", "ProjectUserManager"),
-        ("variables", "ProjectVariableManager"),
-        ("wikis", "ProjectWikiManager"),
-    )
 
     @cli.register_custom_action("Project", ("forked_from_id",))
     @exc.on_http_error(exc.GitlabCreateError)

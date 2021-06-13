@@ -72,7 +72,6 @@ class ProjectCommitDiscussionNoteManager(
 
 class ProjectIssueNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     awardemojis: ProjectIssueNoteAwardEmojiManager
-    _managers = (("awardemojis", "ProjectIssueNoteAwardEmojiManager"),)
 
 
 class ProjectIssueNoteManager(CRUDMixin, RESTManager):
@@ -106,7 +105,6 @@ class ProjectIssueDiscussionNoteManager(
 
 class ProjectMergeRequestNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     awardemojis: ProjectMergeRequestNoteAwardEmojiManager
-    _managers = (("awardemojis", "ProjectMergeRequestNoteAwardEmojiManager"),)
 
 
 class ProjectMergeRequestNoteManager(CRUDMixin, RESTManager):
@@ -140,7 +138,6 @@ class ProjectMergeRequestDiscussionNoteManager(
 
 class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     awardemojis: ProjectMergeRequestNoteAwardEmojiManager
-    _managers = (("awardemojis", "ProjectMergeRequestNoteAwardEmojiManager"),)
 
 
 class ProjectSnippetNoteManager(CRUDMixin, RESTManager):
