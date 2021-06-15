@@ -1,5 +1,5 @@
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import CRUDMixin, NoUpdateMixin, ObjectDeleteMixin, SaveMixin
+from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
 __all__ = [
     "ProjectRelease",
@@ -9,17 +9,20 @@ __all__ = [
 ]
 
 
-class ProjectRelease(RESTObject):
+class ProjectRelease(SaveMixin, RESTObject):
     _id_attr = "tag_name"
     _managers = (("links", "ProjectReleaseLinkManager"),)
 
 
-class ProjectReleaseManager(NoUpdateMixin, RESTManager):
+class ProjectReleaseManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/releases"
     _obj_cls = ProjectRelease
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
         required=("name", "tag_name", "description"), optional=("ref", "assets")
+    )
+    _update_attrs = RequiredOptional(
+        optional=("name", "description", "milestones", "released_at")
     )
 
 
