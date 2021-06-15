@@ -27,6 +27,12 @@ Get a single release::
 
     release = project.releases.get('v1.2.3')
 
+Edit a release::
+
+    release.name = "Demo Release"
+    release.description = "release notes go here"
+    release.save()
+
 Create a release for a project tag::
 
     release = project.releases.create({'name':'Demo Release', 'tag_name':'v1.2.3', 'description':'release notes go here'})
