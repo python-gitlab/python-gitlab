@@ -13,6 +13,7 @@ from .custom_attributes import GroupCustomAttributeManager  # noqa: F401
 from .deploy_tokens import GroupDeployTokenManager  # noqa: F401
 from .epics import GroupEpicManager  # noqa: F401
 from .export_import import GroupExportManager, GroupImportManager  # noqa: F401
+from .hooks import GroupHookManager  # noqa: F401
 from .issues import GroupIssueManager  # noqa: F401
 from .labels import GroupLabelManager  # noqa: F401
 from .members import (  # noqa: F401
@@ -52,6 +53,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         ("descendant_groups", "GroupDescendantGroupManager"),
         ("exports", "GroupExportManager"),
         ("epics", "GroupEpicManager"),
+        ("hooks", "GroupHookManager"),
         ("imports", "GroupImportManager"),
         ("issues", "GroupIssueManager"),
         ("issues_statistics", "GroupIssuesStatisticsManager"),

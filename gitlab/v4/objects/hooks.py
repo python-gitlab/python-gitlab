@@ -6,6 +6,8 @@ __all__ = [
     "HookManager",
     "ProjectHook",
     "ProjectHookManager",
+    "GroupHook",
+    "GroupHookManager",
 ]
 
 
@@ -56,6 +58,56 @@ class ProjectHookManager(CRUDMixin, RESTManager):
             "job_events",
             "pipeline_events",
             "wiki_events",
+            "enable_ssl_verification",
+            "token",
+        ),
+    )
+
+
+class GroupHook(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _short_print_attr = "url"
+
+
+class GroupHookManager(CRUDMixin, RESTManager):
+    _path = "/groups/%(group_id)s/hooks"
+    _obj_cls = GroupHook
+    _from_parent_attrs = {"group_id": "id"}
+    _create_attrs = RequiredOptional(
+        required=("url",),
+        optional=(
+            "push_events",
+            "issues_events",
+            "confidential_issues_events",
+            "merge_requests_events",
+            "tag_push_events",
+            "note_events",
+            "confidential_note_events",
+            "job_events",
+            "pipeline_events",
+            "wiki_page_events",
+            "deployment_events",
+            "releases_events",
+            "subgroup_events",
+            "enable_ssl_verification",
+            "token",
+        ),
+    )
+    _update_attrs = RequiredOptional(
+        required=("url",),
+        optional=(
+            "push_events",
+            "issues_events",
+            "confidential_issues_events",
+            "merge_requests_events",
+            "tag_push_events",
+            "note_events",
+            "confidential_note_events",
+            "job_events",
+            "pipeline_events",
+            "wiki_page_events",
+            "deployment_events",
+            "releases_events",
+            "subgroup_events",
             "enable_ssl_verification",
             "token",
         ),

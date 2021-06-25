@@ -178,31 +178,6 @@ def test_delete_shared_project_link(gl):
 
 
 @pytest.mark.skip(reason="missing test")
-def test_list_project_hooks(gl):
-    pass
-
-
-@pytest.mark.skip(reason="missing test")
-def test_get_project_hook(gl):
-    pass
-
-
-@pytest.mark.skip(reason="missing test")
-def test_create_project_hook(gl):
-    pass
-
-
-@pytest.mark.skip(reason="missing test")
-def test_update_project_hook(gl):
-    pass
-
-
-@pytest.mark.skip(reason="missing test")
-def test_delete_project_hook(gl):
-    pass
-
-
-@pytest.mark.skip(reason="missing test")
 def test_create_forked_from_relationship(gl):
     pass
 
