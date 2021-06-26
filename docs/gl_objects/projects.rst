@@ -412,10 +412,6 @@ Create a tag::
 
     tag = project.tags.create({'tag_name': '1.0', 'ref': 'master'})
 
-Set or update the release note for a tag::
-
-    tag.set_release_description('awesome v1.0 release')
-
 Delete a tag::
 
     project.tags.delete('1.0')

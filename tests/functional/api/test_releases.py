@@ -23,6 +23,15 @@ def test_create_project_release(project, project_file):
     assert release.description == release_description
 
 
+def test_update_save_project_release(project, release):
+    updated_description = f"{release.description} updated"
+    release.description = updated_description
+    release.save()
+
+    release = project.releases.get(release.tag_name)
+    assert release.description == updated_description
+
+
 def test_delete_project_release(project, release):
     project.releases.delete(release.tag_name)
     assert release not in project.releases.list()
