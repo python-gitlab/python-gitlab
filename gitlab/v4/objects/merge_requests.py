@@ -356,6 +356,7 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
             "remove_source_branch",
             "allow_maintainer_to_push",
             "squash",
+            "reviewer_ids",
         ),
     )
     _update_attrs = RequiredOptional(
@@ -371,6 +372,7 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
             "discussion_locked",
             "allow_maintainer_to_push",
             "squash",
+            "reviewer_ids",
         ),
     )
     _list_filters = (
