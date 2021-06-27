@@ -211,6 +211,7 @@ def test_group_wiki(group):
     assert len(group.wikis.list()) == 0
 
 
+@pytest.mark.skip(reason="EE feature")
 def test_group_hooks(group):
     hook = group.hooks.create({"url": "http://hook.url"})
     assert len(group.hooks.list()) == 1
