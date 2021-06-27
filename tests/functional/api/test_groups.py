@@ -209,3 +209,16 @@ def test_group_wiki(group):
     wiki.save()
     wiki.delete()
     assert len(group.wikis.list()) == 0
+
+
+@pytest.mark.skip(reason="EE feature")
+def test_group_hooks(group):
+    hook = group.hooks.create({"url": "http://hook.url"})
+    assert len(group.hooks.list()) == 1
+
+    hook.note_events = True
+    hook.save()
+
+    hook = group.hooks.get(hook.id)
+    assert hook.note_events is True
+    hook.delete()

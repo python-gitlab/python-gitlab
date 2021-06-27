@@ -338,3 +338,43 @@ You can use the ``ldapgroups`` manager to list available LDAP groups::
 
     # list the groups for a specific LDAP provider
     ldap_groups = gl.ldapgroups.list(search='foo', provider='ldapmain')
+
+Groups hooks
+============
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.GroupHook`
+  + :class:`gitlab.v4.objects.GroupHookManager`
+  + :attr:`gitlab.v4.objects.Group.hooks`
+
+* GitLab API: https://docs.gitlab.com/ce/api/groups.html#hooks
+
+Examples
+--------
+
+List the group hooks::
+
+    hooks = group.hooks.list()
+
+Get a group hook::
+
+    hook = group.hooks.get(hook_id)
+
+Create a group hook::
+
+    hook = group.hooks.create({'url': 'http://my/action/url', 'push_events': 1})
+
+Update a group hook::
+
+    hook.push_events = 0
+    hook.save()
+
+Delete a group hook::
+
+    group.hooks.delete(hook_id)
+    # or
+    hook.delete()
