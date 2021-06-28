@@ -2,7 +2,9 @@
 Release notes
 #############
 
-This page describes important changes between python-gitlab releases.
+Prior to version 2.0.0 and GitHub Releases, a summary of changes was maintained
+in release notes. They are available below for historical purposes.
+For the list of current releases, including breaking changes, please see the changelog.
 
 Changes from 1.8 to 1.9
 =======================

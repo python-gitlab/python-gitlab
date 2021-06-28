@@ -18,9 +18,8 @@ Contents:
    api-objects
    api/gitlab
    cli-objects
-   release_notes
    changelog
-   switching-to-v4
+   release-notes
 
 
 Indices and tables
