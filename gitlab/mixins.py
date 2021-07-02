@@ -100,9 +100,10 @@ class GetMixin(_RestManagerBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
+        clean_id = id
         if not isinstance(id, int):
-            id = utils.clean_str_id(id)
-        path = "%s/%s" % (self.path, id)
+            clean_id = utils.clean_str_id(id)
+        path = "%s/%s" % (self.path, clean_id)
         if TYPE_CHECKING:
             assert self._obj_cls is not None
         if lazy is True:

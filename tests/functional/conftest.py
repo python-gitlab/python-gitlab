@@ -227,6 +227,17 @@ def project(gl):
     except gitlab.exceptions.GitlabDeleteError as e:
         print(f"Project already deleted: {e}")
 
+@pytest.fixture(scope="function")
+def branch(project):
+    """Branch fixture for branch API resource tests."""
+    branch = project.branches.create({"branch":f"test/branch", "ref":"master"})
+    yield branch
+
+    try:
+        branch.delete()
+    except gitlab.exceptions.GitlabDeleteError as e:
+        print(f"Project already deleted: {e}")
+
 
 @pytest.fixture(scope="function")
 def merge_request(project, wait_for_sidekiq):
