@@ -297,6 +297,21 @@ class ProjectMergeRequest(
         data = {}
         return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
 
+    @cli.register_custom_action("ProjectMergeRequest")
+    @exc.on_http_error(exc.GitlabGetError)
+    def merge_ref(self, **kwargs):
+        """Attempt to merge changes between source and target branches into
+            `refs/merge-requests/:iid/merge`.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabGetError: If cannot be merged
+        """
+        path = "%s/%s/merge_ref" % (self.manager.path, self.get_id())
+        return self.manager.gitlab.http_get(path, **kwargs)
+
     @cli.register_custom_action(
         "ProjectMergeRequest",
         tuple(),
