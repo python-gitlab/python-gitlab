@@ -163,3 +163,35 @@ def test_merge_request_large_commit_message(
 
     # Ensure we can get the MR branch
     project.branches.get(source_branch)
+
+
+def test_merge_request_merge_ref(merge_request) -> None:
+    source_branch = "merge_ref_test"
+    mr = merge_request(source_branch=source_branch)
+
+    response = mr.merge_ref()
+    assert response and "commit_id" in response
+
+
+def test_merge_request_merge_ref_should_fail(
+    project, merge_request, wait_for_sidekiq
+) -> None:
+    source_branch = "merge_ref_test2"
+    mr = merge_request(source_branch=source_branch)
+
+    # Create conflict
+    project.files.create(
+        {
+            "file_path": f"README.{source_branch}",
+            "branch": project.default_branch,
+            "content": "Different initial content",
+            "commit_message": "Another commit in main branch",
+        }
+    )
+    result = wait_for_sidekiq(timeout=60)
+    assert result is True, "sidekiq process should have terminated but did not"
+
+    # Check for non-existing merge_ref for MR with conflicts
+    with pytest.raises(gitlab.exceptions.GitlabGetError):
+        response = mr.merge_ref()
+        assert "commit_id" not in response
