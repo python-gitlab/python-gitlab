@@ -182,6 +182,11 @@ Attempt to rebase an MR::
 
     mr.rebase()
 
+Attempt to merge changes between source and target branch::
+
+    response = mr.merge_ref()
+    print(response['commit_id'])
+
 Merge Request Pipelines
 =======================
 
