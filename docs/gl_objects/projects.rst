@@ -66,6 +66,10 @@ Get a single project::
     project_id = 851
     project = gl.projects.get(project_id)
 
+    # Get a project by name with namespace
+    project_name_with_namespace = "namespace/project_name"
+    project = gl.projects.get(project_name_with_namespace)
+
 Create a project::
 
     project = gl.projects.create({'name': 'project1'})
