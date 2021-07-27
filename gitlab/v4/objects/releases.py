@@ -19,7 +19,7 @@ class ProjectReleaseManager(CRUDMixin, RESTManager):
     _obj_cls = ProjectRelease
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
-        required=("name", "tag_name", "description"), optional=("ref", "assets")
+        required=("tag_name", "description"), optional=("name", "ref", "assets")
     )
     _update_attrs = RequiredOptional(
         optional=("name", "description", "milestones", "released_at")
