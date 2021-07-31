@@ -1,5 +1,8 @@
 import base64
+import tarfile
 import time
+import zipfile
+from io import BytesIO
 
 import pytest
 
@@ -48,14 +51,34 @@ def test_repository_tree(project):
     blob = project.repository_raw_blob(blob_id)
     assert blob.decode() == "Initial content"
 
+    snapshot = project.snapshot()
+    assert isinstance(snapshot, bytes)
+
+
+def test_repository_archive(project):
     archive = project.repository_archive()
     assert isinstance(archive, bytes)
 
     archive2 = project.repository_archive("main")
     assert archive == archive2
 
-    snapshot = project.snapshot()
-    assert isinstance(snapshot, bytes)
+
+@pytest.mark.parametrize(
+    "format,assertion",
+    [
+        ("tbz", tarfile.is_tarfile),
+        ("tbz2", tarfile.is_tarfile),
+        ("tb2", tarfile.is_tarfile),
+        ("bz2", tarfile.is_tarfile),
+        ("tar", tarfile.is_tarfile),
+        ("tar.gz", tarfile.is_tarfile),
+        ("tar.bz2", tarfile.is_tarfile),
+        ("zip", zipfile.is_zipfile),
+    ],
+)
+def test_repository_archive_formats(project, format, assertion):
+    archive = project.repository_archive(format=format)
+    assert assertion(BytesIO(archive))
 
 
 def test_create_commit(project):

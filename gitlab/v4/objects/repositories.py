@@ -186,7 +186,7 @@ class RepositoryMixin(_RestObjectBase):
         path = f"/projects/{self.get_id()}/repository/contributors"
         return self.manager.gitlab.http_list(path, **kwargs)
 
-    @cli.register_custom_action("Project", tuple(), ("sha",))
+    @cli.register_custom_action("Project", tuple(), ("sha", "format"))
     @exc.on_http_error(exc.GitlabListError)
     def repository_archive(
         self,
@@ -194,9 +194,10 @@ class RepositoryMixin(_RestObjectBase):
         streamed: bool = False,
         action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
+        format: Optional[str] = None,
         **kwargs: Any,
     ) -> Optional[bytes]:
-        """Return a tarball of the repository.
+        """Return an archive of the repository.
 
         Args:
             sha: ID of the commit (default branch by default)
@@ -206,6 +207,7 @@ class RepositoryMixin(_RestObjectBase):
             action: Callable responsible of dealing with chunk of
                 data
             chunk_size: Size of each chunk
+            format: file format (tar.gz by default)
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -216,6 +218,8 @@ class RepositoryMixin(_RestObjectBase):
             The binary data of the archive
         """
         path = f"/projects/{self.get_id()}/repository/archive"
+        if format:
+            path += "." + format
         query_data = {}
         if sha:
             query_data["sha"] = sha
