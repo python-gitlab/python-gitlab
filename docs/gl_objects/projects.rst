@@ -180,6 +180,14 @@ Get the repository archive::
     # get the archive for a branch/tag/commit
     tgz = project.repository_archive(sha='4567abc')
 
+    # get the archive in a different format
+    zip = project.repository_archive(format='zip')
+
+.. note::
+
+   For the formats available, refer to
+   https://docs.gitlab.com/ce/api/repositories.html#get-file-archive
+
 .. warning::
 
    Archives are entirely stored in memory unless you use the streaming feature.
