@@ -25,7 +25,7 @@ setup(
     license="LGPLv3",
     url="https://github.com/python-gitlab/python-gitlab",
     packages=find_packages(),
-    install_requires=["requests>=2.22.0", "requests-toolbelt>=0.9.1"],
+    install_requires=["requests>=2.25.0", "requests-toolbelt>=0.9.1"],
     package_data={
         "gitlab": ["py.typed"],
     },
