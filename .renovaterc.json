@@ -12,12 +12,22 @@
       "depNameTemplate": "gitlab/gitlab-ce",
       "datasourceTemplate": "docker",
       "versioningTemplate": "loose"
+    },
+    {
+      "fileMatch": ["^.pre-commit-config.yaml$"],
+      "matchStrings": ["- (?<depName>.*?)==(?<currentValue>.*?)\n"],
+      "datasourceTemplate": "pypi",
+      "versioningTemplate": "pep440"
     }
   ],
   "packageRules": [
     {
       "packagePatterns": ["^gitlab\/gitlab-.+$"],
       "automerge": true
+    },
+    {
+      "matchPackagePrefixes": ["types-"],
+      "groupName": "typing dependencies"
     }
   ]
 }
