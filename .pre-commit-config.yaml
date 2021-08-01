@@ -25,6 +25,5 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies:
-          # todo: sync with pip deps via renovate regex manager
           - types-PyYAML==5.4.3
           - types-requests==2.25.1
