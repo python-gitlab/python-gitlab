@@ -21,6 +21,10 @@ repos:
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.812
+    rev: v0.910
     hooks:
       - id: mypy
+        additional_dependencies:
+          # todo: sync with pip deps via renovate regex manager
+          - types-PyYAML==5.4.3
+          - types-requests==2.25.1
