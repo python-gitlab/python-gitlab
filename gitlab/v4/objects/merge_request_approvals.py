@@ -203,4 +203,11 @@ class ProjectMergeRequestApprovalRuleManager(
         new_data = data.copy()
         new_data["id"] = self._from_parent_attrs["project_id"]
         new_data["merge_request_iid"] = self._from_parent_attrs["mr_iid"]
+        # If the input includes approval_project_rule_id then don't require 'name'.
+        if new_data.get('approval_project_rule_id'):
+            self._create_attrs = RequiredOptional(
+                required=("id", "merge_request_iid", "approval_project_rule_id",
+                          "approvals_required"),
+                optional=("name", "user_ids", "group_ids"),
+            )
         return CreateMixin.create(self, new_data, **kwargs)
