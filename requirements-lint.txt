@@ -3,4 +3,4 @@ flake8==3.9.2
 isort==5.9.3
 mypy==0.910
 types-PyYAML==5.4.3
-types-requests==2.25.2
+types-requests==2.25.6
