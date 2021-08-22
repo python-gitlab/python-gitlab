@@ -30,9 +30,13 @@ Reference
 Examples
 --------
 
-List the merge requests available on the GitLab server::
+List the merge requests created by the user of the token on the GitLab server::
 
     mrs = gl.mergerequests.list()
+
+List the merge requests available on the GitLab server::
+
+    mrs = gl.mergerequests.list(scope="all")
 
 List the merge requests for a group::
 
