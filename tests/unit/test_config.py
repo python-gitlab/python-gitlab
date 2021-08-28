@@ -86,6 +86,31 @@ per_page = 200
 """
 
 
+def global_retry_transient_errors(value: bool) -> str:
+    return u"""[global]
+default = one
+retry_transient_errors={}
+[one]
+url = http://one.url
+private_token = ABCDEF""".format(
+        value
+    )
+
+
+def global_and_gitlab_retry_transient_errors(
+    global_value: bool, gitlab_value: bool
+) -> str:
+    return u"""[global]
+    default = one
+    retry_transient_errors={global_value}
+    [one]
+    url = http://one.url
+    private_token = ABCDEF
+    retry_transient_errors={gitlab_value}""".format(
+        global_value=global_value, gitlab_value=gitlab_value
+    )
+
+
 @mock.patch.dict(os.environ, {"PYTHON_GITLAB_CFG": "/some/path"})
 def test_env_config_present():
     assert ["/some/path"] == config._env_config()
@@ -245,3 +270,48 @@ def test_config_user_agent(m_open, path_exists, config_string, expected_agent):
 
     cp = config.GitlabConfigParser()
     assert cp.user_agent == expected_agent
+
+
+@mock.patch("os.path.exists")
+@mock.patch("builtins.open")
+@pytest.mark.parametrize(
+    "config_string,expected",
+    [
+        pytest.param(valid_config, False, id="default_value"),
+        pytest.param(
+            global_retry_transient_errors(True), True, id="global_config_true"
+        ),
+        pytest.param(
+            global_retry_transient_errors(False), False, id="global_config_false"
+        ),
+        pytest.param(
+            global_and_gitlab_retry_transient_errors(False, True),
+            True,
+            id="gitlab_overrides_global_true",
+        ),
+        pytest.param(
+            global_and_gitlab_retry_transient_errors(True, False),
+            False,
+            id="gitlab_overrides_global_false",
+        ),
+        pytest.param(
+            global_and_gitlab_retry_transient_errors(True, True),
+            True,
+            id="gitlab_equals_global_true",
+        ),
+        pytest.param(
+            global_and_gitlab_retry_transient_errors(False, False),
+            False,
+            id="gitlab_equals_global_false",
+        ),
+    ],
+)
+def test_config_retry_transient_errors_when_global_config_is_set(
+    m_open, path_exists, config_string, expected
+):
+    fd = io.StringIO(config_string)
+    fd.close = mock.Mock(return_value=None)
+    m_open.return_value = fd
+
+    cp = config.GitlabConfigParser()
+    assert cp.retry_transient_errors == expected

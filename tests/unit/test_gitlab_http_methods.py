@@ -30,12 +30,97 @@ def test_http_request(gl):
 def test_http_request_404(gl):
     @urlmatch(scheme="http", netloc="localhost", path="/api/v4/not_there", method="get")
     def resp_cont(url, request):
-        content = {"Here is wh it failed"}
+        content = {"Here is why it failed"}
         return response(404, content, {}, None, 5, request)
 
     with HTTMock(resp_cont):
         with pytest.raises(GitlabHttpError):
             gl.http_request("get", "/not_there")
+
+
+@pytest.mark.parametrize("status_code", [500, 502, 503, 504])
+def test_http_request_with_only_failures(gl, status_code):
+    call_count = 0
+
+    @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects", method="get")
+    def resp_cont(url, request):
+        nonlocal call_count
+        call_count += 1
+        return response(status_code, {"Here is why it failed"}, {}, None, 5, request)
+
+    with HTTMock(resp_cont):
+        with pytest.raises(GitlabHttpError):
+            gl.http_request("get", "/projects")
+
+    assert call_count == 1
+
+
+def test_http_request_with_retry_on_method_for_transient_failures(gl):
+    call_count = 0
+    calls_before_success = 3
+
+    @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects", method="get")
+    def resp_cont(url, request):
+        nonlocal call_count
+        call_count += 1
+        status_code = 200 if call_count == calls_before_success else 500
+        return response(
+            status_code,
+            {"Failure is the stepping stone to success"},
+            {},
+            None,
+            5,
+            request,
+        )
+
+    with HTTMock(resp_cont):
+        http_r = gl.http_request("get", "/projects", retry_transient_errors=True)
+
+        assert http_r.status_code == 200
+        assert call_count == calls_before_success
+
+
+def test_http_request_with_retry_on_class_for_transient_failures(gl_retry):
+    call_count = 0
+    calls_before_success = 3
+
+    @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects", method="get")
+    def resp_cont(url, request):
+        nonlocal call_count
+        call_count += 1
+        status_code = 200 if call_count == calls_before_success else 500
+        return response(
+            status_code,
+            {"Failure is the stepping stone to success"},
+            {},
+            None,
+            5,
+            request,
+        )
+
+    with HTTMock(resp_cont):
+        http_r = gl_retry.http_request("get", "/projects")
+
+        assert http_r.status_code == 200
+        assert call_count == calls_before_success
+
+
+def test_http_request_with_retry_on_class_and_method_for_transient_failures(gl_retry):
+    call_count = 0
+    calls_before_success = 3
+
+    @urlmatch(scheme="http", netloc="localhost", path="/api/v4/projects", method="get")
+    def resp_cont(url, request):
+        nonlocal call_count
+        call_count += 1
+        status_code = 200 if call_count == calls_before_success else 500
+        return response(status_code, {"Here is why it failed"}, {}, None, 5, request)
+
+    with HTTMock(resp_cont):
+        with pytest.raises(GitlabHttpError):
+            gl_retry.http_request("get", "/projects", retry_transient_errors=False)
+
+        assert call_count == 1
 
 
 def test_get_request(gl):
@@ -66,7 +151,7 @@ def test_get_request_raw(gl):
 def test_get_request_404(gl):
     @urlmatch(scheme="http", netloc="localhost", path="/api/v4/not_there", method="get")
     def resp_cont(url, request):
-        content = {"Here is wh it failed"}
+        content = {"Here is why it failed"}
         return response(404, content, {}, None, 5, request)
 
     with HTTMock(resp_cont):
@@ -150,7 +235,7 @@ def test_post_request_404(gl):
         scheme="http", netloc="localhost", path="/api/v4/not_there", method="post"
     )
     def resp_cont(url, request):
-        content = {"Here is wh it failed"}
+        content = {"Here is why it failed"}
         return response(404, content, {}, None, 5, request)
 
     with HTTMock(resp_cont):
@@ -186,7 +271,7 @@ def test_put_request(gl):
 def test_put_request_404(gl):
     @urlmatch(scheme="http", netloc="localhost", path="/api/v4/not_there", method="put")
     def resp_cont(url, request):
-        content = {"Here is wh it failed"}
+        content = {"Here is why it failed"}
         return response(404, content, {}, None, 5, request)
 
     with HTTMock(resp_cont):
@@ -226,7 +311,7 @@ def test_delete_request_404(gl):
         scheme="http", netloc="localhost", path="/api/v4/not_there", method="delete"
     )
     def resp_cont(url, request):
-        content = {"Here is wh it failed"}
+        content = {"Here is why it failed"}
         return response(404, content, {}, None, 5, request)
 
     with HTTMock(resp_cont):

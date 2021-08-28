@@ -206,6 +206,20 @@ class GitlabConfigParser(object):
         except Exception:
             pass
 
+        self.retry_transient_errors = False
+        try:
+            self.retry_transient_errors = self._config.getboolean(
+                "global", "retry_transient_errors"
+            )
+        except Exception:
+            pass
+        try:
+            self.retry_transient_errors = self._config.getboolean(
+                self.gitlab_id, "retry_transient_errors"
+            )
+        except Exception:
+            pass
+
     def _get_values_from_helper(self) -> None:
         """Update attributes that may get values from an external helper program"""
         for attr in HELPER_ATTRIBUTES:

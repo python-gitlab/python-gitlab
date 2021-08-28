@@ -9,7 +9,18 @@ def gl():
         "http://localhost",
         private_token="private_token",
         ssl_verify=True,
-        api_version=4,
+        api_version="4",
+    )
+
+
+@pytest.fixture
+def gl_retry():
+    return gitlab.Gitlab(
+        "http://localhost",
+        private_token="private_token",
+        ssl_verify=True,
+        api_version="4",
+        retry_transient_errors=True,
     )
 
 
@@ -17,7 +28,7 @@ def gl():
 @pytest.fixture
 def gl_trailing():
     return gitlab.Gitlab(
-        "http://localhost/", private_token="private_token", api_version=4
+        "http://localhost/", private_token="private_token", api_version="4"
     )
 
 
