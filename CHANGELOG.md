@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v2.10.1 (2021-08-28)
+### Fix
+* **mixins:** Improve deprecation warning ([`57e0187`](https://github.com/python-gitlab/python-gitlab/commit/57e018772492a8522b37d438d722c643594cf580))
+* **deps:** Upgrade requests to 2.25.0 (see CVE-2021-33503) ([`ce995b2`](https://github.com/python-gitlab/python-gitlab/commit/ce995b256423a0c5619e2a6c0d88e917aad315ba))
+
+### Documentation
+* **mergequests:** Gl.mergequests.list documentation was missleading ([`5b5a7bc`](https://github.com/python-gitlab/python-gitlab/commit/5b5a7bcc70a4ddd621cbd59e134e7004ad2d9ab9))
+
 ## v2.10.0 (2021-07-28)
 ### Feature
 * **api:** Add merge_ref for merge requests ([`1e24ab2`](https://github.com/python-gitlab/python-gitlab/commit/1e24ab247cc783ae240e94f6cb379fef1e743a52))
