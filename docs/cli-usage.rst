@@ -170,6 +170,25 @@ In `/path/to/helper.sh`:
 
     #!/bin/bash
     pass show path/to/password | head -n 1
+    
+Example for an `environnement variable`:
+
+.. code-block:: ini
+
+   [global]
+   default = somewhere
+   ssl_verify = true
+   timeout = 5
+
+   [somewhere]
+   url = http://somewhe.re
+   private_token = helper: printf -- '%%s' ${GITLAB_TOKEN}
+   timeout = 1
+
+**Notice:**
+
+   * ``printf`` is the executable provided by coreutils package (on a debian based distribution).
+   * ``%`` must be escaped using an other `%` (in order to allow `configparser` load configuration properly.
 
 CLI
 ===
