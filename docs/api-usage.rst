@@ -391,6 +391,17 @@ default an exception is raised for these errors.
    gl = gitlab.gitlab(url, token, api_version=4)
    gl.projects.list(all=True, retry_transient_errors=True)
 
+The default ``retry_transient_errors`` can also be set on the ``Gitlab`` object
+and overridden by individual API calls.
+
+.. code-block:: python
+
+   import gitlab
+   import requests
+   gl = gitlab.gitlab(url, token, api_version=4, retry_transient_errors=True)
+   gl.projects.list(all=True)                               # retries due to default value
+   gl.projects.list(all=True, retry_transient_errors=False) # does not retry
+
 Timeout
 -------
 
