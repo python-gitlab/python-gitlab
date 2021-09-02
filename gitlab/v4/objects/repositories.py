@@ -180,7 +180,7 @@ class RepositoryMixin:
             GitlabListError: If the server failed to perform the request
 
         Returns:
-            str: The binary data of the archive
+            bytes: The binary data of the archive
         """
         path = "/projects/%s/repository/archive" % self.get_id()
         query_data = {}
