@@ -25,6 +25,8 @@ jobs:
             toxenv: py38
           - python-version: 3.9
             toxenv: py39
+          - python-version: 3.9
+            toxenv: smoke
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
