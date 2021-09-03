@@ -16,7 +16,8 @@ module = [
     "setup",
     "tests.functional.*",
     "tests.functional.api.*",
-    "tests.unit.*"
+    "tests.unit.*",
+    "tests.smoke.*"
 ]
 ignore_errors = true
 
