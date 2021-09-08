@@ -40,17 +40,6 @@ def resp_create_merge_request_pipeline():
         yield rsps
 
 
-def test_merge_requests_pipelines_deprecated_raises_warning(
-    project, resp_list_merge_request_pipelines
-):
-    with pytest.deprecated_call():
-        pipelines = project.mergerequests.get(1, lazy=True).pipelines()
-
-    assert len(pipelines) == 1
-    assert isinstance(pipelines[0], ProjectMergeRequestPipeline)
-    assert pipelines[0].sha == pipeline_content["sha"]
-
-
 def test_list_merge_requests_pipelines(project, resp_list_merge_request_pipelines):
     pipelines = project.mergerequests.get(1, lazy=True).pipelines.list()
     assert len(pipelines) == 1

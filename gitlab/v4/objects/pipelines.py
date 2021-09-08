@@ -1,5 +1,3 @@
-import warnings
-
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
@@ -44,33 +42,6 @@ class ProjectMergeRequestPipelineManager(CreateMixin, ListMixin, RESTManager):
     _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/pipelines"
     _obj_cls = ProjectMergeRequestPipeline
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
-
-    # If the manager was called directly as a callable via
-    # mr.pipelines(), execute the deprecated method for now.
-    # TODO: in python-gitlab 3.0.0, remove this method entirely.
-
-    @cli.register_custom_action("ProjectMergeRequest", custom_action="pipelines")
-    @exc.on_http_error(exc.GitlabListError)
-    def __call__(self, **kwargs):
-        """List the merge request pipelines.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabListError: If the list could not be retrieved
-
-        Returns:
-            RESTObjectList: List of changes
-        """
-        warnings.warn(
-            "Calling the ProjectMergeRequest.pipelines() method on "
-            "merge request objects directly is deprecated and will be replaced "
-            "by ProjectMergeRequest.pipelines.list() in python-gitlab 3.0.0.\n",
-            DeprecationWarning,
-        )
-        return self.list(**kwargs)
 
 
 class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
