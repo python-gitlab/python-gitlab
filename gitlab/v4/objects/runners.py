@@ -34,7 +34,7 @@ class RunnerJobManager(ListMixin, RESTManager):
 
 
 class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _managers = (("jobs", "RunnerJobManager"),)
+    jobs: RunnerJobManager
 
 
 class RunnerManager(CRUDMixin, RESTManager):

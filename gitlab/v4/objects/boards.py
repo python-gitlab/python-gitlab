@@ -26,7 +26,7 @@ class GroupBoardListManager(CRUDMixin, RESTManager):
 
 
 class GroupBoard(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _managers = (("lists", "GroupBoardListManager"),)
+    lists: GroupBoardListManager
 
 
 class GroupBoardManager(CRUDMixin, RESTManager):
@@ -49,7 +49,7 @@ class ProjectBoardListManager(CRUDMixin, RESTManager):
 
 
 class ProjectBoard(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _managers = (("lists", "ProjectBoardListManager"),)
+    lists: ProjectBoardListManager
 
 
 class ProjectBoardManager(CRUDMixin, RESTManager):

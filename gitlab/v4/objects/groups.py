@@ -43,35 +43,34 @@ __all__ = [
 
 class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "name"
-    _managers = (
-        ("accessrequests", "GroupAccessRequestManager"),
-        ("audit_events", "GroupAuditEventManager"),
-        ("badges", "GroupBadgeManager"),
-        ("billable_members", "GroupBillableMemberManager"),
-        ("boards", "GroupBoardManager"),
-        ("customattributes", "GroupCustomAttributeManager"),
-        ("descendant_groups", "GroupDescendantGroupManager"),
-        ("exports", "GroupExportManager"),
-        ("epics", "GroupEpicManager"),
-        ("hooks", "GroupHookManager"),
-        ("imports", "GroupImportManager"),
-        ("issues", "GroupIssueManager"),
-        ("issues_statistics", "GroupIssuesStatisticsManager"),
-        ("labels", "GroupLabelManager"),
-        ("members", "GroupMemberManager"),
-        ("members_all", "GroupMemberAllManager"),
-        ("mergerequests", "GroupMergeRequestManager"),
-        ("milestones", "GroupMilestoneManager"),
-        ("notificationsettings", "GroupNotificationSettingsManager"),
-        ("packages", "GroupPackageManager"),
-        ("projects", "GroupProjectManager"),
-        ("runners", "GroupRunnerManager"),
-        ("subgroups", "GroupSubgroupManager"),
-        ("variables", "GroupVariableManager"),
-        ("clusters", "GroupClusterManager"),
-        ("deploytokens", "GroupDeployTokenManager"),
-        ("wikis", "GroupWikiManager"),
-    )
+
+    accessrequests: GroupAccessRequestManager
+    audit_events: GroupAuditEventManager
+    badges: GroupBadgeManager
+    billable_members: GroupBillableMemberManager
+    boards: GroupBoardManager
+    clusters: GroupClusterManager
+    customattributes: GroupCustomAttributeManager
+    deploytokens: GroupDeployTokenManager
+    descendant_groups: "GroupDescendantGroupManager"
+    epics: GroupEpicManager
+    exports: GroupExportManager
+    hooks: GroupHookManager
+    imports: GroupImportManager
+    issues: GroupIssueManager
+    issues_statistics: GroupIssuesStatisticsManager
+    labels: GroupLabelManager
+    members: GroupMemberManager
+    members_all: GroupMemberAllManager
+    mergerequests: GroupMergeRequestManager
+    milestones: GroupMilestoneManager
+    notificationsettings: GroupNotificationSettingsManager
+    packages: GroupPackageManager
+    projects: GroupProjectManager
+    runners: GroupRunnerManager
+    subgroups: "GroupSubgroupManager"
+    variables: GroupVariableManager
+    wikis: GroupWikiManager
 
     @cli.register_custom_action("Group", ("to_project_id",))
     @exc.on_http_error(exc.GitlabTransferProjectError)

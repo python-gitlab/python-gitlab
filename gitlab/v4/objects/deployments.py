@@ -10,7 +10,7 @@ __all__ = [
 
 
 class ProjectDeployment(SaveMixin, RESTObject):
-    _managers = (("mergerequests", "ProjectDeploymentMergeRequestManager"),)
+    mergerequests: ProjectDeploymentMergeRequestManager
 
 
 class ProjectDeploymentManager(RetrieveMixin, CreateMixin, UpdateMixin, RESTManager):

@@ -150,13 +150,22 @@ class RESTObject(object):
         return hash(self.get_id())
 
     def _create_managers(self) -> None:
-        managers = getattr(self, "_managers", None)
-        if managers is None:
-            return
-
-        for attr, cls_name in self._managers:
+        # NOTE(jlvillal): We are creating our managers by looking at the class
+        # annotations. If an attribute is annotated as being a *Manager type
+        # then we create the manager and assign it to the attribute.
+        for attr, annotation in sorted(self.__annotations__.items()):
+            if not isinstance(annotation, (type, str)):
+                continue
+            if isinstance(annotation, type):
+                cls_name = annotation.__name__
+            else:
+                cls_name = annotation
+            # All *Manager classes are used except for the base "RESTManager" class
+            if cls_name == "RESTManager" or not cls_name.endswith("Manager"):
+                continue
             cls = getattr(self._module, cls_name)
             manager = cls(self.manager.gitlab, parent=self)
+            # Since we have our own __setattr__ method, we can't use setattr()
             self.__dict__[attr] = manager
 
     def _update_attrs(self, new_attrs: Dict[str, Any]) -> None:

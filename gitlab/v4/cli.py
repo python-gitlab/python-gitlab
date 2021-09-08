@@ -99,7 +99,10 @@ class GitlabCLI(object):
     def do_project_export_download(self) -> None:
         try:
             project = self.gl.projects.get(int(self.args["project_id"]), lazy=True)
-            data = project.exports.get().download()
+            export_status = project.exports.get()
+            if TYPE_CHECKING:
+                assert export_status is not None
+            data = export_status.download()
             sys.stdout.buffer.write(data)
 
         except Exception as e:

@@ -77,11 +77,10 @@ class SnippetManager(CRUDMixin, RESTManager):
 class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _url = "/projects/%(project_id)s/snippets"
     _short_print_attr = "title"
-    _managers = (
-        ("awardemojis", "ProjectSnippetAwardEmojiManager"),
-        ("discussions", "ProjectSnippetDiscussionManager"),
-        ("notes", "ProjectSnippetNoteManager"),
-    )
+
+    awardemojis: ProjectSnippetAwardEmojiManager
+    discussions: ProjectSnippetDiscussionManager
+    notes: ProjectSnippetNoteManager
 
     @cli.register_custom_action("ProjectSnippet")
     @exc.on_http_error(exc.GitlabGetError)

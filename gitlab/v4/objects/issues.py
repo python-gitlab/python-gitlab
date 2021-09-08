@@ -105,15 +105,14 @@ class ProjectIssue(
 ):
     _short_print_attr = "title"
     _id_attr = "iid"
-    _managers = (
-        ("awardemojis", "ProjectIssueAwardEmojiManager"),
-        ("discussions", "ProjectIssueDiscussionManager"),
-        ("links", "ProjectIssueLinkManager"),
-        ("notes", "ProjectIssueNoteManager"),
-        ("resourcelabelevents", "ProjectIssueResourceLabelEventManager"),
-        ("resourcemilestoneevents", "ProjectIssueResourceMilestoneEventManager"),
-        ("resourcestateevents", "ProjectIssueResourceStateEventManager"),
-    )
+
+    awardemojis: ProjectIssueAwardEmojiManager
+    discussions: ProjectIssueDiscussionManager
+    links: "ProjectIssueLinkManager"
+    notes: ProjectIssueNoteManager
+    resourcelabelevents: ProjectIssueResourceLabelEventManager
+    resourcemilestoneevents: ProjectIssueResourceMilestoneEventManager
+    resourcestateevents: ProjectIssueResourceStateEventManager
 
     @cli.register_custom_action("ProjectIssue", ("to_project_id",))
     @exc.on_http_error(exc.GitlabUpdateError)

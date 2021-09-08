@@ -147,7 +147,7 @@ class TestRESTObject:
 
     def test_create_managers(self, fake_gitlab, fake_manager):
         class ObjectWithManager(FakeObject):
-            _managers = (("fakes", "FakeManager"),)
+            fakes: "FakeManager"
 
         obj = ObjectWithManager(fake_manager, {"foo": "bar"})
         obj.id = 42

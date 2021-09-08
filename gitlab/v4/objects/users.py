@@ -97,12 +97,11 @@ class CurrentUserStatusManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
 class CurrentUser(RESTObject):
     _id_attr = None
     _short_print_attr = "username"
-    _managers = (
-        ("status", "CurrentUserStatusManager"),
-        ("emails", "CurrentUserEmailManager"),
-        ("gpgkeys", "CurrentUserGPGKeyManager"),
-        ("keys", "CurrentUserKeyManager"),
-    )
+
+    emails: CurrentUserEmailManager
+    gpgkeys: CurrentUserGPGKeyManager
+    keys: CurrentUserKeyManager
+    status: CurrentUserStatusManager
 
 
 class CurrentUserManager(GetWithoutIdMixin, RESTManager):
@@ -112,20 +111,19 @@ class CurrentUserManager(GetWithoutIdMixin, RESTManager):
 
 class User(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "username"
-    _managers = (
-        ("customattributes", "UserCustomAttributeManager"),
-        ("emails", "UserEmailManager"),
-        ("followers_users", "UserFollowersManager"),
-        ("following_users", "UserFollowingManager"),
-        ("events", "UserEventManager"),
-        ("gpgkeys", "UserGPGKeyManager"),
-        ("identityproviders", "UserIdentityProviderManager"),
-        ("impersonationtokens", "UserImpersonationTokenManager"),
-        ("keys", "UserKeyManager"),
-        ("memberships", "UserMembershipManager"),
-        ("projects", "UserProjectManager"),
-        ("status", "UserStatusManager"),
-    )
+
+    customattributes: UserCustomAttributeManager
+    emails: "UserEmailManager"
+    events: UserEventManager
+    followers_users: "UserFollowersManager"
+    following_users: "UserFollowingManager"
+    gpgkeys: "UserGPGKeyManager"
+    identityproviders: "UserIdentityProviderManager"
+    impersonationtokens: "UserImpersonationTokenManager"
+    keys: "UserKeyManager"
+    memberships: "UserMembershipManager"
+    projects: "UserProjectManager"
+    status: "UserStatusManager"
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabBlockError)

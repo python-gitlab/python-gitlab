@@ -74,12 +74,10 @@ class ProjectMergeRequestPipelineManager(CreateMixin, ListMixin, RESTManager):
 
 
 class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
-    _managers = (
-        ("jobs", "ProjectPipelineJobManager"),
-        ("bridges", "ProjectPipelineBridgeManager"),
-        ("variables", "ProjectPipelineVariableManager"),
-        ("test_report", "ProjectPipelineTestReportManager"),
-    )
+    bridges: "ProjectPipelineBridgeManager"
+    jobs: "ProjectPipelineJobManager"
+    test_report: "ProjectPipelineTestReportManager"
+    variables: "ProjectPipelineVariableManager"
 
     @cli.register_custom_action("ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineCancelError)
@@ -199,7 +197,7 @@ class ProjectPipelineScheduleVariableManager(
 
 
 class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _managers = (("variables", "ProjectPipelineScheduleVariableManager"),)
+    variables: ProjectPipelineScheduleVariableManager
 
     @cli.register_custom_action("ProjectPipelineSchedule")
     @exc.on_http_error(exc.GitlabOwnershipError)

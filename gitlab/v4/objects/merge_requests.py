@@ -139,18 +139,16 @@ class ProjectMergeRequest(
 ):
     _id_attr = "iid"
 
-    _managers = (
-        ("approvals", "ProjectMergeRequestApprovalManager"),
-        ("approval_rules", "ProjectMergeRequestApprovalRuleManager"),
-        ("awardemojis", "ProjectMergeRequestAwardEmojiManager"),
-        ("diffs", "ProjectMergeRequestDiffManager"),
-        ("discussions", "ProjectMergeRequestDiscussionManager"),
-        ("notes", "ProjectMergeRequestNoteManager"),
-        ("pipelines", "ProjectMergeRequestPipelineManager"),
-        ("resourcelabelevents", "ProjectMergeRequestResourceLabelEventManager"),
-        ("resourcemilestoneevents", "ProjectMergeRequestResourceMilestoneEventManager"),
-        ("resourcestateevents", "ProjectMergeRequestResourceStateEventManager"),
-    )
+    approval_rules: ProjectMergeRequestApprovalRuleManager
+    approvals: ProjectMergeRequestApprovalManager
+    awardemojis: ProjectMergeRequestAwardEmojiManager
+    diffs: "ProjectMergeRequestDiffManager"
+    discussions: ProjectMergeRequestDiscussionManager
+    notes: ProjectMergeRequestNoteManager
+    pipelines: ProjectMergeRequestPipelineManager
+    resourcelabelevents: ProjectMergeRequestResourceLabelEventManager
+    resourcemilestoneevents: ProjectMergeRequestResourceMilestoneEventManager
+    resourcestateevents: ProjectMergeRequestResourceStateEventManager
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMROnBuildSuccessError)
