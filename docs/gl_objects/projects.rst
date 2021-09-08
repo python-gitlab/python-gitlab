@@ -519,8 +519,6 @@ List the project members recursively (including inherited members through
 ancestor groups)::
 
     members = project.members_all.list(all=True)
-    # or
-    members = project.members.all(all=True) # Deprecated
 
 Search project members matching a query string::
 

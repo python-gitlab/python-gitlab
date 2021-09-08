@@ -89,7 +89,6 @@ def test_groups(gl):
 
     group1.members.delete(user.id)
     assert len(group1.members.list()) == 2
-    assert len(group1.members.all())  # Deprecated
     assert len(group1.members_all.list())
     member = group1.members.get(user2.id)
     member.access_level = gitlab.const.OWNER_ACCESS
