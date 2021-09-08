@@ -33,7 +33,7 @@ def test_project_snippets(project):
             "title": "snip1",
             "file_name": "foo.py",
             "content": "initial content",
-            "visibility": gitlab.v4.objects.VISIBILITY_PRIVATE,
+            "visibility": gitlab.VISIBILITY_PRIVATE,
         }
     )
 
