@@ -4,7 +4,6 @@ from gitlab.mixins import (
     CRUDMixin,
     DeleteMixin,
     ListMixin,
-    MemberAllMixin,
     ObjectDeleteMixin,
     RetrieveMixin,
     SaveMixin,
@@ -28,7 +27,7 @@ class GroupMember(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "username"
 
 
-class GroupMemberManager(MemberAllMixin, CRUDMixin, RESTManager):
+class GroupMemberManager(CRUDMixin, RESTManager):
     _path = "/groups/%(group_id)s/members"
     _obj_cls = GroupMember
     _from_parent_attrs = {"group_id": "id"}
@@ -74,7 +73,7 @@ class ProjectMember(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "username"
 
 
-class ProjectMemberManager(MemberAllMixin, CRUDMixin, RESTManager):
+class ProjectMemberManager(CRUDMixin, RESTManager):
     _path = "/projects/%(project_id)s/members"
     _obj_cls = ProjectMember
     _from_parent_attrs = {"project_id": "id"}

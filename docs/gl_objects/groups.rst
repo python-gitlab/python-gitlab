@@ -272,8 +272,6 @@ List the group members recursively (including inherited members through
 ancestor groups)::
 
     members = group.members_all.list(all=True)
-    # or
-    members = group.members.all(all=True) # Deprecated
 
 Get only direct group member::
 
