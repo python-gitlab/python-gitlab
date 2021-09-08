@@ -74,15 +74,4 @@ from .users import *
 from .variables import *
 from .wikis import *
 
-# TODO: deprecate these in favor of gitlab.const.*
-VISIBILITY_PRIVATE = "private"
-VISIBILITY_INTERNAL = "internal"
-VISIBILITY_PUBLIC = "public"
-
-ACCESS_GUEST = 10
-ACCESS_REPORTER = 20
-ACCESS_DEVELOPER = 30
-ACCESS_MASTER = 40
-ACCESS_OWNER = 50
-
 __all__ = [name for name in dir() if not name.startswith("_")]
