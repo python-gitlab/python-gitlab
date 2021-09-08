@@ -29,8 +29,9 @@ import gitlab.exceptions
 from gitlab import utils
 
 REDIRECT_MSG = (
-    "python-gitlab detected an http to https redirection. You "
-    "must update your GitLab URL to use https:// to avoid issues."
+    "python-gitlab detected a {status_code} ({reason!r}) redirection. You must update "
+    "your GitLab URL to the correct URL to avoid issues. The redirection was from: "
+    "{source!r} to {target!r}"
 )
 
 
@@ -456,24 +457,29 @@ class Gitlab(object):
             return "%s%s" % (self._url, path)
 
     def _check_redirects(self, result: requests.Response) -> None:
-        # Check the requests history to detect http to https redirections.
-        # If the initial verb is POST, the next request will use a GET request,
-        # leading to an unwanted behaviour.
-        # If the initial verb is PUT, the data will not be send with the next
-        # request.
-        # If we detect a redirection to https with a POST or a PUT request, we
+        # Check the requests history to detect 301/302 redirections.
+        # If the initial verb is POST or PUT, the redirected request will use a
+        # GET request, leading to unwanted behaviour.
+        # If we detect a redirection with a POST or a PUT request, we
         # raise an exception with a useful error message.
-        if result.history and self._base_url.startswith("http:"):
-            for item in result.history:
-                if item.status_code not in (301, 302):
-                    continue
-                # GET methods can be redirected without issue
-                if item.request.method == "GET":
-                    continue
-                # Did we end-up with an https:// URL?
-                location = item.headers.get("Location", None)
-                if location and location.startswith("https://"):
-                    raise gitlab.exceptions.RedirectError(REDIRECT_MSG)
+        if not result.history:
+            return
+
+        for item in result.history:
+            if item.status_code not in (301, 302):
+                continue
+            # GET methods can be redirected without issue
+            if item.request.method == "GET":
+                continue
+            target = item.headers.get("location")
+            raise gitlab.exceptions.RedirectError(
+                REDIRECT_MSG.format(
+                    status_code=item.status_code,
+                    reason=item.reason,
+                    source=item.url,
+                    target=target,
+                )
+            )
 
     def _prepare_send_data(
         self,

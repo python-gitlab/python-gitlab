@@ -14,7 +14,9 @@ To connect to a GitLab server, create a ``gitlab.Gitlab`` object:
    import gitlab
 
    # private token or personal token authentication
-   gl = gitlab.Gitlab('http://10.0.0.1', private_token='JVNSESs8EwWRx5yDxM5q')
+   # Note that a 'url' that results in 301/302 redirects will cause an error
+   # (see below for more information).
+   gl = gitlab.Gitlab(url='https://gitlab.example.com', private_token='JVNSESs8EwWRx5yDxM5q')
 
    # oauth token authentication
    gl = gitlab.Gitlab('http://10.0.0.1', oauth_token='my_long_token_here')
@@ -46,6 +48,13 @@ configuration files.
 
    If the GitLab server you are using redirects requests from http to https,
    make sure to use the ``https://`` protocol in the URL definition.
+
+.. note::
+
+   It is highly recommended to use the final destination in the ``url`` field.
+   What this means is that you should not use a URL which redirects as it will
+   most likely cause errors. python-gitlab will raise a ``RedirectionError``
+   when it encounters a redirect which it believes will cause an error.
 
 Note on password authentication
 -------------------------------
