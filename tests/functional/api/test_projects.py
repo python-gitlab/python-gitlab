@@ -243,10 +243,6 @@ def test_project_tags(project, project_file):
     tag = project.tags.create({"tag_name": "v1.0", "ref": "master"})
     assert len(project.tags.list()) == 1
 
-    tag.set_release_description("Description 1")
-    tag.set_release_description("Description 2")
-    assert tag.release["description"] == "Description 2"
-
     tag.delete()
     assert len(project.tags.list()) == 0
 
