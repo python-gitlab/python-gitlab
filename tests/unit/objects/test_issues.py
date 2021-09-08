@@ -86,7 +86,3 @@ def test_get_project_issues_statistics(project, resp_issue_statistics):
     statistics = project.issues_statistics.get()
     assert isinstance(statistics, ProjectIssuesStatistics)
     assert statistics.statistics["counts"]["all"] == 20
-
-    # Deprecated attribute
-    deprecated = project.issuesstatistics.get()
-    assert deprecated.statistics == statistics.statistics

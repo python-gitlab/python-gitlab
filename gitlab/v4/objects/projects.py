@@ -135,7 +135,6 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     imports: ProjectImportManager
     issues: ProjectIssueManager
     issues_statistics: ProjectIssuesStatisticsManager
-    issuesstatistics: ProjectIssuesStatisticsManager  # Deprecated
     jobs: ProjectJobManager
     keys: ProjectKeyManager
     labels: ProjectLabelManager
