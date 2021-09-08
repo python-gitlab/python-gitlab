@@ -125,10 +125,18 @@ def test_merge_request_should_remove_source_branch(
         time.sleep(0.5)
     assert mr.merged_at is not None
     time.sleep(0.5)
+    result = wait_for_sidekiq(timeout=60)
+    assert result is True, "sidekiq process should have terminated but did not"
 
     # Ensure we can NOT get the MR branch
     with pytest.raises(gitlab.exceptions.GitlabGetError):
-        project.branches.get(source_branch)
+        result = project.branches.get(source_branch)
+        # Help to debug in case the expected exception doesn't happen.
+        import pprint
+
+        print("mr:", pprint.pformat(mr))
+        print("mr.merged_at:", pprint.pformat(mr.merged_at))
+        print("result:", pprint.pformat(result))
 
 
 def test_merge_request_large_commit_message(
