@@ -72,9 +72,9 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     variables: GroupVariableManager
     wikis: GroupWikiManager
 
-    @cli.register_custom_action("Group", ("to_project_id",))
+    @cli.register_custom_action("Group", ("project_id",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
-    def transfer_project(self, to_project_id, **kwargs):
+    def transfer_project(self, project_id, **kwargs):
         """Transfer a project to this group.
 
         Args:
@@ -85,7 +85,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTransferProjectError: If the project could not be transfered
         """
-        path = "/groups/%s/projects/%s" % (self.id, to_project_id)
+        path = "/groups/%s/projects/%s" % (self.id, project_id)
         self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("Group", ("scope", "search"))
