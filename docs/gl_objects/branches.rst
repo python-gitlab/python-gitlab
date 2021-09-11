@@ -35,21 +35,8 @@ Delete a repository branch::
     # or
     branch.delete()
 
-Protect/unprotect a repository branch::
-
-    branch.protect()
-    branch.unprotect()
-
-.. note::
-
-   By default, developers are not authorized to push or merge into protected
-   branches. This can be changed by passing ``developers_can_push`` or
-   ``developers_can_merge``:
-
-   .. code-block:: python
-
-      branch.protect(developers_can_push=True, developers_can_merge=True)
-
 Delete the merged branches for a project::
 
     project.delete_merged_branches()
+
+To manage protected branches, see :doc:`/gl_objects/protected_branches`.
