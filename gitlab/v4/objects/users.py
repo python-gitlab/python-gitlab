@@ -17,6 +17,7 @@ from gitlab.mixins import (
 
 from .custom_attributes import UserCustomAttributeManager  # noqa: F401
 from .events import UserEventManager  # noqa: F401
+from .personal_access_tokens import UserPersonalAccessTokenManager  # noqa: F401
 
 __all__ = [
     "CurrentUserEmail",
@@ -122,6 +123,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
     impersonationtokens: "UserImpersonationTokenManager"
     keys: "UserKeyManager"
     memberships: "UserMembershipManager"
+    personal_access_tokens: UserPersonalAccessTokenManager
     projects: "UserProjectManager"
     status: "UserStatusManager"
 
