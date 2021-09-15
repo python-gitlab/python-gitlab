@@ -41,7 +41,7 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
-            GitlabSetError: If an error occured
+            GitlabSetError: If an error occurred
 
         Returns:
             obj: The created/updated attribute

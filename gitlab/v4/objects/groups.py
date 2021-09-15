@@ -83,7 +83,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
-            GitlabTransferProjectError: If the project could not be transfered
+            GitlabTransferProjectError: If the project could not be transferred
         """
         path = "/groups/%s/projects/%s" % (self.id, project_id)
         self.manager.gitlab.http_post(path, **kwargs)

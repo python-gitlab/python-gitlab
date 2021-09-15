@@ -45,6 +45,6 @@ class TodoManager(ListMixin, DeleteMixin, RESTManager):
             GitlabTodoError: If the server failed to perform the request
 
         Returns:
-            int: The number of todos maked done
+            int: The number of todos marked done
         """
         self.gitlab.http_post("/todos/mark_as_done", **kwargs)

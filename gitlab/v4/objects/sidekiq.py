@@ -10,14 +10,14 @@ __all__ = [
 class SidekiqManager(RESTManager):
     """Manager for the Sidekiq methods.
 
-    This manager doesn't actually manage objects but provides helper fonction
+    This manager doesn't actually manage objects but provides helper function
     for the sidekiq metrics API.
     """
 
     @cli.register_custom_action("SidekiqManager")
     @exc.on_http_error(exc.GitlabGetError)
     def queue_metrics(self, **kwargs):
-        """Return the registred queues information.
+        """Return the registered queues information.
 
         Args:
             **kwargs: Extra options to send to the server (e.g. sudo)
@@ -34,7 +34,7 @@ class SidekiqManager(RESTManager):
     @cli.register_custom_action("SidekiqManager")
     @exc.on_http_error(exc.GitlabGetError)
     def process_metrics(self, **kwargs):
-        """Return the registred sidekiq workers.
+        """Return the registered sidekiq workers.
 
         Args:
             **kwargs: Extra options to send to the server (e.g. sudo)

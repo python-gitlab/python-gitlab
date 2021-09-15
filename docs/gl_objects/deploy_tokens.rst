@@ -75,7 +75,7 @@ the following parameters:
 
    With GitLab 12.9, even though ``username`` and ``expires_at`` are not required, they always have to be passed to the API.
    You can set them to empty strings, see: https://gitlab.com/gitlab-org/gitlab/-/issues/211878.
-   Also, the ``username``'s value is ignored by the API and will be overriden with ``gitlab+deploy-token-{n}``,
+   Also, the ``username``'s value is ignored by the API and will be overridden with ``gitlab+deploy-token-{n}``,
    see: https://gitlab.com/gitlab-org/gitlab/-/issues/211963
    These issues were fixed in GitLab 12.10.
 
@@ -125,7 +125,7 @@ the following parameters:
 
    With GitLab 12.9, even though ``username`` and ``expires_at`` are not required, they always have to be passed to the API.
    You can set them to empty strings, see: https://gitlab.com/gitlab-org/gitlab/-/issues/211878.
-   Also, the ``username``'s value is ignored by the API and will be overriden with ``gitlab+deploy-token-{n}``,
+   Also, the ``username``'s value is ignored by the API and will be overridden with ``gitlab+deploy-token-{n}``,
    see: https://gitlab.com/gitlab-org/gitlab/-/issues/211963
    These issues were fixed in GitLab 12.10.
 
