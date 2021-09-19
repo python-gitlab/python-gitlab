@@ -192,7 +192,7 @@ class RESTObjectList(object):
     This generator uses the Gitlab pagination system to fetch new data when
     required.
 
-    Note: you should not instanciate such objects, they are returned by calls
+    Note: you should not instantiate such objects, they are returned by calls
     to RESTManager.list()
 
     Args:

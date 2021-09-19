@@ -105,7 +105,7 @@ class GenericPackageManager(RESTManager):
             file_name (str): The name of the file in the registry
             streamed (bool): If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
-                reatment
+                treatment
             action (callable): Callable responsible of dealing with chunk of
                 data
             chunk_size (int): Size of each chunk

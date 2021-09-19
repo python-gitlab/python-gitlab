@@ -515,7 +515,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
-            GitlabTransferProjectError: If the project could not be transfered
+            GitlabTransferProjectError: If the project could not be transferred
         """
         path = "/projects/%s/transfer" % (self.id,)
         self.manager.gitlab.http_put(
