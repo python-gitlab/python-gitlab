@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import urllib.parse
 from types import ModuleType
 from typing import (
     Any,
@@ -391,7 +392,7 @@ class UpdateMixin(_RestManagerBase):
         if id is None:
             path = self.path
         else:
-            path = "%s/%s" % (self.path, id)
+            path = "%s/%s" % (self.path, urllib.parse.quote_plus(str(id)))
 
         self._check_missing_update_attrs(new_data)
         files = {}
