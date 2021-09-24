@@ -38,6 +38,8 @@ __all__ = [
     "GroupDescendantGroupManager",
     "GroupSubgroup",
     "GroupSubgroupManager",
+    "GroupLdapLinks",
+    "GroupLdapLinksManager",
 ]
 
 
@@ -71,6 +73,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     subgroups: "GroupSubgroupManager"
     variables: GroupVariableManager
     wikis: GroupWikiManager
+    ldap_group_links: "GroupLdapLinksManager"
 
     @cli.register_custom_action("Group", ("project_id",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
@@ -318,6 +321,16 @@ class GroupSubgroupManager(ListMixin, RESTManager):
         "min_access_level",
     )
     _types = {"skip_groups": types.ListAttribute}
+
+
+class GroupLdapLinks(RESTObject):
+    pass
+
+
+class GroupLdapLinksManager(ListMixin, RESTManager):
+    _path = "/groups/%(group_id)s/ldap_group_links"
+    _obj_cls = GroupLdapLinks
+    _from_parent_attrs = {"group_id": "id"}
 
 
 class GroupDescendantGroup(RESTObject):
