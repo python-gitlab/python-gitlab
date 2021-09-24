@@ -36,6 +36,10 @@ Update a label for a project::
     label.color = '#112233'
     label.save()
 
+Promote a project label to a group label::
+
+    label.promote()
+
 Delete a label for a project::
 
     project.labels.delete(label_id)
