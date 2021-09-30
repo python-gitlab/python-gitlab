@@ -93,6 +93,8 @@ Update a variable value::
 
     var.value = 'new_value'
     var.save()
+    # or
+    project.variables.update("key1", {"value": "new_value"})
 
 Remove a variable::
 
