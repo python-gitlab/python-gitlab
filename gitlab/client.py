@@ -602,6 +602,8 @@ class Gitlab(object):
         # gitlab installation)
         req = requests.Request(verb, url, json=json, data=data, params=params, **opts)
         prepped = self.session.prepare_request(req)
+        if TYPE_CHECKING:
+            assert prepped.url is not None
         prepped.url = utils.sanitized_url(prepped.url)
         settings = self.session.merge_environment_settings(
             prepped.url, {}, streamed, verify, None
