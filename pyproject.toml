@@ -23,7 +23,8 @@ ignore_errors = true
 
 [[tool.mypy.overrides]] # Overrides to negate above patterns
 module = [
-    "gitlab.v4.objects.projects"
+    "gitlab.v4.objects.projects",
+    "gitlab.v4.objects.users"
 ]
 ignore_errors = false
 

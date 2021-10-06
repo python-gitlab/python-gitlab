@@ -1,7 +1,11 @@
+from typing import Any, cast, Dict, List, Union
+
+import requests
+
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -129,7 +133,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabBlockError)
-    def block(self, **kwargs):
+    def block(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Block the user.
 
         Args:
@@ -150,7 +154,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabFollowError)
-    def follow(self, **kwargs):
+    def follow(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Follow the user.
 
         Args:
@@ -168,7 +172,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUnfollowError)
-    def unfollow(self, **kwargs):
+    def unfollow(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Unfollow the user.
 
         Args:
@@ -186,7 +190,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUnblockError)
-    def unblock(self, **kwargs):
+    def unblock(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Unblock the user.
 
         Args:
@@ -207,7 +211,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabDeactivateError)
-    def deactivate(self, **kwargs):
+    def deactivate(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Deactivate the user.
 
         Args:
@@ -228,7 +232,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabActivateError)
-    def activate(self, **kwargs):
+    def activate(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Activate the user.
 
         Args:
@@ -318,6 +322,9 @@ class UserManager(CRUDMixin, RESTManager):
         ),
     )
     _types = {"confirm": types.LowercaseStringAttribute, "avatar": types.ImageAttribute}
+
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> User:
+        return cast(User, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectUser(RESTObject):
@@ -470,7 +477,7 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
         "id_before",
     )
 
-    def list(self, **kwargs):
+    def list(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
         """Retrieve a list of objects.
 
         Args:
