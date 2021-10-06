@@ -1,5 +1,3 @@
-from gitlab import cli
-from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
@@ -10,21 +8,7 @@ __all__ = [
 
 
 class ProjectTrigger(SaveMixin, ObjectDeleteMixin, RESTObject):
-    @cli.register_custom_action("ProjectTrigger")
-    @exc.on_http_error(exc.GitlabOwnershipError)
-    def take_ownership(self, **kwargs):
-        """Update the owner of a trigger.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabOwnershipError: If the request failed
-        """
-        path = "%s/%s/take_ownership" % (self.manager.path, self.get_id())
-        server_data = self.manager.gitlab.http_post(path, **kwargs)
-        self._update_attrs(server_data)
+    pass
 
 
 class ProjectTriggerManager(CRUDMixin, RESTManager):
