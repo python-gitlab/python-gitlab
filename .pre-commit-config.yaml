@@ -26,4 +26,4 @@ repos:
       - id: mypy
         additional_dependencies:
           - types-PyYAML==5.4.10
-          - types-requests==2.25.6
+          - types-requests==2.25.9
