@@ -29,6 +29,8 @@ To connect to GitLab.com or another GitLab instance, create a ``gitlab.Gitlab`` 
    gl = gitlab.Gitlab('https://gitlab.example.com', oauth_token='my_long_token_here')
 
    # job token authentication (to be used in CI)
+   # bear in mind the limitations of the API endpoints it supports:
+   # https://docs.gitlab.com/ee/ci/jobs/ci_job_token.html
    import os
    gl = gitlab.Gitlab('https://gitlab.example.com', job_token=os.environ['CI_JOB_TOKEN'])
 
@@ -36,7 +38,8 @@ To connect to GitLab.com or another GitLab instance, create a ``gitlab.Gitlab`` 
    gl = gitlab.Gitlab('https://gitlab.example.com', user_agent='my-package/1.0.0')
 
    # make an API request to create the gl.user object. This is mandatory if you
-   # use the username/password authentication.
+   # use the username/password authentication - not required for token authentication,
+   # and will not work with job tokens.
    gl.auth()
 
 You can also use configuration files to create ``gitlab.Gitlab`` objects:
