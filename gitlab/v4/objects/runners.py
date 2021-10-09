@@ -3,7 +3,9 @@ from gitlab import exceptions as exc
 from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
+    CreateMixin,
     CRUDMixin,
+    DeleteMixin,
     ListMixin,
     NoUpdateMixin,
     ObjectDeleteMixin,
@@ -131,7 +133,7 @@ class ProjectRunner(ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectRunnerManager(NoUpdateMixin, RESTManager):
+class ProjectRunnerManager(CreateMixin, DeleteMixin, ListMixin, RESTManager):
     _path = "/projects/%(project_id)s/runners"
     _obj_cls = ProjectRunner
     _from_parent_attrs = {"project_id": "id"}
