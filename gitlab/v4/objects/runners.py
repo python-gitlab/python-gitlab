@@ -7,7 +7,6 @@ from gitlab.mixins import (
     CRUDMixin,
     DeleteMixin,
     ListMixin,
-    NoUpdateMixin,
     ObjectDeleteMixin,
     SaveMixin,
 )
@@ -116,11 +115,11 @@ class RunnerManager(CRUDMixin, RESTManager):
         self.gitlab.http_post(path, post_data=post_data, **kwargs)
 
 
-class GroupRunner(ObjectDeleteMixin, RESTObject):
+class GroupRunner(RESTObject):
     pass
 
 
-class GroupRunnerManager(NoUpdateMixin, RESTManager):
+class GroupRunnerManager(ListMixin, RESTManager):
     _path = "/groups/%(group_id)s/runners"
     _obj_cls = GroupRunner
     _from_parent_attrs = {"group_id": "id"}
