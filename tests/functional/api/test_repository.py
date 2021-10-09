@@ -10,32 +10,32 @@ def test_repository_files(project):
     project.files.create(
         {
             "file_path": "README",
-            "branch": "master",
+            "branch": "main",
             "content": "Initial content",
             "commit_message": "Initial commit",
         }
     )
-    readme = project.files.get(file_path="README", ref="master")
+    readme = project.files.get(file_path="README", ref="main")
     readme.content = base64.b64encode(b"Improved README").decode()
 
     time.sleep(2)
-    readme.save(branch="master", commit_message="new commit")
-    readme.delete(commit_message="Removing README", branch="master")
+    readme.save(branch="main", commit_message="new commit")
+    readme.delete(commit_message="Removing README", branch="main")
 
     project.files.create(
         {
             "file_path": "README.rst",
-            "branch": "master",
+            "branch": "main",
             "content": "Initial content",
             "commit_message": "New commit",
         }
     )
-    readme = project.files.get(file_path="README.rst", ref="master")
+    readme = project.files.get(file_path="README.rst", ref="main")
     # The first decode() is the ProjectFile method, the second one is the bytes
     # object method
     assert readme.decode().decode() == "Initial content"
 
-    blame = project.files.blame(file_path="README.rst", ref="master")
+    blame = project.files.blame(file_path="README.rst", ref="main")
     assert blame
 
 
@@ -51,7 +51,7 @@ def test_repository_tree(project):
     archive = project.repository_archive()
     assert isinstance(archive, bytes)
 
-    archive2 = project.repository_archive("master")
+    archive2 = project.repository_archive("main")
     assert archive == archive2
 
     snapshot = project.snapshot()
@@ -60,7 +60,7 @@ def test_repository_tree(project):
 
 def test_create_commit(project):
     data = {
-        "branch": "master",
+        "branch": "main",
         "commit_message": "blah blah blah",
         "actions": [{"action": "create", "file_path": "blah", "content": "blah"}],
     }
@@ -114,7 +114,7 @@ def test_commit_discussion(project):
 
 def test_revert_commit(project):
     commit = project.commits.list()[0]
-    revert_commit = commit.revert(branch="master")
+    revert_commit = commit.revert(branch="main")
 
     expected_message = 'Revert "{}"\n\nThis reverts commit {}'.format(
         commit.message, commit.id
@@ -123,4 +123,4 @@ def test_revert_commit(project):
 
     with pytest.raises(gitlab.GitlabRevertError):
         # Two revert attempts should raise GitlabRevertError
-        commit.revert(branch="master")
+        commit.revert(branch="main")

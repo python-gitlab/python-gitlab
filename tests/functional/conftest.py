@@ -305,7 +305,7 @@ def project_file(project):
     project_file = project.files.create(
         {
             "file_path": "README",
-            "branch": "master",
+            "branch": "main",
             "content": "Initial content",
             "commit_message": "Initial commit",
         }

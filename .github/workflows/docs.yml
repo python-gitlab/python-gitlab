@@ -3,9 +3,10 @@ name: Docs
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
+      - main
       - master
 
 env:

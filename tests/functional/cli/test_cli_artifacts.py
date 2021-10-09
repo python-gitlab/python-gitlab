@@ -14,7 +14,7 @@ content = textwrap.dedent(
 )
 data = {
     "file_path": ".gitlab-ci.yml",
-    "branch": "master",
+    "branch": "main",
     "content": content,
     "commit_message": "Initial commit",
 }

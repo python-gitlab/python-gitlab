@@ -9,7 +9,7 @@ from gitlab.v4.objects import ProjectMergeRequestPipeline
 pipeline_content = {
     "id": 1,
     "sha": "959e04d7c7a30600c894bd3c0cd0e1ce7f42c11d",
-    "ref": "master",
+    "ref": "main",
     "status": "success",
 }
 

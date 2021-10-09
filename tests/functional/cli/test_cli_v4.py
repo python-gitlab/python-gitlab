@@ -125,7 +125,7 @@ def test_list_user_memberships(gitlab_cli, user):
 
 def test_project_create_file(gitlab_cli, project):
     file_path = "README"
-    branch = "master"
+    branch = "main"
     content = "CONTENT"
     commit_message = "Initial commit"
 
@@ -197,7 +197,7 @@ def test_create_branch(gitlab_cli, project):
         "--branch",
         branch,
         "--ref",
-        "master",
+        "main",
     ]
     ret = gitlab_cli(cmd)
 
@@ -215,7 +215,7 @@ def test_create_merge_request(gitlab_cli, project):
         "--source-branch",
         branch,
         "--target-branch",
-        "master",
+        "main",
         "--title",
         "Update README",
     ]
@@ -260,7 +260,7 @@ def test_revert_commit(gitlab_cli, project):
         "--id",
         commit.id,
         "--branch",
-        "master",
+        "main",
     ]
     ret = gitlab_cli(cmd)
 

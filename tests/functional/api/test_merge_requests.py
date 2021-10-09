@@ -10,14 +10,14 @@ def test_merge_requests(project):
     project.files.create(
         {
             "file_path": "README.rst",
-            "branch": "master",
+            "branch": "main",
             "content": "Initial content",
             "commit_message": "Initial commit",
         }
     )
 
     source_branch = "branch1"
-    project.branches.create({"branch": source_branch, "ref": "master"})
+    project.branches.create({"branch": source_branch, "ref": "main"})
 
     project.files.create(
         {
@@ -28,7 +28,7 @@ def test_merge_requests(project):
         }
     )
     project.mergerequests.create(
-        {"source_branch": "branch1", "target_branch": "master", "title": "MR readme2"}
+        {"source_branch": "branch1", "target_branch": "main", "title": "MR readme2"}
     )
 
 
