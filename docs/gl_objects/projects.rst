@@ -57,6 +57,11 @@ Results can also be sorted using the following parameters:
 
 .. note::
 
+   To list the starred projects of another user, see the
+   :ref:`Users API docs <users_examples>`.
+
+.. note::
+
    Fetching a list of projects, doesn't include all attributes of all projects.
    To retrieve all attributes, you'll need to fetch a single project
 
