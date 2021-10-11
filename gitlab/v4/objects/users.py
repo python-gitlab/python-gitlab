@@ -1,3 +1,8 @@
+"""
+GitLab API:
+https://docs.gitlab.com/ee/api/users.html
+https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
+"""
 from typing import Any, cast, Dict, List, Union
 
 import requests
@@ -38,6 +43,8 @@ __all__ = [
     "UserManager",
     "ProjectUser",
     "ProjectUserManager",
+    "StarredProject",
+    "StarredProjectManager",
     "UserEmail",
     "UserEmailManager",
     "UserActivities",
@@ -129,6 +136,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
     memberships: "UserMembershipManager"
     personal_access_tokens: UserPersonalAccessTokenManager
     projects: "UserProjectManager"
+    starred_projects: "StarredProjectManager"
     status: "UserStatusManager"
 
     @cli.register_custom_action("User")
@@ -500,6 +508,32 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
         else:
             path = "/users/%s/projects" % kwargs["user_id"]
         return ListMixin.list(self, path=path, **kwargs)
+
+
+class StarredProject(RESTObject):
+    pass
+
+
+class StarredProjectManager(ListMixin, RESTManager):
+    _path = "/users/%(user_id)s/starred_projects"
+    _obj_cls = StarredProject
+    _from_parent_attrs = {"user_id": "id"}
+    _list_filters = (
+        "archived",
+        "membership",
+        "min_access_level",
+        "order_by",
+        "owned",
+        "search",
+        "simple",
+        "sort",
+        "starred",
+        "statistics",
+        "visibility",
+        "with_custom_attributes",
+        "with_issues_enabled",
+        "with_merge_requests_enabled",
+    )
 
 
 class UserFollowersManager(ListMixin, RESTManager):

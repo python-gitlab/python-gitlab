@@ -1,10 +1,14 @@
 """
-GitLab API: https://docs.gitlab.com/ce/api/users.html
+GitLab API:
+https://docs.gitlab.com/ce/api/users.html
+https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
 """
 import pytest
 import responses
 
-from gitlab.v4.objects import User, UserMembership, UserStatus
+from gitlab.v4.objects import StarredProject, User, UserMembership, UserStatus
+
+from .test_projects import project_content
 
 
 @pytest.fixture
@@ -174,6 +178,19 @@ def resp_followers_following():
         yield rsps
 
 
+@pytest.fixture
+def resp_starred_projects():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/users/1/starred_projects",
+            json=[project_content],
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
 def test_get_user(gl, resp_get_user):
     user = gl.users.get(1)
     assert isinstance(user, User)
@@ -215,3 +232,9 @@ def test_list_followers(user, resp_followers_following):
     assert followers[0].id == 2
     assert isinstance(followings[0], User)
     assert followings[1].id == 4
+
+
+def test_list_starred_projects(user, resp_starred_projects):
+    projects = user.starred_projects.list()
+    assert isinstance(projects[0], StarredProject)
+    assert projects[0].id == project_content["id"]

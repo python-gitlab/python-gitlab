@@ -1,3 +1,5 @@
+.. _users_examples:
+
 ######################
 Users and current user
 ######################
@@ -19,7 +21,10 @@ References
   + :class:`gitlab.v4.objects.UserManager`
   + :attr:`gitlab.Gitlab.users`
 
-* GitLab API: https://docs.gitlab.com/ce/api/users.html
+* GitLab API:
+
+  + https://docs.gitlab.com/ce/api/users.html
+  + https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
 
 Examples
 --------
@@ -97,6 +102,9 @@ Get the followings of a user
 
     user.following_users.list()
 
+List a user's starred projects
+
+    user.starred_projects.list()
 
 User custom attributes
 ======================
