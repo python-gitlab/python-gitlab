@@ -67,4 +67,4 @@ Enable a deploy key for a project::
 
 Disable a deploy key for a project::
 
-    project_key.delete()
+    project.keys.delete(key_id)
