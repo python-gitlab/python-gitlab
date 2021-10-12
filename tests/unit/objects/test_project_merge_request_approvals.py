@@ -46,7 +46,7 @@ def resp_snippet():
             "closed_at": None,
             "created_at": "2017-04-29T08:46:00Z",
             "updated_at": "2017-04-29T08:46:00Z",
-            "target_branch": "master",
+            "target_branch": "main",
             "source_branch": "test1",
             "upvotes": 0,
             "downvotes": 0,

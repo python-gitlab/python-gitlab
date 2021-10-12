@@ -29,6 +29,7 @@ module = [
 ignore_errors = false
 
 [tool.semantic_release]
+branch = "main"
 version_variable = "gitlab/__version__.py:__version__"
 commit_subject = "chore: release v{version}"
 commit_message = ""

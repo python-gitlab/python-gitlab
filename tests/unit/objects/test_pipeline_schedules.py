@@ -10,7 +10,7 @@ def resp_project_pipeline_schedule(created_content):
     content = {
         "id": 14,
         "description": "Build packages",
-        "ref": "master",
+        "ref": "main",
         "cron": "0 1 * * 5",
         "cron_timezone": "UTC",
         "next_run_at": "2017-05-26T01:00:00.000Z",
@@ -50,7 +50,7 @@ def test_project_pipeline_schedule_play(project, resp_project_pipeline_schedule)
     description = "Build packages"
     cronline = "0 1 * * 5"
     sched = project.pipelineschedules.create(
-        {"ref": "master", "description": description, "cron": cronline}
+        {"ref": "main", "description": description, "cron": cronline}
     )
     assert sched is not None
     assert description == sched.description

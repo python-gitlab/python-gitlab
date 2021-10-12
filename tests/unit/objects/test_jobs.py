@@ -26,7 +26,7 @@ job_content = {
         "id": 1,
         "project_id": 1,
     },
-    "ref": "master",
+    "ref": "main",
     "artifacts": [],
     "runner": None,
     "stage": "test",
@@ -79,18 +79,18 @@ def resp_retry_job():
 def test_get_project_job(project, resp_get_job):
     job = project.jobs.get(1)
     assert isinstance(job, ProjectJob)
-    assert job.ref == "master"
+    assert job.ref == "main"
 
 
 def test_cancel_project_job(project, resp_cancel_job):
     job = project.jobs.get(1, lazy=True)
 
     output = job.cancel()
-    assert output["ref"] == "master"
+    assert output["ref"] == "main"
 
 
 def test_retry_project_job(project, resp_retry_job):
     job = project.jobs.get(1, lazy=True)
 
     output = job.retry()
-    assert output["ref"] == "master"
+    assert output["ref"] == "main"

@@ -10,7 +10,7 @@ pipeline_content = {
     "id": 46,
     "project_id": 1,
     "status": "pending",
-    "ref": "master",
+    "ref": "main",
     "sha": "a91957a858320c0e17f3a0eca7cfacbff50ea29a",
     "before_sha": "a91957a858320c0e17f3a0eca7cfacbff50ea29a",
     "tag": False,
@@ -121,21 +121,21 @@ def resp_get_pipeline_test_report():
 def test_get_project_pipeline(project, resp_get_pipeline):
     pipeline = project.pipelines.get(1)
     assert isinstance(pipeline, ProjectPipeline)
-    assert pipeline.ref == "master"
+    assert pipeline.ref == "main"
 
 
 def test_cancel_project_pipeline(project, resp_cancel_pipeline):
     pipeline = project.pipelines.get(1, lazy=True)
 
     output = pipeline.cancel()
-    assert output["ref"] == "master"
+    assert output["ref"] == "main"
 
 
 def test_retry_project_pipeline(project, resp_retry_pipeline):
     pipeline = project.pipelines.get(1, lazy=True)
 
     output = pipeline.retry()
-    assert output["ref"] == "master"
+    assert output["ref"] == "main"
 
 
 def test_get_project_pipeline_test_report(project, resp_get_pipeline_test_report):

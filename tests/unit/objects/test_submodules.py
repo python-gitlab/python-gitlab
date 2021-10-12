@@ -37,7 +37,7 @@ def resp_update_submodule():
 def test_update_submodule(project, resp_update_submodule):
     ret = project.update_submodule(
         submodule="foo/bar",
-        branch="master",
+        branch="main",
         commit_sha="4c3674f66071e30b3311dac9b9ccc90502a72664",
         commit_message="Message",
     )

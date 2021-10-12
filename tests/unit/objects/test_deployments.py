@@ -7,7 +7,7 @@ import responses
 
 @pytest.fixture
 def resp_deployment():
-    content = {"id": 42, "status": "success", "ref": "master"}
+    content = {"id": 42, "status": "success", "ref": "main"}
 
     with responses.RequestsMock() as rsps:
         rsps.add(
@@ -36,14 +36,14 @@ def test_deployment(project, resp_deployment):
         {
             "environment": "Test",
             "sha": "1agf4gs",
-            "ref": "master",
+            "ref": "main",
             "tag": False,
             "status": "created",
         }
     )
     assert deployment.id == 42
     assert deployment.status == "success"
-    assert deployment.ref == "master"
+    assert deployment.ref == "main"
 
     deployment.status = "failed"
     deployment.save()

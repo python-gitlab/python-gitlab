@@ -29,7 +29,7 @@ Create a new deployment::
     deployment = project.deployments.create({
         "environment": "Test",
         "sha": "1agf4gs",
-        "ref": "master",
+        "ref": "main",
         "tag": False,
         "status": "created",
     })

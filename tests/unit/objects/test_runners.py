@@ -51,7 +51,7 @@ runner_jobs = [
         "status": "running",
         "stage": "test",
         "name": "test",
-        "ref": "master",
+        "ref": "main",
         "tag": False,
         "coverage": "99%",
         "created_at": "2017-11-16T08:50:29.000Z",

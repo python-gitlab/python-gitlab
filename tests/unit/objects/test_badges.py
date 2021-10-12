@@ -10,12 +10,12 @@ import responses
 from gitlab.v4.objects import GroupBadge, ProjectBadge
 
 link_url = (
-    "http://example.com/ci_status.svg?project=example-org/example-project&ref=master"
+    "http://example.com/ci_status.svg?project=example-org/example-project&ref=main"
 )
 image_url = "https://example.io/my/badge"
 
 rendered_link_url = (
-    "http://example.com/ci_status.svg?project=example-org/example-project&ref=master"
+    "http://example.com/ci_status.svg?project=example-org/example-project&ref=main"
 )
 rendered_image_url = "https://example.io/my/badge"
 

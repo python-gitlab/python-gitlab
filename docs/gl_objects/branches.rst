@@ -22,12 +22,12 @@ Get the list of branches for a repository::
 
 Get a single repository branch::
 
-    branch = project.branches.get('master')
+    branch = project.branches.get('main')
 
 Create a repository branch::
 
     branch = project.branches.create({'branch': 'feature1',
-                                      'ref': 'master'})
+                                      'ref': 'main'})
 
 Delete a repository branch::
 

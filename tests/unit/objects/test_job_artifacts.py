@@ -5,7 +5,7 @@ GitLab API: https://docs.gitlab.com/ee/api/job_artifacts.html
 import pytest
 import responses
 
-ref_name = "master"
+ref_name = "main"
 job = "build"
 
 

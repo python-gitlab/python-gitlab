@@ -240,7 +240,7 @@ def test_project_stars(project):
 
 
 def test_project_tags(project, project_file):
-    tag = project.tags.create({"tag_name": "v1.0", "ref": "master"})
+    tag = project.tags.create({"tag_name": "v1.0", "ref": "main"})
     assert len(project.tags.list()) == 1
 
     tag.delete()

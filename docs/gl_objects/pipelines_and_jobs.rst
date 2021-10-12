@@ -35,7 +35,7 @@ Get variables of a pipeline::
 
 Create a pipeline for a particular reference with custom variables::
 
-    pipeline = project.pipelines.create({'ref': 'master', 'variables': [{'key': 'MY_VARIABLE', 'value': 'hello'}]})
+    pipeline = project.pipelines.create({'ref': 'main', 'variables': [{'key': 'MY_VARIABLE', 'value': 'hello'}]})
 
 Retry the failed builds for a pipeline::
 
@@ -97,7 +97,7 @@ Full example with wait for finish::
         return project.triggers.create({'description': trigger_decription})
 
     trigger = get_or_create_trigger(project)
-    pipeline = project.trigger_pipeline('master', trigger.token, variables={"DEPLOY_ZONE": "us-west1"})
+    pipeline = project.trigger_pipeline('main', trigger.token, variables={"DEPLOY_ZONE": "us-west1"})
     while pipeline.finished_at is None:
         pipeline.refresh()
         time.sleep(1)
@@ -108,7 +108,7 @@ objects to get the associated project::
 
     gl = gitlab.Gitlab(URL)  # no authentication
     project = gl.projects.get(project_id, lazy=True)  # no API call
-    project.trigger_pipeline('master', trigger_token)
+    project.trigger_pipeline('main', trigger_token)
 
 Reference: https://docs.gitlab.com/ee/ci/triggers/#trigger-token
 
@@ -146,7 +146,7 @@ Get a single schedule::
 Create a new schedule::
 
     sched = project.pipelineschedules.create({
-        'ref': 'master',
+        'ref': 'main',
         'description': 'Daily test',
         'cron': '0 1 * * *'})
 
@@ -213,7 +213,7 @@ Examples
 Jobs are usually automatically triggered, but you can explicitly trigger a new
 job::
 
-    project.trigger_build('master', trigger_token,
+    project.trigger_build('main', trigger_token,
                           {'extra_var1': 'foo', 'extra_var2': 'bar'})
 
 List jobs for the project::
@@ -247,7 +247,7 @@ Get the artifacts of a job::
 Get the artifacts of a job by its name from the latest successful pipeline of
 a branch or tag:
 
-  project.artifacts(ref_name='master', job='build')
+  project.artifacts(ref_name='main', job='build')
 
 .. warning::
 

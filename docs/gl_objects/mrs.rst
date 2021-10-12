@@ -94,7 +94,7 @@ Get a single MR::
 Create a MR::
 
     mr = project.mergerequests.create({'source_branch': 'cool_feature',
-                                       'target_branch': 'master',
+                                       'target_branch': 'main',
                                        'title': 'merge cool feature',
                                        'labels': ['label1', 'label2']})
 

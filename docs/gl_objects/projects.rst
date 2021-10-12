@@ -158,7 +158,7 @@ Update a project submodule::
 
     items = project.update_submodule(
         submodule="foo/bar",
-        branch="master",
+        branch="main",
         commit_sha="4c3674f66071e30b3311dac9b9ccc90502a72664",
         commit_message="Message",  # optional
     )
@@ -199,7 +199,7 @@ Get a snapshot of the repository::
 
 Compare two branches, tags or commits::
 
-    result = project.repository_compare('master', 'branch1')
+    result = project.repository_compare('main', 'branch1')
 
     # get the commits
     for commit in result['commits']:
@@ -340,7 +340,7 @@ Examples
 
 Get a file::
 
-    f = project.files.get(file_path='README.rst', ref='master')
+    f = project.files.get(file_path='README.rst', ref='main')
 
     # get the base64 encoded content
     print(f.content)
@@ -350,15 +350,15 @@ Get a file::
     
 Get a raw file::
     
-    raw_content = project.files.raw(file_path='README.rst', ref='master')
+    raw_content = project.files.raw(file_path='README.rst', ref='main')
     print(raw_content)
     with open('/tmp/raw-download.txt', 'wb') as f:
-        project.files.raw(file_path='README.rst', ref='master', streamed=True, action=f.write)
+        project.files.raw(file_path='README.rst', ref='main', streamed=True, action=f.write)
 
 Create a new file::
 
     f = project.files.create({'file_path': 'testfile.txt',
-                              'branch': 'master',
+                              'branch': 'main',
                               'content': file_content,
                               'author_email': 'test@example.com',
                               'author_name': 'yourname',
@@ -369,23 +369,23 @@ Update a file. The entire content must be uploaded, as plain text or as base64
 encoded text::
 
     f.content = 'new content'
-    f.save(branch='master', commit_message='Update testfile')
+    f.save(branch='main', commit_message='Update testfile')
 
     # or for binary data
     # Note: decode() is required with python 3 for data serialization. You can omit
     # it with python 2
     f.content = base64.b64encode(open('image.png').read()).decode()
-    f.save(branch='master', commit_message='Update testfile', encoding='base64')
+    f.save(branch='main', commit_message='Update testfile', encoding='base64')
 
 Delete a file::
 
-    f.delete(commit_message='Delete testfile', branch='master')
+    f.delete(commit_message='Delete testfile', branch='main')
     # or
-    project.files.delete(file_path='testfile.txt', commit_message='Delete testfile', branch='master')
+    project.files.delete(file_path='testfile.txt', commit_message='Delete testfile', branch='main')
 
 Get file blame::
 
-    b = project.files.blame(file_path='README.rst', ref='master')
+    b = project.files.blame(file_path='README.rst', ref='main')
 
 Project tags
 ============
@@ -414,7 +414,7 @@ Get a tag::
 
 Create a tag::
 
-    tag = project.tags.create({'tag_name': '1.0', 'ref': 'master'})
+    tag = project.tags.create({'tag_name': '1.0', 'ref': 'main'})
 
 Delete a tag::
 
@@ -702,7 +702,7 @@ Get project push rules (returns None is there are no push rules)::
 
 Edit project push rules::
 
-    pr.branch_name_regex = '^(master|develop|support-\d+|release-\d+\..+|hotfix-.+|feature-.+)$'
+    pr.branch_name_regex = '^(main|develop|support-\d+|release-\d+\..+|hotfix-.+|feature-.+)$'
     pr.save()
 
 Delete project push rules::

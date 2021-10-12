@@ -86,7 +86,7 @@ def test_get_commit(project, resp_commit):
 
 def test_create_commit(project, resp_create_commit):
     data = {
-        "branch": "master",
+        "branch": "main",
         "commit_message": "Commit message",
         "actions": [
             {
@@ -103,7 +103,7 @@ def test_create_commit(project, resp_create_commit):
 
 def test_revert_commit(project, resp_commit):
     commit = project.commits.get("6b2257ea", lazy=True)
-    revert_commit = commit.revert(branch="master")
+    revert_commit = commit.revert(branch="main")
     assert revert_commit["short_id"] == "8b090c1b"
     assert revert_commit["title"] == 'Revert "Initial commit"'
 

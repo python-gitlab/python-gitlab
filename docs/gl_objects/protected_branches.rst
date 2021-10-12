@@ -25,7 +25,7 @@ Get the list of protected branches for a project::
 
 Get a single protected branch::
 
-    p_branch = project.protectedbranches.get('master')
+    p_branch = project.protectedbranches.get('main')
 
 Create a protected branch::
 

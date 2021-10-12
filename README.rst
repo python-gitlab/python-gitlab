@@ -7,8 +7,8 @@
 .. image:: https://readthedocs.org/projects/python-gitlab/badge/?version=latest
    :target: https://python-gitlab.readthedocs.org/en/latest/?badge=latest
 
-.. image:: https://codecov.io/github/python-gitlab/python-gitlab/coverage.svg?branch=master
-    :target: https://codecov.io/github/python-gitlab/python-gitlab?branch=master
+.. image:: https://codecov.io/github/python-gitlab/python-gitlab/coverage.svg?branch=main
+    :target: https://codecov.io/github/python-gitlab/python-gitlab?branch=main
 
 .. image:: https://img.shields.io/pypi/pyversions/python-gitlab.svg
    :target: https://pypi.python.org/pypi/python-gitlab
@@ -96,4 +96,4 @@ You can build the documentation using ``sphinx``::
 Contributing
 ============
 
-For guidelines for contributing to ``python-gitlab``, refer to `CONTRIBUTING.rst <https://github.com/python-gitlab/python-gitlab/blob/master/CONTRIBUTING.rst>`_.
+For guidelines for contributing to ``python-gitlab``, refer to `CONTRIBUTING.rst <https://github.com/python-gitlab/python-gitlab/blob/main/CONTRIBUTING.rst>`_.
