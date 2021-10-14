@@ -162,7 +162,7 @@ class ProjectPackageFile(RESTObject):
     pass
 
 
-class ProjectPackageFileManager(ListMixin, RESTManager):
+class ProjectPackageFileManager(DeleteMixin, ListMixin, RESTManager):
     _path = "/projects/%(project_id)s/packages/%(package_id)s/package_files"
     _obj_cls = ProjectPackageFile
     _from_parent_attrs = {"project_id": "project_id", "package_id": "id"}
