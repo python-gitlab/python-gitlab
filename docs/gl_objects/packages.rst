@@ -89,6 +89,13 @@ List package files for package in project::
     package = project.packages.get(1)
     package_files = package.package_files.list()
 
+Delete a package file in a project::
+
+    package = project.packages.get(1)
+    file = package.package_files.list()[0]
+    package.package_files.delete(file.id)
+
+
 Generic Packages
 ================
 
