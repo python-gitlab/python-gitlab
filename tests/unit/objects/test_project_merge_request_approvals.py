@@ -178,6 +178,15 @@ def resp_snippet():
         }
     ]
 
+    approval_state_rules = copy.deepcopy(mr_ars_content)
+    approval_state_rules[0]["approved"] = False
+    approval_state_rules[0]["approved_by"] = []
+
+    mr_approval_state_content = {
+        "approval_rules_overwritten": False,
+        "rules": approval_state_rules,
+    }
+
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
             method=responses.GET,
@@ -197,6 +206,13 @@ def resp_snippet():
             method=responses.GET,
             url="http://localhost/api/v4/projects/1/merge_requests/1/approval_rules",
             json=mr_ars_content,
+            content_type="application/json",
+            status=200,
+        )
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/merge_requests/1/approval_state",
+            json=mr_approval_state_content,
             content_type="application/json",
             status=200,
         )
@@ -315,3 +331,18 @@ def test_update_merge_request_approval_rule(project, resp_snippet):
     assert ar_1.approvals_required == updated_approval_rule_approvals_required
     assert len(ar_1.eligible_approvers) == len(updated_approval_rule_user_ids)
     assert ar_1.eligible_approvers[0]["id"] == updated_approval_rule_user_ids[0]
+
+
+def test_get_merge_request_approval_state(project, resp_snippet):
+    merge_request = project.mergerequests.get(1)
+    approval_state = merge_request.approval_state.get()
+    assert isinstance(
+        approval_state,
+        gitlab.v4.objects.merge_request_approvals.ProjectMergeRequestApprovalState,
+    )
+    assert not approval_state.approval_rules_overwritten
+    assert len(approval_state.rules) == 1
+    assert approval_state.rules[0]["name"] == approval_rule_name
+    assert approval_state.rules[0]["id"] == approval_rule_id
+    assert not approval_state.rules[0]["approved"]
+    assert approval_state.rules[0]["approved_by"] == []

@@ -19,6 +19,8 @@ __all__ = [
     "ProjectMergeRequestApprovalManager",
     "ProjectMergeRequestApprovalRule",
     "ProjectMergeRequestApprovalRuleManager",
+    "ProjectMergeRequestApprovalState",
+    "ProjectMergeRequestApprovalStateManager",
 ]
 
 
@@ -204,3 +206,13 @@ class ProjectMergeRequestApprovalRuleManager(
         new_data["id"] = self._from_parent_attrs["project_id"]
         new_data["merge_request_iid"] = self._from_parent_attrs["mr_iid"]
         return CreateMixin.create(self, new_data, **kwargs)
+
+
+class ProjectMergeRequestApprovalState(RESTObject):
+    pass
+
+
+class ProjectMergeRequestApprovalStateManager(GetWithoutIdMixin, RESTManager):
+    _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/approval_state"
+    _obj_cls = ProjectMergeRequestApprovalState
+    _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}

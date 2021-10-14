@@ -21,6 +21,9 @@ References
   + :class:`gitlab.v4.objects.ProjectMergeRequestApprovalRule`
   + :class:`gitlab.v4.objects.ProjectMergeRequestApprovalRuleManager`
   + :attr:`gitlab.v4.objects.ProjectMergeRequest.approval_rules`
+  + :class:`gitlab.v4.objects.ProjectMergeRequestApprovalState`
+  + :class:`gitlab.v4.objects.ProjectMergeRequestApprovalStateManager`
+  + :attr:`gitlab.v4.objects.ProjectMergeRequest.approval_state`
 
 * GitLab API: https://docs.gitlab.com/ee/api/merge_request_approvals.html
 
@@ -45,6 +48,10 @@ Get project-level or MR-level MR approvals settings::
     p_mras = project.approvals.get()
 
     mr_mras = mr.approvals.get()
+
+Get MR-level approval state::
+
+    mr_approval_state = mr.approval_state.get()
 
 Change project-level or MR-level MR approvals settings::
 
