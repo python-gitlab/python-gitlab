@@ -3,9 +3,10 @@ from gitlab import exceptions as exc
 from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
+    CreateMixin,
     CRUDMixin,
+    DeleteMixin,
     ListMixin,
-    NoUpdateMixin,
     ObjectDeleteMixin,
     SaveMixin,
 )
@@ -114,11 +115,11 @@ class RunnerManager(CRUDMixin, RESTManager):
         self.gitlab.http_post(path, post_data=post_data, **kwargs)
 
 
-class GroupRunner(ObjectDeleteMixin, RESTObject):
+class GroupRunner(RESTObject):
     pass
 
 
-class GroupRunnerManager(NoUpdateMixin, RESTManager):
+class GroupRunnerManager(ListMixin, RESTManager):
     _path = "/groups/%(group_id)s/runners"
     _obj_cls = GroupRunner
     _from_parent_attrs = {"group_id": "id"}
@@ -131,7 +132,7 @@ class ProjectRunner(ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectRunnerManager(NoUpdateMixin, RESTManager):
+class ProjectRunnerManager(CreateMixin, DeleteMixin, ListMixin, RESTManager):
     _path = "/projects/%(project_id)s/runners"
     _obj_cls = ProjectRunner
     _from_parent_attrs = {"project_id": "id"}

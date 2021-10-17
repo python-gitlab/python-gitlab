@@ -143,7 +143,7 @@ def resp_runner_register():
 @pytest.fixture
 def resp_runner_enable():
     with responses.RequestsMock() as rsps:
-        pattern = re.compile(r".*?(projects|groups)/1/runners")
+        pattern = re.compile(r".*?projects/1/runners")
         rsps.add(
             method=responses.POST,
             url=pattern,
@@ -176,7 +176,7 @@ def resp_runner_delete():
 @pytest.fixture
 def resp_runner_disable():
     with responses.RequestsMock() as rsps:
-        pattern = re.compile(r".*?/(groups|projects)/1/runners/6")
+        pattern = re.compile(r".*?/projects/1/runners/6")
         rsps.add(
             method=responses.DELETE,
             url=pattern,
@@ -252,19 +252,8 @@ def test_disable_project_runner(gl: gitlab.Gitlab, resp_runner_disable):
     gl.projects.get(1, lazy=True).runners.delete(6)
 
 
-def test_disable_group_runner(gl: gitlab.Gitlab, resp_runner_disable):
-    gl.groups.get(1, lazy=True).runners.delete(6)
-
-
 def test_enable_project_runner(gl: gitlab.Gitlab, resp_runner_enable):
     runner = gl.projects.get(1, lazy=True).runners.create({"runner_id": 6})
-    assert runner.active is True
-    assert runner.id == 6
-    assert runner.name == "test-name"
-
-
-def test_enable_group_runner(gl: gitlab.Gitlab, resp_runner_enable):
-    runner = gl.groups.get(1, lazy=True).runners.create({"runner_id": 6})
     assert runner.active is True
     assert runner.id == 6
     assert runner.name == "test-name"
