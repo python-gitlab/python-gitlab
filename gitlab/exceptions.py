@@ -111,6 +111,10 @@ class GitlabProjectDeployKeyError(GitlabOperationError):
     pass
 
 
+class GitlabPromoteError(GitlabOperationError):
+    pass
+
+
 class GitlabCancelError(GitlabOperationError):
     pass
 

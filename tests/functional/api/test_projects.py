@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 
 import gitlab
@@ -157,6 +159,28 @@ def test_project_labels(project):
 
     label.delete()
     assert len(project.labels.list()) == 0
+
+
+def test_project_label_promotion(gl, group):
+    """
+    Label promotion requires the project to be a child of a group (not in a user namespace)
+
+    """
+    _id = uuid.uuid4().hex
+    data = {
+        "name": f"test-project-{_id}",
+        "namespace_id": group.id,
+    }
+    project = gl.projects.create(data)
+
+    label_name = "promoteme"
+    promoted_label = project.labels.create({"name": label_name, "color": "#112233"})
+    promoted_label.promote()
+
+    assert any(label.name == label_name for label in group.labels.list())
+
+    group.labels.delete(label_name)
+    assert not any(label.name == label_name for label in group.labels.list())
 
 
 def test_project_milestones(project):

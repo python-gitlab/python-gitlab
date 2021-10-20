@@ -5,6 +5,7 @@ from gitlab.mixins import (
     DeleteMixin,
     ListMixin,
     ObjectDeleteMixin,
+    PromoteMixin,
     RetrieveMixin,
     SaveMixin,
     SubscribableMixin,
@@ -83,7 +84,9 @@ class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         self.gitlab.http_delete(self.path, query_data={"name": name}, **kwargs)
 
 
-class ProjectLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectLabel(
+    PromoteMixin, SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject
+):
     _id_attr = "name"
 
     # Update without ID, but we need an ID to get from list.

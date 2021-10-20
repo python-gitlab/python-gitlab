@@ -926,3 +926,50 @@ class BadgeRenderMixin(_RestManagerBase):
         if TYPE_CHECKING:
             assert not isinstance(result, requests.Response)
         return result
+
+
+class PromoteMixin(_RestObjectBase):
+    _id_attr: Optional[str]
+    _attrs: Dict[str, Any]
+    _module: ModuleType
+    _parent_attrs: Dict[str, Any]
+    _updated_attrs: Dict[str, Any]
+    _update_uses_post: bool = False
+    manager: base.RESTManager
+
+    def _get_update_method(
+        self,
+    ) -> Callable[..., Union[Dict[str, Any], requests.Response]]:
+        """Return the HTTP method to use.
+
+        Returns:
+            object: http_put (default) or http_post
+        """
+        if self._update_uses_post:
+            http_method = self.manager.gitlab.http_post
+        else:
+            http_method = self.manager.gitlab.http_put
+        return http_method
+
+    @exc.on_http_error(exc.GitlabPromoteError)
+    def promote(self, **kwargs: Any) -> Dict[str, Any]:
+        """Promote the item.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabPromoteError: If the item could not be promoted
+            GitlabParsingError: If the json data could not be parsed
+
+        Returns:
+            dict: The updated object data (*not* a RESTObject)
+        """
+
+        path = "%s/%s/promote" % (self.manager.path, self.id)
+        http_method = self._get_update_method()
+        result = http_method(path, **kwargs)
+        if TYPE_CHECKING:
+            assert not isinstance(result, requests.Response)
+        return result
