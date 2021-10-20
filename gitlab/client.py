@@ -675,19 +675,33 @@ class Gitlab:
         json, data, content_type = self._prepare_send_data(files, post_data, raw)
         opts["headers"]["Content-type"] = content_type
 
+        retry_transient_errors = kwargs.get(
+            "retry_transient_errors", self.retry_transient_errors
+        )
         cur_retries = 0
         while True:
-            result = self.session.request(
-                method=verb,
-                url=url,
-                json=json,
-                data=data,
-                params=params,
-                timeout=timeout,
-                verify=verify,
-                stream=streamed,
-                **opts,
-            )
+            try:
+                result = self.session.request(
+                    method=verb,
+                    url=url,
+                    json=json,
+                    data=data,
+                    params=params,
+                    timeout=timeout,
+                    verify=verify,
+                    stream=streamed,
+                    **opts,
+                )
+            except requests.ConnectionError:
+                if retry_transient_errors and (
+                        max_retries == -1 or cur_retries < max_retries
+                ):
+                    wait_time = 2 ** cur_retries * 0.1
+                    cur_retries += 1
+                    time.sleep(wait_time)
+                    continue
+
+                raise
 
             self._check_redirects(result)
 
