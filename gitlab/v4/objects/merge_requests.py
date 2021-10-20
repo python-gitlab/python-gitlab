@@ -26,6 +26,7 @@ from .issues import ProjectIssue, ProjectIssueManager
 from .merge_request_approvals import (  # noqa: F401
     ProjectMergeRequestApprovalManager,
     ProjectMergeRequestApprovalRuleManager,
+    ProjectMergeRequestApprovalStateManager,
 )
 from .notes import ProjectMergeRequestNoteManager  # noqa: F401
 from .pipelines import ProjectMergeRequestPipelineManager  # noqa: F401
@@ -140,6 +141,7 @@ class ProjectMergeRequest(
     _id_attr = "iid"
 
     approval_rules: ProjectMergeRequestApprovalRuleManager
+    approval_state: ProjectMergeRequestApprovalStateManager
     approvals: ProjectMergeRequestApprovalManager
     awardemojis: ProjectMergeRequestAwardEmojiManager
     diffs: "ProjectMergeRequestDiffManager"
