@@ -609,18 +609,29 @@ class Gitlab(object):
             prepped.url, {}, streamed, verify, None
         )
 
+        retry_transient_errors = kwargs.get(
+            "retry_transient_errors", self.retry_transient_errors
+        )
         cur_retries = 0
         while True:
-            result = self.session.send(prepped, timeout=timeout, **settings)
+            try:
+                result = self.session.send(prepped, timeout=timeout, **settings)
+            except requests.ConnectionError:
+                if retry_transient_errors and (
+                    max_retries == -1 or cur_retries < max_retries
+                ):
+                    wait_time = 2 ** cur_retries * 0.1
+                    cur_retries += 1
+                    time.sleep(wait_time)
+                    continue
+
+                raise
 
             self._check_redirects(result)
 
             if 200 <= result.status_code < 300:
                 return result
 
-            retry_transient_errors = kwargs.get(
-                "retry_transient_errors", self.retry_transient_errors
-            )
             if (429 == result.status_code and obey_rate_limit) or (
                 result.status_code in [500, 502, 503, 504] and retry_transient_errors
             ):
