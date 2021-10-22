@@ -25,5 +25,5 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies:
-          - types-PyYAML==5.4.12
+          - types-PyYAML==6.0.0
           - types-requests==2.25.11
