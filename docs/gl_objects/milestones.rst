@@ -66,6 +66,10 @@ Change the state of a milestone (activate / close)::
     milestone.state_event = 'activate'
     milestone.save()
 
+Promote a project milestone::
+
+    milestone.promote()
+
 List the issues related to a milestone::
 
     issues = milestone.issues()
