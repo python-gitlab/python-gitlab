@@ -9,6 +9,7 @@ from setuptools import sandbox
 from gitlab import __title__, __version__
 
 DIST_DIR = Path("dist")
+DOCS_DIR = "docs"
 TEST_DIR = "tests"
 SDIST_FILE = f"{__title__}-{__version__}.tar.gz"
 WHEEL_FILE = (
@@ -18,8 +19,8 @@ WHEEL_FILE = (
 
 @pytest.fixture(scope="function")
 def build():
-    sandbox.run_setup("setup.py", ["clean", "--all"])
-    return sandbox.run_setup("setup.py", ["sdist", "bdist_wheel"])
+    sandbox.run_setup("setup.py", ["--quiet", "clean", "--all"])
+    return sandbox.run_setup("setup.py", ["--quiet", "sdist", "bdist_wheel"])
 
 
 def test_sdist_includes_tests(build):
@@ -28,6 +29,6 @@ def test_sdist_includes_tests(build):
     assert test_dir.isdir()
 
 
-def test_wheel_excludes_tests(build):
+def test_wheel_excludes_docs_and_tests(build):
     wheel = zipfile.ZipFile(DIST_DIR / WHEEL_FILE)
-    assert [not file.startswith(TEST_DIR) for file in wheel.namelist()]
+    assert not any([file.startswith((DOCS_DIR, TEST_DIR)) for file in wheel.namelist()])
