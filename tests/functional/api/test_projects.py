@@ -199,6 +199,27 @@ def test_project_milestones(project):
     assert len(milestone.merge_requests()) == 0
 
 
+def test_project_milestone_promotion(gl, group):
+    """
+    Milestone promotion requires the project to be a child of a group (not in a user namespace)
+
+    """
+    _id = uuid.uuid4().hex
+    data = {
+        "name": f"test-project-{_id}",
+        "namespace_id": group.id,
+    }
+    project = gl.projects.create(data)
+
+    milestone_title = "promoteme"
+    promoted_milestone = project.milestones.create({"title": milestone_title})
+    promoted_milestone.promote()
+
+    assert any(
+        milestone.title == milestone_title for milestone in group.milestones.list()
+    )
+
+
 def test_project_pages_domains(gl, project):
     domain = project.pagesdomains.create({"domain": "foo.domain.com"})
     assert len(project.pagesdomains.list()) == 1
