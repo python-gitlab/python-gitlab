@@ -154,7 +154,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             bool: Whether the user status has been changed
         """
-        path = "/users/%s/block" % self.id
+        path = f"/users/{self.id}/block"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if server_data is True:
             self._attrs["state"] = "blocked"
@@ -175,7 +175,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             dict: The new object data (*not* a RESTObject)
         """
-        path = "/users/%s/follow" % self.id
+        path = f"/users/{self.id}/follow"
         return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("User")
@@ -193,7 +193,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             dict: The new object data (*not* a RESTObject)
         """
-        path = "/users/%s/unfollow" % self.id
+        path = f"/users/{self.id}/unfollow"
         return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("User")
@@ -211,7 +211,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             bool: Whether the user status has been changed
         """
-        path = "/users/%s/unblock" % self.id
+        path = f"/users/{self.id}/unblock"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if server_data is True:
             self._attrs["state"] = "active"
@@ -232,7 +232,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             bool: Whether the user status has been changed
         """
-        path = "/users/%s/deactivate" % self.id
+        path = f"/users/{self.id}/deactivate"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if server_data:
             self._attrs["state"] = "deactivated"
@@ -253,7 +253,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             bool: Whether the user status has been changed
         """
-        path = "/users/%s/activate" % self.id
+        path = f"/users/{self.id}/activate"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if server_data:
             self._attrs["state"] = "active"
@@ -504,9 +504,9 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
             GitlabListError: If the server cannot perform the request
         """
         if self._parent:
-            path = "/users/%s/projects" % self._parent.id
+            path = f"/users/{self._parent.id}/projects"
         else:
-            path = "/users/%s/projects" % kwargs["user_id"]
+            path = f"/users/{kwargs['user_id']}/projects"
         return ListMixin.list(self, path=path, **kwargs)
 
 

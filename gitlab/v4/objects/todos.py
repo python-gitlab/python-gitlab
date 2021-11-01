@@ -22,7 +22,7 @@ class Todo(ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTodoError: If the server failed to perform the request
         """
-        path = "%s/%s/mark_as_done" % (self.manager.path, self.id)
+        path = f"{self.manager.path}/{self.id}/mark_as_done"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         self._update_attrs(server_data)
 

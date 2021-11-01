@@ -10,7 +10,7 @@ def key_fingerprint(key):
     key_part = key.split()[1]
     decoded = base64.b64decode(key_part.encode("ascii"))
     digest = hashlib.sha256(decoded).digest()
-    return "SHA256:" + base64.b64encode(digest).rstrip(b"=").decode("utf-8")
+    return f"SHA256:{base64.b64encode(digest).rstrip(b'=').decode('utf-8')}"
 
 
 def test_keys_ssh(gl, user, SSH_KEY):

@@ -116,9 +116,7 @@ def test_revert_commit(project):
     commit = project.commits.list()[0]
     revert_commit = commit.revert(branch="main")
 
-    expected_message = 'Revert "{}"\n\nThis reverts commit {}'.format(
-        commit.message, commit.id
-    )
+    expected_message = f'Revert "{commit.message}"\n\nThis reverts commit {commit.id}'
     assert revert_commit["message"] == expected_message
 
     with pytest.raises(gitlab.GitlabRevertError):

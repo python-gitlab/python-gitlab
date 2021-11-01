@@ -61,4 +61,4 @@ class FileAttribute(GitlabAttribute):
 
 class ImageAttribute(FileAttribute):
     def get_file_name(self, attr_name: Optional[str] = None) -> str:
-        return "%s.png" % attr_name if attr_name else "image.png"
+        return f"{attr_name}.png" if attr_name else "image.png"

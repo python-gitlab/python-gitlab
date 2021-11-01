@@ -95,7 +95,7 @@ class GroupEpicIssueManager(
                         the data sent by the server
         """
         CreateMixin._check_missing_create_attrs(self, data)
-        path = "%s/%s" % (self.path, data.pop("issue_id"))
+        path = f"{self.path}/{data.pop('issue_id')}"
         server_data = self.gitlab.http_post(path, **kwargs)
         # The epic_issue_id attribute doesn't exist when creating the resource,
         # but is used everywhere elese. Let's create it to be consistent client

@@ -166,13 +166,13 @@ def test_rate_limits(gl):
 
     projects = list()
     for i in range(0, 20):
-        projects.append(gl.projects.create({"name": str(i) + "ok"}))
+        projects.append(gl.projects.create({"name": f"{str(i)}ok"}))
 
     with pytest.raises(gitlab.GitlabCreateError) as e:
         for i in range(20, 40):
             projects.append(
                 gl.projects.create(
-                    {"name": str(i) + "shouldfail"}, obey_rate_limit=False
+                    {"name": f"{str(i)}shouldfail"}, obey_rate_limit=False
                 )
             )
 

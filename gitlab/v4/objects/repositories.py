@@ -27,7 +27,7 @@ class RepositoryMixin:
         """
 
         submodule = submodule.replace("/", "%2F")  # .replace('.', '%2E')
-        path = "/projects/%s/repository/submodules/%s" % (self.get_id(), submodule)
+        path = f"/projects/{self.get_id()}/repository/submodules/{submodule}"
         data = {"branch": branch, "commit_sha": commit_sha}
         if "commit_message" in kwargs:
             data["commit_message"] = kwargs["commit_message"]
@@ -56,7 +56,7 @@ class RepositoryMixin:
         Returns:
             list: The representation of the tree
         """
-        gl_path = "/projects/%s/repository/tree" % self.get_id()
+        gl_path = f"/projects/{self.get_id()}/repository/tree"
         query_data = {"recursive": recursive}
         if path:
             query_data["path"] = path
@@ -81,7 +81,7 @@ class RepositoryMixin:
             dict: The blob content and metadata
         """
 
-        path = "/projects/%s/repository/blobs/%s" % (self.get_id(), sha)
+        path = f"/projects/{self.get_id()}/repository/blobs/{sha}"
         return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action("Project", ("sha",))
@@ -108,7 +108,7 @@ class RepositoryMixin:
         Returns:
             str: The blob content if streamed is False, None otherwise
         """
-        path = "/projects/%s/repository/blobs/%s/raw" % (self.get_id(), sha)
+        path = f"/projects/{self.get_id()}/repository/blobs/{sha}/raw"
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
@@ -131,7 +131,7 @@ class RepositoryMixin:
         Returns:
             str: The diff
         """
-        path = "/projects/%s/repository/compare" % self.get_id()
+        path = f"/projects/{self.get_id()}/repository/compare"
         query_data = {"from": from_, "to": to}
         return self.manager.gitlab.http_get(path, query_data=query_data, **kwargs)
 
@@ -155,7 +155,7 @@ class RepositoryMixin:
         Returns:
             list: The contributors
         """
-        path = "/projects/%s/repository/contributors" % self.get_id()
+        path = f"/projects/{self.get_id()}/repository/contributors"
         return self.manager.gitlab.http_list(path, **kwargs)
 
     @cli.register_custom_action("Project", tuple(), ("sha",))
@@ -182,7 +182,7 @@ class RepositoryMixin:
         Returns:
             bytes: The binary data of the archive
         """
-        path = "/projects/%s/repository/archive" % self.get_id()
+        path = f"/projects/{self.get_id()}/repository/archive"
         query_data = {}
         if sha:
             query_data["sha"] = sha
@@ -203,5 +203,5 @@ class RepositoryMixin:
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server failed to perform the request
         """
-        path = "/projects/%s/repository/merged_branches" % self.get_id()
+        path = f"/projects/{self.get_id()}/repository/merged_branches"
         self.manager.gitlab.http_delete(path, **kwargs)

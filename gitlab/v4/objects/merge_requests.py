@@ -166,9 +166,8 @@ class ProjectMergeRequest(
                 request
         """
 
-        path = "%s/%s/cancel_merge_when_pipeline_succeeds" % (
-            self.manager.path,
-            self.get_id(),
+        path = (
+            f"{self.manager.path}/{self.get_id()}/cancel_merge_when_pipeline_succeeds"
         )
         server_data = self.manager.gitlab.http_put(path, **kwargs)
         self._update_attrs(server_data)
@@ -193,7 +192,7 @@ class ProjectMergeRequest(
         Returns:
             RESTObjectList: List of issues
         """
-        path = "%s/%s/closes_issues" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/closes_issues"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
         return RESTObjectList(manager, ProjectIssue, data_list)
@@ -219,7 +218,7 @@ class ProjectMergeRequest(
             RESTObjectList: The list of commits
         """
 
-        path = "%s/%s/commits" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/commits"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = ProjectCommitManager(self.manager.gitlab, parent=self.manager._parent)
         return RESTObjectList(manager, ProjectCommit, data_list)
@@ -239,7 +238,7 @@ class ProjectMergeRequest(
         Returns:
             RESTObjectList: List of changes
         """
-        path = "%s/%s/changes" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/changes"
         return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action("ProjectMergeRequest", tuple(), ("sha",))
@@ -255,7 +254,7 @@ class ProjectMergeRequest(
             GitlabAuthenticationError: If authentication is not correct
             GitlabMRApprovalError: If the approval failed
         """
-        path = "%s/%s/approve" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/approve"
         data = {}
         if sha:
             data["sha"] = sha
@@ -275,7 +274,7 @@ class ProjectMergeRequest(
             GitlabAuthenticationError: If authentication is not correct
             GitlabMRApprovalError: If the unapproval failed
         """
-        path = "%s/%s/unapprove" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/unapprove"
         data = {}
 
         server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
@@ -293,7 +292,7 @@ class ProjectMergeRequest(
             GitlabAuthenticationError: If authentication is not correct
             GitlabMRRebaseError: If rebasing failed
         """
-        path = "%s/%s/rebase" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/rebase"
         data = {}
         return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
 
@@ -309,7 +308,7 @@ class ProjectMergeRequest(
         Raises:
             GitlabGetError: If cannot be merged
         """
-        path = "%s/%s/merge_ref" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/merge_ref"
         return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action(
@@ -327,7 +326,7 @@ class ProjectMergeRequest(
         merge_commit_message=None,
         should_remove_source_branch=False,
         merge_when_pipeline_succeeds=False,
-        **kwargs
+        **kwargs,
     ):
         """Accept the merge request.
 
@@ -343,7 +342,7 @@ class ProjectMergeRequest(
             GitlabAuthenticationError: If authentication is not correct
             GitlabMRClosedError: If the merge failed
         """
-        path = "%s/%s/merge" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/merge"
         data = {}
         if merge_commit_message:
             data["merge_commit_message"] = merge_commit_message

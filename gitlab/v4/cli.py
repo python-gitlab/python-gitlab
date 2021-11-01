@@ -46,7 +46,7 @@ class GitlabCLI(object):
             Type[gitlab.mixins.GetWithoutIdMixin],
             Type[gitlab.mixins.ListMixin],
             Type[gitlab.mixins.UpdateMixin],
-        ] = getattr(gitlab.v4.objects, self.cls.__name__ + "Manager")
+        ] = getattr(gitlab.v4.objects, f"{self.cls.__name__}Manager")
         # We could do something smart, like splitting the manager name to find
         # parents, build the chain of managers to get to the final object.
         # Instead we do something ugly and efficient: interpolate variables in
@@ -65,12 +65,12 @@ class GitlabCLI(object):
 
     def __call__(self) -> Any:
         # Check for a method that matches object + action
-        method = "do_%s_%s" % (self.what, self.action)
+        method = f"do_{self.what}_{self.action}"
         if hasattr(self, method):
             return getattr(self, method)()
 
         # Fallback to standard actions (get, list, create, ...)
-        method = "do_%s" % self.action
+        method = f"do_{self.action}"
         if hasattr(self, method):
             return getattr(self, method)()
 
@@ -177,7 +177,7 @@ class GitlabCLI(object):
 def _populate_sub_parser_by_class(
     cls: Type[gitlab.base.RESTObject], sub_parser: argparse._SubParsersAction
 ) -> None:
-    mgr_cls_name = cls.__name__ + "Manager"
+    mgr_cls_name = f"{cls.__name__}Manager"
     mgr_cls = getattr(gitlab.v4.objects, mgr_cls_name)
 
     for action_name in ["list", "get", "create", "update", "delete"]:
@@ -189,13 +189,13 @@ def _populate_sub_parser_by_class(
         if mgr_cls._from_parent_attrs:
             for x in mgr_cls._from_parent_attrs:
                 sub_parser_action.add_argument(
-                    "--%s" % x.replace("_", "-"), required=True
+                    f"--{x.replace('_', '-')}", required=True
                 )
 
         if action_name == "list":
             for x in mgr_cls._list_filters:
                 sub_parser_action.add_argument(
-                    "--%s" % x.replace("_", "-"), required=False
+                    f"--{x.replace('_', '-')}", required=False
                 )
 
             sub_parser_action.add_argument("--page", required=False)
@@ -205,44 +205,44 @@ def _populate_sub_parser_by_class(
         if action_name == "delete":
             if cls._id_attr is not None:
                 id_attr = cls._id_attr.replace("_", "-")
-                sub_parser_action.add_argument("--%s" % id_attr, required=True)
+                sub_parser_action.add_argument(f"--{id_attr}", required=True)
 
         if action_name == "get":
             if not issubclass(cls, gitlab.mixins.GetWithoutIdMixin):
                 if cls._id_attr is not None:
                     id_attr = cls._id_attr.replace("_", "-")
-                    sub_parser_action.add_argument("--%s" % id_attr, required=True)
+                    sub_parser_action.add_argument(f"--{id_attr}", required=True)
 
             for x in mgr_cls._optional_get_attrs:
                 sub_parser_action.add_argument(
-                    "--%s" % x.replace("_", "-"), required=False
+                    f"--{x.replace('_', '-')}", required=False
                 )
 
         if action_name == "create":
             for x in mgr_cls._create_attrs.required:
                 sub_parser_action.add_argument(
-                    "--%s" % x.replace("_", "-"), required=True
+                    f"--{x.replace('_', '-')}", required=True
                 )
             for x in mgr_cls._create_attrs.optional:
                 sub_parser_action.add_argument(
-                    "--%s" % x.replace("_", "-"), required=False
+                    f"--{x.replace('_', '-')}", required=False
                 )
 
         if action_name == "update":
             if cls._id_attr is not None:
                 id_attr = cls._id_attr.replace("_", "-")
-                sub_parser_action.add_argument("--%s" % id_attr, required=True)
+                sub_parser_action.add_argument(f"--{id_attr}", required=True)
 
             for x in mgr_cls._update_attrs.required:
                 if x != cls._id_attr:
                     sub_parser_action.add_argument(
-                        "--%s" % x.replace("_", "-"), required=True
+                        f"--{x.replace('_', '-')}", required=True
                     )
 
             for x in mgr_cls._update_attrs.optional:
                 if x != cls._id_attr:
                     sub_parser_action.add_argument(
-                        "--%s" % x.replace("_", "-"), required=False
+                        f"--{x.replace('_', '-')}", required=False
                     )
 
     if cls.__name__ in cli.custom_actions:
@@ -253,7 +253,7 @@ def _populate_sub_parser_by_class(
             if mgr_cls._from_parent_attrs:
                 for x in mgr_cls._from_parent_attrs:
                     sub_parser_action.add_argument(
-                        "--%s" % x.replace("_", "-"), required=True
+                        f"--{x.replace('_', '-')}", required=True
                     )
                 sub_parser_action.add_argument("--sudo", required=False)
 
@@ -261,19 +261,19 @@ def _populate_sub_parser_by_class(
             if not issubclass(cls, gitlab.mixins.GetWithoutIdMixin):
                 if cls._id_attr is not None:
                     id_attr = cls._id_attr.replace("_", "-")
-                    sub_parser_action.add_argument("--%s" % id_attr, required=True)
+                    sub_parser_action.add_argument(f"--{id_attr}", required=True)
 
             required, optional, dummy = cli.custom_actions[name][action_name]
             [
                 sub_parser_action.add_argument(
-                    "--%s" % x.replace("_", "-"), required=True
+                    f"--{x.replace('_', '-')}", required=True
                 )
                 for x in required
                 if x != cls._id_attr
             ]
             [
                 sub_parser_action.add_argument(
-                    "--%s" % x.replace("_", "-"), required=False
+                    f"--{x.replace('_', '-')}", required=False
                 )
                 for x in optional
                 if x != cls._id_attr
@@ -286,21 +286,21 @@ def _populate_sub_parser_by_class(
             if mgr_cls._from_parent_attrs:
                 for x in mgr_cls._from_parent_attrs:
                     sub_parser_action.add_argument(
-                        "--%s" % x.replace("_", "-"), required=True
+                        f"--{x.replace('_', '-')}", required=True
                     )
                 sub_parser_action.add_argument("--sudo", required=False)
 
             required, optional, dummy = cli.custom_actions[name][action_name]
             [
                 sub_parser_action.add_argument(
-                    "--%s" % x.replace("_", "-"), required=True
+                    f"--{x.replace('_', '-')}", required=True
                 )
                 for x in required
                 if x != cls._id_attr
             ]
             [
                 sub_parser_action.add_argument(
-                    "--%s" % x.replace("_", "-"), required=False
+                    f"--{x.replace('_', '-')}", required=False
                 )
                 for x in optional
                 if x != cls._id_attr
@@ -357,7 +357,7 @@ class JSONPrinter(object):
         self,
         data: List[Union[str, gitlab.base.RESTObject]],
         fields: List[str],
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         import json  # noqa
 
@@ -381,7 +381,7 @@ class YAMLPrinter(object):
         self,
         data: List[Union[str, gitlab.base.RESTObject]],
         fields: List[str],
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         try:
             import yaml  # noqa
@@ -411,11 +411,11 @@ class LegacyPrinter(object):
             for k in sorted(d.keys()):
                 v = d[k]
                 if isinstance(v, dict):
-                    print("%s%s:" % (" " * padding, k.replace("_", "-")))
+                    print(f"{' ' * padding}{k.replace('_', '-')}:")
                     new_padding = padding + 2
                     self.display(v, verbose=True, padding=new_padding, obj=v)
                     continue
-                print("%s%s: %s" % (" " * padding, k.replace("_", "-"), v))
+                print(f"{' ' * padding}{k.replace('_', '-')}: {v}")
 
         if verbose:
             if isinstance(obj, dict):
@@ -425,7 +425,7 @@ class LegacyPrinter(object):
             # not a dict, we assume it's a RESTObject
             if obj._id_attr:
                 id = getattr(obj, obj._id_attr, None)
-                print("%s: %s" % (obj._id_attr, id))
+                print(f"{obj._id_attr}: {id}")
             attrs = obj.attributes
             if obj._id_attr:
                 attrs.pop(obj._id_attr)
@@ -436,23 +436,23 @@ class LegacyPrinter(object):
                 assert isinstance(obj, gitlab.base.RESTObject)
             if obj._id_attr:
                 id = getattr(obj, obj._id_attr)
-                print("%s: %s" % (obj._id_attr.replace("_", "-"), id))
+                print(f"{obj._id_attr.replace('_', '-')}: {id}")
             if obj._short_print_attr:
                 value = getattr(obj, obj._short_print_attr) or "None"
                 value = value.replace("\r", "").replace("\n", " ")
                 # If the attribute is a note (ProjectCommitComment) then we do
                 # some modifications to fit everything on one line
-                line = "%s: %s" % (obj._short_print_attr, value)
+                line = f"{obj._short_print_attr}: {value}"
                 # ellipsize long lines (comments)
                 if len(line) > 79:
-                    line = line[:76] + "..."
+                    line = f"{line[:76]}..."
                 print(line)
 
     def display_list(
         self,
         data: List[Union[str, gitlab.base.RESTObject]],
         fields: List[str],
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         verbose = kwargs.get("verbose", False)
         for obj in data:

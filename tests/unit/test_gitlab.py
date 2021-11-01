@@ -33,9 +33,7 @@ token = "abc123"
 @urlmatch(scheme="http", netloc="localhost", path="/api/v4/user", method="get")
 def resp_get_user(url, request):
     headers = {"content-type": "application/json"}
-    content = '{{"id": {0:d}, "username": "{1:s}"}}'.format(user_id, username).encode(
-        "utf-8"
-    )
+    content = f'{{"id": {user_id:d}, "username": "{username:s}"}}'.encode("utf-8")
     return response(200, content, headers, None, 5, request)
 
 

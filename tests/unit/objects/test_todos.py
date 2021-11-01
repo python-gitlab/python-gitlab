@@ -10,7 +10,7 @@ import responses
 
 from gitlab.v4.objects import Todo
 
-with open(os.path.dirname(__file__) + "/../data/todo.json", "r") as json_file:
+with open(f"{os.path.dirname(__file__)}/../data/todo.json", "r") as json_file:
     todo_content = json_file.read()
     json_content = json.loads(todo_content)
 

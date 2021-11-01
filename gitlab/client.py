@@ -80,7 +80,7 @@ class Gitlab(object):
         self._server_version: Optional[str] = None
         self._server_revision: Optional[str] = None
         self._base_url = self._get_base_url(url)
-        self._url = "%s/api/v%s" % (self._base_url, api_version)
+        self._url = f"{self._base_url}/api/v{api_version}"
         #: Timeout to use for requests to gitlab server
         self.timeout = timeout
         self.retry_transient_errors = retry_transient_errors
@@ -106,7 +106,7 @@ class Gitlab(object):
 
         # We only support v4 API at this time
         if self._api_version not in ("4",):
-            raise ModuleNotFoundError(name="gitlab.v%s.objects" % self._api_version)
+            raise ModuleNotFoundError(name=f"gitlab.v{self._api_version}.objects")
         # NOTE: We must delay import of gitlab.v4.objects until now or
         # otherwise it will cause circular import errors
         import gitlab.v4.objects
@@ -196,7 +196,7 @@ class Gitlab(object):
         self.__dict__.update(state)
         # We only support v4 API at this time
         if self._api_version not in ("4",):
-            raise ModuleNotFoundError(name="gitlab.v%s.objects" % self._api_version)
+            raise ModuleNotFoundError(name=f"gitlab.v{self._api_version}.objects")
         # NOTE: We must delay import of gitlab.v4.objects until now or
         # otherwise it will cause circular import errors
         import gitlab.v4.objects
@@ -409,7 +409,7 @@ class Gitlab(object):
             self.headers.pop("JOB-TOKEN", None)
 
         if self.oauth_token:
-            self.headers["Authorization"] = "Bearer %s" % self.oauth_token
+            self.headers["Authorization"] = f"Bearer {self.oauth_token}"
             self.headers.pop("PRIVATE-TOKEN", None)
             self.headers.pop("JOB-TOKEN", None)
 
@@ -465,7 +465,7 @@ class Gitlab(object):
         if path.startswith("http://") or path.startswith("https://"):
             return path
         else:
-            return "%s%s" % (self._url, path)
+            return f"{self._url}{path}"
 
     def _check_redirects(self, result: requests.Response) -> None:
         # Check the requests history to detect 301/302 redirections.

@@ -37,7 +37,7 @@ class ProjectCommit(RESTObject):
         Returns:
             list: The changes done in this commit
         """
-        path = "%s/%s/diff" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/diff"
         return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action("ProjectCommit", ("branch",))
@@ -53,7 +53,7 @@ class ProjectCommit(RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabCherryPickError: If the cherry-pick could not be performed
         """
-        path = "%s/%s/cherry_pick" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/cherry_pick"
         post_data = {"branch": branch}
         self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
@@ -73,7 +73,7 @@ class ProjectCommit(RESTObject):
         Returns:
             list: The references the commit is pushed to.
         """
-        path = "%s/%s/refs" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/refs"
         data = {"type": type}
         return self.manager.gitlab.http_get(path, query_data=data, **kwargs)
 
@@ -92,7 +92,7 @@ class ProjectCommit(RESTObject):
         Returns:
             list: The merge requests related to the commit.
         """
-        path = "%s/%s/merge_requests" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/merge_requests"
         return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action("ProjectCommit", ("branch",))
@@ -111,7 +111,7 @@ class ProjectCommit(RESTObject):
         Returns:
             dict: The new commit data (*not* a RESTObject)
         """
-        path = "%s/%s/revert" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/revert"
         post_data = {"branch": branch}
         return self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
@@ -130,7 +130,7 @@ class ProjectCommit(RESTObject):
         Returns:
             dict: The commit's signature data
         """
-        path = "%s/%s/signature" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/signature"
         return self.manager.gitlab.http_get(path, **kwargs)
 
 

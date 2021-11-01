@@ -40,7 +40,7 @@ class LDAPGroupManager(RESTManager):
             data.setdefault("per_page", self.gitlab.per_page)
 
         if "provider" in data:
-            path = "/ldap/%s/groups" % data["provider"]
+            path = f"/ldap/{data['provider']}/groups"
         else:
             path = self._path
 

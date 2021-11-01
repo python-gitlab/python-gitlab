@@ -23,7 +23,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabJobCancelError: If the job could not be canceled
         """
-        path = "%s/%s/cancel" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/cancel"
         return self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
@@ -38,7 +38,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabJobRetryError: If the job could not be retried
         """
-        path = "%s/%s/retry" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/retry"
         return self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
@@ -53,7 +53,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabJobPlayError: If the job could not be triggered
         """
-        path = "%s/%s/play" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/play"
         self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
@@ -68,7 +68,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabJobEraseError: If the job could not be erased
         """
-        path = "%s/%s/erase" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/erase"
         self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
@@ -83,7 +83,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the request could not be performed
         """
-        path = "%s/%s/artifacts/keep" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/artifacts/keep"
         self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
@@ -98,7 +98,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the request could not be performed
         """
-        path = "%s/%s/artifacts" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/artifacts"
         self.manager.gitlab.http_delete(path)
 
     @cli.register_custom_action("ProjectJob")
@@ -122,7 +122,7 @@ class ProjectJob(RefreshMixin, RESTObject):
         Returns:
             str: The artifacts if `streamed` is False, None otherwise.
         """
-        path = "%s/%s/artifacts" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/artifacts"
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
@@ -150,7 +150,7 @@ class ProjectJob(RefreshMixin, RESTObject):
         Returns:
             str: The artifacts if `streamed` is False, None otherwise.
         """
-        path = "%s/%s/artifacts/%s" % (self.manager.path, self.get_id(), path)
+        path = f"{self.manager.path}/{self.get_id()}/artifacts/{path}"
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
@@ -177,7 +177,7 @@ class ProjectJob(RefreshMixin, RESTObject):
         Returns:
             str: The trace
         """
-        path = "%s/%s/trace" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/trace"
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )

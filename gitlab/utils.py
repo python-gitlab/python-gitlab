@@ -51,7 +51,7 @@ def copy_dict(dest: Dict[str, Any], src: Dict[str, Any]) -> None:
             # custom_attributes: {'foo', 'bar'} =>
             #   "custom_attributes['foo']": "bar"
             for dict_k, dict_v in v.items():
-                dest["%s[%s]" % (k, dict_k)] = dict_v
+                dest[f"{k}[{dict_k}]"] = dict_v
         else:
             dest[k] = v
 

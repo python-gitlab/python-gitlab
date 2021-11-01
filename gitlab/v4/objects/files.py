@@ -123,7 +123,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         self._check_missing_create_attrs(data)
         new_data = data.copy()
         file_path = new_data.pop("file_path").replace("/", "%2F")
-        path = "%s/%s" % (self.path, file_path)
+        path = f"{self.path}/{file_path}"
         server_data = self.gitlab.http_post(path, post_data=new_data, **kwargs)
         return self._obj_cls(self, server_data)
 
@@ -147,7 +147,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         data = new_data.copy()
         file_path = file_path.replace("/", "%2F")
         data["file_path"] = file_path
-        path = "%s/%s" % (self.path, file_path)
+        path = f"{self.path}/{file_path}"
         self._check_missing_update_attrs(data)
         return self.gitlab.http_put(path, post_data=data, **kwargs)
 
@@ -168,7 +168,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
-        path = "%s/%s" % (self.path, file_path.replace("/", "%2F"))
+        path = f"{self.path}/{file_path.replace('/', '%2F')}"
         data = {"branch": branch, "commit_message": commit_message}
         self.gitlab.http_delete(path, query_data=data, **kwargs)
 
@@ -198,7 +198,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             str: The file content
         """
         file_path = file_path.replace("/", "%2F").replace(".", "%2E")
-        path = "%s/%s/raw" % (self.path, file_path)
+        path = f"{self.path}/{file_path}/raw"
         query_data = {"ref": ref}
         result = self.gitlab.http_get(
             path, query_data=query_data, streamed=streamed, raw=True, **kwargs
@@ -223,6 +223,6 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             list(blame): a list of commits/lines matching the file
         """
         file_path = file_path.replace("/", "%2F").replace(".", "%2E")
-        path = "%s/%s/blame" % (self.path, file_path)
+        path = f"{self.path}/{file_path}/blame"
         query_data = {"ref": ref}
         return self.gitlab.http_list(path, query_data, **kwargs)

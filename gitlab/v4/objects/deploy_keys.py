@@ -44,5 +44,5 @@ class ProjectKeyManager(CRUDMixin, RESTManager):
             GitlabAuthenticationError: If authentication is not correct
             GitlabProjectDeployKeyError: If the key could not be enabled
         """
-        path = "%s/%s/enable" % (self.path, key_id)
+        path = f"{self.path}/{key_id}/enable"
         self.gitlab.http_post(path, **kwargs)

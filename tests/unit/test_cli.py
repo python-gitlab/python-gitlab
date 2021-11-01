@@ -91,7 +91,7 @@ def test_parse_value():
     fd, temp_path = tempfile.mkstemp()
     os.write(fd, b"content")
     os.close(fd)
-    ret = cli._parse_value("@%s" % temp_path)
+    ret = cli._parse_value(f"@{temp_path}")
     assert ret == "content"
     os.unlink(temp_path)
 
