@@ -42,6 +42,7 @@ from .merge_request_approvals import (  # noqa: F401
     ProjectApprovalRuleManager,
 )
 from .merge_requests import ProjectMergeRequestManager  # noqa: F401
+from .merge_trains import ProjectMergeTrainManager  # noqa: F401
 from .milestones import ProjectMilestoneManager  # noqa: F401
 from .notes import ProjectNoteManager  # noqa: F401
 from .notification_settings import ProjectNotificationSettingsManager  # noqa: F401
@@ -141,6 +142,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     members: ProjectMemberManager
     members_all: ProjectMemberAllManager
     mergerequests: ProjectMergeRequestManager
+    merge_trains: ProjectMergeTrainManager
     milestones: ProjectMilestoneManager
     notes: ProjectNoteManager
     notificationsettings: ProjectNotificationSettingsManager

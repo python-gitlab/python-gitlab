@@ -29,6 +29,7 @@ API examples
    gl_objects/boards
    gl_objects/labels
    gl_objects/notifications
+   gl_objects/merge_trains
    gl_objects/mrs
    gl_objects/mr_approvals
    gl_objects/milestones

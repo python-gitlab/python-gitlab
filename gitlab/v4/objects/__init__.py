@@ -49,6 +49,7 @@ from .ldap import *
 from .members import *
 from .merge_request_approvals import *
 from .merge_requests import *
+from .merge_trains import *
 from .milestones import *
 from .namespaces import *
 from .notes import *
