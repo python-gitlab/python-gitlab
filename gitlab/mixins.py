@@ -101,7 +101,7 @@ class GetMixin(_RestManagerBase):
         """
         if not isinstance(id, int):
             id = utils.clean_str_id(id)
-        path = "%s/%s" % (self.path, id)
+        path = f"{self.path}/{id}"
         if TYPE_CHECKING:
             assert self._obj_cls is not None
         if lazy is True:
@@ -173,7 +173,7 @@ class RefreshMixin(_RestObjectBase):
             GitlabGetError: If the server cannot perform the request
         """
         if self._id_attr:
-            path = "%s/%s" % (self.manager.path, self.id)
+            path = f"{self.manager.path}/{self.id}"
         else:
             if TYPE_CHECKING:
                 assert self.manager.path is not None
@@ -273,7 +273,7 @@ class CreateMixin(_RestManagerBase):
                 missing.append(attr)
                 continue
         if missing:
-            raise AttributeError("Missing attributes: %s" % ", ".join(missing))
+            raise AttributeError(f"Missing attributes: {', '.join(missing)}")
 
     @exc.on_http_error(exc.GitlabCreateError)
     def create(
@@ -349,7 +349,7 @@ class UpdateMixin(_RestManagerBase):
                 missing.append(attr)
                 continue
         if missing:
-            raise AttributeError("Missing attributes: %s" % ", ".join(missing))
+            raise AttributeError(f"Missing attributes: {', '.join(missing)}")
 
     def _get_update_method(
         self,
@@ -370,7 +370,7 @@ class UpdateMixin(_RestManagerBase):
         self,
         id: Optional[Union[str, int]] = None,
         new_data: Optional[Dict[str, Any]] = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Dict[str, Any]:
         """Update an object on the server.
 
@@ -391,7 +391,7 @@ class UpdateMixin(_RestManagerBase):
         if id is None:
             path = self.path
         else:
-            path = "%s/%s" % (self.path, id)
+            path = f"{self.path}/{id}"
 
         self._check_missing_update_attrs(new_data)
         files = {}
@@ -444,7 +444,7 @@ class SetMixin(_RestManagerBase):
         Returns:
             obj: The created/updated attribute
         """
-        path = "%s/%s" % (self.path, utils.clean_str_id(key))
+        path = f"{self.path}/{utils.clean_str_id(key)}"
         data = {"value": value}
         server_data = self.gitlab.http_put(path, post_data=data, **kwargs)
         if TYPE_CHECKING:
@@ -479,7 +479,7 @@ class DeleteMixin(_RestManagerBase):
         else:
             if not isinstance(id, int):
                 id = utils.clean_str_id(id)
-            path = "%s/%s" % (self.path, id)
+            path = f"{self.path}/{id}"
         self.gitlab.http_delete(path, **kwargs)
 
 
@@ -598,7 +598,7 @@ class UserAgentDetailMixin(_RestObjectBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        path = "%s/%s/user_agent_detail" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/user_agent_detail"
         result = self.manager.gitlab.http_get(path, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(result, requests.Response)
@@ -631,7 +631,7 @@ class AccessRequestMixin(_RestObjectBase):
             GitlabUpdateError: If the server fails to perform the request
         """
 
-        path = "%s/%s/approve" % (self.manager.path, self.id)
+        path = f"{self.manager.path}/{self.id}/approve"
         data = {"access_level": access_level}
         server_data = self.manager.gitlab.http_put(path, post_data=data, **kwargs)
         if TYPE_CHECKING:
@@ -654,7 +654,7 @@ class DownloadMixin(_RestObjectBase):
         streamed: bool = False,
         action: Optional[Callable] = None,
         chunk_size: int = 1024,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Optional[bytes]:
         """Download the archive of a resource export.
 
@@ -674,7 +674,7 @@ class DownloadMixin(_RestObjectBase):
         Returns:
             str: The blob content if streamed is False, None otherwise
         """
-        path = "%s/download" % (self.manager.path)
+        path = f"{self.manager.path}/download"
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
@@ -705,7 +705,7 @@ class SubscribableMixin(_RestObjectBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabSubscribeError: If the subscription cannot be done
         """
-        path = "%s/%s/subscribe" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/subscribe"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(server_data, requests.Response)
@@ -725,7 +725,7 @@ class SubscribableMixin(_RestObjectBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabUnsubscribeError: If the unsubscription cannot be done
         """
-        path = "%s/%s/unsubscribe" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/unsubscribe"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(server_data, requests.Response)
@@ -752,7 +752,7 @@ class TodoMixin(_RestObjectBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTodoError: If the todo cannot be set
         """
-        path = "%s/%s/todo" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/todo"
         self.manager.gitlab.http_post(path, **kwargs)
 
 
@@ -781,7 +781,7 @@ class TimeTrackingMixin(_RestObjectBase):
         if "time_stats" in self.attributes:
             return self.attributes["time_stats"]
 
-        path = "%s/%s/time_stats" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/time_stats"
         result = self.manager.gitlab.http_get(path, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(result, requests.Response)
@@ -800,7 +800,7 @@ class TimeTrackingMixin(_RestObjectBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
-        path = "%s/%s/time_estimate" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/time_estimate"
         data = {"duration": duration}
         result = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
         if TYPE_CHECKING:
@@ -819,7 +819,7 @@ class TimeTrackingMixin(_RestObjectBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
-        path = "%s/%s/reset_time_estimate" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/reset_time_estimate"
         result = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(result, requests.Response)
@@ -838,7 +838,7 @@ class TimeTrackingMixin(_RestObjectBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
-        path = "%s/%s/add_spent_time" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/add_spent_time"
         data = {"duration": duration}
         result = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
         if TYPE_CHECKING:
@@ -857,7 +857,7 @@ class TimeTrackingMixin(_RestObjectBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTimeTrackingError: If the time tracking update cannot be done
         """
-        path = "%s/%s/reset_spent_time" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/reset_spent_time"
         result = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(result, requests.Response)
@@ -893,7 +893,7 @@ class ParticipantsMixin(_RestObjectBase):
             RESTObjectList: The list of participants
         """
 
-        path = "%s/%s/participants" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/participants"
         result = self.manager.gitlab.http_get(path, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(result, requests.Response)
@@ -920,7 +920,7 @@ class BadgeRenderMixin(_RestManagerBase):
         Returns:
             dict: The rendering properties
         """
-        path = "%s/render" % self.path
+        path = f"{self.path}/render"
         data = {"link_url": link_url, "image_url": image_url}
         result = self.gitlab.http_get(path, data, **kwargs)
         if TYPE_CHECKING:
@@ -967,7 +967,7 @@ class PromoteMixin(_RestObjectBase):
             dict: The updated object data (*not* a RESTObject)
         """
 
-        path = "%s/%s/promote" % (self.manager.path, self.id)
+        path = f"{self.manager.path}/{self.id}/promote"
         http_method = self._get_update_method()
         result = http_method(path, **kwargs)
         if TYPE_CHECKING:

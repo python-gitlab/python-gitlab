@@ -40,7 +40,7 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             str: The snippet content
         """
-        path = "/snippets/%s/raw" % self.get_id()
+        path = f"/snippets/{self.get_id()}/raw"
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
@@ -103,7 +103,7 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
         Returns:
             str: The snippet content
         """
-        path = "%s/%s/raw" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/raw"
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )

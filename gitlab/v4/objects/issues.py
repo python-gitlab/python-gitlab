@@ -127,7 +127,7 @@ class ProjectIssue(
             GitlabAuthenticationError: If authentication is not correct
             GitlabUpdateError: If the issue could not be moved
         """
-        path = "%s/%s/move" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/move"
         data = {"to_project_id": to_project_id}
         server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
         self._update_attrs(server_data)
@@ -147,7 +147,7 @@ class ProjectIssue(
         Returns:
             list: The list of merge requests.
         """
-        path = "%s/%s/related_merge_requests" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/related_merge_requests"
         return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action("ProjectIssue")
@@ -165,7 +165,7 @@ class ProjectIssue(
         Returns:
             list: The list of merge requests.
         """
-        path = "%s/%s/closed_by" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/closed_by"
         return self.manager.gitlab.http_get(path, **kwargs)
 
 

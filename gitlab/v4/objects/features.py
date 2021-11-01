@@ -26,7 +26,7 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
         user=None,
         group=None,
         project=None,
-        **kwargs
+        **kwargs,
     ):
         """Create or update the object.
 
@@ -46,7 +46,7 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
         Returns:
             obj: The created/updated attribute
         """
-        path = "%s/%s" % (self.path, name.replace("/", "%2F"))
+        path = f"{self.path}/{name.replace('/', '%2F')}"
         data = {
             "value": value,
             "feature_group": feature_group,

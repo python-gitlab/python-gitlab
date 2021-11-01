@@ -85,8 +85,8 @@ def register_custom_action(
 
 def die(msg: str, e: Optional[Exception] = None) -> None:
     if e:
-        msg = "%s (%s)" % (msg, e)
-    sys.stderr.write(msg + "\n")
+        msg = f"{msg} ({e})"
+    sys.stderr.write(f"{msg}\n")
     sys.exit(1)
 
 
@@ -172,7 +172,7 @@ def _parse_value(v: Any) -> Any:
             with open(v[1:]) as fl:
                 return fl.read()
         except Exception as e:
-            sys.stderr.write("%s\n" % e)
+            sys.stderr.write(f"{e}\n")
             sys.exit(1)
 
     return v
@@ -209,7 +209,7 @@ def main() -> None:
         sys.exit(e)
     # We only support v4 API at this time
     if config.api_version not in ("4",):
-        raise ModuleNotFoundError(name="gitlab.v%s.cli" % config.api_version)
+        raise ModuleNotFoundError(name=f"gitlab.v{config.api_version}.cli")
 
     # Now we build the entire set of subcommands and do the complete parsing
     parser = _get_parser()

@@ -14,7 +14,7 @@ LDAP_PROVIDER = "ldapmain"
 
 
 def start_log(message):
-    print("Testing %s... " % message, end="")
+    print(f"Testing {message}... ", end="")
 
 
 def end_log():

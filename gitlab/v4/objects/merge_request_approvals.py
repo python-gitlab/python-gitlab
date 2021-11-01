@@ -58,7 +58,7 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         approver_ids = approver_ids or []
         approver_group_ids = approver_group_ids or []
 
-        path = "/projects/%s/approvers" % self._parent.get_id()
+        path = f"/projects/{self._parent.get_id()}/approvers"
         data = {"approver_ids": approver_ids, "approver_group_ids": approver_group_ids}
         self.gitlab.http_put(path, post_data=data, **kwargs)
 
@@ -97,7 +97,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
         approver_ids=None,
         approver_group_ids=None,
         approval_rule_name="name",
-        **kwargs
+        **kwargs,
     ):
         """Change MR-level allowed approvers and approver groups.
 

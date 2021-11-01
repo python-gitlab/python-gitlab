@@ -115,17 +115,13 @@ class RESTObject(object):
     def __str__(self) -> str:
         data = self._attrs.copy()
         data.update(self._updated_attrs)
-        return "%s => %s" % (type(self), data)
+        return f"{type(self)} => {data}"
 
     def __repr__(self) -> str:
         if self._id_attr:
-            return "<%s %s:%s>" % (
-                self.__class__.__name__,
-                self._id_attr,
-                self.get_id(),
-            )
+            return f"<{self.__class__.__name__} {self._id_attr}:{self.get_id()}>"
         else:
-            return "<%s>" % self.__class__.__name__
+            return f"<{self.__class__.__name__}>"
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, RESTObject):

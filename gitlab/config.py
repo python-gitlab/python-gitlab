@@ -95,8 +95,8 @@ class GitlabConfigParser(object):
             self.url = self._config.get(self.gitlab_id, "url")
         except Exception as e:
             raise GitlabDataError(
-                "Impossible to get gitlab informations from "
-                "configuration (%s)" % self.gitlab_id
+                "Impossible to get gitlab details from "
+                f"configuration ({self.gitlab_id})"
             ) from e
 
         self.ssl_verify: Union[bool, str] = True
@@ -173,7 +173,7 @@ class GitlabConfigParser(object):
         except Exception:
             pass
         if self.api_version not in ("4",):
-            raise GitlabDataError("Unsupported API version: %s" % self.api_version)
+            raise GitlabDataError(f"Unsupported API version: {self.api_version}")
 
         self.per_page = None
         for section in ["global", self.gitlab_id]:
@@ -182,7 +182,7 @@ class GitlabConfigParser(object):
             except Exception:
                 pass
         if self.per_page is not None and not 0 <= self.per_page <= 100:
-            raise GitlabDataError("Unsupported per_page number: %s" % self.per_page)
+            raise GitlabDataError(f"Unsupported per_page number: {self.per_page}")
 
         self.pagination = None
         try:

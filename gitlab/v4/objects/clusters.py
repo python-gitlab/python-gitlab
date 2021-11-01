@@ -50,7 +50,7 @@ class GroupClusterManager(CRUDMixin, RESTManager):
             RESTObject: A new instance of the manage object class build with
                         the data sent by the server
         """
-        path = "%s/user" % (self.path)
+        path = f"{self.path}/user"
         return CreateMixin.create(self, data, path=path, **kwargs)
 
 
@@ -94,5 +94,5 @@ class ProjectClusterManager(CRUDMixin, RESTManager):
             RESTObject: A new instance of the manage object class build with
                         the data sent by the server
         """
-        path = "%s/user" % (self.path)
+        path = f"{self.path}/user"
         return CreateMixin.create(self, data, path=path, **kwargs)

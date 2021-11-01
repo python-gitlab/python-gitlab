@@ -29,7 +29,7 @@ class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabStopError: If the operation failed
         """
-        path = "%s/%s/stop" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/stop"
         self.manager.gitlab.http_post(path, **kwargs)
 
 

@@ -26,7 +26,7 @@ from gitlab import config, USER_AGENT
 
 custom_user_agent = "my-package/1.0.0"
 
-valid_config = u"""[global]
+valid_config = """[global]
 default = one
 ssl_verify = true
 timeout = 2
@@ -52,24 +52,22 @@ url = https://four.url
 oauth_token = STUV
 """
 
-custom_user_agent_config = """[global]
+custom_user_agent_config = f"""[global]
 default = one
-user_agent = {}
+user_agent = {custom_user_agent}
 
 [one]
 url = http://one.url
 private_token = ABCDEF
-""".format(
-    custom_user_agent
-)
+"""
 
-no_default_config = u"""[global]
+no_default_config = """[global]
 [there]
 url = http://there.url
 private_token = ABCDEF
 """
 
-missing_attr_config = u"""[global]
+missing_attr_config = """[global]
 [one]
 url = http://one.url
 
@@ -87,28 +85,24 @@ per_page = 200
 
 
 def global_retry_transient_errors(value: bool) -> str:
-    return u"""[global]
+    return f"""[global]
 default = one
-retry_transient_errors={}
+retry_transient_errors={value}
 [one]
 url = http://one.url
-private_token = ABCDEF""".format(
-        value
-    )
+private_token = ABCDEF"""
 
 
 def global_and_gitlab_retry_transient_errors(
     global_value: bool, gitlab_value: bool
 ) -> str:
-    return u"""[global]
+    return f"""[global]
     default = one
     retry_transient_errors={global_value}
     [one]
     url = http://one.url
     private_token = ABCDEF
-    retry_transient_errors={gitlab_value}""".format(
-        global_value=global_value, gitlab_value=gitlab_value
-    )
+    retry_transient_errors={gitlab_value}"""
 
 
 @mock.patch.dict(os.environ, {"PYTHON_GITLAB_CFG": "/some/path"})
@@ -233,16 +227,15 @@ def test_data_from_helper(m_open, path_exists, tmp_path):
 
     fd = io.StringIO(
         dedent(
-            """\
+            f"""\
             [global]
             default = helper
 
             [helper]
             url = https://helper.url
-            oauth_token = helper: %s
+            oauth_token = helper: {helper}
             """
         )
-        % helper
     )
 
     fd.close = mock.Mock(return_value=None)

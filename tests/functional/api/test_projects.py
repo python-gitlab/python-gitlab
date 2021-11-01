@@ -108,7 +108,7 @@ def test_project_file_uploads(project):
     uploaded_file = project.upload(filename, file_contents)
     assert uploaded_file["alt"] == filename
     assert uploaded_file["url"].startswith("/uploads/")
-    assert uploaded_file["url"].endswith("/" + filename)
+    assert uploaded_file["url"].endswith(f"/{filename}")
     assert uploaded_file["markdown"] == "[{}]({})".format(
         uploaded_file["alt"], uploaded_file["url"]
     )

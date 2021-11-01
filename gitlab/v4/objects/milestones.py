@@ -43,7 +43,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
             RESTObjectList: The list of issues
         """
 
-        path = "%s/%s/issues" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/issues"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
@@ -69,7 +69,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             RESTObjectList: The list of merge requests
         """
-        path = "%s/%s/merge_requests" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/merge_requests"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
@@ -115,7 +115,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
             RESTObjectList: The list of issues
         """
 
-        path = "%s/%s/issues" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/issues"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
@@ -141,7 +141,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             RESTObjectList: The list of merge requests
         """
-        path = "%s/%s/merge_requests" % (self.manager.path, self.get_id())
+        path = f"{self.manager.path}/{self.get_id()}/merge_requests"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         manager = ProjectMergeRequestManager(
             self.manager.gitlab, parent=self.manager._parent

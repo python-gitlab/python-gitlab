@@ -55,4 +55,4 @@ SEARCH_SCOPE_GLOBAL_SNIPPET_TITLES: str = "snippet_titles"
 # specific project scope
 SEARCH_SCOPE_PROJECT_NOTES: str = "notes"
 
-USER_AGENT: str = "{}/{}".format(__title__, __version__)
+USER_AGENT: str = f"{__title__}/{__version__}"
