@@ -26,7 +26,7 @@ class GroupDeployToken(ObjectDeleteMixin, RESTObject):
 
 
 class GroupDeployTokenManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
-    _path = "/groups/%(group_id)s/deploy_tokens"
+    _path = "/groups/{group_id}/deploy_tokens"
     _from_parent_attrs = {"group_id": "id"}
     _obj_cls = GroupDeployToken
     _create_attrs = RequiredOptional(
@@ -47,7 +47,7 @@ class ProjectDeployToken(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectDeployTokenManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
-    _path = "/projects/%(project_id)s/deploy_tokens"
+    _path = "/projects/{project_id}/deploy_tokens"
     _from_parent_attrs = {"project_id": "id"}
     _obj_cls = ProjectDeployToken
     _create_attrs = RequiredOptional(

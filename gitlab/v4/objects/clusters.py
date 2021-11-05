@@ -17,7 +17,7 @@ class GroupCluster(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class GroupClusterManager(CRUDMixin, RESTManager):
-    _path = "/groups/%(group_id)s/clusters"
+    _path = "/groups/{group_id}/clusters"
     _obj_cls = GroupCluster
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(
@@ -63,7 +63,7 @@ class ProjectCluster(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectClusterManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/clusters"
+    _path = "/projects/{project_id}/clusters"
     _obj_cls = ProjectCluster
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(

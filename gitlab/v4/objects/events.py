@@ -41,7 +41,7 @@ class GroupEpicResourceLabelEvent(RESTObject):
 
 
 class GroupEpicResourceLabelEventManager(RetrieveMixin, RESTManager):
-    _path = "/groups/%(group_id)s/epics/%(epic_id)s/resource_label_events"
+    _path = "/groups/{group_id}/epics/{epic_id}/resource_label_events"
     _obj_cls = GroupEpicResourceLabelEvent
     _from_parent_attrs = {"group_id": "group_id", "epic_id": "id"}
 
@@ -51,7 +51,7 @@ class ProjectEvent(Event):
 
 
 class ProjectEventManager(EventManager):
-    _path = "/projects/%(project_id)s/events"
+    _path = "/projects/{project_id}/events"
     _obj_cls = ProjectEvent
     _from_parent_attrs = {"project_id": "id"}
 
@@ -61,7 +61,7 @@ class ProjectIssueResourceLabelEvent(RESTObject):
 
 
 class ProjectIssueResourceLabelEventManager(RetrieveMixin, RESTManager):
-    _path = "/projects/%(project_id)s/issues/%(issue_iid)s" "/resource_label_events"
+    _path = "/projects/{project_id}/issues/{issue_iid}/resource_label_events"
     _obj_cls = ProjectIssueResourceLabelEvent
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
 
@@ -71,7 +71,7 @@ class ProjectIssueResourceMilestoneEvent(RESTObject):
 
 
 class ProjectIssueResourceMilestoneEventManager(RetrieveMixin, RESTManager):
-    _path = "/projects/%(project_id)s/issues/%(issue_iid)s/resource_milestone_events"
+    _path = "/projects/{project_id}/issues/{issue_iid}/resource_milestone_events"
     _obj_cls = ProjectIssueResourceMilestoneEvent
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
 
@@ -81,7 +81,7 @@ class ProjectIssueResourceStateEvent(RESTObject):
 
 
 class ProjectIssueResourceStateEventManager(RetrieveMixin, RESTManager):
-    _path = "/projects/%(project_id)s/issues/%(issue_iid)s/resource_state_events"
+    _path = "/projects/{project_id}/issues/{issue_iid}/resource_state_events"
     _obj_cls = ProjectIssueResourceStateEvent
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
 
@@ -91,9 +91,7 @@ class ProjectMergeRequestResourceLabelEvent(RESTObject):
 
 
 class ProjectMergeRequestResourceLabelEventManager(RetrieveMixin, RESTManager):
-    _path = (
-        "/projects/%(project_id)s/merge_requests/%(mr_iid)s" "/resource_label_events"
-    )
+    _path = "/projects/{project_id}/merge_requests/{mr_iid}/resource_label_events"
     _obj_cls = ProjectMergeRequestResourceLabelEvent
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
 
@@ -103,9 +101,7 @@ class ProjectMergeRequestResourceMilestoneEvent(RESTObject):
 
 
 class ProjectMergeRequestResourceMilestoneEventManager(RetrieveMixin, RESTManager):
-    _path = (
-        "/projects/%(project_id)s/merge_requests/%(mr_iid)s/resource_milestone_events"
-    )
+    _path = "/projects/{project_id}/merge_requests/{mr_iid}/resource_milestone_events"
     _obj_cls = ProjectMergeRequestResourceMilestoneEvent
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
 
@@ -115,7 +111,7 @@ class ProjectMergeRequestResourceStateEvent(RESTObject):
 
 
 class ProjectMergeRequestResourceStateEventManager(RetrieveMixin, RESTManager):
-    _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/resource_state_events"
+    _path = "/projects/{project_id}/merge_requests/{mr_iid}/resource_state_events"
     _obj_cls = ProjectMergeRequestResourceStateEvent
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
 
@@ -125,6 +121,6 @@ class UserEvent(Event):
 
 
 class UserEventManager(EventManager):
-    _path = "/users/%(user_id)s/events"
+    _path = "/users/{user_id}/events"
     _obj_cls = UserEvent
     _from_parent_attrs = {"user_id": "id"}

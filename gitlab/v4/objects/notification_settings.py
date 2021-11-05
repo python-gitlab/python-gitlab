@@ -42,7 +42,7 @@ class GroupNotificationSettings(NotificationSettings):
 
 
 class GroupNotificationSettingsManager(NotificationSettingsManager):
-    _path = "/groups/%(group_id)s/notification_settings"
+    _path = "/groups/{group_id}/notification_settings"
     _obj_cls = GroupNotificationSettings
     _from_parent_attrs = {"group_id": "id"}
 
@@ -52,6 +52,6 @@ class ProjectNotificationSettings(NotificationSettings):
 
 
 class ProjectNotificationSettingsManager(NotificationSettingsManager):
-    _path = "/projects/%(project_id)s/notification_settings"
+    _path = "/projects/{project_id}/notification_settings"
     _obj_cls = ProjectNotificationSettings
     _from_parent_attrs = {"project_id": "id"}

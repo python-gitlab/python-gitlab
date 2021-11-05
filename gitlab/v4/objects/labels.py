@@ -45,7 +45,7 @@ class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
-    _path = "/groups/%(group_id)s/labels"
+    _path = "/groups/{group_id}/labels"
     _obj_cls = GroupLabel
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(
@@ -113,7 +113,7 @@ class ProjectLabel(
 class ProjectLabelManager(
     RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
 ):
-    _path = "/projects/%(project_id)s/labels"
+    _path = "/projects/{project_id}/labels"
     _obj_cls = ProjectLabel
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(

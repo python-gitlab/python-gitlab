@@ -18,7 +18,7 @@ class ProjectAdditionalStatistics(RefreshMixin, RESTObject):
 
 
 class ProjectAdditionalStatisticsManager(GetWithoutIdMixin, RESTManager):
-    _path = "/projects/%(project_id)s/statistics"
+    _path = "/projects/{project_id}/statistics"
     _obj_cls = ProjectAdditionalStatistics
     _from_parent_attrs = {"project_id": "id"}
 
@@ -37,7 +37,7 @@ class GroupIssuesStatistics(RefreshMixin, RESTObject):
 
 
 class GroupIssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
-    _path = "/groups/%(group_id)s/issues_statistics"
+    _path = "/groups/{group_id}/issues_statistics"
     _obj_cls = GroupIssuesStatistics
     _from_parent_attrs = {"group_id": "id"}
 
@@ -47,6 +47,6 @@ class ProjectIssuesStatistics(RefreshMixin, RESTObject):
 
 
 class ProjectIssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
-    _path = "/projects/%(project_id)s/issues_statistics"
+    _path = "/projects/{project_id}/issues_statistics"
     _obj_cls = ProjectIssuesStatistics
     _from_parent_attrs = {"project_id": "id"}

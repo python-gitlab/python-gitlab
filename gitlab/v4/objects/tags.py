@@ -15,7 +15,7 @@ class ProjectTag(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectTagManager(NoUpdateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/repository/tags"
+    _path = "/projects/{project_id}/repository/tags"
     _obj_cls = ProjectTag
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
@@ -29,7 +29,7 @@ class ProjectProtectedTag(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectProtectedTagManager(NoUpdateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/protected_tags"
+    _path = "/projects/{project_id}/protected_tags"
     _obj_cls = ProjectProtectedTag
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(

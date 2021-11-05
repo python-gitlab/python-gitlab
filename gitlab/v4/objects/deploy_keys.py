@@ -29,7 +29,7 @@ class ProjectKey(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectKeyManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/deploy_keys"
+    _path = "/projects/{project_id}/deploy_keys"
     _obj_cls = ProjectKey
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(required=("title", "key"), optional=("can_push",))

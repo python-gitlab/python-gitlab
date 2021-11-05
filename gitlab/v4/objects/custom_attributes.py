@@ -16,7 +16,7 @@ class GroupCustomAttribute(ObjectDeleteMixin, RESTObject):
 
 
 class GroupCustomAttributeManager(RetrieveMixin, SetMixin, DeleteMixin, RESTManager):
-    _path = "/groups/%(group_id)s/custom_attributes"
+    _path = "/groups/{group_id}/custom_attributes"
     _obj_cls = GroupCustomAttribute
     _from_parent_attrs = {"group_id": "id"}
 
@@ -26,7 +26,7 @@ class ProjectCustomAttribute(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectCustomAttributeManager(RetrieveMixin, SetMixin, DeleteMixin, RESTManager):
-    _path = "/projects/%(project_id)s/custom_attributes"
+    _path = "/projects/{project_id}/custom_attributes"
     _obj_cls = ProjectCustomAttribute
     _from_parent_attrs = {"project_id": "id"}
 
@@ -36,6 +36,6 @@ class UserCustomAttribute(ObjectDeleteMixin, RESTObject):
 
 
 class UserCustomAttributeManager(RetrieveMixin, SetMixin, DeleteMixin, RESTManager):
-    _path = "/users/%(user_id)s/custom_attributes"
+    _path = "/users/{user_id}/custom_attributes"
     _obj_cls = UserCustomAttribute
     _from_parent_attrs = {"user_id": "id"}

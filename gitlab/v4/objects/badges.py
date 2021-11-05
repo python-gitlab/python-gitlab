@@ -16,7 +16,7 @@ class GroupBadge(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class GroupBadgeManager(BadgeRenderMixin, CRUDMixin, RESTManager):
-    _path = "/groups/%(group_id)s/badges"
+    _path = "/groups/{group_id}/badges"
     _obj_cls = GroupBadge
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(required=("link_url", "image_url"))
@@ -28,7 +28,7 @@ class ProjectBadge(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectBadgeManager(BadgeRenderMixin, CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/badges"
+    _path = "/projects/{project_id}/badges"
     _obj_cls = ProjectBadge
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(required=("link_url", "image_url"))

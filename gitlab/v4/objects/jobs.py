@@ -185,6 +185,6 @@ class ProjectJob(RefreshMixin, RESTObject):
 
 
 class ProjectJobManager(RetrieveMixin, RESTManager):
-    _path = "/projects/%(project_id)s/jobs"
+    _path = "/projects/{project_id}/jobs"
     _obj_cls = ProjectJob
     _from_parent_attrs = {"project_id": "id"}

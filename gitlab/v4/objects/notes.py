@@ -41,7 +41,7 @@ class ProjectNote(RESTObject):
 
 
 class ProjectNoteManager(RetrieveMixin, RESTManager):
-    _path = "/projects/%(project_id)s/notes"
+    _path = "/projects/{project_id}/notes"
     _obj_cls = ProjectNote
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(required=("body",))
@@ -55,8 +55,8 @@ class ProjectCommitDiscussionNoteManager(
     GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
 ):
     _path = (
-        "/projects/%(project_id)s/repository/commits/%(commit_id)s/"
-        "discussions/%(discussion_id)s/notes"
+        "/projects/{project_id}/repository/commits/{commit_id}/"
+        "discussions/{discussion_id}/notes"
     )
     _obj_cls = ProjectCommitDiscussionNote
     _from_parent_attrs = {
@@ -75,7 +75,7 @@ class ProjectIssueNote(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectIssueNoteManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/issues/%(issue_iid)s/notes"
+    _path = "/projects/{project_id}/issues/{issue_iid}/notes"
     _obj_cls = ProjectIssueNote
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
@@ -90,8 +90,7 @@ class ProjectIssueDiscussionNoteManager(
     GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
 ):
     _path = (
-        "/projects/%(project_id)s/issues/%(issue_iid)s/"
-        "discussions/%(discussion_id)s/notes"
+        "/projects/{project_id}/issues/{issue_iid}/discussions/{discussion_id}/notes"
     )
     _obj_cls = ProjectIssueDiscussionNote
     _from_parent_attrs = {
@@ -108,7 +107,7 @@ class ProjectMergeRequestNote(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectMergeRequestNoteManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/notes"
+    _path = "/projects/{project_id}/merge_requests/{mr_iid}/notes"
     _obj_cls = ProjectMergeRequestNote
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
     _create_attrs = RequiredOptional(required=("body",))
@@ -123,8 +122,8 @@ class ProjectMergeRequestDiscussionNoteManager(
     GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
 ):
     _path = (
-        "/projects/%(project_id)s/merge_requests/%(mr_iid)s/"
-        "discussions/%(discussion_id)s/notes"
+        "/projects/{project_id}/merge_requests/{mr_iid}/"
+        "discussions/{discussion_id}/notes"
     )
     _obj_cls = ProjectMergeRequestDiscussionNote
     _from_parent_attrs = {
@@ -141,7 +140,7 @@ class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectSnippetNoteManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/snippets/%(snippet_id)s/notes"
+    _path = "/projects/{project_id}/snippets/{snippet_id}/notes"
     _obj_cls = ProjectSnippetNote
     _from_parent_attrs = {"project_id": "project_id", "snippet_id": "id"}
     _create_attrs = RequiredOptional(required=("body",))
@@ -156,8 +155,8 @@ class ProjectSnippetDiscussionNoteManager(
     GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
 ):
     _path = (
-        "/projects/%(project_id)s/snippets/%(snippet_id)s/"
-        "discussions/%(discussion_id)s/notes"
+        "/projects/{project_id}/snippets/{snippet_id}/"
+        "discussions/{discussion_id}/notes"
     )
     _obj_cls = ProjectSnippetDiscussionNote
     _from_parent_attrs = {

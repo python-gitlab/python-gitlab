@@ -20,7 +20,7 @@ class GroupAccessRequest(AccessRequestMixin, ObjectDeleteMixin, RESTObject):
 
 
 class GroupAccessRequestManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
-    _path = "/groups/%(group_id)s/access_requests"
+    _path = "/groups/{group_id}/access_requests"
     _obj_cls = GroupAccessRequest
     _from_parent_attrs = {"group_id": "id"}
 
@@ -30,6 +30,6 @@ class ProjectAccessRequest(AccessRequestMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectAccessRequestManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
-    _path = "/projects/%(project_id)s/access_requests"
+    _path = "/projects/{project_id}/access_requests"
     _obj_cls = ProjectAccessRequest
     _from_parent_attrs = {"project_id": "id"}

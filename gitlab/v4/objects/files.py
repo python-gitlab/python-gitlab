@@ -67,7 +67,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
-    _path = "/projects/%(project_id)s/repository/files"
+    _path = "/projects/{project_id}/repository/files"
     _obj_cls = ProjectFile
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(

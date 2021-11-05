@@ -23,7 +23,7 @@ class ProjectPushRules(SaveMixin, ObjectDeleteMixin, RESTObject):
 class ProjectPushRulesManager(
     GetWithoutIdMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
 ):
-    _path = "/projects/%(project_id)s/push_rule"
+    _path = "/projects/{project_id}/push_rule"
     _obj_cls = ProjectPushRules
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
