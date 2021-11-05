@@ -14,7 +14,7 @@ class ProjectTrigger(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectTriggerManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/triggers"
+    _path = "/projects/{project_id}/triggers"
     _obj_cls = ProjectTrigger
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(required=("description",))

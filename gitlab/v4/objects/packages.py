@@ -32,7 +32,7 @@ class GenericPackage(RESTObject):
 
 
 class GenericPackageManager(RESTManager):
-    _path = "/projects/%(project_id)s/packages/generic"
+    _path = "/projects/{project_id}/packages/generic"
     _obj_cls = GenericPackage
     _from_parent_attrs = {"project_id": "id"}
 
@@ -140,7 +140,7 @@ class GroupPackage(RESTObject):
 
 
 class GroupPackageManager(ListMixin, RESTManager):
-    _path = "/groups/%(group_id)s/packages"
+    _path = "/groups/{group_id}/packages"
     _obj_cls = GroupPackage
     _from_parent_attrs = {"group_id": "id"}
     _list_filters = (
@@ -157,7 +157,7 @@ class ProjectPackage(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectPackageManager(ListMixin, GetMixin, DeleteMixin, RESTManager):
-    _path = "/projects/%(project_id)s/packages"
+    _path = "/projects/{project_id}/packages"
     _obj_cls = ProjectPackage
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = (
@@ -173,6 +173,6 @@ class ProjectPackageFile(RESTObject):
 
 
 class ProjectPackageFileManager(DeleteMixin, ListMixin, RESTManager):
-    _path = "/projects/%(project_id)s/packages/%(package_id)s/package_files"
+    _path = "/projects/{project_id}/packages/{package_id}/package_files"
     _obj_cls = ProjectPackageFile
     _from_parent_attrs = {"project_id": "project_id", "package_id": "id"}

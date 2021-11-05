@@ -336,7 +336,7 @@ class GroupSubgroup(RESTObject):
 
 
 class GroupSubgroupManager(ListMixin, RESTManager):
-    _path = "/groups/%(group_id)s/subgroups"
+    _path = "/groups/{group_id}/subgroups"
     _obj_cls: Union[Type["GroupDescendantGroup"], Type[GroupSubgroup]] = GroupSubgroup
     _from_parent_attrs = {"group_id": "id"}
     _list_filters = (
@@ -363,5 +363,5 @@ class GroupDescendantGroupManager(GroupSubgroupManager):
     share all attributes with subgroups, except the path and object class.
     """
 
-    _path = "/groups/%(group_id)s/descendant_groups"
+    _path = "/groups/{group_id}/descendant_groups"
     _obj_cls: Type[GroupDescendantGroup] = GroupDescendantGroup

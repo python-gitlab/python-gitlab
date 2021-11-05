@@ -71,7 +71,7 @@ class GroupIssue(RESTObject):
 
 
 class GroupIssueManager(ListMixin, RESTManager):
-    _path = "/groups/%(group_id)s/issues"
+    _path = "/groups/{group_id}/issues"
     _obj_cls = GroupIssue
     _from_parent_attrs = {"group_id": "id"}
     _list_filters = (
@@ -170,7 +170,7 @@ class ProjectIssue(
 
 
 class ProjectIssueManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/issues"
+    _path = "/projects/{project_id}/issues"
     _obj_cls = ProjectIssue
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = (
@@ -228,7 +228,7 @@ class ProjectIssueLink(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
-    _path = "/projects/%(project_id)s/issues/%(issue_iid)s/links"
+    _path = "/projects/{project_id}/issues/{issue_iid}/links"
     _obj_cls = ProjectIssueLink
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
     _create_attrs = RequiredOptional(required=("target_project_id", "target_issue_iid"))

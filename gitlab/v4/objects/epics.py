@@ -29,7 +29,7 @@ class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
 
 
 class GroupEpicManager(CRUDMixin, RESTManager):
-    _path = "/groups/%(group_id)s/epics"
+    _path = "/groups/{group_id}/epics"
     _obj_cls = GroupEpic
     _from_parent_attrs = {"group_id": "id"}
     _list_filters = ("author_id", "labels", "order_by", "sort", "search")
@@ -71,7 +71,7 @@ class GroupEpicIssue(ObjectDeleteMixin, SaveMixin, RESTObject):
 class GroupEpicIssueManager(
     ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
 ):
-    _path = "/groups/%(group_id)s/epics/%(epic_iid)s/issues"
+    _path = "/groups/{group_id}/epics/{epic_iid}/issues"
     _obj_cls = GroupEpicIssue
     _from_parent_attrs = {"group_id": "group_id", "epic_iid": "iid"}
     _create_attrs = RequiredOptional(required=("issue_id",))

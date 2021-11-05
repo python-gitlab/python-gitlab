@@ -43,7 +43,7 @@ class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
 class ProjectEnvironmentManager(
     RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
 ):
-    _path = "/projects/%(project_id)s/environments"
+    _path = "/projects/{project_id}/environments"
     _obj_cls = ProjectEnvironment
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(required=("name",), optional=("external_url",))

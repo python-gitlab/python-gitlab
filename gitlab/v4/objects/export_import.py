@@ -20,7 +20,7 @@ class GroupExport(DownloadMixin, RESTObject):
 
 
 class GroupExportManager(GetWithoutIdMixin, CreateMixin, RESTManager):
-    _path = "/groups/%(group_id)s/export"
+    _path = "/groups/{group_id}/export"
     _obj_cls = GroupExport
     _from_parent_attrs = {"group_id": "id"}
 
@@ -35,7 +35,7 @@ class GroupImport(RESTObject):
 
 
 class GroupImportManager(GetWithoutIdMixin, RESTManager):
-    _path = "/groups/%(group_id)s/import"
+    _path = "/groups/{group_id}/import"
     _obj_cls = GroupImport
     _from_parent_attrs = {"group_id": "id"}
 
@@ -50,7 +50,7 @@ class ProjectExport(DownloadMixin, RefreshMixin, RESTObject):
 
 
 class ProjectExportManager(GetWithoutIdMixin, CreateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/export"
+    _path = "/projects/{project_id}/export"
     _obj_cls = ProjectExport
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(optional=("description",))
@@ -66,7 +66,7 @@ class ProjectImport(RefreshMixin, RESTObject):
 
 
 class ProjectImportManager(GetWithoutIdMixin, RESTManager):
-    _path = "/projects/%(project_id)s/import"
+    _path = "/projects/{project_id}/import"
     _obj_cls = ProjectImport
     _from_parent_attrs = {"project_id": "id"}
 

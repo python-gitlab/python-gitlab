@@ -57,7 +57,7 @@ class TestRESTManager:
 
     def test_computed_path_with_parent(self):
         class MGR(base.RESTManager):
-            _path = "/tests/%(test_id)s/cases"
+            _path = "/tests/{test_id}/cases"
             _obj_cls = object
             _from_parent_attrs = {"test_id": "id"}
 

@@ -340,7 +340,7 @@ class ProjectUser(RESTObject):
 
 
 class ProjectUserManager(ListMixin, RESTManager):
-    _path = "/projects/%(project_id)s/users"
+    _path = "/projects/{project_id}/users"
     _obj_cls = ProjectUser
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = ("search", "skip_users")
@@ -352,7 +352,7 @@ class UserEmail(ObjectDeleteMixin, RESTObject):
 
 
 class UserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
-    _path = "/users/%(user_id)s/emails"
+    _path = "/users/{user_id}/emails"
     _obj_cls = UserEmail
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(required=("email",))
@@ -368,7 +368,7 @@ class UserStatus(RESTObject):
 
 
 class UserStatusManager(GetWithoutIdMixin, RESTManager):
-    _path = "/users/%(user_id)s/status"
+    _path = "/users/{user_id}/status"
     _obj_cls = UserStatus
     _from_parent_attrs = {"user_id": "id"}
 
@@ -383,7 +383,7 @@ class UserGPGKey(ObjectDeleteMixin, RESTObject):
 
 
 class UserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
-    _path = "/users/%(user_id)s/gpg_keys"
+    _path = "/users/{user_id}/gpg_keys"
     _obj_cls = UserGPGKey
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(required=("key",))
@@ -394,7 +394,7 @@ class UserKey(ObjectDeleteMixin, RESTObject):
 
 
 class UserKeyManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
-    _path = "/users/%(user_id)s/keys"
+    _path = "/users/{user_id}/keys"
     _obj_cls = UserKey
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(required=("title", "key"))
@@ -407,7 +407,7 @@ class UserIdentityProviderManager(DeleteMixin, RESTManager):
     functionality for deletion of user identities by provider.
     """
 
-    _path = "/users/%(user_id)s/identities"
+    _path = "/users/{user_id}/identities"
     _from_parent_attrs = {"user_id": "id"}
 
 
@@ -416,7 +416,7 @@ class UserImpersonationToken(ObjectDeleteMixin, RESTObject):
 
 
 class UserImpersonationTokenManager(NoUpdateMixin, RESTManager):
-    _path = "/users/%(user_id)s/impersonation_tokens"
+    _path = "/users/{user_id}/impersonation_tokens"
     _obj_cls = UserImpersonationToken
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(
@@ -430,7 +430,7 @@ class UserMembership(RESTObject):
 
 
 class UserMembershipManager(RetrieveMixin, RESTManager):
-    _path = "/users/%(user_id)s/memberships"
+    _path = "/users/{user_id}/memberships"
     _obj_cls = UserMembership
     _from_parent_attrs = {"user_id": "id"}
     _list_filters = ("type",)
@@ -442,7 +442,7 @@ class UserProject(RESTObject):
 
 
 class UserProjectManager(ListMixin, CreateMixin, RESTManager):
-    _path = "/projects/user/%(user_id)s"
+    _path = "/projects/user/{user_id}"
     _obj_cls = UserProject
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(
@@ -515,7 +515,7 @@ class StarredProject(RESTObject):
 
 
 class StarredProjectManager(ListMixin, RESTManager):
-    _path = "/users/%(user_id)s/starred_projects"
+    _path = "/users/{user_id}/starred_projects"
     _obj_cls = StarredProject
     _from_parent_attrs = {"user_id": "id"}
     _list_filters = (
@@ -537,12 +537,12 @@ class StarredProjectManager(ListMixin, RESTManager):
 
 
 class UserFollowersManager(ListMixin, RESTManager):
-    _path = "/users/%(user_id)s/followers"
+    _path = "/users/{user_id}/followers"
     _obj_cls = User
     _from_parent_attrs = {"user_id": "id"}
 
 
 class UserFollowingManager(ListMixin, RESTManager):
-    _path = "/users/%(user_id)s/following"
+    _path = "/users/{user_id}/following"
     _obj_cls = User
     _from_parent_attrs = {"user_id": "id"}

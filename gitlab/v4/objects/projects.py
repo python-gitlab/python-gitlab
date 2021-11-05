@@ -87,7 +87,7 @@ class GroupProject(RESTObject):
 
 
 class GroupProjectManager(ListMixin, RESTManager):
-    _path = "/groups/%(group_id)s/projects"
+    _path = "/groups/{group_id}/projects"
     _obj_cls = GroupProject
     _from_parent_attrs = {"group_id": "id"}
     _list_filters = (
@@ -986,7 +986,7 @@ class ProjectFork(RESTObject):
 
 
 class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
-    _path = "/projects/%(project_id)s/forks"
+    _path = "/projects/{project_id}/forks"
     _obj_cls = ProjectFork
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = (
@@ -1035,7 +1035,7 @@ class ProjectRemoteMirror(SaveMixin, RESTObject):
 
 
 class ProjectRemoteMirrorManager(ListMixin, CreateMixin, UpdateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/remote_mirrors"
+    _path = "/projects/{project_id}/remote_mirrors"
     _obj_cls = ProjectRemoteMirror
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(

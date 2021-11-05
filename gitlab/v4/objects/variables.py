@@ -42,7 +42,7 @@ class GroupVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class GroupVariableManager(CRUDMixin, RESTManager):
-    _path = "/groups/%(group_id)s/variables"
+    _path = "/groups/{group_id}/variables"
     _obj_cls = GroupVariable
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(
@@ -63,7 +63,7 @@ class ProjectVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectVariableManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/variables"
+    _path = "/projects/{project_id}/variables"
     _obj_cls = ProjectVariable
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(

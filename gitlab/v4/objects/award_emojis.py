@@ -22,7 +22,7 @@ class ProjectIssueAwardEmoji(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectIssueAwardEmojiManager(NoUpdateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/issues/%(issue_iid)s/award_emoji"
+    _path = "/projects/{project_id}/issues/{issue_iid}/award_emoji"
     _obj_cls = ProjectIssueAwardEmoji
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
     _create_attrs = RequiredOptional(required=("name",))
@@ -33,9 +33,7 @@ class ProjectIssueNoteAwardEmoji(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectIssueNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
-    _path = (
-        "/projects/%(project_id)s/issues/%(issue_iid)s" "/notes/%(note_id)s/award_emoji"
-    )
+    _path = "/projects/{project_id}/issues/{issue_iid}/notes/{note_id}/award_emoji"
     _obj_cls = ProjectIssueNoteAwardEmoji
     _from_parent_attrs = {
         "project_id": "project_id",
@@ -50,7 +48,7 @@ class ProjectMergeRequestAwardEmoji(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectMergeRequestAwardEmojiManager(NoUpdateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/award_emoji"
+    _path = "/projects/{project_id}/merge_requests/{mr_iid}/award_emoji"
     _obj_cls = ProjectMergeRequestAwardEmoji
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
     _create_attrs = RequiredOptional(required=("name",))
@@ -61,10 +59,7 @@ class ProjectMergeRequestNoteAwardEmoji(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectMergeRequestNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
-    _path = (
-        "/projects/%(project_id)s/merge_requests/%(mr_iid)s"
-        "/notes/%(note_id)s/award_emoji"
-    )
+    _path = "/projects/{project_id}/merge_requests/{mr_iid}/notes/{note_id}/award_emoji"
     _obj_cls = ProjectMergeRequestNoteAwardEmoji
     _from_parent_attrs = {
         "project_id": "project_id",
@@ -79,7 +74,7 @@ class ProjectSnippetAwardEmoji(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectSnippetAwardEmojiManager(NoUpdateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/snippets/%(snippet_id)s/award_emoji"
+    _path = "/projects/{project_id}/snippets/{snippet_id}/award_emoji"
     _obj_cls = ProjectSnippetAwardEmoji
     _from_parent_attrs = {"project_id": "project_id", "snippet_id": "id"}
     _create_attrs = RequiredOptional(required=("name",))
@@ -90,10 +85,7 @@ class ProjectSnippetNoteAwardEmoji(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectSnippetNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
-    _path = (
-        "/projects/%(project_id)s/snippets/%(snippet_id)s"
-        "/notes/%(note_id)s/award_emoji"
-    )
+    _path = "/projects/{project_id}/snippets/{snippet_id}/notes/{note_id}/award_emoji"
     _obj_cls = ProjectSnippetNoteAwardEmoji
     _from_parent_attrs = {
         "project_id": "project_id",

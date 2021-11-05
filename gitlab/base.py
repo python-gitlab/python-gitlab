@@ -320,7 +320,7 @@ class RESTManager(object):
             for self_attr, parent_attr in self._from_parent_attrs.items()
         }
         self._parent_attrs = data
-        return path % data
+        return path.format(**data)
 
     @property
     def path(self) -> Optional[str]:

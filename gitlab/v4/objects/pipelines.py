@@ -39,7 +39,7 @@ class ProjectMergeRequestPipeline(RESTObject):
 
 
 class ProjectMergeRequestPipelineManager(CreateMixin, ListMixin, RESTManager):
-    _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/pipelines"
+    _path = "/projects/{project_id}/merge_requests/{mr_iid}/pipelines"
     _obj_cls = ProjectMergeRequestPipeline
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
 
@@ -82,7 +82,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
-    _path = "/projects/%(project_id)s/pipelines"
+    _path = "/projects/{project_id}/pipelines"
     _obj_cls = ProjectPipeline
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = (
@@ -123,7 +123,7 @@ class ProjectPipelineJob(RESTObject):
 
 
 class ProjectPipelineJobManager(ListMixin, RESTManager):
-    _path = "/projects/%(project_id)s/pipelines/%(pipeline_id)s/jobs"
+    _path = "/projects/{project_id}/pipelines/{pipeline_id}/jobs"
     _obj_cls = ProjectPipelineJob
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
     _list_filters = ("scope", "include_retried")
@@ -134,7 +134,7 @@ class ProjectPipelineBridge(RESTObject):
 
 
 class ProjectPipelineBridgeManager(ListMixin, RESTManager):
-    _path = "/projects/%(project_id)s/pipelines/%(pipeline_id)s/bridges"
+    _path = "/projects/{project_id}/pipelines/{pipeline_id}/bridges"
     _obj_cls = ProjectPipelineBridge
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
     _list_filters = ("scope",)
@@ -145,7 +145,7 @@ class ProjectPipelineVariable(RESTObject):
 
 
 class ProjectPipelineVariableManager(ListMixin, RESTManager):
-    _path = "/projects/%(project_id)s/pipelines/%(pipeline_id)s/variables"
+    _path = "/projects/{project_id}/pipelines/{pipeline_id}/variables"
     _obj_cls = ProjectPipelineVariable
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
 
@@ -157,10 +157,7 @@ class ProjectPipelineScheduleVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
 class ProjectPipelineScheduleVariableManager(
     CreateMixin, UpdateMixin, DeleteMixin, RESTManager
 ):
-    _path = (
-        "/projects/%(project_id)s/pipeline_schedules/"
-        "%(pipeline_schedule_id)s/variables"
-    )
+    _path = "/projects/{project_id}/pipeline_schedules/{pipeline_schedule_id}/variables"
     _obj_cls = ProjectPipelineScheduleVariable
     _from_parent_attrs = {"project_id": "project_id", "pipeline_schedule_id": "id"}
     _create_attrs = RequiredOptional(required=("key", "value"))
@@ -206,7 +203,7 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/pipeline_schedules"
+    _path = "/projects/{project_id}/pipeline_schedules"
     _obj_cls = ProjectPipelineSchedule
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
@@ -222,6 +219,6 @@ class ProjectPipelineTestReport(RESTObject):
 
 
 class ProjectPipelineTestReportManager(GetWithoutIdMixin, RESTManager):
-    _path = "/projects/%(project_id)s/pipelines/%(pipeline_id)s/test_report"
+    _path = "/projects/{project_id}/pipelines/{pipeline_id}/test_report"
     _obj_cls = ProjectPipelineTestReport
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}

@@ -14,7 +14,7 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectBranchManager(NoUpdateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/repository/branches"
+    _path = "/projects/{project_id}/repository/branches"
     _obj_cls = ProjectBranch
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(required=("branch", "ref"))
@@ -25,7 +25,7 @@ class ProjectProtectedBranch(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectProtectedBranchManager(NoUpdateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/protected_branches"
+    _path = "/projects/{project_id}/protected_branches"
     _obj_cls = ProjectProtectedBranch
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(

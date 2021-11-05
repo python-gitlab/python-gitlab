@@ -27,7 +27,7 @@ class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectHookManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/hooks"
+    _path = "/projects/{project_id}/hooks"
     _obj_cls = ProjectHook
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
@@ -69,7 +69,7 @@ class GroupHook(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class GroupHookManager(CRUDMixin, RESTManager):
-    _path = "/groups/%(group_id)s/hooks"
+    _path = "/groups/{group_id}/hooks"
     _obj_cls = GroupHook
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(

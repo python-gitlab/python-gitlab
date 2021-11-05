@@ -18,7 +18,7 @@ class ProjectRegistryRepository(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectRegistryRepositoryManager(DeleteMixin, ListMixin, RESTManager):
-    _path = "/projects/%(project_id)s/registry/repositories"
+    _path = "/projects/{project_id}/registry/repositories"
     _obj_cls = ProjectRegistryRepository
     _from_parent_attrs = {"project_id": "id"}
 
@@ -30,7 +30,7 @@ class ProjectRegistryTag(ObjectDeleteMixin, RESTObject):
 class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
     _obj_cls = ProjectRegistryTag
     _from_parent_attrs = {"project_id": "project_id", "repository_id": "id"}
-    _path = "/projects/%(project_id)s/registry/repositories/%(repository_id)s/tags"
+    _path = "/projects/{project_id}/registry/repositories/{repository_id}/tags"
 
     @cli.register_custom_action(
         "ProjectRegistryTagManager",

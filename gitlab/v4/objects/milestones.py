@@ -79,7 +79,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class GroupMilestoneManager(CRUDMixin, RESTManager):
-    _path = "/groups/%(group_id)s/milestones"
+    _path = "/groups/{group_id}/milestones"
     _obj_cls = GroupMilestone
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(
@@ -153,7 +153,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectMilestoneManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/milestones"
+    _path = "/projects/{project_id}/milestones"
     _obj_cls = ProjectMilestone
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(

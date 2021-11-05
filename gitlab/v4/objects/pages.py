@@ -25,7 +25,7 @@ class ProjectPagesDomain(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectPagesDomainManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/pages/domains"
+    _path = "/projects/{project_id}/pages/domains"
     _obj_cls = ProjectPagesDomain
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(

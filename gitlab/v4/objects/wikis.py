@@ -17,7 +17,7 @@ class ProjectWiki(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectWikiManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/wikis"
+    _path = "/projects/{project_id}/wikis"
     _obj_cls = ProjectWiki
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
@@ -38,7 +38,7 @@ class GroupWiki(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class GroupWikiManager(CRUDMixin, RESTManager):
-    _path = "/groups/%(group_id)s/wikis"
+    _path = "/groups/{group_id}/wikis"
     _obj_cls = GroupWiki
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(

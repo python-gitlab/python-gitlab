@@ -75,7 +75,7 @@ class SnippetManager(CRUDMixin, RESTManager):
 
 
 class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
-    _url = "/projects/%(project_id)s/snippets"
+    _url = "/projects/{project_id}/snippets"
     _short_print_attr = "title"
 
     awardemojis: ProjectSnippetAwardEmojiManager
@@ -111,7 +111,7 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
 
 
 class ProjectSnippetManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/snippets"
+    _path = "/projects/{project_id}/snippets"
     _obj_cls = ProjectSnippet
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(

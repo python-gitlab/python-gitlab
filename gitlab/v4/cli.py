@@ -53,7 +53,7 @@ class GitlabCLI(object):
         # the class _path attribute, and replace the value with the result.
         if TYPE_CHECKING:
             assert self.mgr_cls._path is not None
-        self.mgr_cls._path = self.mgr_cls._path % self.args
+        self.mgr_cls._path = self.mgr_cls._path.format(**self.args)
         self.mgr = self.mgr_cls(gl)
 
         if self.mgr_cls._types:

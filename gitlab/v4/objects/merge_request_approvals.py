@@ -29,7 +29,7 @@ class ProjectApproval(SaveMixin, RESTObject):
 
 
 class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/approvals"
+    _path = "/projects/{project_id}/approvals"
     _obj_cls = ProjectApproval
     _from_parent_attrs = {"project_id": "id"}
     _update_attrs = RequiredOptional(
@@ -70,7 +70,7 @@ class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
 class ProjectApprovalRuleManager(
     ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
 ):
-    _path = "/projects/%(project_id)s/approval_rules"
+    _path = "/projects/{project_id}/approval_rules"
     _obj_cls = ProjectApprovalRule
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
@@ -84,7 +84,7 @@ class ProjectMergeRequestApproval(SaveMixin, RESTObject):
 
 
 class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/approvals"
+    _path = "/projects/{project_id}/merge_requests/{mr_iid}/approvals"
     _obj_cls = ProjectMergeRequestApproval
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
     _update_attrs = RequiredOptional(required=("approvals_required",))
@@ -164,7 +164,7 @@ class ProjectMergeRequestApprovalRule(SaveMixin, RESTObject):
 class ProjectMergeRequestApprovalRuleManager(
     ListMixin, UpdateMixin, CreateMixin, RESTManager
 ):
-    _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/approval_rules"
+    _path = "/projects/{project_id}/merge_requests/{mr_iid}/approval_rules"
     _obj_cls = ProjectMergeRequestApprovalRule
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
     _list_filters = ("name", "rule_type")
@@ -213,6 +213,6 @@ class ProjectMergeRequestApprovalState(RESTObject):
 
 
 class ProjectMergeRequestApprovalStateManager(GetWithoutIdMixin, RESTManager):
-    _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/approval_state"
+    _path = "/projects/{project_id}/merge_requests/{mr_iid}/approval_state"
     _obj_cls = ProjectMergeRequestApprovalState
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}

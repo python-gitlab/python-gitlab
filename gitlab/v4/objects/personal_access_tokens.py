@@ -24,7 +24,7 @@ class UserPersonalAccessToken(RESTObject):
 
 
 class UserPersonalAccessTokenManager(CreateMixin, RESTManager):
-    _path = "/users/%(user_id)s/personal_access_tokens"
+    _path = "/users/{user_id}/personal_access_tokens"
     _obj_cls = UserPersonalAccessToken
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(

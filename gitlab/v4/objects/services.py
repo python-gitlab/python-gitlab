@@ -20,7 +20,7 @@ class ProjectService(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTManager):
-    _path = "/projects/%(project_id)s/services"
+    _path = "/projects/{project_id}/services"
     _from_parent_attrs = {"project_id": "id"}
     _obj_cls = ProjectService
 

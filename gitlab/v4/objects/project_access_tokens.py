@@ -12,6 +12,6 @@ class ProjectAccessToken(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectAccessTokenManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
-    _path = "/projects/%(project_id)s/access_tokens"
+    _path = "/projects/{project_id}/access_tokens"
     _obj_cls = ProjectAccessToken
     _from_parent_attrs = {"project_id": "id"}

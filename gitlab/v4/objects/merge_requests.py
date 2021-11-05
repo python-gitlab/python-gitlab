@@ -107,7 +107,7 @@ class GroupMergeRequest(RESTObject):
 
 
 class GroupMergeRequestManager(ListMixin, RESTManager):
-    _path = "/groups/%(group_id)s/merge_requests"
+    _path = "/groups/{group_id}/merge_requests"
     _obj_cls = GroupMergeRequest
     _from_parent_attrs = {"group_id": "id"}
     _list_filters = (
@@ -393,7 +393,7 @@ class ProjectMergeRequest(
 
 
 class ProjectMergeRequestManager(CRUDMixin, RESTManager):
-    _path = "/projects/%(project_id)s/merge_requests"
+    _path = "/projects/{project_id}/merge_requests"
     _obj_cls = ProjectMergeRequest
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
@@ -467,7 +467,7 @@ class ProjectDeploymentMergeRequest(MergeRequest):
 
 
 class ProjectDeploymentMergeRequestManager(MergeRequestManager):
-    _path = "/projects/%(project_id)s/deployments/%(deployment_id)s/merge_requests"
+    _path = "/projects/{project_id}/deployments/{deployment_id}/merge_requests"
     _obj_cls = ProjectDeploymentMergeRequest
     _from_parent_attrs = {"deployment_id": "id", "project_id": "project_id"}
 
@@ -477,6 +477,6 @@ class ProjectMergeRequestDiff(RESTObject):
 
 
 class ProjectMergeRequestDiffManager(RetrieveMixin, RESTManager):
-    _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/versions"
+    _path = "/projects/{project_id}/merge_requests/{mr_iid}/versions"
     _obj_cls = ProjectMergeRequestDiff
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}

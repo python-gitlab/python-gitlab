@@ -25,7 +25,7 @@ class ProjectCommitDiscussion(RESTObject):
 
 
 class ProjectCommitDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/repository/commits/%(commit_id)s/" "discussions"
+    _path = "/projects/{project_id}/repository/commits/{commit_id}/discussions"
     _obj_cls = ProjectCommitDiscussion
     _from_parent_attrs = {"project_id": "project_id", "commit_id": "id"}
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
@@ -36,7 +36,7 @@ class ProjectIssueDiscussion(RESTObject):
 
 
 class ProjectIssueDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/issues/%(issue_iid)s/discussions"
+    _path = "/projects/{project_id}/issues/{issue_iid}/discussions"
     _obj_cls = ProjectIssueDiscussion
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
@@ -49,7 +49,7 @@ class ProjectMergeRequestDiscussion(SaveMixin, RESTObject):
 class ProjectMergeRequestDiscussionManager(
     RetrieveMixin, CreateMixin, UpdateMixin, RESTManager
 ):
-    _path = "/projects/%(project_id)s/merge_requests/%(mr_iid)s/discussions"
+    _path = "/projects/{project_id}/merge_requests/{mr_iid}/discussions"
     _obj_cls = ProjectMergeRequestDiscussion
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
     _create_attrs = RequiredOptional(
@@ -63,7 +63,7 @@ class ProjectSnippetDiscussion(RESTObject):
 
 
 class ProjectSnippetDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/snippets/%(snippet_id)s/discussions"
+    _path = "/projects/{project_id}/snippets/{snippet_id}/discussions"
     _obj_cls = ProjectSnippetDiscussion
     _from_parent_attrs = {"project_id": "project_id", "snippet_id": "id"}
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))

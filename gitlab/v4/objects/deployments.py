@@ -14,7 +14,7 @@ class ProjectDeployment(SaveMixin, RESTObject):
 
 
 class ProjectDeploymentManager(RetrieveMixin, CreateMixin, UpdateMixin, RESTManager):
-    _path = "/projects/%(project_id)s/deployments"
+    _path = "/projects/{project_id}/deployments"
     _obj_cls = ProjectDeployment
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = (

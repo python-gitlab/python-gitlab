@@ -32,7 +32,7 @@ class GroupAuditEvent(RESTObject):
 
 
 class GroupAuditEventManager(RetrieveMixin, RESTManager):
-    _path = "/groups/%(group_id)s/audit_events"
+    _path = "/groups/{group_id}/audit_events"
     _obj_cls = GroupAuditEvent
     _from_parent_attrs = {"group_id": "id"}
     _list_filters = ("created_after", "created_before")
@@ -43,7 +43,7 @@ class ProjectAuditEvent(RESTObject):
 
 
 class ProjectAuditEventManager(RetrieveMixin, RESTManager):
-    _path = "/projects/%(project_id)s/audit_events"
+    _path = "/projects/{project_id}/audit_events"
     _obj_cls = ProjectAuditEvent
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = ("created_after", "created_before")
