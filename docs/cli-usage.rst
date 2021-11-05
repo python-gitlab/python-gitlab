@@ -446,6 +446,12 @@ Bash
 .. code-block:: console
 
    eval "$(register-python-argcomplete gitlab)"
+   
+For python3 and ubuntu you need to install the python3-argcomplete package.
+
+.. code-block:: console
+
+   eval "$(register-python-argcomplete3 gitlab)"
 
 tcsh
 ----
