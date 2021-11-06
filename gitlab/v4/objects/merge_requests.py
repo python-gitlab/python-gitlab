@@ -1,3 +1,8 @@
+"""
+GitLab API:
+https://docs.gitlab.com/ee/api/merge_requests.html
+https://docs.gitlab.com/ee/api/merge_request_approvals.html
+"""
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
@@ -253,6 +258,8 @@ class ProjectMergeRequest(
         Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabMRApprovalError: If the approval failed
+
+        https://docs.gitlab.com/ee/api/merge_request_approvals.html#approve-merge-request
         """
         path = f"{self.manager.path}/{self.get_id()}/approve"
         data = {}
@@ -273,6 +280,8 @@ class ProjectMergeRequest(
         Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabMRApprovalError: If the unapproval failed
+
+        https://docs.gitlab.com/ee/api/merge_request_approvals.html#unapprove-merge-request
         """
         path = f"{self.manager.path}/{self.get_id()}/unapprove"
         data = {}
