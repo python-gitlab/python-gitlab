@@ -1,3 +1,5 @@
+from typing import Any
+
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
@@ -123,7 +125,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("ProjectMilestone")
     @exc.on_http_error(exc.GitlabListError)
-    def merge_requests(self, **kwargs):
+    def merge_requests(self, **kwargs: Any) -> RESTObjectList:
         """List the merge requests related to this milestone.
 
         Args:

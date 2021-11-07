@@ -1,3 +1,5 @@
+from typing import Any, List, Union
+
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject, RESTObjectList
 
@@ -17,7 +19,7 @@ class LDAPGroupManager(RESTManager):
     _list_filters = ("search", "provider")
 
     @exc.on_http_error(exc.GitlabListError)
-    def list(self, **kwargs):
+    def list(self, **kwargs: Any) -> Union[List[LDAPGroup], RESTObjectList]:
         """Retrieve a list of objects.
 
         Args:

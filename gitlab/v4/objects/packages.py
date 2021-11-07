@@ -1,3 +1,9 @@
+"""
+GitLab API:
+https://docs.gitlab.com/ee/api/packages.html
+https://docs.gitlab.com/ee/user/packages/generic_packages/
+"""
+
 from pathlib import Path
 from typing import Any, Callable, Optional, TYPE_CHECKING, Union
 
@@ -41,7 +47,7 @@ class GenericPackageManager(RESTManager):
         package_version: str,
         file_name: str,
         path: Union[str, Path],
-        **kwargs,
+        **kwargs: Any,
     ) -> GenericPackage:
         """Upload a file as a generic package.
 
@@ -60,6 +66,8 @@ class GenericPackageManager(RESTManager):
 
         Returns:
             GenericPackage: An object storing the metadata of the uploaded package.
+
+        https://docs.gitlab.com/ee/user/packages/generic_packages/
         """
 
         try:
@@ -70,6 +78,8 @@ class GenericPackageManager(RESTManager):
 
         url = f"{self._computed_path}/{package_name}/{package_version}/{file_name}"
         server_data = self.gitlab.http_put(url, post_data=file_data, raw=True, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
 
         return self._obj_cls(
             self,

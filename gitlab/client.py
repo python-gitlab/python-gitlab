@@ -495,10 +495,10 @@ class Gitlab(object):
     def _prepare_send_data(
         self,
         files: Optional[Dict[str, Any]] = None,
-        post_data: Optional[Dict[str, Any]] = None,
+        post_data: Optional[Union[Dict[str, Any], bytes]] = None,
         raw: bool = False,
     ) -> Tuple[
-        Optional[Dict[str, Any]],
+        Optional[Union[Dict[str, Any], bytes]],
         Optional[Union[Dict[str, Any], MultipartEncoder]],
         str,
     ]:
@@ -508,6 +508,8 @@ class Gitlab(object):
             else:
                 # booleans does not exists for data (neither for MultipartEncoder):
                 # cast to string int to avoid: 'bool' object has no attribute 'encode'
+                if TYPE_CHECKING:
+                    assert isinstance(post_data, dict)
                 for k, v in post_data.items():
                     if isinstance(v, bool):
                         post_data[k] = str(int(v))
@@ -527,7 +529,7 @@ class Gitlab(object):
         verb: str,
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
-        post_data: Optional[Dict[str, Any]] = None,
+        post_data: Optional[Union[Dict[str, Any], bytes]] = None,
         raw: bool = False,
         streamed: bool = False,
         files: Optional[Dict[str, Any]] = None,
@@ -544,7 +546,7 @@ class Gitlab(object):
             path (str): Path or full URL to query ('/projects' or
                         'http://whatever/v4/api/projecs')
             query_data (dict): Data to send as query parameters
-            post_data (dict): Data to send in the body (will be converted to
+            post_data (dict|bytes): Data to send in the body (will be converted to
                               json by default)
             raw (bool): If True, do not convert post_data to json
             streamed (bool): Whether the data should be streamed
@@ -800,7 +802,7 @@ class Gitlab(object):
         self,
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
-        post_data: Optional[Dict[str, Any]] = None,
+        post_data: Optional[Union[Dict[str, Any], bytes]] = None,
         raw: bool = False,
         files: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
@@ -811,7 +813,7 @@ class Gitlab(object):
             path (str): Path or full URL to query ('/projects' or
                         'http://whatever/v4/api/projecs')
             query_data (dict): Data to send as query parameters
-            post_data (dict): Data to send in the body (will be converted to
+            post_data (dict|bytes): Data to send in the body (will be converted to
                               json by default)
             raw (bool): If True, do not convert post_data to json
             files (dict): The files to send to the server

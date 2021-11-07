@@ -1,3 +1,9 @@
+"""
+GitLab API:
+https://docs.gitlab.com/ee/api/features.html
+"""
+from typing import Any, Optional, TYPE_CHECKING, Union
+
 from gitlab import exceptions as exc
 from gitlab import utils
 from gitlab.base import RESTManager, RESTObject
@@ -20,14 +26,14 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
     @exc.on_http_error(exc.GitlabSetError)
     def set(
         self,
-        name,
-        value,
-        feature_group=None,
-        user=None,
-        group=None,
-        project=None,
-        **kwargs,
-    ):
+        name: str,
+        value: Union[bool, int],
+        feature_group: Optional[str] = None,
+        user: Optional[str] = None,
+        group: Optional[str] = None,
+        project: Optional[str] = None,
+        **kwargs: Any,
+    ) -> Feature:
         """Create or update the object.
 
         Args:
@@ -56,4 +62,6 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
         }
         data = utils.remove_none_from_dict(data)
         server_data = self.gitlab.http_post(path, post_data=data, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
         return self._obj_cls(self, server_data)

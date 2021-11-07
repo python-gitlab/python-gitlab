@@ -1,3 +1,5 @@
+from typing import Any, TYPE_CHECKING
+
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
@@ -36,7 +38,7 @@ class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
         optional=("keep_n", "name_regex_keep", "older_than"),
     )
     @exc.on_http_error(exc.GitlabDeleteError)
-    def delete_in_bulk(self, name_regex_delete, **kwargs):
+    def delete_in_bulk(self, name_regex_delete: str, **kwargs: Any) -> None:
         """Delete Tag in bulk
 
         Args:
@@ -55,4 +57,6 @@ class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
         valid_attrs = ["keep_n", "name_regex_keep", "older_than"]
         data = {"name_regex_delete": name_regex_delete}
         data.update({k: v for k, v in kwargs.items() if k in valid_attrs})
+        if TYPE_CHECKING:
+            assert self.path is not None
         self.gitlab.http_delete(self.path, query_data=data, **kwargs)
