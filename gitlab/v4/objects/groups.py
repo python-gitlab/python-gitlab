@@ -1,3 +1,8 @@
+from typing import Any, BinaryIO, cast, Dict, List, Optional, Type, TYPE_CHECKING, Union
+
+import requests
+
+import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
@@ -74,7 +79,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("Group", ("project_id",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
-    def transfer_project(self, project_id, **kwargs):
+    def transfer_project(self, project_id: int, **kwargs: Any) -> None:
         """Transfer a project to this group.
 
         Args:
@@ -90,7 +95,9 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("Group", ("scope", "search"))
     @exc.on_http_error(exc.GitlabSearchError)
-    def search(self, scope, search, **kwargs):
+    def search(
+        self, scope: str, search: str, **kwargs: Any
+    ) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
         """Search the group resources matching the provided string.'
 
         Args:
@@ -111,7 +118,9 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("Group", ("cn", "group_access", "provider"))
     @exc.on_http_error(exc.GitlabCreateError)
-    def add_ldap_group_link(self, cn, group_access, provider, **kwargs):
+    def add_ldap_group_link(
+        self, cn: str, group_access: int, provider: str, **kwargs: Any
+    ) -> None:
         """Add an LDAP group link.
 
         Args:
@@ -131,7 +140,9 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("Group", ("cn",), ("provider",))
     @exc.on_http_error(exc.GitlabDeleteError)
-    def delete_ldap_group_link(self, cn, provider=None, **kwargs):
+    def delete_ldap_group_link(
+        self, cn: str, provider: Optional[str] = None, **kwargs: Any
+    ) -> None:
         """Delete an LDAP group link.
 
         Args:
@@ -151,7 +162,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("Group")
     @exc.on_http_error(exc.GitlabCreateError)
-    def ldap_sync(self, **kwargs):
+    def ldap_sync(self, **kwargs: Any) -> None:
         """Sync LDAP groups.
 
         Args:
@@ -166,7 +177,13 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("Group", ("group_id", "group_access"), ("expires_at",))
     @exc.on_http_error(exc.GitlabCreateError)
-    def share(self, group_id, group_access, expires_at=None, **kwargs):
+    def share(
+        self,
+        group_id: int,
+        group_access: int,
+        expires_at: Optional[str] = None,
+        **kwargs: Any,
+    ) -> None:
         """Share the group with a group.
 
         Args:
@@ -177,6 +194,9 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server failed to perform the request
+
+        Returns:
+            Group
         """
         path = f"/groups/{self.get_id()}/share"
         data = {
@@ -184,11 +204,14 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             "group_access": group_access,
             "expires_at": expires_at,
         }
-        self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
+        self._update_attrs(server_data)
 
     @cli.register_custom_action("Group", ("group_id",))
     @exc.on_http_error(exc.GitlabDeleteError)
-    def unshare(self, group_id, **kwargs):
+    def unshare(self, group_id: int, **kwargs: Any) -> None:
         """Delete a shared group link within a group.
 
         Args:
@@ -269,8 +292,18 @@ class GroupManager(CRUDMixin, RESTManager):
     )
     _types = {"avatar": types.ImageAttribute, "skip_groups": types.ListAttribute}
 
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Group:
+        return cast(Group, super().get(id=id, lazy=lazy, **kwargs))
+
     @exc.on_http_error(exc.GitlabImportError)
-    def import_group(self, file, path, name, parent_id=None, **kwargs):
+    def import_group(
+        self,
+        file: BinaryIO,
+        path: str,
+        name: str,
+        parent_id: Optional[str] = None,
+        **kwargs: Any,
+    ) -> Union[Dict[str, Any], requests.Response]:
         """Import a group from an archive file.
 
         Args:
@@ -304,7 +337,7 @@ class GroupSubgroup(RESTObject):
 
 class GroupSubgroupManager(ListMixin, RESTManager):
     _path = "/groups/%(group_id)s/subgroups"
-    _obj_cls = GroupSubgroup
+    _obj_cls: Union[Type["GroupDescendantGroup"], Type[GroupSubgroup]] = GroupSubgroup
     _from_parent_attrs = {"group_id": "id"}
     _list_filters = (
         "skip_groups",
@@ -331,4 +364,4 @@ class GroupDescendantGroupManager(GroupSubgroupManager):
     """
 
     _path = "/groups/%(group_id)s/descendant_groups"
-    _obj_cls = GroupDescendantGroup
+    _obj_cls: Type[GroupDescendantGroup] = GroupDescendantGroup
