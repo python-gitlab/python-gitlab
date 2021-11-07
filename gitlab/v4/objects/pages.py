@@ -1,3 +1,5 @@
+from typing import Any, cast, Union
+
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
 
@@ -30,3 +32,8 @@ class ProjectPagesDomainManager(CRUDMixin, RESTManager):
         required=("domain",), optional=("certificate", "key")
     )
     _update_attrs = RequiredOptional(optional=("certificate", "key"))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectPagesDomain:
+        return cast(ProjectPagesDomain, super().get(id=id, lazy=lazy, **kwargs))
