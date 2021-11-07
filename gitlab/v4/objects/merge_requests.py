@@ -3,6 +3,11 @@ GitLab API:
 https://docs.gitlab.com/ee/api/merge_requests.html
 https://docs.gitlab.com/ee/api/merge_request_approvals.html
 """
+from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
+
+import requests
+
+import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
@@ -159,7 +164,9 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMROnBuildSuccessError)
-    def cancel_merge_when_pipeline_succeeds(self, **kwargs):
+    def cancel_merge_when_pipeline_succeeds(
+        self, **kwargs: Any
+    ) -> "ProjectMergeRequest":
         """Cancel merge when the pipeline succeeds.
 
         Args:
@@ -169,17 +176,23 @@ class ProjectMergeRequest(
             GitlabAuthenticationError: If authentication is not correct
             GitlabMROnBuildSuccessError: If the server could not handle the
                 request
+
+        Returns:
+            ProjectMergeRequest
         """
 
         path = (
             f"{self.manager.path}/{self.get_id()}/cancel_merge_when_pipeline_succeeds"
         )
         server_data = self.manager.gitlab.http_put(path, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
+        return ProjectMergeRequest(self.manager, server_data)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
-    def closes_issues(self, **kwargs):
+    def closes_issues(self, **kwargs: Any) -> RESTObjectList:
         """List issues that will close on merge."
 
         Args:
@@ -199,12 +212,14 @@ class ProjectMergeRequest(
         """
         path = f"{self.manager.path}/{self.get_id()}/closes_issues"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(data_list, gitlab.GitlabList)
         manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
         return RESTObjectList(manager, ProjectIssue, data_list)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
-    def commits(self, **kwargs):
+    def commits(self, **kwargs: Any) -> RESTObjectList:
         """List the merge request commits.
 
         Args:
@@ -225,12 +240,14 @@ class ProjectMergeRequest(
 
         path = f"{self.manager.path}/{self.get_id()}/commits"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(data_list, gitlab.GitlabList)
         manager = ProjectCommitManager(self.manager.gitlab, parent=self.manager._parent)
         return RESTObjectList(manager, ProjectCommit, data_list)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
-    def changes(self, **kwargs):
+    def changes(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """List the merge request changes.
 
         Args:
@@ -248,7 +265,7 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action("ProjectMergeRequest", tuple(), ("sha",))
     @exc.on_http_error(exc.GitlabMRApprovalError)
-    def approve(self, sha=None, **kwargs):
+    def approve(self, sha: Optional[str] = None, **kwargs: Any) -> Dict[str, Any]:
         """Approve the merge request.
 
         Args:
@@ -259,6 +276,9 @@ class ProjectMergeRequest(
             GitlabAuthenticationError: If authentication is not correct
             GitlabMRApprovalError: If the approval failed
 
+        Returns:
+           A dict containing the result.
+
         https://docs.gitlab.com/ee/api/merge_request_approvals.html#approve-merge-request
         """
         path = f"{self.manager.path}/{self.get_id()}/approve"
@@ -267,11 +287,14 @@ class ProjectMergeRequest(
             data["sha"] = sha
 
         server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
+        return server_data
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMRApprovalError)
-    def unapprove(self, **kwargs):
+    def unapprove(self, **kwargs: Any) -> None:
         """Unapprove the merge request.
 
         Args:
@@ -284,14 +307,16 @@ class ProjectMergeRequest(
         https://docs.gitlab.com/ee/api/merge_request_approvals.html#unapprove-merge-request
         """
         path = f"{self.manager.path}/{self.get_id()}/unapprove"
-        data = {}
+        data: Dict[str, Any] = {}
 
         server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMRRebaseError)
-    def rebase(self, **kwargs):
+    def rebase(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Attempt to rebase the source branch onto the target branch
 
         Args:
@@ -302,12 +327,12 @@ class ProjectMergeRequest(
             GitlabMRRebaseError: If rebasing failed
         """
         path = f"{self.manager.path}/{self.get_id()}/rebase"
-        data = {}
+        data: Dict[str, Any] = {}
         return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabGetError)
-    def merge_ref(self, **kwargs):
+    def merge_ref(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Attempt to merge changes between source and target branches into
             `refs/merge-requests/:iid/merge`.
 
@@ -332,15 +357,15 @@ class ProjectMergeRequest(
     @exc.on_http_error(exc.GitlabMRClosedError)
     def merge(
         self,
-        merge_commit_message=None,
-        should_remove_source_branch=False,
-        merge_when_pipeline_succeeds=False,
-        **kwargs,
-    ):
+        merge_commit_message: Optional[str] = None,
+        should_remove_source_branch: bool = False,
+        merge_when_pipeline_succeeds: bool = False,
+        **kwargs: Any,
+    ) -> Dict[str, Any]:
         """Accept the merge request.
 
         Args:
-            merge_commit_message (bool): Commit message
+            merge_commit_message (str): Commit message
             should_remove_source_branch (bool): If True, removes the source
                                                 branch
             merge_when_pipeline_succeeds (bool): Wait for the build to succeed,
@@ -352,7 +377,7 @@ class ProjectMergeRequest(
             GitlabMRClosedError: If the merge failed
         """
         path = f"{self.manager.path}/{self.get_id()}/merge"
-        data = {}
+        data: Dict[str, Any] = {}
         if merge_commit_message:
             data["merge_commit_message"] = merge_commit_message
         if should_remove_source_branch is not None:
@@ -361,7 +386,10 @@ class ProjectMergeRequest(
             data["merge_when_pipeline_succeeds"] = True
 
         server_data = self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
+        return server_data
 
 
 class ProjectMergeRequestManager(CRUDMixin, RESTManager):
@@ -427,6 +455,11 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
         "iids": types.ListAttribute,
         "labels": types.ListAttribute,
     }
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectMergeRequest:
+        return cast(ProjectMergeRequest, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectDeploymentMergeRequest(MergeRequest):
