@@ -1,3 +1,5 @@
+from typing import Any, cast, Union
+
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, RetrieveMixin, SaveMixin, UpdateMixin
 
@@ -28,3 +30,8 @@ class ProjectDeploymentManager(RetrieveMixin, CreateMixin, UpdateMixin, RESTMana
     _create_attrs = RequiredOptional(
         required=("sha", "ref", "tag", "status", "environment")
     )
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectDeployment:
+        return cast(ProjectDeployment, super().get(id=id, lazy=lazy, **kwargs))

@@ -1,3 +1,5 @@
+from typing import Any, cast, Union
+
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, NoUpdateMixin, ObjectDeleteMixin, SaveMixin
 
@@ -20,6 +22,9 @@ class HookManager(NoUpdateMixin, RESTManager):
     _path = "/hooks"
     _obj_cls = Hook
     _create_attrs = RequiredOptional(required=("url",))
+
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Hook:
+        return cast(Hook, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -62,6 +67,11 @@ class ProjectHookManager(CRUDMixin, RESTManager):
             "token",
         ),
     )
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectHook:
+        return cast(ProjectHook, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class GroupHook(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -112,3 +122,6 @@ class GroupHookManager(CRUDMixin, RESTManager):
             "token",
         ),
     )
+
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> GroupHook:
+        return cast(GroupHook, super().get(id=id, lazy=lazy, **kwargs))

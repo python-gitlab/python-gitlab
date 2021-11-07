@@ -1,4 +1,4 @@
-from typing import Any, TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING, Union
 
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -60,3 +60,8 @@ class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
         if TYPE_CHECKING:
             assert self.path is not None
         self.gitlab.http_delete(self.path, query_data=data, **kwargs)
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectRegistryTag:
+        return cast(ProjectRegistryTag, super().get(id=id, lazy=lazy, **kwargs))

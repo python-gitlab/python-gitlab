@@ -5,7 +5,7 @@ https://docs.gitlab.com/ee/user/packages/generic_packages/
 """
 
 from pathlib import Path
-from typing import Any, Callable, Optional, TYPE_CHECKING, Union
+from typing import Any, Callable, cast, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -166,6 +166,11 @@ class ProjectPackageManager(ListMixin, GetMixin, DeleteMixin, RESTManager):
         "package_type",
         "package_name",
     )
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectPackage:
+        return cast(ProjectPackage, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectPackageFile(RESTObject):

@@ -22,6 +22,9 @@ class GroupBadgeManager(BadgeRenderMixin, CRUDMixin, RESTManager):
     _create_attrs = RequiredOptional(required=("link_url", "image_url"))
     _update_attrs = RequiredOptional(optional=("link_url", "image_url"))
 
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> GroupBadge:
+        return cast(GroupBadge, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class ProjectBadge(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass

@@ -1,3 +1,5 @@
+from typing import Any, cast, Union
+
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import NoUpdateMixin, ObjectDeleteMixin
 
@@ -18,6 +20,11 @@ class ProjectBranchManager(NoUpdateMixin, RESTManager):
     _obj_cls = ProjectBranch
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(required=("branch", "ref"))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectBranch:
+        return cast(ProjectBranch, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectProtectedBranch(ObjectDeleteMixin, RESTObject):
@@ -40,3 +47,8 @@ class ProjectProtectedBranchManager(NoUpdateMixin, RESTManager):
             "code_owner_approval_required",
         ),
     )
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectProtectedBranch:
+        return cast(ProjectProtectedBranch, super().get(id=id, lazy=lazy, **kwargs))

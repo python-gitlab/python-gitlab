@@ -1,4 +1,4 @@
-from typing import Any, Dict, Union
+from typing import Any, cast, Dict, Union
 
 import requests
 
@@ -48,3 +48,8 @@ class ProjectEnvironmentManager(
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(required=("name",), optional=("external_url",))
     _update_attrs = RequiredOptional(optional=("name", "external_url"))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectEnvironment:
+        return cast(ProjectEnvironment, super().get(id=id, lazy=lazy, **kwargs))
