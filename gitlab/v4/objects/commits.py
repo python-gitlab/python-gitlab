@@ -1,3 +1,7 @@
+from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
+
+import requests
+
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
@@ -24,7 +28,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action("ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    def diff(self, **kwargs):
+    def diff(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Generate the commit diff.
 
         Args:
@@ -42,7 +46,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action("ProjectCommit", ("branch",))
     @exc.on_http_error(exc.GitlabCherryPickError)
-    def cherry_pick(self, branch, **kwargs):
+    def cherry_pick(self, branch: str, **kwargs: Any) -> None:
         """Cherry-pick a commit into a branch.
 
         Args:
@@ -59,7 +63,9 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action("ProjectCommit", optional=("type",))
     @exc.on_http_error(exc.GitlabGetError)
-    def refs(self, type="all", **kwargs):
+    def refs(
+        self, type: str = "all", **kwargs: Any
+    ) -> Union[Dict[str, Any], requests.Response]:
         """List the references the commit is pushed to.
 
         Args:
@@ -79,7 +85,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action("ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    def merge_requests(self, **kwargs):
+    def merge_requests(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """List the merge requests related to the commit.
 
         Args:
@@ -97,7 +103,9 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action("ProjectCommit", ("branch",))
     @exc.on_http_error(exc.GitlabRevertError)
-    def revert(self, branch, **kwargs):
+    def revert(
+        self, branch: str, **kwargs: Any
+    ) -> Union[Dict[str, Any], requests.Response]:
         """Revert a commit on a given branch.
 
         Args:
@@ -117,7 +125,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action("ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    def signature(self, **kwargs):
+    def signature(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Get the signature of the commit.
 
         Args:
@@ -172,7 +180,9 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
     )
 
     @exc.on_http_error(exc.GitlabCreateError)
-    def create(self, data, **kwargs):
+    def create(
+        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> ProjectCommitStatus:
         """Create a new object.
 
         Args:
@@ -193,8 +203,13 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
         # they are missing when using only the API
         # See #511
         base_path = "/projects/%(project_id)s/statuses/%(commit_id)s"
-        if "project_id" in data and "commit_id" in data:
+        path: Optional[str]
+        if data is not None and "project_id" in data and "commit_id" in data:
             path = base_path % data
         else:
             path = self._compute_path(base_path)
-        return CreateMixin.create(self, data, path=path, **kwargs)
+        if TYPE_CHECKING:
+            assert path is not None
+        return cast(
+            ProjectCommitStatus, CreateMixin.create(self, data, path=path, **kwargs)
+        )
