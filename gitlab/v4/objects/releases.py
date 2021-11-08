@@ -1,3 +1,5 @@
+from typing import Any, cast, Union
+
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
@@ -26,6 +28,11 @@ class ProjectReleaseManager(CRUDMixin, RESTManager):
         optional=("name", "description", "milestones", "released_at")
     )
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectRelease:
+        return cast(ProjectRelease, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class ProjectReleaseLink(ObjectDeleteMixin, SaveMixin, RESTObject):
     pass
@@ -39,3 +46,8 @@ class ProjectReleaseLinkManager(CRUDMixin, RESTManager):
         required=("name", "url"), optional=("filepath", "link_type")
     )
     _update_attrs = RequiredOptional(optional=("name", "url", "filepath", "link_type"))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectReleaseLink:
+        return cast(ProjectReleaseLink, super().get(id=id, lazy=lazy, **kwargs))

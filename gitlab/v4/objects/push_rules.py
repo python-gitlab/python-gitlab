@@ -1,3 +1,5 @@
+from typing import Any, cast, Optional, Union
+
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
@@ -48,3 +50,8 @@ class ProjectPushRulesManager(
             "max_file_size",
         ),
     )
+
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[ProjectPushRules]:
+        return cast(ProjectPushRules, super().get(id=id, **kwargs))

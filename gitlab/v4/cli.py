@@ -103,6 +103,8 @@ class GitlabCLI(object):
             if TYPE_CHECKING:
                 assert export_status is not None
             data = export_status.download()
+            if TYPE_CHECKING:
+                assert data is not None
             sys.stdout.buffer.write(data)
 
         except Exception as e:

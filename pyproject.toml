@@ -12,7 +12,19 @@ files = "."
 module = [
     "docs.*",
     "docs.ext.*",
-    "gitlab.v4.objects.*",
+    "gitlab.v4.objects.epics",
+    "gitlab.v4.objects.files",
+    "gitlab.v4.objects.geo_nodes",
+    "gitlab.v4.objects.issues",
+    "gitlab.v4.objects.jobs",
+    "gitlab.v4.objects.labels",
+    "gitlab.v4.objects.merge_request_approvals",
+    "gitlab.v4.objects.milestones",
+    "gitlab.v4.objects.pipelines",
+    "gitlab.v4.objects.repositories",
+    "gitlab.v4.objects.services",
+    "gitlab.v4.objects.sidekiq",
+    "gitlab.v4.objects.snippets",
     "setup",
     "tests.functional.*",
     "tests.functional.api.*",
@@ -20,29 +32,6 @@ module = [
     "tests.smoke.*"
 ]
 ignore_errors = true
-
-[[tool.mypy.overrides]] # Overrides to negate above patterns
-module = [
-    "gitlab.v4.objects.access_requests",
-    "gitlab.v4.objects.applications",
-    "gitlab.v4.objects.broadcast_messages",
-    "gitlab.v4.objects.deployments",
-    "gitlab.v4.objects.commits",
-    "gitlab.v4.objects.groups",
-    "gitlab.v4.objects.keys",
-    "gitlab.v4.objects.merge_requests",
-    "gitlab.v4.objects.merge_trains",
-    "gitlab.v4.objects.namespaces",
-    "gitlab.v4.objects.pages",
-    "gitlab.v4.objects.personal_access_tokens",
-    "gitlab.v4.objects.project_access_tokens",
-    "gitlab.v4.objects.projects",
-    "gitlab.v4.objects.tags",
-    "gitlab.v4.objects.templates",
-    "gitlab.v4.objects.triggers",
-    "gitlab.v4.objects.users",
-]
-ignore_errors = false
 
 [tool.semantic_release]
 branch = "main"

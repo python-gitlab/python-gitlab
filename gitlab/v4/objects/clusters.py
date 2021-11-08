@@ -1,3 +1,5 @@
+from typing import Any, cast, Dict, Optional
+
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, CRUDMixin, ObjectDeleteMixin, SaveMixin
@@ -33,7 +35,9 @@ class GroupClusterManager(CRUDMixin, RESTManager):
     )
 
     @exc.on_http_error(exc.GitlabStopError)
-    def create(self, data, **kwargs):
+    def create(
+        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> GroupCluster:
         """Create a new object.
 
         Args:
@@ -51,7 +55,7 @@ class GroupClusterManager(CRUDMixin, RESTManager):
                         the data sent by the server
         """
         path = f"{self.path}/user"
-        return CreateMixin.create(self, data, path=path, **kwargs)
+        return cast(GroupCluster, CreateMixin.create(self, data, path=path, **kwargs))
 
 
 class ProjectCluster(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -77,7 +81,9 @@ class ProjectClusterManager(CRUDMixin, RESTManager):
     )
 
     @exc.on_http_error(exc.GitlabStopError)
-    def create(self, data, **kwargs):
+    def create(
+        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> ProjectCluster:
         """Create a new object.
 
         Args:
@@ -95,4 +101,4 @@ class ProjectClusterManager(CRUDMixin, RESTManager):
                         the data sent by the server
         """
         path = f"{self.path}/user"
-        return CreateMixin.create(self, data, path=path, **kwargs)
+        return cast(ProjectCluster, CreateMixin.create(self, data, path=path, **kwargs))

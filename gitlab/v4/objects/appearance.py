@@ -1,3 +1,5 @@
+from typing import Any, cast, Dict, Optional, Union
+
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
@@ -32,7 +34,12 @@ class ApplicationAppearanceManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     )
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def update(self, id=None, new_data=None, **kwargs):
+    def update(
+        self,
+        id: Optional[Union[str, int]] = None,
+        new_data: Dict[str, Any] = None,
+        **kwargs: Any
+    ) -> Dict[str, Any]:
         """Update an object on the server.
 
         Args:
@@ -49,4 +56,9 @@ class ApplicationAppearanceManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         """
         new_data = new_data or {}
         data = new_data.copy()
-        super(ApplicationAppearanceManager, self).update(id, data, **kwargs)
+        return super(ApplicationAppearanceManager, self).update(id, data, **kwargs)
+
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[ApplicationAppearance]:
+        return cast(ApplicationAppearance, super().get(id=id, **kwargs))

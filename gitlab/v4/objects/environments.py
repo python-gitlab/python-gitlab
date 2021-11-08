@@ -1,3 +1,7 @@
+from typing import Any, Dict, Union
+
+import requests
+
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
@@ -19,7 +23,7 @@ __all__ = [
 class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("ProjectEnvironment")
     @exc.on_http_error(exc.GitlabStopError)
-    def stop(self, **kwargs):
+    def stop(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Stop the environment.
 
         Args:
@@ -28,9 +32,12 @@ class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
         Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabStopError: If the operation failed
+
+        Returns:
+           A dict of the result.
         """
         path = f"{self.manager.path}/{self.get_id()}/stop"
-        self.manager.gitlab.http_post(path, **kwargs)
+        return self.manager.gitlab.http_post(path, **kwargs)
 
 
 class ProjectEnvironmentManager(

@@ -1,3 +1,5 @@
+from typing import Any, cast, Dict, Optional, Union
+
 from gitlab import exceptions as exc
 from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
@@ -87,7 +89,12 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     }
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def update(self, id=None, new_data=None, **kwargs):
+    def update(
+        self,
+        id: Optional[Union[str, int]] = None,
+        new_data: Dict[str, Any] = None,
+        **kwargs: Any
+    ) -> Dict[str, Any]:
         """Update an object on the server.
 
         Args:
@@ -106,4 +113,9 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         data = new_data.copy()
         if "domain_whitelist" in data and data["domain_whitelist"] is None:
             data.pop("domain_whitelist")
-        super(ApplicationSettingsManager, self).update(id, data, **kwargs)
+        return super(ApplicationSettingsManager, self).update(id, data, **kwargs)
+
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[ApplicationSettings]:
+        return cast(ApplicationSettings, super().get(id=id, **kwargs))
