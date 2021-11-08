@@ -66,6 +66,7 @@ class GroupEpicIssue(ObjectDeleteMixin, SaveMixin, RESTObject):
         # call the manager
         obj_id = self.get_id()
         self.manager.update(obj_id, updated_data, **kwargs)
+        raise ValueError("fail")
 
 
 class GroupEpicIssueManager(
