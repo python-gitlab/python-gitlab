@@ -27,6 +27,7 @@ module = [
     "gitlab.v4.objects.applications",
     "gitlab.v4.objects.broadcast_messages",
     "gitlab.v4.objects.deployments",
+    "gitlab.v4.objects.commits",
     "gitlab.v4.objects.groups",
     "gitlab.v4.objects.keys",
     "gitlab.v4.objects.merge_requests",
