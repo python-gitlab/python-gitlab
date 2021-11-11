@@ -80,7 +80,7 @@ Remove a group::
 
 Share/unshare the group with a group::
 
-    group.share(group2.id, gitlab.const.DEVELOPER_ACCESS)
+    group.share(group2.id, gitlab.const.AccessLevel.DEVELOPER.value)
     group.unshare(group2.id)
 
 Import / Export
@@ -237,11 +237,11 @@ Group members
 
 The following constants define the supported access levels:
 
-* ``gitlab.const.GUEST_ACCESS = 10``
-* ``gitlab.const.REPORTER_ACCESS = 20``
-* ``gitlab.const.DEVELOPER_ACCESS = 30``
-* ``gitlab.const.MAINTAINER_ACCESS = 40``
-* ``gitlab.const.OWNER_ACCESS = 50``
+* ``gitlab.const.AccessLevel.GUEST = 10``
+* ``gitlab.const.AccessLevel.REPORTER = 20``
+* ``gitlab.const.AccessLevel.DEVELOPER = 30``
+* ``gitlab.const.AccessLevel.MAINTAINER = 40``
+* ``gitlab.const.AccessLevel.OWNER = 50``
 
 Reference
 ---------
@@ -284,11 +284,11 @@ Get a member of a group, including members inherited through ancestor groups::
 Add a member to the group::
 
     member = group.members.create({'user_id': user_id,
-                                   'access_level': gitlab.const.GUEST_ACCESS})
+                                   'access_level': gitlab.const.AccessLevel.GUEST.value})
 
 Update a member (change the access level)::
 
-    member.access_level = gitlab.const.DEVELOPER_ACCESS
+    member.access_level = gitlab.const.AccessLevel.DEVELOPER.value
     member.save()
 
 Remove a member from the group::
@@ -316,7 +316,7 @@ LDAP group links
 
 Add an LDAP group link to an existing GitLab group::
 
-    group.add_ldap_group_link(ldap_group_cn, gitlab.const.DEVELOPER_ACCESS, 'ldapmain')
+    group.add_ldap_group_link(ldap_group_cn, gitlab.const.AccessLevel.DEVELOPER.value, 'ldapmain')
 
 Remove a link::
 
