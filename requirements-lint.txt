@@ -2,5 +2,5 @@ black==20.8b1
 flake8==4.0.1
 isort==5.10.1
 mypy==0.910
-types-PyYAML==6.0.0
+types-PyYAML==6.0.1
 types-requests==2.26.0
