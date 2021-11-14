@@ -1,7 +1,11 @@
+from typing import Any, Callable, cast, List, Optional, TYPE_CHECKING, Union
+
+import requests
+
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import utils
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin, UserAgentDetailMixin
 
 from .award_emojis import ProjectSnippetAwardEmojiManager  # noqa: F401
@@ -21,7 +25,13 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("Snippet")
     @exc.on_http_error(exc.GitlabGetError)
-    def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+    def content(
+        self,
+        streamed: bool = False,
+        action: Optional[Callable[..., Any]] = None,
+        chunk_size: int = 1024,
+        **kwargs: Any,
+    ) -> Optional[bytes]:
         """Return the content of a snippet.
 
         Args:
@@ -44,6 +54,8 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
+        if TYPE_CHECKING:
+            assert isinstance(result, requests.Response)
         return utils.response_content(result, streamed, action, chunk_size)
 
 
@@ -58,7 +70,7 @@ class SnippetManager(CRUDMixin, RESTManager):
     )
 
     @cli.register_custom_action("SnippetManager")
-    def public(self, **kwargs):
+    def public(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
         """List all the public snippets.
 
         Args:
@@ -73,6 +85,9 @@ class SnippetManager(CRUDMixin, RESTManager):
         """
         return self.list(path="/snippets/public", **kwargs)
 
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Snippet:
+        return cast(Snippet, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _url = "/projects/{project_id}/snippets"
@@ -84,7 +99,13 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
 
     @cli.register_custom_action("ProjectSnippet")
     @exc.on_http_error(exc.GitlabGetError)
-    def content(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+    def content(
+        self,
+        streamed: bool = False,
+        action: Optional[Callable[..., Any]] = None,
+        chunk_size: int = 1024,
+        **kwargs: Any,
+    ) -> Optional[bytes]:
         """Return the content of a snippet.
 
         Args:
@@ -107,6 +128,8 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
+        if TYPE_CHECKING:
+            assert isinstance(result, requests.Response)
         return utils.response_content(result, streamed, action, chunk_size)
 
 
@@ -121,3 +144,8 @@ class ProjectSnippetManager(CRUDMixin, RESTManager):
     _update_attrs = RequiredOptional(
         optional=("title", "file_name", "content", "visibility", "description"),
     )
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectSnippet:
+        return cast(ProjectSnippet, super().get(id=id, lazy=lazy, **kwargs))
