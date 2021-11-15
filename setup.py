@@ -4,11 +4,14 @@
 from setuptools import find_packages, setup
 
 
-def get_version():
+def get_version() -> str:
+    version = ""
     with open("gitlab/__version__.py") as f:
         for line in f:
             if line.startswith("__version__"):
-                return eval(line.split("=")[-1])
+                version = eval(line.split("=")[-1])
+                break
+    return version
 
 
 with open("README.rst", "r") as readme_file:
