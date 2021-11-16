@@ -24,7 +24,6 @@ module = [
     "gitlab.v4.objects.repositories",
     "gitlab.v4.objects.services",
     "gitlab.v4.objects.sidekiq",
-    "setup",
     "tests.functional.*",
     "tests.functional.api.*",
     "tests.meta.*",
