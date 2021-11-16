@@ -1,3 +1,5 @@
+from typing import Any, cast, Union
+
 from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
@@ -39,6 +41,11 @@ class GroupMemberManager(CRUDMixin, RESTManager):
     )
     _types = {"user_ids": types.ListAttribute}
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> GroupMember:
+        return cast(GroupMember, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class GroupBillableMember(ObjectDeleteMixin, RESTObject):
     _short_print_attr = "username"
@@ -68,6 +75,11 @@ class GroupMemberAllManager(RetrieveMixin, RESTManager):
     _obj_cls = GroupMember
     _from_parent_attrs = {"group_id": "id"}
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> GroupMember:
+        return cast(GroupMember, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class ProjectMember(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "username"
@@ -85,8 +97,18 @@ class ProjectMemberManager(CRUDMixin, RESTManager):
     )
     _types = {"user_ids": types.ListAttribute}
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectMember:
+        return cast(ProjectMember, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class ProjectMemberAllManager(RetrieveMixin, RESTManager):
     _path = "/projects/{project_id}/members/all"
     _obj_cls = ProjectMember
     _from_parent_attrs = {"project_id": "id"}
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectMember:
+        return cast(ProjectMember, super().get(id=id, lazy=lazy, **kwargs))

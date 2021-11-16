@@ -480,3 +480,8 @@ class ProjectMergeRequestDiffManager(RetrieveMixin, RESTManager):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/versions"
     _obj_cls = ProjectMergeRequestDiff
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectMergeRequestDiff:
+        return cast(ProjectMergeRequestDiff, super().get(id=id, lazy=lazy, **kwargs))

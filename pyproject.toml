@@ -27,6 +27,7 @@ module = [
     "setup",
     "tests.functional.*",
     "tests.functional.api.*",
+    "tests.meta.*",
     "tests.unit.*",
     "tests.smoke.*"
 ]

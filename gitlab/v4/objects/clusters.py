@@ -1,4 +1,4 @@
-from typing import Any, cast, Dict, Optional
+from typing import Any, cast, Dict, Optional, Union
 
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
@@ -57,6 +57,11 @@ class GroupClusterManager(CRUDMixin, RESTManager):
         path = f"{self.path}/user"
         return cast(GroupCluster, CreateMixin.create(self, data, path=path, **kwargs))
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> GroupCluster:
+        return cast(GroupCluster, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class ProjectCluster(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
@@ -102,3 +107,8 @@ class ProjectClusterManager(CRUDMixin, RESTManager):
         """
         path = f"{self.path}/user"
         return cast(ProjectCluster, CreateMixin.create(self, data, path=path, **kwargs))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectCluster:
+        return cast(ProjectCluster, super().get(id=id, lazy=lazy, **kwargs))

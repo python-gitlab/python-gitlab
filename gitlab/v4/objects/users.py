@@ -74,6 +74,11 @@ class CurrentUserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManag
     _obj_cls = CurrentUserEmail
     _create_attrs = RequiredOptional(required=("email",))
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> CurrentUserEmail:
+        return cast(CurrentUserEmail, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class CurrentUserGPGKey(ObjectDeleteMixin, RESTObject):
     pass
@@ -84,6 +89,11 @@ class CurrentUserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTMana
     _obj_cls = CurrentUserGPGKey
     _create_attrs = RequiredOptional(required=("key",))
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> CurrentUserGPGKey:
+        return cast(CurrentUserGPGKey, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class CurrentUserKey(ObjectDeleteMixin, RESTObject):
     _short_print_attr = "title"
@@ -93,6 +103,11 @@ class CurrentUserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager
     _path = "/user/keys"
     _obj_cls = CurrentUserKey
     _create_attrs = RequiredOptional(required=("title", "key"))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> CurrentUserKey:
+        return cast(CurrentUserKey, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class CurrentUserStatus(SaveMixin, RESTObject):
@@ -357,6 +372,9 @@ class UserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(required=("email",))
 
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> UserEmail:
+        return cast(UserEmail, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class UserActivities(RESTObject):
     _id_attr = "username"
@@ -387,6 +405,9 @@ class UserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _obj_cls = UserGPGKey
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(required=("key",))
+
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> UserGPGKey:
+        return cast(UserGPGKey, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class UserKey(ObjectDeleteMixin, RESTObject):
@@ -424,6 +445,11 @@ class UserImpersonationTokenManager(NoUpdateMixin, RESTManager):
     )
     _list_filters = ("state",)
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> UserImpersonationToken:
+        return cast(UserImpersonationToken, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class UserMembership(RESTObject):
     _id_attr = "source_id"
@@ -434,6 +460,11 @@ class UserMembershipManager(RetrieveMixin, RESTManager):
     _obj_cls = UserMembership
     _from_parent_attrs = {"user_id": "id"}
     _list_filters = ("type",)
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> UserMembership:
+        return cast(UserMembership, super().get(id=id, lazy=lazy, **kwargs))
 
 
 # Having this outside projects avoids circular imports due to ProjectUser

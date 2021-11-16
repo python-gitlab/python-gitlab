@@ -1,3 +1,5 @@
+from typing import Any, cast, Union
+
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
@@ -46,6 +48,11 @@ class ProjectNoteManager(RetrieveMixin, RESTManager):
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(required=("body",))
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectNote:
+        return cast(ProjectNote, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class ProjectCommitDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
@@ -69,6 +76,13 @@ class ProjectCommitDiscussionNoteManager(
     )
     _update_attrs = RequiredOptional(required=("body",))
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectCommitDiscussionNote:
+        return cast(
+            ProjectCommitDiscussionNote, super().get(id=id, lazy=lazy, **kwargs)
+        )
+
 
 class ProjectIssueNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     awardemojis: ProjectIssueNoteAwardEmojiManager
@@ -80,6 +94,11 @@ class ProjectIssueNoteManager(CRUDMixin, RESTManager):
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
     _update_attrs = RequiredOptional(required=("body",))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectIssueNote:
+        return cast(ProjectIssueNote, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectIssueDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -101,6 +120,11 @@ class ProjectIssueDiscussionNoteManager(
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
     _update_attrs = RequiredOptional(required=("body",))
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectIssueDiscussionNote:
+        return cast(ProjectIssueDiscussionNote, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class ProjectMergeRequestNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     awardemojis: ProjectMergeRequestNoteAwardEmojiManager
@@ -112,6 +136,11 @@ class ProjectMergeRequestNoteManager(CRUDMixin, RESTManager):
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
     _create_attrs = RequiredOptional(required=("body",))
     _update_attrs = RequiredOptional(required=("body",))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectMergeRequestNote:
+        return cast(ProjectMergeRequestNote, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectMergeRequestDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -134,6 +163,13 @@ class ProjectMergeRequestDiscussionNoteManager(
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
     _update_attrs = RequiredOptional(required=("body",))
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectMergeRequestDiscussionNote:
+        return cast(
+            ProjectMergeRequestDiscussionNote, super().get(id=id, lazy=lazy, **kwargs)
+        )
+
 
 class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     awardemojis: ProjectMergeRequestNoteAwardEmojiManager
@@ -145,6 +181,11 @@ class ProjectSnippetNoteManager(CRUDMixin, RESTManager):
     _from_parent_attrs = {"project_id": "project_id", "snippet_id": "id"}
     _create_attrs = RequiredOptional(required=("body",))
     _update_attrs = RequiredOptional(required=("body",))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectSnippetNote:
+        return cast(ProjectSnippetNote, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectSnippetDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -166,3 +207,10 @@ class ProjectSnippetDiscussionNoteManager(
     }
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
     _update_attrs = RequiredOptional(required=("body",))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectSnippetDiscussionNote:
+        return cast(
+            ProjectSnippetDiscussionNote, super().get(id=id, lazy=lazy, **kwargs)
+        )

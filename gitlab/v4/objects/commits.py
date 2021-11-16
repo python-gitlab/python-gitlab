@@ -151,6 +151,11 @@ class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
         optional=("author_email", "author_name"),
     )
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectCommit:
+        return cast(ProjectCommit, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class ProjectCommitComment(RESTObject):
     _id_attr = None
