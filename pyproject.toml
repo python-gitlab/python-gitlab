@@ -18,7 +18,6 @@ module = [
     "gitlab.v4.objects.issues",
     "gitlab.v4.objects.jobs",
     "gitlab.v4.objects.labels",
-    "gitlab.v4.objects.merge_request_approvals",
     "gitlab.v4.objects.milestones",
     "gitlab.v4.objects.pipelines",
     "gitlab.v4.objects.repositories",
