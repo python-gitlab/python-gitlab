@@ -1,3 +1,5 @@
+from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
+
 from gitlab import exceptions as exc
 from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
@@ -42,11 +44,17 @@ class GroupEpicManager(CRUDMixin, RESTManager):
     )
     _types = {"labels": types.ListAttribute}
 
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> GroupEpic:
+        return cast(GroupEpic, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class GroupEpicIssue(ObjectDeleteMixin, SaveMixin, RESTObject):
     _id_attr = "epic_issue_id"
+    # Define type for 'manager' here So mypy won't complain about
+    # 'self.manager.update()' call in the 'save' method.
+    manager: "GroupEpicIssueManager"
 
-    def save(self, **kwargs):
+    def save(self, **kwargs: Any) -> None:
         """Save the changes made to the object to the server.
 
         The object is updated to match what the server returns.
@@ -78,7 +86,9 @@ class GroupEpicIssueManager(
     _update_attrs = RequiredOptional(optional=("move_before_id", "move_after_id"))
 
     @exc.on_http_error(exc.GitlabCreateError)
-    def create(self, data, **kwargs):
+    def create(
+        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> GroupEpicIssue:
         """Create a new object.
 
         Args:
@@ -94,9 +104,13 @@ class GroupEpicIssueManager(
             RESTObject: A new instance of the manage object class build with
                         the data sent by the server
         """
+        if TYPE_CHECKING:
+            assert data is not None
         CreateMixin._check_missing_create_attrs(self, data)
         path = f"{self.path}/{data.pop('issue_id')}"
         server_data = self.gitlab.http_post(path, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
         # The epic_issue_id attribute doesn't exist when creating the resource,
         # but is used everywhere elese. Let's create it to be consistent client
         # side
