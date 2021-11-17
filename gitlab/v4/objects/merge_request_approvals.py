@@ -1,3 +1,5 @@
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
+
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
@@ -44,7 +46,12 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _update_uses_post = True
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def set_approvers(self, approver_ids=None, approver_group_ids=None, **kwargs):
+    def set_approvers(
+        self,
+        approver_ids: Optional[List[int]] = None,
+        approver_group_ids: Optional[List[int]] = None,
+        **kwargs: Any,
+    ) -> Dict[str, Any]:
         """Change project-level allowed approvers and approver groups.
 
         Args:
@@ -54,13 +61,21 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabUpdateError: If the server failed to perform the request
+
+        Returns:
+            A dict value of the result
         """
         approver_ids = approver_ids or []
         approver_group_ids = approver_group_ids or []
 
+        if TYPE_CHECKING:
+            assert self._parent is not None
         path = f"/projects/{self._parent.get_id()}/approvers"
         data = {"approver_ids": approver_ids, "approver_group_ids": approver_group_ids}
-        self.gitlab.http_put(path, post_data=data, **kwargs)
+        result = self.gitlab.http_put(path, post_data=data, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(result, dict)
+        return result
 
 
 class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -93,12 +108,12 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
     @exc.on_http_error(exc.GitlabUpdateError)
     def set_approvers(
         self,
-        approvals_required,
-        approver_ids=None,
-        approver_group_ids=None,
-        approval_rule_name="name",
-        **kwargs,
-    ):
+        approvals_required: int,
+        approver_ids: Optional[List[int]] = None,
+        approver_group_ids: Optional[List[int]] = None,
+        approval_rule_name: str = "name",
+        **kwargs: Any,
+    ) -> RESTObject:
         """Change MR-level allowed approvers and approver groups.
 
         Args:
@@ -120,7 +135,11 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
             "user_ids": approver_ids,
             "group_ids": approver_group_ids,
         }
-        approval_rules = self._parent.approval_rules
+        if TYPE_CHECKING:
+            assert self._parent is not None
+        approval_rules: ProjectMergeRequestApprovalRuleManager = (
+            self._parent.approval_rules
+        )
         """ update any existing approval rule matching the name"""
         existing_approval_rules = approval_rules.list()
         for ar in existing_approval_rules:
@@ -137,9 +156,10 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
 class ProjectMergeRequestApprovalRule(SaveMixin, RESTObject):
     _id_attr = "approval_rule_id"
     _short_print_attr = "approval_rule"
+    id: int
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def save(self, **kwargs):
+    def save(self, **kwargs: Any) -> None:
         """Save the changes made to the object to the server.
 
         The object is updated to match what the server returns.
@@ -185,7 +205,9 @@ class ProjectMergeRequestApprovalRuleManager(
         optional=("approval_project_rule_id", "user_ids", "group_ids"),
     )
 
-    def create(self, data, **kwargs):
+    def create(
+        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> RESTObject:
         """Create a new object.
 
         Args:
@@ -202,6 +224,8 @@ class ProjectMergeRequestApprovalRuleManager(
             RESTObject: A new instance of the manage object class build with
                         the data sent by the server
         """
+        if TYPE_CHECKING:
+            assert data is not None
         new_data = data.copy()
         new_data["id"] = self._from_parent_attrs["project_id"]
         new_data["merge_request_iid"] = self._from_parent_attrs["mr_iid"]
