@@ -36,7 +36,11 @@ def test_groups(gl):
 
     filtered_groups = gl.groups.list(skip_groups=[group3.id, group4.id])
     assert group3 not in filtered_groups
+    assert group4 not in filtered_groups
+
+    filtered_groups = gl.groups.list(skip_groups=[group3.id])
     assert group3 not in filtered_groups
+    assert group4 in filtered_groups
 
     group1.members.create(
         {"access_level": gitlab.const.OWNER_ACCESS, "user_id": user.id}
