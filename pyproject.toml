@@ -13,7 +13,6 @@ module = [
     "docs.*",
     "docs.ext.*",
     "gitlab.v4.objects.files",
-    "gitlab.v4.objects.issues",
     "gitlab.v4.objects.jobs",
     "gitlab.v4.objects.labels",
     "gitlab.v4.objects.milestones",
