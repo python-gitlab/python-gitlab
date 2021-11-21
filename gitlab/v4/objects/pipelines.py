@@ -1,3 +1,7 @@
+from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
+
+import requests
+
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
@@ -52,7 +56,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineCancelError)
-    def cancel(self, **kwargs):
+    def cancel(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Cancel the job.
 
         Args:
@@ -67,7 +71,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineRetryError)
-    def retry(self, **kwargs):
+    def retry(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Retry the job.
 
         Args:
@@ -98,7 +102,14 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManage
     )
     _create_attrs = RequiredOptional(required=("ref",))
 
-    def create(self, data, **kwargs):
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectPipeline:
+        return cast(ProjectPipeline, super().get(id=id, lazy=lazy, **kwargs))
+
+    def create(
+        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> ProjectPipeline:
         """Creates a new object.
 
         Args:
@@ -114,8 +125,12 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManage
             RESTObject: A new instance of the managed object class build with
                 the data sent by the server
         """
+        if TYPE_CHECKING:
+            assert self.path is not None
         path = self.path[:-1]  # drop the 's'
-        return CreateMixin.create(self, data, path=path, **kwargs)
+        return cast(
+            ProjectPipeline, CreateMixin.create(self, data, path=path, **kwargs)
+        )
 
 
 class ProjectPipelineJob(RESTObject):
@@ -169,7 +184,7 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("ProjectPipelineSchedule")
     @exc.on_http_error(exc.GitlabOwnershipError)
-    def take_ownership(self, **kwargs):
+    def take_ownership(self, **kwargs: Any) -> None:
         """Update the owner of a pipeline schedule.
 
         Args:
@@ -181,11 +196,13 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = f"{self.manager.path}/{self.get_id()}/take_ownership"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action("ProjectPipelineSchedule")
     @exc.on_http_error(exc.GitlabPipelinePlayError)
-    def play(self, **kwargs):
+    def play(self, **kwargs: Any) -> Dict[str, Any]:
         """Trigger a new scheduled pipeline, which runs immediately.
         The next scheduled run of this pipeline is not affected.
 
@@ -198,6 +215,8 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = f"{self.manager.path}/{self.get_id()}/play"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
         return server_data
 
@@ -212,6 +231,11 @@ class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
     _update_attrs = RequiredOptional(
         optional=("description", "ref", "cron", "cron_timezone", "active"),
     )
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectPipelineSchedule:
+        return cast(ProjectPipelineSchedule, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectPipelineTestReport(RESTObject):
