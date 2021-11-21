@@ -14,7 +14,6 @@ module = [
     "docs.ext.*",
     "gitlab.v4.objects.files",
     "gitlab.v4.objects.labels",
-    "gitlab.v4.objects.sidekiq",
     "tests.functional.*",
     "tests.functional.api.*",
     "tests.meta.*",
