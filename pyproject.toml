@@ -12,7 +12,6 @@ files = "."
 module = [
     "docs.*",
     "docs.ext.*",
-    "gitlab.v4.objects.files",
     "tests.functional.*",
     "tests.functional.api.*",
     "tests.meta.*",

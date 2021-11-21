@@ -1,4 +1,7 @@
 import base64
+from typing import Any, Callable, cast, Dict, List, Optional, TYPE_CHECKING
+
+import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -22,6 +25,8 @@ __all__ = [
 class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "file_path"
     _short_print_attr = "file_path"
+    file_path: str
+    manager: "ProjectFileManager"
 
     def decode(self) -> bytes:
         """Returns the decoded content of the file.
@@ -31,7 +36,11 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         return base64.b64decode(self.content)
 
-    def save(self, branch, commit_message, **kwargs):
+    # NOTE(jlvillal): Signature doesn't match SaveMixin.save() so ignore
+    # type error
+    def save(  # type: ignore
+        self, branch: str, commit_message: str, **kwargs: Any
+    ) -> None:
         """Save the changes made to the file to the server.
 
         The object is updated to match what the server returns.
@@ -50,7 +59,12 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.file_path = self.file_path.replace("/", "%2F")
         super(ProjectFile, self).save(**kwargs)
 
-    def delete(self, branch, commit_message, **kwargs):
+    @exc.on_http_error(exc.GitlabDeleteError)
+    # NOTE(jlvillal): Signature doesn't match DeleteMixin.delete() so ignore
+    # type error
+    def delete(  # type: ignore
+        self, branch: str, commit_message: str, **kwargs: Any
+    ) -> None:
         """Delete the file from the server.
 
         Args:
@@ -80,7 +94,11 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
     )
 
     @cli.register_custom_action("ProjectFileManager", ("file_path", "ref"))
-    def get(self, file_path, ref, **kwargs):
+    # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
+    # type error
+    def get(  # type: ignore
+        self, file_path: str, ref: str, **kwargs: Any
+    ) -> ProjectFile:
         """Retrieve a single file.
 
         Args:
@@ -95,7 +113,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         Returns:
             object: The generated RESTObject
         """
-        return GetMixin.get(self, file_path, ref=ref, **kwargs)
+        return cast(ProjectFile, GetMixin.get(self, file_path, ref=ref, **kwargs))
 
     @cli.register_custom_action(
         "ProjectFileManager",
@@ -103,7 +121,9 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         ("encoding", "author_email", "author_name"),
     )
     @exc.on_http_error(exc.GitlabCreateError)
-    def create(self, data, **kwargs):
+    def create(
+        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> ProjectFile:
         """Create a new object.
 
         Args:
@@ -120,15 +140,23 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             GitlabCreateError: If the server cannot perform the request
         """
 
+        if TYPE_CHECKING:
+            assert data is not None
         self._check_missing_create_attrs(data)
         new_data = data.copy()
         file_path = new_data.pop("file_path").replace("/", "%2F")
         path = f"{self.path}/{file_path}"
         server_data = self.gitlab.http_post(path, post_data=new_data, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
         return self._obj_cls(self, server_data)
 
     @exc.on_http_error(exc.GitlabUpdateError)
-    def update(self, file_path, new_data=None, **kwargs):
+    # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
+    # type error
+    def update(  # type: ignore
+        self, file_path: str, new_data: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> Dict[str, Any]:
         """Update an object on the server.
 
         Args:
@@ -149,13 +177,20 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         data["file_path"] = file_path
         path = f"{self.path}/{file_path}"
         self._check_missing_update_attrs(data)
-        return self.gitlab.http_put(path, post_data=data, **kwargs)
+        result = self.gitlab.http_put(path, post_data=data, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(result, dict)
+        return result
 
     @cli.register_custom_action(
         "ProjectFileManager", ("file_path", "branch", "commit_message")
     )
     @exc.on_http_error(exc.GitlabDeleteError)
-    def delete(self, file_path, branch, commit_message, **kwargs):
+    # NOTE(jlvillal): Signature doesn't match DeleteMixin.delete() so ignore
+    # type error
+    def delete(  # type: ignore
+        self, file_path: str, branch: str, commit_message: str, **kwargs: Any
+    ) -> None:
         """Delete a file on the server.
 
         Args:
@@ -175,8 +210,14 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
     @cli.register_custom_action("ProjectFileManager", ("file_path", "ref"))
     @exc.on_http_error(exc.GitlabGetError)
     def raw(
-        self, file_path, ref, streamed=False, action=None, chunk_size=1024, **kwargs
-    ):
+        self,
+        file_path: str,
+        ref: str,
+        streamed: bool = False,
+        action: Optional[Callable[..., Any]] = None,
+        chunk_size: int = 1024,
+        **kwargs: Any,
+    ) -> Optional[bytes]:
         """Return the content of a file for a commit.
 
         Args:
@@ -203,11 +244,13 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         result = self.gitlab.http_get(
             path, query_data=query_data, streamed=streamed, raw=True, **kwargs
         )
+        if TYPE_CHECKING:
+            assert isinstance(result, requests.Response)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action("ProjectFileManager", ("file_path", "ref"))
     @exc.on_http_error(exc.GitlabListError)
-    def blame(self, file_path, ref, **kwargs):
+    def blame(self, file_path: str, ref: str, **kwargs: Any) -> List[Dict[str, Any]]:
         """Return the content of a file for a commit.
 
         Args:
@@ -225,4 +268,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         file_path = file_path.replace("/", "%2F").replace(".", "%2E")
         path = f"{self.path}/{file_path}/blame"
         query_data = {"ref": ref}
-        return self.gitlab.http_list(path, query_data, **kwargs)
+        result = self.gitlab.http_list(path, query_data, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(result, list)
+        return result
