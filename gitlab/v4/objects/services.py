@@ -1,3 +1,5 @@
+from typing import Any, cast, Dict, List, Optional, Union
+
 from gitlab import cli
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
@@ -253,7 +255,9 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
         "youtrack": (("issues_url", "project_url"), ("description", "push_events")),
     }
 
-    def get(self, id, **kwargs):
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectService:
         """Retrieve a single object.
 
         Args:
@@ -270,11 +274,16 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        obj = super(ProjectServiceManager, self).get(id, **kwargs)
+        obj = cast(ProjectService, super(ProjectServiceManager, self).get(id, **kwargs))
         obj.id = id
         return obj
 
-    def update(self, id=None, new_data=None, **kwargs):
+    def update(
+        self,
+        id: Optional[Union[str, int]] = None,
+        new_data: Optional[Dict[str, Any]] = None,
+        **kwargs: Any
+    ) -> Dict[str, Any]:
         """Update an object on the server.
 
         Args:
@@ -290,11 +299,12 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
             GitlabUpdateError: If the server cannot perform the request
         """
         new_data = new_data or {}
-        super(ProjectServiceManager, self).update(id, new_data, **kwargs)
+        result = super(ProjectServiceManager, self).update(id, new_data, **kwargs)
         self.id = id
+        return result
 
     @cli.register_custom_action("ProjectServiceManager")
-    def available(self, **kwargs):
+    def available(self, **kwargs: Any) -> List[str]:
         """List the services known by python-gitlab.
 
         Returns:
