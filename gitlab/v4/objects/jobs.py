@@ -1,3 +1,7 @@
+from typing import Any, Callable, cast, Dict, Optional, TYPE_CHECKING, Union
+
+import requests
+
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import utils
@@ -13,7 +17,7 @@ __all__ = [
 class ProjectJob(RefreshMixin, RESTObject):
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobCancelError)
-    def cancel(self, **kwargs):
+    def cancel(self, **kwargs: Any) -> Dict[str, Any]:
         """Cancel the job.
 
         Args:
@@ -24,11 +28,14 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabJobCancelError: If the job could not be canceled
         """
         path = f"{self.manager.path}/{self.get_id()}/cancel"
-        return self.manager.gitlab.http_post(path)
+        result = self.manager.gitlab.http_post(path)
+        if TYPE_CHECKING:
+            assert isinstance(result, dict)
+        return result
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobRetryError)
-    def retry(self, **kwargs):
+    def retry(self, **kwargs: Any) -> Dict[str, Any]:
         """Retry the job.
 
         Args:
@@ -39,11 +46,14 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabJobRetryError: If the job could not be retried
         """
         path = f"{self.manager.path}/{self.get_id()}/retry"
-        return self.manager.gitlab.http_post(path)
+        result = self.manager.gitlab.http_post(path)
+        if TYPE_CHECKING:
+            assert isinstance(result, dict)
+        return result
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobPlayError)
-    def play(self, **kwargs):
+    def play(self, **kwargs: Any) -> None:
         """Trigger a job explicitly.
 
         Args:
@@ -58,7 +68,7 @@ class ProjectJob(RefreshMixin, RESTObject):
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobEraseError)
-    def erase(self, **kwargs):
+    def erase(self, **kwargs: Any) -> None:
         """Erase the job (remove job artifacts and trace).
 
         Args:
@@ -73,7 +83,7 @@ class ProjectJob(RefreshMixin, RESTObject):
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabCreateError)
-    def keep_artifacts(self, **kwargs):
+    def keep_artifacts(self, **kwargs: Any) -> None:
         """Prevent artifacts from being deleted when expiration is set.
 
         Args:
@@ -88,7 +98,7 @@ class ProjectJob(RefreshMixin, RESTObject):
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabCreateError)
-    def delete_artifacts(self, **kwargs):
+    def delete_artifacts(self, **kwargs: Any) -> None:
         """Delete artifacts of a job.
 
         Args:
@@ -103,7 +113,13 @@ class ProjectJob(RefreshMixin, RESTObject):
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
-    def artifacts(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+    def artifacts(
+        self,
+        streamed: bool = False,
+        action: Optional[Callable[..., Any]] = None,
+        chunk_size: int = 1024,
+        **kwargs: Any,
+    ) -> Optional[bytes]:
         """Get the job artifacts.
 
         Args:
@@ -120,17 +136,26 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabGetError: If the artifacts could not be retrieved
 
         Returns:
-            str: The artifacts if `streamed` is False, None otherwise.
+            bytes: The artifacts if `streamed` is False, None otherwise.
         """
         path = f"{self.manager.path}/{self.get_id()}/artifacts"
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
+        if TYPE_CHECKING:
+            assert isinstance(result, requests.Response)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
-    def artifact(self, path, streamed=False, action=None, chunk_size=1024, **kwargs):
+    def artifact(
+        self,
+        path: str,
+        streamed: bool = False,
+        action: Optional[Callable[..., Any]] = None,
+        chunk_size: int = 1024,
+        **kwargs: Any,
+    ) -> Optional[bytes]:
         """Get a single artifact file from within the job's artifacts archive.
 
         Args:
@@ -148,17 +173,25 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabGetError: If the artifacts could not be retrieved
 
         Returns:
-            str: The artifacts if `streamed` is False, None otherwise.
+            bytes: The artifacts if `streamed` is False, None otherwise.
         """
         path = f"{self.manager.path}/{self.get_id()}/artifacts/{path}"
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
+        if TYPE_CHECKING:
+            assert isinstance(result, requests.Response)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
-    def trace(self, streamed=False, action=None, chunk_size=1024, **kwargs):
+    def trace(
+        self,
+        streamed: bool = False,
+        action: Optional[Callable[..., Any]] = None,
+        chunk_size: int = 1024,
+        **kwargs: Any,
+    ) -> Dict[str, Any]:
         """Get the job trace.
 
         Args:
@@ -181,10 +214,18 @@ class ProjectJob(RefreshMixin, RESTObject):
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
-        return utils.response_content(result, streamed, action, chunk_size)
+        if TYPE_CHECKING:
+            assert isinstance(result, requests.Response)
+        return_value = utils.response_content(result, streamed, action, chunk_size)
+        if TYPE_CHECKING:
+            assert isinstance(return_value, dict)
+        return return_value
 
 
 class ProjectJobManager(RetrieveMixin, RESTManager):
     _path = "/projects/{project_id}/jobs"
     _obj_cls = ProjectJob
     _from_parent_attrs = {"project_id": "id"}
+
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> ProjectJob:
+        return cast(ProjectJob, super().get(id=id, lazy=lazy, **kwargs))
