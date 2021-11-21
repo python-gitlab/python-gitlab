@@ -3,23 +3,36 @@ GitLab API: https://docs.gitlab.com/ee/api/repositories.html
 
 Currently this module only contains repository-related methods for projects.
 """
+from typing import Any, Callable, Dict, List, Optional, TYPE_CHECKING, Union
 
+import requests
+
+import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import utils
 
+if TYPE_CHECKING:
+    # When running mypy we use these as the base classes
+    _RestObjectBase = gitlab.base.RESTObject
+else:
+    _RestObjectBase = object
 
-class RepositoryMixin:
+
+class RepositoryMixin(_RestObjectBase):
     @cli.register_custom_action("Project", ("submodule", "branch", "commit_sha"))
     @exc.on_http_error(exc.GitlabUpdateError)
-    def update_submodule(self, submodule, branch, commit_sha, **kwargs):
+    def update_submodule(
+        self, submodule: str, branch: str, commit_sha: str, **kwargs: Any
+    ) -> Union[Dict[str, Any], requests.Response]:
         """Update a project submodule
 
         Args:
             submodule (str): Full path to the submodule
             branch (str): Name of the branch to commit into
             commit_sha (str): Full commit SHA to update the submodule to
-            commit_message (str): Commit message. If no message is provided, a default one will be set (optional)
+            commit_message (str): Commit message. If no message is provided, a
+                default one will be set (optional)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -35,7 +48,9 @@ class RepositoryMixin:
 
     @cli.register_custom_action("Project", tuple(), ("path", "ref", "recursive"))
     @exc.on_http_error(exc.GitlabGetError)
-    def repository_tree(self, path="", ref="", recursive=False, **kwargs):
+    def repository_tree(
+        self, path: str = "", ref: str = "", recursive: bool = False, **kwargs: Any
+    ) -> Union[gitlab.client.GitlabList, List[Dict[str, Any]]]:
         """Return a list of files in the repository.
 
         Args:
@@ -57,7 +72,7 @@ class RepositoryMixin:
             list: The representation of the tree
         """
         gl_path = f"/projects/{self.get_id()}/repository/tree"
-        query_data = {"recursive": recursive}
+        query_data: Dict[str, Any] = {"recursive": recursive}
         if path:
             query_data["path"] = path
         if ref:
@@ -66,7 +81,9 @@ class RepositoryMixin:
 
     @cli.register_custom_action("Project", ("sha",))
     @exc.on_http_error(exc.GitlabGetError)
-    def repository_blob(self, sha, **kwargs):
+    def repository_blob(
+        self, sha: str, **kwargs: Any
+    ) -> Union[Dict[str, Any], requests.Response]:
         """Return a file by blob SHA.
 
         Args:
@@ -87,8 +104,13 @@ class RepositoryMixin:
     @cli.register_custom_action("Project", ("sha",))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_raw_blob(
-        self, sha, streamed=False, action=None, chunk_size=1024, **kwargs
-    ):
+        self,
+        sha: str,
+        streamed: bool = False,
+        action: Optional[Callable[..., Any]] = None,
+        chunk_size: int = 1024,
+        **kwargs: Any,
+    ) -> Optional[bytes]:
         """Return the raw file contents for a blob.
 
         Args:
@@ -112,11 +134,15 @@ class RepositoryMixin:
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
+        if TYPE_CHECKING:
+            assert isinstance(result, requests.Response)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action("Project", ("from_", "to"))
     @exc.on_http_error(exc.GitlabGetError)
-    def repository_compare(self, from_, to, **kwargs):
+    def repository_compare(
+        self, from_: str, to: str, **kwargs: Any
+    ) -> Union[Dict[str, Any], requests.Response]:
         """Return a diff between two branches/commits.
 
         Args:
@@ -137,7 +163,9 @@ class RepositoryMixin:
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabGetError)
-    def repository_contributors(self, **kwargs):
+    def repository_contributors(
+        self, **kwargs: Any
+    ) -> Union[gitlab.client.GitlabList, List[Dict[str, Any]]]:
         """Return a list of contributors for the project.
 
         Args:
@@ -161,8 +189,13 @@ class RepositoryMixin:
     @cli.register_custom_action("Project", tuple(), ("sha",))
     @exc.on_http_error(exc.GitlabListError)
     def repository_archive(
-        self, sha=None, streamed=False, action=None, chunk_size=1024, **kwargs
-    ):
+        self,
+        sha: str = None,
+        streamed: bool = False,
+        action: Optional[Callable[..., Any]] = None,
+        chunk_size: int = 1024,
+        **kwargs: Any,
+    ) -> Optional[bytes]:
         """Return a tarball of the repository.
 
         Args:
@@ -189,11 +222,13 @@ class RepositoryMixin:
         result = self.manager.gitlab.http_get(
             path, query_data=query_data, raw=True, streamed=streamed, **kwargs
         )
+        if TYPE_CHECKING:
+            assert isinstance(result, requests.Response)
         return utils.response_content(result, streamed, action, chunk_size)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabDeleteError)
-    def delete_merged_branches(self, **kwargs):
+    def delete_merged_branches(self, **kwargs: Any) -> None:
         """Delete merged branches.
 
         Args:
