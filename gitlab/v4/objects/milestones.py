@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast, TYPE_CHECKING, Union
 
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -26,7 +26,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("GroupMilestone")
     @exc.on_http_error(exc.GitlabListError)
-    def issues(self, **kwargs):
+    def issues(self, **kwargs: Any) -> RESTObjectList:
         """List issues related to this milestone.
 
         Args:
@@ -47,13 +47,15 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
 
         path = f"{self.manager.path}/{self.get_id()}/issues"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(data_list, RESTObjectList)
         manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, GroupIssue, data_list)
 
     @cli.register_custom_action("GroupMilestone")
     @exc.on_http_error(exc.GitlabListError)
-    def merge_requests(self, **kwargs):
+    def merge_requests(self, **kwargs: Any) -> RESTObjectList:
         """List the merge requests related to this milestone.
 
         Args:
@@ -73,6 +75,8 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = f"{self.manager.path}/{self.get_id()}/merge_requests"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(data_list, RESTObjectList)
         manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, GroupMergeRequest, data_list)
@@ -91,6 +95,11 @@ class GroupMilestoneManager(CRUDMixin, RESTManager):
     _list_filters = ("iids", "state", "search")
     _types = {"iids": types.ListAttribute}
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> GroupMilestone:
+        return cast(GroupMilestone, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "title"
@@ -98,7 +107,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("ProjectMilestone")
     @exc.on_http_error(exc.GitlabListError)
-    def issues(self, **kwargs):
+    def issues(self, **kwargs: Any) -> RESTObjectList:
         """List issues related to this milestone.
 
         Args:
@@ -119,6 +128,8 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
         path = f"{self.manager.path}/{self.get_id()}/issues"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(data_list, RESTObjectList)
         manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, ProjectIssue, data_list)
@@ -145,6 +156,8 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = f"{self.manager.path}/{self.get_id()}/merge_requests"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(data_list, RESTObjectList)
         manager = ProjectMergeRequestManager(
             self.manager.gitlab, parent=self.manager._parent
         )
@@ -165,3 +178,8 @@ class ProjectMilestoneManager(CRUDMixin, RESTManager):
     )
     _list_filters = ("iids", "state", "search")
     _types = {"iids": types.ListAttribute}
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectMilestone:
+        return cast(ProjectMilestone, super().get(id=id, lazy=lazy, **kwargs))
