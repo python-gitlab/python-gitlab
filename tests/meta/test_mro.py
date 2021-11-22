@@ -49,7 +49,7 @@ import pytest
 import gitlab.v4.objects
 
 
-def test_show_issue():
+def test_show_issue() -> None:
     """Test case to demonstrate the TypeError that occurs"""
 
     class RESTObject(object):
@@ -61,7 +61,7 @@ def test_show_issue():
 
     with pytest.raises(TypeError) as exc_info:
         # Wrong ordering here
-        class Wrongv4Object(RESTObject, Mixin):
+        class Wrongv4Object(RESTObject, Mixin):  # type: ignore
             ...
 
     # The error message in the exception should be:
@@ -76,7 +76,7 @@ def test_show_issue():
         ...
 
 
-def test_mros():
+def test_mros() -> None:
     """Ensure objects defined in gitlab.v4.objects have REST* as last item in
     class definition.
 

@@ -25,7 +25,6 @@ module = [
     "gitlab.v4.objects.sidekiq",
     "tests.functional.*",
     "tests.functional.api.*",
-    "tests.meta.*",
     "tests.unit.*",
     "tests.smoke.*"
 ]

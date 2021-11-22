@@ -7,13 +7,14 @@ Original notes by John L. Villalovos
 import inspect
 from typing import Tuple, Type
 
+import _pytest
 import toml
 
 import gitlab.mixins
 import gitlab.v4.objects
 
 
-def pytest_generate_tests(metafunc):
+def pytest_generate_tests(metafunc: _pytest.python.Metafunc) -> None:
     """Find all of the classes in gitlab.v4.objects and pass them to our test
     function"""
 
@@ -54,7 +55,7 @@ def pytest_generate_tests(metafunc):
 
 
 class TestTypeHints:
-    def test_check_get_function_type_hints(self, class_info: Tuple[str, Type]):
+    def test_check_get_function_type_hints(self, class_info: Tuple[str, Type]) -> None:
         """Ensure classes derived from GetMixin have defined a 'get()' method with
         correct type-hints.
         """
