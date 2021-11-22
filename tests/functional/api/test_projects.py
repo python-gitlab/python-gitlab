@@ -140,13 +140,21 @@ def test_project_housekeeping(project):
 
 
 def test_project_labels(project):
+    print("JLV: project.id:", project.id)
+    print("JLV: project.labels:", project.labels)
     label = project.labels.create({"name": "label", "color": "#778899"})
+    print("JLV: type(label):", type(label))
+    print("JLV: label.manager._computed_path:", label.manager._computed_path)
+    print("JLV: label.manager._parent:", label.manager._parent)
     labels = project.labels.list()
     assert len(labels) == 1
 
     label = project.labels.get("label")
     assert label == labels[0]
 
+    print("JLV: type(label):", type(label))
+    print("JLV: label.manager._computed_path:", label.manager._computed_path)
+    print("JLV: label.manager._parent:", label.manager._parent)
     label.new_name = "labelupdated"
     label.save()
     assert label.name == "labelupdated"
@@ -159,6 +167,8 @@ def test_project_labels(project):
 
     label.delete()
     assert len(project.labels.list()) == 0
+
+    assert "1" is None
 
 
 def test_project_label_promotion(gl, group):
