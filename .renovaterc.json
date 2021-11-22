@@ -28,6 +28,12 @@
     {
       "matchPackagePrefixes": ["types-"],
       "groupName": "typing dependencies"
-    }
+    },
+    {
+        "matchPackagePatterns": ["(^|/)black$"],
+        "versioning": "pep440",
+        "ignoreUnstable": false,
+        "groupName": "black"
+     }
   ]
 }
