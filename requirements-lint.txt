@@ -5,5 +5,5 @@ mypy==0.910
 pytest
 types-PyYAML==6.0.1
 types-requests==2.26.0
-types-setuptools==57.4.2
+types-setuptools==57.4.3
 types-toml==0.10.1
