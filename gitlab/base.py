@@ -150,6 +150,10 @@ class RESTObject(object):
         # annotations. If an attribute is annotated as being a *Manager type
         # then we create the manager and assign it to the attribute.
         for attr, annotation in sorted(self.__annotations__.items()):
+            # We ignore creating a manager for the 'manager' attribute as that
+            # is done in the self.__init__() method
+            if attr in ("manager",):
+                continue
             if not isinstance(annotation, (type, str)):
                 continue
             if isinstance(annotation, type):

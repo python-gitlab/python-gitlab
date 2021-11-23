@@ -1,3 +1,5 @@
+from typing import Any, cast, Dict, Tuple, TYPE_CHECKING, Union
+
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
@@ -65,6 +67,9 @@ class IssueManager(RetrieveMixin, RESTManager):
     )
     _types = {"iids": types.ListAttribute, "labels": types.ListAttribute}
 
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Issue:
+        return cast(Issue, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class GroupIssue(RESTObject):
     pass
@@ -116,7 +121,7 @@ class ProjectIssue(
 
     @cli.register_custom_action("ProjectIssue", ("to_project_id",))
     @exc.on_http_error(exc.GitlabUpdateError)
-    def move(self, to_project_id, **kwargs):
+    def move(self, to_project_id: int, **kwargs: Any) -> None:
         """Move the issue to another project.
 
         Args:
@@ -130,11 +135,13 @@ class ProjectIssue(
         path = f"{self.manager.path}/{self.get_id()}/move"
         data = {"to_project_id": to_project_id}
         server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action("ProjectIssue")
     @exc.on_http_error(exc.GitlabGetError)
-    def related_merge_requests(self, **kwargs):
+    def related_merge_requests(self, **kwargs: Any) -> Dict[str, Any]:
         """List merge requests related to the issue.
 
         Args:
@@ -148,11 +155,14 @@ class ProjectIssue(
             list: The list of merge requests.
         """
         path = f"{self.manager.path}/{self.get_id()}/related_merge_requests"
-        return self.manager.gitlab.http_get(path, **kwargs)
+        result = self.manager.gitlab.http_get(path, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(result, dict)
+        return result
 
     @cli.register_custom_action("ProjectIssue")
     @exc.on_http_error(exc.GitlabGetError)
-    def closed_by(self, **kwargs):
+    def closed_by(self, **kwargs: Any) -> Dict[str, Any]:
         """List merge requests that will close the issue when merged.
 
         Args:
@@ -166,7 +176,10 @@ class ProjectIssue(
             list: The list of merge requests.
         """
         path = f"{self.manager.path}/{self.get_id()}/closed_by"
-        return self.manager.gitlab.http_get(path, **kwargs)
+        result = self.manager.gitlab.http_get(path, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(result, dict)
+        return result
 
 
 class ProjectIssueManager(CRUDMixin, RESTManager):
@@ -222,6 +235,11 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
     )
     _types = {"iids": types.ListAttribute, "labels": types.ListAttribute}
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectIssue:
+        return cast(ProjectIssue, super().get(id=id, lazy=lazy, **kwargs))
+
 
 class ProjectIssueLink(ObjectDeleteMixin, RESTObject):
     _id_attr = "issue_link_id"
@@ -234,7 +252,11 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     _create_attrs = RequiredOptional(required=("target_project_id", "target_issue_iid"))
 
     @exc.on_http_error(exc.GitlabCreateError)
-    def create(self, data, **kwargs):
+    # NOTE(jlvillal): Signature doesn't match CreateMixin.create() so ignore
+    # type error
+    def create(  # type: ignore
+        self, data: Dict[str, Any], **kwargs: Any
+    ) -> Tuple[RESTObject, RESTObject]:
         """Create a new object.
 
         Args:
@@ -250,7 +272,12 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
             GitlabCreateError: If the server cannot perform the request
         """
         self._check_missing_create_attrs(data)
+        if TYPE_CHECKING:
+            assert self.path is not None
         server_data = self.gitlab.http_post(self.path, post_data=data, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
+            assert self._parent is not None
         source_issue = ProjectIssue(self._parent.manager, server_data["source_issue"])
         target_issue = ProjectIssue(self._parent.manager, server_data["target_issue"])
         return source_issue, target_issue

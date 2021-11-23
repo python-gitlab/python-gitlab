@@ -1,3 +1,5 @@
+from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
+
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
@@ -22,10 +24,11 @@ __all__ = [
 
 class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
+    manager: "GroupLabelManager"
 
     # Update without ID, but we need an ID to get from list.
     @exc.on_http_error(exc.GitlabUpdateError)
-    def save(self, **kwargs):
+    def save(self, **kwargs: Any) -> None:
         """Saves the changes made to the object to the server.
 
         The object is updated to match what the server returns.
@@ -56,7 +59,14 @@ class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
     )
 
     # Update without ID.
-    def update(self, name, new_data=None, **kwargs):
+    # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
+    # type error
+    def update(  # type: ignore
+        self,
+        name: Optional[str],
+        new_data: Optional[Dict[str, Any]] = None,
+        **kwargs: Any
+    ) -> Dict[str, Any]:
         """Update a Label on the server.
 
         Args:
@@ -70,7 +80,9 @@ class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
 
     # Delete without ID.
     @exc.on_http_error(exc.GitlabDeleteError)
-    def delete(self, name, **kwargs):
+    # NOTE(jlvillal): Signature doesn't match DeleteMixin.delete() so ignore
+    # type error
+    def delete(self, name: str, **kwargs: Any) -> None:  # type: ignore
         """Delete a Label on the server.
 
         Args:
@@ -81,6 +93,8 @@ class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
+        if TYPE_CHECKING:
+            assert self.path is not None
         self.gitlab.http_delete(self.path, query_data={"name": name}, **kwargs)
 
 
@@ -88,10 +102,11 @@ class ProjectLabel(
     PromoteMixin, SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject
 ):
     _id_attr = "name"
+    manager: "ProjectLabelManager"
 
     # Update without ID, but we need an ID to get from list.
     @exc.on_http_error(exc.GitlabUpdateError)
-    def save(self, **kwargs):
+    def save(self, **kwargs: Any) -> None:
         """Saves the changes made to the object to the server.
 
         The object is updated to match what the server returns.
@@ -123,8 +138,20 @@ class ProjectLabelManager(
         required=("name",), optional=("new_name", "color", "description", "priority")
     )
 
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectLabel:
+        return cast(ProjectLabel, super().get(id=id, lazy=lazy, **kwargs))
+
     # Update without ID.
-    def update(self, name, new_data=None, **kwargs):
+    # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
+    # type error
+    def update(  # type: ignore
+        self,
+        name: Optional[str],
+        new_data: Optional[Dict[str, Any]] = None,
+        **kwargs: Any
+    ) -> Dict[str, Any]:
         """Update a Label on the server.
 
         Args:
@@ -138,7 +165,9 @@ class ProjectLabelManager(
 
     # Delete without ID.
     @exc.on_http_error(exc.GitlabDeleteError)
-    def delete(self, name, **kwargs):
+    # NOTE(jlvillal): Signature doesn't match DeleteMixin.delete() so ignore
+    # type error
+    def delete(self, name: str, **kwargs: Any) -> None:  # type: ignore
         """Delete a Label on the server.
 
         Args:
@@ -149,4 +178,6 @@ class ProjectLabelManager(
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
+        if TYPE_CHECKING:
+            assert self.path is not None
         self.gitlab.http_delete(self.path, query_data={"name": name}, **kwargs)
