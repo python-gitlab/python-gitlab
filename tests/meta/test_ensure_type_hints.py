@@ -8,7 +8,6 @@ import inspect
 from typing import Tuple, Type
 
 import _pytest
-import toml
 
 import gitlab.mixins
 import gitlab.v4.objects
@@ -18,20 +17,8 @@ def pytest_generate_tests(metafunc: _pytest.python.Metafunc) -> None:
     """Find all of the classes in gitlab.v4.objects and pass them to our test
     function"""
 
-    # Ignore any modules that we are ignoring in our pyproject.toml
-    excluded_modules = set()
-    with open("pyproject.toml", "r") as in_file:
-        pyproject = toml.load(in_file)
-    overrides = pyproject.get("tool", {}).get("mypy", {}).get("overrides", [])
-    for override in overrides:
-        if not override.get("ignore_errors"):
-            continue
-        for module in override.get("module", []):
-            if module.startswith("gitlab.v4.objects"):
-                excluded_modules.add(module)
-
-    class_info_list = []
-    for module_name, module_value in inspect.getmembers(gitlab.v4.objects):
+    class_info_set = set()
+    for _, module_value in inspect.getmembers(gitlab.v4.objects):
         if not inspect.ismodule(module_value):
             # We only care about the modules
             continue
@@ -41,17 +28,16 @@ def pytest_generate_tests(metafunc: _pytest.python.Metafunc) -> None:
                 continue
 
             module_name = class_value.__module__
-            # Ignore modules that mypy is ignoring
-            if module_name in excluded_modules:
-                continue
-
             # Ignore imported classes from gitlab.base
             if module_name == "gitlab.base":
                 continue
 
-            class_info_list.append((class_name, class_value))
+            if not class_name.endswith("Manager"):
+                continue
 
-    metafunc.parametrize("class_info", class_info_list)
+            class_info_set.add((class_name, class_value))
+
+    metafunc.parametrize("class_info", class_info_set)
 
 
 class TestTypeHints:
