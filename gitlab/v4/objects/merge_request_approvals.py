@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import Any, cast, Dict, List, Optional, TYPE_CHECKING, Union
 
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
@@ -44,6 +44,11 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         ),
     )
     _update_uses_post = True
+
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[ProjectApproval]:
+        return cast(Optional[ProjectApproval], super().get(id=id, **kwargs))
 
     @exc.on_http_error(exc.GitlabUpdateError)
     def set_approvers(
@@ -104,6 +109,11 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
     _update_attrs = RequiredOptional(required=("approvals_required",))
     _update_uses_post = True
+
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[ProjectMergeRequestApproval]:
+        return cast(Optional[ProjectMergeRequestApproval], super().get(id=id, **kwargs))
 
     @exc.on_http_error(exc.GitlabUpdateError)
     def set_approvers(
@@ -199,7 +209,7 @@ class ProjectMergeRequestApprovalRuleManager(
         optional=("user_ids", "group_ids"),
     )
     # Important: When approval_project_rule_id is set, the name, users and groups of
-    # project-level rule will be copied. The approvals_required specified will be used.  """
+    # project-level rule will be copied. The approvals_required specified will be used.
     _create_attrs = RequiredOptional(
         required=("id", "merge_request_iid", "name", "approvals_required"),
         optional=("approval_project_rule_id", "user_ids", "group_ids"),
@@ -240,3 +250,10 @@ class ProjectMergeRequestApprovalStateManager(GetWithoutIdMixin, RESTManager):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/approval_state"
     _obj_cls = ProjectMergeRequestApprovalState
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
+
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[ProjectMergeRequestApprovalState]:
+        return cast(
+            Optional[ProjectMergeRequestApprovalState], super().get(id=id, **kwargs)
+        )

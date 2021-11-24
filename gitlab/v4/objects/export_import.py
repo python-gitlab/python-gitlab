@@ -27,7 +27,7 @@ class GroupExportManager(GetWithoutIdMixin, CreateMixin, RESTManager):
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
     ) -> Optional[GroupExport]:
-        return cast(GroupExport, super().get(id=id, **kwargs))
+        return cast(Optional[GroupExport], super().get(id=id, **kwargs))
 
 
 class GroupImport(RESTObject):
@@ -42,7 +42,7 @@ class GroupImportManager(GetWithoutIdMixin, RESTManager):
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
     ) -> Optional[GroupImport]:
-        return cast(GroupImport, super().get(id=id, **kwargs))
+        return cast(Optional[GroupImport], super().get(id=id, **kwargs))
 
 
 class ProjectExport(DownloadMixin, RefreshMixin, RESTObject):
@@ -58,7 +58,7 @@ class ProjectExportManager(GetWithoutIdMixin, CreateMixin, RESTManager):
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
     ) -> Optional[ProjectExport]:
-        return cast(ProjectExport, super().get(id=id, **kwargs))
+        return cast(Optional[ProjectExport], super().get(id=id, **kwargs))
 
 
 class ProjectImport(RefreshMixin, RESTObject):
@@ -73,4 +73,4 @@ class ProjectImportManager(GetWithoutIdMixin, RESTManager):
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
     ) -> Optional[ProjectImport]:
-        return cast(ProjectImport, super().get(id=id, **kwargs))
+        return cast(Optional[ProjectImport], super().get(id=id, **kwargs))

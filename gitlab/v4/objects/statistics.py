@@ -1,3 +1,5 @@
+from typing import Any, cast, Optional, Union
+
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import GetWithoutIdMixin, RefreshMixin
 
@@ -22,6 +24,11 @@ class ProjectAdditionalStatisticsManager(GetWithoutIdMixin, RESTManager):
     _obj_cls = ProjectAdditionalStatistics
     _from_parent_attrs = {"project_id": "id"}
 
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[ProjectAdditionalStatistics]:
+        return cast(Optional[ProjectAdditionalStatistics], super().get(id=id, **kwargs))
+
 
 class IssuesStatistics(RefreshMixin, RESTObject):
     _id_attr = None
@@ -30,6 +37,11 @@ class IssuesStatistics(RefreshMixin, RESTObject):
 class IssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
     _path = "/issues_statistics"
     _obj_cls = IssuesStatistics
+
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[IssuesStatistics]:
+        return cast(Optional[IssuesStatistics], super().get(id=id, **kwargs))
 
 
 class GroupIssuesStatistics(RefreshMixin, RESTObject):
@@ -41,6 +53,11 @@ class GroupIssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
     _obj_cls = GroupIssuesStatistics
     _from_parent_attrs = {"group_id": "id"}
 
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[GroupIssuesStatistics]:
+        return cast(Optional[GroupIssuesStatistics], super().get(id=id, **kwargs))
+
 
 class ProjectIssuesStatistics(RefreshMixin, RESTObject):
     _id_attr = None
@@ -50,3 +67,8 @@ class ProjectIssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
     _path = "/projects/{project_id}/issues_statistics"
     _obj_cls = ProjectIssuesStatistics
     _from_parent_attrs = {"project_id": "id"}
+
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[ProjectIssuesStatistics]:
+        return cast(Optional[ProjectIssuesStatistics], super().get(id=id, **kwargs))

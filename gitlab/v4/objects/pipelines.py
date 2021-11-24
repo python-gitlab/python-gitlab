@@ -246,3 +246,8 @@ class ProjectPipelineTestReportManager(GetWithoutIdMixin, RESTManager):
     _path = "/projects/{project_id}/pipelines/{pipeline_id}/test_report"
     _obj_cls = ProjectPipelineTestReport
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
+
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[ProjectPipelineTestReport]:
+        return cast(Optional[ProjectPipelineTestReport], super().get(id=id, **kwargs))
