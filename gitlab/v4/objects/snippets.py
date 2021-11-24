@@ -35,12 +35,12 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         """Return the content of a snippet.
 
         Args:
-            streamed (bool): If True the data will be processed by chunks of
+            streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment.
-            action (callable): Callable responsible of dealing with chunk of
+            action: Callable responsible of dealing with chunk of
                 data
-            chunk_size (int): Size of each chunk
+            chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -74,7 +74,7 @@ class SnippetManager(CRUDMixin, RESTManager):
         """List all the public snippets.
 
         Args:
-            all (bool): If True the returned object will be a list
+            all: If True the returned object will be a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -109,12 +109,12 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
         """Return the content of a snippet.
 
         Args:
-            streamed (bool): If True the data will be processed by chunks of
+            streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment.
-            action (callable): Callable responsible of dealing with chunk of
+            action: Callable responsible of dealing with chunk of
                 data
-            chunk_size (int): Size of each chunk
+            chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:

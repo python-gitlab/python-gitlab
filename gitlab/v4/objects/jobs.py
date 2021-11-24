@@ -123,12 +123,12 @@ class ProjectJob(RefreshMixin, RESTObject):
         """Get the job artifacts.
 
         Args:
-            streamed (bool): If True the data will be processed by chunks of
+            streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
-            action (callable): Callable responsible of dealing with chunk of
+            action: Callable responsible of dealing with chunk of
                 data
-            chunk_size (int): Size of each chunk
+            chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -159,13 +159,13 @@ class ProjectJob(RefreshMixin, RESTObject):
         """Get a single artifact file from within the job's artifacts archive.
 
         Args:
-            path (str): Path of the artifact
-            streamed (bool): If True the data will be processed by chunks of
+            path: Path of the artifact
+            streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
-            action (callable): Callable responsible of dealing with chunk of
+            action: Callable responsible of dealing with chunk of
                 data
-            chunk_size (int): Size of each chunk
+            chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -195,12 +195,12 @@ class ProjectJob(RefreshMixin, RESTObject):
         """Get the job trace.
 
         Args:
-            streamed (bool): If True the data will be processed by chunks of
+            streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
-            action (callable): Callable responsible of dealing with chunk of
+            action: Callable responsible of dealing with chunk of
                 data
-            chunk_size (int): Size of each chunk
+            chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:

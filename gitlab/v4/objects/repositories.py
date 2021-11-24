@@ -28,10 +28,10 @@ class RepositoryMixin(_RestObjectBase):
         """Update a project submodule
 
         Args:
-            submodule (str): Full path to the submodule
-            branch (str): Name of the branch to commit into
-            commit_sha (str): Full commit SHA to update the submodule to
-            commit_message (str): Commit message. If no message is provided, a
+            submodule: Full path to the submodule
+            branch: Name of the branch to commit into
+            commit_sha: Full commit SHA to update the submodule to
+            commit_message: Commit message. If no message is provided, a
                 default one will be set (optional)
 
         Raises:
@@ -54,13 +54,13 @@ class RepositoryMixin(_RestObjectBase):
         """Return a list of files in the repository.
 
         Args:
-            path (str): Path of the top folder (/ by default)
-            ref (str): Reference to a commit or branch
-            recursive (bool): Whether to get the tree recursively
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
+            path: Path of the top folder (/ by default)
+            ref: Reference to a commit or branch
+            recursive: Whether to get the tree recursively
+            all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            as_list: If set to False and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -87,7 +87,7 @@ class RepositoryMixin(_RestObjectBase):
         """Return a file by blob SHA.
 
         Args:
-            sha(str): ID of the blob
+            sha: ID of the blob
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -114,13 +114,13 @@ class RepositoryMixin(_RestObjectBase):
         """Return the raw file contents for a blob.
 
         Args:
-            sha(str): ID of the blob
-            streamed (bool): If True the data will be processed by chunks of
+            sha: ID of the blob
+            streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
-            action (callable): Callable responsible of dealing with chunk of
+            action: Callable responsible of dealing with chunk of
                 data
-            chunk_size (int): Size of each chunk
+            chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -146,8 +146,8 @@ class RepositoryMixin(_RestObjectBase):
         """Return a diff between two branches/commits.
 
         Args:
-            from_(str): Source branch/SHA
-            to(str): Destination branch/SHA
+            from_: Source branch/SHA
+            to: Destination branch/SHA
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -169,10 +169,10 @@ class RepositoryMixin(_RestObjectBase):
         """Return a list of contributors for the project.
 
         Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
+            all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            as_list: If set to False and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -199,13 +199,13 @@ class RepositoryMixin(_RestObjectBase):
         """Return a tarball of the repository.
 
         Args:
-            sha (str): ID of the commit (default branch by default)
-            streamed (bool): If True the data will be processed by chunks of
+            sha: ID of the commit (default branch by default)
+            streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
-            action (callable): Callable responsible of dealing with chunk of
+            action: Callable responsible of dealing with chunk of
                 data
-            chunk_size (int): Size of each chunk
+            chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:

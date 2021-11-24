@@ -30,10 +30,10 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         """List issues related to this milestone.
 
         Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
+            all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            as_list: If set to False and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -59,10 +59,10 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         """List the merge requests related to this milestone.
 
         Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
+            all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            as_list: If set to False and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -111,10 +111,10 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         """List issues related to this milestone.
 
         Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
+            all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            as_list: If set to False and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -140,10 +140,10 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         """List the merge requests related to this milestone.
 
         Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
+            all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            as_list: If set to False and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 

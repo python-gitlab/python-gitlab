@@ -52,12 +52,12 @@ class GenericPackageManager(RESTManager):
         """Upload a file as a generic package.
 
         Args:
-            package_name (str): The package name. Must follow generic package
+            package_name: The package name. Must follow generic package
                                 name regex rules
-            package_version (str): The package version. Must follow semantic
+            package_version: The package version. Must follow semantic
                                 version regex rules
-            file_name (str): The name of the file as uploaded in the registry
-            path (str): The path to a local file to upload
+            file_name: The name of the file as uploaded in the registry
+            path: The path to a local file to upload
 
         Raises:
             GitlabConnectionError: If the server cannot be reached
@@ -110,15 +110,15 @@ class GenericPackageManager(RESTManager):
         """Download a generic package.
 
         Args:
-            package_name (str): The package name.
-            package_version (str): The package version.
-            file_name (str): The name of the file in the registry
-            streamed (bool): If True the data will be processed by chunks of
+            package_name: The package name.
+            package_version: The package version.
+            file_name: The name of the file in the registry
+            streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
-            action (callable): Callable responsible of dealing with chunk of
+            action: Callable responsible of dealing with chunk of
                 data
-            chunk_size (int): Size of each chunk
+            chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:

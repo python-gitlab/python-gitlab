@@ -37,12 +37,12 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
         """Create or update the object.
 
         Args:
-            name (str): The value to set for the object
-            value (bool/int): The value to set for the object
-            feature_group (str): A feature group name
-            user (str): A GitLab username
-            group (str): A GitLab group
-            project (str): A GitLab project in form group/project
+            name: The value to set for the object
+            value: The value to set for the object
+            feature_group: A feature group name
+            user: A GitLab username
+            group: A GitLab group
+            project: A GitLab project in form group/project
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:

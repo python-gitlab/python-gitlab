@@ -113,7 +113,7 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManage
         """Creates a new object.
 
         Args:
-            data (dict): Parameters to send to the server to create the
+            data: Parameters to send to the server to create the
                          resource
             **kwargs: Extra options to send to the server (e.g. sudo)
 

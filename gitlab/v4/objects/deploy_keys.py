@@ -43,7 +43,7 @@ class ProjectKeyManager(CRUDMixin, RESTManager):
         """Enable a deploy key for a project.
 
         Args:
-            key_id (int): The ID of the key to enable
+            key_id: The ID of the key to enable
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:

@@ -125,7 +125,7 @@ class ProjectIssue(
         """Move the issue to another project.
 
         Args:
-            to_project_id(int): ID of the target project
+            to_project_id: ID of the target project
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -260,7 +260,7 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
         """Create a new object.
 
         Args:
-            data (dict): parameters to send to the server to create the
+            data: parameters to send to the server to create the
                          resource
             **kwargs: Extra options to send to the server (e.g. sudo)
 

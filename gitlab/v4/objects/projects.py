@@ -190,7 +190,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """Create a forked from/to relation between existing projects.
 
         Args:
-            forked_from_id (int): The ID of the project that was forked from
+            forked_from_id: The ID of the project that was forked from
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -316,8 +316,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """Share the project with a group.
 
         Args:
-            group_id (int): ID of the group.
-            group_access (int): Access level for the group.
+            group_id: ID of the group.
+            group_access: Access level for the group.
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -338,7 +338,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """Delete a shared project link within a group.
 
         Args:
-            group_id (int): ID of the group.
+            group_id: ID of the group.
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -363,9 +363,9 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         See https://gitlab.com/help/ci/triggers/README.md#trigger-a-build
 
         Args:
-            ref (str): Commit to build; can be a branch name or a tag
-            token (str): The trigger token
-            variables (dict): Variables passed to the build script
+            ref: Commit to build; can be a branch name or a tag
+            token: The trigger token
+            variables: Variables passed to the build script
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -413,9 +413,9 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             Either ``filedata`` or ``filepath`` *MUST* be specified.
 
         Args:
-            filename (str): The name of the file being uploaded
-            filedata (bytes): The raw data of the file being uploaded
-            filepath (str): The path to a local file to upload (optional)
+            filename: The name of the file being uploaded
+            filedata: The raw data of the file being uploaded
+            filepath: The path to a local file to upload (optional)
 
         Raises:
             GitlabConnectionError: If the server cannot be reached
@@ -462,13 +462,13 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """Return a snapshot of the repository.
 
         Args:
-            wiki (bool): If True return the wiki repository
-            streamed (bool): If True the data will be processed by chunks of
+            wiki: If True return the wiki repository
+            streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment.
-            action (callable): Callable responsible of dealing with chunk of
+            action: Callable responsible of dealing with chunk of
                 data
-            chunk_size (int): Size of each chunk
+            chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -494,8 +494,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """Search the project resources matching the provided string.'
 
         Args:
-            scope (str): Scope of the search
-            search (str): Search string
+            scope: Scope of the search
+            search: Search string
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -530,7 +530,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """Transfer a project to the given namespace ID
 
         Args:
-            to_namespace (str): ID or path of the namespace to transfer the
+            to_namespace: ID or path of the namespace to transfer the
             project to
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -557,17 +557,17 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """Get the job artifacts archive from a specific tag or branch.
 
         Args:
-            ref_name (str): Branch or tag name in repository. HEAD or SHA references
+            ref_name: Branch or tag name in repository. HEAD or SHA references
             are not supported.
-            artifact_path (str): Path to a file inside the artifacts archive.
-            job (str): The name of the job.
-            job_token (str): Job token for multi-project pipeline triggers.
-            streamed (bool): If True the data will be processed by chunks of
+            artifact_path: Path to a file inside the artifacts archive.
+            job: The name of the job.
+            job_token: Job token for multi-project pipeline triggers.
+            streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
-            action (callable): Callable responsible of dealing with chunk of
+            action: Callable responsible of dealing with chunk of
                 data
-            chunk_size (int): Size of each chunk
+            chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -600,15 +600,15 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """Download a single artifact file from a specific tag or branch from within the job’s artifacts archive.
 
         Args:
-            ref_name (str): Branch or tag name in repository. HEAD or SHA references are not supported.
-            artifact_path (str): Path to a file inside the artifacts archive.
-            job (str): The name of the job.
-            streamed (bool): If True the data will be processed by chunks of
+            ref_name: Branch or tag name in repository. HEAD or SHA references are not supported.
+            artifact_path: Path to a file inside the artifacts archive.
+            job: The name of the job.
+            streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
-            action (callable): Callable responsible of dealing with chunk of
+            action: Callable responsible of dealing with chunk of
                 data
-            chunk_size (int): Size of each chunk
+            chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -809,12 +809,12 @@ class ProjectManager(CRUDMixin, RESTManager):
 
         Args:
             file: Data or file object containing the project
-            path (str): Name and path for the new project
-            namespace (str): The ID or path of the namespace that the project
+            path: Name and path for the new project
+            namespace: The ID or path of the namespace that the project
                 will be imported to
-            overwrite (bool): If True overwrite an existing project with the
+            overwrite: If True overwrite an existing project with the
                 same path
-            override_params (dict): Set the specific settings for the project
+            override_params: Set the specific settings for the project
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -861,14 +861,14 @@ class ProjectManager(CRUDMixin, RESTManager):
             A timeout can be specified via kwargs to override this functionality.
 
         Args:
-            bitbucket_server_url (str): Bitbucket Server URL
-            bitbucket_server_username (str): Bitbucket Server Username
-            personal_access_token (str): Bitbucket Server personal access
+            bitbucket_server_url: Bitbucket Server URL
+            bitbucket_server_username: Bitbucket Server Username
+            personal_access_token: Bitbucket Server personal access
                 token/password
-            bitbucket_server_project (str): Bitbucket Project Key
-            bitbucket_server_repo (str): Bitbucket Repository Name
-            new_name (str): New repository name (Optional)
-            target_namespace (str): Namespace to import repository into.
+            bitbucket_server_project: Bitbucket Project Key
+            bitbucket_server_repo: Bitbucket Repository Name
+            new_name: New repository name (Optional)
+            target_namespace: Namespace to import repository into.
                 Supports subgroups like /namespace/subgroup (Optional)
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -949,10 +949,10 @@ class ProjectManager(CRUDMixin, RESTManager):
             A timeout can be specified via kwargs to override this functionality.
 
         Args:
-            personal_access_token (str): GitHub personal access token
-            repo_id (int): Github repository ID
-            target_namespace (str): Namespace to import repo into
-            new_name (str): New repo name (Optional)
+            personal_access_token: GitHub personal access token
+            repo_id: Github repository ID
+            target_namespace: Namespace to import repo into
+            new_name: New repo name (Optional)
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -1031,7 +1031,7 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
         """Creates a new object.
 
         Args:
-            data (dict): Parameters to send to the server to create the
+            data: Parameters to send to the server to create the
                          resource
             **kwargs: Extra options to send to the server (e.g. sudo)
 

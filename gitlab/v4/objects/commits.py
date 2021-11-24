@@ -50,7 +50,7 @@ class ProjectCommit(RESTObject):
         """Cherry-pick a commit into a branch.
 
         Args:
-            branch (str): Name of target branch
+            branch: Name of target branch
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -69,7 +69,7 @@ class ProjectCommit(RESTObject):
         """List the references the commit is pushed to.
 
         Args:
-            type (str): The scope of references ('branch', 'tag' or 'all')
+            type: The scope of references ('branch', 'tag' or 'all')
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -109,7 +109,7 @@ class ProjectCommit(RESTObject):
         """Revert a commit on a given branch.
 
         Args:
-            branch (str): Name of target branch
+            branch: Name of target branch
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -191,7 +191,7 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
         """Create a new object.
 
         Args:
-            data (dict): Parameters to send to the server to create the
+            data: Parameters to send to the server to create the
                          resource
             **kwargs: Extra options to send to the server (e.g. sudo or
                       'ref_name', 'stage', 'name', 'all')

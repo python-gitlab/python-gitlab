@@ -41,7 +41,7 @@ class GroupClusterManager(CRUDMixin, RESTManager):
         """Create a new object.
 
         Args:
-            data (dict): Parameters to send to the server to create the
+            data: Parameters to send to the server to create the
                          resource
             **kwargs: Extra options to send to the server (e.g. sudo or
                       'ref_name', 'stage', 'name', 'all')
@@ -92,7 +92,7 @@ class ProjectClusterManager(CRUDMixin, RESTManager):
         """Create a new object.
 
         Args:
-            data (dict): Parameters to send to the server to create the
+            data: Parameters to send to the server to create the
                          resource
             **kwargs: Extra options to send to the server (e.g. sudo or
                       'ref_name', 'stage', 'name', 'all')

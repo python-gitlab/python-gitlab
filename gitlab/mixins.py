@@ -86,8 +86,8 @@ class GetMixin(_RestManagerBase):
         """Retrieve a single object.
 
         Args:
-            id (int or str): ID of the object to retrieve
-            lazy (bool): If True, don't request the server, but create a
+            id: ID of the object to retrieve
+            lazy: If True, don't request the server, but create a
                          shallow object giving access to the managers. This is
                          useful if you want to avoid useless calls to the API.
             **kwargs: Extra options to send to the server (e.g. sudo)
@@ -199,10 +199,10 @@ class ListMixin(_RestManagerBase):
         """Retrieve a list of objects.
 
         Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
+            all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            as_list: If set to False and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -282,7 +282,7 @@ class CreateMixin(_RestManagerBase):
         """Create a new object.
 
         Args:
-            data (dict): parameters to send to the server to create the
+            data: parameters to send to the server to create the
                          resource
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -433,8 +433,8 @@ class SetMixin(_RestManagerBase):
         """Create or update the object.
 
         Args:
-            key (str): The key of the object to create/update
-            value (str): The value to set for the object
+            key: The key of the object to create/update
+            value: The value to set for the object
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -623,7 +623,7 @@ class AccessRequestMixin(_RestObjectBase):
         """Approve an access request.
 
         Args:
-            access_level (int): The access level for the user
+            access_level: The access level for the user
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -659,12 +659,12 @@ class DownloadMixin(_RestObjectBase):
         """Download the archive of a resource export.
 
         Args:
-            streamed (bool): If True the data will be processed by chunks of
+            streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
-            action (callable): Callable responsible of dealing with chunk of
+            action: Callable responsible of dealing with chunk of
                 data
-            chunk_size (int): Size of each chunk
+            chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -793,7 +793,7 @@ class TimeTrackingMixin(_RestObjectBase):
         """Set an estimated time of work for the object.
 
         Args:
-            duration (str): Duration in human format (e.g. 3h30)
+            duration: Duration in human format (e.g. 3h30)
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -831,7 +831,7 @@ class TimeTrackingMixin(_RestObjectBase):
         """Add time spent working on the object.
 
         Args:
-            duration (str): Duration in human format (e.g. 3h30)
+            duration: Duration in human format (e.g. 3h30)
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -878,10 +878,10 @@ class ParticipantsMixin(_RestObjectBase):
         """List the participants.
 
         Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
+            all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            as_list: If set to False and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -909,8 +909,8 @@ class BadgeRenderMixin(_RestManagerBase):
         """Preview link_url and image_url after interpolation.
 
         Args:
-            link_url (str): URL of the badge link
-            image_url (str): URL of the badge image
+            link_url: URL of the badge link
+            image_url: URL of the badge image
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
