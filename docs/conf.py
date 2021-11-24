@@ -42,6 +42,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "ext.docstrings",
+    "sphinx_autodoc_typehints",  # must be loaded after napoleon modules
     "sphinxcontrib.autoprogram",
 ]
 

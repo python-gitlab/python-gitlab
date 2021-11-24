@@ -4,3 +4,4 @@ myst-parser
 sphinx==4.3.1
 sphinx_rtd_theme
 sphinxcontrib-autoprogram
+sphinx-autodoc-typehints==1.12.0
