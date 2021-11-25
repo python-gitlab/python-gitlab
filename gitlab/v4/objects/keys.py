@@ -31,4 +31,4 @@ class KeyManager(GetMixin, RESTManager):
         server_data = self.gitlab.http_get(self.path, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(server_data, dict)
-        return cast(Key, self._obj_cls(self, server_data))
+        return self._obj_cls(self, server_data)
