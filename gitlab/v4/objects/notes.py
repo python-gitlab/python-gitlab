@@ -13,12 +13,17 @@ from gitlab.mixins import (
 )
 
 from .award_emojis import (  # noqa: F401
+    GroupEpicNoteAwardEmojiManager,
     ProjectIssueNoteAwardEmojiManager,
     ProjectMergeRequestNoteAwardEmojiManager,
     ProjectSnippetNoteAwardEmojiManager,
 )
 
 __all__ = [
+    "GroupEpicNote",
+    "GroupEpicNoteManager",
+    "GroupEpicDiscussionNote",
+    "GroupEpicDiscussionNoteManager",
     "ProjectNote",
     "ProjectNoteManager",
     "ProjectCommitDiscussionNote",
@@ -36,6 +41,46 @@ __all__ = [
     "ProjectSnippetDiscussionNote",
     "ProjectSnippetDiscussionNoteManager",
 ]
+
+
+class GroupEpicNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+    awardemojis: GroupEpicNoteAwardEmojiManager
+
+
+class GroupEpicNoteManager(CRUDMixin, RESTManager):
+    _path = "/groups/{group_id}/epics/{epic_iid}/notes"
+    _obj_cls = GroupEpicNote
+    _from_parent_attrs = {"group_id": "group_id", "epic_iid": "iid"}
+    _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
+    _update_attrs = RequiredOptional(required=("body",))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> GroupEpicNote:
+        return cast(GroupEpicNote, super().get(id=id, lazy=lazy, **kwargs))
+
+
+class GroupEpicDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class GroupEpicDiscussionNoteManager(
+    GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+):
+    _path = "/groups/{group_id}/epics/{epic_iid}/discussions/{discussion_id}/notes"
+    _obj_cls = GroupEpicDiscussionNote
+    _from_parent_attrs = {
+        "group_id": "group_id",
+        "epic_iid": "epic_iid",
+        "discussion_id": "id",
+    }
+    _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
+    _update_attrs = RequiredOptional(required=("body",))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> GroupEpicDiscussionNote:
+        return cast(GroupEpicDiscussionNote, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectNote(RESTObject):
@@ -172,7 +217,7 @@ class ProjectMergeRequestDiscussionNoteManager(
 
 
 class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
-    awardemojis: ProjectMergeRequestNoteAwardEmojiManager
+    awardemojis: ProjectSnippetNoteAwardEmojiManager
 
 
 class ProjectSnippetNoteManager(CRUDMixin, RESTManager):
