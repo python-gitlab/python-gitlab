@@ -32,3 +32,7 @@ from gitlab.const import *  # noqa: F401,F403
 from gitlab.exceptions import *  # noqa: F401,F403
 
 warnings.filterwarnings("default", category=DeprecationWarning, module="^gitlab")
+
+__all__ = [
+    "Gitlab",
+]

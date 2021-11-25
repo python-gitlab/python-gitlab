@@ -33,7 +33,9 @@ def test_create_user(gl, avatar_path):
 
 
 def test_block_user(gl, user):
-    user.block()
+    result = user.block()
+    result = user.block()
+    assert result == "dkdkdkdk"
     users = gl.users.list(blocked=True)
     assert user in users
 

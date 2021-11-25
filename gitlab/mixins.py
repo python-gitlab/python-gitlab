@@ -573,9 +573,11 @@ class ObjectDeleteMixin(_RestObjectBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
+        id_val = self.get_id()
         if TYPE_CHECKING:
             assert isinstance(self.manager, DeleteMixin)
-        self.manager.delete(self.get_id(), **kwargs)
+            assert id_val is not None
+        self.manager.delete(id_val, **kwargs)
 
 
 class UserAgentDetailMixin(_RestObjectBase):
@@ -652,7 +654,7 @@ class DownloadMixin(_RestObjectBase):
     def download(
         self,
         streamed: bool = False,
-        action: Optional[Callable] = None,
+        action: Optional[Callable[[bytes], None]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
     ) -> Optional[bytes]:
@@ -779,7 +781,8 @@ class TimeTrackingMixin(_RestObjectBase):
         # Use the existing time_stats attribute if it exist, otherwise make an
         # API call
         if "time_stats" in self.attributes:
-            return self.attributes["time_stats"]
+            time_stats: Dict[str, Any] = self.attributes["time_stats"]
+            return time_stats
 
         path = f"{self.manager.path}/{self.get_id()}/time_stats"
         result = self.manager.gitlab.http_get(path, **kwargs)

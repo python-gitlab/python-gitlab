@@ -8,6 +8,23 @@ disallow_incomplete_defs = true
 disallow_untyped_defs = true
 files = "."
 
+# strict = true is
+check_untyped_defs = true
+disallow_any_generics = true
+# disallow_incomplete_defs = true
+disallow_subclassing_any = true
+# disallow_untyped_calls = true
+disallow_untyped_decorators = true
+# disallow_untyped_defs = true
+no_implicit_optional = true
+# no_implicit_reexport = true
+strict_equality = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+
 [[tool.mypy.overrides]] # Overrides for currently untyped modules
 module = [
     "docs.*",

@@ -181,6 +181,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = f"/users/{self.id}/block"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
+        print(type(server_data))
         if server_data is True:
             self._attrs["state"] = "blocked"
         return server_data

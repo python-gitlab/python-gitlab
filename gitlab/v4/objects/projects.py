@@ -436,7 +436,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         self,
         wiki: bool = False,
         streamed: bool = False,
-        action: Optional[Callable] = None,
+        action: Optional[Callable[[bytes], None]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
     ) -> Optional[bytes]:
@@ -531,7 +531,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         ref_name: str,
         job: str,
         streamed: bool = False,
-        action: Optional[Callable] = None,
+        action: Optional[Callable[[bytes], None]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
     ) -> Optional[bytes]:
@@ -574,7 +574,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         artifact_path: str,
         job: str,
         streamed: bool = False,
-        action: Optional[Callable] = None,
+        action: Optional[Callable[[bytes], None]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
     ) -> Optional[bytes]:

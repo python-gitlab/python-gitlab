@@ -117,8 +117,8 @@ class TestRESTObject:
         obj.id = 42
         assert 42 == obj.get_id()
 
-        obj.id = None
-        assert obj.get_id() is None
+        obj.id = "hello"
+        assert "hello" == obj.get_id()
 
     def test_custom_id_attr(self, fake_manager):
         class OtherFakeObject(FakeObject):
@@ -126,6 +126,13 @@ class TestRESTObject:
 
         obj = OtherFakeObject(fake_manager, {"foo": "bar"})
         assert "bar" == obj.get_id()
+
+    def test_custom_id_attr_missing(self, fake_manager):
+        class OtherFakeObject(FakeObject):
+            _id_attr = "spam"
+
+        obj = OtherFakeObject(fake_manager, {"foo": "bar"})
+        assert obj.get_id() is None
 
     def test_update_attrs(self, fake_manager):
         obj = FakeObject(fake_manager, {"foo": "bar"})

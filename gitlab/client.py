@@ -337,6 +337,7 @@ class Gitlab(object):
         data = self.http_post("/markdown", post_data=post_data, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(data, requests.Response)
+            assert isinstance(data["html"], str)
         return data["html"]
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabLicenseError)
@@ -614,10 +615,13 @@ class Gitlab(object):
         cur_retries = 0
         while True:
             result = self.session.send(prepped, timeout=timeout, **settings)
+            print("result type:", type(result))
+            print("result:", result)
 
             self._check_redirects(result)
 
             if 200 <= result.status_code < 300:
+                print("Returning result:", result)
                 return result
 
             retry_transient_errors = kwargs.get(
@@ -694,7 +698,8 @@ class Gitlab(object):
             and not raw
         ):
             try:
-                return result.json()
+                data: Dict[str, Any] = result.json()
+                return data
             except Exception as e:
                 raise gitlab.exceptions.GitlabParsingError(
                     error_message="Failed to parse the server message"
@@ -791,7 +796,10 @@ class Gitlab(object):
         )
         try:
             if result.headers.get("Content-Type", None) == "application/json":
-                return result.json()
+                print("data.text:", result.text)
+                data: Dict[str, Any] = result.json()
+                print("data type:", type(data))
+                return data
         except Exception as e:
             raise gitlab.exceptions.GitlabParsingError(
                 error_message="Failed to parse the server message"
@@ -839,7 +847,8 @@ class Gitlab(object):
             **kwargs,
         )
         try:
-            return result.json()
+            data: Dict[str, Any] = result.json()
+            return data
         except Exception as e:
             raise gitlab.exceptions.GitlabParsingError(
                 error_message="Failed to parse the server message"

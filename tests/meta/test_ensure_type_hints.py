@@ -7,7 +7,7 @@ Original notes by John L. Villalovos
 import dataclasses
 import functools
 import inspect
-from typing import Optional, Type
+from typing import Optional, Type, Union, TYPE_CHECKING
 
 import _pytest
 
@@ -19,7 +19,7 @@ import gitlab.v4.objects
 @dataclasses.dataclass(frozen=True)
 class ClassInfo:
     name: str
-    type: Type
+    type: Type[Union[gitlab.mixins.GetMixin, gitlab.mixins.GetWithoutIdMixin]]
 
     def __lt__(self, other: object) -> bool:
         if not isinstance(other, ClassInfo):
@@ -108,7 +108,7 @@ class TestTypeHints:
     def get_check_helper(
         self,
         *,
-        base_type: Type,
+        base_type: Type[Union[gitlab.mixins.GetMixin, gitlab.mixins.GetWithoutIdMixin]],
         class_info: ClassInfo,
         method_template: str,
         optional_return: bool,
@@ -121,6 +121,11 @@ class TestTypeHints:
             return
 
         obj_cls = class_info.type._obj_cls
+        if TYPE_CHECKING:
+            assert obj_cls is not None
+            assert issubclass(
+                obj_cls, (gitlab.mixins.GetMixin, gitlab.mixins.GetWithoutIdMixin)
+            )
         signature = inspect.signature(class_info.type.get)
         filename = inspect.getfile(class_info.type)
 
@@ -131,7 +136,9 @@ class TestTypeHints:
             f"Recommend adding the followinng method:\n"
         )
         fail_message += method_template.format(obj_cls=obj_cls)
-        check_type = obj_cls
+        check_type: Optional[
+            Type[Union[gitlab.mixins.GetMixin, gitlab.mixins.GetWithoutIdMixin]]
+        ] = obj_cls
         if optional_return:
             check_type = Optional[obj_cls]
         assert check_type == signature.return_annotation, fail_message

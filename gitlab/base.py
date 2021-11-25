@@ -17,7 +17,17 @@
 
 import importlib
 from types import ModuleType
-from typing import Any, Dict, Iterable, NamedTuple, Optional, Tuple, Type
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    NamedTuple,
+    Optional,
+    Tuple,
+    Type,
+    TYPE_CHECKING,
+    Union,
+)
 
 from gitlab import types as g_types
 from gitlab.exceptions import GitlabParsingError
@@ -172,15 +182,18 @@ class RESTObject(object):
         self.__dict__["_updated_attrs"] = {}
         self.__dict__["_attrs"] = new_attrs
 
-    def get_id(self) -> Any:
+    def get_id(self) -> Optional[Union[int, str]]:
         """Returns the id of the resource."""
         if self._id_attr is None or not hasattr(self, self._id_attr):
             return None
-        return getattr(self, self._id_attr)
+        id_val = getattr(self, self._id_attr)
+        if TYPE_CHECKING:
+            assert isinstance(id_val, (int, str))
+        return id_val
 
     @property
     def attributes(self) -> Dict[str, Any]:
-        d = self.__dict__["_updated_attrs"].copy()
+        d: Dict[str, Any] = self.__dict__["_updated_attrs"].copy()
         d.update(self.__dict__["_attrs"])
         d.update(self.__dict__["_parent_attrs"])
         return d

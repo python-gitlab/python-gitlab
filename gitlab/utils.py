@@ -29,7 +29,7 @@ class _StdoutStream(object):
 def response_content(
     response: requests.Response,
     streamed: bool,
-    action: Optional[Callable],
+    action: Optional[Callable[[bytes], None]],
     chunk_size: int,
 ) -> Optional[bytes]:
     if streamed is False:
