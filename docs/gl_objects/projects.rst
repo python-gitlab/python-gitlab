@@ -92,6 +92,11 @@ Create a project in a group::
     group_id = gl.groups.list(search='my-group')[0].id
     project = gl.projects.create({'name': 'myrepo', 'namespace_id': group_id})
 
+List a project's groups::
+
+    # Get a list of ancestor/parent groups for a project.
+    groups = project.groups.list()
+
 Update a project::
 
     project.snippets_enabled = 1

@@ -311,3 +311,21 @@ def test_project_wiki(project):
     wiki.save()
     wiki.delete()
     assert len(project.wikis.list()) == 0
+
+
+def test_project_groups_list(gl, group):
+    """Test listing groups of a project"""
+    # Create a subgroup of our top-group, we will place our new project inside
+    # this group.
+    group2 = gl.groups.create(
+        {"name": "group2_proj", "path": "group2_proj", "parent_id": group.id}
+    )
+    data = {
+        "name": "test-project-tpsg",
+        "namespace_id": group2.id,
+    }
+    project = gl.projects.create(data)
+
+    groups = project.groups.list()
+    group_ids = set([x.id for x in groups])
+    assert set((group.id, group2.id)) == group_ids
