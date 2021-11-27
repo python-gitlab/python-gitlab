@@ -3,23 +3,17 @@ GitLab API:
 https://docs.gitlab.com/ee/api/users.html
 https://docs.gitlab.com/ee/api/users.html#delete-authentication-identity-from-user
 """
-import pytest
 import requests
 
 
-@pytest.fixture(scope="session")
-def avatar_path(test_dir):
-    return test_dir / "fixtures" / "avatar.png"
-
-
-def test_create_user(gl, avatar_path):
+def test_create_user(gl, fixture_dir):
     user = gl.users.create(
         {
             "email": "foo@bar.com",
             "username": "foo",
             "name": "foo",
             "password": "foo_password",
-            "avatar": open(avatar_path, "rb"),
+            "avatar": open(fixture_dir / "avatar.png", "rb"),
         }
     )
 
@@ -29,7 +23,7 @@ def test_create_user(gl, avatar_path):
 
     avatar_url = user.avatar_url.replace("gitlab.test", "localhost:8080")
     uploaded_avatar = requests.get(avatar_url).content
-    assert uploaded_avatar == open(avatar_path, "rb").read()
+    assert uploaded_avatar == open(fixture_dir / "avatar.png", "rb").read()
 
 
 def test_block_user(gl, user):

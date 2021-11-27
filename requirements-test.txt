@@ -1,6 +1,6 @@
 coverage
 httmock
-mock
 pytest
+pytest-console-scripts
 pytest-cov
 responses

@@ -3,6 +3,11 @@ import pytest
 import gitlab
 
 
+@pytest.fixture(scope="session")
+def fixture_dir(test_dir):
+    return test_dir / "unit" / "fixtures"
+
+
 @pytest.fixture
 def gl():
     return gitlab.Gitlab(

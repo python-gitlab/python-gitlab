@@ -12,6 +12,7 @@ files = "."
 module = [
     "docs.*",
     "docs.ext.*",
+    "tests.*",
     "tests.functional.*",
     "tests.functional.api.*",
     "tests.unit.*",
