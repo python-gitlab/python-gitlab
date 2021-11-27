@@ -18,7 +18,28 @@
 import json
 import warnings
 
+import pytest
+import requests
+import responses
+
 from gitlab import types, utils
+
+
+@responses.activate
+def test_response_content(capsys):
+    responses.add(
+        method="GET",
+        url="https://example.com",
+        status=200,
+        body="test",
+        content_type="application/octet-stream",
+    )
+
+    resp = requests.get("https://example.com", stream=True)
+    utils.response_content(resp, streamed=True, action=None, chunk_size=1024)
+
+    captured = capsys.readouterr()
+    assert "test" in captured.out
 
 
 class TestEncodedId:
@@ -37,6 +58,10 @@ class TestEncodedId:
         assert 23 == obj
         assert "23" == str(obj)
         assert "23" == f"{obj}"
+
+    def test_init_invalid_type_raises(self):
+        with pytest.raises(TypeError):
+            utils.EncodedId(None)
 
     def test_init_encodeid_str(self):
         value = "Goodbye"
@@ -95,6 +120,33 @@ class TestWarningsWrapper:
         assert warn_message in str(warning.message)
         assert __file__ in str(warning.message)
         assert warn_source == warning.source
+
+
+@pytest.mark.parametrize(
+    "source,expected",
+    [
+        ({"a": "", "b": "spam", "c": None}, {"a": "", "b": "spam", "c": None}),
+        ({"a": "", "b": {"c": "spam"}}, {"a": "", "b[c]": "spam"}),
+    ],
+)
+def test_copy_dict(source, expected):
+    dest = {}
+
+    utils.copy_dict(src=source, dest=dest)
+    assert dest == expected
+
+
+@pytest.mark.parametrize(
+    "dictionary,expected",
+    [
+        ({"a": None, "b": "spam"}, {"b": "spam"}),
+        ({"a": "", "b": "spam"}, {"a": "", "b": "spam"}),
+        ({"a": None, "b": None}, {}),
+    ],
+)
+def test_remove_none_from_dict(dictionary, expected):
+    result = utils.remove_none_from_dict(dictionary)
+    assert result == expected
 
 
 def test_transform_types_copies_data_with_empty_files():

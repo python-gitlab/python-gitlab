@@ -24,6 +24,7 @@ import pytest
 import responses
 
 import gitlab
+from tests.unit import helpers
 
 localhost = "http://localhost"
 token = "abc123"
@@ -58,7 +59,7 @@ def resp_page_1():
         "headers": headers,
         "content_type": "application/json",
         "status": 200,
-        "match": [responses.matchers.query_param_matcher({})],
+        "match": helpers.MATCH_EMPTY_QUERY_PARAMS,
     }
 
 
@@ -82,6 +83,64 @@ def resp_page_2():
         "status": 200,
         "match": [responses.matchers.query_param_matcher(params)],
     }
+
+
+def test_gitlab_init_with_valid_api_version():
+    gl = gitlab.Gitlab(api_version="4")
+    assert gl.api_version == "4"
+
+
+def test_gitlab_init_with_invalid_api_version():
+    with pytest.raises(ModuleNotFoundError):
+        gitlab.Gitlab(api_version="1")
+
+
+def test_gitlab_as_context_manager():
+    with gitlab.Gitlab() as gl:
+        assert isinstance(gl, gitlab.Gitlab)
+
+
+@responses.activate
+@pytest.mark.parametrize(
+    "status_code,response_json,expected",
+    [
+        (200, {"version": "0.0.0-pre", "revision": "abcdef"}, ("0.0.0-pre", "abcdef")),
+        (200, None, ("unknown", "unknown")),
+        (401, None, ("unknown", "unknown")),
+    ],
+)
+def test_gitlab_get_version(gl, status_code, response_json, expected):
+    responses.add(
+        method=responses.GET,
+        url="http://localhost/api/v4/version",
+        json=response_json,
+        status=status_code,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+    )
+
+    version = gl.version()
+    assert version == expected
+
+
+@responses.activate
+@pytest.mark.parametrize(
+    "response_json,expected",
+    [
+        ({"id": "1", "plan": "premium"}, {"id": "1", "plan": "premium"}),
+        (None, {}),
+    ],
+)
+def test_gitlab_get_license(gl, response_json, expected):
+    responses.add(
+        method=responses.GET,
+        url="http://localhost/api/v4/license",
+        json=response_json,
+        status=200,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+    )
+
+    gitlab_license = gl.get_license()
+    assert gitlab_license == expected
 
 
 @responses.activate

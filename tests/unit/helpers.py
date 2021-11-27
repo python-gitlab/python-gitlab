@@ -4,6 +4,9 @@ import json
 from typing import Optional
 
 import requests
+import responses
+
+MATCH_EMPTY_QUERY_PARAMS = [responses.matchers.query_param_matcher({})]
 
 
 # NOTE: The function `httmock_response` and the class `Headers` is taken from

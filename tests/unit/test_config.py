@@ -54,6 +54,15 @@ url = https://four.url
 oauth_token = STUV
 """
 
+ssl_verify_str_config = """[global]
+default = one
+ssl_verify = /etc/ssl/certs/ca-certificates.crt
+
+[one]
+url = http://one.url
+private_token = ABCDEF
+"""
+
 custom_user_agent_config = f"""[global]
 default = one
 user_agent = {custom_user_agent}
@@ -69,7 +78,7 @@ url = http://there.url
 private_token = ABCDEF
 """
 
-missing_attr_config = """[global]
+invalid_data_config = """[global]
 [one]
 url = http://one.url
 
@@ -83,6 +92,11 @@ meh = hem
 url = http://four.url
 private_token = ABCDEF
 per_page = 200
+
+[invalid-api-version]
+url = http://invalid-api-version.url
+private_token = ABCDEF
+api_version = 1
 """
 
 
@@ -173,7 +187,7 @@ def test_invalid_id(m_open, mock_clean_env, monkeypatch):
 
 @mock.patch("builtins.open")
 def test_invalid_data(m_open, monkeypatch):
-    fd = io.StringIO(missing_attr_config)
+    fd = io.StringIO(invalid_data_config)
     fd.close = mock.Mock(return_value=None, side_effect=lambda: fd.seek(0))
     m_open.return_value = fd
 
@@ -185,9 +199,14 @@ def test_invalid_data(m_open, monkeypatch):
             config.GitlabConfigParser(gitlab_id="two")
         with pytest.raises(config.GitlabDataError):
             config.GitlabConfigParser(gitlab_id="three")
-        with pytest.raises(config.GitlabDataError) as emgr:
+
+        with pytest.raises(config.GitlabDataError) as e:
             config.GitlabConfigParser("four")
-        assert "Unsupported per_page number: 200" == emgr.value.args[0]
+        assert str(e.value) == "Unsupported per_page number: 200"
+
+        with pytest.raises(config.GitlabDataError) as e:
+            config.GitlabConfigParser("invalid-api-version")
+        assert str(e.value) == "Unsupported API version: 1"
 
 
 @mock.patch("builtins.open")
@@ -249,6 +268,18 @@ def test_valid_data(m_open, monkeypatch):
 
 
 @mock.patch("builtins.open")
+def test_ssl_verify_as_str(m_open, monkeypatch):
+    fd = io.StringIO(ssl_verify_str_config)
+    fd.close = mock.Mock(return_value=None)
+    m_open.return_value = fd
+
+    with monkeypatch.context() as m:
+        m.setattr(Path, "resolve", _mock_existent_file)
+        cp = config.GitlabConfigParser()
+    assert cp.ssl_verify == "/etc/ssl/certs/ca-certificates.crt"
+
+
+@mock.patch("builtins.open")
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Not supported on Windows")
 def test_data_from_helper(m_open, monkeypatch, tmp_path):
     helper = tmp_path / "helper.sh"
@@ -284,6 +315,33 @@ def test_data_from_helper(m_open, monkeypatch, tmp_path):
     assert "https://helper.url" == cp.url
     assert cp.private_token is None
     assert "secret" == cp.oauth_token
+
+
+@mock.patch("builtins.open")
+@pytest.mark.skipif(sys.platform.startswith("win"), reason="Not supported on Windows")
+def test_from_helper_subprocess_error_raises_error(m_open, monkeypatch):
+    # using /usr/bin/false here to force a non-zero return code
+    fd = io.StringIO(
+        dedent(
+            """\
+            [global]
+            default = helper
+
+            [helper]
+            url = https://helper.url
+            oauth_token = helper: /usr/bin/false
+            """
+        )
+    )
+
+    fd.close = mock.Mock(return_value=None)
+    m_open.return_value = fd
+    with monkeypatch.context() as m:
+        m.setattr(Path, "resolve", _mock_existent_file)
+        with pytest.raises(config.GitlabConfigHelperError) as e:
+            config.GitlabConfigParser(gitlab_id="helper")
+
+        assert "Failed to read oauth_token value from helper" in str(e.value)
 
 
 @mock.patch("builtins.open")
