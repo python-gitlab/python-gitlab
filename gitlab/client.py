@@ -463,6 +463,7 @@ class Gitlab(object):
             str: The full URL
         """
         if path.startswith("http://") or path.startswith("https://"):
+            path = path.replace("#", "%23")
             return path
         else:
             return f"{self._url}{path}"
