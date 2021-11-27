@@ -109,6 +109,24 @@ class GroupProjectManager(ListMixin, RESTManager):
     )
 
 
+class ProjectGroup(RESTObject):
+    pass
+
+
+class ProjectGroupManager(ListMixin, RESTManager):
+    _path = "/projects/{project_id}/groups"
+    _obj_cls = ProjectGroup
+    _from_parent_attrs = {"project_id": "id"}
+    _list_filters = (
+        "search",
+        "skip_groups",
+        "with_shared",
+        "shared_min_access_level",
+        "shared_visible_only",
+    )
+    _types = {"skip_groups": types.ListAttribute}
+
+
 class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTObject):
     _short_print_attr = "path"
 
@@ -132,6 +150,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     files: ProjectFileManager
     forks: "ProjectForkManager"
     generic_packages: GenericPackageManager
+    groups: ProjectGroupManager
     hooks: ProjectHookManager
     imports: ProjectImportManager
     issues: ProjectIssueManager
