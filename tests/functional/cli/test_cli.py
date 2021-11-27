@@ -27,6 +27,12 @@ def test_version(script_runner):
     assert ret.stdout.strip() == __version__
 
 
+def test_config_error_with_help_prints_help(script_runner):
+    ret = script_runner.run("gitlab", "-c", "invalid-file", "--help")
+    assert ret.stdout.startswith("usage:")
+    assert ret.returncode == 0
+
+
 @pytest.mark.script_launch_mode("inprocess")
 @responses.activate
 def test_defaults_to_gitlab_com(script_runner, resp_get_project, monkeypatch):

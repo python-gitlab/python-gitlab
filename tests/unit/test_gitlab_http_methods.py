@@ -9,8 +9,6 @@ from gitlab import GitlabHttpError, GitlabList, GitlabParsingError, RedirectErro
 from gitlab.client import RETRYABLE_TRANSIENT_ERROR_CODES
 from tests.unit import helpers
 
-MATCH_EMPTY_QUERY_PARAMS = [responses.matchers.query_param_matcher({})]
-
 
 def test_build_url(gl):
     r = gl._build_url("http://localhost/api/v4")
@@ -29,7 +27,7 @@ def test_http_request(gl):
         url=url,
         json=[{"name": "project1"}],
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     http_r = gl.http_request("get", "/projects")
@@ -46,7 +44,7 @@ def test_http_request_404(gl):
         url=url,
         json={},
         status=400,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -63,7 +61,7 @@ def test_http_request_with_only_failures(gl, status_code):
         url=url,
         json={},
         status=status_code,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -322,7 +320,7 @@ def test_http_request_302_get_does_not_raise(gl):
             method=responses.GET,
             url=url,
             status=302,
-            match=MATCH_EMPTY_QUERY_PARAMS,
+            match=helpers.MATCH_EMPTY_QUERY_PARAMS,
         )
         gl.http_request(verb=method, path=api_path)
 
@@ -346,7 +344,7 @@ def test_http_request_302_put_raises_redirect_error(gl):
             method=responses.PUT,
             url=url,
             status=302,
-            match=MATCH_EMPTY_QUERY_PARAMS,
+            match=helpers.MATCH_EMPTY_QUERY_PARAMS,
         )
         with pytest.raises(RedirectError) as exc:
             gl.http_request(verb=method, path=api_path)
@@ -364,7 +362,7 @@ def test_get_request(gl):
         url=url,
         json={"name": "project1"},
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_get("/projects")
@@ -382,7 +380,7 @@ def test_get_request_raw(gl):
         content_type="application/octet-stream",
         body="content",
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_get("/projects")
@@ -398,7 +396,7 @@ def test_get_request_404(gl):
         url=url,
         json=[],
         status=404,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -415,7 +413,7 @@ def test_get_request_invalid_data(gl):
         body='["name": "project1"]',
         content_type="application/json",
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabParsingError):
@@ -434,7 +432,7 @@ def test_list_request(gl):
         json=[{"name": "project1"}],
         headers={"X-Total": "1"},
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with warnings.catch_warnings(record=True) as caught_warnings:
@@ -480,7 +478,7 @@ large_list_response = {
     ],
     "headers": {"X-Total": "30", "x-per-page": "20"},
     "status": 200,
-    "match": MATCH_EMPTY_QUERY_PARAMS,
+    "match": helpers.MATCH_EMPTY_QUERY_PARAMS,
 }
 
 
@@ -572,7 +570,7 @@ def test_list_request_404(gl):
         url=url,
         json=[],
         status=404,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -589,7 +587,7 @@ def test_list_request_invalid_data(gl):
         body='["name": "project1"]',
         content_type="application/json",
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabParsingError):
@@ -605,7 +603,7 @@ def test_post_request(gl):
         url=url,
         json={"name": "project1"},
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_post("/projects")
@@ -622,7 +620,7 @@ def test_post_request_404(gl):
         url=url,
         json=[],
         status=404,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -639,7 +637,7 @@ def test_post_request_invalid_data(gl):
         content_type="application/json",
         body='["name": "project1"]',
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabParsingError):
@@ -655,7 +653,7 @@ def test_put_request(gl):
         url=url,
         json={"name": "project1"},
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_put("/projects")
@@ -672,7 +670,7 @@ def test_put_request_404(gl):
         url=url,
         json=[],
         status=404,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -689,7 +687,7 @@ def test_put_request_invalid_data(gl):
         body='["name": "project1"]',
         content_type="application/json",
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabParsingError):
@@ -705,7 +703,7 @@ def test_delete_request(gl):
         url=url,
         json=True,
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_delete("/projects")
@@ -722,7 +720,7 @@ def test_delete_request_404(gl):
         url=url,
         json=[],
         status=404,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):

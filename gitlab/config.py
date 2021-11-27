@@ -154,7 +154,7 @@ class GitlabConfigParser:
             # CA bundle.
             try:
                 self.ssl_verify = _config.get("global", "ssl_verify")
-            except Exception:
+            except Exception:  # pragma: no cover
                 pass
         except Exception:
             pass
@@ -166,7 +166,7 @@ class GitlabConfigParser:
             # CA bundle.
             try:
                 self.ssl_verify = _config.get(self.gitlab_id, "ssl_verify")
-            except Exception:
+            except Exception:  # pragma: no cover
                 pass
         except Exception:
             pass
@@ -197,7 +197,9 @@ class GitlabConfigParser:
 
         try:
             self.http_username = _config.get(self.gitlab_id, "http_username")
-            self.http_password = _config.get(self.gitlab_id, "http_password")
+            self.http_password = _config.get(
+                self.gitlab_id, "http_password"
+            )  # pragma: no cover
         except Exception:
             pass
 
