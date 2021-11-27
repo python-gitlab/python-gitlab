@@ -4,6 +4,10 @@ from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import NoUpdateMixin, ObjectDeleteMixin
 
 __all__ = [
+    "GroupEpicAwardEmoji",
+    "GroupEpicAwardEmojiManager",
+    "GroupEpicNoteAwardEmoji",
+    "GroupEpicNoteAwardEmojiManager",
     "ProjectIssueAwardEmoji",
     "ProjectIssueAwardEmojiManager",
     "ProjectIssueNoteAwardEmoji",
@@ -17,6 +21,42 @@ __all__ = [
     "ProjectSnippetNoteAwardEmoji",
     "ProjectSnippetNoteAwardEmojiManager",
 ]
+
+
+class GroupEpicAwardEmoji(ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class GroupEpicAwardEmojiManager(NoUpdateMixin, RESTManager):
+    _path = "/groups/{group_id}/epics/{epic_iid}/award_emoji"
+    _obj_cls = GroupEpicAwardEmoji
+    _from_parent_attrs = {"group_id": "group_id", "epic_iid": "iid"}
+    _create_attrs = RequiredOptional(required=("name",))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> GroupEpicAwardEmoji:
+        return cast(GroupEpicAwardEmoji, super().get(id=id, lazy=lazy, **kwargs))
+
+
+class GroupEpicNoteAwardEmoji(ObjectDeleteMixin, RESTObject):
+    pass
+
+
+class GroupEpicNoteAwardEmojiManager(NoUpdateMixin, RESTManager):
+    _path = "/groups/{group_id}/epics/{epic_iid}/notes/{note_id}/award_emoji"
+    _obj_cls = GroupEpicNoteAwardEmoji
+    _from_parent_attrs = {
+        "group_id": "group_id",
+        "epic_iid": "epic_iid",
+        "note_id": "id",
+    }
+    _create_attrs = RequiredOptional(required=("name",))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> GroupEpicNoteAwardEmoji:
+        return cast(GroupEpicNoteAwardEmoji, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectIssueAwardEmoji(ObjectDeleteMixin, RESTObject):
