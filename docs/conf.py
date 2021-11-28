@@ -42,9 +42,10 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "ext.docstrings",
-    "sphinx_autodoc_typehints",  # must be loaded after napoleon modules
     "sphinxcontrib.autoprogram",
 ]
+
+autodoc_typehints = "both"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
