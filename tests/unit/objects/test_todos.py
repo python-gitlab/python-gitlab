@@ -3,20 +3,22 @@ GitLab API: https://docs.gitlab.com/ce/api/todos.html
 """
 
 import json
-import os
 
 import pytest
 import responses
 
 from gitlab.v4.objects import Todo
 
-with open(f"{os.path.dirname(__file__)}/../data/todo.json", "r") as json_file:
-    todo_content = json_file.read()
-    json_content = json.loads(todo_content)
+
+@pytest.fixture()
+def json_content(fixture_dir):
+    with open(fixture_dir / "todo.json", "r") as json_file:
+        todo_content = json_file.read()
+        return json.loads(todo_content)
 
 
 @pytest.fixture
-def resp_todo():
+def resp_todo(json_content):
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
             method=responses.GET,

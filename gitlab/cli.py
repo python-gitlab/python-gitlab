@@ -178,7 +178,7 @@ def _parse_value(v: Any) -> Any:
     return v
 
 
-def docs() -> argparse.ArgumentParser:
+def docs() -> argparse.ArgumentParser:  # pragma: no cover
     """
     Provide a statically generated parser for sphinx only, so we don't need
     to provide dummy gitlab config for readthedocs.
@@ -208,7 +208,7 @@ def main() -> None:
             sys.exit(0)
         sys.exit(e)
     # We only support v4 API at this time
-    if config.api_version not in ("4",):
+    if config.api_version not in ("4",):  # dead code # pragma: no cover
         raise ModuleNotFoundError(name=f"gitlab.v{config.api_version}.cli")
 
     # Now we build the entire set of subcommands and do the complete parsing
@@ -216,7 +216,7 @@ def main() -> None:
     try:
         import argcomplete  # type: ignore
 
-        argcomplete.autocomplete(parser)
+        argcomplete.autocomplete(parser)  # pragma: no cover
     except Exception:
         pass
     args = parser.parse_args()

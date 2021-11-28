@@ -18,8 +18,8 @@
 import io
 import os
 from textwrap import dedent
+from unittest import mock
 
-import mock
 import pytest
 
 from gitlab import config, USER_AGENT

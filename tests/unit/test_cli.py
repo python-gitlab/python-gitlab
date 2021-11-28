@@ -25,6 +25,7 @@ from contextlib import redirect_stderr  # noqa: H302
 import pytest
 
 from gitlab import cli
+from gitlab.exceptions import GitlabError
 
 
 @pytest.mark.parametrize(
@@ -66,12 +67,19 @@ def test_cls_to_what(class_name, expected_what):
     assert cli.cls_to_what(TestClass) == expected_what
 
 
-def test_die():
+@pytest.mark.parametrize(
+    "message,error,expected",
+    [
+        ("foobar", None, "foobar\n"),
+        ("foo", GitlabError("bar"), "foo (bar)\n"),
+    ],
+)
+def test_die(message, error, expected):
     fl = io.StringIO()
     with redirect_stderr(fl):
         with pytest.raises(SystemExit) as test:
-            cli.die("foobar")
-    assert fl.getvalue() == "foobar\n"
+            cli.die(message, error)
+    assert fl.getvalue() == expected
     assert test.value.code == 1
 
 
