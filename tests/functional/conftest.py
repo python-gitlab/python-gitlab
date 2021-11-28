@@ -31,8 +31,8 @@ def reset_gitlab(gl):
             user.delete(hard_delete=True)
 
 
-def set_token(container, rootdir):
-    set_token_rb = rootdir / "set_token.rb"
+def set_token(container, fixture_dir):
+    set_token_rb = fixture_dir / "set_token.rb"
 
     with open(set_token_rb, "r") as f:
         set_token_command = f.read().strip()
@@ -137,7 +137,7 @@ def gitlab_config(check_is_alive, docker_ip, docker_services, temp_dir, fixture_
         timeout=200, pause=5, check=lambda: check_is_alive("gitlab-test")
     )
 
-    token = set_token("gitlab-test", rootdir=fixture_dir)
+    token = set_token("gitlab-test", fixture_dir=fixture_dir)
 
     config = f"""[global]
 default = local
