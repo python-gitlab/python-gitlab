@@ -16,6 +16,18 @@ I cannot edit the merge request / issue I've just retrieved
     See the :ref:`merge requests example <merge_requests_examples>` and the
     :ref:`issues examples <issues_examples>`.
 
+.. _attribute_error_list:
+
+I get an ``AttributeError`` when accessing attributes of an object retrieved via a ``list()`` call.
+    Fetching a list of objects, doesn’t always include all attributes in the
+    objects. To retrieve an object with all attributes use a ``get()`` call.
+
+    Example with projects::
+
+        for projects in gl.projects.list():
+            # Retrieve project object with all attributes
+            project = gl.projects.get(project.id)
+
 How can I clone the repository of a project?
     python-gitlab doesn't provide an API to clone a project. You have to use a
     git library or call the ``git`` command.

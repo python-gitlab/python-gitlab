@@ -16,9 +16,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import importlib
+import textwrap
 from types import ModuleType
 from typing import Any, Dict, Iterable, NamedTuple, Optional, Tuple, Type
 
+import gitlab
 from gitlab import types as g_types
 from gitlab.exceptions import GitlabParsingError
 
@@ -30,6 +32,12 @@ __all__ = [
     "RESTObjectList",
     "RESTManager",
 ]
+
+
+_URL_ATTRIBUTE_ERROR = (
+    f"https://python-gitlab.readthedocs.io/en/{gitlab.__version__}/"
+    f"faq.html#attribute-error-list"
+)
 
 
 class RESTObject(object):
@@ -45,13 +53,20 @@ class RESTObject(object):
 
     _id_attr: Optional[str] = "id"
     _attrs: Dict[str, Any]
+    _created_from_list: bool  # Indicates if object was created from a list() action
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _short_print_attr: Optional[str] = None
     _updated_attrs: Dict[str, Any]
     manager: "RESTManager"
 
-    def __init__(self, manager: "RESTManager", attrs: Dict[str, Any]) -> None:
+    def __init__(
+        self,
+        manager: "RESTManager",
+        attrs: Dict[str, Any],
+        *,
+        created_from_list: bool = False,
+    ) -> None:
         if not isinstance(attrs, dict):
             raise GitlabParsingError(
                 "Attempted to initialize RESTObject with a non-dictionary value: "
@@ -64,6 +79,7 @@ class RESTObject(object):
                 "_attrs": attrs,
                 "_updated_attrs": {},
                 "_module": importlib.import_module(self.__module__),
+                "_created_from_list": created_from_list,
             }
         )
         self.__dict__["_parent_attrs"] = self.manager.parent_attrs
@@ -106,8 +122,22 @@ class RESTObject(object):
             except KeyError:
                 try:
                     return self.__dict__["_parent_attrs"][name]
-                except KeyError:
-                    raise AttributeError(name)
+                except KeyError as exc:
+                    message = (
+                        f"{type(self).__name__!r} object has no attribute {name!r}"
+                    )
+                    if self._created_from_list:
+                        message = (
+                            f"{message}\n\n"
+                            + textwrap.fill(
+                                f"{self.__class__!r} was created via a list() call and "
+                                f"only a subset of the data may be present. To ensure "
+                                f"all data is present get the object using a "
+                                f"get(object.id) call. For more details, see:"
+                            )
+                            + f"\n\n{_URL_ATTRIBUTE_ERROR}"
+                        )
+                    raise AttributeError(message) from exc
 
     def __setattr__(self, name: str, value: Any) -> None:
         self.__dict__["_updated_attrs"][name] = value
@@ -229,7 +259,7 @@ class RESTObjectList(object):
 
     def next(self) -> RESTObject:
         data = self._list.next()
-        return self._obj_cls(self.manager, data)
+        return self._obj_cls(self.manager, data, created_from_list=True)
 
     @property
     def current_page(self) -> int:
