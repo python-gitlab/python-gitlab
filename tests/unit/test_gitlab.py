@@ -129,19 +129,19 @@ def test_gitlab_token_auth(gl, callback=None):
 
 def test_gitlab_default_url():
     gl = gitlab.Gitlab()
-    assert gl.url == gitlab.DEFAULT_URL
+    assert gl.url == gitlab.const.DEFAULT_URL
 
 
 @pytest.mark.parametrize(
     "args, kwargs, expected_url, expected_private_token, expected_oauth_token",
     [
-        ([], {}, gitlab.DEFAULT_URL, None, None),
-        ([None, token], {}, gitlab.DEFAULT_URL, token, None),
+        ([], {}, gitlab.const.DEFAULT_URL, None, None),
+        ([None, token], {}, gitlab.const.DEFAULT_URL, token, None),
         ([localhost], {}, localhost, None, None),
         ([localhost, token], {}, localhost, token, None),
         ([localhost, None, token], {}, localhost, None, token),
-        ([], {"private_token": token}, gitlab.DEFAULT_URL, token, None),
-        ([], {"oauth_token": token}, gitlab.DEFAULT_URL, None, token),
+        ([], {"private_token": token}, gitlab.const.DEFAULT_URL, token, None),
+        ([], {"oauth_token": token}, gitlab.const.DEFAULT_URL, None, token),
         ([], {"url": localhost}, localhost, None, None),
         ([], {"url": localhost, "private_token": token}, localhost, token, None),
         ([], {"url": localhost, "oauth_token": token}, localhost, None, token),
@@ -185,7 +185,7 @@ def test_gitlab_subclass_from_config(default_config):
 @pytest.mark.parametrize(
     "kwargs,expected_agent",
     [
-        ({}, gitlab.USER_AGENT),
+        ({}, gitlab.const.USER_AGENT),
         ({"user_agent": "my-package/1.0.0"}, "my-package/1.0.0"),
     ],
 )
