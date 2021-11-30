@@ -17,6 +17,7 @@
 """Wrapper for the GitLab API."""
 
 import warnings
+from typing import Any
 
 import gitlab.config  # noqa: F401
 from gitlab.__version__ import (  # noqa: F401
@@ -28,7 +29,22 @@ from gitlab.__version__ import (  # noqa: F401
     __version__,
 )
 from gitlab.client import Gitlab, GitlabList  # noqa: F401
-from gitlab.const import *  # noqa: F401,F403
 from gitlab.exceptions import *  # noqa: F401,F403
 
 warnings.filterwarnings("default", category=DeprecationWarning, module="^gitlab")
+
+
+# NOTE(jlvillal): We are deprecating access to the gitlab.const values which
+# were previously imported into this namespace by the
+# 'from gitlab.const import *' statement.
+def __getattr__(name: str) -> Any:
+    # Deprecate direct access to constants without namespace
+    if name in gitlab.const._DEPRECATED:
+        warnings.warn(
+            f"\nDirect access to 'gitlab.{name}' is deprecated and will be "
+            f"removed in a future major python-gitlab release. Please "
+            f"use 'gitlab.const.{name}' instead.",
+            DeprecationWarning,
+        )
+        return getattr(gitlab.const, name)
+    raise AttributeError(f"module {__name__} has no attribute {name}")
