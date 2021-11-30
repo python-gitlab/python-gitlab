@@ -1,4 +1,0 @@
-include COPYING AUTHORS CHANGELOG.md requirements*.txt
-include tox.ini
-recursive-include tests *
-recursive-include docs *j2 *.py *.rst api/*.rst Makefile make.bat

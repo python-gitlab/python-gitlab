@@ -1,6 +1,0 @@
--r requirements.txt
-jinja2
-myst-parser
-sphinx==4.2.0
-sphinx_rtd_theme
-sphinxcontrib-autoprogram
