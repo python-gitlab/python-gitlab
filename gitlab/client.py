@@ -269,9 +269,8 @@ class Gitlab(object):
         object.
 
         Returns:
-            tuple: The server version and server revision.
-                              ('unknown', 'unknwown') if the server doesn't
-                              perform as expected.
+            The server version and server revision.
+                ('unknown', 'unknown') if the server doesn't perform as expected.
         """
         if self._server_version is None:
             try:
@@ -301,8 +300,7 @@ class Gitlab(object):
             GitlabVerifyError: If the validation could not be done
 
         Returns:
-            tuple: (True, []) if the file is valid, (False, errors(list))
-                otherwise
+            (True, []) if the file is valid, (False, errors(list)) otherwise
         """
         post_data = {"content": content}
         data = self.http_post("/ci/lint", post_data=post_data, **kwargs)
@@ -327,7 +325,7 @@ class Gitlab(object):
             GitlabMarkdownError: If the server cannot perform the request
 
         Returns:
-            str: The HTML rendering of the markdown text.
+            The HTML rendering of the markdown text.
         """
         post_data = {"text": text, "gfm": gfm}
         if project is not None:
@@ -349,7 +347,7 @@ class Gitlab(object):
             GitlabGetError: If the server cannot perform the request
 
         Returns:
-            dict: The current license information
+            The current license information
         """
         result = self.http_get("/license", **kwargs)
         if isinstance(result, dict):
@@ -369,7 +367,7 @@ class Gitlab(object):
             GitlabPostError: If the server cannot perform the request
 
         Returns:
-            dict: The new license information
+            The new license information
         """
         data = {"license": license}
         result = self.http_post("/license", post_data=data, **kwargs)
@@ -444,7 +442,7 @@ class Gitlab(object):
         """Return the base URL with the trailing slash stripped.
         If the URL is a Falsy value, return the default URL.
         Returns:
-            str: The base URL
+            The base URL
         """
         if not url:
             return gitlab.const.DEFAULT_URL
@@ -458,7 +456,7 @@ class Gitlab(object):
         it to the stored url.
 
         Returns:
-            str: The full URL
+            The full URL
         """
         if path.startswith("http://") or path.startswith("https://"):
             return path
@@ -716,7 +714,7 @@ class Gitlab(object):
                       per_page)
 
         Returns:
-            list: A list of the objects returned by the server. If `as_list` is
+            A list of the objects returned by the server. If `as_list` is
             False and no pagination-related arguments (`page`, `per_page`,
             `all`) are defined then a GitlabList object (generator) is returned
             instead. This object will make API calls when needed to fetch the
@@ -874,7 +872,7 @@ class Gitlab(object):
             GitlabSearchError: If the server failed to perform the request
 
         Returns:
-            GitlabList: A list of dicts describing the resources found.
+            A list of dicts describing the resources found.
         """
         data = {"scope": scope, "search": search}
         return self.http_list("/search", query_data=data, **kwargs)

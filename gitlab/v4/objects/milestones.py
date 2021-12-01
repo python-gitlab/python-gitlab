@@ -42,7 +42,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabListError: If the list could not be retrieved
 
         Returns:
-            RESTObjectList: The list of issues
+            The list of issues
         """
 
         path = f"{self.manager.path}/{self.get_id()}/issues"
@@ -71,7 +71,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabListError: If the list could not be retrieved
 
         Returns:
-            RESTObjectList: The list of merge requests
+            The list of merge requests
         """
         path = f"{self.manager.path}/{self.get_id()}/merge_requests"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
@@ -123,7 +123,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabListError: If the list could not be retrieved
 
         Returns:
-            RESTObjectList: The list of issues
+            The list of issues
         """
 
         path = f"{self.manager.path}/{self.get_id()}/issues"
@@ -152,7 +152,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabListError: If the list could not be retrieved
 
         Returns:
-            RESTObjectList: The list of merge requests
+            The list of merge requests
         """
         path = f"{self.manager.path}/{self.get_id()}/merge_requests"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)

@@ -110,7 +110,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabSearchError: If the server failed to perform the request
 
         Returns:
-            GitlabList: A list of dicts describing the resources found.
+            A list of dicts describing the resources found.
         """
         data = {"scope": scope, "search": search}
         path = f"/groups/{self.get_id()}/search"
@@ -319,7 +319,7 @@ class GroupManager(CRUDMixin, RESTManager):
             GitlabImportError: If the server failed to perform the request
 
         Returns:
-            dict: A representation of the import status.
+            A representation of the import status.
         """
         files = {"file": ("file.tar.gz", file, "application/octet-stream")}
         data = {"path": path, "name": name}

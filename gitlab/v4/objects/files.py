@@ -111,7 +111,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             GitlabGetError: If the file could not be retrieved
 
         Returns:
-            object: The generated RESTObject
+            The generated RESTObject
         """
         return cast(ProjectFile, GetMixin.get(self, file_path, ref=ref, **kwargs))
 
@@ -132,7 +132,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            RESTObject: a new instance of the managed object class built with
+            a new instance of the managed object class built with
                 the data sent by the server
 
         Raises:
@@ -165,7 +165,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            dict: The new object data (*not* a RESTObject)
+            The new object data (*not* a RESTObject)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -236,7 +236,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             GitlabGetError: If the file could not be retrieved
 
         Returns:
-            str: The file content
+            The file content
         """
         file_path = file_path.replace("/", "%2F").replace(".", "%2E")
         path = f"{self.path}/{file_path}/raw"

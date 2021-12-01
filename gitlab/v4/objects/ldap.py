@@ -31,7 +31,7 @@ class LDAPGroupManager(RESTManager):
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            list: The list of objects, or a generator if `as_list` is False
+            The list of objects, or a generator if `as_list` is False
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct

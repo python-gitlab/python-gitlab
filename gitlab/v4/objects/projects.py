@@ -426,7 +426,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
                 specified
 
         Returns:
-            dict: A ``dict`` with the keys:
+            A ``dict`` with the keys:
                 * ``alt`` - The alternate text for the upload
                 * ``url`` - The direct url to the uploaded file
                 * ``markdown`` - Markdown for the uploaded file
@@ -476,7 +476,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabGetError: If the content could not be retrieved
 
         Returns:
-            str: The uncompressed tar archive of the repository
+            The uncompressed tar archive of the repository
         """
         path = f"/projects/{self.get_id()}/snapshot"
         result = self.manager.gitlab.http_get(
@@ -503,7 +503,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabSearchError: If the server failed to perform the request
 
         Returns:
-            GitlabList: A list of dicts describing the resources found.
+            A list of dicts describing the resources found.
         """
         data = {"scope": scope, "search": search}
         path = f"/projects/{self.get_id()}/search"
@@ -575,7 +575,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabGetError: If the artifacts could not be retrieved
 
         Returns:
-            str: The artifacts if `streamed` is False, None otherwise.
+            The artifacts if `streamed` is False, None otherwise.
         """
         path = f"/projects/{self.get_id()}/jobs/artifacts/{ref_name}/download"
         result = self.manager.gitlab.http_get(
@@ -616,7 +616,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabGetError: If the artifacts could not be retrieved
 
         Returns:
-            str: The artifacts if `streamed` is False, None otherwise.
+            The artifacts if `streamed` is False, None otherwise.
         """
 
         path = f"/projects/{self.get_id()}/jobs/artifacts/{ref_name}/raw/{artifact_path}?job={job}"
@@ -822,7 +822,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             GitlabListError: If the server failed to perform the request
 
         Returns:
-            dict: A representation of the import status.
+            A representation of the import status.
         """
         files = {"file": ("file.tar.gz", file, "application/octet-stream")}
         data = {"path": path, "overwrite": str(overwrite)}
@@ -877,7 +877,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             GitlabListError: If the server failed to perform the request
 
         Returns:
-            dict: A representation of the import status.
+            A representation of the import status.
 
         Example:
 
@@ -960,7 +960,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             GitlabListError: If the server failed to perform the request
 
         Returns:
-            dict: A representation of the import status.
+            A representation of the import status.
 
         Example:
 
@@ -1040,7 +1040,7 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
             GitlabCreateError: If the server cannot perform the request
 
         Returns:
-            RESTObject: A new instance of the managed object class build with
+            A new instance of the managed object class build with
                 the data sent by the server
         """
         if TYPE_CHECKING:

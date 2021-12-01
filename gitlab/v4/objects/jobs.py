@@ -136,7 +136,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabGetError: If the artifacts could not be retrieved
 
         Returns:
-            bytes: The artifacts if `streamed` is False, None otherwise.
+            The artifacts if `streamed` is False, None otherwise.
         """
         path = f"{self.manager.path}/{self.get_id()}/artifacts"
         result = self.manager.gitlab.http_get(
@@ -173,7 +173,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabGetError: If the artifacts could not be retrieved
 
         Returns:
-            bytes: The artifacts if `streamed` is False, None otherwise.
+            The artifacts if `streamed` is False, None otherwise.
         """
         path = f"{self.manager.path}/{self.get_id()}/artifacts/{path}"
         result = self.manager.gitlab.http_get(
@@ -208,7 +208,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabGetError: If the artifacts could not be retrieved
 
         Returns:
-            str: The trace
+            The trace
         """
         path = f"{self.manager.path}/{self.get_id()}/trace"
         result = self.manager.gitlab.http_get(

@@ -101,8 +101,8 @@ class GroupEpicIssueManager(
             GitlabCreateError: If the server cannot perform the request
 
         Returns:
-            RESTObject: A new instance of the manage object class build with
-                        the data sent by the server
+            A new instance of the manage object class build with
+                the data sent by the server
         """
         if TYPE_CHECKING:
             assert data is not None

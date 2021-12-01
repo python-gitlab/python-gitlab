@@ -51,8 +51,8 @@ class GroupClusterManager(CRUDMixin, RESTManager):
             GitlabCreateError: If the server cannot perform the request
 
         Returns:
-            RESTObject: A new instance of the manage object class build with
-                        the data sent by the server
+            A new instance of the manage object class build with
+                the data sent by the server
         """
         path = f"{self.path}/user"
         return cast(GroupCluster, CreateMixin.create(self, data, path=path, **kwargs))
@@ -102,8 +102,8 @@ class ProjectClusterManager(CRUDMixin, RESTManager):
             GitlabCreateError: If the server cannot perform the request
 
         Returns:
-            RESTObject: A new instance of the manage object class build with
-                        the data sent by the server
+            A new instance of the manage object class build with
+                the data sent by the server
         """
         path = f"{self.path}/user"
         return cast(ProjectCluster, CreateMixin.create(self, data, path=path, **kwargs))

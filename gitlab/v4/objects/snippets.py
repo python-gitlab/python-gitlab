@@ -48,7 +48,7 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabGetError: If the content could not be retrieved
 
         Returns:
-            str: The snippet content
+            The snippet content
         """
         path = f"/snippets/{self.get_id()}/raw"
         result = self.manager.gitlab.http_get(
@@ -81,7 +81,7 @@ class SnippetManager(CRUDMixin, RESTManager):
             GitlabListError: If the list could not be retrieved
 
         Returns:
-            RESTObjectList: A generator for the snippets list
+            A generator for the snippets list
         """
         return self.list(path="/snippets/public", **kwargs)
 
@@ -122,7 +122,7 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
             GitlabGetError: If the content could not be retrieved
 
         Returns:
-            str: The snippet content
+            The snippet content
         """
         path = f"{self.manager.path}/{self.get_id()}/raw"
         result = self.manager.gitlab.http_get(

@@ -167,7 +167,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabBlockError: If the user could not be blocked
 
         Returns:
-            bool: Whether the user status has been changed
+            Whether the user status has been changed
         """
         path = f"/users/{self.id}/block"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
@@ -188,7 +188,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabFollowError: If the user could not be followed
 
         Returns:
-            dict: The new object data (*not* a RESTObject)
+            The new object data (*not* a RESTObject)
         """
         path = f"/users/{self.id}/follow"
         return self.manager.gitlab.http_post(path, **kwargs)
@@ -206,7 +206,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabUnfollowError: If the user could not be followed
 
         Returns:
-            dict: The new object data (*not* a RESTObject)
+            The new object data (*not* a RESTObject)
         """
         path = f"/users/{self.id}/unfollow"
         return self.manager.gitlab.http_post(path, **kwargs)
@@ -224,7 +224,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabUnblockError: If the user could not be unblocked
 
         Returns:
-            bool: Whether the user status has been changed
+            Whether the user status has been changed
         """
         path = f"/users/{self.id}/unblock"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
@@ -245,7 +245,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabDeactivateError: If the user could not be deactivated
 
         Returns:
-            bool: Whether the user status has been changed
+            Whether the user status has been changed
         """
         path = f"/users/{self.id}/deactivate"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
@@ -266,7 +266,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabActivateError: If the user could not be activated
 
         Returns:
-            bool: Whether the user status has been changed
+            Whether the user status has been changed
         """
         path = f"/users/{self.id}/activate"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
@@ -528,7 +528,7 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            list: The list of objects, or a generator if `as_list` is False
+            The list of objects, or a generator if `as_list` is False
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct

@@ -39,7 +39,7 @@ class ProjectCommit(RESTObject):
             GitlabGetError: If the diff could not be retrieved
 
         Returns:
-            list: The changes done in this commit
+            The changes done in this commit
         """
         path = f"{self.manager.path}/{self.get_id()}/diff"
         return self.manager.gitlab.http_get(path, **kwargs)
@@ -77,7 +77,7 @@ class ProjectCommit(RESTObject):
             GitlabGetError: If the references could not be retrieved
 
         Returns:
-            list: The references the commit is pushed to.
+            The references the commit is pushed to.
         """
         path = f"{self.manager.path}/{self.get_id()}/refs"
         data = {"type": type}
@@ -96,7 +96,7 @@ class ProjectCommit(RESTObject):
             GitlabGetError: If the references could not be retrieved
 
         Returns:
-            list: The merge requests related to the commit.
+            The merge requests related to the commit.
         """
         path = f"{self.manager.path}/{self.get_id()}/merge_requests"
         return self.manager.gitlab.http_get(path, **kwargs)
@@ -117,7 +117,7 @@ class ProjectCommit(RESTObject):
             GitlabRevertError: If the revert could not be performed
 
         Returns:
-            dict: The new commit data (*not* a RESTObject)
+            The new commit data (*not* a RESTObject)
         """
         path = f"{self.manager.path}/{self.get_id()}/revert"
         post_data = {"branch": branch}
@@ -136,7 +136,7 @@ class ProjectCommit(RESTObject):
             GitlabGetError: If the signature could not be retrieved
 
         Returns:
-            dict: The commit's signature data
+            The commit's signature data
         """
         path = f"{self.manager.path}/{self.get_id()}/signature"
         return self.manager.gitlab.http_get(path, **kwargs)
@@ -201,8 +201,8 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
             GitlabCreateError: If the server cannot perform the request
 
         Returns:
-            RESTObject: A new instance of the manage object class build with
-                        the data sent by the server
+            A new instance of the manage object class build with
+                the data sent by the server
         """
         # project_id and commit_id are in the data dict when using the CLI, but
         # they are missing when using only the API

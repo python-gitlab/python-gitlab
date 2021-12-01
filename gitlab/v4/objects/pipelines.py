@@ -122,7 +122,7 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManage
             GitlabCreateError: If the server cannot perform the request
 
         Returns:
-            RESTObject: A new instance of the managed object class build with
+            A new instance of the managed object class build with
                 the data sent by the server
         """
         if TYPE_CHECKING:

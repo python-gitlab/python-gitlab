@@ -65,7 +65,7 @@ class GenericPackageManager(RESTManager):
             GitlabUploadError: If ``filepath`` cannot be read
 
         Returns:
-            GenericPackage: An object storing the metadata of the uploaded package.
+            An object storing the metadata of the uploaded package.
 
         https://docs.gitlab.com/ee/user/packages/generic_packages/
         """
@@ -126,7 +126,7 @@ class GenericPackageManager(RESTManager):
             GitlabGetError: If the server failed to perform the request
 
         Returns:
-            str: The package content if streamed is False, None otherwise
+            The package content if streamed is False, None otherwise
         """
         path = f"{self._computed_path}/{package_name}/{package_version}/{file_name}"
         result = self.gitlab.http_get(path, streamed=streamed, raw=True, **kwargs)

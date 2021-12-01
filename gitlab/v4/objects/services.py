@@ -268,7 +268,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            object: The generated RESTObject.
+            The generated RESTObject.
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -292,7 +292,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            dict: The new object data (*not* a RESTObject)
+            The new object data (*not* a RESTObject)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -308,6 +308,6 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
         """List the services known by python-gitlab.
 
         Returns:
-            list: The list of service code names.
+            The list of service code names.
         """
         return list(self._service_attrs.keys())

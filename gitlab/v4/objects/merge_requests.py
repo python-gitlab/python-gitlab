@@ -208,7 +208,7 @@ class ProjectMergeRequest(
             GitlabListError: If the list could not be retrieved
 
         Returns:
-            RESTObjectList: List of issues
+            List of issues
         """
         path = f"{self.manager.path}/{self.get_id()}/closes_issues"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
@@ -235,7 +235,7 @@ class ProjectMergeRequest(
             GitlabListError: If the list could not be retrieved
 
         Returns:
-            RESTObjectList: The list of commits
+            The list of commits
         """
 
         path = f"{self.manager.path}/{self.get_id()}/commits"
@@ -258,7 +258,7 @@ class ProjectMergeRequest(
             GitlabListError: If the list could not be retrieved
 
         Returns:
-            RESTObjectList: List of changes
+            List of changes
         """
         path = f"{self.manager.path}/{self.get_id()}/changes"
         return self.manager.gitlab.http_get(path, **kwargs)

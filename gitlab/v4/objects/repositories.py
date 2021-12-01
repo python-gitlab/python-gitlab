@@ -69,7 +69,7 @@ class RepositoryMixin(_RestObjectBase):
             GitlabGetError: If the server failed to perform the request
 
         Returns:
-            list: The representation of the tree
+            The representation of the tree
         """
         gl_path = f"/projects/{self.get_id()}/repository/tree"
         query_data: Dict[str, Any] = {"recursive": recursive}
@@ -95,7 +95,7 @@ class RepositoryMixin(_RestObjectBase):
             GitlabGetError: If the server failed to perform the request
 
         Returns:
-            dict: The blob content and metadata
+            The blob content and metadata
         """
 
         path = f"/projects/{self.get_id()}/repository/blobs/{sha}"
@@ -128,7 +128,7 @@ class RepositoryMixin(_RestObjectBase):
             GitlabGetError: If the server failed to perform the request
 
         Returns:
-            str: The blob content if streamed is False, None otherwise
+            The blob content if streamed is False, None otherwise
         """
         path = f"/projects/{self.get_id()}/repository/blobs/{sha}/raw"
         result = self.manager.gitlab.http_get(
@@ -155,7 +155,7 @@ class RepositoryMixin(_RestObjectBase):
             GitlabGetError: If the server failed to perform the request
 
         Returns:
-            str: The diff
+            The diff
         """
         path = f"/projects/{self.get_id()}/repository/compare"
         query_data = {"from": from_, "to": to}
@@ -181,7 +181,7 @@ class RepositoryMixin(_RestObjectBase):
             GitlabGetError: If the server failed to perform the request
 
         Returns:
-            list: The contributors
+            The contributors
         """
         path = f"/projects/{self.get_id()}/repository/contributors"
         return self.manager.gitlab.http_list(path, **kwargs)
@@ -213,7 +213,7 @@ class RepositoryMixin(_RestObjectBase):
             GitlabListError: If the server failed to perform the request
 
         Returns:
-            bytes: The binary data of the archive
+            The binary data of the archive
         """
         path = f"/projects/{self.get_id()}/repository/archive"
         query_data = {}

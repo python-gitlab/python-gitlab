@@ -152,7 +152,7 @@ class ProjectIssue(
             GitlabGetErrot: If the merge requests could not be retrieved
 
         Returns:
-            list: The list of merge requests.
+            The list of merge requests.
         """
         path = f"{self.manager.path}/{self.get_id()}/related_merge_requests"
         result = self.manager.gitlab.http_get(path, **kwargs)
@@ -173,7 +173,7 @@ class ProjectIssue(
             GitlabGetErrot: If the merge requests could not be retrieved
 
         Returns:
-            list: The list of merge requests.
+            The list of merge requests.
         """
         path = f"{self.manager.path}/{self.get_id()}/closed_by"
         result = self.manager.gitlab.http_get(path, **kwargs)
@@ -265,7 +265,7 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            RESTObject, RESTObject: The source and target issues
+            The source and target issues
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct

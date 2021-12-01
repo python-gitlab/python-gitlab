@@ -50,7 +50,7 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
             GitlabSetError: If an error occurred
 
         Returns:
-            obj: The created/updated attribute
+            The created/updated attribute
         """
         path = f"{self.path}/{name.replace('/', '%2F')}"
         data = {

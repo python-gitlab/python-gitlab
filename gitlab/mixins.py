@@ -93,7 +93,7 @@ class GetMixin(_RestManagerBase):
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            object: The generated RESTObject.
+            The generated RESTObject.
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -134,7 +134,7 @@ class GetWithoutIdMixin(_RestManagerBase):
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            object: The generated RESTObject
+            The generated RESTObject
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -207,7 +207,7 @@ class ListMixin(_RestManagerBase):
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            list: The list of objects, or a generator if `as_list` is False
+            The list of objects, or a generator if `as_list` is False
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -287,7 +287,7 @@ class CreateMixin(_RestManagerBase):
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            RESTObject: a new instance of the managed object class built with
+            A new instance of the managed object class built with
                 the data sent by the server
 
         Raises:
@@ -357,7 +357,7 @@ class UpdateMixin(_RestManagerBase):
         """Return the HTTP method to use.
 
         Returns:
-            object: http_put (default) or http_post
+            http_put (default) or http_post
         """
         if self._update_uses_post:
             http_method = self.gitlab.http_post
@@ -380,7 +380,7 @@ class UpdateMixin(_RestManagerBase):
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            dict: The new object data (*not* a RESTObject)
+            The new object data (*not* a RESTObject)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -442,7 +442,7 @@ class SetMixin(_RestManagerBase):
             GitlabSetError: If an error occurred
 
         Returns:
-            obj: The created/updated attribute
+            The created/updated attribute
         """
         path = f"{self.path}/{utils.clean_str_id(key)}"
         data = {"value": value}
@@ -672,7 +672,7 @@ class DownloadMixin(_RestObjectBase):
             GitlabGetError: If the server failed to perform the request
 
         Returns:
-            str: The blob content if streamed is False, None otherwise
+            The blob content if streamed is False, None otherwise
         """
         path = f"{self.manager.path}/download"
         result = self.manager.gitlab.http_get(
@@ -890,7 +890,7 @@ class ParticipantsMixin(_RestObjectBase):
             GitlabListError: If the list could not be retrieved
 
         Returns:
-            RESTObjectList: The list of participants
+            The list of participants
         """
 
         path = f"{self.manager.path}/{self.get_id()}/participants"
@@ -918,7 +918,7 @@ class BadgeRenderMixin(_RestManagerBase):
             GitlabRenderError: If the rendering failed
 
         Returns:
-            dict: The rendering properties
+            The rendering properties
         """
         path = f"{self.path}/render"
         data = {"link_url": link_url, "image_url": image_url}
@@ -943,7 +943,7 @@ class PromoteMixin(_RestObjectBase):
         """Return the HTTP method to use.
 
         Returns:
-            object: http_put (default) or http_post
+            http_put (default) or http_post
         """
         if self._update_uses_post:
             http_method = self.manager.gitlab.http_post
@@ -964,7 +964,7 @@ class PromoteMixin(_RestObjectBase):
             GitlabParsingError: If the json data could not be parsed
 
         Returns:
-            dict: The updated object data (*not* a RESTObject)
+            The updated object data (*not* a RESTObject)
         """
 
         path = f"{self.manager.path}/{self.id}/promote"
