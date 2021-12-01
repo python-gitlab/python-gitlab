@@ -76,12 +76,12 @@ class RunnerManager(CRUDMixin, RESTManager):
         """List all the runners.
 
         Args:
-            scope (str): The scope of runners to show, one of: specific,
+            scope: The scope of runners to show, one of: specific,
                 shared, active, paused, online
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
+            all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            as_list: If set to False and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -90,7 +90,7 @@ class RunnerManager(CRUDMixin, RESTManager):
             GitlabListError: If the server failed to perform the request
 
         Returns:
-            list(Runner): a list of runners matching the scope.
+            A list of runners matching the scope.
         """
         path = "/runners/all"
         query_data = {}
@@ -105,7 +105,7 @@ class RunnerManager(CRUDMixin, RESTManager):
         """Validates authentication credentials for a registered Runner.
 
         Args:
-            token (str): The runner's authentication token
+            token: The runner's authentication token
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:

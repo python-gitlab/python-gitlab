@@ -297,8 +297,7 @@ def on_http_error(error: Type[Exception]) -> Callable[[__F], __F]:
     raise specialized exceptions instead.
 
     Args:
-        error(Exception): The exception type to raise -- must inherit from
-            GitlabError
+        The exception type to raise -- must inherit from GitlabError
     """
 
     def wrap(f: __F) -> __F:

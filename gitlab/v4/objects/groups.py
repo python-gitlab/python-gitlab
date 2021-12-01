@@ -83,7 +83,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         """Transfer a project to this group.
 
         Args:
-            to_project_id (int): ID of the project to transfer
+            to_project_id: ID of the project to transfer
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -101,8 +101,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         """Search the group resources matching the provided string.'
 
         Args:
-            scope (str): Scope of the search
-            search (str): Search string
+            scope: Scope of the search
+            search: Search string
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -110,7 +110,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabSearchError: If the server failed to perform the request
 
         Returns:
-            GitlabList: A list of dicts describing the resources found.
+            A list of dicts describing the resources found.
         """
         data = {"scope": scope, "search": search}
         path = f"/groups/{self.get_id()}/search"
@@ -124,10 +124,10 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         """Add an LDAP group link.
 
         Args:
-            cn (str): CN of the LDAP group
-            group_access (int): Minimum access level for members of the LDAP
+            cn: CN of the LDAP group
+            group_access: Minimum access level for members of the LDAP
                 group
-            provider (str): LDAP provider for the LDAP group
+            provider: LDAP provider for the LDAP group
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -146,8 +146,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         """Delete an LDAP group link.
 
         Args:
-            cn (str): CN of the LDAP group
-            provider (str): LDAP provider for the LDAP group
+            cn: CN of the LDAP group
+            provider: LDAP provider for the LDAP group
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -187,8 +187,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         """Share the group with a group.
 
         Args:
-            group_id (int): ID of the group.
-            group_access (int): Access level for the group.
+            group_id: ID of the group.
+            group_access: Access level for the group.
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -215,7 +215,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         """Delete a shared group link within a group.
 
         Args:
-            group_id (int): ID of the group.
+            group_id: ID of the group.
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -308,9 +308,9 @@ class GroupManager(CRUDMixin, RESTManager):
 
         Args:
             file: Data or file object containing the group
-            path (str): The path for the new group to be imported.
-            name (str): The name for the new group.
-            parent_id (str): ID of a parent group that the group will
+            path: The path for the new group to be imported.
+            name: The name for the new group.
+            parent_id: ID of a parent group that the group will
                 be imported into.
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -319,7 +319,7 @@ class GroupManager(CRUDMixin, RESTManager):
             GitlabImportError: If the server failed to perform the request
 
         Returns:
-            dict: A representation of the import status.
+            A representation of the import status.
         """
         files = {"file": ("file.tar.gz", file, "application/octet-stream")}
         data = {"path": path, "name": name}

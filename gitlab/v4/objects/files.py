@@ -32,7 +32,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         """Returns the decoded content of the file.
 
         Returns:
-            (bytes): the decoded content.
+            The decoded content.
         """
         return base64.b64decode(self.content)
 
@@ -46,8 +46,8 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         The object is updated to match what the server returns.
 
         Args:
-            branch (str): Branch in which the file will be updated
-            commit_message (str): Message to send with the commit
+            branch: Branch in which the file will be updated
+            commit_message: Message to send with the commit
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -68,8 +68,8 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         """Delete the file from the server.
 
         Args:
-            branch (str): Branch from which the file will be removed
-            commit_message (str): Commit message for the deletion
+            branch: Branch from which the file will be removed
+            commit_message: Commit message for the deletion
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -102,8 +102,8 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         """Retrieve a single file.
 
         Args:
-            file_path (str): Path of the file to retrieve
-            ref (str): Name of the branch, tag or commit
+            file_path: Path of the file to retrieve
+            ref: Name of the branch, tag or commit
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -111,7 +111,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             GitlabGetError: If the file could not be retrieved
 
         Returns:
-            object: The generated RESTObject
+            The generated RESTObject
         """
         return cast(ProjectFile, GetMixin.get(self, file_path, ref=ref, **kwargs))
 
@@ -127,12 +127,12 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         """Create a new object.
 
         Args:
-            data (dict): parameters to send to the server to create the
+            data: parameters to send to the server to create the
                          resource
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            RESTObject: a new instance of the managed object class built with
+            a new instance of the managed object class built with
                 the data sent by the server
 
         Raises:
@@ -165,7 +165,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            dict: The new object data (*not* a RESTObject)
+            The new object data (*not* a RESTObject)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -194,9 +194,9 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         """Delete a file on the server.
 
         Args:
-            file_path (str): Path of the file to remove
-            branch (str): Branch from which the file will be removed
-            commit_message (str): Commit message for the deletion
+            file_path: Path of the file to remove
+            branch: Branch from which the file will be removed
+            commit_message: Commit message for the deletion
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -221,14 +221,14 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         """Return the content of a file for a commit.
 
         Args:
-            ref (str): ID of the commit
-            filepath (str): Path of the file to return
-            streamed (bool): If True the data will be processed by chunks of
+            ref: ID of the commit
+            filepath: Path of the file to return
+            streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
-            action (callable): Callable responsible of dealing with chunk of
+            action: Callable responsible of dealing with chunk of
                 data
-            chunk_size (int): Size of each chunk
+            chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -236,7 +236,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             GitlabGetError: If the file could not be retrieved
 
         Returns:
-            str: The file content
+            The file content
         """
         file_path = file_path.replace("/", "%2F").replace(".", "%2E")
         path = f"{self.path}/{file_path}/raw"
@@ -254,8 +254,8 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         """Return the content of a file for a commit.
 
         Args:
-            file_path (str): Path of the file to retrieve
-            ref (str): Name of the branch, tag or commit
+            file_path: Path of the file to retrieve
+            ref: Name of the branch, tag or commit
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -263,7 +263,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             GitlabListError:  If the server failed to perform the request
 
         Returns:
-            list(blame): a list of commits/lines matching the file
+            A list of commits/lines matching the file
         """
         file_path = file_path.replace("/", "%2F").replace(".", "%2E")
         path = f"{self.path}/{file_path}/blame"

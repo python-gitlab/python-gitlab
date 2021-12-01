@@ -23,15 +23,15 @@ class LDAPGroupManager(RESTManager):
         """Retrieve a list of objects.
 
         Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
+            all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            as_list: If set to False and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            list: The list of objects, or a generator if `as_list` is False
+            The list of objects, or a generator if `as_list` is False
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct

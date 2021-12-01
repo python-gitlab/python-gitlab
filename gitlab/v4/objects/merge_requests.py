@@ -196,10 +196,10 @@ class ProjectMergeRequest(
         """List issues that will close on merge."
 
         Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
+            all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            as_list: If set to False and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -208,7 +208,7 @@ class ProjectMergeRequest(
             GitlabListError: If the list could not be retrieved
 
         Returns:
-            RESTObjectList: List of issues
+            List of issues
         """
         path = f"{self.manager.path}/{self.get_id()}/closes_issues"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
@@ -223,10 +223,10 @@ class ProjectMergeRequest(
         """List the merge request commits.
 
         Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
+            all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            as_list: If set to False and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -235,7 +235,7 @@ class ProjectMergeRequest(
             GitlabListError: If the list could not be retrieved
 
         Returns:
-            RESTObjectList: The list of commits
+            The list of commits
         """
 
         path = f"{self.manager.path}/{self.get_id()}/commits"
@@ -258,7 +258,7 @@ class ProjectMergeRequest(
             GitlabListError: If the list could not be retrieved
 
         Returns:
-            RESTObjectList: List of changes
+            List of changes
         """
         path = f"{self.manager.path}/{self.get_id()}/changes"
         return self.manager.gitlab.http_get(path, **kwargs)
@@ -269,7 +269,7 @@ class ProjectMergeRequest(
         """Approve the merge request.
 
         Args:
-            sha (str): Head SHA of MR
+            sha: Head SHA of MR
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -365,10 +365,10 @@ class ProjectMergeRequest(
         """Accept the merge request.
 
         Args:
-            merge_commit_message (str): Commit message
-            should_remove_source_branch (bool): If True, removes the source
+            merge_commit_message: Commit message
+            should_remove_source_branch: If True, removes the source
                                                 branch
-            merge_when_pipeline_succeeds (bool): Wait for the build to succeed,
+            merge_when_pipeline_succeeds: Wait for the build to succeed,
                                                  then merge
             **kwargs: Extra options to send to the server (e.g. sudo)
 

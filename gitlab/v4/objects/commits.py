@@ -39,7 +39,7 @@ class ProjectCommit(RESTObject):
             GitlabGetError: If the diff could not be retrieved
 
         Returns:
-            list: The changes done in this commit
+            The changes done in this commit
         """
         path = f"{self.manager.path}/{self.get_id()}/diff"
         return self.manager.gitlab.http_get(path, **kwargs)
@@ -50,7 +50,7 @@ class ProjectCommit(RESTObject):
         """Cherry-pick a commit into a branch.
 
         Args:
-            branch (str): Name of target branch
+            branch: Name of target branch
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -69,7 +69,7 @@ class ProjectCommit(RESTObject):
         """List the references the commit is pushed to.
 
         Args:
-            type (str): The scope of references ('branch', 'tag' or 'all')
+            type: The scope of references ('branch', 'tag' or 'all')
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -77,7 +77,7 @@ class ProjectCommit(RESTObject):
             GitlabGetError: If the references could not be retrieved
 
         Returns:
-            list: The references the commit is pushed to.
+            The references the commit is pushed to.
         """
         path = f"{self.manager.path}/{self.get_id()}/refs"
         data = {"type": type}
@@ -96,7 +96,7 @@ class ProjectCommit(RESTObject):
             GitlabGetError: If the references could not be retrieved
 
         Returns:
-            list: The merge requests related to the commit.
+            The merge requests related to the commit.
         """
         path = f"{self.manager.path}/{self.get_id()}/merge_requests"
         return self.manager.gitlab.http_get(path, **kwargs)
@@ -109,7 +109,7 @@ class ProjectCommit(RESTObject):
         """Revert a commit on a given branch.
 
         Args:
-            branch (str): Name of target branch
+            branch: Name of target branch
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -117,7 +117,7 @@ class ProjectCommit(RESTObject):
             GitlabRevertError: If the revert could not be performed
 
         Returns:
-            dict: The new commit data (*not* a RESTObject)
+            The new commit data (*not* a RESTObject)
         """
         path = f"{self.manager.path}/{self.get_id()}/revert"
         post_data = {"branch": branch}
@@ -136,7 +136,7 @@ class ProjectCommit(RESTObject):
             GitlabGetError: If the signature could not be retrieved
 
         Returns:
-            dict: The commit's signature data
+            The commit's signature data
         """
         path = f"{self.manager.path}/{self.get_id()}/signature"
         return self.manager.gitlab.http_get(path, **kwargs)
@@ -191,7 +191,7 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
         """Create a new object.
 
         Args:
-            data (dict): Parameters to send to the server to create the
+            data: Parameters to send to the server to create the
                          resource
             **kwargs: Extra options to send to the server (e.g. sudo or
                       'ref_name', 'stage', 'name', 'all')
@@ -201,8 +201,8 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
             GitlabCreateError: If the server cannot perform the request
 
         Returns:
-            RESTObject: A new instance of the manage object class build with
-                        the data sent by the server
+            A new instance of the manage object class build with
+                the data sent by the server
         """
         # project_id and commit_id are in the data dict when using the CLI, but
         # they are missing when using only the API

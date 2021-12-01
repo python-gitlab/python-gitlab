@@ -31,7 +31,7 @@ class SidekiqManager(RESTManager):
             GitlabGetError: If the information couldn't be retrieved
 
         Returns:
-            dict: Information about the Sidekiq queues
+            Information about the Sidekiq queues
         """
         return self.gitlab.http_get("/sidekiq/queue_metrics", **kwargs)
 
@@ -50,7 +50,7 @@ class SidekiqManager(RESTManager):
             GitlabGetError: If the information couldn't be retrieved
 
         Returns:
-            dict: Information about the register Sidekiq worker
+            Information about the register Sidekiq worker
         """
         return self.gitlab.http_get("/sidekiq/process_metrics", **kwargs)
 
@@ -67,7 +67,7 @@ class SidekiqManager(RESTManager):
             GitlabGetError: If the information couldn't be retrieved
 
         Returns:
-            dict: Statistics about the Sidekiq jobs performed
+            Statistics about the Sidekiq jobs performed
         """
         return self.gitlab.http_get("/sidekiq/job_stats", **kwargs)
 
@@ -86,6 +86,6 @@ class SidekiqManager(RESTManager):
             GitlabGetError: If the information couldn't be retrieved
 
         Returns:
-            dict: All available Sidekiq metrics and statistics
+            All available Sidekiq metrics and statistics
         """
         return self.gitlab.http_get("/sidekiq/compound_metrics", **kwargs)

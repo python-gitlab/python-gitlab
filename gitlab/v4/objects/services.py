@@ -261,14 +261,14 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
         """Retrieve a single object.
 
         Args:
-            id (int or str): ID of the object to retrieve
-            lazy (bool): If True, don't request the server, but create a
+            id: ID of the object to retrieve
+            lazy: If True, don't request the server, but create a
                          shallow object giving access to the managers. This is
                          useful if you want to avoid useless calls to the API.
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            object: The generated RESTObject.
+            The generated RESTObject.
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -292,7 +292,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            dict: The new object data (*not* a RESTObject)
+            The new object data (*not* a RESTObject)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -308,6 +308,6 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
         """List the services known by python-gitlab.
 
         Returns:
-            list (str): The list of service code names.
+            The list of service code names.
         """
         return list(self._service_attrs.keys())

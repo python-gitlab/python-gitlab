@@ -55,8 +55,8 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         """Change project-level allowed approvers and approver groups.
 
         Args:
-            approver_ids (list): User IDs that can approve MRs
-            approver_group_ids (list): Group IDs whose members can approve MRs
+            approver_ids: User IDs that can approve MRs
+            approver_group_ids: Group IDs whose members can approve MRs
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -117,9 +117,9 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
         """Change MR-level allowed approvers and approver groups.
 
         Args:
-            approvals_required (integer): The number of required approvals for this rule
-            approver_ids (list of integers): User IDs that can approve MRs
-            approver_group_ids (list): Group IDs whose members can approve MRs
+            approvals_required: The number of required approvals for this rule
+            approver_ids: User IDs that can approve MRs
+            approver_group_ids: Group IDs whose members can approve MRs
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -211,7 +211,7 @@ class ProjectMergeRequestApprovalRuleManager(
         """Create a new object.
 
         Args:
-            data (dict): Parameters to send to the server to create the
+            data: Parameters to send to the server to create the
                          resource
             **kwargs: Extra options to send to the server (e.g. sudo or
                       'ref_name', 'stage', 'name', 'all')
@@ -221,8 +221,8 @@ class ProjectMergeRequestApprovalRuleManager(
             GitlabCreateError: If the server cannot perform the request
 
         Returns:
-            RESTObject: A new instance of the manage object class build with
-                        the data sent by the server
+            A new instance of the manage object class build with
+                the data sent by the server
         """
         if TYPE_CHECKING:
             assert data is not None

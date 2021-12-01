@@ -125,7 +125,7 @@ class ProjectIssue(
         """Move the issue to another project.
 
         Args:
-            to_project_id(int): ID of the target project
+            to_project_id: ID of the target project
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -152,7 +152,7 @@ class ProjectIssue(
             GitlabGetErrot: If the merge requests could not be retrieved
 
         Returns:
-            list: The list of merge requests.
+            The list of merge requests.
         """
         path = f"{self.manager.path}/{self.get_id()}/related_merge_requests"
         result = self.manager.gitlab.http_get(path, **kwargs)
@@ -173,7 +173,7 @@ class ProjectIssue(
             GitlabGetErrot: If the merge requests could not be retrieved
 
         Returns:
-            list: The list of merge requests.
+            The list of merge requests.
         """
         path = f"{self.manager.path}/{self.get_id()}/closed_by"
         result = self.manager.gitlab.http_get(path, **kwargs)
@@ -260,12 +260,12 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
         """Create a new object.
 
         Args:
-            data (dict): parameters to send to the server to create the
+            data: parameters to send to the server to create the
                          resource
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            RESTObject, RESTObject: The source and target issues
+            The source and target issues
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct

@@ -328,8 +328,7 @@ class RESTManager(object):
         """REST manager constructor.
 
         Args:
-            gl (Gitlab): :class:`~gitlab.Gitlab` connection to use to make
-                         requests.
+            gl: :class:`~gitlab.Gitlab` connection to use to make requests.
             parent: REST object to which the manager is attached.
         """
         self.gitlab = gl

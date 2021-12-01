@@ -49,7 +49,7 @@ class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabGetError: If the server failed to perform the request
 
         Returns:
-            dict: The status of the geo node
+            The status of the geo node
         """
         path = f"/geo_nodes/{self.get_id()}/status"
         result = self.manager.gitlab.http_get(path, **kwargs)
@@ -81,7 +81,7 @@ class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
             GitlabGetError: If the server failed to perform the request
 
         Returns:
-            list: The status of all the geo nodes
+            The status of all the geo nodes
         """
         result = self.gitlab.http_list("/geo_nodes/status", **kwargs)
         if TYPE_CHECKING:
@@ -101,7 +101,7 @@ class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
             GitlabGetError: If the server failed to perform the request
 
         Returns:
-            list: The list of failures
+            The list of failures
         """
         result = self.gitlab.http_list("/geo_nodes/current/failures", **kwargs)
         if TYPE_CHECKING:

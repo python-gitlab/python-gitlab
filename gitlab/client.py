@@ -39,21 +39,21 @@ class Gitlab(object):
     """Represents a GitLab server connection.
 
     Args:
-        url (str): The URL of the GitLab server (defaults to https://gitlab.com).
-        private_token (str): The user private token
-        oauth_token (str): An oauth token
-        job_token (str): A CI job token
-        ssl_verify (bool|str): Whether SSL certificates should be validated. If
+        url: The URL of the GitLab server (defaults to https://gitlab.com).
+        private_token: The user private token
+        oauth_token: An oauth token
+        job_token: A CI job token
+        ssl_verify: Whether SSL certificates should be validated. If
             the value is a string, it is the path to a CA file used for
             certificate validation.
-        timeout (float): Timeout to use for requests to the GitLab server.
-        http_username (str): Username for HTTP authentication
-        http_password (str): Password for HTTP authentication
-        api_version (str): Gitlab API version to use (support for 4 only)
-        pagination (str): Can be set to 'keyset' to use keyset pagination
-        order_by (str): Set order_by globally
-        user_agent (str): A custom user agent to use for making HTTP requests.
-        retry_transient_errors (bool): Whether to retry after 500, 502, 503, or
+        timeout: Timeout to use for requests to the GitLab server.
+        http_username: Username for HTTP authentication
+        http_password: Password for HTTP authentication
+        api_version: Gitlab API version to use (support for 4 only)
+        pagination: Can be set to 'keyset' to use keyset pagination
+        order_by: Set order_by globally
+        user_agent: A custom user agent to use for making HTTP requests.
+        retry_transient_errors: Whether to retry after 500, 502, 503, or
             504 responses. Defaults to False.
     """
 
@@ -225,11 +225,11 @@ class Gitlab(object):
         """Create a Gitlab connection from configuration files.
 
         Args:
-            gitlab_id (str): ID of the configuration section.
+            gitlab_id: ID of the configuration section.
             config_files list[str]: List of paths to configuration files.
 
         Returns:
-            (gitlab.Gitlab): A Gitlab connection.
+            A Gitlab connection.
 
         Raises:
             gitlab.config.GitlabDataError: If the configuration is not correct.
@@ -269,9 +269,8 @@ class Gitlab(object):
         object.
 
         Returns:
-            tuple (str, str): The server version and server revision.
-                              ('unknown', 'unknwown') if the server doesn't
-                              perform as expected.
+            The server version and server revision.
+                ('unknown', 'unknown') if the server doesn't perform as expected.
         """
         if self._server_version is None:
             try:
@@ -293,7 +292,7 @@ class Gitlab(object):
         """Validate a gitlab CI configuration.
 
         Args:
-            content (txt): The .gitlab-ci.yml content
+            content: The .gitlab-ci.yml content
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -301,8 +300,7 @@ class Gitlab(object):
             GitlabVerifyError: If the validation could not be done
 
         Returns:
-            tuple: (True, []) if the file is valid, (False, errors(list))
-                otherwise
+            (True, []) if the file is valid, (False, errors(list)) otherwise
         """
         post_data = {"content": content}
         data = self.http_post("/ci/lint", post_data=post_data, **kwargs)
@@ -317,11 +315,9 @@ class Gitlab(object):
         """Render an arbitrary Markdown document.
 
         Args:
-            text (str): The markdown text to render
-            gfm (bool): Render text using GitLab Flavored Markdown. Default is
-                False
-            project (str): Full path of a project used a context when `gfm` is
-                True
+            text: The markdown text to render
+            gfm: Render text using GitLab Flavored Markdown. Default is False
+            project: Full path of a project used a context when `gfm` is True
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -329,7 +325,7 @@ class Gitlab(object):
             GitlabMarkdownError: If the server cannot perform the request
 
         Returns:
-            str: The HTML rendering of the markdown text.
+            The HTML rendering of the markdown text.
         """
         post_data = {"text": text, "gfm": gfm}
         if project is not None:
@@ -351,7 +347,7 @@ class Gitlab(object):
             GitlabGetError: If the server cannot perform the request
 
         Returns:
-            dict: The current license information
+            The current license information
         """
         result = self.http_get("/license", **kwargs)
         if isinstance(result, dict):
@@ -363,7 +359,7 @@ class Gitlab(object):
         """Add a new license.
 
         Args:
-            license (str): The license string
+            license: The license string
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -371,7 +367,7 @@ class Gitlab(object):
             GitlabPostError: If the server cannot perform the request
 
         Returns:
-            dict: The new license information
+            The new license information
         """
         data = {"license": license}
         result = self.http_post("/license", post_data=data, **kwargs)
@@ -446,7 +442,7 @@ class Gitlab(object):
         """Return the base URL with the trailing slash stripped.
         If the URL is a Falsy value, return the default URL.
         Returns:
-            str: The base URL
+            The base URL
         """
         if not url:
             return gitlab.const.DEFAULT_URL
@@ -460,7 +456,7 @@ class Gitlab(object):
         it to the stored url.
 
         Returns:
-            str: The full URL
+            The full URL
         """
         if path.startswith("http://") or path.startswith("https://"):
             return path
@@ -541,20 +537,19 @@ class Gitlab(object):
         """Make an HTTP request to the Gitlab server.
 
         Args:
-            verb (str): The HTTP method to call ('get', 'post', 'put',
-                        'delete')
-            path (str): Path or full URL to query ('/projects' or
+            verb: The HTTP method to call ('get', 'post', 'put', 'delete')
+            path: Path or full URL to query ('/projects' or
                         'http://whatever/v4/api/projecs')
-            query_data (dict): Data to send as query parameters
-            post_data (dict|bytes): Data to send in the body (will be converted to
+            query_data: Data to send as query parameters
+            post_data: Data to send in the body (will be converted to
                               json by default)
-            raw (bool): If True, do not convert post_data to json
-            streamed (bool): Whether the data should be streamed
-            files (dict): The files to send to the server
-            timeout (float): The timeout, in seconds, for the request
-            obey_rate_limit (bool): Whether to obey 429 Too Many Request
+            raw: If True, do not convert post_data to json
+            streamed: Whether the data should be streamed
+            files: The files to send to the server
+            timeout: The timeout, in seconds, for the request
+            obey_rate_limit: Whether to obey 429 Too Many Request
                                     responses. Defaults to True.
-            max_retries (int): Max retries after 429 or transient errors,
+            max_retries: Max retries after 429 or transient errors,
                                set to -1 to retry forever. Defaults to 10.
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -667,11 +662,11 @@ class Gitlab(object):
         """Make a GET request to the Gitlab server.
 
         Args:
-            path (str): Path or full URL to query ('/projects' or
+            path: Path or full URL to query ('/projects' or
                         'http://whatever/v4/api/projecs')
-            query_data (dict): Data to send as query parameters
-            streamed (bool): Whether the data should be streamed
-            raw (bool): If True do not try to parse the output as json
+            query_data: Data to send as query parameters
+            streamed: Whether the data should be streamed
+            raw: If True do not try to parse the output as json
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
@@ -712,14 +707,14 @@ class Gitlab(object):
         """Make a GET request to the Gitlab server for list-oriented queries.
 
         Args:
-            path (str): Path or full URL to query ('/projects' or
+            path: Path or full URL to query ('/projects' or
                         'http://whatever/v4/api/projects')
-            query_data (dict): Data to send as query parameters
+            query_data: Data to send as query parameters
             **kwargs: Extra options to send to the server (e.g. sudo, page,
                       per_page)
 
         Returns:
-            list: A list of the objects returned by the server. If `as_list` is
+            A list of the objects returned by the server. If `as_list` is
             False and no pagination-related arguments (`page`, `per_page`,
             `all`) are defined then a GitlabList object (generator) is returned
             instead. This object will make API calls when needed to fetch the
@@ -761,13 +756,13 @@ class Gitlab(object):
         """Make a POST request to the Gitlab server.
 
         Args:
-            path (str): Path or full URL to query ('/projects' or
+            path: Path or full URL to query ('/projects' or
                         'http://whatever/v4/api/projecs')
-            query_data (dict): Data to send as query parameters
-            post_data (dict): Data to send in the body (will be converted to
+            query_data: Data to send as query parameters
+            post_data: Data to send in the body (will be converted to
                               json by default)
-            raw (bool): If True, do not convert post_data to json
-            files (dict): The files to send to the server
+            raw: If True, do not convert post_data to json
+            files: The files to send to the server
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
@@ -810,13 +805,13 @@ class Gitlab(object):
         """Make a PUT request to the Gitlab server.
 
         Args:
-            path (str): Path or full URL to query ('/projects' or
+            path: Path or full URL to query ('/projects' or
                         'http://whatever/v4/api/projecs')
-            query_data (dict): Data to send as query parameters
-            post_data (dict|bytes): Data to send in the body (will be converted to
+            query_data: Data to send as query parameters
+            post_data: Data to send in the body (will be converted to
                               json by default)
-            raw (bool): If True, do not convert post_data to json
-            files (dict): The files to send to the server
+            raw: If True, do not convert post_data to json
+            files: The files to send to the server
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
@@ -849,7 +844,7 @@ class Gitlab(object):
         """Make a DELETE request to the Gitlab server.
 
         Args:
-            path (str): Path or full URL to query ('/projects' or
+            path: Path or full URL to query ('/projects' or
                         'http://whatever/v4/api/projecs')
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -868,8 +863,8 @@ class Gitlab(object):
         """Search GitLab resources matching the provided string.'
 
         Args:
-            scope (str): Scope of the search
-            search (str): Search string
+            scope: Scope of the search
+            search: Search string
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -877,7 +872,7 @@ class Gitlab(object):
             GitlabSearchError: If the server failed to perform the request
 
         Returns:
-            GitlabList: A list of dicts describing the resources found.
+            A list of dicts describing the resources found.
         """
         data = {"scope": scope, "search": search}
         return self.http_list("/search", query_data=data, **kwargs)

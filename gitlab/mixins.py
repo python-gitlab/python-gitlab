@@ -86,14 +86,14 @@ class GetMixin(_RestManagerBase):
         """Retrieve a single object.
 
         Args:
-            id (int or str): ID of the object to retrieve
-            lazy (bool): If True, don't request the server, but create a
+            id: ID of the object to retrieve
+            lazy: If True, don't request the server, but create a
                          shallow object giving access to the managers. This is
                          useful if you want to avoid useless calls to the API.
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            object: The generated RESTObject.
+            The generated RESTObject.
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -134,7 +134,7 @@ class GetWithoutIdMixin(_RestManagerBase):
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            object: The generated RESTObject
+            The generated RESTObject
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -199,15 +199,15 @@ class ListMixin(_RestManagerBase):
         """Retrieve a list of objects.
 
         Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
+            all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            as_list: If set to False and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            list: The list of objects, or a generator if `as_list` is False
+            The list of objects, or a generator if `as_list` is False
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -282,12 +282,12 @@ class CreateMixin(_RestManagerBase):
         """Create a new object.
 
         Args:
-            data (dict): parameters to send to the server to create the
+            data: parameters to send to the server to create the
                          resource
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            RESTObject: a new instance of the managed object class built with
+            A new instance of the managed object class built with
                 the data sent by the server
 
         Raises:
@@ -357,7 +357,7 @@ class UpdateMixin(_RestManagerBase):
         """Return the HTTP method to use.
 
         Returns:
-            object: http_put (default) or http_post
+            http_put (default) or http_post
         """
         if self._update_uses_post:
             http_method = self.gitlab.http_post
@@ -380,7 +380,7 @@ class UpdateMixin(_RestManagerBase):
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            dict: The new object data (*not* a RESTObject)
+            The new object data (*not* a RESTObject)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -433,8 +433,8 @@ class SetMixin(_RestManagerBase):
         """Create or update the object.
 
         Args:
-            key (str): The key of the object to create/update
-            value (str): The value to set for the object
+            key: The key of the object to create/update
+            value: The value to set for the object
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -442,7 +442,7 @@ class SetMixin(_RestManagerBase):
             GitlabSetError: If an error occurred
 
         Returns:
-            obj: The created/updated attribute
+            The created/updated attribute
         """
         path = f"{self.path}/{utils.clean_str_id(key)}"
         data = {"value": value}
@@ -623,7 +623,7 @@ class AccessRequestMixin(_RestObjectBase):
         """Approve an access request.
 
         Args:
-            access_level (int): The access level for the user
+            access_level: The access level for the user
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -659,12 +659,12 @@ class DownloadMixin(_RestObjectBase):
         """Download the archive of a resource export.
 
         Args:
-            streamed (bool): If True the data will be processed by chunks of
+            streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
-            action (callable): Callable responsible of dealing with chunk of
+            action: Callable responsible of dealing with chunk of
                 data
-            chunk_size (int): Size of each chunk
+            chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -672,7 +672,7 @@ class DownloadMixin(_RestObjectBase):
             GitlabGetError: If the server failed to perform the request
 
         Returns:
-            str: The blob content if streamed is False, None otherwise
+            The blob content if streamed is False, None otherwise
         """
         path = f"{self.manager.path}/download"
         result = self.manager.gitlab.http_get(
@@ -793,7 +793,7 @@ class TimeTrackingMixin(_RestObjectBase):
         """Set an estimated time of work for the object.
 
         Args:
-            duration (str): Duration in human format (e.g. 3h30)
+            duration: Duration in human format (e.g. 3h30)
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -831,7 +831,7 @@ class TimeTrackingMixin(_RestObjectBase):
         """Add time spent working on the object.
 
         Args:
-            duration (str): Duration in human format (e.g. 3h30)
+            duration: Duration in human format (e.g. 3h30)
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -878,10 +878,10 @@ class ParticipantsMixin(_RestObjectBase):
         """List the participants.
 
         Args:
-            all (bool): If True, return all the items, without pagination
-            per_page (int): Number of items to retrieve per request
-            page (int): ID of the page to return (starts with page 1)
-            as_list (bool): If set to False and no pagination option is
+            all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            as_list: If set to False and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -890,7 +890,7 @@ class ParticipantsMixin(_RestObjectBase):
             GitlabListError: If the list could not be retrieved
 
         Returns:
-            RESTObjectList: The list of participants
+            The list of participants
         """
 
         path = f"{self.manager.path}/{self.get_id()}/participants"
@@ -909,8 +909,8 @@ class BadgeRenderMixin(_RestManagerBase):
         """Preview link_url and image_url after interpolation.
 
         Args:
-            link_url (str): URL of the badge link
-            image_url (str): URL of the badge image
+            link_url: URL of the badge link
+            image_url: URL of the badge image
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -918,7 +918,7 @@ class BadgeRenderMixin(_RestManagerBase):
             GitlabRenderError: If the rendering failed
 
         Returns:
-            dict: The rendering properties
+            The rendering properties
         """
         path = f"{self.path}/render"
         data = {"link_url": link_url, "image_url": image_url}
@@ -943,7 +943,7 @@ class PromoteMixin(_RestObjectBase):
         """Return the HTTP method to use.
 
         Returns:
-            object: http_put (default) or http_post
+            http_put (default) or http_post
         """
         if self._update_uses_post:
             http_method = self.manager.gitlab.http_post
@@ -964,7 +964,7 @@ class PromoteMixin(_RestObjectBase):
             GitlabParsingError: If the json data could not be parsed
 
         Returns:
-            dict: The updated object data (*not* a RESTObject)
+            The updated object data (*not* a RESTObject)
         """
 
         path = f"{self.manager.path}/{self.id}/promote"
