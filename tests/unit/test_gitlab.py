@@ -17,12 +17,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pickle
+import warnings
 
 import pytest
 from httmock import HTTMock, response, urlmatch, with_httmock  # noqa
 
-from gitlab import DEFAULT_URL, Gitlab, GitlabList, USER_AGENT
-from gitlab.v4.objects import CurrentUser
+import gitlab
 
 localhost = "http://localhost"
 username = "username"
@@ -94,7 +94,7 @@ def test_gitlab_build_list(gl):
 @with_httmock(resp_page_1, resp_page_2)
 def test_gitlab_all_omitted_when_as_list(gl):
     result = gl.http_list("/tests", as_list=False, all=True)
-    assert isinstance(result, GitlabList)
+    assert isinstance(result, gitlab.GitlabList)
 
 
 def test_gitlab_strip_base_url(gl_trailing):
@@ -114,7 +114,7 @@ def test_gitlab_pickability(gl):
     original_gl_objects = gl._objects
     pickled = pickle.dumps(gl)
     unpickled = pickle.loads(pickled)
-    assert isinstance(unpickled, Gitlab)
+    assert isinstance(unpickled, gitlab.Gitlab)
     assert hasattr(unpickled, "_objects")
     assert unpickled._objects == original_gl_objects
 
@@ -124,24 +124,24 @@ def test_gitlab_token_auth(gl, callback=None):
     gl.auth()
     assert gl.user.username == username
     assert gl.user.id == user_id
-    assert isinstance(gl.user, CurrentUser)
+    assert isinstance(gl.user, gitlab.v4.objects.CurrentUser)
 
 
 def test_gitlab_default_url():
-    gl = Gitlab()
-    assert gl.url == DEFAULT_URL
+    gl = gitlab.Gitlab()
+    assert gl.url == gitlab.const.DEFAULT_URL
 
 
 @pytest.mark.parametrize(
     "args, kwargs, expected_url, expected_private_token, expected_oauth_token",
     [
-        ([], {}, DEFAULT_URL, None, None),
-        ([None, token], {}, DEFAULT_URL, token, None),
+        ([], {}, gitlab.const.DEFAULT_URL, None, None),
+        ([None, token], {}, gitlab.const.DEFAULT_URL, token, None),
         ([localhost], {}, localhost, None, None),
         ([localhost, token], {}, localhost, token, None),
         ([localhost, None, token], {}, localhost, None, token),
-        ([], {"private_token": token}, DEFAULT_URL, token, None),
-        ([], {"oauth_token": token}, DEFAULT_URL, None, token),
+        ([], {"private_token": token}, gitlab.const.DEFAULT_URL, token, None),
+        ([], {"oauth_token": token}, gitlab.const.DEFAULT_URL, None, token),
         ([], {"url": localhost}, localhost, None, None),
         ([], {"url": localhost, "private_token": token}, localhost, token, None),
         ([], {"url": localhost, "oauth_token": token}, localhost, None, token),
@@ -162,7 +162,7 @@ def test_gitlab_default_url():
 def test_gitlab_args_kwargs(
     args, kwargs, expected_url, expected_private_token, expected_oauth_token
 ):
-    gl = Gitlab(*args, **kwargs)
+    gl = gitlab.Gitlab(*args, **kwargs)
     assert gl.url == expected_url
     assert gl.private_token == expected_private_token
     assert gl.oauth_token == expected_oauth_token
@@ -170,11 +170,11 @@ def test_gitlab_args_kwargs(
 
 def test_gitlab_from_config(default_config):
     config_path = default_config
-    Gitlab.from_config("one", [config_path])
+    gitlab.Gitlab.from_config("one", [config_path])
 
 
 def test_gitlab_subclass_from_config(default_config):
-    class MyGitlab(Gitlab):
+    class MyGitlab(gitlab.Gitlab):
         pass
 
     config_path = default_config
@@ -185,10 +185,25 @@ def test_gitlab_subclass_from_config(default_config):
 @pytest.mark.parametrize(
     "kwargs,expected_agent",
     [
-        ({}, USER_AGENT),
+        ({}, gitlab.const.USER_AGENT),
         ({"user_agent": "my-package/1.0.0"}, "my-package/1.0.0"),
     ],
 )
 def test_gitlab_user_agent(kwargs, expected_agent):
-    gl = Gitlab("http://localhost", **kwargs)
+    gl = gitlab.Gitlab("http://localhost", **kwargs)
     assert gl.headers["User-Agent"] == expected_agent
+
+
+def test_gitlab_deprecated_const():
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        gitlab.NO_ACCESS
+    assert len(caught_warnings) == 1
+    warning = caught_warnings[0]
+    assert isinstance(warning.message, DeprecationWarning)
+    message = str(caught_warnings[0].message)
+    assert "deprecated" in message
+    assert "gitlab.const.NO_ACCESS" in message
+
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        gitlab.const.NO_ACCESS
+    assert len(caught_warnings) == 0

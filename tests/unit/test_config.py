@@ -22,7 +22,8 @@ from unittest import mock
 
 import pytest
 
-from gitlab import config, USER_AGENT
+import gitlab
+from gitlab import config
 
 custom_user_agent = "my-package/1.0.0"
 
@@ -252,7 +253,7 @@ def test_data_from_helper(m_open, path_exists, tmp_path):
 @pytest.mark.parametrize(
     "config_string,expected_agent",
     [
-        (valid_config, USER_AGENT),
+        (valid_config, gitlab.const.USER_AGENT),
         (custom_user_agent_config, custom_user_agent),
     ],
 )

@@ -439,9 +439,9 @@ Project snippets
 
 The snippet visibility can be defined using the following constants:
 
-* ``gitlab.VISIBILITY_PRIVATE``
-* ``gitlab.VISIBILITY_INTERNAL``
-* ``gitlab.VISIBILITY_PUBLIC``
+* ``gitlab.const.VISIBILITY_PRIVATE``
+* ``gitlab.const.VISIBILITY_INTERNAL``
+* ``gitlab.const.VISIBILITY_PUBLIC``
 
 Reference
 ---------
@@ -480,7 +480,7 @@ Create a snippet::
                                        'file_name': 'foo.py',
                                        'code': 'import gitlab',
                                        'visibility_level':
-                                       gitlab.VISIBILITY_PRIVATE})
+                                       gitlab.const.VISIBILITY_PRIVATE})
 
 Update a snippet::
 
@@ -546,11 +546,11 @@ Get a member of a project, including members inherited through ancestor groups::
 Add a project member::
 
     member = project.members.create({'user_id': user.id, 'access_level':
-                                     gitlab.DEVELOPER_ACCESS})
+                                     gitlab.const.DEVELOPER_ACCESS})
 
 Modify a project member (change the access level)::
 
-    member.access_level = gitlab.MAINTAINER_ACCESS
+    member.access_level = gitlab.const.MAINTAINER_ACCESS
     member.save()
 
 Remove a member from the project team::
@@ -561,7 +561,7 @@ Remove a member from the project team::
 
 Share/unshare the project with a group::
 
-    project.share(group.id, gitlab.DEVELOPER_ACCESS)
+    project.share(group.id, gitlab.const.DEVELOPER_ACCESS)
     project.unshare(group.id)
 
 Project hooks

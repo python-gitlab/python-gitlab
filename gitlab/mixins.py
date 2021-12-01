@@ -618,7 +618,7 @@ class AccessRequestMixin(_RestObjectBase):
     )
     @exc.on_http_error(exc.GitlabUpdateError)
     def approve(
-        self, access_level: int = gitlab.DEVELOPER_ACCESS, **kwargs: Any
+        self, access_level: int = gitlab.const.DEVELOPER_ACCESS, **kwargs: Any
     ) -> None:
         """Approve an access request.
 

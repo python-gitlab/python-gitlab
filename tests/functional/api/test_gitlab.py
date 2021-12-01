@@ -118,11 +118,11 @@ def test_namespaces(gl):
 
 def test_notification_settings(gl):
     settings = gl.notificationsettings.get()
-    settings.level = gitlab.NOTIFICATION_LEVEL_WATCH
+    settings.level = gitlab.const.NOTIFICATION_LEVEL_WATCH
     settings.save()
 
     settings = gl.notificationsettings.get()
-    assert settings.level == gitlab.NOTIFICATION_LEVEL_WATCH
+    assert settings.level == gitlab.const.NOTIFICATION_LEVEL_WATCH
 
 
 def test_user_activities(gl):
