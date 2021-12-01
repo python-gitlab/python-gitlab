@@ -15,10 +15,15 @@ References
 
 Examples
 --------
+Branch listing uses the base ListMixin class which provides pagination.
 
-Get the list of branches for a repository::
+Get a list of branches for a repository (Limited to 20 branches in a pagination response)::
 
     branches = project.branches.list()
+    
+Get a list of ALL branches for a repository::
+
+    branches = project.branches.list(all=True)    
 
 Get a single repository branch::
 
