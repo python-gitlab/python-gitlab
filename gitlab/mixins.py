@@ -240,7 +240,7 @@ class ListMixin(_RestManagerBase):
             assert self._obj_cls is not None
         obj = self.gitlab.http_list(path, **data)
         if isinstance(obj, list):
-            return [self._obj_cls(self, item) for item in obj]
+            return [self._obj_cls(self, item, created_from_list=True) for item in obj]
         else:
             return base.RESTObjectList(self, self._obj_cls, obj)
 

@@ -90,6 +90,30 @@ class TestRESTObject:
         with pytest.raises(gitlab.exceptions.GitlabParsingError):
             FakeObject(fake_manager, ["a", "list", "fails"])
 
+    def test_missing_attribute_does_not_raise_custom(self, fake_gitlab, fake_manager):
+        """Ensure a missing attribute does not raise our custom error message
+        if the RESTObject was not created from a list"""
+        obj = FakeObject(manager=fake_manager, attrs={"foo": "bar"})
+        with pytest.raises(AttributeError) as excinfo:
+            obj.missing_attribute
+        exc_str = str(excinfo.value)
+        assert "missing_attribute" in exc_str
+        assert "was created via a list()" not in exc_str
+        assert base._URL_ATTRIBUTE_ERROR not in exc_str
+
+    def test_missing_attribute_from_list_raises_custom(self, fake_gitlab, fake_manager):
+        """Ensure a missing attribute raises our custom error message if the
+        RESTObject was created from a list"""
+        obj = FakeObject(
+            manager=fake_manager, attrs={"foo": "bar"}, created_from_list=True
+        )
+        with pytest.raises(AttributeError) as excinfo:
+            obj.missing_attribute
+        exc_str = str(excinfo.value)
+        assert "missing_attribute" in exc_str
+        assert "was created via a list()" in exc_str
+        assert base._URL_ATTRIBUTE_ERROR in exc_str
+
     def test_picklability(self, fake_manager):
         obj = FakeObject(fake_manager, {"foo": "bar"})
         original_obj_module = obj._module
