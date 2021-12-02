@@ -3,7 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ee/api/users.html
 https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
 """
-from typing import Any, cast, Dict, List, Union
+from typing import Any, cast, Dict, List, Optional, Union
 
 import requests
 
@@ -120,6 +120,11 @@ class CurrentUserStatusManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _obj_cls = CurrentUserStatus
     _update_attrs = RequiredOptional(optional=("emoji", "message"))
 
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[CurrentUserStatus]:
+        return cast(Optional[CurrentUserStatus], super().get(id=id, **kwargs))
+
 
 class CurrentUser(RESTObject):
     _id_attr = None
@@ -134,6 +139,11 @@ class CurrentUser(RESTObject):
 class CurrentUserManager(GetWithoutIdMixin, RESTManager):
     _path = "/user"
     _obj_cls = CurrentUser
+
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[CurrentUser]:
+        return cast(Optional[CurrentUser], super().get(id=id, **kwargs))
 
 
 class User(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -389,6 +399,11 @@ class UserStatusManager(GetWithoutIdMixin, RESTManager):
     _path = "/users/{user_id}/status"
     _obj_cls = UserStatus
     _from_parent_attrs = {"user_id": "id"}
+
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[UserStatus]:
+        return cast(Optional[UserStatus], super().get(id=id, **kwargs))
 
 
 class UserActivitiesManager(ListMixin, RESTManager):

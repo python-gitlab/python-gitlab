@@ -61,4 +61,4 @@ class ApplicationAppearanceManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
     ) -> Optional[ApplicationAppearance]:
-        return cast(ApplicationAppearance, super().get(id=id, **kwargs))
+        return cast(Optional[ApplicationAppearance], super().get(id=id, **kwargs))
