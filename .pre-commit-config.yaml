@@ -20,6 +20,15 @@ repos:
     rev: 5.9.3
     hooks:
       - id: isort
+  - repo: https://github.com/pycqa/pylint
+    rev: v2.12.2
+    hooks:
+      - id: pylint
+        additional_dependencies:
+          - argcomplete==1.12.3
+          - requests==2.26.0
+          - requests-toolbelt==0.9.1
+        files: 'gitlab/'
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.910
     hooks:

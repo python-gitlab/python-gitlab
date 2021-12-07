@@ -597,10 +597,12 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         chunk_size: int = 1024,
         **kwargs: Any,
     ) -> Optional[bytes]:
-        """Download a single artifact file from a specific tag or branch from within the job’s artifacts archive.
+        """Download a single artifact file from a specific tag or branch from
+        within the job’s artifacts archive.
 
         Args:
-            ref_name: Branch or tag name in repository. HEAD or SHA references are not supported.
+            ref_name: Branch or tag name in repository. HEAD or SHA references
+                are not supported.
             artifact_path: Path to a file inside the artifacts archive.
             job: The name of the job.
             streamed: If True the data will be processed by chunks of
@@ -619,7 +621,10 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             The artifacts if `streamed` is False, None otherwise.
         """
 
-        path = f"/projects/{self.get_id()}/jobs/artifacts/{ref_name}/raw/{artifact_path}?job={job}"
+        path = (
+            f"/projects/{self.get_id()}/jobs/artifacts/{ref_name}/raw/"
+            f"{artifact_path}?job={job}"
+        )
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
@@ -857,7 +862,8 @@ class ProjectManager(CRUDMixin, RESTManager):
 
         .. note::
             This request may take longer than most other API requests.
-            So this method will specify a 60 second default timeout if none is specified.
+            So this method will specify a 60 second default timeout if none is
+            specified.
             A timeout can be specified via kwargs to override this functionality.
 
         Args:
@@ -945,7 +951,8 @@ class ProjectManager(CRUDMixin, RESTManager):
 
         .. note::
             This request may take longer than most other API requests.
-            So this method will specify a 60 second default timeout if none is specified.
+            So this method will specify a 60 second default timeout if none is
+            specified.
             A timeout can be specified via kwargs to override this functionality.
 
         Args:

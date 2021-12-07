@@ -140,7 +140,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
         approval_rules: ProjectMergeRequestApprovalRuleManager = (
             self._parent.approval_rules
         )
-        """ update any existing approval rule matching the name"""
+        # update any existing approval rule matching the name
         existing_approval_rules = approval_rules.list()
         for ar in existing_approval_rules:
             if ar.name == approval_rule_name:
@@ -149,7 +149,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
                 ar.group_ids = data["group_ids"]
                 ar.save()
                 return ar
-        """ if there was no rule matching the rule name, create a new one"""
+        # if there was no rule matching the rule name, create a new one
         return approval_rules.create(data=data)
 
 
@@ -171,13 +171,13 @@ class ProjectMergeRequestApprovalRule(SaveMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabUpdateError: If the server cannot perform the request
         """
-        # There is a mismatch between the name of our id attribute and the put REST API name for the
-        # project_id, so we override it here.
+        # There is a mismatch between the name of our id attribute and the put
+        # REST API name for the project_id, so we override it here.
         self.approval_rule_id = self.id
         self.merge_request_iid = self._parent_attrs["mr_iid"]
         self.id = self._parent_attrs["project_id"]
-        # save will update self.id with the result from the server, so no need to overwrite with
-        # what it was before we overwrote it."""
+        # save will update self.id with the result from the server, so no need
+        # to overwrite with what it was before we overwrote it.
         SaveMixin.save(self, **kwargs)
 
 
@@ -198,8 +198,9 @@ class ProjectMergeRequestApprovalRuleManager(
         ),
         optional=("user_ids", "group_ids"),
     )
-    # Important: When approval_project_rule_id is set, the name, users and groups of
-    # project-level rule will be copied. The approvals_required specified will be used.  """
+    # Important: When approval_project_rule_id is set, the name, users and
+    # groups of project-level rule will be copied. The approvals_required
+    # specified will be used.
     _create_attrs = RequiredOptional(
         required=("id", "merge_request_iid", "name", "approvals_required"),
         optional=("approval_project_rule_id", "user_ids", "group_ids"),
