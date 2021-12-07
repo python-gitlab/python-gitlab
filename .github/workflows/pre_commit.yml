@@ -1,0 +1,32 @@
+name: pre_commit
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      .github/workflows/pre_commit.yml
+      .pre-commit-config.yaml
+  pull_request:
+    branches:
+      - main
+      - master
+    paths:
+      - .github/workflows/pre_commit.yml
+      - .pre-commit-config.yaml
+
+env:
+  PY_COLORS: 1
+
+jobs:
+
+  pre_commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - run: pip install --upgrade -r requirements.txt -r requirements-lint.txt pre-commit
+      - name: Run pre-commit install
+        run: pre-commit install
+      - name: pre-commit run all-files
+        run: pre-commit run --all-files

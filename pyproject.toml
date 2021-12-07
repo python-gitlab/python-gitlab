@@ -41,3 +41,50 @@ branch = "main"
 version_variable = "gitlab/__version__.py:__version__"
 commit_subject = "chore: release v{version}"
 commit_message = ""
+
+[tool.pylint.messages_control]
+max-line-length = 88
+# TODO(jlvilla): Work on removing these disables over time.
+disable = [
+    "arguments-differ",
+    "arguments-renamed",
+    "attribute-defined-outside-init",
+    "broad-except",
+    "consider-using-f-string",
+    "consider-using-generator",
+    "consider-using-sys-exit",
+    "cyclic-import",
+    "duplicate-code",
+    "expression-not-assigned",
+    "fixme",
+    "implicit-str-concat",
+    "import-outside-toplevel",
+    "invalid-name",
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "missing-module-docstring",
+    "no-else-return",
+    "no-self-use",
+    "protected-access",
+    "raise-missing-from",
+    "redefined-builtin",
+    "redefined-outer-name",
+    "signature-differs",
+    "super-with-arguments",
+    "too-few-public-methods",
+    "too-many-ancestors",
+    "too-many-arguments",
+    "too-many-branches",
+    "too-many-instance-attributes",
+    "too-many-lines",
+    "too-many-locals",
+    "too-many-statements",
+    "unexpected-keyword-arg",
+    "unnecessary-pass",
+    "unspecified-encoding",
+    "unsubscriptable-object",
+    "unused-argument",
+    "useless-import-alias",
+    "useless-object-inheritance",
+
+]

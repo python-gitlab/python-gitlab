@@ -1,8 +1,10 @@
+argcomplete==1.12.3
 black==21.12b0
 flake8==4.0.1
 isort==5.10.1
 mypy==0.910
-pytest
+pylint==2.12.2
+pytest==6.2.5
 types-PyYAML==6.0.1
 types-requests==2.26.1
 types-setuptools==57.4.4
