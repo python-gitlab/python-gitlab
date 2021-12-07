@@ -33,6 +33,7 @@ repos:
     rev: v0.910
     hooks:
       - id: mypy
+        args: []
         additional_dependencies:
           - types-PyYAML==6.0.1
           - types-requests==2.26.1
