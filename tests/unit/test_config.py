@@ -17,6 +17,7 @@
 
 import io
 import os
+import sys
 from textwrap import dedent
 from unittest import mock
 
@@ -214,6 +215,7 @@ def test_valid_data(m_open, path_exists):
 
 @mock.patch("os.path.exists")
 @mock.patch("builtins.open")
+@pytest.mark.skipif(sys.platform.startswith("win"), reason="Not supported on Windows")
 def test_data_from_helper(m_open, path_exists, tmp_path):
     helper = tmp_path / "helper.sh"
     helper.write_text(
