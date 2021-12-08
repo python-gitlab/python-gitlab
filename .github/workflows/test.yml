@@ -14,31 +14,39 @@ env:
 
 jobs:
   unit:
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        include:
-          - python-version: 3.7
+        os: [ubuntu-latest]
+        python:
+          - version: "3.7"
             toxenv: py37
-          - python-version: 3.8
+          - version: "3.8"
             toxenv: py38
-          - python-version: 3.9
+          - version: "3.9"
             toxenv: py39
-          - python-version: "3.10"
-            toxenv: py310
-          - python-version: "3.10"
-            toxenv: smoke
+          - version: "3.10"
+            toxenv: py310,smoke
+        include:
+          - os: macos-latest
+            python:
+              version: "3.10"
+              toxenv: py310,smoke
+          - os: windows-latest
+            python:
+              version: "3.10"
+              toxenv: py310,smoke
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python.version }}
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.python.version }}
       - name: Install dependencies
-        run: pip install tox pytest-github-actions-annotate-failures
+        run: pip3 install tox pytest-github-actions-annotate-failures
       - name: Run tests
         env:
-          TOXENV: ${{ matrix.toxenv }}
+          TOXENV: ${{ matrix.python.toxenv }}
         run: tox
 
   functional:
