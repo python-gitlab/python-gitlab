@@ -266,20 +266,16 @@ def _populate_sub_parser_by_class(
                     sub_parser_action.add_argument(f"--{id_attr}", required=True)
 
             required, optional, dummy = cli.custom_actions[name][action_name]
-            [
-                sub_parser_action.add_argument(
-                    f"--{x.replace('_', '-')}", required=True
-                )
-                for x in required
-                if x != cls._id_attr
-            ]
-            [
-                sub_parser_action.add_argument(
-                    f"--{x.replace('_', '-')}", required=False
-                )
-                for x in optional
-                if x != cls._id_attr
-            ]
+            for x in required:
+                if x != cls._id_attr:
+                    sub_parser_action.add_argument(
+                        f"--{x.replace('_', '-')}", required=True
+                    )
+            for x in optional:
+                if x != cls._id_attr:
+                    sub_parser_action.add_argument(
+                        f"--{x.replace('_', '-')}", required=False
+                    )
 
     if mgr_cls.__name__ in cli.custom_actions:
         name = mgr_cls.__name__
@@ -293,20 +289,16 @@ def _populate_sub_parser_by_class(
                 sub_parser_action.add_argument("--sudo", required=False)
 
             required, optional, dummy = cli.custom_actions[name][action_name]
-            [
-                sub_parser_action.add_argument(
-                    f"--{x.replace('_', '-')}", required=True
-                )
-                for x in required
-                if x != cls._id_attr
-            ]
-            [
-                sub_parser_action.add_argument(
-                    f"--{x.replace('_', '-')}", required=False
-                )
-                for x in optional
-                if x != cls._id_attr
-            ]
+            for x in required:
+                if x != cls._id_attr:
+                    sub_parser_action.add_argument(
+                        f"--{x.replace('_', '-')}", required=True
+                    )
+            for x in optional:
+                if x != cls._id_attr:
+                    sub_parser_action.add_argument(
+                        f"--{x.replace('_', '-')}", required=False
+                    )
 
 
 def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:

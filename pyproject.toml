@@ -55,7 +55,6 @@ disable = [
     "consider-using-sys-exit",
     "cyclic-import",
     "duplicate-code",
-    "expression-not-assigned",
     "fixme",
     "implicit-str-concat",
     "import-outside-toplevel",
