@@ -169,6 +169,29 @@ def resp_delete_package_file(no_content):
 
 
 @pytest.fixture
+def resp_delete_package_file_list(no_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url=re.compile(
+                r"http://localhost/api/v4/projects/1/packages/1/package_files"
+            ),
+            json=package_file_content,
+            content_type="application/json",
+            status=200,
+        )
+        for pkg_file_id in range(25, 28):
+            rsps.add(
+                method=responses.DELETE,
+                url=f"http://localhost/api/v4/projects/1/packages/1/package_files/{pkg_file_id}",
+                json=no_content,
+                content_type="application/json",
+                status=204,
+            )
+        yield rsps
+
+
+@pytest.fixture
 def resp_list_package_files():
     with responses.RequestsMock() as rsps:
         rsps.add(
@@ -242,9 +265,19 @@ def test_list_project_package_files(project, resp_list_package_files):
     assert package_files[0].id == 25
 
 
-def test_delete_project_package_file(project, resp_delete_package_file):
+def test_delete_project_package_file_from_package_object(
+    project, resp_delete_package_file
+):
     package = project.packages.get(1, lazy=True)
     package.package_files.delete(1)
+
+
+def test_delete_project_package_file_from_package_file_object(
+    project, resp_delete_package_file_list
+):
+    package = project.packages.get(1, lazy=True)
+    for package_file in package.package_files.list():
+        package_file.delete()
 
 
 def test_upload_generic_package(tmp_path, project, resp_upload_generic_package):

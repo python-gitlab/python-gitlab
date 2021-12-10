@@ -173,7 +173,7 @@ class ProjectPackageManager(ListMixin, GetMixin, DeleteMixin, RESTManager):
         return cast(ProjectPackage, super().get(id=id, lazy=lazy, **kwargs))
 
 
-class ProjectPackageFile(RESTObject):
+class ProjectPackageFile(ObjectDeleteMixin, RESTObject):
     pass
 
 

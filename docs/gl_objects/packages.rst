@@ -93,7 +93,7 @@ Delete a package file in a project::
 
     package = project.packages.get(1)
     file = package.package_files.list()[0]
-    package.package_files.delete(file.id)
+    file.delete()
 
 
 Generic Packages
