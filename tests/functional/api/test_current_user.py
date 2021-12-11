@@ -1,10 +1,10 @@
 def test_current_user_email(gl):
     gl.auth()
     mail = gl.user.emails.create({"email": "current@user.com"})
-    assert len(gl.user.emails.list()) == 1
+    assert len(gl.user.emails.list()) == 2
 
     mail.delete()
-    assert len(gl.user.emails.list()) == 0
+    assert len(gl.user.emails.list()) == 1
 
 
 def test_current_user_gpg_keys(gl, GPG_KEY):
