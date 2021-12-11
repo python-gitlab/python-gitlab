@@ -1,0 +1,119 @@
+"""
+GitLab API:
+https://docs.gitlab.com/ce/api/topics.html
+"""
+import pytest
+import responses
+
+from gitlab.v4.objects import Topic
+
+name = "GitLab"
+new_name = "gitlab-test"
+topic_content = {
+    "id": 1,
+    "name": name,
+    "description": "GitLab is an open source end-to-end software development platform.",
+    "total_projects_count": 1000,
+    "avatar_url": "http://www.gravatar.com/avatar/a0d477b3ea21970ce6ffcbb817b0b435?s=80&d=identicon",
+}
+topics_url = "http://localhost/api/v4/topics"
+topic_url = f"{topics_url}/1"
+
+
+@pytest.fixture
+def resp_list_topics():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url=topics_url,
+            json=[topic_content],
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_get_topic():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url=topic_url,
+            json=topic_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_create_topic():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url=topics_url,
+            json=topic_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_update_topic():
+    updated_content = dict(topic_content)
+    updated_content["name"] = new_name
+
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.PUT,
+            url=topic_url,
+            json=updated_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_delete_topic(no_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.DELETE,
+            url=topic_url,
+            json=no_content,
+            content_type="application/json",
+            status=204,
+        )
+        yield rsps
+
+
+def test_list_topics(gl, resp_list_topics):
+    topics = gl.topics.list()
+    assert isinstance(topics, list)
+    assert isinstance(topics[0], Topic)
+    assert topics[0].name == name
+
+
+def test_get_topic(gl, resp_get_topic):
+    topic = gl.topics.get(1)
+    assert isinstance(topic, Topic)
+    assert topic.name == name
+
+
+def test_create_topic(gl, resp_create_topic):
+    topic = gl.topics.create({"name": name})
+    assert isinstance(topic, Topic)
+    assert topic.name == name
+
+
+def test_update_topic(gl, resp_update_topic):
+    topic = gl.topics.get(1, lazy=True)
+    topic.name = new_name
+    topic.save()
+    assert topic.name == new_name
+
+
+def test_delete_topic(gl, resp_delete_topic):
+    topic = gl.topics.get(1, lazy=True)
+    topic.delete()

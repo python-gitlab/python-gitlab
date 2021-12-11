@@ -53,6 +53,7 @@ API examples
    gl_objects/system_hooks
    gl_objects/templates
    gl_objects/todos
+   gl_objects/topics
    gl_objects/users
    gl_objects/variables
    gl_objects/sidekiq

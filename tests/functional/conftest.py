@@ -24,6 +24,8 @@ def reset_gitlab(gl):
         for deploy_token in group.deploytokens.list():
             deploy_token.delete()
         group.delete()
+    for topic in gl.topics.list():
+        topic.delete()
     for variable in gl.variables.list():
         variable.delete()
     for user in gl.users.list():
