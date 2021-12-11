@@ -118,4 +118,4 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
     ) -> Optional[ApplicationSettings]:
-        return cast(ApplicationSettings, super().get(id=id, **kwargs))
+        return cast(Optional[ApplicationSettings], super().get(id=id, **kwargs))

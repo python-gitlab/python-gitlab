@@ -4,13 +4,32 @@ Ensure type-hints are setup correctly and detect if missing functions.
 Original notes by John L. Villalovos
 
 """
+import dataclasses
+import functools
 import inspect
-from typing import Tuple, Type
+from typing import Optional, Type
 
 import _pytest
 
 import gitlab.mixins
 import gitlab.v4.objects
+
+
+@functools.total_ordering
+@dataclasses.dataclass(frozen=True)
+class ClassInfo:
+    name: str
+    type: Type
+
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, ClassInfo):
+            return NotImplemented
+        return (self.type.__module__, self.name) < (other.type.__module__, other.name)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, ClassInfo):
+            return NotImplemented
+        return (self.type.__module__, self.name) == (other.type.__module__, other.name)
 
 
 def pytest_generate_tests(metafunc: _pytest.python.Metafunc) -> None:
@@ -35,38 +54,84 @@ def pytest_generate_tests(metafunc: _pytest.python.Metafunc) -> None:
             if not class_name.endswith("Manager"):
                 continue
 
-            class_info_set.add((class_name, class_value))
+            class_info_set.add(ClassInfo(name=class_name, type=class_value))
 
-    metafunc.parametrize("class_info", class_info_set)
+    metafunc.parametrize("class_info", sorted(class_info_set))
+
+
+GET_ID_METHOD_TEMPLATE = """
+def get(
+    self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+) -> {obj_cls.__name__}:
+    return cast({obj_cls.__name__}, super().get(id=id, lazy=lazy, **kwargs))
+
+You may also need to add the following imports:
+from typing import Any, cast, Union"
+"""
+
+GET_WITHOUT_ID_METHOD_TEMPLATE = """
+def get(
+    self, id: Optional[Union[int, str]] = None, **kwargs: Any
+) -> Optional[{obj_cls.__name__}]:
+    return cast(Optional[{obj_cls.__name__}], super().get(id=id, **kwargs))
+
+You may also need to add the following imports:
+from typing import Any, cast, Optional, Union"
+"""
 
 
 class TestTypeHints:
-    def test_check_get_function_type_hints(self, class_info: Tuple[str, Type]) -> None:
+    def test_check_get_function_type_hints(self, class_info: ClassInfo) -> None:
         """Ensure classes derived from GetMixin have defined a 'get()' method with
         correct type-hints.
         """
-        class_name, class_value = class_info
-        if not class_name.endswith("Manager"):
-            return
+        self.get_check_helper(
+            base_type=gitlab.mixins.GetMixin,
+            class_info=class_info,
+            method_template=GET_ID_METHOD_TEMPLATE,
+            optional_return=False,
+        )
 
-        mro = class_value.mro()
+    def test_check_get_without_id_function_type_hints(
+        self, class_info: ClassInfo
+    ) -> None:
+        """Ensure classes derived from GetMixin have defined a 'get()' method with
+        correct type-hints.
+        """
+        self.get_check_helper(
+            base_type=gitlab.mixins.GetWithoutIdMixin,
+            class_info=class_info,
+            method_template=GET_WITHOUT_ID_METHOD_TEMPLATE,
+            optional_return=True,
+        )
+
+    def get_check_helper(
+        self,
+        *,
+        base_type: Type,
+        class_info: ClassInfo,
+        method_template: str,
+        optional_return: bool,
+    ) -> None:
+        if not class_info.name.endswith("Manager"):
+            return
+        mro = class_info.type.mro()
         # The class needs to be derived from GetMixin or we ignore it
-        if gitlab.mixins.GetMixin not in mro:
+        if base_type not in mro:
             return
 
-        obj_cls = class_value._obj_cls
-        signature = inspect.signature(class_value.get)
-        filename = inspect.getfile(class_value)
+        obj_cls = class_info.type._obj_cls
+        signature = inspect.signature(class_info.type.get)
+        filename = inspect.getfile(class_info.type)
 
         fail_message = (
-            f"class definition for {class_name!r} in file {filename!r} "
+            f"class definition for {class_info.name!r} in file {filename!r} "
             f"must have defined a 'get' method with a return annotation of "
             f"{obj_cls} but found {signature.return_annotation}\n"
             f"Recommend adding the followinng method:\n"
-            f"def get(\n"
-            f"     self, id: Union[str, int], lazy: bool = False, **kwargs: Any\n"
-            f" ) -> {obj_cls.__name__}:\n"
-            f"     return cast({obj_cls.__name__}, super().get(id=id, lazy=lazy, "
-            f"**kwargs))\n"
         )
-        assert obj_cls == signature.return_annotation, fail_message
+        fail_message += method_template.format(obj_cls=obj_cls)
+        check_type = obj_cls
+        if optional_return:
+            check_type = Optional[obj_cls]
+        assert check_type == signature.return_annotation, fail_message
