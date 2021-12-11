@@ -180,6 +180,8 @@ class Gitlab(object):
         """See :class:`~gitlab.v4.objects.VariableManager`"""
         self.personal_access_tokens = objects.PersonalAccessTokenManager(self)
         """See :class:`~gitlab.v4.objects.PersonalAccessTokenManager`"""
+        self.topics = objects.TopicManager(self)
+        """See :class:`~gitlab.v4.objects.TopicManager`"""
 
     def __enter__(self) -> "Gitlab":
         return self

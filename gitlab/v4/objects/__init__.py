@@ -70,6 +70,7 @@ from .statistics import *
 from .tags import *
 from .templates import *
 from .todos import *
+from .topics import *
 from .triggers import *
 from .users import *
 from .variables import *
