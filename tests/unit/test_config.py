@@ -16,15 +16,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import io
-import os
 import sys
+from pathlib import Path
 from textwrap import dedent
 from unittest import mock
 
 import pytest
 
 import gitlab
-from gitlab import config
+from gitlab import config, const
 
 custom_user_agent = "my-package/1.0.0"
 
@@ -107,69 +107,96 @@ def global_and_gitlab_retry_transient_errors(
     retry_transient_errors={gitlab_value}"""
 
 
-@mock.patch.dict(os.environ, {"PYTHON_GITLAB_CFG": "/some/path"})
-def test_env_config_present():
-    assert ["/some/path"] == config._env_config()
+def _mock_nonexistent_file(*args, **kwargs):
+    raise OSError
 
 
-@mock.patch.dict(os.environ, {}, clear=True)
-def test_env_config_missing():
-    assert [] == config._env_config()
+def _mock_existent_file(path, *args, **kwargs):
+    return path
 
 
-@mock.patch("os.path.exists")
-def test_missing_config(path_exists):
-    path_exists.return_value = False
+@pytest.fixture
+def mock_clean_env(monkeypatch):
+    monkeypatch.delenv("PYTHON_GITLAB_CFG", raising=False)
+
+
+def test_env_config_missing_file_raises(monkeypatch):
+    monkeypatch.setenv("PYTHON_GITLAB_CFG", "/some/path")
     with pytest.raises(config.GitlabConfigMissingError):
-        config.GitlabConfigParser("test")
+        config._get_config_files()
 
 
-@mock.patch("os.path.exists")
+def test_env_config_not_defined_does_not_raise(mock_clean_env):
+    assert config._get_config_files() == []
+
+
+def test_default_config(mock_clean_env, monkeypatch):
+    with monkeypatch.context() as m:
+        m.setattr(Path, "resolve", _mock_nonexistent_file)
+        cp = config.GitlabConfigParser()
+
+    assert cp.gitlab_id is None
+    assert cp.http_username is None
+    assert cp.http_password is None
+    assert cp.job_token is None
+    assert cp.oauth_token is None
+    assert cp.private_token is None
+    assert cp.api_version == "4"
+    assert cp.order_by is None
+    assert cp.pagination is None
+    assert cp.per_page is None
+    assert cp.retry_transient_errors is False
+    assert cp.ssl_verify is True
+    assert cp.timeout == 60
+    assert cp.url == const.DEFAULT_URL
+    assert cp.user_agent == const.USER_AGENT
+
+
 @mock.patch("builtins.open")
-def test_invalid_id(m_open, path_exists):
+def test_invalid_id(m_open, mock_clean_env, monkeypatch):
     fd = io.StringIO(no_default_config)
     fd.close = mock.Mock(return_value=None)
     m_open.return_value = fd
-    path_exists.return_value = True
-    config.GitlabConfigParser("there")
-    with pytest.raises(config.GitlabIDError):
-        config.GitlabConfigParser()
+    with monkeypatch.context() as m:
+        m.setattr(Path, "resolve", _mock_existent_file)
+        config.GitlabConfigParser("there")
+        with pytest.raises(config.GitlabIDError):
+            config.GitlabConfigParser()
+        fd = io.StringIO(valid_config)
+        fd.close = mock.Mock(return_value=None)
+        m_open.return_value = fd
+        with pytest.raises(config.GitlabDataError):
+            config.GitlabConfigParser(gitlab_id="not_there")
 
-    fd = io.StringIO(valid_config)
-    fd.close = mock.Mock(return_value=None)
-    m_open.return_value = fd
-    with pytest.raises(config.GitlabDataError):
-        config.GitlabConfigParser(gitlab_id="not_there")
 
-
-@mock.patch("os.path.exists")
 @mock.patch("builtins.open")
-def test_invalid_data(m_open, path_exists):
+def test_invalid_data(m_open, monkeypatch):
     fd = io.StringIO(missing_attr_config)
     fd.close = mock.Mock(return_value=None, side_effect=lambda: fd.seek(0))
     m_open.return_value = fd
-    path_exists.return_value = True
 
-    config.GitlabConfigParser("one")
-    config.GitlabConfigParser("one")
-    with pytest.raises(config.GitlabDataError):
-        config.GitlabConfigParser(gitlab_id="two")
-    with pytest.raises(config.GitlabDataError):
-        config.GitlabConfigParser(gitlab_id="three")
-    with pytest.raises(config.GitlabDataError) as emgr:
-        config.GitlabConfigParser("four")
-    assert "Unsupported per_page number: 200" == emgr.value.args[0]
+    with monkeypatch.context() as m:
+        m.setattr(Path, "resolve", _mock_existent_file)
+        config.GitlabConfigParser("one")
+        config.GitlabConfigParser("one")
+        with pytest.raises(config.GitlabDataError):
+            config.GitlabConfigParser(gitlab_id="two")
+        with pytest.raises(config.GitlabDataError):
+            config.GitlabConfigParser(gitlab_id="three")
+        with pytest.raises(config.GitlabDataError) as emgr:
+            config.GitlabConfigParser("four")
+        assert "Unsupported per_page number: 200" == emgr.value.args[0]
 
 
-@mock.patch("os.path.exists")
 @mock.patch("builtins.open")
-def test_valid_data(m_open, path_exists):
+def test_valid_data(m_open, monkeypatch):
     fd = io.StringIO(valid_config)
     fd.close = mock.Mock(return_value=None)
     m_open.return_value = fd
-    path_exists.return_value = True
 
-    cp = config.GitlabConfigParser()
+    with monkeypatch.context() as m:
+        m.setattr(Path, "resolve", _mock_existent_file)
+        cp = config.GitlabConfigParser()
     assert "one" == cp.gitlab_id
     assert "http://one.url" == cp.url
     assert "ABCDEF" == cp.private_token
@@ -181,7 +208,9 @@ def test_valid_data(m_open, path_exists):
     fd = io.StringIO(valid_config)
     fd.close = mock.Mock(return_value=None)
     m_open.return_value = fd
-    cp = config.GitlabConfigParser(gitlab_id="two")
+    with monkeypatch.context() as m:
+        m.setattr(Path, "resolve", _mock_existent_file)
+        cp = config.GitlabConfigParser(gitlab_id="two")
     assert "two" == cp.gitlab_id
     assert "https://two.url" == cp.url
     assert "GHIJKL" == cp.private_token
@@ -192,7 +221,9 @@ def test_valid_data(m_open, path_exists):
     fd = io.StringIO(valid_config)
     fd.close = mock.Mock(return_value=None)
     m_open.return_value = fd
-    cp = config.GitlabConfigParser(gitlab_id="three")
+    with monkeypatch.context() as m:
+        m.setattr(Path, "resolve", _mock_existent_file)
+        cp = config.GitlabConfigParser(gitlab_id="three")
     assert "three" == cp.gitlab_id
     assert "https://three.url" == cp.url
     assert "MNOPQR" == cp.private_token
@@ -204,7 +235,9 @@ def test_valid_data(m_open, path_exists):
     fd = io.StringIO(valid_config)
     fd.close = mock.Mock(return_value=None)
     m_open.return_value = fd
-    cp = config.GitlabConfigParser(gitlab_id="four")
+    with monkeypatch.context() as m:
+        m.setattr(Path, "resolve", _mock_existent_file)
+        cp = config.GitlabConfigParser(gitlab_id="four")
     assert "four" == cp.gitlab_id
     assert "https://four.url" == cp.url
     assert cp.private_token is None
@@ -213,10 +246,9 @@ def test_valid_data(m_open, path_exists):
     assert cp.ssl_verify is True
 
 
-@mock.patch("os.path.exists")
 @mock.patch("builtins.open")
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Not supported on Windows")
-def test_data_from_helper(m_open, path_exists, tmp_path):
+def test_data_from_helper(m_open, monkeypatch, tmp_path):
     helper = tmp_path / "helper.sh"
     helper.write_text(
         dedent(
@@ -243,14 +275,15 @@ def test_data_from_helper(m_open, path_exists, tmp_path):
 
     fd.close = mock.Mock(return_value=None)
     m_open.return_value = fd
-    cp = config.GitlabConfigParser(gitlab_id="helper")
+    with monkeypatch.context() as m:
+        m.setattr(Path, "resolve", _mock_existent_file)
+        cp = config.GitlabConfigParser(gitlab_id="helper")
     assert "helper" == cp.gitlab_id
     assert "https://helper.url" == cp.url
     assert cp.private_token is None
     assert "secret" == cp.oauth_token
 
 
-@mock.patch("os.path.exists")
 @mock.patch("builtins.open")
 @pytest.mark.parametrize(
     "config_string,expected_agent",
@@ -259,16 +292,17 @@ def test_data_from_helper(m_open, path_exists, tmp_path):
         (custom_user_agent_config, custom_user_agent),
     ],
 )
-def test_config_user_agent(m_open, path_exists, config_string, expected_agent):
+def test_config_user_agent(m_open, monkeypatch, config_string, expected_agent):
     fd = io.StringIO(config_string)
     fd.close = mock.Mock(return_value=None)
     m_open.return_value = fd
 
-    cp = config.GitlabConfigParser()
+    with monkeypatch.context() as m:
+        m.setattr(Path, "resolve", _mock_existent_file)
+        cp = config.GitlabConfigParser()
     assert cp.user_agent == expected_agent
 
 
-@mock.patch("os.path.exists")
 @mock.patch("builtins.open")
 @pytest.mark.parametrize(
     "config_string,expected",
@@ -303,11 +337,13 @@ def test_config_user_agent(m_open, path_exists, config_string, expected_agent):
     ],
 )
 def test_config_retry_transient_errors_when_global_config_is_set(
-    m_open, path_exists, config_string, expected
+    m_open, monkeypatch, config_string, expected
 ):
     fd = io.StringIO(config_string)
     fd.close = mock.Mock(return_value=None)
     m_open.return_value = fd
 
-    cp = config.GitlabConfigParser()
+    with monkeypatch.context() as m:
+        m.setattr(Path, "resolve", _mock_existent_file)
+        cp = config.GitlabConfigParser()
     assert cp.retry_transient_errors == expected
