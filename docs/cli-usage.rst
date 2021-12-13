@@ -4,7 +4,8 @@
 
 ``python-gitlab`` provides a :command:`gitlab` command-line tool to interact
 with GitLab servers. It uses a configuration file to define how to connect to
-the servers.
+the servers. Without a configuration file, ``gitlab`` will default to
+https://gitlab.com and unauthenticated requests.
 
 .. _cli_configuration:
 
@@ -16,8 +17,8 @@ Files
 
 ``gitlab`` looks up 3 configuration files by default:
 
-``PYTHON_GITLAB_CFG`` environment variable
-    An environment variable that contains the path to a configuration file
+The ``PYTHON_GITLAB_CFG`` environment variable
+    An environment variable that contains the path to a configuration file.
 
 ``/etc/python-gitlab.cfg``
     System-wide configuration file
@@ -26,6 +27,13 @@ Files
     User configuration file
 
 You can use a different configuration file with the ``--config-file`` option.
+
+.. warning::
+    If the ``PYTHON_GITLAB_CFG`` environment variable is defined and the target
+    file exists, it will be the only configuration file parsed by ``gitlab``.  
+
+    If the environment variable is defined and the target file cannot be accessed,
+    ``gitlab`` will fail explicitly.
 
 Content
 -------

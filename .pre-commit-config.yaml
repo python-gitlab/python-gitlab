@@ -26,6 +26,7 @@ repos:
       - id: pylint
         additional_dependencies:
           - argcomplete==1.12.3
+          - pytest==6.2.5
           - requests==2.26.0
           - requests-toolbelt==0.9.1
         files: 'gitlab/'
