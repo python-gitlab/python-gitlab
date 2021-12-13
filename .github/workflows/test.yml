@@ -33,6 +33,8 @@ jobs:
             toxenv: py39
           - version: "3.10"
             toxenv: py310,smoke
+          - version: '3.11.0-alpha - 3.11' # SemVer's version range syntax
+            toxenv: py311,smoke
         include:
           - os: macos-latest
             python:
