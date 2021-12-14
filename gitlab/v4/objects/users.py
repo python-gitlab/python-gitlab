@@ -500,6 +500,7 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
             "merge_requests_enabled",
             "wiki_enabled",
             "snippets_enabled",
+            "squash_option",
             "public",
             "visibility",
             "description",
