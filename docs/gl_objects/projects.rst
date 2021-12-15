@@ -372,7 +372,6 @@ Create a new file::
                               'content': file_content,
                               'author_email': 'test@example.com',
                               'author_name': 'yourname',
-                              'encoding': 'text',
                               'commit_message': 'Create testfile'})
 
 Update a file. The entire content must be uploaded, as plain text or as base64
