@@ -17,6 +17,7 @@ venv/
 # Include tracked hidden files and directories in search and diff tools
 !.commitlintrc.json
 !.dockerignore
+!.env
 !.github/
 !.gitignore
 !.gitlab-ci.yml
