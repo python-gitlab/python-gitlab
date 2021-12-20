@@ -126,8 +126,10 @@ def test_env_config_missing_file_raises(monkeypatch):
         config._get_config_files()
 
 
-def test_env_config_not_defined_does_not_raise(mock_clean_env):
-    assert config._get_config_files() == []
+def test_env_config_not_defined_does_not_raise(mock_clean_env, monkeypatch):
+    with monkeypatch.context() as m:
+        m.setattr(config, "_DEFAULT_FILES", [])
+        assert config._get_config_files() == []
 
 
 def test_default_config(mock_clean_env, monkeypatch):
