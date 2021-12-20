@@ -11,13 +11,12 @@ import responses
 from gitlab.v4.objects import ProjectReleaseLink
 
 tag_name = "v1.0.0"
-encoded_tag_name = "v1%2E0%2E0"
 release_name = "demo-release"
 release_description = "my-rel-desc"
 released_at = "2019-03-15T08:00:00Z"
 link_name = "hello-world"
 link_url = "https://gitlab.example.com/group/hello/-/jobs/688/artifacts/raw/bin/hello-darwin-amd64"
-direct_url = f"https://gitlab.example.com/group/hello/-/releases/{encoded_tag_name}/downloads/hello-world"
+direct_url = f"https://gitlab.example.com/group/hello/-/releases/{tag_name}/downloads/hello-world"
 new_link_type = "package"
 link_content = {
     "id": 2,
@@ -37,14 +36,12 @@ release_content = {
     "released_at": released_at,
 }
 
-release_url = re.compile(
-    rf"http://localhost/api/v4/projects/1/releases/{encoded_tag_name}"
-)
+release_url = re.compile(rf"http://localhost/api/v4/projects/1/releases/{tag_name}")
 links_url = re.compile(
-    rf"http://localhost/api/v4/projects/1/releases/{encoded_tag_name}/assets/links"
+    rf"http://localhost/api/v4/projects/1/releases/{tag_name}/assets/links"
 )
 link_id_url = re.compile(
-    rf"http://localhost/api/v4/projects/1/releases/{encoded_tag_name}/assets/links/1"
+    rf"http://localhost/api/v4/projects/1/releases/{tag_name}/assets/links/1"
 )
 
 

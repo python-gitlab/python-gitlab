@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Any, Callable, Dict, Optional
-from urllib.parse import quote, urlparse
+from urllib.parse import quote
 
 import requests
 
@@ -58,12 +58,6 @@ def copy_dict(dest: Dict[str, Any], src: Dict[str, Any]) -> None:
 
 def clean_str_id(id: str) -> str:
     return quote(id, safe="")
-
-
-def sanitized_url(url: str) -> str:
-    parsed = urlparse(url)
-    new_path = parsed.path.replace(".", "%2E")
-    return parsed._replace(path=new_path).geturl()
 
 
 def remove_none_from_dict(data: Dict[str, Any]) -> Dict[str, Any]:

@@ -30,13 +30,3 @@ def test_clean_str_id():
     src = "foo%bar/baz/"
     dest = "foo%25bar%2Fbaz%2F"
     assert dest == utils.clean_str_id(src)
-
-
-def test_sanitized_url():
-    src = "http://localhost/foo/bar"
-    dest = "http://localhost/foo/bar"
-    assert dest == utils.sanitized_url(src)
-
-    src = "http://localhost/foo.bar.baz"
-    dest = "http://localhost/foo%2Ebar%2Ebaz"
-    assert dest == utils.sanitized_url(src)

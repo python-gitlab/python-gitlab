@@ -29,8 +29,7 @@ def resp_get_repository_file():
         "last_commit_id": "570e7b2abdd848b95f2f578043fc23bd6f6fd24d",
     }
 
-    # requests also encodes `.`
-    encoded_path = quote(file_path, safe="").replace(".", "%2E")
+    encoded_path = quote(file_path, safe="")
 
     with responses.RequestsMock() as rsps:
         rsps.add(

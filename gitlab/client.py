@@ -593,24 +593,19 @@ class Gitlab(object):
         json, data, content_type = self._prepare_send_data(files, post_data, raw)
         opts["headers"]["Content-type"] = content_type
 
-        # Requests assumes that `.` should not be encoded as %2E and will make
-        # changes to urls using this encoding. Using a prepped request we can
-        # get the desired behavior.
-        # The Requests behavior is right but it seems that web servers don't
-        # always agree with this decision (this is the case with a default
-        # gitlab installation)
-        req = requests.Request(verb, url, json=json, data=data, params=params, **opts)
-        prepped = self.session.prepare_request(req)
-        if TYPE_CHECKING:
-            assert prepped.url is not None
-        prepped.url = utils.sanitized_url(prepped.url)
-        settings = self.session.merge_environment_settings(
-            prepped.url, {}, streamed, verify, None
-        )
-
         cur_retries = 0
         while True:
-            result = self.session.send(prepped, timeout=timeout, **settings)
+            result = self.session.request(
+                method=verb,
+                url=url,
+                json=json,
+                data=data,
+                params=params,
+                timeout=timeout,
+                verify=verify,
+                stream=streamed,
+                **opts,
+            )
 
             self._check_redirects(result)
 
