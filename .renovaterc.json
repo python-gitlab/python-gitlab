@@ -1,6 +1,7 @@
 {
   "extends": [
-    "config:base"
+    "config:base",
+    ":enablePreCommit"
   ],
   "pip_requirements": {
     "fileMatch": ["^requirements(-[\\w]*)?\\.txt$"]
