@@ -425,7 +425,7 @@ class Gitlab(object):
         import logging
         from http.client import HTTPConnection  # noqa
 
-        HTTPConnection.debuglevel = 1  # type: ignore
+        HTTPConnection.debuglevel = 1
         logging.basicConfig()
         logging.getLogger().setLevel(logging.DEBUG)
         requests_log = logging.getLogger("requests.packages.urllib3")
