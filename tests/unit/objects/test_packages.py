@@ -2,7 +2,6 @@
 GitLab API: https://docs.gitlab.com/ce/api/packages.html
 """
 import re
-from urllib.parse import quote_plus
 
 import pytest
 import responses
@@ -109,10 +108,9 @@ package_version = "v1.0.0"
 file_name = "hello.tar.gz"
 file_content = "package content"
 package_url = "http://localhost/api/v4/projects/1/packages/generic/{}/{}/{}".format(
-    # https://datatracker.ietf.org/doc/html/rfc3986.html#section-2.3 :(
-    quote_plus(package_name).replace(".", "%2E"),
-    quote_plus(package_version).replace(".", "%2E"),
-    quote_plus(file_name).replace(".", "%2E"),
+    package_name,
+    package_version,
+    file_name,
 )
 
 
