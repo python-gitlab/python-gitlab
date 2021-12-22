@@ -33,6 +33,11 @@ jobs:
         env:
           TOXENV: docs
         run: tox
+      - name: Archive generated docs
+        uses: actions/upload-artifact@v2
+        with:
+          name: html-docs
+          path: build/sphinx/html/
 
   twine-check:
     runs-on: ubuntu-20.04
