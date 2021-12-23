@@ -186,6 +186,14 @@ Attempt to rebase an MR::
 
     mr.rebase()
 
+Get status of a rebase for an MR::
+
+    mr = project.mergerequests.get(mr_id, include_rebase_in_progress=True)
+    print(mr.rebase_in_progress, mr.merge_error)
+
+For more info see:
+https://docs.gitlab.com/ee/api/merge_requests.html#rebase-a-merge-request
+
 Attempt to merge changes between source and target branch::
 
     response = mr.merge_ref()

@@ -396,6 +396,11 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
     _path = "/projects/{project_id}/merge_requests"
     _obj_cls = ProjectMergeRequest
     _from_parent_attrs = {"project_id": "id"}
+    _optional_get_attrs = (
+        "render_html",
+        "include_diverged_commits_count",
+        "include_rebase_in_progress",
+    )
     _create_attrs = RequiredOptional(
         required=("source_branch", "target_branch", "title"),
         optional=(
