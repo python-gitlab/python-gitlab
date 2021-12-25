@@ -30,8 +30,8 @@ API examples
    gl_objects/labels
    gl_objects/notifications
    gl_objects/merge_trains
-   gl_objects/mrs
-   gl_objects/mr_approvals
+   gl_objects/merge_requests
+   gl_objects/merge_request_approvals.rst
    gl_objects/milestones
    gl_objects/namespaces
    gl_objects/notes
