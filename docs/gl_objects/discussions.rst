@@ -70,7 +70,7 @@ You can get and update a single note using the ``*DiscussionNote`` resources::
 
     discussion = resource.discussions.get(discussion_id)
     # Get the latest note's id
-    note_id = discussion.attributes['note'][-1]['id']
+    note_id = discussion.attributes['notes'][-1]['id']
     last_note = discussion.notes.get(note_id)
     last_note.body = 'Updated comment'
     last_note.save()
