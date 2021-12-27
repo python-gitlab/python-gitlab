@@ -1,4 +1,5 @@
 import base64
+import sys
 import tarfile
 import time
 import zipfile
@@ -63,6 +64,9 @@ def test_repository_archive(project):
     assert archive == archive2
 
 
+# NOTE(jlvillal): Support for using tarfile.is_tarfile() on a file or file-like object
+# was added in Python 3.9
+@pytest.mark.skipif(sys.version_info < (3, 9), reason="requires python3.9 or higher")
 @pytest.mark.parametrize(
     "format,assertion",
     [
