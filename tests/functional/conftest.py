@@ -7,6 +7,10 @@ from subprocess import check_output
 import pytest
 
 import gitlab
+import gitlab.base
+
+SLEEP_INTERVAL = 0.1
+TIMEOUT = 60  # seconds before timeout will occur
 
 
 @pytest.fixture(scope="session")
@@ -29,6 +33,32 @@ def reset_gitlab(gl):
     for user in gl.users.list():
         if user.username != "root":
             user.delete(hard_delete=True)
+
+    max_iterations = int(TIMEOUT / SLEEP_INTERVAL)
+
+    # Ensure everything has been reset
+    start_time = time.perf_counter()
+
+    def wait_for_maximum_list_length(
+        rest_manager: gitlab.base.RESTManager, description: str, max_length: int = 0
+    ) -> None:
+        """Wait for the list() length to be no greater than expected maximum or fail
+        test if timeout is exceeded"""
+        for _ in range(max_iterations):
+            if len(rest_manager.list()) <= max_length:
+                break
+            time.sleep(SLEEP_INTERVAL)
+        assert len(rest_manager.list()) <= max_length, (
+            f"Did not delete required items for {description}. "
+            f"Elapsed_time: {time.perf_counter() - start_time}"
+        )
+
+    wait_for_maximum_list_length(rest_manager=gl.projects, description="projects")
+    wait_for_maximum_list_length(rest_manager=gl.groups, description="groups")
+    wait_for_maximum_list_length(rest_manager=gl.variables, description="variables")
+    wait_for_maximum_list_length(
+        rest_manager=gl.users, description="users", max_length=1
+    )
 
 
 def set_token(container, fixture_dir):
