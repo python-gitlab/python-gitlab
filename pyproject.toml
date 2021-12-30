@@ -87,3 +87,6 @@ disable = [
     "useless-object-inheritance",
 
 ]
+
+[tool.pytest.ini_options]
+xfail_strict = true

@@ -288,12 +288,12 @@ class RESTObjectList(object):
         return self._list.per_page
 
     @property
-    def total_pages(self) -> int:
+    def total_pages(self) -> Optional[int]:
         """The total number of pages."""
         return self._list.total_pages
 
     @property
-    def total(self) -> int:
+    def total(self) -> Optional[int]:
         """The total number of items."""
         return self._list.total
 
