@@ -18,6 +18,7 @@
 
 import pickle
 import warnings
+from copy import deepcopy
 
 import pytest
 import responses
@@ -102,6 +103,35 @@ def test_gitlab_build_list(gl, resp_page_1, resp_page_2):
     assert len(test_list) == 2
     assert test_list[0]["a"] == "b"
     assert test_list[1]["c"] == "d"
+
+
+def _strip_pagination_headers(response):
+    """
+    https://docs.gitlab.com/ee/user/gitlab_com/index.html#pagination-response-headers
+    """
+    stripped = deepcopy(response)
+
+    del stripped["headers"]["X-Total-Pages"]
+    del stripped["headers"]["X-Total"]
+
+    return stripped
+
+
+@pytest.mark.xfail(reason="See #1686")
+@responses.activate
+def test_gitlab_build_list_missing_headers(gl, resp_page_1, resp_page_2):
+    stripped_page_1 = _strip_pagination_headers(resp_page_1)
+    stripped_page_2 = _strip_pagination_headers(resp_page_2)
+
+    responses.add(**stripped_page_1)
+    obj = gl.http_list("/tests", as_list=False)
+    assert len(obj) == 0  # Lazy generator has no knowledge of total items
+    assert obj.total_pages is None
+    assert obj.total is None
+
+    responses.add(**stripped_page_2)
+    test_list = list(obj)
+    assert len(test_list) == 2  # List has total items after making the API calls
 
 
 @responses.activate
