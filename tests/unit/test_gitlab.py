@@ -20,61 +20,74 @@ import pickle
 import warnings
 
 import pytest
-from httmock import HTTMock, response, urlmatch, with_httmock  # noqa
+import responses
 
 import gitlab
 
 localhost = "http://localhost"
-username = "username"
-user_id = 1
 token = "abc123"
 
 
-@urlmatch(scheme="http", netloc="localhost", path="/api/v4/user", method="get")
-def resp_get_user(url, request):
-    headers = {"content-type": "application/json"}
-    content = f'{{"id": {user_id:d}, "username": "{username:s}"}}'.encode("utf-8")
-    return response(200, content, headers, None, 5, request)
+@pytest.fixture
+def resp_get_user():
+    return {
+        "method": responses.GET,
+        "url": "http://localhost/api/v4/user",
+        "json": {"id": 1, "username": "username"},
+        "content_type": "application/json",
+        "status": 200,
+    }
 
 
-@urlmatch(scheme="http", netloc="localhost", path="/api/v4/tests", method="get")
-def resp_page_1(url, request):
+@pytest.fixture
+def resp_page_1():
     headers = {
-        "content-type": "application/json",
-        "X-Page": 1,
-        "X-Next-Page": 2,
-        "X-Per-Page": 1,
-        "X-Total-Pages": 2,
-        "X-Total": 2,
+        "X-Page": "1",
+        "X-Next-Page": "2",
+        "X-Per-Page": "1",
+        "X-Total-Pages": "2",
+        "X-Total": "2",
         "Link": ("<http://localhost/api/v4/tests?per_page=1&page=2>;" ' rel="next"'),
     }
-    content = '[{"a": "b"}]'
-    return response(200, content, headers, None, 5, request)
 
-
-@urlmatch(
-    scheme="http",
-    netloc="localhost",
-    path="/api/v4/tests",
-    method="get",
-    query=r".*page=2",
-)
-def resp_page_2(url, request):
-    headers = {
-        "content-type": "application/json",
-        "X-Page": 2,
-        "X-Next-Page": 2,
-        "X-Per-Page": 1,
-        "X-Total-Pages": 2,
-        "X-Total": 2,
+    return {
+        "method": responses.GET,
+        "url": "http://localhost/api/v4/tests",
+        "json": [{"a": "b"}],
+        "headers": headers,
+        "content_type": "application/json",
+        "status": 200,
+        "match_querystring": True,
     }
-    content = '[{"c": "d"}]'
-    return response(200, content, headers, None, 5, request)
 
 
-def test_gitlab_build_list(gl):
-    with HTTMock(resp_page_1):
-        obj = gl.http_list("/tests", as_list=False)
+@pytest.fixture
+def resp_page_2():
+    headers = {
+        "X-Page": "2",
+        "X-Next-Page": "2",
+        "X-Per-Page": "1",
+        "X-Total-Pages": "2",
+        "X-Total": "2",
+    }
+    params = {"per_page": "1", "page": "2"}
+
+    return {
+        "method": responses.GET,
+        "url": "http://localhost/api/v4/tests",
+        "json": [{"c": "d"}],
+        "headers": headers,
+        "content_type": "application/json",
+        "status": 200,
+        "match": [responses.matchers.query_param_matcher(params)],
+        "match_querystring": False,
+    }
+
+
+@responses.activate
+def test_gitlab_build_list(gl, resp_page_1, resp_page_2):
+    responses.add(**resp_page_1)
+    obj = gl.http_list("/tests", as_list=False)
     assert len(obj) == 2
     assert obj._next_url == "http://localhost/api/v4/tests?per_page=1&page=2"
     assert obj.current_page == 1
@@ -84,15 +97,17 @@ def test_gitlab_build_list(gl):
     assert obj.total_pages == 2
     assert obj.total == 2
 
-    with HTTMock(resp_page_2):
-        test_list = list(obj)
+    responses.add(**resp_page_2)
+    test_list = list(obj)
     assert len(test_list) == 2
     assert test_list[0]["a"] == "b"
     assert test_list[1]["c"] == "d"
 
 
-@with_httmock(resp_page_1, resp_page_2)
-def test_gitlab_all_omitted_when_as_list(gl):
+@responses.activate
+def test_gitlab_all_omitted_when_as_list(gl, resp_page_1, resp_page_2):
+    responses.add(**resp_page_1)
+    responses.add(**resp_page_2)
     result = gl.http_list("/tests", as_list=False, all=True)
     assert isinstance(result, gitlab.GitlabList)
 
@@ -119,11 +134,12 @@ def test_gitlab_pickability(gl):
     assert unpickled._objects == original_gl_objects
 
 
-@with_httmock(resp_get_user)
-def test_gitlab_token_auth(gl, callback=None):
+@responses.activate
+def test_gitlab_token_auth(gl, resp_get_user):
+    responses.add(**resp_get_user)
     gl.auth()
-    assert gl.user.username == username
-    assert gl.user.id == user_id
+    assert gl.user.username == "username"
+    assert gl.user.id == 1
     assert isinstance(gl.user, gitlab.v4.objects.CurrentUser)
 
 
