@@ -16,9 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import copy
 import pickle
 import warnings
-from copy import deepcopy
 
 import pytest
 import responses
@@ -109,7 +109,7 @@ def _strip_pagination_headers(response):
     """
     https://docs.gitlab.com/ee/user/gitlab_com/index.html#pagination-response-headers
     """
-    stripped = deepcopy(response)
+    stripped = copy.deepcopy(response)
 
     del stripped["headers"]["X-Total-Pages"]
     del stripped["headers"]["X-Total"]
@@ -117,7 +117,6 @@ def _strip_pagination_headers(response):
     return stripped
 
 
-@pytest.mark.xfail(reason="See #1686")
 @responses.activate
 def test_gitlab_build_list_missing_headers(gl, resp_page_1, resp_page_2):
     stripped_page_1 = _strip_pagination_headers(resp_page_1)

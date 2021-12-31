@@ -917,14 +917,12 @@ class GitlabList(object):
             self._next_url = next_url
         except KeyError:
             self._next_url = None
-        self._current_page: Optional[Union[str, int]] = result.headers.get("X-Page")
-        self._prev_page: Optional[Union[str, int]] = result.headers.get("X-Prev-Page")
-        self._next_page: Optional[Union[str, int]] = result.headers.get("X-Next-Page")
-        self._per_page: Optional[Union[str, int]] = result.headers.get("X-Per-Page")
-        self._total_pages: Optional[Union[str, int]] = result.headers.get(
-            "X-Total-Pages"
-        )
-        self._total: Optional[Union[str, int]] = result.headers.get("X-Total")
+        self._current_page: Optional[str] = result.headers.get("X-Page")
+        self._prev_page: Optional[str] = result.headers.get("X-Prev-Page")
+        self._next_page: Optional[str] = result.headers.get("X-Next-Page")
+        self._per_page: Optional[str] = result.headers.get("X-Per-Page")
+        self._total_pages: Optional[str] = result.headers.get("X-Total-Pages")
+        self._total: Optional[str] = result.headers.get("X-Total")
 
         try:
             self._data: List[Dict[str, Any]] = result.json()
@@ -965,19 +963,22 @@ class GitlabList(object):
             assert self._per_page is not None
         return int(self._per_page)
 
+    # NOTE(jlvillal): When a query returns more than 10,000 items, GitLab doesn't return
+    # the headers 'x-total-pages' and 'x-total'. In those cases we return None.
+    # https://docs.gitlab.com/ee/user/gitlab_com/index.html#pagination-response-headers
     @property
-    def total_pages(self) -> int:
+    def total_pages(self) -> Optional[int]:
         """The total number of pages."""
-        if TYPE_CHECKING:
-            assert self._total_pages is not None
-        return int(self._total_pages)
+        if self._total_pages is not None:
+            return int(self._total_pages)
+        return None
 
     @property
-    def total(self) -> int:
+    def total(self) -> Optional[int]:
         """The total number of items."""
-        if TYPE_CHECKING:
-            assert self._total is not None
-        return int(self._total)
+        if self._total is not None:
+            return int(self._total)
+        return None
 
     def __iter__(self) -> "GitlabList":
         return self
