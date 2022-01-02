@@ -3,7 +3,7 @@ import json
 import pytest
 import responses
 
-from gitlab import __version__
+from gitlab import __version__, config
 
 
 @pytest.fixture
@@ -30,9 +30,13 @@ def test_version(script_runner):
 
 
 @pytest.mark.script_launch_mode("inprocess")
-def test_defaults_to_gitlab_com(script_runner, resp_get_project):
-    # Runs in-process to intercept requests to gitlab.com
-    ret = script_runner.run("gitlab", "project", "get", "--id", "1")
+def test_defaults_to_gitlab_com(script_runner, resp_get_project, monkeypatch):
+    with monkeypatch.context() as m:
+        # Ensure we don't pick up any config files that may already exist in the local
+        # environment.
+        m.setattr(config, "_DEFAULT_FILES", [])
+        # Runs in-process to intercept requests to gitlab.com
+        ret = script_runner.run("gitlab", "project", "get", "--id", "1")
     assert ret.success
     assert "id: 1" in ret.stdout
 
