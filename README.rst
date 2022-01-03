@@ -43,29 +43,41 @@ Install with pip
 
    pip install python-gitlab
 
+Using the docker image
+======================
 
-Using the python-gitlab docker image
-====================================
+You can run the Docker image directly from the GitLab registry:
 
-How to build
-------------
+.. code-block:: console
 
-``docker build -t python-gitlab:TAG .``
+   $ docker run -it --rm registry.gitlab.com/python-gitlab/python-gitlab:latest <command> ...
 
-How to use
-----------
+For example, to get a project on GitLab.com (without authentication):
 
-``docker run -it --rm -e GITLAB_PRIVATE_TOKEN=<your token> -v /path/to/python-gitlab.cfg:/python-gitlab.cfg python-gitlab <command> ...``
+.. code-block:: console
 
-or run it directly from the upstream image:
+   $ docker run -it --rm registry.gitlab.com/python-gitlab/python-gitlab:latest project get --id gitlab-org/gitlab
 
-``docker run -it --rm -e GITLAB_PRIVATE_TOKEN=<your token> -v /path/to/python-gitlab.cfg:/python-gitlab.cfg registry.gitlab.com/python-gitlab/python-gitlab:latest <command> ...``
+You can also mount your own config file:
 
-To change the GitLab URL, use `-e GITLAB_URL=<your url>`
+.. code-block:: console
 
-Bring your own config file:
-``docker run -it --rm -v /path/to/python-gitlab.cfg:/python-gitlab.cfg -e GITLAB_CFG=/python-gitlab.cfg python-gitlab <command> ...``
+   $ docker run -it --rm -v /path/to/python-gitlab.cfg:/etc/python-gitlab.cfg registry.gitlab.com/python-gitlab/python-gitlab:latest <command> ...
 
+Building the image
+------------------
+
+To build your own image from this repository, run:
+
+.. code-block:: console
+
+   $ docker build -t python-gitlab:latest .
+
+Run your own image:
+
+.. code-block:: console
+
+   $ docker run -it --rm -v python-gitlab:latest <command> ...
 
 Bug reports
 ===========
