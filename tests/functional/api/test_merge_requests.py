@@ -32,6 +32,22 @@ def test_merge_requests(project):
     )
 
 
+def test_merge_requests_get(project, merge_request):
+    new_mr = merge_request(source_branch="test_get")
+    mr_iid = new_mr.iid
+    mr = project.mergerequests.get(mr_iid)
+    assert mr.iid == mr_iid
+    mr = project.mergerequests.get(str(mr_iid))
+    assert mr.iid == mr_iid
+
+
+def test_merge_requests_get_lazy(project, merge_request):
+    new_mr = merge_request(source_branch="test_get")
+    mr_iid = new_mr.iid
+    mr = project.mergerequests.get(mr_iid, lazy=True)
+    assert mr.iid == mr_iid
+
+
 def test_merge_request_discussion(project):
     mr = project.mergerequests.list()[0]
     size = len(mr.discussions.list())
