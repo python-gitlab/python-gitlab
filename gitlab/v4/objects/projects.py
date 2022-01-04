@@ -2,11 +2,11 @@ from typing import Any, Callable, cast, Dict, List, Optional, TYPE_CHECKING, Uni
 
 import requests
 
-from gitlab import cli, client
-from gitlab import exceptions as exc
-from gitlab import types, utils
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import (
+from ... import cli, client
+from ... import exceptions as exc
+from ... import types, utils
+from ...base import RequiredOptional, RESTManager, RESTObject
+from ...mixins import (
     CreateMixin,
     CRUDMixin,
     ListMixin,
@@ -15,7 +15,6 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
-
 from .access_requests import ProjectAccessRequestManager  # noqa: F401
 from .audit_events import ProjectAuditEventManager  # noqa: F401
 from .badges import ProjectBadgeManager  # noqa: F401

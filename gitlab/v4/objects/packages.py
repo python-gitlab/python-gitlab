@@ -9,11 +9,11 @@ from typing import Any, Callable, cast, Optional, TYPE_CHECKING, Union
 
 import requests
 
-from gitlab import cli
-from gitlab import exceptions as exc
-from gitlab import utils
-from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import DeleteMixin, GetMixin, ListMixin, ObjectDeleteMixin
+from ... import cli
+from ... import exceptions as exc
+from ... import utils
+from ...base import RESTManager, RESTObject
+from ...mixins import DeleteMixin, GetMixin, ListMixin, ObjectDeleteMixin
 
 __all__ = [
     "GenericPackage",

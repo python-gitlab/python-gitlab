@@ -1,8 +1,8 @@
 from typing import Any, cast, Dict, Optional, Union
 
-from gitlab import exceptions as exc
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
+from ... import exceptions as exc
+from ...base import RequiredOptional, RESTManager, RESTObject
+from ...mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
 
 __all__ = [
     "ApplicationAppearance",

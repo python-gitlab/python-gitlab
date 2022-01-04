@@ -1,9 +1,9 @@
 from typing import Any, Dict, TYPE_CHECKING
 
-from gitlab import cli
-from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import DeleteMixin, ListMixin, ObjectDeleteMixin
+from ... import cli
+from ... import exceptions as exc
+from ...base import RESTManager, RESTObject
+from ...mixins import DeleteMixin, ListMixin, ObjectDeleteMixin
 
 __all__ = [
     "Todo",

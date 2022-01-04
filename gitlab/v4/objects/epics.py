@@ -1,9 +1,9 @@
 from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
 
-from gitlab import exceptions as exc
-from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import (
+from ... import exceptions as exc
+from ... import types
+from ...base import RequiredOptional, RESTManager, RESTObject
+from ...mixins import (
     CreateMixin,
     CRUDMixin,
     DeleteMixin,
@@ -12,7 +12,6 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
-
 from .events import GroupEpicResourceLabelEventManager  # noqa: F401
 
 __all__ = [

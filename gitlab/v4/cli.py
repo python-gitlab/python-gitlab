@@ -21,32 +21,28 @@ import operator
 import sys
 from typing import Any, Dict, List, Optional, Type, TYPE_CHECKING, Union
 
-import gitlab
-import gitlab.base
-import gitlab.v4.objects
-from gitlab import cli
+from .. import base, cli, client, mixins
+from . import objects as v4_objects
 
 
 class GitlabCLI(object):
     def __init__(
-        self, gl: gitlab.Gitlab, what: str, action: str, args: Dict[str, str]
+        self, gl: client.Gitlab, what: str, action: str, args: Dict[str, str]
     ) -> None:
-        self.cls: Type[gitlab.base.RESTObject] = cli.what_to_cls(
-            what, namespace=gitlab.v4.objects
-        )
+        self.cls: Type[base.RESTObject] = cli.what_to_cls(what, namespace=v4_objects)
         self.cls_name = self.cls.__name__
         self.what = what.replace("-", "_")
         self.action = action.lower()
         self.gl = gl
         self.args = args
         self.mgr_cls: Union[
-            Type[gitlab.mixins.CreateMixin],
-            Type[gitlab.mixins.DeleteMixin],
-            Type[gitlab.mixins.GetMixin],
-            Type[gitlab.mixins.GetWithoutIdMixin],
-            Type[gitlab.mixins.ListMixin],
-            Type[gitlab.mixins.UpdateMixin],
-        ] = getattr(gitlab.v4.objects, f"{self.cls.__name__}Manager")
+            Type[mixins.CreateMixin],
+            Type[mixins.DeleteMixin],
+            Type[mixins.GetMixin],
+            Type[mixins.GetWithoutIdMixin],
+            Type[mixins.ListMixin],
+            Type[mixins.UpdateMixin],
+        ] = getattr(v4_objects, f"{self.cls.__name__}Manager")
         # We could do something smart, like splitting the manager name to find
         # parents, build the chain of managers to get to the final object.
         # Instead we do something ugly and efficient: interpolate variables in
@@ -86,7 +82,7 @@ class GitlabCLI(object):
             if self.mgr._from_parent_attrs:
                 for k in self.mgr._from_parent_attrs:
                     data[k] = self.args[k]
-            if not issubclass(self.cls, gitlab.mixins.GetWithoutIdMixin):
+            if not issubclass(self.cls, mixins.GetWithoutIdMixin):
                 if TYPE_CHECKING:
                     assert isinstance(self.cls._id_attr, str)
                 data[self.cls._id_attr] = self.args.pop(self.cls._id_attr)
@@ -110,9 +106,9 @@ class GitlabCLI(object):
         except Exception as e:
             cli.die("Impossible to download the export", e)
 
-    def do_create(self) -> gitlab.base.RESTObject:
+    def do_create(self) -> base.RESTObject:
         if TYPE_CHECKING:
-            assert isinstance(self.mgr, gitlab.mixins.CreateMixin)
+            assert isinstance(self.mgr, mixins.CreateMixin)
         try:
             result = self.mgr.create(self.args)
         except Exception as e:
@@ -121,17 +117,17 @@ class GitlabCLI(object):
 
     def do_list(
         self,
-    ) -> Union[gitlab.base.RESTObjectList, List[gitlab.base.RESTObject]]:
+    ) -> Union[base.RESTObjectList, List[base.RESTObject]]:
         if TYPE_CHECKING:
-            assert isinstance(self.mgr, gitlab.mixins.ListMixin)
+            assert isinstance(self.mgr, mixins.ListMixin)
         try:
             result = self.mgr.list(**self.args)
         except Exception as e:
             cli.die("Impossible to list objects", e)
         return result
 
-    def do_get(self) -> Optional[gitlab.base.RESTObject]:
-        if isinstance(self.mgr, gitlab.mixins.GetWithoutIdMixin):
+    def do_get(self) -> Optional[base.RESTObject]:
+        if isinstance(self.mgr, mixins.GetWithoutIdMixin):
             try:
                 result = self.mgr.get(id=None, **self.args)
             except Exception as e:
@@ -139,7 +135,7 @@ class GitlabCLI(object):
             return result
 
         if TYPE_CHECKING:
-            assert isinstance(self.mgr, gitlab.mixins.GetMixin)
+            assert isinstance(self.mgr, mixins.GetMixin)
             assert isinstance(self.cls._id_attr, str)
 
         id = self.args.pop(self.cls._id_attr)
@@ -151,7 +147,7 @@ class GitlabCLI(object):
 
     def do_delete(self) -> None:
         if TYPE_CHECKING:
-            assert isinstance(self.mgr, gitlab.mixins.DeleteMixin)
+            assert isinstance(self.mgr, mixins.DeleteMixin)
             assert isinstance(self.cls._id_attr, str)
         id = self.args.pop(self.cls._id_attr)
         try:
@@ -161,8 +157,8 @@ class GitlabCLI(object):
 
     def do_update(self) -> Dict[str, Any]:
         if TYPE_CHECKING:
-            assert isinstance(self.mgr, gitlab.mixins.UpdateMixin)
-        if issubclass(self.mgr_cls, gitlab.mixins.GetWithoutIdMixin):
+            assert isinstance(self.mgr, mixins.UpdateMixin)
+        if issubclass(self.mgr_cls, mixins.GetWithoutIdMixin):
             id = None
         else:
             if TYPE_CHECKING:
@@ -177,10 +173,10 @@ class GitlabCLI(object):
 
 
 def _populate_sub_parser_by_class(
-    cls: Type[gitlab.base.RESTObject], sub_parser: argparse._SubParsersAction
+    cls: Type[base.RESTObject], sub_parser: argparse._SubParsersAction
 ) -> None:
     mgr_cls_name = f"{cls.__name__}Manager"
-    mgr_cls = getattr(gitlab.v4.objects, mgr_cls_name)
+    mgr_cls = getattr(v4_objects, mgr_cls_name)
 
     for action_name in ["list", "get", "create", "update", "delete"]:
         if not hasattr(mgr_cls, action_name):
@@ -210,7 +206,7 @@ def _populate_sub_parser_by_class(
                 sub_parser_action.add_argument(f"--{id_attr}", required=True)
 
         if action_name == "get":
-            if not issubclass(cls, gitlab.mixins.GetWithoutIdMixin):
+            if not issubclass(cls, mixins.GetWithoutIdMixin):
                 if cls._id_attr is not None:
                     id_attr = cls._id_attr.replace("_", "-")
                     sub_parser_action.add_argument(f"--{id_attr}", required=True)
@@ -260,7 +256,7 @@ def _populate_sub_parser_by_class(
                 sub_parser_action.add_argument("--sudo", required=False)
 
             # We need to get the object somehow
-            if not issubclass(cls, gitlab.mixins.GetWithoutIdMixin):
+            if not issubclass(cls, mixins.GetWithoutIdMixin):
                 if cls._id_attr is not None:
                     id_attr = cls._id_attr.replace("_", "-")
                     sub_parser_action.add_argument(f"--{id_attr}", required=True)
@@ -309,10 +305,10 @@ def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
 
     # populate argparse for all Gitlab Object
     classes = []
-    for cls in gitlab.v4.objects.__dict__.values():
+    for cls in v4_objects.__dict__.values():
         if not isinstance(cls, type):
             continue
-        if issubclass(cls, gitlab.base.RESTManager):
+        if issubclass(cls, base.RESTManager):
             if cls._obj_cls is not None:
                 classes.append(cls._obj_cls)
     classes.sort(key=operator.attrgetter("__name__"))
@@ -331,7 +327,7 @@ def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
 
 
 def get_dict(
-    obj: Union[str, gitlab.base.RESTObject], fields: List[str]
+    obj: Union[str, base.RESTObject], fields: List[str]
 ) -> Union[str, Dict[str, Any]]:
     if isinstance(obj, str):
         return obj
@@ -349,7 +345,7 @@ class JSONPrinter(object):
 
     def display_list(
         self,
-        data: List[Union[str, gitlab.base.RESTObject]],
+        data: List[Union[str, base.RESTObject]],
         fields: List[str],
         **kwargs: Any,
     ) -> None:
@@ -373,7 +369,7 @@ class YAMLPrinter(object):
 
     def display_list(
         self,
-        data: List[Union[str, gitlab.base.RESTObject]],
+        data: List[Union[str, base.RESTObject]],
         fields: List[str],
         **kwargs: Any,
     ) -> None:
@@ -397,7 +393,7 @@ class LegacyPrinter(object):
     def display(self, d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
         verbose = kwargs.get("verbose", False)
         padding = kwargs.get("padding", 0)
-        obj: Optional[Union[Dict[str, Any], gitlab.base.RESTObject]] = kwargs.get("obj")
+        obj: Optional[Union[Dict[str, Any], base.RESTObject]] = kwargs.get("obj")
         if TYPE_CHECKING:
             assert obj is not None
 
@@ -427,7 +423,7 @@ class LegacyPrinter(object):
 
         else:
             if TYPE_CHECKING:
-                assert isinstance(obj, gitlab.base.RESTObject)
+                assert isinstance(obj, base.RESTObject)
             if obj._id_attr:
                 id = getattr(obj, obj._id_attr)
                 print(f"{obj._id_attr.replace('_', '-')}: {id}")
@@ -444,13 +440,13 @@ class LegacyPrinter(object):
 
     def display_list(
         self,
-        data: List[Union[str, gitlab.base.RESTObject]],
+        data: List[Union[str, base.RESTObject]],
         fields: List[str],
         **kwargs: Any,
     ) -> None:
         verbose = kwargs.get("verbose", False)
         for obj in data:
-            if isinstance(obj, gitlab.base.RESTObject):
+            if isinstance(obj, base.RESTObject):
                 self.display(get_dict(obj, fields), verbose=verbose, obj=obj)
             else:
                 print(obj)
@@ -467,7 +463,7 @@ PRINTERS: Dict[
 
 
 def run(
-    gl: gitlab.Gitlab,
+    gl: client.Gitlab,
     what: str,
     action: str,
     args: Dict[str, Any],
@@ -484,7 +480,7 @@ def run(
         printer.display(data, verbose=True, obj=data)
     elif isinstance(data, list):
         printer.display_list(data, fields, verbose=verbose)
-    elif isinstance(data, gitlab.base.RESTObject):
+    elif isinstance(data, base.RESTObject):
         printer.display(get_dict(data, fields), verbose=verbose, obj=data)
     elif isinstance(data, str):
         print(data)

@@ -1,7 +1,7 @@
 from typing import Any, cast, Union
 
-from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import ListMixin, RetrieveMixin
+from ...base import RESTManager, RESTObject
+from ...mixins import ListMixin, RetrieveMixin
 
 __all__ = [
     "Event",

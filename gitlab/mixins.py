@@ -30,11 +30,10 @@ from typing import (
 
 import requests
 
-import gitlab
-from gitlab import base, cli
-from gitlab import exceptions as exc
-from gitlab import types as g_types
-from gitlab import utils
+from . import base, cli, client, const
+from . import exceptions as exc
+from . import types as g_types
+from . import utils
 
 __all__ = [
     "GetMixin",
@@ -77,7 +76,7 @@ class GetMixin(_RestManagerBase):
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
-    gitlab: gitlab.Gitlab
+    gitlab: client.Gitlab
 
     @exc.on_http_error(exc.GitlabGetError)
     def get(
@@ -122,7 +121,7 @@ class GetWithoutIdMixin(_RestManagerBase):
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
-    gitlab: gitlab.Gitlab
+    gitlab: client.Gitlab
 
     @exc.on_http_error(exc.GitlabGetError)
     def get(
@@ -192,7 +191,7 @@ class ListMixin(_RestManagerBase):
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
-    gitlab: gitlab.Gitlab
+    gitlab: client.Gitlab
 
     @exc.on_http_error(exc.GitlabListError)
     def list(self, **kwargs: Any) -> Union[base.RESTObjectList, List[base.RESTObject]]:
@@ -252,7 +251,7 @@ class RetrieveMixin(ListMixin, GetMixin):
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
-    gitlab: gitlab.Gitlab
+    gitlab: client.Gitlab
 
     pass
 
@@ -264,7 +263,7 @@ class CreateMixin(_RestManagerBase):
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
-    gitlab: gitlab.Gitlab
+    gitlab: client.Gitlab
 
     def _check_missing_create_attrs(self, data: Dict[str, Any]) -> None:
         missing = []
@@ -333,7 +332,7 @@ class UpdateMixin(_RestManagerBase):
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     _update_uses_post: bool = False
-    gitlab: gitlab.Gitlab
+    gitlab: client.Gitlab
 
     def _check_missing_update_attrs(self, data: Dict[str, Any]) -> None:
         if TYPE_CHECKING:
@@ -426,7 +425,7 @@ class SetMixin(_RestManagerBase):
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
-    gitlab: gitlab.Gitlab
+    gitlab: client.Gitlab
 
     @exc.on_http_error(exc.GitlabSetError)
     def set(self, key: str, value: str, **kwargs: Any) -> base.RESTObject:
@@ -460,7 +459,7 @@ class DeleteMixin(_RestManagerBase):
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
-    gitlab: gitlab.Gitlab
+    gitlab: client.Gitlab
 
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete(self, id: Union[str, int], **kwargs: Any) -> None:
@@ -490,7 +489,7 @@ class CRUDMixin(GetMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin):
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
-    gitlab: gitlab.Gitlab
+    gitlab: client.Gitlab
 
     pass
 
@@ -502,7 +501,7 @@ class NoUpdateMixin(GetMixin, ListMixin, CreateMixin, DeleteMixin):
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
-    gitlab: gitlab.Gitlab
+    gitlab: client.Gitlab
 
     pass
 
@@ -618,7 +617,7 @@ class AccessRequestMixin(_RestObjectBase):
     )
     @exc.on_http_error(exc.GitlabUpdateError)
     def approve(
-        self, access_level: int = gitlab.const.DEVELOPER_ACCESS, **kwargs: Any
+        self, access_level: int = const.DEVELOPER_ACCESS, **kwargs: Any
     ) -> None:
         """Approve an access request.
 

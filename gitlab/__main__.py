@@ -1,4 +1,4 @@
-import gitlab.cli
+from . import cli
 
 if __name__ == "__main__":
-    gitlab.cli.main()
+    cli.main()

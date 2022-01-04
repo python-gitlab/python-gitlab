@@ -7,11 +7,11 @@ from typing import Any, cast, Dict, List, Optional, Union
 
 import requests
 
-from gitlab import cli
-from gitlab import exceptions as exc
-from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
-from gitlab.mixins import (
+from ... import cli
+from ... import exceptions as exc
+from ... import types
+from ...base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
+from ...mixins import (
     CreateMixin,
     CRUDMixin,
     DeleteMixin,
@@ -23,7 +23,6 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
-
 from .custom_attributes import UserCustomAttributeManager  # noqa: F401
 from .events import UserEventManager  # noqa: F401
 from .personal_access_tokens import UserPersonalAccessTokenManager  # noqa: F401

@@ -1,7 +1,7 @@
 from typing import Any, cast, Optional, TYPE_CHECKING, Union
 
-from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import GetMixin
+from ...base import RESTManager, RESTObject
+from ...mixins import GetMixin
 
 __all__ = [
     "Key",

@@ -1,5 +1,5 @@
-from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import CreateMixin, DeleteMixin, ListMixin, ObjectDeleteMixin
+from ...base import RESTManager, RESTObject
+from ...mixins import CreateMixin, DeleteMixin, ListMixin, ObjectDeleteMixin
 
 __all__ = [
     "ProjectAccessToken",

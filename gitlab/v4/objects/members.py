@@ -1,8 +1,8 @@
 from typing import Any, cast, Union
 
-from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import (
+from ... import types
+from ...base import RequiredOptional, RESTManager, RESTObject
+from ...mixins import (
     CRUDMixin,
     DeleteMixin,
     ListMixin,

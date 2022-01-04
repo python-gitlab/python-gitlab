@@ -1,7 +1,7 @@
 from typing import Any, cast, Union
 
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import (
+from ...base import RequiredOptional, RESTManager, RESTObject
+from ...mixins import (
     CreateMixin,
     CRUDMixin,
     DeleteMixin,
@@ -11,7 +11,6 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
-
 from .award_emojis import (  # noqa: F401
     GroupEpicNoteAwardEmojiManager,
     ProjectIssueNoteAwardEmojiManager,

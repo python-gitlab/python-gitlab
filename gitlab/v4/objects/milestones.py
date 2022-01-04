@@ -1,11 +1,10 @@
 from typing import Any, cast, TYPE_CHECKING, Union
 
-from gitlab import cli
-from gitlab import exceptions as exc
-from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
-from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, PromoteMixin, SaveMixin
-
+from ... import cli
+from ... import exceptions as exc
+from ... import types
+from ...base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
+from ...mixins import CRUDMixin, ObjectDeleteMixin, PromoteMixin, SaveMixin
 from .issues import GroupIssue, GroupIssueManager, ProjectIssue, ProjectIssueManager
 from .merge_requests import (
     GroupMergeRequest,

@@ -1,8 +1,7 @@
 from typing import Any, cast, Union
 
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import CreateMixin, RetrieveMixin, SaveMixin, UpdateMixin
-
+from ...base import RequiredOptional, RESTManager, RESTObject
+from ...mixins import CreateMixin, RetrieveMixin, SaveMixin, UpdateMixin
 from .notes import (  # noqa: F401
     ProjectCommitDiscussionNoteManager,
     ProjectIssueDiscussionNoteManager,

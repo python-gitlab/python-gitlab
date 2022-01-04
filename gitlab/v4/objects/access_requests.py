@@ -1,5 +1,5 @@
-from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import (
+from ...base import RESTManager, RESTObject
+from ...mixins import (
     AccessRequestMixin,
     CreateMixin,
     DeleteMixin,

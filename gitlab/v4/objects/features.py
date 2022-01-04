@@ -4,10 +4,10 @@ https://docs.gitlab.com/ee/api/features.html
 """
 from typing import Any, Optional, TYPE_CHECKING, Union
 
-from gitlab import exceptions as exc
-from gitlab import utils
-from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import DeleteMixin, ListMixin, ObjectDeleteMixin
+from ... import exceptions as exc
+from ... import utils
+from ...base import RESTManager, RESTObject
+from ...mixins import DeleteMixin, ListMixin, ObjectDeleteMixin
 
 __all__ = [
     "Feature",

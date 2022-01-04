@@ -2,9 +2,9 @@ from typing import Any, Dict, Union
 
 import requests
 
-from gitlab import cli
-from gitlab import exceptions as exc
-from gitlab.base import RESTManager
+from ... import cli
+from ... import exceptions as exc
+from ...base import RESTManager
 
 __all__ = [
     "SidekiqManager",

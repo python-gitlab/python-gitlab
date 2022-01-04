@@ -1,5 +1,5 @@
-from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import ListMixin
+from ...base import RESTManager, RESTObject
+from ...mixins import ListMixin
 
 __all__ = [
     "ProjectMergeTrain",
