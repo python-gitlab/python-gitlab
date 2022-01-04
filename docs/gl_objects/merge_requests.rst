@@ -154,7 +154,7 @@ Get a diff for a merge request::
 
 Get time tracking stats::
 
-    merge request.time_stats()
+    time_stats = mr.time_stats()
 
 On recent versions of Gitlab the time stats are also returned as a merge
 request object attribute::
