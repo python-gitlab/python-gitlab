@@ -1,8 +1,8 @@
 from typing import Any, cast, Dict, Optional, Union
 
-from gitlab import exceptions as exc
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import CreateMixin, CRUDMixin, ObjectDeleteMixin, SaveMixin
+from ... import exceptions as exc
+from ...base import RequiredOptional, RESTManager, RESTObject
+from ...mixins import CreateMixin, CRUDMixin, ObjectDeleteMixin, SaveMixin
 
 __all__ = [
     "GroupCluster",

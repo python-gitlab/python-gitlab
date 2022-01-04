@@ -7,12 +7,11 @@ from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
 
 import requests
 
-import gitlab
-from gitlab import cli
-from gitlab import exceptions as exc
-from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
-from gitlab.mixins import (
+from ... import cli, client
+from ... import exceptions as exc
+from ... import types
+from ...base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
+from ...mixins import (
     CRUDMixin,
     ListMixin,
     ObjectDeleteMixin,
@@ -23,7 +22,6 @@ from gitlab.mixins import (
     TimeTrackingMixin,
     TodoMixin,
 )
-
 from .award_emojis import ProjectMergeRequestAwardEmojiManager  # noqa: F401
 from .commits import ProjectCommit, ProjectCommitManager
 from .discussions import ProjectMergeRequestDiscussionManager  # noqa: F401
@@ -213,7 +211,7 @@ class ProjectMergeRequest(
         path = f"{self.manager.path}/{self.get_id()}/closes_issues"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         if TYPE_CHECKING:
-            assert isinstance(data_list, gitlab.GitlabList)
+            assert isinstance(data_list, client.GitlabList)
         manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
         return RESTObjectList(manager, ProjectIssue, data_list)
 
@@ -241,7 +239,7 @@ class ProjectMergeRequest(
         path = f"{self.manager.path}/{self.get_id()}/commits"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         if TYPE_CHECKING:
-            assert isinstance(data_list, gitlab.GitlabList)
+            assert isinstance(data_list, client.GitlabList)
         manager = ProjectCommitManager(self.manager.gitlab, parent=self.manager._parent)
         return RESTObjectList(manager, ProjectCommit, data_list)
 

@@ -1,5 +1,5 @@
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import CreateMixin, DeleteMixin, ListMixin, ObjectDeleteMixin
+from ...base import RequiredOptional, RESTManager, RESTObject
+from ...mixins import CreateMixin, DeleteMixin, ListMixin, ObjectDeleteMixin
 
 __all__ = [
     "Application",

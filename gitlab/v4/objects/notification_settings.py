@@ -1,7 +1,7 @@
 from typing import Any, cast, Optional, Union
 
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
+from ...base import RequiredOptional, RESTManager, RESTObject
+from ...mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
 
 __all__ = [
     "NotificationSettings",

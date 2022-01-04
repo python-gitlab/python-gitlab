@@ -1,7 +1,7 @@
 from typing import Any, cast, Optional, Union
 
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import CreateMixin, DownloadMixin, GetWithoutIdMixin, RefreshMixin
+from ...base import RequiredOptional, RESTManager, RESTObject
+from ...mixins import CreateMixin, DownloadMixin, GetWithoutIdMixin, RefreshMixin
 
 __all__ = [
     "GroupExport",

@@ -2,13 +2,11 @@ from typing import Any, BinaryIO, cast, Dict, List, Optional, Type, TYPE_CHECKIN
 
 import requests
 
-import gitlab
-from gitlab import cli
-from gitlab import exceptions as exc
-from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
-
+from ... import cli, client
+from ... import exceptions as exc
+from ... import types
+from ...base import RequiredOptional, RESTManager, RESTObject
+from ...mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
 from .access_requests import GroupAccessRequestManager  # noqa: F401
 from .audit_events import GroupAuditEventManager  # noqa: F401
 from .badges import GroupBadgeManager  # noqa: F401
@@ -97,7 +95,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     @exc.on_http_error(exc.GitlabSearchError)
     def search(
         self, scope: str, search: str, **kwargs: Any
-    ) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
+    ) -> Union[client.GitlabList, List[Dict[str, Any]]]:
         """Search the group resources matching the provided string.'
 
         Args:

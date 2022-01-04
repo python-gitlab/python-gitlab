@@ -1,7 +1,7 @@
 from typing import Any, cast, Union
 
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import NoUpdateMixin, ObjectDeleteMixin
+from ...base import RequiredOptional, RESTManager, RESTObject
+from ...mixins import NoUpdateMixin, ObjectDeleteMixin
 
 __all__ = [
     "ProjectTag",

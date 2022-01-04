@@ -23,7 +23,7 @@ from os.path import expanduser, expandvars
 from pathlib import Path
 from typing import List, Optional, Union
 
-from gitlab.const import USER_AGENT
+from .const import USER_AGENT
 
 _DEFAULT_FILES: List[str] = [
     "/etc/python-gitlab.cfg",

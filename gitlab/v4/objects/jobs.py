@@ -2,11 +2,11 @@ from typing import Any, Callable, cast, Dict, Optional, TYPE_CHECKING, Union
 
 import requests
 
-from gitlab import cli
-from gitlab import exceptions as exc
-from gitlab import utils
-from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import RefreshMixin, RetrieveMixin
+from ... import cli
+from ... import exceptions as exc
+from ... import utils
+from ...base import RESTManager, RESTObject
+from ...mixins import RefreshMixin, RetrieveMixin
 
 __all__ = [
     "ProjectJob",

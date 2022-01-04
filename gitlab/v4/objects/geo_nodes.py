@@ -1,9 +1,9 @@
 from typing import Any, cast, Dict, List, TYPE_CHECKING, Union
 
-from gitlab import cli
-from gitlab import exceptions as exc
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import (
+from ... import cli
+from ... import exceptions as exc
+from ...base import RequiredOptional, RESTManager, RESTObject
+from ...mixins import (
     DeleteMixin,
     ObjectDeleteMixin,
     RetrieveMixin,

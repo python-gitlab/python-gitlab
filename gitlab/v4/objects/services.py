@@ -1,8 +1,8 @@
 from typing import Any, cast, Dict, List, Optional, Union
 
-from gitlab import cli
-from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import (
+from ... import cli
+from ...base import RESTManager, RESTObject
+from ...mixins import (
     DeleteMixin,
     GetMixin,
     ListMixin,

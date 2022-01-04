@@ -19,17 +19,18 @@
 import warnings
 from typing import Any
 
-import gitlab.config  # noqa: F401
-from gitlab.version import (  # noqa: F401
-    __author__,
-    __copyright__,
-    __email__,
-    __license__,
-    __title__,
-    __version__,
-)
-from gitlab.client import Gitlab, GitlabList  # noqa: F401
-from gitlab.exceptions import *  # noqa: F401,F403
+from . import config as config  # noqa: F401
+from . import const as const
+from . import exceptions as exceptions  # noqa: F401
+from .client import Gitlab as Gitlab  # noqa: F401
+from .client import GitlabList as GitlabList  # noqa: F401
+from .exceptions import *  # noqa: F401,F403
+from .version import __author__ as __author__  # noqa: F401
+from .version import __copyright__ as __copyright__  # noqa: F401
+from .version import __email__ as __email__  # noqa: F401
+from .version import __license__ as __license__  # noqa: F401
+from .version import __title__ as __title__  # noqa: F401
+from .version import __version__ as __version__  # noqa: F401
 
 warnings.filterwarnings("default", category=DeprecationWarning, module="^gitlab")
 
@@ -39,12 +40,12 @@ warnings.filterwarnings("default", category=DeprecationWarning, module="^gitlab"
 # 'from gitlab.const import *' statement.
 def __getattr__(name: str) -> Any:
     # Deprecate direct access to constants without namespace
-    if name in gitlab.const._DEPRECATED:
+    if name in const._DEPRECATED:
         warnings.warn(
             f"\nDirect access to 'gitlab.{name}' is deprecated and will be "
             f"removed in a future major python-gitlab release. Please "
             f"use 'gitlab.const.{name}' instead.",
             DeprecationWarning,
         )
-        return getattr(gitlab.const, name)
+        return getattr(const, name)
     raise AttributeError(f"module {__name__} has no attribute {name}")

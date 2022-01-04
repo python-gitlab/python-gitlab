@@ -7,14 +7,13 @@ from typing import Any, Callable, Dict, List, Optional, TYPE_CHECKING, Union
 
 import requests
 
-import gitlab
-from gitlab import cli
-from gitlab import exceptions as exc
-from gitlab import utils
+from ... import base, cli, client
+from ... import exceptions as exc
+from ... import utils
 
 if TYPE_CHECKING:
     # When running mypy we use these as the base classes
-    _RestObjectBase = gitlab.base.RESTObject
+    _RestObjectBase = base.RESTObject
 else:
     _RestObjectBase = object
 
@@ -50,7 +49,7 @@ class RepositoryMixin(_RestObjectBase):
     @exc.on_http_error(exc.GitlabGetError)
     def repository_tree(
         self, path: str = "", ref: str = "", recursive: bool = False, **kwargs: Any
-    ) -> Union[gitlab.client.GitlabList, List[Dict[str, Any]]]:
+    ) -> Union[client.GitlabList, List[Dict[str, Any]]]:
         """Return a list of files in the repository.
 
         Args:
@@ -165,7 +164,7 @@ class RepositoryMixin(_RestObjectBase):
     @exc.on_http_error(exc.GitlabGetError)
     def repository_contributors(
         self, **kwargs: Any
-    ) -> Union[gitlab.client.GitlabList, List[Dict[str, Any]]]:
+    ) -> Union[client.GitlabList, List[Dict[str, Any]]]:
         """Return a list of contributors for the project.
 
         Args:

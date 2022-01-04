@@ -1,7 +1,7 @@
 from typing import Any, cast, Optional, Union
 
-from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import GetWithoutIdMixin, RefreshMixin
+from ...base import RESTManager, RESTObject
+from ...mixins import GetWithoutIdMixin, RefreshMixin
 
 __all__ = [
     "GroupIssuesStatistics",

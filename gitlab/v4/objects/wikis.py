@@ -1,7 +1,7 @@
 from typing import Any, cast, Union
 
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
+from ...base import RequiredOptional, RESTManager, RESTObject
+from ...mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
 __all__ = [
     "ProjectWiki",

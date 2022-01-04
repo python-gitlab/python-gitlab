@@ -20,11 +20,10 @@ import textwrap
 from types import ModuleType
 from typing import Any, Dict, Iterable, NamedTuple, Optional, Tuple, Type
 
-import gitlab
-from gitlab import types as g_types
-from gitlab.exceptions import GitlabParsingError
-
 from .client import Gitlab, GitlabList
+from .exceptions import GitlabParsingError
+from .types import GitlabAttribute
+from .version import __version__
 
 __all__ = [
     "RequiredOptional",
@@ -35,7 +34,7 @@ __all__ = [
 
 
 _URL_ATTRIBUTE_ERROR = (
-    f"https://python-gitlab.readthedocs.io/en/{gitlab.__version__}/"
+    f"https://python-gitlab.readthedocs.io/en/{__version__}/"
     f"faq.html#attribute-error-list"
 )
 
@@ -317,7 +316,7 @@ class RESTManager(object):
     _path: Optional[str] = None
     _obj_cls: Optional[Type[RESTObject]] = None
     _from_parent_attrs: Dict[str, Any] = {}
-    _types: Dict[str, Type[g_types.GitlabAttribute]] = {}
+    _types: Dict[str, Type[GitlabAttribute]] = {}
 
     _computed_path: Optional[str]
     _parent: Optional[RESTObject]

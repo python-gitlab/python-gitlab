@@ -27,8 +27,10 @@ from typing import Any, Callable, cast, Dict, Optional, Tuple, Type, TypeVar, Un
 
 from requests.structures import CaseInsensitiveDict
 
-import gitlab.config
-from gitlab.base import RESTObject
+from . import __version__
+from . import config as gl_config
+from .base import RESTObject
+from .client import Gitlab
 
 # This regex is based on:
 # https://github.com/jpvanhal/inflection/blob/master/inflection/__init__.py
@@ -246,10 +248,10 @@ def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
 def _get_parser() -> argparse.ArgumentParser:
     # NOTE: We must delay import of gitlab.v4.cli until now or
     # otherwise it will cause circular import errors
-    import gitlab.v4.cli
+    from .v4 import cli
 
     parser = _get_base_parser()
-    return gitlab.v4.cli.extend_parser(parser)
+    return cli.extend_parser(parser)
 
 
 def _parse_value(v: Any) -> Any:
@@ -279,7 +281,7 @@ def docs() -> argparse.ArgumentParser:  # pragma: no cover
 
 def main() -> None:
     if "--version" in sys.argv:
-        print(gitlab.__version__)
+        print(__version__)
         sys.exit(0)
 
     parser = _get_base_parser(add_help=False)
@@ -289,8 +291,8 @@ def main() -> None:
     # any subparser setup
     (options, _) = parser.parse_known_args(sys.argv)
     try:
-        config = gitlab.config.GitlabConfigParser(options.gitlab, options.config_file)
-    except gitlab.config.ConfigError as e:
+        config = gl_config.GitlabConfigParser(options.gitlab, options.config_file)
+    except gl_config.ConfigError as e:
         if "--help" in sys.argv or "-h" in sys.argv:
             parser.print_help()
             sys.exit(0)
@@ -346,7 +348,7 @@ def main() -> None:
     args_dict = {k: _parse_value(v) for k, v in args_dict.items() if v is not None}
 
     try:
-        gl = gitlab.Gitlab.merge_config(vars(options), gitlab_id, config_files)
+        gl = Gitlab.merge_config(vars(options), gitlab_id, config_files)
         if gl.private_token or gl.oauth_token:
             gl.auth()
     except Exception as e:
@@ -355,4 +357,6 @@ def main() -> None:
     if debug:
         gl.enable_debug()
 
-    gitlab.v4.cli.run(gl, what, action, args_dict, verbose, output, fields)
+    from .v4 import cli
+
+    cli.run(gl, what, action, args_dict, verbose, output, fields)

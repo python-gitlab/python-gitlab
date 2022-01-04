@@ -1,7 +1,7 @@
 from typing import Any, cast, Union
 
-from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import RetrieveMixin
+from ...base import RESTManager, RESTObject
+from ...mixins import RetrieveMixin
 
 __all__ = [
     "Namespace",

@@ -1,7 +1,7 @@
 from typing import Any, cast, Union
 
-from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import DeleteMixin, ObjectDeleteMixin, RetrieveMixin, SetMixin
+from ...base import RESTManager, RESTObject
+from ...mixins import DeleteMixin, ObjectDeleteMixin, RetrieveMixin, SetMixin
 
 __all__ = [
     "GroupCustomAttribute",
