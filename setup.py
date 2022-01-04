@@ -50,7 +50,7 @@ setup(
         "Programming Language :: Python :: 3.10",
     ],
     extras_require={
-        "autocompletion": ["argcomplete>=1.10.0,<2"],
+        "autocompletion": ["argcomplete>=1.10.0,<3"],
         "yaml": ["PyYaml>=5.2"],
     },
 )

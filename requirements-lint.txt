@@ -1,4 +1,4 @@
-argcomplete==1.12.3
+argcomplete==2.0.0
 black==21.12b0
 flake8==4.0.1
 isort==5.10.1
