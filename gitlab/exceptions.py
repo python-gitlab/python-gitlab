@@ -52,7 +52,24 @@ class GitlabError(Exception):
 
 
 class GitlabAuthenticationError(GitlabError):
-    pass
+    def __init__(
+        self,
+        error_message: Union[str, bytes] = "",
+        response_code: Optional[int] = None,
+        response_body: Optional[bytes] = None,
+        auth_type: str = "",
+    ) -> None:
+        super().__init__(
+            error_message=error_message,
+            response_code=response_code,
+            response_body=response_body,
+        )
+        self.auth_type = auth_type
+
+    def __str__(self) -> str:
+        if self.auth_type:
+            return f"{super().__str__()}: authentication_type: {self.auth_type}"
+        return super().__str__()
 
 
 class RedirectError(GitlabError):

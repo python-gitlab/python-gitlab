@@ -96,6 +96,7 @@ class Gitlab(object):
         self.http_password = http_password
         self.oauth_token = oauth_token
         self.job_token = job_token
+        self.auth_type = ""
         self._set_auth_info()
 
         #: Create a session object for requests
@@ -487,21 +488,25 @@ class Gitlab(object):
             self.headers.pop("Authorization", None)
             self.headers["PRIVATE-TOKEN"] = self.private_token
             self.headers.pop("JOB-TOKEN", None)
+            self.auth_type = "private_token"
 
         if self.oauth_token:
             self.headers["Authorization"] = f"Bearer {self.oauth_token}"
             self.headers.pop("PRIVATE-TOKEN", None)
             self.headers.pop("JOB-TOKEN", None)
+            self.auth_type = "oauth_token"
 
         if self.job_token:
             self.headers.pop("Authorization", None)
             self.headers.pop("PRIVATE-TOKEN", None)
             self.headers["JOB-TOKEN"] = self.job_token
+            self.auth_type = "job_token"
 
         if self.http_username:
             self._http_auth = requests.auth.HTTPBasicAuth(
                 self.http_username, self.http_password
             )
+            self.auth_type = "password"
 
     def enable_debug(self) -> None:
         import logging
@@ -722,6 +727,7 @@ class Gitlab(object):
                     response_code=result.status_code,
                     error_message=error_message,
                     response_body=result.content,
+                    auth_type=self.auth_type,
                 )
 
             raise gitlab.exceptions.GitlabHttpError(
