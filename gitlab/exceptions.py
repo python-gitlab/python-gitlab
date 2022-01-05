@@ -107,6 +107,10 @@ class GitlabTransferProjectError(GitlabOperationError):
     pass
 
 
+class GitlabGroupTransferError(GitlabOperationError):
+    pass
+
+
 class GitlabProjectDeployKeyError(GitlabOperationError):
     pass
 
