@@ -95,12 +95,34 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"/groups/{self.encoded_id}/projects/{project_id}"
         self.manager.gitlab.http_post(path, **kwargs)
 
+    @cli.register_custom_action("Group", tuple(), ("group_id",))
+    @exc.on_http_error(exc.GitlabGroupTransferError)
+    def transfer(self, group_id: Optional[int] = None, **kwargs: Any) -> None:
+        """Transfer the group to a new parent group or make it a top-level group.
+
+        Requires GitLab ≥14.6.
+
+        Args:
+            group_id: ID of the new parent group. When not specified,
+                the group to transfer is instead turned into a top-level group.
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGroupTransferError: If the group could not be transferred
+        """
+        path = f"/groups/{self.id}/transfer"
+        post_data = {}
+        if group_id is not None:
+            post_data["group_id"] = group_id
+        self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+
     @cli.register_custom_action("Group", ("scope", "search"))
     @exc.on_http_error(exc.GitlabSearchError)
     def search(
         self, scope: str, search: str, **kwargs: Any
     ) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
-        """Search the group resources matching the provided string.'
+        """Search the group resources matching the provided string.
 
         Args:
             scope: Scope of the search
