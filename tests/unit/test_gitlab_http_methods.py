@@ -22,7 +22,7 @@ def test_http_request(gl):
         return response(200, content, headers, None, 5, request)
 
     with HTTMock(resp_cont):
-        http_r = gl.http_request("get", "/projects")
+        http_r = gl.http_request(method="get", path="/projects")
         http_r.json()
         assert http_r.status_code == 200
 
@@ -35,7 +35,7 @@ def test_http_request_404(gl):
 
     with HTTMock(resp_cont):
         with pytest.raises(GitlabHttpError):
-            gl.http_request("get", "/not_there")
+            gl.http_request(method="get", path="/not_there")
 
 
 @pytest.mark.parametrize("status_code", [500, 502, 503, 504])
@@ -50,7 +50,7 @@ def test_http_request_with_only_failures(gl, status_code):
 
     with HTTMock(resp_cont):
         with pytest.raises(GitlabHttpError):
-            gl.http_request("get", "/projects")
+            gl.http_request(method="get", path="/projects")
 
     assert call_count == 1
 
@@ -74,7 +74,9 @@ def test_http_request_with_retry_on_method_for_transient_failures(gl):
         )
 
     with HTTMock(resp_cont):
-        http_r = gl.http_request("get", "/projects", retry_transient_errors=True)
+        http_r = gl.http_request(
+            method="get", path="/projects", retry_transient_errors=True
+        )
 
         assert http_r.status_code == 200
         assert call_count == calls_before_success
@@ -99,7 +101,7 @@ def test_http_request_with_retry_on_class_for_transient_failures(gl_retry):
         )
 
     with HTTMock(resp_cont):
-        http_r = gl_retry.http_request("get", "/projects")
+        http_r = gl_retry.http_request(method="get", path="/projects")
 
         assert http_r.status_code == 200
         assert call_count == calls_before_success
@@ -118,7 +120,9 @@ def test_http_request_with_retry_on_class_and_method_for_transient_failures(gl_r
 
     with HTTMock(resp_cont):
         with pytest.raises(GitlabHttpError):
-            gl_retry.http_request("get", "/projects", retry_transient_errors=False)
+            gl_retry.http_request(
+                method="get", path="/projects", retry_transient_errors=False
+            )
 
         assert call_count == 1
 
@@ -181,7 +185,7 @@ def test_http_request_302_get_does_not_raise(gl):
         return resp_obj
 
     with HTTMock(resp_cont):
-        gl.http_request(verb=method, path=api_path)
+        gl.http_request(method=method, path=api_path)
 
 
 def test_http_request_302_put_raises_redirect_error(gl):
@@ -203,7 +207,7 @@ def test_http_request_302_put_raises_redirect_error(gl):
 
     with HTTMock(resp_cont):
         with pytest.raises(RedirectError) as exc:
-            gl.http_request(verb=method, path=api_path)
+            gl.http_request(method=method, path=api_path)
         error_message = exc.value.error_message
         assert "Moved Temporarily" in error_message
         assert "http://localhost/api/v4/user/status" in error_message

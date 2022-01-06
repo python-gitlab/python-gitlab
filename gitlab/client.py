@@ -549,7 +549,7 @@ class Gitlab(object):
 
     def _check_redirects(self, result: requests.Response) -> None:
         # Check the requests history to detect 301/302 redirections.
-        # If the initial verb is POST or PUT, the redirected request will use a
+        # If the initial method is POST or PUT, the redirected request will use a
         # GET request, leading to unwanted behaviour.
         # If we detect a redirection with a POST or a PUT request, we
         # raise an exception with a useful error message.
@@ -606,7 +606,8 @@ class Gitlab(object):
 
     def http_request(
         self,
-        verb: str,
+        *,
+        method: str,
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
         post_data: Optional[Union[Dict[str, Any], bytes]] = None,
@@ -621,7 +622,7 @@ class Gitlab(object):
         """Make an HTTP request to the Gitlab server.
 
         Args:
-            verb: The HTTP method to call ('get', 'post', 'put', 'delete')
+            method: The HTTP method to call ('get', 'post', 'put', 'delete')
             path: Path or full URL to query ('/projects' or
                         'http://whatever/v4/api/projecs')
             query_data: Data to send as query parameters
@@ -678,7 +679,7 @@ class Gitlab(object):
         cur_retries = 0
         while True:
             result = self.session.request(
-                method=verb,
+                method=method,
                 url=url,
                 json=json,
                 data=data,
@@ -759,7 +760,7 @@ class Gitlab(object):
         """
         query_data = query_data or {}
         result = self.http_request(
-            "get", path, query_data=query_data, streamed=streamed, **kwargs
+            method="get", path=path, query_data=query_data, streamed=streamed, **kwargs
         )
 
         if (
@@ -856,8 +857,8 @@ class Gitlab(object):
         post_data = post_data or {}
 
         result = self.http_request(
-            "post",
-            path,
+            method="post",
+            path=path,
             query_data=query_data,
             post_data=post_data,
             files=files,
@@ -904,8 +905,8 @@ class Gitlab(object):
         post_data = post_data or {}
 
         result = self.http_request(
-            "put",
-            path,
+            method="put",
+            path=path,
             query_data=query_data,
             post_data=post_data,
             files=files,
@@ -933,7 +934,7 @@ class Gitlab(object):
         Raises:
             GitlabHttpError: When the return code is not 2xx
         """
-        return self.http_request("delete", path, **kwargs)
+        return self.http_request(method="delete", path=path, **kwargs)
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabSearchError)
     def search(
@@ -987,7 +988,9 @@ class GitlabList(object):
         self, url: str, query_data: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> None:
         query_data = query_data or {}
-        result = self._gl.http_request("get", url, query_data=query_data, **kwargs)
+        result = self._gl.http_request(
+            method="get", path=url, query_data=query_data, **kwargs
+        )
         try:
             links = result.links
             if links:
