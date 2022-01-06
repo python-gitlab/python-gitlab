@@ -874,6 +874,8 @@ class Gitlab(object):
             raise gitlab.exceptions.GitlabParsingError(
                 error_message="Failed to parse the server message"
             ) from e
+        print(result)
+        raise ValueError("Should not get here")
         return result
 
     def http_put(
