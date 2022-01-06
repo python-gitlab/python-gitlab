@@ -185,8 +185,6 @@ class ProjectMergeRequest(
             f"{self.manager.path}/{self.get_id()}/cancel_merge_when_pipeline_succeeds"
         )
         server_data = self.manager.gitlab.http_put(path, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
         return ProjectMergeRequest(self.manager, server_data)
 
@@ -287,8 +285,6 @@ class ProjectMergeRequest(
             data["sha"] = sha
 
         server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
         return server_data
 
@@ -310,13 +306,11 @@ class ProjectMergeRequest(
         data: Dict[str, Any] = {}
 
         server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMRRebaseError)
-    def rebase(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def rebase(self, **kwargs: Any) -> Dict[str, Any]:
         """Attempt to rebase the source branch onto the target branch
 
         Args:
@@ -386,8 +380,6 @@ class ProjectMergeRequest(
             data["merge_when_pipeline_succeeds"] = True
 
         server_data = self.manager.gitlab.http_put(path, post_data=data, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
         return server_data
 

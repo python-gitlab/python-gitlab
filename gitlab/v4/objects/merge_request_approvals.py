@@ -78,8 +78,6 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         path = f"/projects/{self._parent.get_id()}/approvers"
         data = {"approver_ids": approver_ids, "approver_group_ids": approver_group_ids}
         result = self.gitlab.http_put(path, post_data=data, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(result, dict)
         return result
 
 

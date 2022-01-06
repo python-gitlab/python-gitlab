@@ -24,7 +24,7 @@ class RepositoryMixin(_RestObjectBase):
     @exc.on_http_error(exc.GitlabUpdateError)
     def update_submodule(
         self, submodule: str, branch: str, commit_sha: str, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Dict[str, Any]:
         """Update a project submodule
 
         Args:

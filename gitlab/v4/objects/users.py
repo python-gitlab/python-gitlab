@@ -5,8 +5,6 @@ https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
 """
 from typing import Any, cast, Dict, List, Optional, Union
 
-import requests
-
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
@@ -166,7 +164,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabBlockError)
-    def block(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def block(self, **kwargs: Any) -> None:
         """Block the user.
 
         Args:
@@ -180,14 +178,12 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             Whether the user status has been changed
         """
         path = f"/users/{self.id}/block"
-        server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if server_data is True:
-            self._attrs["state"] = "blocked"
-        return server_data
+        self.manager.gitlab.http_post(path, **kwargs)
+        self._attrs["state"] = "blocked"
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabFollowError)
-    def follow(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def follow(self, **kwargs: Any) -> Dict[str, Any]:
         """Follow the user.
 
         Args:
@@ -205,7 +201,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUnfollowError)
-    def unfollow(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def unfollow(self, **kwargs: Any) -> Dict[str, Any]:
         """Unfollow the user.
 
         Args:
@@ -223,7 +219,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUnblockError)
-    def unblock(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def unblock(self, **kwargs: Any) -> None:
         """Unblock the user.
 
         Args:
@@ -237,14 +233,12 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             Whether the user status has been changed
         """
         path = f"/users/{self.id}/unblock"
-        server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if server_data is True:
-            self._attrs["state"] = "active"
-        return server_data
+        self.manager.gitlab.http_post(path, **kwargs)
+        self._attrs["state"] = "active"
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabDeactivateError)
-    def deactivate(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def deactivate(self, **kwargs: Any) -> None:
         """Deactivate the user.
 
         Args:
@@ -258,14 +252,12 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             Whether the user status has been changed
         """
         path = f"/users/{self.id}/deactivate"
-        server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if server_data:
-            self._attrs["state"] = "deactivated"
-        return server_data
+        self.manager.gitlab.http_post(path, **kwargs)
+        self._attrs["state"] = "deactivated"
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabActivateError)
-    def activate(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def activate(self, **kwargs: Any) -> None:
         """Activate the user.
 
         Args:
@@ -279,10 +271,8 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             Whether the user status has been changed
         """
         path = f"/users/{self.id}/activate"
-        server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if server_data:
-            self._attrs["state"] = "active"
-        return server_data
+        self.manager.gitlab.http_post(path, **kwargs)
+        self._attrs["state"] = "active"
 
 
 class UserManager(CRUDMixin, RESTManager):

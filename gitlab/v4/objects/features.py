@@ -2,7 +2,7 @@
 GitLab API:
 https://docs.gitlab.com/ee/api/features.html
 """
-from typing import Any, Optional, TYPE_CHECKING, Union
+from typing import Any, Optional, Union
 
 from gitlab import exceptions as exc
 from gitlab import utils
@@ -62,6 +62,4 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
         }
         data = utils.remove_none_from_dict(data)
         server_data = self.gitlab.http_post(path, post_data=data, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         return self._obj_cls(self, server_data)

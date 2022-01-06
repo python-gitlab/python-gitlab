@@ -1,4 +1,4 @@
-from typing import Any, Dict, TYPE_CHECKING
+from typing import Any, Dict
 
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -29,8 +29,6 @@ class Todo(ObjectDeleteMixin, RESTObject):
         """
         path = f"{self.manager.path}/{self.id}/mark_as_done"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
         return server_data
 

@@ -46,7 +46,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action("ProjectCommit", ("branch",))
     @exc.on_http_error(exc.GitlabCherryPickError)
-    def cherry_pick(self, branch: str, **kwargs: Any) -> None:
+    def cherry_pick(self, branch: str, **kwargs: Any) -> Dict[str, Any]:
         """Cherry-pick a commit into a branch.
 
         Args:
@@ -59,7 +59,7 @@ class ProjectCommit(RESTObject):
         """
         path = f"{self.manager.path}/{self.get_id()}/cherry_pick"
         post_data = {"branch": branch}
-        self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        return self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
     @cli.register_custom_action("ProjectCommit", optional=("type",))
     @exc.on_http_error(exc.GitlabGetError)
@@ -103,9 +103,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action("ProjectCommit", ("branch",))
     @exc.on_http_error(exc.GitlabRevertError)
-    def revert(
-        self, branch: str, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    def revert(self, branch: str, **kwargs: Any) -> Dict[str, Any]:
         """Revert a commit on a given branch.
 
         Args:

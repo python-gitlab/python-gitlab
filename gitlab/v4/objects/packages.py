@@ -78,8 +78,6 @@ class GenericPackageManager(RESTManager):
 
         url = f"{self._computed_path}/{package_name}/{package_version}/{file_name}"
         server_data = self.gitlab.http_put(url, post_data=file_data, raw=True, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
 
         return self._obj_cls(
             self,

@@ -147,8 +147,6 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         file_path = new_data.pop("file_path").replace("/", "%2F")
         path = f"{self.path}/{file_path}"
         server_data = self.gitlab.http_post(path, post_data=new_data, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         return self._obj_cls(self, server_data)
 
     @exc.on_http_error(exc.GitlabUpdateError)
@@ -178,8 +176,6 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         path = f"{self.path}/{file_path}"
         self._check_missing_update_attrs(data)
         result = self.gitlab.http_put(path, post_data=data, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(result, dict)
         return result
 
     @cli.register_custom_action(

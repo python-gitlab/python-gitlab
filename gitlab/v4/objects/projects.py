@@ -244,8 +244,6 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """
         path = f"/projects/{self.get_id()}/star"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action("Project")
@@ -262,8 +260,6 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """
         path = f"/projects/{self.get_id()}/unstar"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action("Project")
@@ -280,8 +276,6 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """
         path = f"/projects/{self.get_id()}/archive"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action("Project")
@@ -298,8 +292,6 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """
         path = f"/projects/{self.get_id()}/unarchive"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action(
@@ -376,8 +368,6 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         path = f"/projects/{self.get_id()}/trigger/pipeline"
         post_data = {"ref": ref, "token": token, "variables": variables}
         attrs = self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(attrs, dict)
         return ProjectPipeline(self.pipelines, attrs)
 
     @cli.register_custom_action("Project")
@@ -444,9 +434,6 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         url = f"/projects/{self.id}/uploads"
         file_info = {"file": (filename, filedata)}
         data = self.manager.gitlab.http_post(url, files=file_info)
-
-        if TYPE_CHECKING:
-            assert isinstance(data, dict)
         return {"alt": data["alt"], "url": data["url"], "markdown": data["markdown"]}
 
     @cli.register_custom_action("Project", optional=("wiki",))
@@ -526,7 +513,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
 
     @cli.register_custom_action("Project", ("to_namespace",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
-    def transfer_project(self, to_namespace: str, **kwargs: Any) -> None:
+    def transfer_project(self, to_namespace: str, **kwargs: Any) -> Dict[str, Any]:
         """Transfer a project to the given namespace ID
 
         Args:
@@ -539,7 +526,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabTransferProjectError: If the project could not be transferred
         """
         path = f"/projects/{self.id}/transfer"
-        self.manager.gitlab.http_put(
+        return self.manager.gitlab.http_put(
             path, post_data={"namespace": to_namespace}, **kwargs
         )
 
@@ -811,7 +798,7 @@ class ProjectManager(CRUDMixin, RESTManager):
         overwrite: bool = False,
         override_params: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Dict[str, Any]:
         """Import a project from an archive file.
 
         Args:
@@ -854,7 +841,7 @@ class ProjectManager(CRUDMixin, RESTManager):
         new_name: Optional[str] = None,
         target_namespace: Optional[str] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Dict[str, Any]:
         """Import a project from BitBucket Server to Gitlab (schedule the import)
 
         This method will return when an import operation has been safely queued,
@@ -943,7 +930,7 @@ class ProjectManager(CRUDMixin, RESTManager):
         target_namespace: str,
         new_name: Optional[str] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Dict[str, Any]:
         """Import a project from Github to Gitlab (schedule the import)
 
         This method will return when an import operation has been safely queued,

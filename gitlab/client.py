@@ -831,7 +831,7 @@ class Gitlab(object):
         raw: bool = False,
         files: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Dict[str, Any]:
         """Make a POST request to the Gitlab server.
 
         Args:
@@ -870,7 +870,7 @@ class Gitlab(object):
             raise gitlab.exceptions.GitlabParsingError(
                 error_message="Failed to parse the server message"
             ) from e
-        return result
+        return {}
 
     def http_put(
         self,
@@ -880,7 +880,7 @@ class Gitlab(object):
         raw: bool = False,
         files: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Dict[str, Any]:
         """Make a PUT request to the Gitlab server.
 
         Args:

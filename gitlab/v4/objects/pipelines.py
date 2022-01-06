@@ -1,7 +1,5 @@
 from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
 
-import requests
-
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
@@ -56,7 +54,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineCancelError)
-    def cancel(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def cancel(self, **kwargs: Any) -> Dict[str, Any]:
         """Cancel the job.
 
         Args:
@@ -71,7 +69,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineRetryError)
-    def retry(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def retry(self, **kwargs: Any) -> Dict[str, Any]:
         """Retry the job.
 
         Args:
@@ -196,8 +194,6 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = f"{self.manager.path}/{self.get_id()}/take_ownership"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action("ProjectPipelineSchedule")
@@ -215,8 +211,6 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = f"{self.manager.path}/{self.get_id()}/play"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
         return server_data
 

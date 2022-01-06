@@ -29,8 +29,6 @@ class ProjectJob(RefreshMixin, RESTObject):
         """
         path = f"{self.manager.path}/{self.get_id()}/cancel"
         result = self.manager.gitlab.http_post(path)
-        if TYPE_CHECKING:
-            assert isinstance(result, dict)
         return result
 
     @cli.register_custom_action("ProjectJob")
@@ -47,13 +45,11 @@ class ProjectJob(RefreshMixin, RESTObject):
         """
         path = f"{self.manager.path}/{self.get_id()}/retry"
         result = self.manager.gitlab.http_post(path)
-        if TYPE_CHECKING:
-            assert isinstance(result, dict)
         return result
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobPlayError)
-    def play(self, **kwargs: Any) -> None:
+    def play(self, **kwargs: Any) -> Dict[str, Any]:
         """Trigger a job explicitly.
 
         Args:
@@ -64,11 +60,11 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabJobPlayError: If the job could not be triggered
         """
         path = f"{self.manager.path}/{self.get_id()}/play"
-        self.manager.gitlab.http_post(path)
+        return self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobEraseError)
-    def erase(self, **kwargs: Any) -> None:
+    def erase(self, **kwargs: Any) -> Dict[str, Any]:
         """Erase the job (remove job artifacts and trace).
 
         Args:
@@ -79,11 +75,11 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabJobEraseError: If the job could not be erased
         """
         path = f"{self.manager.path}/{self.get_id()}/erase"
-        self.manager.gitlab.http_post(path)
+        return self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabCreateError)
-    def keep_artifacts(self, **kwargs: Any) -> None:
+    def keep_artifacts(self, **kwargs: Any) -> Dict[str, Any]:
         """Prevent artifacts from being deleted when expiration is set.
 
         Args:
@@ -94,7 +90,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabCreateError: If the request could not be performed
         """
         path = f"{self.manager.path}/{self.get_id()}/artifacts/keep"
-        self.manager.gitlab.http_post(path)
+        return self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabCreateError)

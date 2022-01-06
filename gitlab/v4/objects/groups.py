@@ -1,6 +1,4 @@
-from typing import Any, BinaryIO, cast, Dict, List, Optional, Type, TYPE_CHECKING, Union
-
-import requests
+from typing import Any, BinaryIO, cast, Dict, List, Optional, Type, Union
 
 import gitlab
 from gitlab import cli
@@ -205,8 +203,6 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             "expires_at": expires_at,
         }
         server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action("Group", ("group_id",))
@@ -303,7 +299,7 @@ class GroupManager(CRUDMixin, RESTManager):
         name: str,
         parent_id: Optional[str] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Dict[str, Any]:
         """Import a group from an archive file.
 
         Args:

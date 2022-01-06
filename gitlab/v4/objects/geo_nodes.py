@@ -32,8 +32,6 @@ class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = f"/geo_nodes/{self.get_id()}/repair"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action("GeoNode")

@@ -135,8 +135,6 @@ class ProjectIssue(
         path = f"{self.manager.path}/{self.get_id()}/move"
         data = {"to_project_id": to_project_id}
         server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
     @cli.register_custom_action("ProjectIssue")
@@ -276,7 +274,6 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
             assert self.path is not None
         server_data = self.gitlab.http_post(self.path, post_data=data, **kwargs)
         if TYPE_CHECKING:
-            assert isinstance(server_data, dict)
             assert self._parent is not None
         source_issue = ProjectIssue(self._parent.manager, server_data["source_issue"])
         target_issue = ProjectIssue(self._parent.manager, server_data["target_issue"])
