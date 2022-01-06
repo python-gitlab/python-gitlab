@@ -77,7 +77,9 @@ class GenericPackageManager(RESTManager):
             raise exc.GitlabUploadError(f"Failed to read package file {path}")
 
         url = f"{self._computed_path}/{package_name}/{package_version}/{file_name}"
-        server_data = self.gitlab.http_put(url, post_data=file_data, raw=True, **kwargs)
+        server_data = self.gitlab.http_put(
+            url, post_data=file_data, raw_post_data=True, **kwargs
+        )
         if TYPE_CHECKING:
             assert isinstance(server_data, dict)
 

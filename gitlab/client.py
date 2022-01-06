@@ -572,11 +572,11 @@ class Gitlab(object):
                 )
             )
 
+    @staticmethod
     def _prepare_send_data(
-        self,
         files: Optional[Dict[str, Any]] = None,
         post_data: Optional[Union[Dict[str, Any], bytes]] = None,
-        raw: bool = False,
+        raw_post_data: bool = False,
     ) -> Tuple[
         Optional[Union[Dict[str, Any], bytes]],
         Optional[Union[Dict[str, Any], MultipartEncoder]],
@@ -599,7 +599,7 @@ class Gitlab(object):
             data = MultipartEncoder(post_data)
             return (None, data, data.content_type)
 
-        if raw and post_data:
+        if raw_post_data and post_data:
             return (None, post_data, "application/octet-stream")
 
         return (post_data, None, "application/json")
@@ -611,7 +611,7 @@ class Gitlab(object):
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
         post_data: Optional[Union[Dict[str, Any], bytes]] = None,
-        raw: bool = False,
+        raw_post_data: bool = False,
         streamed: bool = False,
         files: Optional[Dict[str, Any]] = None,
         timeout: Optional[float] = None,
@@ -628,7 +628,7 @@ class Gitlab(object):
             query_data: Data to send as query parameters
             post_data: Data to send in the body (will be converted to
                               json by default)
-            raw: If True, do not convert post_data to json
+            raw_post_data: If True, do not convert post_data to json
             streamed: Whether the data should be streamed
             files: The files to send to the server
             timeout: The timeout, in seconds, for the request
@@ -673,7 +673,9 @@ class Gitlab(object):
             timeout = opts_timeout
 
         # We need to deal with json vs. data when uploading files
-        json, data, content_type = self._prepare_send_data(files, post_data, raw)
+        json, data, content_type = self._prepare_send_data(
+            files, post_data, raw_post_data
+        )
         opts["headers"]["Content-type"] = content_type
 
         cur_retries = 0
@@ -829,7 +831,7 @@ class Gitlab(object):
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
         post_data: Optional[Dict[str, Any]] = None,
-        raw: bool = False,
+        raw_post_data: bool = False,
         files: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> Union[Dict[str, Any], requests.Response]:
@@ -862,6 +864,7 @@ class Gitlab(object):
             query_data=query_data,
             post_data=post_data,
             files=files,
+            raw_post_data=raw_post_data,
             **kwargs,
         )
         try:
@@ -878,10 +881,10 @@ class Gitlab(object):
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
         post_data: Optional[Union[Dict[str, Any], bytes]] = None,
-        raw: bool = False,
+        raw_post_data: bool = False,
         files: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Dict[str, Any]:
         """Make a PUT request to the Gitlab server.
 
         Args:
@@ -890,7 +893,7 @@ class Gitlab(object):
             query_data: Data to send as query parameters
             post_data: Data to send in the body (will be converted to
                               json by default)
-            raw: If True, do not convert post_data to json
+            raw_post_data: If True, do not convert post_data to json
             files: The files to send to the server
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -910,7 +913,7 @@ class Gitlab(object):
             query_data=query_data,
             post_data=post_data,
             files=files,
-            raw=raw,
+            raw_post_data=raw_post_data,
             **kwargs,
         )
         try:
