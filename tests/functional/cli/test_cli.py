@@ -42,11 +42,8 @@ def test_version(script_runner):
 @responses.activate
 def test_defaults_to_gitlab_com(script_runner, resp_get_project, monkeypatch):
     responses.add(**resp_get_project)
-    with monkeypatch.context() as m:
-        # Ensure we don't pick up any config files that may already exist in the local
-        # environment.
-        m.setattr(config, "_DEFAULT_FILES", [])
-        ret = script_runner.run("gitlab", "project", "get", "--id", "1")
+    monkeypatch.setattr(config, "_DEFAULT_FILES", [])
+    ret = script_runner.run("gitlab", "project", "get", "--id", "1")
     assert ret.success
     assert "id: 1" in ret.stdout
 
@@ -55,6 +52,7 @@ def test_defaults_to_gitlab_com(script_runner, resp_get_project, monkeypatch):
 @responses.activate
 def test_uses_ci_server_url(monkeypatch, script_runner, resp_get_project):
     monkeypatch.setenv("CI_SERVER_URL", CI_SERVER_URL)
+    monkeypatch.setattr(config, "_DEFAULT_FILES", [])
     resp_get_project_in_ci = copy.deepcopy(resp_get_project)
     resp_get_project_in_ci.update(url=f"{CI_SERVER_URL}/api/v4/projects/1")
 
@@ -67,6 +65,7 @@ def test_uses_ci_server_url(monkeypatch, script_runner, resp_get_project):
 @responses.activate
 def test_uses_ci_job_token(monkeypatch, script_runner, resp_get_project):
     monkeypatch.setenv("CI_JOB_TOKEN", CI_JOB_TOKEN)
+    monkeypatch.setattr(config, "_DEFAULT_FILES", [])
     resp_get_project_in_ci = copy.deepcopy(resp_get_project)
     resp_get_project_in_ci.update(
         match=[responses.matchers.header_matcher({"JOB-TOKEN": CI_JOB_TOKEN})],
