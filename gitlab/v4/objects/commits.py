@@ -1,7 +1,8 @@
-from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
+from typing import Any, cast, Dict, List, Optional, TYPE_CHECKING, Union
 
 import requests
 
+import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
@@ -28,7 +29,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action("ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    def diff(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def diff(self, **kwargs: Any) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
         """Generate the commit diff.
 
         Args:
@@ -42,7 +43,7 @@ class ProjectCommit(RESTObject):
             The changes done in this commit
         """
         path = f"{self.manager.path}/{self.get_id()}/diff"
-        return self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_list(path, **kwargs)
 
     @cli.register_custom_action("ProjectCommit", ("branch",))
     @exc.on_http_error(exc.GitlabCherryPickError)
@@ -65,7 +66,7 @@ class ProjectCommit(RESTObject):
     @exc.on_http_error(exc.GitlabGetError)
     def refs(
         self, type: str = "all", **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
         """List the references the commit is pushed to.
 
         Args:
@@ -80,12 +81,14 @@ class ProjectCommit(RESTObject):
             The references the commit is pushed to.
         """
         path = f"{self.manager.path}/{self.get_id()}/refs"
-        data = {"type": type}
-        return self.manager.gitlab.http_get(path, query_data=data, **kwargs)
+        query_data = {"type": type}
+        return self.manager.gitlab.http_list(path, query_data=query_data, **kwargs)
 
     @cli.register_custom_action("ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    def merge_requests(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def merge_requests(
+        self, **kwargs: Any
+    ) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
         """List the merge requests related to the commit.
 
         Args:
@@ -99,7 +102,7 @@ class ProjectCommit(RESTObject):
             The merge requests related to the commit.
         """
         path = f"{self.manager.path}/{self.get_id()}/merge_requests"
-        return self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_list(path, **kwargs)
 
     @cli.register_custom_action("ProjectCommit", ("branch",))
     @exc.on_http_error(exc.GitlabRevertError)
