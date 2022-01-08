@@ -278,7 +278,7 @@ These options must be defined before the mandatory arguments.
 ``--output``, ``-o``
     Output format. Defaults to a custom format. Can also be ``yaml`` or ``json``.
 
-    **Notice:**
+.. important::
 
         The `PyYAML package <https://pypi.org/project/PyYAML/>`_ is required to use the yaml output option.
         You need to install it explicitly using ``pip install python-gitlab[yaml]``

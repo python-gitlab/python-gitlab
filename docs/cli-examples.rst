@@ -2,9 +2,9 @@
 CLI examples
 ############
 
-    **Notice:**
+.. seealso::
 
-        For a complete list of objects and actions available, see :doc:`/cli-objects`.
+      For a complete list of objects and actions available, see :doc:`/cli-objects`.
 
 List the projects (paginated):
 
