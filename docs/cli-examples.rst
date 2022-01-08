@@ -6,6 +6,9 @@ CLI examples
 
       For a complete list of objects and actions available, see :doc:`/cli-objects`.
 
+Projects
+--------
+
 List the projects (paginated):
 
 .. code-block:: console
@@ -42,11 +45,17 @@ Get a specific project (id 2):
 
    $ gitlab project get --id 2
 
+Users
+-----
+
 Get a specific user by id:
 
 .. code-block:: console
 
    $ gitlab user get --id 3
+
+Deploy tokens
+-------------
 
 Create a deploy token for a project:
 
@@ -60,6 +69,9 @@ List deploy tokens for a group:
 .. code-block:: console
 
    $ gitlab -v group-deploy-token list --group-id 3
+
+Packages
+--------
 
 List packages for a project:
 
@@ -99,11 +111,17 @@ Download a project's generic package:
    $ gitlab generic-package download --project-id 1 --package-name hello-world \
         --package-version v1.0.0 --file-name hello.tar.gz > /path/to/hello.tar.gz
 
+Issues
+------
+
 Get a list of issues for this project:
 
 .. code-block:: console
 
    $ gitlab project-issue list --project-id 2
+
+Snippets
+--------
 
 Delete a snippet (id 3):
 
@@ -128,6 +146,9 @@ Create a snippet:
    $ gitlab project-snippet create --project-id 2 --title "the title" \
        --file-name "the name" --code "the code"
 
+Commits
+-------
+
 Get a specific project commit by its SHA id:
 
 .. code-block:: console
@@ -149,11 +170,17 @@ Define the status of a commit (as would be done from a CI tool for example):
        --target-url http://server/build/123 \
        --description "Jenkins build succeeded"
 
+Artifacts
+---------
+
 Download the artifacts zip archive of a job:
 
 .. code-block:: console
 
    $ gitlab project-job artifacts --id 10 --project-id 1 > artifacts.zip
+
+Other
+-----
 
 Use sudo to act as another user (admin only):
 
