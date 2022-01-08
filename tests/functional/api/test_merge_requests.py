@@ -170,7 +170,9 @@ def test_merge_request_large_commit_message(
     merge_commit_message = "large_message\r\n" * 1_000
     assert len(merge_commit_message) > 10_000
 
-    mr.merge(merge_commit_message=merge_commit_message)
+    mr.merge(
+        merge_commit_message=merge_commit_message, should_remove_source_branch=False
+    )
 
     result = wait_for_sidekiq(timeout=60)
     assert result is True, "sidekiq process should have terminated but did not"
