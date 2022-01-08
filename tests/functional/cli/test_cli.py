@@ -17,17 +17,6 @@ CI_JOB_TOKEN = "ci-job-token"
 CI_SERVER_URL = "https://gitlab.example.com"
 
 
-@pytest.fixture
-def resp_get_project():
-    return {
-        "method": responses.GET,
-        "url": f"{DEFAULT_URL}/api/v4/projects/1",
-        "json": {"name": "name", "path": "test-path", "id": 1},
-        "content_type": "application/json",
-        "status": 200,
-    }
-
-
 def test_main_entrypoint(script_runner, gitlab_config):
     ret = script_runner.run("python", "-m", "gitlab", "--config-file", gitlab_config)
     assert ret.returncode == 2
