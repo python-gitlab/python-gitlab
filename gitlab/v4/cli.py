@@ -39,6 +39,7 @@ class GitlabCLI(object):
         self.action = action.lower()
         self.gl = gl
         self.args = args
+        self.parent_args: Dict[str, Any] = {}
         self.mgr_cls: Union[
             Type[gitlab.mixins.CreateMixin],
             Type[gitlab.mixins.DeleteMixin],
@@ -53,7 +54,10 @@ class GitlabCLI(object):
         # the class _path attribute, and replace the value with the result.
         if TYPE_CHECKING:
             assert self.mgr_cls._path is not None
-        self.mgr_cls._path = self.mgr_cls._path.format(**self.args)
+
+        self._process_from_parent_attrs()
+
+        self.mgr_cls._path = self.mgr_cls._path.format(**self.parent_args)
         self.mgr = self.mgr_cls(gl)
 
         if self.mgr_cls._types:
@@ -62,6 +66,18 @@ class GitlabCLI(object):
                     obj = type_cls()
                     obj.set_from_cli(self.args[attr_name])
                     self.args[attr_name] = obj.get()
+
+    def _process_from_parent_attrs(self) -> None:
+        """Items in the path need to be url-encoded. There is a 1:1 mapping from
+        mgr_cls._from_parent_attrs <--> mgr_cls._path. Those values must be url-encoded
+        as they may contain a slash '/'."""
+        for key in self.mgr_cls._from_parent_attrs:
+            if key not in self.args:
+                continue
+
+            self.parent_args[key] = gitlab.utils.clean_str_id(self.args[key])
+            # If we don't delete it then it will be added to the URL as a query-string
+            del self.args[key]
 
     def __call__(self) -> Any:
         # Check for a method that matches object + action
@@ -85,7 +101,7 @@ class GitlabCLI(object):
             data = {}
             if self.mgr._from_parent_attrs:
                 for k in self.mgr._from_parent_attrs:
-                    data[k] = self.args[k]
+                    data[k] = self.parent_args[k]
             if not issubclass(self.cls, gitlab.mixins.GetWithoutIdMixin):
                 if TYPE_CHECKING:
                     assert isinstance(self.cls._id_attr, str)

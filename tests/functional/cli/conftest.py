@@ -1,4 +1,7 @@
 import pytest
+import responses
+
+from gitlab.const import DEFAULT_URL
 
 
 @pytest.fixture
@@ -19,3 +22,14 @@ def gitlab_cli(script_runner, gitlab_config):
         return script_runner.run(*command)
 
     return _gitlab_cli
+
+
+@pytest.fixture
+def resp_get_project():
+    return {
+        "method": responses.GET,
+        "url": f"{DEFAULT_URL}/api/v4/projects/1",
+        "json": {"name": "name", "path": "test-path", "id": 1},
+        "content_type": "application/json",
+        "status": 200,
+    }
