@@ -18,6 +18,7 @@ from .custom_attributes import GroupCustomAttributeManager  # noqa: F401
 from .deploy_tokens import GroupDeployTokenManager  # noqa: F401
 from .epics import GroupEpicManager  # noqa: F401
 from .export_import import GroupExportManager, GroupImportManager  # noqa: F401
+from .group_access_tokens import GroupAccessTokenManager  # noqa: F401
 from .hooks import GroupHookManager  # noqa: F401
 from .issues import GroupIssueManager  # noqa: F401
 from .labels import GroupLabelManager  # noqa: F401
@@ -49,6 +50,7 @@ __all__ = [
 class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     _short_print_attr = "name"
 
+    access_tokens: GroupAccessTokenManager
     accessrequests: GroupAccessRequestManager
     audit_events: GroupAuditEventManager
     badges: GroupBadgeManager

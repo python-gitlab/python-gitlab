@@ -24,6 +24,7 @@ API examples
    gl_objects/features
    gl_objects/geo_nodes
    gl_objects/groups
+   gl_objects/group_access_tokens
    gl_objects/issues
    gl_objects/keys
    gl_objects/boards
