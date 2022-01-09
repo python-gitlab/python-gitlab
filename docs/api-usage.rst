@@ -179,6 +179,20 @@ resources. For example:
    project = gl.projects.get(1)
    project.star()
 
+You can print a Gitlab Object. For example:
+
+.. code-block:: python
+
+   project = gl.projects.get(1)
+   print(project)
+
+   # Or in a prettier format.
+   project.pprint()
+
+   # Or explicitly via `pformat()`. This is equivalent to the above.
+   print(project.pformat())
+
+
 Base types
 ==========
 
