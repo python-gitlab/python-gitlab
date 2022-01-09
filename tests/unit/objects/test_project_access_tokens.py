@@ -1,5 +1,5 @@
 """
-GitLab API: https://docs.gitlab.com/ee/api/resource_access_tokens.html
+GitLab API: https://docs.gitlab.com/ee/api/project_access_tokens.html
 """
 
 import pytest
