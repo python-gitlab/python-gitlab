@@ -90,3 +90,10 @@ disable = [
 
 [tool.pytest.ini_options]
 xfail_strict = true
+
+# If 'log_cli=True' the following apply
+# NOTE: If set 'log_cli_level' to 'DEBUG' will show a log of all of the HTTP requests
+# made in functional tests.
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s.%(msecs)03d [%(levelname)8s] (%(filename)s:%(funcName)s:L%(lineno)s) %(message)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
