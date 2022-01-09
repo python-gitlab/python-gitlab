@@ -201,3 +201,33 @@ class TestRESTObject:
         obj1 = FakeObject(fake_manager, {"attr1": "foo"})
         obj2 = FakeObject(fake_manager, {"attr1": "bar"})
         assert obj1 != obj2
+
+    def test_dunder_str(self, fake_manager):
+        fake_object = FakeObject(fake_manager, {"attr1": "foo"})
+        assert str(fake_object) == (
+            "<class 'tests.unit.test_base.FakeObject'> => {'attr1': 'foo'}"
+        )
+
+    def test_pformat(self, fake_manager):
+        fake_object = FakeObject(
+            fake_manager, {"attr1": "foo" * 10, "ham": "eggs" * 15}
+        )
+        assert fake_object.pformat() == (
+            "<class 'tests.unit.test_base.FakeObject'> => "
+            "\n{'attr1': 'foofoofoofoofoofoofoofoofoofoo',\n"
+            " 'ham': 'eggseggseggseggseggseggseggseggseggseggseggseggseggseggseggs'}"
+        )
+
+    def test_pprint(self, capfd, fake_manager):
+        fake_object = FakeObject(
+            fake_manager, {"attr1": "foo" * 10, "ham": "eggs" * 15}
+        )
+        result = fake_object.pprint()
+        assert result is None
+        stdout, stderr = capfd.readouterr()
+        assert stdout == (
+            "<class 'tests.unit.test_base.FakeObject'> => "
+            "\n{'attr1': 'foofoofoofoofoofoofoofoofoofoo',\n"
+            " 'ham': 'eggseggseggseggseggseggseggseggseggseggseggseggseggseggseggs'}\n"
+        )
+        assert stderr == ""

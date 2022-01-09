@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import importlib
+import pprint
 import textwrap
 from types import ModuleType
 from typing import Any, Dict, Iterable, NamedTuple, Optional, Tuple, Type
@@ -146,6 +147,14 @@ class RESTObject(object):
         data = self._attrs.copy()
         data.update(self._updated_attrs)
         return f"{type(self)} => {data}"
+
+    def pformat(self) -> str:
+        data = self._attrs.copy()
+        data.update(self._updated_attrs)
+        return f"{type(self)} => \n{pprint.pformat(data)}"
+
+    def pprint(self) -> None:
+        print(self.pformat())
 
     def __repr__(self) -> str:
         if self._id_attr:
