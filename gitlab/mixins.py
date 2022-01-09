@@ -100,7 +100,7 @@ class GetMixin(_RestManagerBase):
             GitlabGetError: If the server cannot perform the request
         """
         if not isinstance(id, int):
-            id = utils.clean_str_id(id)
+            id = utils._url_encode(id)
         path = f"{self.path}/{id}"
         if TYPE_CHECKING:
             assert self._obj_cls is not None
@@ -444,7 +444,7 @@ class SetMixin(_RestManagerBase):
         Returns:
             The created/updated attribute
         """
-        path = f"{self.path}/{utils.clean_str_id(key)}"
+        path = f"{self.path}/{utils._url_encode(key)}"
         data = {"value": value}
         server_data = self.gitlab.http_put(path, post_data=data, **kwargs)
         if TYPE_CHECKING:
@@ -478,7 +478,7 @@ class DeleteMixin(_RestManagerBase):
             path = self.path
         else:
             if not isinstance(id, int):
-                id = utils.clean_str_id(id)
+                id = utils._url_encode(id)
             path = f"{self.path}/{id}"
         self.gitlab.http_delete(path, **kwargs)
 
