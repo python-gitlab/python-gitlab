@@ -72,7 +72,7 @@ class GroupEpicIssue(ObjectDeleteMixin, SaveMixin, RESTObject):
             return
 
         # call the manager
-        obj_id = self.get_id()
+        obj_id = self.encoded_id
         self.manager.update(obj_id, updated_data, **kwargs)
 
 

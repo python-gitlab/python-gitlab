@@ -30,7 +30,7 @@ class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabRepairError: If the server failed to perform the request
         """
-        path = f"/geo_nodes/{self.get_id()}/repair"
+        path = f"/geo_nodes/{self.encoded_id}/repair"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(server_data, dict)
@@ -51,7 +51,7 @@ class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             The status of the geo node
         """
-        path = f"/geo_nodes/{self.get_id()}/status"
+        path = f"/geo_nodes/{self.encoded_id}/status"
         result = self.manager.gitlab.http_get(path, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(result, dict)

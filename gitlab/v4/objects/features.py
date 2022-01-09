@@ -52,8 +52,7 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
         Returns:
             The created/updated attribute
         """
-        name = utils._url_encode(name)
-        path = f"{self.path}/{name}"
+        path = f"{self.path}/{utils.EncodedId(name)}"
         data = {
             "value": value,
             "feature_group": feature_group,

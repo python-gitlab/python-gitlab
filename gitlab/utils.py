@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib.parse
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, Optional, Union
 
 import requests
 
@@ -56,8 +56,13 @@ def copy_dict(dest: Dict[str, Any], src: Dict[str, Any]) -> None:
             dest[k] = v
 
 
-def _url_encode(id: str) -> str:
-    """Encode/quote the characters in the string so that they can be used in a path.
+class EncodedId(str):
+    """A custom `str` class that will return the URL-encoded value of the string.
+
+    Features:
+      * Using it recursively will only url-encode the value once.
+      * Can accept either `str` or `int` as input value.
+      * Can be used in an f-string and output the URL-encoded string.
 
     Reference to documentation on why this is necessary.
 
@@ -69,12 +74,52 @@ def _url_encode(id: str) -> str:
     https://docs.gitlab.com/ee/api/index.html#path-parameters
 
     Path parameters that are required to be URL-encoded must be followed. If not, it
-    doesn’t match an API endpoint and responds with a 404. If there’s something in front
-    of the API (for example, Apache), ensure that it doesn’t decode the URL-encoded path
-    parameters.
+    doesn’t match an API endpoint and responds with a 404. If there’s something in
+    front of the API (for example, Apache), ensure that it doesn’t decode the
+    URL-encoded path parameters."""
 
-    """
-    return urllib.parse.quote(id, safe="")
+    # `original_str` will contain the original string value that was used to create the
+    # first instance of EncodedId. We will use this original value to generate the
+    # URL-encoded value each time.
+    original_str: str
+
+    def __init__(self, value: Union[int, str]) -> None:
+        # At this point `super().__str__()` returns the URL-encoded value. Which means
+        # when using this as a `str` it will return the URL-encoded value.
+        #
+        # But `value` contains the original value passed in `EncodedId(value)`. We use
+        # this to always keep the original string that was received so that no matter
+        # how many times we recurse we only URL-encode our original string once.
+        if isinstance(value, int):
+            value = str(value)
+        # Make sure isinstance() for `EncodedId` comes before check for `str` as
+        # `EncodedId` is an instance of `str` and would pass that check.
+        elif isinstance(value, EncodedId):
+            # This is the key part as we are always keeping the original string even
+            # through multiple recursions.
+            value = value.original_str
+        elif isinstance(value, str):
+            pass
+        else:
+            raise ValueError(f"Unsupported type received: {type(value)}")
+        self.original_str = value
+        super().__init__()
+
+    def __new__(cls, value: Union[str, int, "EncodedId"]) -> "EncodedId":
+        if isinstance(value, int):
+            value = str(value)
+        # Make sure isinstance() for `EncodedId` comes before check for `str` as
+        # `EncodedId` is an instance of `str` and would pass that check.
+        elif isinstance(value, EncodedId):
+            # We use the original string value to URL-encode
+            value = value.original_str
+        elif isinstance(value, str):
+            pass
+        else:
+            raise ValueError(f"Unsupported type received: {type(value)}")
+        # Set the value our string will return
+        value = urllib.parse.quote(value, safe="")
+        return super().__new__(cls, value)
 
 
 def remove_none_from_dict(data: Dict[str, Any]) -> Dict[str, Any]:

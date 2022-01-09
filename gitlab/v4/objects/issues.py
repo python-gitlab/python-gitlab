@@ -132,7 +132,7 @@ class ProjectIssue(
             GitlabAuthenticationError: If authentication is not correct
             GitlabUpdateError: If the issue could not be moved
         """
-        path = f"{self.manager.path}/{self.get_id()}/move"
+        path = f"{self.manager.path}/{self.encoded_id}/move"
         data = {"to_project_id": to_project_id}
         server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
         if TYPE_CHECKING:
@@ -154,7 +154,7 @@ class ProjectIssue(
         Returns:
             The list of merge requests.
         """
-        path = f"{self.manager.path}/{self.get_id()}/related_merge_requests"
+        path = f"{self.manager.path}/{self.encoded_id}/related_merge_requests"
         result = self.manager.gitlab.http_get(path, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(result, dict)
@@ -175,7 +175,7 @@ class ProjectIssue(
         Returns:
             The list of merge requests.
         """
-        path = f"{self.manager.path}/{self.get_id()}/closed_by"
+        path = f"{self.manager.path}/{self.encoded_id}/closed_by"
         result = self.manager.gitlab.http_get(path, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(result, dict)

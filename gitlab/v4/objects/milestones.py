@@ -45,7 +45,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
             The list of issues
         """
 
-        path = f"{self.manager.path}/{self.get_id()}/issues"
+        path = f"{self.manager.path}/{self.encoded_id}/issues"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, RESTObjectList)
@@ -73,7 +73,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             The list of merge requests
         """
-        path = f"{self.manager.path}/{self.get_id()}/merge_requests"
+        path = f"{self.manager.path}/{self.encoded_id}/merge_requests"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, RESTObjectList)
@@ -126,7 +126,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
             The list of issues
         """
 
-        path = f"{self.manager.path}/{self.get_id()}/issues"
+        path = f"{self.manager.path}/{self.encoded_id}/issues"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, RESTObjectList)
@@ -154,7 +154,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             The list of merge requests
         """
-        path = f"{self.manager.path}/{self.get_id()}/merge_requests"
+        path = f"{self.manager.path}/{self.encoded_id}/merge_requests"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, RESTObjectList)
