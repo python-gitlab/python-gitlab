@@ -36,7 +36,7 @@ __all__ = [
 
 
 _URL_ATTRIBUTE_ERROR = (
-    f"https://python-gitlab.readthedocs.io/en/{gitlab.__version__}/"
+    f"https://python-gitlab.readthedocs.io/en/v{gitlab.__version__}/"
     f"faq.html#attribute-error-list"
 )
 
