@@ -52,7 +52,8 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
         Returns:
             The created/updated attribute
         """
-        path = f"{self.path}/{name.replace('/', '%2F')}"
+        name = utils._url_encode(name)
+        path = f"{self.path}/{name}"
         data = {
             "value": value,
             "feature_group": feature_group,

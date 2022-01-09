@@ -18,15 +18,20 @@
 from gitlab import utils
 
 
-def test_clean_str_id():
+def test_url_encode():
     src = "nothing_special"
     dest = "nothing_special"
-    assert dest == utils.clean_str_id(src)
+    assert dest == utils._url_encode(src)
 
     src = "foo#bar/baz/"
     dest = "foo%23bar%2Fbaz%2F"
-    assert dest == utils.clean_str_id(src)
+    assert dest == utils._url_encode(src)
 
     src = "foo%bar/baz/"
     dest = "foo%25bar%2Fbaz%2F"
-    assert dest == utils.clean_str_id(src)
+    assert dest == utils._url_encode(src)
+
+    # periods/dots should not be modified
+    src = "docs/README.md"
+    dest = "docs%2FREADME.md"
+    assert dest == utils._url_encode(src)

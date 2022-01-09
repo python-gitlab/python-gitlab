@@ -1,4 +1,5 @@
 import base64
+import os
 import sys
 import tarfile
 import time
@@ -13,13 +14,13 @@ import gitlab
 def test_repository_files(project):
     project.files.create(
         {
-            "file_path": "README",
+            "file_path": "README.md",
             "branch": "main",
             "content": "Initial content",
             "commit_message": "Initial commit",
         }
     )
-    readme = project.files.get(file_path="README", ref="main")
+    readme = project.files.get(file_path="README.md", ref="main")
     readme.content = base64.b64encode(b"Improved README").decode()
 
     time.sleep(2)
@@ -41,6 +42,9 @@ def test_repository_files(project):
 
     blame = project.files.blame(file_path="README.rst", ref="main")
     assert blame
+
+    raw_file = project.files.raw(file_path="README.rst", ref="main")
+    assert os.fsdecode(raw_file) == "Initial content"
 
 
 def test_repository_tree(project):
