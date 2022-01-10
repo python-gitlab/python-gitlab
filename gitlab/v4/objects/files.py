@@ -76,7 +76,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
-        file_path = utils._url_encode(self.get_id())
+        file_path = self.encoded_id
         self.manager.delete(file_path, branch, commit_message, **kwargs)
 
 

@@ -197,7 +197,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the relation could not be created
         """
-        path = f"/projects/{self.get_id()}/fork/{forked_from_id}"
+        path = f"/projects/{self.encoded_id}/fork/{forked_from_id}"
         self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("Project")
@@ -212,7 +212,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server failed to perform the request
         """
-        path = f"/projects/{self.get_id()}/fork"
+        path = f"/projects/{self.encoded_id}/fork"
         self.manager.gitlab.http_delete(path, **kwargs)
 
     @cli.register_custom_action("Project")
@@ -227,7 +227,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server failed to perform the request
         """
-        path = f"/projects/{self.get_id()}/languages"
+        path = f"/projects/{self.encoded_id}/languages"
         return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action("Project")
@@ -242,7 +242,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server failed to perform the request
         """
-        path = f"/projects/{self.get_id()}/star"
+        path = f"/projects/{self.encoded_id}/star"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(server_data, dict)
@@ -260,7 +260,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server failed to perform the request
         """
-        path = f"/projects/{self.get_id()}/unstar"
+        path = f"/projects/{self.encoded_id}/unstar"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(server_data, dict)
@@ -278,7 +278,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server failed to perform the request
         """
-        path = f"/projects/{self.get_id()}/archive"
+        path = f"/projects/{self.encoded_id}/archive"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(server_data, dict)
@@ -296,7 +296,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server failed to perform the request
         """
-        path = f"/projects/{self.get_id()}/unarchive"
+        path = f"/projects/{self.encoded_id}/unarchive"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(server_data, dict)
@@ -324,7 +324,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server failed to perform the request
         """
-        path = f"/projects/{self.get_id()}/share"
+        path = f"/projects/{self.encoded_id}/share"
         data = {
             "group_id": group_id,
             "group_access": group_access,
@@ -345,7 +345,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server failed to perform the request
         """
-        path = f"/projects/{self.get_id()}/share/{group_id}"
+        path = f"/projects/{self.encoded_id}/share/{group_id}"
         self.manager.gitlab.http_delete(path, **kwargs)
 
     # variables not supported in CLI
@@ -373,7 +373,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabCreateError: If the server failed to perform the request
         """
         variables = variables or {}
-        path = f"/projects/{self.get_id()}/trigger/pipeline"
+        path = f"/projects/{self.encoded_id}/trigger/pipeline"
         post_data = {"ref": ref, "token": token, "variables": variables}
         attrs = self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
         if TYPE_CHECKING:
@@ -393,7 +393,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabHousekeepingError: If the server failed to perform the
                                      request
         """
-        path = f"/projects/{self.get_id()}/housekeeping"
+        path = f"/projects/{self.encoded_id}/housekeeping"
         self.manager.gitlab.http_post(path, **kwargs)
 
     # see #56 - add file attachment features
@@ -478,7 +478,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         Returns:
             The uncompressed tar archive of the repository
         """
-        path = f"/projects/{self.get_id()}/snapshot"
+        path = f"/projects/{self.encoded_id}/snapshot"
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
@@ -506,7 +506,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             A list of dicts describing the resources found.
         """
         data = {"scope": scope, "search": search}
-        path = f"/projects/{self.get_id()}/search"
+        path = f"/projects/{self.encoded_id}/search"
         return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
 
     @cli.register_custom_action("Project")
@@ -521,7 +521,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server failed to perform the request
         """
-        path = f"/projects/{self.get_id()}/mirror/pull"
+        path = f"/projects/{self.encoded_id}/mirror/pull"
         self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("Project", ("to_namespace",))
@@ -577,7 +577,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         Returns:
             The artifacts if `streamed` is False, None otherwise.
         """
-        path = f"/projects/{self.get_id()}/jobs/artifacts/{ref_name}/download"
+        path = f"/projects/{self.encoded_id}/jobs/artifacts/{ref_name}/download"
         result = self.manager.gitlab.http_get(
             path, job=job, streamed=streamed, raw=True, **kwargs
         )
@@ -622,7 +622,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """
 
         path = (
-            f"/projects/{self.get_id()}/jobs/artifacts/{ref_name}/raw/"
+            f"/projects/{self.encoded_id}/jobs/artifacts/{ref_name}/raw/"
             f"{artifact_path}?job={job}"
         )
         result = self.manager.gitlab.http_get(

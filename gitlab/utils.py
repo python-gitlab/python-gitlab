@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib.parse
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, Optional, overload, Union
 
 import requests
 
@@ -56,7 +56,17 @@ def copy_dict(dest: Dict[str, Any], src: Dict[str, Any]) -> None:
             dest[k] = v
 
 
+@overload
+def _url_encode(id: int) -> int:
+    ...
+
+
+@overload
 def _url_encode(id: str) -> str:
+    ...
+
+
+def _url_encode(id: Union[int, str]) -> Union[int, str]:
     """Encode/quote the characters in the string so that they can be used in a path.
 
     Reference to documentation on why this is necessary.
@@ -74,6 +84,8 @@ def _url_encode(id: str) -> str:
     parameters.
 
     """
+    if isinstance(id, int):
+        return id
     return urllib.parse.quote(id, safe="")
 
 

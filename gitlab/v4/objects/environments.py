@@ -36,7 +36,7 @@ class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
            A dict of the result.
         """
-        path = f"{self.manager.path}/{self.get_id()}/stop"
+        path = f"{self.manager.path}/{self.encoded_id}/stop"
         return self.manager.gitlab.http_post(path, **kwargs)
 
 

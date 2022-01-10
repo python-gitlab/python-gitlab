@@ -182,7 +182,7 @@ class ProjectMergeRequest(
         """
 
         path = (
-            f"{self.manager.path}/{self.get_id()}/cancel_merge_when_pipeline_succeeds"
+            f"{self.manager.path}/{self.encoded_id}/cancel_merge_when_pipeline_succeeds"
         )
         server_data = self.manager.gitlab.http_put(path, **kwargs)
         if TYPE_CHECKING:
@@ -210,7 +210,7 @@ class ProjectMergeRequest(
         Returns:
             List of issues
         """
-        path = f"{self.manager.path}/{self.get_id()}/closes_issues"
+        path = f"{self.manager.path}/{self.encoded_id}/closes_issues"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, gitlab.GitlabList)
@@ -238,7 +238,7 @@ class ProjectMergeRequest(
             The list of commits
         """
 
-        path = f"{self.manager.path}/{self.get_id()}/commits"
+        path = f"{self.manager.path}/{self.encoded_id}/commits"
         data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, gitlab.GitlabList)
@@ -260,7 +260,7 @@ class ProjectMergeRequest(
         Returns:
             List of changes
         """
-        path = f"{self.manager.path}/{self.get_id()}/changes"
+        path = f"{self.manager.path}/{self.encoded_id}/changes"
         return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action("ProjectMergeRequest", tuple(), ("sha",))
@@ -281,7 +281,7 @@ class ProjectMergeRequest(
 
         https://docs.gitlab.com/ee/api/merge_request_approvals.html#approve-merge-request
         """
-        path = f"{self.manager.path}/{self.get_id()}/approve"
+        path = f"{self.manager.path}/{self.encoded_id}/approve"
         data = {}
         if sha:
             data["sha"] = sha
@@ -306,7 +306,7 @@ class ProjectMergeRequest(
 
         https://docs.gitlab.com/ee/api/merge_request_approvals.html#unapprove-merge-request
         """
-        path = f"{self.manager.path}/{self.get_id()}/unapprove"
+        path = f"{self.manager.path}/{self.encoded_id}/unapprove"
         data: Dict[str, Any] = {}
 
         server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
@@ -326,7 +326,7 @@ class ProjectMergeRequest(
             GitlabAuthenticationError: If authentication is not correct
             GitlabMRRebaseError: If rebasing failed
         """
-        path = f"{self.manager.path}/{self.get_id()}/rebase"
+        path = f"{self.manager.path}/{self.encoded_id}/rebase"
         data: Dict[str, Any] = {}
         return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
 
@@ -342,7 +342,7 @@ class ProjectMergeRequest(
         Raises:
             GitlabGetError: If cannot be merged
         """
-        path = f"{self.manager.path}/{self.get_id()}/merge_ref"
+        path = f"{self.manager.path}/{self.encoded_id}/merge_ref"
         return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action(
@@ -376,7 +376,7 @@ class ProjectMergeRequest(
             GitlabAuthenticationError: If authentication is not correct
             GitlabMRClosedError: If the merge failed
         """
-        path = f"{self.manager.path}/{self.get_id()}/merge"
+        path = f"{self.manager.path}/{self.encoded_id}/merge"
         data: Dict[str, Any] = {}
         if merge_commit_message:
             data["merge_commit_message"] = merge_commit_message
