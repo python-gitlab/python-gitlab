@@ -8,7 +8,7 @@ MANIFEST
 .idea/
 coverage.xml
 docs/_build
-.coverage
+.coverage*
 .python-version
 .tox
 .venv/
