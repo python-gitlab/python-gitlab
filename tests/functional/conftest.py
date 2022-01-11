@@ -406,7 +406,8 @@ def user(gl):
     yield user
 
     try:
-        user.delete()
+        # Use `hard_delete=True` or a 'Ghost User' may be created.
+        user.delete(hard_delete=True)
     except gitlab.exceptions.GitlabDeleteError as e:
         print(f"User already deleted: {e}")
 

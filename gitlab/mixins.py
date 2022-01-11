@@ -542,8 +542,7 @@ class SaveMixin(_RestObjectBase):
             return
 
         # call the manager
-        # Don't use `self.encoded_id` here as `self.manager.update()` will encode it.
-        obj_id = self.get_id()
+        obj_id = self.encoded_id
         if TYPE_CHECKING:
             assert isinstance(self.manager, UpdateMixin)
         server_data = self.manager.update(obj_id, updated_data, **kwargs)
@@ -573,8 +572,7 @@ class ObjectDeleteMixin(_RestObjectBase):
         """
         if TYPE_CHECKING:
             assert isinstance(self.manager, DeleteMixin)
-        # Don't use `self.encoded_id` here as `self.manager.delete()` will encode it.
-        self.manager.delete(self.get_id(), **kwargs)
+        self.manager.delete(self.encoded_id, **kwargs)
 
 
 class UserAgentDetailMixin(_RestObjectBase):

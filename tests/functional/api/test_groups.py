@@ -100,6 +100,7 @@ def test_groups(gl):
     member = group1.members.get(user2.id)
     assert member.access_level == gitlab.const.OWNER_ACCESS
 
+    gl.auth()
     group2.members.delete(gl.user.id)
 
 
@@ -197,6 +198,11 @@ def test_group_subgroups_projects(gl, user):
     assert group4.parent_id == group2.id
     assert gr1_project.namespace["id"] == group1.id
     assert gr2_project.namespace["parent_id"] == group1.id
+
+    gr1_project.delete()
+    gr2_project.delete()
+    group3.delete()
+    group4.delete()
 
 
 @pytest.mark.skip

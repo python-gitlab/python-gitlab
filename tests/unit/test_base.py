@@ -158,6 +158,10 @@ class TestRESTObject:
         obj.id = "a/path"
         assert "a%2Fpath" == obj.encoded_id
 
+        # If you assign it again it does not double URL-encode
+        obj.id = obj.encoded_id
+        assert "a%2Fpath" == obj.encoded_id
+
     def test_custom_id_attr(self, fake_manager):
         class OtherFakeObject(FakeObject):
             _id_attr = "foo"
