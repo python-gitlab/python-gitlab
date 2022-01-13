@@ -701,6 +701,31 @@ def test_delete_group_deploy_token(gitlab_cli, group_deploy_token):
     # TODO assert not in list
 
 
+def test_project_member_all(gitlab_cli, project):
+    cmd = [
+        "project-member-all",
+        "list",
+        "--project-id",
+        project.id,
+    ]
+    ret = gitlab_cli(cmd)
+
+    assert ret.success
+
+
+def test_group_member_all(gitlab_cli, group):
+    cmd = [
+        "group-member-all",
+        "list",
+        "--group-id",
+        group.id,
+    ]
+    ret = gitlab_cli(cmd)
+
+    assert ret.success
+
+
+# Deleting the project and group. Add your tests above here.
 def test_delete_project(gitlab_cli, project):
     cmd = ["project", "delete", "--id", project.id]
     ret = gitlab_cli(cmd)
@@ -713,3 +738,6 @@ def test_delete_group(gitlab_cli, group):
     ret = gitlab_cli(cmd)
 
     assert ret.success
+
+
+# Don't add tests below here as the group and project have been deleted
