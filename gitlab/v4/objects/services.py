@@ -1,3 +1,8 @@
+"""
+GitLab API:
+https://docs.gitlab.com/ee/api/integrations.html
+"""
+
 from typing import Any, cast, Dict, List, Optional, Union
 
 from gitlab import cli
@@ -275,7 +280,10 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        obj = cast(ProjectService, super(ProjectServiceManager, self).get(id, **kwargs))
+        obj = cast(
+            ProjectService,
+            super(ProjectServiceManager, self).get(id, lazy=lazy, **kwargs),
+        )
         obj.id = id
         return obj
 
