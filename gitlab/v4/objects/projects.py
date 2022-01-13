@@ -527,7 +527,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
 
     @cli.register_custom_action("Project", ("to_namespace",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
-    def transfer(self, to_namespace: str, **kwargs: Any) -> None:
+    def transfer(self, to_namespace: Union[int, str], **kwargs: Any) -> None:
         """Transfer a project to the given namespace ID
 
         Args:
