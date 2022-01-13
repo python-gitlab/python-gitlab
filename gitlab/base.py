@@ -223,7 +223,7 @@ class RESTObject(object):
         path"""
         obj_id = self.get_id()
         if isinstance(obj_id, str):
-            obj_id = gitlab.utils._url_encode(obj_id)
+            obj_id = gitlab.utils.EncodedId(obj_id)
         return obj_id
 
     @property

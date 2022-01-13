@@ -39,7 +39,7 @@ class RepositoryMixin(_RestObjectBase):
             GitlabPutError: If the submodule could not be updated
         """
 
-        submodule = utils._url_encode(submodule)
+        submodule = utils.EncodedId(submodule)
         path = f"/projects/{self.encoded_id}/repository/submodules/{submodule}"
         data = {"branch": branch, "commit_sha": commit_sha}
         if "commit_message" in kwargs:

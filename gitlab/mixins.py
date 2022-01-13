@@ -99,7 +99,8 @@ class GetMixin(_RestManagerBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        id = utils._url_encode(id)
+        if isinstance(id, str):
+            id = utils.EncodedId(id)
         path = f"{self.path}/{id}"
         if TYPE_CHECKING:
             assert self._obj_cls is not None
@@ -390,7 +391,7 @@ class UpdateMixin(_RestManagerBase):
         if id is None:
             path = self.path
         else:
-            path = f"{self.path}/{utils._url_encode(id)}"
+            path = f"{self.path}/{utils.EncodedId(id)}"
 
         self._check_missing_update_attrs(new_data)
         files = {}
@@ -443,7 +444,7 @@ class SetMixin(_RestManagerBase):
         Returns:
             The created/updated attribute
         """
-        path = f"{self.path}/{utils._url_encode(key)}"
+        path = f"{self.path}/{utils.EncodedId(key)}"
         data = {"value": value}
         server_data = self.gitlab.http_put(path, post_data=data, **kwargs)
         if TYPE_CHECKING:
@@ -476,7 +477,7 @@ class DeleteMixin(_RestManagerBase):
         if id is None:
             path = self.path
         else:
-            path = f"{self.path}/{utils._url_encode(id)}"
+            path = f"{self.path}/{utils.EncodedId(id)}"
         self.gitlab.http_delete(path, **kwargs)
 
 

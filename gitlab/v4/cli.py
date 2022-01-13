@@ -75,7 +75,7 @@ class GitlabCLI(object):
             if key not in self.args:
                 continue
 
-            self.parent_args[key] = gitlab.utils._url_encode(self.args[key])
+            self.parent_args[key] = gitlab.utils.EncodedId(self.args[key])
             # If we don't delete it then it will be added to the URL as a query-string
             del self.args[key]
 

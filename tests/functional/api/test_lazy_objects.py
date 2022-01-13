@@ -12,7 +12,7 @@ def lazy_project(gl, project):
 def test_lazy_id(project, lazy_project):
     assert isinstance(lazy_project.id, str)
     assert isinstance(lazy_project.id, gitlab.utils.EncodedId)
-    assert lazy_project.id == gitlab.utils._url_encode(project.path_with_namespace)
+    assert lazy_project.id == gitlab.utils.EncodedId(project.path_with_namespace)
 
 
 def test_refresh_after_lazy_get_with_path(project, lazy_project):

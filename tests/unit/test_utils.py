@@ -20,28 +20,10 @@ import json
 from gitlab import utils
 
 
-def test_url_encode():
-    src = "nothing_special"
-    dest = "nothing_special"
-    assert dest == utils._url_encode(src)
-
-    src = "foo#bar/baz/"
-    dest = "foo%23bar%2Fbaz%2F"
-    assert dest == utils._url_encode(src)
-
-    src = "foo%bar/baz/"
-    dest = "foo%25bar%2Fbaz%2F"
-    assert dest == utils._url_encode(src)
-
-    # periods/dots should not be modified
-    src = "docs/README.md"
-    dest = "docs%2FREADME.md"
-    assert dest == utils._url_encode(src)
-
-
 class TestEncodedId:
     def test_init_str(self):
         obj = utils.EncodedId("Hello")
+        assert "Hello" == obj
         assert "Hello" == str(obj)
         assert "Hello" == f"{obj}"
 
@@ -51,6 +33,7 @@ class TestEncodedId:
 
     def test_init_int(self):
         obj = utils.EncodedId(23)
+        assert 23 == obj
         assert "23" == str(obj)
         assert "23" == f"{obj}"
 
@@ -60,12 +43,10 @@ class TestEncodedId:
         obj = utils.EncodedId(obj_init)
         assert value == str(obj)
         assert value == f"{obj}"
-        assert value == obj.original_str
 
         value = "we got/a/path"
         expected = "we%20got%2Fa%2Fpath"
         obj_init = utils.EncodedId(value)
-        assert value == obj_init.original_str
         assert expected == str(obj_init)
         assert expected == f"{obj_init}"
         # Show that no matter how many times we recursively call it we still only
@@ -75,8 +56,6 @@ class TestEncodedId:
         )
         assert expected == str(obj)
         assert expected == f"{obj}"
-        # We have stored a copy of our original string
-        assert value == obj.original_str
 
         # Show assignments still only encode once
         obj2 = obj
