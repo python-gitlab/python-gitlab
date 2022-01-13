@@ -17,9 +17,11 @@ __all__ = [
     "GroupBillableMemberMembership",
     "GroupBillableMemberMembershipManager",
     "GroupMember",
+    "GroupMemberAll",
     "GroupMemberManager",
     "GroupMemberAllManager",
     "ProjectMember",
+    "ProjectMemberAll",
     "ProjectMemberManager",
     "ProjectMemberAllManager",
 ]
@@ -70,15 +72,19 @@ class GroupBillableMemberMembershipManager(ListMixin, RESTManager):
     _from_parent_attrs = {"group_id": "group_id", "user_id": "id"}
 
 
+class GroupMemberAll(RESTObject):
+    _short_print_attr = "username"
+
+
 class GroupMemberAllManager(RetrieveMixin, RESTManager):
     _path = "/groups/{group_id}/members/all"
-    _obj_cls = GroupMember
+    _obj_cls = GroupMemberAll
     _from_parent_attrs = {"group_id": "id"}
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupMember:
-        return cast(GroupMember, super().get(id=id, lazy=lazy, **kwargs))
+    ) -> GroupMemberAll:
+        return cast(GroupMemberAll, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectMember(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -103,12 +109,16 @@ class ProjectMemberManager(CRUDMixin, RESTManager):
         return cast(ProjectMember, super().get(id=id, lazy=lazy, **kwargs))
 
 
+class ProjectMemberAll(RESTObject):
+    _short_print_attr = "username"
+
+
 class ProjectMemberAllManager(RetrieveMixin, RESTManager):
     _path = "/projects/{project_id}/members/all"
-    _obj_cls = ProjectMember
+    _obj_cls = ProjectMemberAll
     _from_parent_attrs = {"project_id": "id"}
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMember:
-        return cast(ProjectMember, super().get(id=id, lazy=lazy, **kwargs))
+    ) -> ProjectMemberAll:
+        return cast(ProjectMemberAll, super().get(id=id, lazy=lazy, **kwargs))
