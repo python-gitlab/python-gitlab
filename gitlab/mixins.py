@@ -525,13 +525,16 @@ class SaveMixin(_RestObjectBase):
 
         return updated_data
 
-    def save(self, **kwargs: Any) -> None:
+    def save(self, **kwargs: Any) -> Optional[Dict[str, Any]]:
         """Save the changes made to the object to the server.
 
         The object is updated to match what the server returns.
 
         Args:
             **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Returns:
+            The new object data (*not* a RESTObject)
 
         Raise:
             GitlabAuthenticationError: If authentication is not correct
@@ -540,15 +543,15 @@ class SaveMixin(_RestObjectBase):
         updated_data = self._get_updated_data()
         # Nothing to update. Server fails if sent an empty dict.
         if not updated_data:
-            return
+            return None
 
         # call the manager
         obj_id = self.encoded_id
         if TYPE_CHECKING:
             assert isinstance(self.manager, UpdateMixin)
         server_data = self.manager.update(obj_id, updated_data, **kwargs)
-        if server_data is not None:
-            self._update_attrs(server_data)
+        self._update_attrs(server_data)
+        return server_data
 
 
 class ObjectDeleteMixin(_RestObjectBase):
