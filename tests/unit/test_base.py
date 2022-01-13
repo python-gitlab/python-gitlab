@@ -144,6 +144,24 @@ class TestRESTObject:
         obj.id = None
         assert obj.get_id() is None
 
+    def test_encoded_id(self, fake_manager):
+        obj = FakeObject(fake_manager, {"foo": "bar"})
+        obj.id = 42
+        assert 42 == obj.encoded_id
+
+        obj.id = None
+        assert obj.encoded_id is None
+
+        obj.id = "plain"
+        assert "plain" == obj.encoded_id
+
+        obj.id = "a/path"
+        assert "a%2Fpath" == obj.encoded_id
+
+        # If you assign it again it does not double URL-encode
+        obj.id = obj.encoded_id
+        assert "a%2Fpath" == obj.encoded_id
+
     def test_custom_id_attr(self, fake_manager):
         class OtherFakeObject(FakeObject):
             _id_attr = "foo"

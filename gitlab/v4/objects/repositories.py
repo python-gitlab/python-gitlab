@@ -39,8 +39,8 @@ class RepositoryMixin(_RestObjectBase):
             GitlabPutError: If the submodule could not be updated
         """
 
-        submodule = utils._url_encode(submodule)
-        path = f"/projects/{self.get_id()}/repository/submodules/{submodule}"
+        submodule = utils.EncodedId(submodule)
+        path = f"/projects/{self.encoded_id}/repository/submodules/{submodule}"
         data = {"branch": branch, "commit_sha": commit_sha}
         if "commit_message" in kwargs:
             data["commit_message"] = kwargs["commit_message"]
@@ -71,7 +71,7 @@ class RepositoryMixin(_RestObjectBase):
         Returns:
             The representation of the tree
         """
-        gl_path = f"/projects/{self.get_id()}/repository/tree"
+        gl_path = f"/projects/{self.encoded_id}/repository/tree"
         query_data: Dict[str, Any] = {"recursive": recursive}
         if path:
             query_data["path"] = path
@@ -98,7 +98,7 @@ class RepositoryMixin(_RestObjectBase):
             The blob content and metadata
         """
 
-        path = f"/projects/{self.get_id()}/repository/blobs/{sha}"
+        path = f"/projects/{self.encoded_id}/repository/blobs/{sha}"
         return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action("Project", ("sha",))
@@ -130,7 +130,7 @@ class RepositoryMixin(_RestObjectBase):
         Returns:
             The blob content if streamed is False, None otherwise
         """
-        path = f"/projects/{self.get_id()}/repository/blobs/{sha}/raw"
+        path = f"/projects/{self.encoded_id}/repository/blobs/{sha}/raw"
         result = self.manager.gitlab.http_get(
             path, streamed=streamed, raw=True, **kwargs
         )
@@ -157,7 +157,7 @@ class RepositoryMixin(_RestObjectBase):
         Returns:
             The diff
         """
-        path = f"/projects/{self.get_id()}/repository/compare"
+        path = f"/projects/{self.encoded_id}/repository/compare"
         query_data = {"from": from_, "to": to}
         return self.manager.gitlab.http_get(path, query_data=query_data, **kwargs)
 
@@ -183,7 +183,7 @@ class RepositoryMixin(_RestObjectBase):
         Returns:
             The contributors
         """
-        path = f"/projects/{self.get_id()}/repository/contributors"
+        path = f"/projects/{self.encoded_id}/repository/contributors"
         return self.manager.gitlab.http_list(path, **kwargs)
 
     @cli.register_custom_action("Project", tuple(), ("sha", "format"))
@@ -217,7 +217,7 @@ class RepositoryMixin(_RestObjectBase):
         Returns:
             The binary data of the archive
         """
-        path = f"/projects/{self.get_id()}/repository/archive"
+        path = f"/projects/{self.encoded_id}/repository/archive"
         if format:
             path += "." + format
         query_data = {}
@@ -242,5 +242,5 @@ class RepositoryMixin(_RestObjectBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server failed to perform the request
         """
-        path = f"/projects/{self.get_id()}/repository/merged_branches"
+        path = f"/projects/{self.encoded_id}/repository/merged_branches"
         self.manager.gitlab.http_delete(path, **kwargs)

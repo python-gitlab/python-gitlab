@@ -56,7 +56,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         self.branch = branch
         self.commit_message = commit_message
-        self.file_path = utils._url_encode(self.file_path)
+        self.file_path = utils.EncodedId(self.file_path)
         super(ProjectFile, self).save(**kwargs)
 
     @exc.on_http_error(exc.GitlabDeleteError)
@@ -76,7 +76,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
-        file_path = utils._url_encode(self.get_id())
+        file_path = self.encoded_id
         self.manager.delete(file_path, branch, commit_message, **kwargs)
 
 
@@ -144,7 +144,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             assert data is not None
         self._check_missing_create_attrs(data)
         new_data = data.copy()
-        file_path = utils._url_encode(new_data.pop("file_path"))
+        file_path = utils.EncodedId(new_data.pop("file_path"))
         path = f"{self.path}/{file_path}"
         server_data = self.gitlab.http_post(path, post_data=new_data, **kwargs)
         if TYPE_CHECKING:
@@ -173,7 +173,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         """
         new_data = new_data or {}
         data = new_data.copy()
-        file_path = utils._url_encode(file_path)
+        file_path = utils.EncodedId(file_path)
         data["file_path"] = file_path
         path = f"{self.path}/{file_path}"
         self._check_missing_update_attrs(data)
@@ -203,7 +203,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
-        file_path = utils._url_encode(file_path)
+        file_path = utils.EncodedId(file_path)
         path = f"{self.path}/{file_path}"
         data = {"branch": branch, "commit_message": commit_message}
         self.gitlab.http_delete(path, query_data=data, **kwargs)
@@ -239,7 +239,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         Returns:
             The file content
         """
-        file_path = utils._url_encode(file_path)
+        file_path = utils.EncodedId(file_path)
         path = f"{self.path}/{file_path}/raw"
         query_data = {"ref": ref}
         result = self.gitlab.http_get(
@@ -266,7 +266,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         Returns:
             A list of commits/lines matching the file
         """
-        file_path = utils._url_encode(file_path)
+        file_path = utils.EncodedId(file_path)
         path = f"{self.path}/{file_path}/blame"
         query_data = {"ref": ref}
         result = self.gitlab.http_list(path, query_data, **kwargs)

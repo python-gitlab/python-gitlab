@@ -66,7 +66,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabPipelineCancelError: If the request failed
         """
-        path = f"{self.manager.path}/{self.get_id()}/cancel"
+        path = f"{self.manager.path}/{self.encoded_id}/cancel"
         return self.manager.gitlab.http_post(path)
 
     @cli.register_custom_action("ProjectPipeline")
@@ -81,7 +81,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabPipelineRetryError: If the request failed
         """
-        path = f"{self.manager.path}/{self.get_id()}/retry"
+        path = f"{self.manager.path}/{self.encoded_id}/retry"
         return self.manager.gitlab.http_post(path)
 
 
@@ -194,7 +194,7 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabOwnershipError: If the request failed
         """
-        path = f"{self.manager.path}/{self.get_id()}/take_ownership"
+        path = f"{self.manager.path}/{self.encoded_id}/take_ownership"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(server_data, dict)
@@ -213,7 +213,7 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabPipelinePlayError: If the request failed
         """
-        path = f"{self.manager.path}/{self.get_id()}/play"
+        path = f"{self.manager.path}/{self.encoded_id}/play"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(server_data, dict)

@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib.parse
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, Optional, Union
 
 import requests
 
@@ -56,25 +56,32 @@ def copy_dict(dest: Dict[str, Any], src: Dict[str, Any]) -> None:
             dest[k] = v
 
 
-def _url_encode(id: str) -> str:
-    """Encode/quote the characters in the string so that they can be used in a path.
+class EncodedId(str):
+    """A custom `str` class that will return the URL-encoded value of the string.
+
+      * Using it recursively will only url-encode the value once.
+      * Can accept either `str` or `int` as input value.
+      * Can be used in an f-string and output the URL-encoded string.
 
     Reference to documentation on why this is necessary.
 
-    https://docs.gitlab.com/ee/api/index.html#namespaced-path-encoding
+    See::
 
-    If using namespaced API requests, make sure that the NAMESPACE/PROJECT_PATH is
-    URL-encoded. For example, / is represented by %2F
-
-    https://docs.gitlab.com/ee/api/index.html#path-parameters
-
-    Path parameters that are required to be URL-encoded must be followed. If not, it
-    doesn’t match an API endpoint and responds with a 404. If there’s something in front
-    of the API (for example, Apache), ensure that it doesn’t decode the URL-encoded path
-    parameters.
-
+        https://docs.gitlab.com/ee/api/index.html#namespaced-path-encoding
+        https://docs.gitlab.com/ee/api/index.html#path-parameters
     """
-    return urllib.parse.quote(id, safe="")
+
+    # mypy complains if return type other than the class type. So we ignore issue.
+    def __new__(  # type: ignore
+        cls, value: Union[str, int, "EncodedId"]
+    ) -> Union[int, "EncodedId"]:
+        if isinstance(value, (int, EncodedId)):
+            return value
+
+        if not isinstance(value, str):
+            raise TypeError(f"Unsupported type received: {type(value)}")
+        value = urllib.parse.quote(value, safe="")
+        return super().__new__(cls, value)
 
 
 def remove_none_from_dict(data: Dict[str, Any]) -> Dict[str, Any]:

@@ -115,7 +115,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             A list of dicts describing the resources found.
         """
         data = {"scope": scope, "search": search}
-        path = f"/groups/{self.get_id()}/search"
+        path = f"/groups/{self.encoded_id}/search"
         return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
 
     @cli.register_custom_action("Group", ("cn", "group_access", "provider"))
@@ -136,7 +136,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server cannot perform the request
         """
-        path = f"/groups/{self.get_id()}/ldap_group_links"
+        path = f"/groups/{self.encoded_id}/ldap_group_links"
         data = {"cn": cn, "group_access": group_access, "provider": provider}
         self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
@@ -156,7 +156,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
-        path = f"/groups/{self.get_id()}/ldap_group_links"
+        path = f"/groups/{self.encoded_id}/ldap_group_links"
         if provider is not None:
             path += f"/{provider}"
         path += f"/{cn}"
@@ -174,7 +174,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server cannot perform the request
         """
-        path = f"/groups/{self.get_id()}/ldap_sync"
+        path = f"/groups/{self.encoded_id}/ldap_sync"
         self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("Group", ("group_id", "group_access"), ("expires_at",))
@@ -200,7 +200,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             Group
         """
-        path = f"/groups/{self.get_id()}/share"
+        path = f"/groups/{self.encoded_id}/share"
         data = {
             "group_id": group_id,
             "group_access": group_access,
@@ -224,7 +224,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server failed to perform the request
         """
-        path = f"/groups/{self.get_id()}/share/{group_id}"
+        path = f"/groups/{self.encoded_id}/share/{group_id}"
         self.manager.gitlab.http_delete(path, **kwargs)
 
 

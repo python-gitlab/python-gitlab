@@ -218,6 +218,15 @@ class RESTObject(object):
         return getattr(self, self._id_attr)
 
     @property
+    def encoded_id(self) -> Any:
+        """Ensure that the ID is url-encoded so that it can be safely used in a URL
+        path"""
+        obj_id = self.get_id()
+        if isinstance(obj_id, str):
+            obj_id = gitlab.utils.EncodedId(obj_id)
+        return obj_id
+
+    @property
     def attributes(self) -> Dict[str, Any]:
         d = self.__dict__["_updated_attrs"].copy()
         d.update(self.__dict__["_attrs"])
