@@ -1,3 +1,4 @@
+import warnings
 from typing import Any, Callable, cast, Dict, List, Optional, TYPE_CHECKING, Union
 
 import requests
@@ -526,7 +527,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
 
     @cli.register_custom_action("Project", ("to_namespace",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
-    def transfer_project(self, to_namespace: str, **kwargs: Any) -> None:
+    def transfer(self, to_namespace: str, **kwargs: Any) -> None:
         """Transfer a project to the given namespace ID
 
         Args:
@@ -542,6 +543,15 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         self.manager.gitlab.http_put(
             path, post_data={"namespace": to_namespace}, **kwargs
         )
+
+    @cli.register_custom_action("Project", ("to_namespace",))
+    def transfer_project(self, *args: Any, **kwargs: Any) -> None:
+        warnings.warn(
+            "The project.transfer_project() method is deprecated and will be "
+            "removed in a future version. Use project.transfer() instead.",
+            DeprecationWarning,
+        )
+        return self.transfer(*args, **kwargs)
 
     @cli.register_custom_action("Project", ("ref_name", "job"), ("job_token",))
     @exc.on_http_error(exc.GitlabGetError)

@@ -10,6 +10,7 @@ import responses
 import gitlab
 from gitlab.v4.objects import GroupDescendantGroup, GroupSubgroup
 
+content = {"name": "name", "id": 1, "path": "path"}
 subgroup_descgroup_content = [
     {
         "id": 2,
@@ -41,8 +42,6 @@ subgroup_descgroup_content = [
 
 @pytest.fixture
 def resp_groups():
-    content = {"name": "name", "id": 1, "path": "path"}
-
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
             method=responses.GET,
@@ -92,6 +91,22 @@ def resp_create_import(accepted_content):
             json=accepted_content,
             content_type="application/json",
             status=202,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_transfer_group():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.PUT,
+            url="http://localhost/api/v4/groups/1/transfer",
+            json=content,
+            content_type="application/json",
+            status=200,
+            match=[
+                responses.matchers.json_params_matcher({"namespace": "test-namespace"})
+            ],
         )
         yield rsps
 
@@ -153,3 +168,9 @@ def test_refresh_group_import_status(group, resp_groups):
     group_import = group.imports.get()
     group_import.refresh()
     assert group_import.import_status == "finished"
+
+
+@pytest.mark.skip("Pending #1807")
+def test_transfer_group(gl, resp_transfer_group):
+    group = gl.groups.get(1, lazy=True)
+    group.transfer("test-namespace")
