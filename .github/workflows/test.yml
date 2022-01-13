@@ -79,7 +79,7 @@ jobs:
         with:
           files: ./coverage.xml
           flags: ${{ matrix.toxenv }}
-          fail_ci_if_error: true
+          fail_ci_if_error: false
 
   coverage:
     runs-on: ubuntu-20.04
@@ -101,4 +101,4 @@ jobs:
         with:
           files: ./coverage.xml
           flags: unit
-          fail_ci_if_error: true
+          fail_ci_if_error: false
