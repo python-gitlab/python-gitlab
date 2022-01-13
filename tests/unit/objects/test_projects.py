@@ -54,6 +54,22 @@ def resp_import_bitbucket_server():
         yield rsps
 
 
+@pytest.fixture
+def resp_transfer_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.PUT,
+            url="http://localhost/api/v4/projects/1/transfer",
+            json=project_content,
+            content_type="application/json",
+            status=200,
+            match=[
+                responses.matchers.json_params_matcher({"namespace": "test-namespace"})
+            ],
+        )
+        yield rsps
+
+
 def test_get_project(gl, resp_get_project):
     data = gl.projects.get(1)
     assert isinstance(data, Project)
@@ -217,9 +233,15 @@ def test_delete_project_push_rule(gl):
     pass
 
 
-@pytest.mark.skip(reason="missing test")
-def test_transfer_project(gl):
-    pass
+def test_transfer_project(gl, resp_transfer_project):
+    project = gl.projects.get(1, lazy=True)
+    project.transfer("test-namespace")
+
+
+def test_transfer_project_deprecated_warns(gl, resp_transfer_project):
+    project = gl.projects.get(1, lazy=True)
+    with pytest.warns(DeprecationWarning):
+        project.transfer_project("test-namespace")
 
 
 @pytest.mark.skip(reason="missing test")

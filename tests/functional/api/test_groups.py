@@ -231,3 +231,19 @@ def test_group_hooks(group):
     hook = group.hooks.get(hook.id)
     assert hook.note_events is True
     hook.delete()
+
+
+@pytest.mark.skip(reason="Pending #1807")
+def test_group_transfer(gl, group):
+    transfer_group = gl.groups.create({"name": "transfer-test-group"})
+    assert group.namespace["path"] != group.full_path
+
+    transfer_group.transfer(group.id)
+
+    transferred_group = gl.projects.get(transfer_group.id)
+    assert transferred_group.namespace["path"] == group.full_path
+
+    transfer_group.transfer()
+
+    transferred_group = gl.projects.get(transfer_group.id)
+    assert transferred_group.path == transferred_group.full_path

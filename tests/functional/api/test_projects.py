@@ -329,3 +329,17 @@ def test_project_groups_list(gl, group):
     groups = project.groups.list()
     group_ids = set([x.id for x in groups])
     assert set((group.id, group2.id)) == group_ids
+
+
+def test_project_transfer(gl, project, group):
+    assert project.namespace["path"] != group.full_path
+    project.transfer_project(group.id)
+
+    project = gl.projects.get(project.id)
+    assert project.namespace["path"] == group.full_path
+
+    gl.auth()
+    project.transfer_project(gl.user.username)
+
+    project = gl.projects.get(project.id)
+    assert project.namespace["path"] == gl.user.username
