@@ -77,6 +77,8 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabDeleteError: If the server cannot perform the request
         """
         file_path = self.encoded_id
+        if TYPE_CHECKING:
+            assert isinstance(file_path, str)
         self.manager.delete(file_path, branch, commit_message, **kwargs)
 
 
