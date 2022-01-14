@@ -233,17 +233,19 @@ def test_group_hooks(group):
     hook.delete()
 
 
-@pytest.mark.skip(reason="Pending #1807")
 def test_group_transfer(gl, group):
-    transfer_group = gl.groups.create({"name": "transfer-test-group"})
-    assert group.namespace["path"] != group.full_path
+    transfer_group = gl.groups.create(
+        {"name": "transfer-test-group", "path": "transfer-test-group"}
+    )
+    transfer_group = gl.groups.get(transfer_group.id)
+    assert transfer_group.parent_id != group.id
 
     transfer_group.transfer(group.id)
 
-    transferred_group = gl.projects.get(transfer_group.id)
-    assert transferred_group.namespace["path"] == group.full_path
+    transferred_group = gl.groups.get(transfer_group.id)
+    assert transferred_group.parent_id == group.id
 
     transfer_group.transfer()
 
-    transferred_group = gl.projects.get(transfer_group.id)
+    transferred_group = gl.groups.get(transfer_group.id)
     assert transferred_group.path == transferred_group.full_path
