@@ -27,7 +27,7 @@ class Todo(ObjectDeleteMixin, RESTObject):
         Returns:
             A dict with the result
         """
-        path = f"{self.manager.path}/{self.id}/mark_as_done"
+        path = f"{self.manager.path}/{self.encoded_id}/mark_as_done"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(server_data, dict)
