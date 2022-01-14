@@ -333,13 +333,13 @@ def test_project_groups_list(gl, group):
 
 def test_project_transfer(gl, project, group):
     assert project.namespace["path"] != group.full_path
-    project.transfer_project(group.id)
+    project.transfer(group.id)
 
     project = gl.projects.get(project.id)
     assert project.namespace["path"] == group.full_path
 
     gl.auth()
-    project.transfer_project(gl.user.username)
+    project.transfer(gl.user.username)
 
     project = gl.projects.get(project.id)
     assert project.namespace["path"] == gl.user.username
