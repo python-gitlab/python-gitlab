@@ -179,7 +179,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             Whether the user status has been changed
         """
-        path = f"/users/{self.id}/block"
+        path = f"/users/{self.encoded_id}/block"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if server_data is True:
             self._attrs["state"] = "blocked"
@@ -200,7 +200,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             The new object data (*not* a RESTObject)
         """
-        path = f"/users/{self.id}/follow"
+        path = f"/users/{self.encoded_id}/follow"
         return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("User")
@@ -218,7 +218,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             The new object data (*not* a RESTObject)
         """
-        path = f"/users/{self.id}/unfollow"
+        path = f"/users/{self.encoded_id}/unfollow"
         return self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("User")
@@ -236,7 +236,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             Whether the user status has been changed
         """
-        path = f"/users/{self.id}/unblock"
+        path = f"/users/{self.encoded_id}/unblock"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if server_data is True:
             self._attrs["state"] = "active"
@@ -257,7 +257,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             Whether the user status has been changed
         """
-        path = f"/users/{self.id}/deactivate"
+        path = f"/users/{self.encoded_id}/deactivate"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if server_data:
             self._attrs["state"] = "deactivated"
@@ -278,7 +278,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         Returns:
             Whether the user status has been changed
         """
-        path = f"/users/{self.id}/activate"
+        path = f"/users/{self.encoded_id}/activate"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if server_data:
             self._attrs["state"] = "active"
