@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.0 (2022-01-14)
+### Feature
+* Add support for Groups API method `transfer()` ([`0007006`](https://github.com/python-gitlab/python-gitlab/commit/0007006c184c64128caa96b82dafa3db0ea1101f))
+* **api:** Add `project.transfer()` and deprecate `transfer_project()` ([`259668a`](https://github.com/python-gitlab/python-gitlab/commit/259668ad8cb54348e4a41143a45f899a222d2d35))
+* **api:** Return result from `SaveMixin.save()` ([`e6258a4`](https://github.com/python-gitlab/python-gitlab/commit/e6258a4193a0e8d0c3cf48de15b926bebfa289f3))
+
+### Fix
+* **cli:** Add missing list filters for environments ([`6f64d40`](https://github.com/python-gitlab/python-gitlab/commit/6f64d4098ed4a890838c6cf43d7a679e6be4ac6c))
+* Use url-encoded ID in all paths ([`12435d7`](https://github.com/python-gitlab/python-gitlab/commit/12435d74364ca881373d690eab89d2e2baa62a49))
+* **members:** Use new *All objects for *AllManager managers ([`755e0a3`](https://github.com/python-gitlab/python-gitlab/commit/755e0a32e8ca96a3a3980eb7d7346a1a899ad58b))
+* **api:** Services: add missing `lazy` parameter ([`888f332`](https://github.com/python-gitlab/python-gitlab/commit/888f3328d3b1c82a291efbdd9eb01f11dff0c764))
+
 ## v3.0.0 (2022-01-05)
 ### Feature
 * **docker:** Remove custom entrypoint from image ([`80754a1`](https://github.com/python-gitlab/python-gitlab/commit/80754a17f66ef4cd8469ff0857e0fc592c89796d))
