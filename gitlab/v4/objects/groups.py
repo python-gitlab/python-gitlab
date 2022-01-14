@@ -111,7 +111,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGroupTransferError: If the group could not be transferred
         """
-        path = f"/groups/{self.id}/transfer"
+        path = f"/groups/{self.encoded_id}/transfer"
         post_data = {}
         if group_id is not None:
             post_data["group_id"] = group_id
