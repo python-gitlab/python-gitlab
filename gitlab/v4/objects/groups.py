@@ -92,7 +92,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabTransferProjectError: If the project could not be transferred
         """
-        path = f"/groups/{self.id}/projects/{project_id}"
+        path = f"/groups/{self.encoded_id}/projects/{project_id}"
         self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("Group", ("scope", "search"))
