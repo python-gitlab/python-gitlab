@@ -99,13 +99,13 @@ def resp_create_import(accepted_content):
 def resp_transfer_group():
     with responses.RequestsMock() as rsps:
         rsps.add(
-            method=responses.PUT,
+            method=responses.POST,
             url="http://localhost/api/v4/groups/1/transfer",
             json=content,
             content_type="application/json",
             status=200,
             match=[
-                responses.matchers.json_params_matcher({"namespace": "test-namespace"})
+                responses.matchers.json_params_matcher({"group_id": "test-namespace"})
             ],
         )
         yield rsps
@@ -170,7 +170,6 @@ def test_refresh_group_import_status(group, resp_groups):
     assert group_import.import_status == "finished"
 
 
-@pytest.mark.skip("Pending #1807")
 def test_transfer_group(gl, resp_transfer_group):
     group = gl.groups.get(1, lazy=True)
     group.transfer("test-namespace")
