@@ -4,6 +4,7 @@
 
 ## v3.1.0 (2022-01-14)
 ### Feature
+* add support for Group Access Token API ([`c01b7c4`](https://github.com/python-gitlab/python-gitlab/commit/c01b7c494192c5462ec673848287ef2a5c9bd737))
 * Add support for Groups API method `transfer()` ([`0007006`](https://github.com/python-gitlab/python-gitlab/commit/0007006c184c64128caa96b82dafa3db0ea1101f))
 * **api:** Add `project.transfer()` and deprecate `transfer_project()` ([`259668a`](https://github.com/python-gitlab/python-gitlab/commit/259668ad8cb54348e4a41143a45f899a222d2d35))
 * **api:** Return result from `SaveMixin.save()` ([`e6258a4`](https://github.com/python-gitlab/python-gitlab/commit/e6258a4193a0e8d0c3cf48de15b926bebfa289f3))
@@ -13,6 +14,13 @@
 * Use url-encoded ID in all paths ([`12435d7`](https://github.com/python-gitlab/python-gitlab/commit/12435d74364ca881373d690eab89d2e2baa62a49))
 * **members:** Use new *All objects for *AllManager managers ([`755e0a3`](https://github.com/python-gitlab/python-gitlab/commit/755e0a32e8ca96a3a3980eb7d7346a1a899ad58b))
 * **api:** Services: add missing `lazy` parameter ([`888f332`](https://github.com/python-gitlab/python-gitlab/commit/888f3328d3b1c82a291efbdd9eb01f11dff0c764))
+* broken URL for FAQ about attribute-error-list ([`1863f30`](https://github.com/python-gitlab/python-gitlab/commit/1863f30ea1f6fb7644b3128debdbb6b7bb218836))
+* remove default arguments for mergerequests.merge() ([`8e589c4`](https://github.com/python-gitlab/python-gitlab/commit/8e589c43fa2298dc24b97423ffcc0ce18d911e3b))
+* remove custom URL encoding ([`3d49e5e`](https://github.com/python-gitlab/python-gitlab/commit/3d49e5e6a2bf1c9a883497acb73d7ce7115b804d))
+
+### Documentation
+* **cli:** make examples more easily navigable by generating TOC ([`f33c523`](https://github.com/python-gitlab/python-gitlab/commit/f33c5230cb25c9a41e9f63c0846c1ecba7097ee7))
+* update project access token API reference link ([`73ae955`](https://github.com/python-gitlab/python-gitlab/commit/73ae9559dc7f4fba5c80862f0f253959e60f7a0c))
 
 ## v3.0.0 (2022-01-05)
 ### Feature
