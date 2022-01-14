@@ -442,7 +442,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             with open(filepath, "rb") as f:
                 filedata = f.read()
 
-        url = f"/projects/{self.id}/uploads"
+        url = f"/projects/{self.encoded_id}/uploads"
         file_info = {"file": (filename, filedata)}
         data = self.manager.gitlab.http_post(url, files=file_info)
 
@@ -539,7 +539,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             GitlabAuthenticationError: If authentication is not correct
             GitlabTransferProjectError: If the project could not be transferred
         """
-        path = f"/projects/{self.id}/transfer"
+        path = f"/projects/{self.encoded_id}/transfer"
         self.manager.gitlab.http_put(
             path, post_data={"namespace": to_namespace}, **kwargs
         )
