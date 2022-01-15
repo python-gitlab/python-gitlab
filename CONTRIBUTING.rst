@@ -153,7 +153,7 @@ This avoids triggering incorrect version bumps and releases without functional c
 The release workflow uses `python-semantic-release
 <https://python-semantic-release.readthedocs.io>`_ and does the following:
 
-* Bumps the version in ``__version__.py`` and adds an entry in ``CHANGELOG.md``,
+* Bumps the version in ``_version.py`` and adds an entry in ``CHANGELOG.md``,
 * Commits and tags the changes, then pushes to the main branch as the ``github-actions`` user,
 * Creates a release from the tag and adds the changelog entry to the release notes,
 * Uploads the package as assets to the GitHub release,

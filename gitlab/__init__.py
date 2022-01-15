@@ -20,7 +20,7 @@ import warnings
 from typing import Any
 
 import gitlab.config  # noqa: F401
-from gitlab.__version__ import (  # noqa: F401
+from gitlab._version import (  # noqa: F401
     __author__,
     __copyright__,
     __email__,
