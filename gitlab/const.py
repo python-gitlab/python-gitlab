@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from gitlab.__version__ import __title__, __version__
+from gitlab._version import __title__, __version__
 
 # NOTE(jlvillal): '_DEPRECATED' only affects users accessing constants via the
 # top-level gitlab.* namespace. See 'gitlab/__init__.py:__getattr__()' for the

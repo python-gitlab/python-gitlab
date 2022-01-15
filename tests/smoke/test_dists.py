@@ -6,7 +6,7 @@ from sys import version_info
 import pytest
 from setuptools import sandbox
 
-from gitlab import __title__, __version__
+from gitlab._version import __title__, __version__
 
 DIST_DIR = Path("dist")
 DOCS_DIR = "docs"
