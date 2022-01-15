@@ -19,7 +19,7 @@ import importlib
 import pprint
 import textwrap
 from types import ModuleType
-from typing import Any, Dict, Iterable, NamedTuple, Optional, Tuple, Type
+from typing import Any, Dict, Iterable, NamedTuple, Optional, Tuple, Type, Union
 
 import gitlab
 from gitlab import types as g_types
@@ -211,14 +211,14 @@ class RESTObject(object):
         self.__dict__["_updated_attrs"] = {}
         self.__dict__["_attrs"] = new_attrs
 
-    def get_id(self) -> Any:
+    def get_id(self) -> Optional[Union[int, str]]:
         """Returns the id of the resource."""
         if self._id_attr is None or not hasattr(self, self._id_attr):
             return None
         return getattr(self, self._id_attr)
 
     @property
-    def encoded_id(self) -> Any:
+    def encoded_id(self) -> Optional[Union[int, str]]:
         """Ensure that the ID is url-encoded so that it can be safely used in a URL
         path"""
         obj_id = self.get_id()

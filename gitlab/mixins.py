@@ -576,6 +576,7 @@ class ObjectDeleteMixin(_RestObjectBase):
         """
         if TYPE_CHECKING:
             assert isinstance(self.manager, DeleteMixin)
+            assert self.encoded_id is not None
         self.manager.delete(self.encoded_id, **kwargs)
 
 
