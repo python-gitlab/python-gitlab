@@ -39,6 +39,7 @@ from .export_import import *
 from .features import *
 from .files import *
 from .geo_nodes import *
+from .group_access_tokens import *
 from .groups import *
 from .hooks import *
 from .issues import *
@@ -58,9 +59,11 @@ from .packages import *
 from .pages import *
 from .personal_access_tokens import *
 from .pipelines import *
+from .project_access_tokens import *
 from .projects import *
 from .push_rules import *
 from .releases import *
+from .repositories import *
 from .runners import *
 from .services import *
 from .settings import *
