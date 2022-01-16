@@ -29,6 +29,14 @@ python-gitlab
 
 It supports the v4 API of GitLab, and provides a CLI tool (``gitlab``).
 
+The client aims to let you write clean Python code when managing GitLab resources.
+You can pass arbitrary parameters to the GitLab API - so you only need to
+follow GitLab's current documentation on what parameters are available.
+
+It also provides lower-level API methods giving you a degree of control and
+usability for any endpoint the moment it is available on GitLab.com or your
+GitLab instance.
+
 Installation
 ------------
 
