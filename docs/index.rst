@@ -10,6 +10,7 @@
    api-objects
    api/gitlab
    cli-objects
+   api-levels
    changelog
    release-notes
    faq
