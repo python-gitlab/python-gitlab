@@ -1,13 +1,11 @@
-import datetime
-import io
-import json
-from typing import Optional
-
 import pytest
 import requests
 import responses
 
 from gitlab import GitlabHttpError, GitlabList, GitlabParsingError, RedirectError
+from tests.unit import helpers
+
+MATCH_EMPTY_QUERY_PARAMS = [responses.matchers.query_param_matcher({})]
 
 
 def test_build_url(gl):
@@ -27,7 +25,7 @@ def test_http_request(gl):
         url=url,
         json=[{"name": "project1"}],
         status=200,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     http_r = gl.http_request("get", "/projects")
@@ -44,7 +42,7 @@ def test_http_request_404(gl):
         url=url,
         json={},
         status=400,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -61,7 +59,7 @@ def test_http_request_with_only_failures(gl, status_code):
         url=url,
         json={},
         status=status_code,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -167,7 +165,7 @@ def create_redirect_response(
 
     # Create a history which contains our original request which is redirected
     history = [
-        httmock_response(
+        helpers.httmock_response(
             status_code=302,
             content="",
             headers={"Location": f"http://example.com/api/v4{api_path}"},
@@ -185,7 +183,7 @@ def create_redirect_response(
     )
     prepped = req.prepare()
 
-    resp_obj = httmock_response(
+    resp_obj = helpers.httmock_response(
         status_code=200,
         content="",
         headers={},
@@ -216,7 +214,7 @@ def test_http_request_302_get_does_not_raise(gl):
             method=responses.GET,
             url=url,
             status=302,
-            match=[responses.matchers.query_param_matcher({})],
+            match=MATCH_EMPTY_QUERY_PARAMS,
         )
         gl.http_request(verb=method, path=api_path)
 
@@ -240,7 +238,7 @@ def test_http_request_302_put_raises_redirect_error(gl):
             method=responses.PUT,
             url=url,
             status=302,
-            match=[responses.matchers.query_param_matcher({})],
+            match=MATCH_EMPTY_QUERY_PARAMS,
         )
         with pytest.raises(RedirectError) as exc:
             gl.http_request(verb=method, path=api_path)
@@ -258,7 +256,7 @@ def test_get_request(gl):
         url=url,
         json={"name": "project1"},
         status=200,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_get("/projects")
@@ -276,7 +274,7 @@ def test_get_request_raw(gl):
         content_type="application/octet-stream",
         body="content",
         status=200,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_get("/projects")
@@ -292,7 +290,7 @@ def test_get_request_404(gl):
         url=url,
         json=[],
         status=404,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -309,7 +307,7 @@ def test_get_request_invalid_data(gl):
         body='["name": "project1"]',
         content_type="application/json",
         status=200,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabParsingError):
@@ -328,7 +326,7 @@ def test_list_request(gl):
         json=[{"name": "project1"}],
         headers={"X-Total": "1"},
         status=200,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_list("/projects", as_list=True)
@@ -353,7 +351,7 @@ def test_list_request_404(gl):
         url=url,
         json=[],
         status=404,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -370,7 +368,7 @@ def test_list_request_invalid_data(gl):
         body='["name": "project1"]',
         content_type="application/json",
         status=200,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabParsingError):
@@ -386,7 +384,7 @@ def test_post_request(gl):
         url=url,
         json={"name": "project1"},
         status=200,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_post("/projects")
@@ -403,7 +401,7 @@ def test_post_request_404(gl):
         url=url,
         json=[],
         status=404,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -420,7 +418,7 @@ def test_post_request_invalid_data(gl):
         content_type="application/json",
         body='["name": "project1"]',
         status=200,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabParsingError):
@@ -436,7 +434,7 @@ def test_put_request(gl):
         url=url,
         json={"name": "project1"},
         status=200,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_put("/projects")
@@ -453,7 +451,7 @@ def test_put_request_404(gl):
         url=url,
         json=[],
         status=404,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -470,7 +468,7 @@ def test_put_request_invalid_data(gl):
         body='["name": "project1"]',
         content_type="application/json",
         status=200,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabParsingError):
@@ -486,7 +484,7 @@ def test_delete_request(gl):
         url=url,
         json=True,
         status=200,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_delete("/projects")
@@ -503,69 +501,9 @@ def test_delete_request_404(gl):
         url=url,
         json=[],
         status=404,
-        match=[responses.matchers.query_param_matcher({})],
+        match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
         gl.http_delete("/not_there")
     assert responses.assert_call_count(url, 1) is True
-
-
-# NOTE: The function `httmock_response` and the class `Headers` is taken from
-# https://github.com/patrys/httmock/ which is licensed under the Apache License, Version
-# 2.0. Thus it is allowed to be used in this project.
-# https://www.apache.org/licenses/GPL-compatibility.html
-class Headers(object):
-    def __init__(self, res):
-        self.headers = res.headers
-
-    def get_all(self, name, failobj=None):
-        return self.getheaders(name)
-
-    def getheaders(self, name):
-        return [self.headers.get(name)]
-
-
-def httmock_response(
-    status_code: int = 200,
-    content: str = "",
-    headers=None,
-    reason=None,
-    elapsed=0,
-    request: Optional[requests.models.PreparedRequest] = None,
-    stream: bool = False,
-    http_vsn=11,
-) -> requests.models.Response:
-    res = requests.Response()
-    res.status_code = status_code
-    if isinstance(content, (dict, list)):
-        content = json.dumps(content).encode("utf-8")
-    if isinstance(content, str):
-        content = content.encode("utf-8")
-    res._content = content
-    res._content_consumed = content
-    res.headers = requests.structures.CaseInsensitiveDict(headers or {})
-    res.encoding = requests.utils.get_encoding_from_headers(res.headers)
-    res.reason = reason
-    res.elapsed = datetime.timedelta(elapsed)
-    res.request = request
-    if hasattr(request, "url"):
-        res.url = request.url
-        if isinstance(request.url, bytes):
-            res.url = request.url.decode("utf-8")
-    if "set-cookie" in res.headers:
-        res.cookies.extract_cookies(
-            requests.cookies.MockResponse(Headers(res)),
-            requests.cookies.MockRequest(request),
-        )
-    if stream:
-        res.raw = io.BytesIO(content)
-    else:
-        res.raw = io.BytesIO(b"")
-    res.raw.version = http_vsn
-
-    # normally this closes the underlying connection,
-    #  but we have nothing to free.
-    res.close = lambda *args, **kwargs: None
-
-    return res
