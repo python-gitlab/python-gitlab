@@ -58,7 +58,7 @@ def resp_page_1():
         "headers": headers,
         "content_type": "application/json",
         "status": 200,
-        "match_querystring": True,
+        "match": [responses.matchers.query_param_matcher({})],
     }
 
 
@@ -81,7 +81,6 @@ def resp_page_2():
         "content_type": "application/json",
         "status": 200,
         "match": [responses.matchers.query_param_matcher(params)],
-        "match_querystring": False,
     }
 
 

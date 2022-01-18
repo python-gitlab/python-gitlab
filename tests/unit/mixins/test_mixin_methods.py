@@ -35,7 +35,7 @@ def test_get_mixin(gl):
         url=url,
         json={"id": 42, "foo": "bar"},
         status=200,
-        match_querystring=True,
+        match=[responses.matchers.query_param_matcher({})],
     )
 
     mgr = M(gl)
@@ -57,7 +57,7 @@ def test_refresh_mixin(gl):
         url=url,
         json={"id": 42, "foo": "bar"},
         status=200,
-        match_querystring=True,
+        match=[responses.matchers.query_param_matcher({})],
     )
 
     mgr = FakeManager(gl)
@@ -80,7 +80,7 @@ def test_get_without_id_mixin(gl):
         url=url,
         json={"foo": "bar"},
         status=200,
-        match_querystring=True,
+        match=[responses.matchers.query_param_matcher({})],
     )
 
     mgr = M(gl)
@@ -102,7 +102,7 @@ def test_list_mixin(gl):
         url=url,
         json=[{"id": 42, "foo": "bar"}, {"id": 43, "foo": "baz"}],
         status=200,
-        match_querystring=True,
+        match=[responses.matchers.query_param_matcher({})],
     )
 
     # test RESTObjectList
@@ -134,7 +134,7 @@ def test_list_other_url(gl):
         url=url,
         json=[{"id": 42, "foo": "bar"}],
         status=200,
-        match_querystring=True,
+        match=[responses.matchers.query_param_matcher({})],
     )
 
     mgr = M(gl)
@@ -177,7 +177,7 @@ def test_create_mixin(gl):
         url=url,
         json={"id": 42, "foo": "bar"},
         status=200,
-        match_querystring=True,
+        match=[responses.matchers.query_param_matcher({})],
     )
 
     mgr = M(gl)
@@ -202,7 +202,7 @@ def test_create_mixin_custom_path(gl):
         url=url,
         json={"id": 42, "foo": "bar"},
         status=200,
-        match_querystring=True,
+        match=[responses.matchers.query_param_matcher({})],
     )
 
     mgr = M(gl)
@@ -243,7 +243,7 @@ def test_update_mixin(gl):
         url=url,
         json={"id": 42, "foo": "baz"},
         status=200,
-        match_querystring=True,
+        match=[responses.matchers.query_param_matcher({})],
     )
 
     mgr = M(gl)
@@ -268,7 +268,7 @@ def test_update_mixin_no_id(gl):
         url=url,
         json={"foo": "baz"},
         status=200,
-        match_querystring=True,
+        match=[responses.matchers.query_param_matcher({})],
     )
 
     mgr = M(gl)
@@ -289,7 +289,7 @@ def test_delete_mixin(gl):
         url=url,
         json="",
         status=200,
-        match_querystring=True,
+        match=[responses.matchers.query_param_matcher({})],
     )
 
     mgr = M(gl)
@@ -311,7 +311,7 @@ def test_save_mixin(gl):
         url=url,
         json={"id": 42, "foo": "baz"},
         status=200,
-        match_querystring=True,
+        match=[responses.matchers.query_param_matcher({})],
     )
 
     mgr = M(gl)
@@ -334,7 +334,7 @@ def test_set_mixin(gl):
         url=url,
         json={"key": "foo", "value": "bar"},
         status=200,
-        match_querystring=True,
+        match=[responses.matchers.query_param_matcher({})],
     )
 
     mgr = M(gl)
