@@ -168,8 +168,7 @@ We recommend that you use `Credential helpers`_ to securely store your tokens.
        <https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html>`__
        to learn how to obtain a token.
    * - ``oauth_token``
-     - An Oauth token for authentication. The Gitlab server must be configured
-       to support this authentication method.
+     - An Oauth token for authentication.
    * - ``job_token``
      - Your job token. See `the official documentation
        <https://docs.gitlab.com/ce/api/jobs.html#get-job-artifacts>`__

@@ -2,6 +2,7 @@ import pytest
 import requests
 
 import gitlab
+from gitlab.oauth import PasswordCredentials
 
 
 @pytest.fixture(
@@ -18,6 +19,13 @@ def get_all_kwargs(request):
 def test_auth_from_config(gl, gitlab_config, temp_dir):
     """Test token authentication from config file"""
     test_gitlab = gitlab.Gitlab.from_config(config_files=[gitlab_config])
+    test_gitlab.auth()
+    assert isinstance(test_gitlab.user, gitlab.v4.objects.CurrentUser)
+
+
+def test_auth_with_ropc_flow(gl, temp_dir):
+    oauth_credentials = PasswordCredentials("root", "5iveL!fe")
+    test_gitlab = gitlab.Gitlab(gl.url, oauth_credentials=oauth_credentials)
     test_gitlab.auth()
     assert isinstance(test_gitlab.user, gitlab.v4.objects.CurrentUser)
 
