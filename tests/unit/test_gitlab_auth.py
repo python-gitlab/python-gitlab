@@ -8,6 +8,33 @@ from requests import PreparedRequest
 from gitlab import Gitlab
 from gitlab._backends import JobTokenAuth, OAuthTokenAuth, PrivateTokenAuth
 from gitlab.config import GitlabConfigParser
+from gitlab.oauth import PasswordCredentials
+
+
+# /oauth/token endpoint might be missing correct content-type header
+@pytest.fixture(params=["application/json", None])
+def resp_oauth_token(gl: Gitlab, request: pytest.FixtureRequest):
+    ropc_payload = {
+        "username": "foo",
+        "password": "bar",
+        "grant_type": "password",
+        "scope": "api",
+    }
+    ropc_response = {
+        "access_token": "test-token",
+        "token_type": "bearer",
+        "expires_in": 7200,
+    }
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url=f"{gl._base_url}/oauth/token",
+            status=201,
+            match=[responses.matchers.json_params_matcher(ropc_payload)],
+            json=ropc_response,
+            content_type=request.param,
+        )
+        yield rsps
 
 
 @pytest.fixture
@@ -91,24 +118,17 @@ def test_job_token_auth():
     assert "Authorization" not in p.headers
 
 
-def test_http_auth():
-    gl = Gitlab(
-        "http://localhost",
-        http_username="foo",
-        http_password="bar",
-        api_version="4",
-    )
+def test_oauth_resource_password_auth(resp_oauth_token):
+    oauth_credentials = PasswordCredentials("foo", "bar")
+    gl = Gitlab("http://localhost", oauth_credentials=oauth_credentials)
     p = PreparedRequest()
     p.prepare(url=gl.url, auth=gl._auth)
     assert gl.private_token is None
     assert gl.oauth_token is None
     assert gl.job_token is None
-    assert isinstance(gl._auth, requests.auth.HTTPBasicAuth)
     assert gl._auth.username == "foo"
     assert gl._auth.password == "bar"
     assert p.headers["Authorization"] == "Basic Zm9vOmJhcg=="
-    assert "PRIVATE-TOKEN" not in p.headers
-    assert "JOB-TOKEN" not in p.headers
 
 
 @responses.activate
