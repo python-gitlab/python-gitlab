@@ -21,6 +21,7 @@ Examples
 
 Get a list of releases from a project::
 
+    project = gl.projects.get(project_id, lazy=True)
     release = project.releases.list()
 
 Get a single release::
@@ -44,6 +45,14 @@ Delete a release::
 
     # delete object directly
     release.delete()
+
+.. note::
+
+    The Releases API is one of the few working with ``CI_JOB_TOKEN``, but the project can't
+    be fetched with the token. Thus use `lazy` for the project as in the above example.
+
+    Also be aware that most of the capabilities of the endpoint were not accessible with
+    ``CI_JOB_TOKEN`` until Gitlab version 14.5.
 
 Project release links
 =====================
