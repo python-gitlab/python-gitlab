@@ -33,3 +33,12 @@ def resp_get_project():
         "content_type": "application/json",
         "status": 200,
     }
+
+
+@pytest.fixture
+def resp_delete_registry_tags_in_bulk():
+    return {
+        "method": responses.DELETE,
+        "url": f"{DEFAULT_URL}/api/v4/projects/1/registry/repositories/1/tags",
+        "status": 202,
+    }

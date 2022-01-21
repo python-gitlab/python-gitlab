@@ -94,6 +94,7 @@ class GitlabCLI(object):
         return self.do_custom()
 
     def do_custom(self) -> Any:
+        class_instance: Union[gitlab.base.RESTManager, gitlab.base.RESTObject]
         in_obj = cli.custom_actions[self.cls_name][self.action][2]
 
         # Get the object (lazy), then act
@@ -106,11 +107,12 @@ class GitlabCLI(object):
                 if TYPE_CHECKING:
                     assert isinstance(self.cls._id_attr, str)
                 data[self.cls._id_attr] = self.args.pop(self.cls._id_attr)
-            obj = self.cls(self.mgr, data)
-            method_name = self.action.replace("-", "_")
-            return getattr(obj, method_name)(**self.args)
+            class_instance = self.cls(self.mgr, data)
         else:
-            return getattr(self.mgr, self.action)(**self.args)
+            class_instance = self.mgr
+
+        method_name = self.action.replace("-", "_")
+        return getattr(class_instance, method_name)(**self.args)
 
     def do_project_export_download(self) -> None:
         try:
