@@ -41,7 +41,7 @@ _URL_ATTRIBUTE_ERROR = (
 )
 
 
-class RESTObject(object):
+class RESTObject:
     """Represents an object built from server data.
 
     It holds the attributes know from the server, and the updated attributes in
@@ -234,7 +234,7 @@ class RESTObject(object):
         return d
 
 
-class RESTObjectList(object):
+class RESTObjectList:
     """Generator object representing a list of RESTObject's.
 
     This generator uses the Gitlab pagination system to fetch new data when
@@ -321,7 +321,7 @@ class RequiredOptional(NamedTuple):
     optional: Tuple[str, ...] = tuple()
 
 
-class RESTManager(object):
+class RESTManager:
     """Base class for CRUD operations on objects.
 
     Derived class must define ``_path`` and ``_obj_cls``.

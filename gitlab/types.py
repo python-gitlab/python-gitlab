@@ -18,7 +18,7 @@
 from typing import Any, Optional, TYPE_CHECKING
 
 
-class GitlabAttribute(object):
+class GitlabAttribute:
     def __init__(self, value: Any = None) -> None:
         self._value = value
 

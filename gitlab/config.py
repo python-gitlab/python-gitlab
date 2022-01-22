@@ -101,7 +101,7 @@ class GitlabConfigHelperError(ConfigError):
     pass
 
 
-class GitlabConfigParser(object):
+class GitlabConfigParser:
     def __init__(
         self, gitlab_id: Optional[str] = None, config_files: Optional[List[str]] = None
     ) -> None:
