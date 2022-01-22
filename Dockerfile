@@ -1,10 +1,11 @@
-FROM python:3.10-alpine AS build
+ARG PYTHON_FLAVOR=alpine
+FROM python:3.10-${PYTHON_FLAVOR} AS build
 
 WORKDIR /opt/python-gitlab
 COPY . .
 RUN python setup.py bdist_wheel
 
-FROM python:3.10-alpine
+FROM python:3.10-${PYTHON_FLAVOR}
 
 WORKDIR /opt/python-gitlab
 COPY --from=build /opt/python-gitlab/dist dist/
