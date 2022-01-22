@@ -41,7 +41,7 @@ class GroupMemberManager(CRUDMixin, RESTManager):
     _update_attrs = RequiredOptional(
         required=("access_level",), optional=("expires_at",)
     )
-    _types = {"user_ids": types.ListAttribute}
+    _types = {"user_ids": types.CommaSeparatedListAttribute}
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any
@@ -101,7 +101,7 @@ class ProjectMemberManager(CRUDMixin, RESTManager):
     _update_attrs = RequiredOptional(
         required=("access_level",), optional=("expires_at",)
     )
-    _types = {"user_ids": types.ListAttribute}
+    _types = {"user_ids": types.CommaSeparatedListAttribute}
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any

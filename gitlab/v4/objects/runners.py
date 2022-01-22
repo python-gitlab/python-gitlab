@@ -68,7 +68,7 @@ class RunnerManager(CRUDMixin, RESTManager):
         ),
     )
     _list_filters = ("scope", "tag_list")
-    _types = {"tag_list": types.ListAttribute}
+    _types = {"tag_list": types.CommaSeparatedListAttribute}
 
     @cli.register_custom_action("RunnerManager", tuple(), ("scope",))
     @exc.on_http_error(exc.GitlabListError)
@@ -130,7 +130,7 @@ class GroupRunnerManager(ListMixin, RESTManager):
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(required=("runner_id",))
     _list_filters = ("scope", "tag_list")
-    _types = {"tag_list": types.ListAttribute}
+    _types = {"tag_list": types.CommaSeparatedListAttribute}
 
 
 class ProjectRunner(ObjectDeleteMixin, RESTObject):
@@ -143,4 +143,4 @@ class ProjectRunnerManager(CreateMixin, DeleteMixin, ListMixin, RESTManager):
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(required=("runner_id",))
     _list_filters = ("scope", "tag_list")
-    _types = {"tag_list": types.ListAttribute}
+    _types = {"tag_list": types.CommaSeparatedListAttribute}

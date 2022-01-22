@@ -42,7 +42,7 @@ class GroupEpicManager(CRUDMixin, RESTManager):
     _update_attrs = RequiredOptional(
         optional=("title", "labels", "description", "start_date", "end_date"),
     )
-    _types = {"labels": types.ListAttribute}
+    _types = {"labels": types.CommaSeparatedListAttribute}
 
     def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> GroupEpic:
         return cast(GroupEpic, super().get(id=id, lazy=lazy, **kwargs))

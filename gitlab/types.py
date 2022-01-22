@@ -32,7 +32,7 @@ class GitlabAttribute(object):
         return self._value
 
 
-class ListAttribute(GitlabAttribute):
+class CommaSeparatedListAttribute(GitlabAttribute):
     def set_from_cli(self, cli_value: str) -> None:
         if not cli_value.strip():
             self._value = []
