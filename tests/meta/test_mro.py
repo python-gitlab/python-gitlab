@@ -20,7 +20,7 @@ Why this is an issue:
 
   Here is how our classes look when type-checking:
 
-      class RESTObject(object):
+      class RESTObject:
           def __init__(self, manager: "RESTManager", attrs: Dict[str, Any]) -> None:
               ...
 
@@ -52,7 +52,7 @@ import gitlab.v4.objects
 def test_show_issue() -> None:
     """Test case to demonstrate the TypeError that occurs"""
 
-    class RESTObject(object):
+    class RESTObject:
         def __init__(self, manager: str, attrs: int) -> None:
             ...
 

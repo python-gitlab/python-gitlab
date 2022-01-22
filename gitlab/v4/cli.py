@@ -27,7 +27,7 @@ import gitlab.v4.objects
 from gitlab import cli
 
 
-class GitlabCLI(object):
+class GitlabCLI:
     def __init__(
         self, gl: gitlab.Gitlab, what: str, action: str, args: Dict[str, str]
     ) -> None:
@@ -359,7 +359,7 @@ def get_dict(
     return obj.attributes
 
 
-class JSONPrinter(object):
+class JSONPrinter:
     def display(self, d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
         import json  # noqa
 
@@ -376,7 +376,7 @@ class JSONPrinter(object):
         print(json.dumps([get_dict(obj, fields) for obj in data]))
 
 
-class YAMLPrinter(object):
+class YAMLPrinter:
     def display(self, d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
         try:
             import yaml  # noqa
@@ -411,7 +411,7 @@ class YAMLPrinter(object):
             )
 
 
-class LegacyPrinter(object):
+class LegacyPrinter:
     def display(self, d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
         verbose = kwargs.get("verbose", False)
         padding = kwargs.get("padding", 0)

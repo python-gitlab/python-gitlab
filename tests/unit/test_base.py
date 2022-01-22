@@ -23,7 +23,7 @@ import gitlab
 from gitlab import base
 
 
-class FakeGitlab(object):
+class FakeGitlab:
     pass
 
 
@@ -61,7 +61,7 @@ class TestRESTManager:
             _obj_cls = object
             _from_parent_attrs = {"test_id": "id"}
 
-        class Parent(object):
+        class Parent:
             id = 42
 
         mgr = MGR(FakeGitlab(), parent=Parent())

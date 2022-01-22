@@ -36,7 +36,7 @@ REDIRECT_MSG = (
 )
 
 
-class Gitlab(object):
+class Gitlab:
     """Represents a GitLab server connection.
 
     Args:
@@ -957,7 +957,7 @@ class Gitlab(object):
         return self.http_list("/search", query_data=data, **kwargs)
 
 
-class GitlabList(object):
+class GitlabList:
     """Generator representing a list of remote objects.
 
     The object handles the links returned by a query to the API, and will call

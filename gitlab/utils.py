@@ -21,7 +21,7 @@ from typing import Any, Callable, Dict, Optional, Union
 import requests
 
 
-class _StdoutStream(object):
+class _StdoutStream:
     def __call__(self, chunk: Any) -> None:
         print(chunk)
 
