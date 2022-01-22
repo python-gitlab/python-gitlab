@@ -328,7 +328,7 @@ def test_project_groups_list(gl, group):
 
     groups = project.groups.list()
     group_ids = set([x.id for x in groups])
-    assert set((group.id, group2.id)) == group_ids
+    assert {group.id, group2.id} == group_ids
 
 
 def test_project_transfer(gl, project, group):

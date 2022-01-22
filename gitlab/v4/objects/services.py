@@ -96,7 +96,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
                 "pipeline_events",
             ),
         ),
-        "external-wiki": (("external_wiki_url",), tuple()),
+        "external-wiki": (("external_wiki_url",), ()),
         "flowdock": (("token",), ("push_events",)),
         "github": (("token", "repository_url"), ("static_context",)),
         "hangouts-chat": (
@@ -159,7 +159,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
                 "comment_on_event_enabled",
             ),
         ),
-        "slack-slash-commands": (("token",), tuple()),
+        "slack-slash-commands": (("token",), ()),
         "mattermost-slash-commands": (("token",), ("username",)),
         "packagist": (
             ("username", "token"),
@@ -194,7 +194,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
             ),
         ),
         "pivotaltracker": (("token",), ("restrict_to_branch", "push_events")),
-        "prometheus": (("api_url",), tuple()),
+        "prometheus": (("api_url",), ()),
         "pushover": (
             ("api_key", "user_key", "priority"),
             ("device", "sound", "push_events"),
@@ -257,7 +257,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
             ("push_events",),
         ),
         "jenkins": (("jenkins_url", "project_name"), ("username", "password")),
-        "mock-ci": (("mock_service_url",), tuple()),
+        "mock-ci": (("mock_service_url",), ()),
         "youtrack": (("issues_url", "project_url"), ("description", "push_events")),
     }
 

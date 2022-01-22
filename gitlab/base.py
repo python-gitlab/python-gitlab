@@ -317,8 +317,8 @@ class RESTObjectList:
 
 
 class RequiredOptional(NamedTuple):
-    required: Tuple[str, ...] = tuple()
-    optional: Tuple[str, ...] = tuple()
+    required: Tuple[str, ...] = ()
+    optional: Tuple[str, ...] = ()
 
 
 class RESTManager:

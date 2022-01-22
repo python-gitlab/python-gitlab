@@ -263,7 +263,7 @@ class ProjectMergeRequest(
         path = f"{self.manager.path}/{self.encoded_id}/changes"
         return self.manager.gitlab.http_get(path, **kwargs)
 
-    @cli.register_custom_action("ProjectMergeRequest", tuple(), ("sha",))
+    @cli.register_custom_action("ProjectMergeRequest", (), ("sha",))
     @exc.on_http_error(exc.GitlabMRApprovalError)
     def approve(self, sha: Optional[str] = None, **kwargs: Any) -> Dict[str, Any]:
         """Approve the merge request.
@@ -347,7 +347,7 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action(
         "ProjectMergeRequest",
-        tuple(),
+        (),
         (
             "merge_commit_message",
             "should_remove_source_branch",

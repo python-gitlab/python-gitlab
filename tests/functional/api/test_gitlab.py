@@ -164,7 +164,7 @@ def test_rate_limits(gl):
     settings.throttle_authenticated_api_period_in_seconds = 3
     settings.save()
 
-    projects = list()
+    projects = []
     for i in range(0, 20):
         projects.append(gl.projects.create({"name": f"{str(i)}ok"}))
 

@@ -70,7 +70,7 @@ class RunnerManager(CRUDMixin, RESTManager):
     _list_filters = ("scope", "tag_list")
     _types = {"tag_list": types.CommaSeparatedListAttribute}
 
-    @cli.register_custom_action("RunnerManager", tuple(), ("scope",))
+    @cli.register_custom_action("RunnerManager", (), ("scope",))
     @exc.on_http_error(exc.GitlabListError)
     def all(self, scope: Optional[str] = None, **kwargs: Any) -> List[Runner]:
         """List all the runners.
