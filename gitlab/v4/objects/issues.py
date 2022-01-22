@@ -65,7 +65,10 @@ class IssueManager(RetrieveMixin, RESTManager):
         "updated_after",
         "updated_before",
     )
-    _types = {"iids": types.ListAttribute, "labels": types.ListAttribute}
+    _types = {
+        "iids": types.CommaSeparatedListAttribute,
+        "labels": types.CommaSeparatedListAttribute,
+    }
 
     def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Issue:
         return cast(Issue, super().get(id=id, lazy=lazy, **kwargs))
@@ -95,7 +98,10 @@ class GroupIssueManager(ListMixin, RESTManager):
         "updated_after",
         "updated_before",
     )
-    _types = {"iids": types.ListAttribute, "labels": types.ListAttribute}
+    _types = {
+        "iids": types.CommaSeparatedListAttribute,
+        "labels": types.CommaSeparatedListAttribute,
+    }
 
 
 class ProjectIssue(
@@ -233,7 +239,10 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
             "discussion_locked",
         ),
     )
-    _types = {"iids": types.ListAttribute, "labels": types.ListAttribute}
+    _types = {
+        "iids": types.CommaSeparatedListAttribute,
+        "labels": types.CommaSeparatedListAttribute,
+    }
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any

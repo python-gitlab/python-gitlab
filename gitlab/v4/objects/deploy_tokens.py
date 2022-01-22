@@ -39,7 +39,7 @@ class GroupDeployTokenManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
             "username",
         ),
     )
-    _types = {"scopes": types.ListAttribute}
+    _types = {"scopes": types.CommaSeparatedListAttribute}
 
 
 class ProjectDeployToken(ObjectDeleteMixin, RESTObject):
@@ -60,4 +60,4 @@ class ProjectDeployTokenManager(ListMixin, CreateMixin, DeleteMixin, RESTManager
             "username",
         ),
     )
-    _types = {"scopes": types.ListAttribute}
+    _types = {"scopes": types.CommaSeparatedListAttribute}
