@@ -616,7 +616,7 @@ class AccessRequestMixin(_RestObjectBase):
     manager: base.RESTManager
 
     @cli.register_custom_action(
-        ("ProjectAccessRequest", "GroupAccessRequest"), tuple(), ("access_level",)
+        ("ProjectAccessRequest", "GroupAccessRequest"), (), ("access_level",)
     )
     @exc.on_http_error(exc.GitlabUpdateError)
     def approve(

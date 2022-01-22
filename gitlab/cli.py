@@ -52,8 +52,8 @@ __F = TypeVar("__F", bound=Callable[..., Any])
 
 def register_custom_action(
     cls_names: Union[str, Tuple[str, ...]],
-    mandatory: Tuple[str, ...] = tuple(),
-    optional: Tuple[str, ...] = tuple(),
+    mandatory: Tuple[str, ...] = (),
+    optional: Tuple[str, ...] = (),
     custom_action: Optional[str] = None,
 ) -> Callable[[__F], __F]:
     def wrap(f: __F) -> __F:

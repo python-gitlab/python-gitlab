@@ -95,7 +95,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"/groups/{self.encoded_id}/projects/{project_id}"
         self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("Group", tuple(), ("group_id",))
+    @cli.register_custom_action("Group", (), ("group_id",))
     @exc.on_http_error(exc.GitlabGroupTransferError)
     def transfer(self, group_id: Optional[int] = None, **kwargs: Any) -> None:
         """Transfer the group to a new parent group or make it a top-level group.

@@ -46,7 +46,7 @@ class RepositoryMixin(_RestObjectBase):
             data["commit_message"] = kwargs["commit_message"]
         return self.manager.gitlab.http_put(path, post_data=data)
 
-    @cli.register_custom_action("Project", tuple(), ("path", "ref", "recursive"))
+    @cli.register_custom_action("Project", (), ("path", "ref", "recursive"))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_tree(
         self, path: str = "", ref: str = "", recursive: bool = False, **kwargs: Any
@@ -186,7 +186,7 @@ class RepositoryMixin(_RestObjectBase):
         path = f"/projects/{self.encoded_id}/repository/contributors"
         return self.manager.gitlab.http_list(path, **kwargs)
 
-    @cli.register_custom_action("Project", tuple(), ("sha", "format"))
+    @cli.register_custom_action("Project", (), ("sha", "format"))
     @exc.on_http_error(exc.GitlabListError)
     def repository_archive(
         self,
