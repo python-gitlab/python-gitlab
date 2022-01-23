@@ -107,11 +107,7 @@ package_name = "hello-world"
 package_version = "v1.0.0"
 file_name = "hello.tar.gz"
 file_content = "package content"
-package_url = "http://localhost/api/v4/projects/1/packages/generic/{}/{}/{}".format(
-    package_name,
-    package_version,
-    file_name,
-)
+package_url = f"http://localhost/api/v4/projects/1/packages/generic/{package_name}/{package_version}/{file_name}"
 
 
 @pytest.fixture
