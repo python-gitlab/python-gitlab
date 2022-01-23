@@ -56,7 +56,7 @@ class ApplicationAppearanceManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         """
         new_data = new_data or {}
         data = new_data.copy()
-        return super(ApplicationAppearanceManager, self).update(id, data, **kwargs)
+        return super().update(id, data, **kwargs)
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any

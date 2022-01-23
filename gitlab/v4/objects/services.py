@@ -282,7 +282,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
         """
         obj = cast(
             ProjectService,
-            super(ProjectServiceManager, self).get(id, lazy=lazy, **kwargs),
+            super().get(id, lazy=lazy, **kwargs),
         )
         obj.id = id
         return obj
@@ -308,7 +308,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
             GitlabUpdateError: If the server cannot perform the request
         """
         new_data = new_data or {}
-        result = super(ProjectServiceManager, self).update(id, new_data, **kwargs)
+        result = super().update(id, new_data, **kwargs)
         self.id = id
         return result
 

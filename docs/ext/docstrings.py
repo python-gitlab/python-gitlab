@@ -48,9 +48,7 @@ class GitlabDocstring(GoogleDocstring):
     def __init__(
         self, docstring, config=None, app=None, what="", name="", obj=None, options=None
     ):
-        super(GitlabDocstring, self).__init__(
-            docstring, config, app, what, name, obj, options
-        )
+        super().__init__(docstring, config, app, what, name, obj, options)
 
         if name.startswith("gitlab.v4.objects") and name.endswith("Manager"):
             self._parsed_lines.extend(self._build_doc("manager_tmpl.j2", cls=self._obj))

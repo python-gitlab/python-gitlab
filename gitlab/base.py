@@ -167,21 +167,21 @@ class RESTObject:
             return NotImplemented
         if self.get_id() and other.get_id():
             return self.get_id() == other.get_id()
-        return super(RESTObject, self) == other
+        return super() == other
 
     def __ne__(self, other: object) -> bool:
         if not isinstance(other, RESTObject):
             return NotImplemented
         if self.get_id() and other.get_id():
             return self.get_id() != other.get_id()
-        return super(RESTObject, self) != other
+        return super() != other
 
     def __dir__(self) -> Iterable[str]:
-        return set(self.attributes).union(super(RESTObject, self).__dir__())
+        return set(self.attributes).union(super().__dir__())
 
     def __hash__(self) -> int:
         if not self.get_id():
-            return super(RESTObject, self).__hash__()
+            return super().__hash__()
         return hash(self.get_id())
 
     def _create_managers(self) -> None:

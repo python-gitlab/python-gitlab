@@ -57,7 +57,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.branch = branch
         self.commit_message = commit_message
         self.file_path = utils.EncodedId(self.file_path)
-        super(ProjectFile, self).save(**kwargs)
+        super().save(**kwargs)
 
     @exc.on_http_error(exc.GitlabDeleteError)
     # NOTE(jlvillal): Signature doesn't match DeleteMixin.delete() so ignore
