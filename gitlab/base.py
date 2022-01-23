@@ -18,8 +18,9 @@
 import importlib
 import pprint
 import textwrap
+from dataclasses import dataclass
 from types import ModuleType
-from typing import Any, Dict, Iterable, NamedTuple, Optional, Tuple, Type, Union
+from typing import Any, Dict, Iterable, Optional, Tuple, Type, Union
 
 import gitlab
 from gitlab import types as g_types
@@ -316,7 +317,8 @@ class RESTObjectList:
         return self._list.total
 
 
-class RequiredOptional(NamedTuple):
+@dataclass(frozen=True)
+class RequiredOptional:
     required: Tuple[str, ...] = ()
     optional: Tuple[str, ...] = ()
 
