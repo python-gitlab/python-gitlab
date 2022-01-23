@@ -31,4 +31,4 @@ def test_sdist_includes_tests(build):
 
 def test_wheel_excludes_docs_and_tests(build):
     wheel = zipfile.ZipFile(DIST_DIR / WHEEL_FILE)
-    assert not any([file.startswith((DOCS_DIR, TEST_DIR)) for file in wheel.namelist()])
+    assert not any(file.startswith((DOCS_DIR, TEST_DIR)) for file in wheel.namelist())
