@@ -21,7 +21,7 @@ class KeyManager(GetMixin, RESTManager):
         self, id: Optional[Union[int, str]] = None, lazy: bool = False, **kwargs: Any
     ) -> Key:
         if id is not None:
-            return cast(Key, super(KeyManager, self).get(id, lazy=lazy, **kwargs))
+            return cast(Key, super().get(id, lazy=lazy, **kwargs))
 
         if "fingerprint" not in kwargs:
             raise AttributeError("Missing attribute: id or fingerprint")

@@ -113,7 +113,7 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         data = new_data.copy()
         if "domain_whitelist" in data and data["domain_whitelist"] is None:
             data.pop("domain_whitelist")
-        return super(ApplicationSettingsManager, self).update(id, data, **kwargs)
+        return super().update(id, data, **kwargs)
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
