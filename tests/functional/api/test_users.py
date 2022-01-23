@@ -23,7 +23,8 @@ def test_create_user(gl, fixture_dir):
 
     avatar_url = user.avatar_url.replace("gitlab.test", "localhost:8080")
     uploaded_avatar = requests.get(avatar_url).content
-    assert uploaded_avatar == open(fixture_dir / "avatar.png", "rb").read()
+    with open(fixture_dir / "avatar.png", "rb") as f:
+        assert uploaded_avatar == f.read()
 
 
 def test_block_user(gl, user):
