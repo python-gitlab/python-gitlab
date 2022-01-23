@@ -106,12 +106,11 @@ def test_project_file_uploads(project):
     file_contents = "testing contents"
 
     uploaded_file = project.upload(filename, file_contents)
-    assert uploaded_file["alt"] == filename
-    assert uploaded_file["url"].startswith("/uploads/")
-    assert uploaded_file["url"].endswith(f"/{filename}")
-    assert uploaded_file["markdown"] == "[{}]({})".format(
-        uploaded_file["alt"], uploaded_file["url"]
-    )
+    alt, url = uploaded_file["alt"], uploaded_file["url"]
+    assert alt == filename
+    assert url.startswith("/uploads/")
+    assert url.endswith(f"/{filename}")
+    assert uploaded_file["markdown"] == f"[{alt}]({url})"
 
 
 def test_project_forks(gl, project, user):

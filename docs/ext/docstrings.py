@@ -11,9 +11,9 @@ def classref(value, short=True):
     return value
 
     if not inspect.isclass(value):
-        return ":class:%s" % value
+        return f":class:{value}"
     tilde = "~" if short else ""
-    return ":class:`%sgitlab.objects.%s`" % (tilde, value.__name__)
+    return f":class:`{tilde}gitlab.objects.{value.__name__}`"
 
 
 def setup(app):
