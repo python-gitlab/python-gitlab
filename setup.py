@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 def get_version() -> str:
     version = ""
-    with open("gitlab/_version.py") as f:
+    with open("gitlab/_version.py", "r", encoding="utf-8") as f:
         for line in f:
             if line.startswith("__version__"):
                 version = eval(line.split("=")[-1])
@@ -14,8 +14,8 @@ def get_version() -> str:
     return version
 
 
-with open("README.rst", "r") as readme_file:
-    readme = readme_file.read()
+with open("README.rst", "r", encoding="utf-8") as f:
+    readme = f.read()
 
 setup(
     name="python-gitlab",

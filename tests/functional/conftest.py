@@ -87,7 +87,7 @@ def set_token(container, fixture_dir):
     logging.info("Creating API token.")
     set_token_rb = fixture_dir / "set_token.rb"
 
-    with open(set_token_rb, "r") as f:
+    with open(set_token_rb, "r", encoding="utf-8") as f:
         set_token_command = f.read().strip()
 
     rails_command = [
@@ -206,7 +206,7 @@ url = http://{docker_ip}:{port}
 private_token = {token}
 api_version = 4"""
 
-    with open(config_file, "w") as f:
+    with open(config_file, "w", encoding="utf-8") as f:
         f.write(config)
 
     return config_file

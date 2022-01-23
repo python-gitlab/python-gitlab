@@ -12,8 +12,8 @@ from gitlab.v4.objects import Todo
 
 @pytest.fixture()
 def json_content(fixture_dir):
-    with open(fixture_dir / "todo.json", "r") as json_file:
-        todo_content = json_file.read()
+    with open(fixture_dir / "todo.json", "r", encoding="utf-8") as f:
+        todo_content = f.read()
         return json.loads(todo_content)
 
 
