@@ -218,8 +218,8 @@ def _populate_sub_parser_by_class(
                     f"--{x.replace('_', '-')}", required=False
                 )
 
-            sub_parser_action.add_argument("--page", required=False)
-            sub_parser_action.add_argument("--per-page", required=False)
+            sub_parser_action.add_argument("--page", required=False, type=int)
+            sub_parser_action.add_argument("--per-page", required=False, type=int)
             sub_parser_action.add_argument("--all", required=False, action="store_true")
 
         if action_name == "delete":
