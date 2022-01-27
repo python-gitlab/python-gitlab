@@ -181,6 +181,7 @@ def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
             "[env var: GITLAB_TIMEOUT]"
         ),
         required=False,
+        type=int,
         default=os.getenv("GITLAB_TIMEOUT"),
     )
     parser.add_argument(
@@ -196,6 +197,7 @@ def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
             "[env var: GITLAB_PER_PAGE]"
         ),
         required=False,
+        type=int,
         default=os.getenv("GITLAB_PER_PAGE"),
     )
     parser.add_argument(
