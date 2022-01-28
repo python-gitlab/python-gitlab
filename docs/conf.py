@@ -121,10 +121,7 @@ html_theme = "furo"
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {
-    "announcement": "⚠ python-gitlab 3.0.0 has been released with several "
-    "<a href='changelog.html#breaking'>breaking changes</a>.",
-}
+# html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
