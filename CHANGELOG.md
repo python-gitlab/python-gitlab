@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.1 (2022-01-28)
+### Fix
+* **cli:** Make 'per_page' and 'page' type explicit ([`d493a5e`](https://github.com/python-gitlab/python-gitlab/commit/d493a5e8685018daa69c92e5942cbe763e5dac62))
+* **cli:** Make 'timeout' type explicit ([`bbb7df5`](https://github.com/python-gitlab/python-gitlab/commit/bbb7df526f4375c438be97d8cfa0d9ea9d604e7d))
+* **cli:** Allow custom methods in managers ([`8dfed0c`](https://github.com/python-gitlab/python-gitlab/commit/8dfed0c362af2c5e936011fd0b488b8b05e8a8a0))
+* **objects:** Make resource access tokens and repos available in CLI ([`e0a3a41`](https://github.com/python-gitlab/python-gitlab/commit/e0a3a41ce60503a25fa5c26cf125364db481b207))
+
+### Documentation
+* Enhance release docs for CI_JOB_TOKEN usage ([`5d973de`](https://github.com/python-gitlab/python-gitlab/commit/5d973de8a5edd08f38031cf9be2636b0e12f008d))
+* **changelog:** Add missing changelog items ([`01755fb`](https://github.com/python-gitlab/python-gitlab/commit/01755fb56a5330aa6fa4525086e49990e57ce50b))
+
 ## v3.1.0 (2022-01-14)
 ### Feature
 * add support for Group Access Token API ([`c01b7c4`](https://github.com/python-gitlab/python-gitlab/commit/c01b7c494192c5462ec673848287ef2a5c9bd737))
