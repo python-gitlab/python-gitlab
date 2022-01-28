@@ -7,6 +7,7 @@ on:
 
 jobs:
   release:
+    if: github.repository == 'python-gitlab/python-gitlab'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
