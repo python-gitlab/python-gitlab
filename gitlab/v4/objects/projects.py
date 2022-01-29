@@ -18,6 +18,7 @@ from gitlab.mixins import (
 )
 
 from .access_requests import ProjectAccessRequestManager  # noqa: F401
+from .artifacts import ProjectArtifactManager  # noqa: F401
 from .audit_events import ProjectAuditEventManager  # noqa: F401
 from .badges import ProjectBadgeManager  # noqa: F401
 from .boards import ProjectBoardManager  # noqa: F401
@@ -136,6 +137,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     additionalstatistics: ProjectAdditionalStatisticsManager
     approvalrules: ProjectApprovalRuleManager
     approvals: ProjectApprovalManager
+    artifacts: ProjectArtifactManager
     audit_events: ProjectAuditEventManager
     badges: ProjectBadgeManager
     boards: ProjectBoardManager
@@ -553,94 +555,19 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         )
         return self.transfer(*args, **kwargs)
 
-    @cli.register_custom_action("Project", ("ref_name", "job"), ("job_token",))
-    @exc.on_http_error(exc.GitlabGetError)
-    def artifacts(
-        self,
-        ref_name: str,
-        job: str,
-        streamed: bool = False,
-        action: Optional[Callable] = None,
-        chunk_size: int = 1024,
-        **kwargs: Any,
-    ) -> Optional[bytes]:
-        """Get the job artifacts archive from a specific tag or branch.
-
-        Args:
-            ref_name: Branch or tag name in repository. HEAD or SHA references
-            are not supported.
-            artifact_path: Path to a file inside the artifacts archive.
-            job: The name of the job.
-            job_token: Job token for multi-project pipeline triggers.
-            streamed: If True the data will be processed by chunks of
-                `chunk_size` and each chunk is passed to `action` for
-                treatment
-            action: Callable responsible of dealing with chunk of
-                data
-            chunk_size: Size of each chunk
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabGetError: If the artifacts could not be retrieved
-
-        Returns:
-            The artifacts if `streamed` is False, None otherwise.
-        """
-        path = f"/projects/{self.encoded_id}/jobs/artifacts/{ref_name}/download"
-        result = self.manager.gitlab.http_get(
-            path, job=job, streamed=streamed, raw=True, **kwargs
-        )
-        if TYPE_CHECKING:
-            assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, action, chunk_size)
-
     @cli.register_custom_action("Project", ("ref_name", "artifact_path", "job"))
     @exc.on_http_error(exc.GitlabGetError)
     def artifact(
         self,
-        ref_name: str,
-        artifact_path: str,
-        job: str,
-        streamed: bool = False,
-        action: Optional[Callable] = None,
-        chunk_size: int = 1024,
+        *args: Any,
         **kwargs: Any,
     ) -> Optional[bytes]:
-        """Download a single artifact file from a specific tag or branch from
-        within the job’s artifacts archive.
-
-        Args:
-            ref_name: Branch or tag name in repository. HEAD or SHA references
-                are not supported.
-            artifact_path: Path to a file inside the artifacts archive.
-            job: The name of the job.
-            streamed: If True the data will be processed by chunks of
-                `chunk_size` and each chunk is passed to `action` for
-                treatment
-            action: Callable responsible of dealing with chunk of
-                data
-            chunk_size: Size of each chunk
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabGetError: If the artifacts could not be retrieved
-
-        Returns:
-            The artifacts if `streamed` is False, None otherwise.
-        """
-
-        path = (
-            f"/projects/{self.encoded_id}/jobs/artifacts/{ref_name}/raw/"
-            f"{artifact_path}?job={job}"
+        warnings.warn(
+            "The project.artifact() method is deprecated and will be "
+            "removed in a future version. Use project.artifacts.raw() instead.",
+            DeprecationWarning,
         )
-        result = self.manager.gitlab.http_get(
-            path, streamed=streamed, raw=True, **kwargs
-        )
-        if TYPE_CHECKING:
-            assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, action, chunk_size)
+        return self.artifacts.raw(*args, **kwargs)
 
 
 class ProjectManager(CRUDMixin, RESTManager):

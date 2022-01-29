@@ -1,3 +1,4 @@
+import warnings
 from typing import Any, Callable, cast, Dict, Optional, TYPE_CHECKING, Union
 
 import requests
@@ -8,6 +9,8 @@ from gitlab import utils
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import RefreshMixin, RetrieveMixin
 
+from .artifacts import ProjectJobArtifactManager  # noqa: F401
+
 __all__ = [
     "ProjectJob",
     "ProjectJobManager",
@@ -15,6 +18,8 @@ __all__ = [
 
 
 class ProjectJob(RefreshMixin, RESTObject):
+    artifacts: ProjectJobArtifactManager
+
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobCancelError)
     def cancel(self, **kwargs: Any) -> Dict[str, Any]:
@@ -83,105 +88,37 @@ class ProjectJob(RefreshMixin, RESTObject):
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabCreateError)
-    def keep_artifacts(self, **kwargs: Any) -> None:
-        """Prevent artifacts from being deleted when expiration is set.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabCreateError: If the request could not be performed
-        """
-        path = f"{self.manager.path}/{self.encoded_id}/artifacts/keep"
-        self.manager.gitlab.http_post(path)
+    def keep_artifacts(self, *args: Any, **kwargs: Any) -> None:
+        warnings.warn(
+            "The job.keep_artifacts() method is deprecated and will be "
+            "removed in a future version. Use job.artifacts.keep() instead.",
+            DeprecationWarning,
+        )
+        return self.artifacts.keep(*args, **kwargs)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabCreateError)
-    def delete_artifacts(self, **kwargs: Any) -> None:
-        """Delete artifacts of a job.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabDeleteError: If the request could not be performed
-        """
-        path = f"{self.manager.path}/{self.encoded_id}/artifacts"
-        self.manager.gitlab.http_delete(path)
-
-    @cli.register_custom_action("ProjectJob")
-    @exc.on_http_error(exc.GitlabGetError)
-    def artifacts(
-        self,
-        streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
-        chunk_size: int = 1024,
-        **kwargs: Any,
-    ) -> Optional[bytes]:
-        """Get the job artifacts.
-
-        Args:
-            streamed: If True the data will be processed by chunks of
-                `chunk_size` and each chunk is passed to `action` for
-                treatment
-            action: Callable responsible of dealing with chunk of
-                data
-            chunk_size: Size of each chunk
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabGetError: If the artifacts could not be retrieved
-
-        Returns:
-            The artifacts if `streamed` is False, None otherwise.
-        """
-        path = f"{self.manager.path}/{self.encoded_id}/artifacts"
-        result = self.manager.gitlab.http_get(
-            path, streamed=streamed, raw=True, **kwargs
+    def delete_artifacts(self, *args: Any, **kwargs: Any) -> None:
+        warnings.warn(
+            "The job.delete_artifacts() method is deprecated and will be "
+            "removed in a future version. Use job.artifacts.delete() instead.",
+            DeprecationWarning,
         )
-        if TYPE_CHECKING:
-            assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, action, chunk_size)
+        return self.artifacts.delete(*args, **kwargs)
 
-    @cli.register_custom_action("ProjectJob")
+    @cli.register_custom_action("ProjectJob", ("path",))
     @exc.on_http_error(exc.GitlabGetError)
     def artifact(
         self,
-        path: str,
-        streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
-        chunk_size: int = 1024,
+        *args: Any,
         **kwargs: Any,
     ) -> Optional[bytes]:
-        """Get a single artifact file from within the job's artifacts archive.
-
-        Args:
-            path: Path of the artifact
-            streamed: If True the data will be processed by chunks of
-                `chunk_size` and each chunk is passed to `action` for
-                treatment
-            action: Callable responsible of dealing with chunk of
-                data
-            chunk_size: Size of each chunk
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabGetError: If the artifacts could not be retrieved
-
-        Returns:
-            The artifacts if `streamed` is False, None otherwise.
-        """
-        path = f"{self.manager.path}/{self.encoded_id}/artifacts/{path}"
-        result = self.manager.gitlab.http_get(
-            path, streamed=streamed, raw=True, **kwargs
+        warnings.warn(
+            "The job.artifact() method is deprecated and will be "
+            "removed in a future version. Use job.artifacts.raw() instead.",
+            DeprecationWarning,
         )
-        if TYPE_CHECKING:
-            assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, action, chunk_size)
+        return self.artifacts.raw(*args, **kwargs)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
