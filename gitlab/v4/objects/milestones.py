@@ -93,7 +93,7 @@ class GroupMilestoneManager(CRUDMixin, RESTManager):
         optional=("title", "description", "due_date", "start_date", "state_event"),
     )
     _list_filters = ("iids", "state", "search")
-    _types = {"iids": types.CommaSeparatedListAttribute}
+    _types = {"iids": types.ArrayAttribute}
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any
@@ -177,7 +177,7 @@ class ProjectMilestoneManager(CRUDMixin, RESTManager):
         optional=("title", "description", "due_date", "start_date", "state_event"),
     )
     _list_filters = ("iids", "state", "search")
-    _types = {"iids": types.CommaSeparatedListAttribute}
+    _types = {"iids": types.ArrayAttribute}
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any

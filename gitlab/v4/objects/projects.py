@@ -125,7 +125,7 @@ class ProjectGroupManager(ListMixin, RESTManager):
         "shared_min_access_level",
         "shared_visible_only",
     )
-    _types = {"skip_groups": types.CommaSeparatedListAttribute}
+    _types = {"skip_groups": types.ArrayAttribute}
 
 
 class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTObject):
