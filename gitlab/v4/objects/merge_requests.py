@@ -95,8 +95,8 @@ class MergeRequestManager(ListMixin, RESTManager):
         "deployed_after",
     )
     _types = {
-        "approver_ids": types.CommaSeparatedListAttribute,
-        "approved_by_ids": types.CommaSeparatedListAttribute,
+        "approver_ids": types.ArrayAttribute,
+        "approved_by_ids": types.ArrayAttribute,
         "in": types.CommaSeparatedListAttribute,
         "labels": types.CommaSeparatedListAttribute,
     }
@@ -133,8 +133,8 @@ class GroupMergeRequestManager(ListMixin, RESTManager):
         "wip",
     )
     _types = {
-        "approver_ids": types.CommaSeparatedListAttribute,
-        "approved_by_ids": types.CommaSeparatedListAttribute,
+        "approver_ids": types.ArrayAttribute,
+        "approved_by_ids": types.ArrayAttribute,
         "labels": types.CommaSeparatedListAttribute,
     }
 
@@ -455,9 +455,9 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
         "wip",
     )
     _types = {
-        "approver_ids": types.CommaSeparatedListAttribute,
-        "approved_by_ids": types.CommaSeparatedListAttribute,
-        "iids": types.CommaSeparatedListAttribute,
+        "approver_ids": types.ArrayAttribute,
+        "approved_by_ids": types.ArrayAttribute,
+        "iids": types.ArrayAttribute,
         "labels": types.CommaSeparatedListAttribute,
     }
 

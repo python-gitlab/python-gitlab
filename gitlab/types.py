@@ -32,7 +32,9 @@ class GitlabAttribute:
         return self._value
 
 
-class CommaSeparatedListAttribute(GitlabAttribute):
+class _ListArrayAttribute(GitlabAttribute):
+    """Helper class to support `list` / `array` types."""
+
     def set_from_cli(self, cli_value: str) -> None:
         if not cli_value.strip():
             self._value = []
@@ -47,6 +49,17 @@ class CommaSeparatedListAttribute(GitlabAttribute):
         if TYPE_CHECKING:
             assert isinstance(self._value, list)
         return ",".join([str(x) for x in self._value])
+
+
+class ArrayAttribute(_ListArrayAttribute):
+    """To support `array` types as documented in
+    https://docs.gitlab.com/ee/api/#array"""
+
+
+class CommaSeparatedListAttribute(_ListArrayAttribute):
+    """For values which are sent to the server as a Comma Separated Values
+    (CSV) string.  We allow them to be specified as a list and we convert it
+    into a CSV"""
 
 
 class LowercaseStringAttribute(GitlabAttribute):

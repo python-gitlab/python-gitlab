@@ -30,8 +30,8 @@ def test_gitlab_attribute_get():
     assert o._value is None
 
 
-def test_csv_list_attribute_input():
-    o = types.CommaSeparatedListAttribute()
+def test_array_attribute_input():
+    o = types.ArrayAttribute()
     o.set_from_cli("foo,bar,baz")
     assert o.get() == ["foo", "bar", "baz"]
 
@@ -39,8 +39,8 @@ def test_csv_list_attribute_input():
     assert o.get() == ["foo"]
 
 
-def test_csv_list_attribute_empty_input():
-    o = types.CommaSeparatedListAttribute()
+def test_array_attribute_empty_input():
+    o = types.ArrayAttribute()
     o.set_from_cli("")
     assert o.get() == []
 
@@ -48,27 +48,45 @@ def test_csv_list_attribute_empty_input():
     assert o.get() == []
 
 
-def test_csv_list_attribute_get_for_api_from_cli():
+def test_array_attribute_get_for_api_from_cli():
+    o = types.ArrayAttribute()
+    o.set_from_cli("foo,bar,baz")
+    assert o.get_for_api() == "foo,bar,baz"
+
+
+def test_array_attribute_get_for_api_from_list():
+    o = types.ArrayAttribute(["foo", "bar", "baz"])
+    assert o.get_for_api() == "foo,bar,baz"
+
+
+def test_array_attribute_get_for_api_from_int_list():
+    o = types.ArrayAttribute([1, 9, 7])
+    assert o.get_for_api() == "1,9,7"
+
+
+def test_array_attribute_does_not_split_string():
+    o = types.ArrayAttribute("foo")
+    assert o.get_for_api() == "foo"
+
+
+# CommaSeparatedListAttribute tests
+def test_csv_string_attribute_get_for_api_from_cli():
     o = types.CommaSeparatedListAttribute()
     o.set_from_cli("foo,bar,baz")
     assert o.get_for_api() == "foo,bar,baz"
 
 
-def test_csv_list_attribute_get_for_api_from_list():
+def test_csv_string_attribute_get_for_api_from_list():
     o = types.CommaSeparatedListAttribute(["foo", "bar", "baz"])
     assert o.get_for_api() == "foo,bar,baz"
 
 
-def test_csv_list_attribute_get_for_api_from_int_list():
+def test_csv_string_attribute_get_for_api_from_int_list():
     o = types.CommaSeparatedListAttribute([1, 9, 7])
     assert o.get_for_api() == "1,9,7"
 
 
-def test_csv_list_attribute_does_not_split_string():
-    o = types.CommaSeparatedListAttribute("foo")
-    assert o.get_for_api() == "foo"
-
-
+# LowercaseStringAttribute tests
 def test_lowercase_string_attribute_get_for_api():
     o = types.LowercaseStringAttribute("FOO")
     assert o.get_for_api() == "foo"
