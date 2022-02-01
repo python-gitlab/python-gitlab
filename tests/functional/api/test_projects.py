@@ -146,9 +146,11 @@ def test_project_labels(project):
     label = project.labels.get("label")
     assert label == labels[0]
 
-    label.new_name = "labelupdated"
+    label.new_name = "Label:that requires:encoding"
     label.save()
-    assert label.name == "labelupdated"
+    assert label.name == "Label:that requires:encoding"
+    label = project.labels.get("Label:that requires:encoding")
+    assert label.name == "Label:that requires:encoding"
 
     label.subscribe()
     assert label.subscribed is True
