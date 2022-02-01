@@ -1,11 +1,10 @@
-from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
+from typing import Any, cast, Dict, Optional, Union
 
 from gitlab import exceptions as exc
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
-    ListMixin,
     ObjectDeleteMixin,
     PromoteMixin,
     RetrieveMixin,
@@ -47,7 +46,9 @@ class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         self._update_attrs(server_data)
 
 
-class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
+class GroupLabelManager(
+    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+):
     _path = "/groups/{group_id}/labels"
     _obj_cls = GroupLabel
     _from_parent_attrs = {"group_id": "id"}
@@ -57,6 +58,9 @@ class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
     _update_attrs = RequiredOptional(
         required=("name",), optional=("new_name", "color", "description", "priority")
     )
+
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> GroupLabel:
+        return cast(GroupLabel, super().get(id=id, lazy=lazy, **kwargs))
 
     # Update without ID.
     # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
@@ -77,25 +81,6 @@ class GroupLabelManager(ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         if name:
             new_data["name"] = name
         return super().update(id=None, new_data=new_data, **kwargs)
-
-    # Delete without ID.
-    @exc.on_http_error(exc.GitlabDeleteError)
-    # NOTE(jlvillal): Signature doesn't match DeleteMixin.delete() so ignore
-    # type error
-    def delete(self, name: str, **kwargs: Any) -> None:  # type: ignore
-        """Delete a Label on the server.
-
-        Args:
-            name: The name of the label
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabDeleteError: If the server cannot perform the request
-        """
-        if TYPE_CHECKING:
-            assert self.path is not None
-        self.gitlab.http_delete(self.path, query_data={"name": name}, **kwargs)
 
 
 class ProjectLabel(
@@ -162,22 +147,3 @@ class ProjectLabelManager(
         if name:
             new_data["name"] = name
         return super().update(id=None, new_data=new_data, **kwargs)
-
-    # Delete without ID.
-    @exc.on_http_error(exc.GitlabDeleteError)
-    # NOTE(jlvillal): Signature doesn't match DeleteMixin.delete() so ignore
-    # type error
-    def delete(self, name: str, **kwargs: Any) -> None:  # type: ignore
-        """Delete a Label on the server.
-
-        Args:
-            name: The name of the label
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabDeleteError: If the server cannot perform the request
-        """
-        if TYPE_CHECKING:
-            assert self.path is not None
-        self.gitlab.http_delete(self.path, query_data={"name": name}, **kwargs)

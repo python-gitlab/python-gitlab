@@ -104,7 +104,6 @@ def test_groups(gl):
     group2.members.delete(gl.user.id)
 
 
-@pytest.mark.skip(reason="Commented out in legacy test")
 def test_group_labels(group):
     group.labels.create({"name": "foo", "description": "bar", "color": "#112233"})
     label = group.labels.get("foo")
@@ -115,6 +114,12 @@ def test_group_labels(group):
     label = group.labels.get("foo")
     assert label.description == "baz"
     assert len(group.labels.list()) == 1
+
+    label.new_name = "Label:that requires:encoding"
+    label.save()
+    assert label.name == "Label:that requires:encoding"
+    label = group.labels.get("Label:that requires:encoding")
+    assert label.name == "Label:that requires:encoding"
 
     label.delete()
     assert len(group.labels.list()) == 0
