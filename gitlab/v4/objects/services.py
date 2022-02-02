@@ -3,7 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ee/api/integrations.html
 """
 
-from typing import Any, cast, Dict, List, Optional, Union
+from typing import Any, cast, List, Union
 
 from gitlab import cli
 from gitlab.base import RESTManager, RESTObject
@@ -23,7 +23,7 @@ __all__ = [
 
 
 class ProjectService(SaveMixin, ObjectDeleteMixin, RESTObject):
-    pass
+    _id_attr = "slug"
 
 
 class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTManager):
@@ -264,53 +264,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any
     ) -> ProjectService:
-        """Retrieve a single object.
-
-        Args:
-            id: ID of the object to retrieve
-            lazy: If True, don't request the server, but create a
-                         shallow object giving access to the managers. This is
-                         useful if you want to avoid useless calls to the API.
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Returns:
-            The generated RESTObject.
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabGetError: If the server cannot perform the request
-        """
-        obj = cast(
-            ProjectService,
-            super().get(id, lazy=lazy, **kwargs),
-        )
-        obj.id = id
-        return obj
-
-    def update(
-        self,
-        id: Optional[Union[str, int]] = None,
-        new_data: Optional[Dict[str, Any]] = None,
-        **kwargs: Any
-    ) -> Dict[str, Any]:
-        """Update an object on the server.
-
-        Args:
-            id: ID of the object to update (can be None if not required)
-            new_data: the update data for the object
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Returns:
-            The new object data (*not* a RESTObject)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabUpdateError: If the server cannot perform the request
-        """
-        new_data = new_data or {}
-        result = super().update(id, new_data, **kwargs)
-        self.id = id
-        return result
+        return cast(ProjectService, super().get(id=id, lazy=lazy, **kwargs))
 
     @cli.register_custom_action("ProjectServiceManager")
     def available(self, **kwargs: Any) -> List[str]:
