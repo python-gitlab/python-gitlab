@@ -245,9 +245,14 @@ Get the artifacts of a job::
     build_or_job.artifacts()
 
 Get the artifacts of a job by its name from the latest successful pipeline of
-a branch or tag:
+a branch or tag::
 
-  project.artifacts(ref_name='main', job='build')
+  project.artifacts.download(ref_name='main', job='build')
+
+.. attention::
+
+    An older method ``project.artifacts()`` is deprecated and will be
+    removed in a future version.
 
 .. warning::
 
@@ -275,7 +280,12 @@ Get a single artifact file::
 
 Get a single artifact file by branch and job::
 
-    project.artifact('branch', 'path/to/file', 'job')
+    project.artifacts.raw('branch', 'path/to/file', 'job')
+
+.. attention::
+
+    An older method ``project.artifact()`` is deprecated and will be
+    removed in a future version.
 
 Mark a job artifact as kept when expiration is set::
 
