@@ -17,6 +17,7 @@ __all__ = ["ProjectArtifact", "ProjectArtifactManager"]
 
 class ProjectArtifact(RESTObject):
     """Dummy object to manage custom actions on artifacts"""
+
     _id_attr = "ref_name"
 
 
@@ -57,6 +58,7 @@ class ProjectArtifactManager(RESTManager):
         **kwargs: Any,
     ) -> Optional[bytes]:
         """Get the job artifacts archive from a specific tag or branch.
+
         Args:
             ref_name: Branch or tag name in repository. HEAD or SHA references
             are not supported.
@@ -69,9 +71,11 @@ class ProjectArtifactManager(RESTManager):
                 data
             chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
+
         Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the artifacts could not be retrieved
+
         Returns:
             The artifacts if `streamed` is False, None otherwise.
         """
@@ -83,7 +87,9 @@ class ProjectArtifactManager(RESTManager):
             assert isinstance(result, requests.Response)
         return utils.response_content(result, streamed, action, chunk_size)
 
-    @cli.register_custom_action("ProjectArtifactManager", ("ref_name", "artifact_path", "job"))
+    @cli.register_custom_action(
+        "ProjectArtifactManager", ("ref_name", "artifact_path", "job")
+    )
     @exc.on_http_error(exc.GitlabGetError)
     def raw(
         self,
@@ -97,6 +103,7 @@ class ProjectArtifactManager(RESTManager):
     ) -> Optional[bytes]:
         """Download a single artifact file from a specific tag or branch from
         within the job's artifacts archive.
+
         Args:
             ref_name: Branch or tag name in repository. HEAD or SHA references
                 are not supported.
@@ -109,9 +116,11 @@ class ProjectArtifactManager(RESTManager):
                 data
             chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
+
         Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the artifacts could not be retrieved
+
         Returns:
             The artifact if `streamed` is False, None otherwise.
         """
