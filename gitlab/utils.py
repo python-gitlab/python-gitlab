@@ -44,7 +44,11 @@ def response_content(
     return None
 
 
-def copy_dict(dest: Dict[str, Any], src: Dict[str, Any]) -> None:
+def copy_dict(
+    *,
+    src: Dict[str, Any],
+    dest: Dict[str, Any],
+) -> None:
     for k, v in src.items():
         if isinstance(v, dict):
             # Transform dict values to new attributes. For example:
