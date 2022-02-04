@@ -2,6 +2,7 @@
 GitLab API:
 https://docs.gitlab.com/ee/api/job_artifacts.html
 """
+import warnings
 from typing import Any, Callable, Iterator, Optional, TYPE_CHECKING, Union
 
 import requests
@@ -11,7 +12,12 @@ from gitlab import exceptions as exc
 from gitlab import utils
 from gitlab.base import RESTManager, RESTObject
 
-__all__ = ["ProjectArtifact", "ProjectArtifactManager"]
+__all__ = [
+    "ProjectArtifact",
+    "ProjectArtifactManager",
+    "ProjectJobArtifact",
+    "ProjectJobArtifactManager",
+]
 
 
 class ProjectArtifact(RESTObject):
@@ -160,6 +166,114 @@ class ProjectArtifactManager(RESTManager):
         result = self.gitlab.http_get(
             path, streamed=streamed, raw=True, job=job, **kwargs
         )
+        if TYPE_CHECKING:
+            assert isinstance(result, requests.Response)
+        return utils.response_content(
+            result, streamed, action, chunk_size, iterator=iterator
+        )
+
+
+class ProjectJobArtifact(RESTObject):
+    """Dummy object to manage custom actions on artifacts"""
+
+    _id_attr = "artifact_path"
+
+
+class ProjectJobArtifactManager(RESTManager):
+    _path = "/projects/{project_id}/jobs/{job_id}/artifacts"
+    _from_parent_attrs = {"project_id": "project_id", "job_id": "id"}
+
+    @cli.register_custom_action("ProjectJob", custom_action="artifacts")
+    def __call__(
+        self,
+        *args: Any,
+        **kwargs: Any,
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
+        warnings.warn(
+            "The job.artifacts() method is deprecated and will be "
+            "removed in a future version. Use job.artifacts.download() instead.\n",
+            DeprecationWarning,
+        )
+        return self.download(
+            *args,
+            **kwargs,
+        )
+
+    @cli.register_custom_action("ProjectJobArtifactManager")
+    @exc.on_http_error(exc.GitlabGetError)
+    def download(
+        self,
+        streamed: bool = False,
+        action: Optional[Callable[..., Any]] = None,
+        chunk_size: int = 1024,
+        iterator: bool = False,
+        **kwargs: Any,
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
+        """Get the job artifacts.
+
+        Args:
+            streamed: If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment
+            action: Callable responsible of dealing with chunk of
+                data
+            chunk_size: Size of each chunk
+            iterator: If True directly return the underlying response
+                iterator
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the artifacts could not be retrieved
+
+        Returns:
+            The artifacts if `streamed` is False, None otherwise.
+        """
+        if TYPE_CHECKING:
+            assert self.path is not None
+        result = self.gitlab.http_get(self.path, streamed=streamed, raw=True, **kwargs)
+
+        if TYPE_CHECKING:
+            assert isinstance(result, requests.Response)
+        return utils.response_content(
+            result, streamed, action, chunk_size, iterator=iterator
+        )
+
+    @cli.register_custom_action("ProjectJobArtifactManager", ("artifact_path",))
+    @cli.register_custom_action("ProjectJob")
+    @exc.on_http_error(exc.GitlabGetError)
+    def raw(
+        self,
+        path: str,
+        streamed: bool = False,
+        action: Optional[Callable[..., Any]] = None,
+        chunk_size: int = 1024,
+        iterator: bool = False,
+        **kwargs: Any,
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
+        """Get a single artifact file from within the job's artifacts archive.
+
+        Args:
+            path: Path of the artifact
+            streamed: If True the data will be processed by chunks of
+                `chunk_size` and each chunk is passed to `action` for
+                treatment
+            action: Callable responsible of dealing with chunk of
+                data
+            chunk_size: Size of each chunk
+            iterator: If True directly return the underlying response
+                iterator
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the artifacts could not be retrieved
+
+        Returns:
+            The artifacts if `streamed` is False, None otherwise.
+        """
+        path = f"{self.path}/{path}"
+        result = self.gitlab.http_get(path, streamed=streamed, raw=True, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
         return utils.response_content(

@@ -242,7 +242,12 @@ List the jobs of a pipeline::
 
 Get the artifacts of a job::
 
-    build_or_job.artifacts()
+    job.artifacts.download()
+
+.. attention::
+
+    An older method ``job.artifacts()`` is deprecated and will be
+    removed in a future version.
 
 Get the artifacts of a job by its name from the latest successful pipeline of
 a branch or tag::
@@ -264,13 +269,13 @@ You can download artifacts as a stream. Provide a callable to handle the
 stream::
 
     with open("archive.zip", "wb") as f:
-         build_or_job.artifacts(streamed=True, action=f.write)
+         job.artifacts.download(streamed=True, action=f.write)
 
 You can also directly stream the output into a file, and unzip it afterwards::
 
     zipfn = "___artifacts.zip"
     with open(zipfn, "wb") as f:
-        build_or_job.artifacts(streamed=True, action=f.write)
+        job.artifacts.download(streamed=True, action=f.write)
     subprocess.run(["unzip", "-bo", zipfn])
     os.unlink(zipfn)
 
@@ -293,7 +298,12 @@ Delete all artifacts of a project that can be deleted::
 
 Get a single artifact file::
 
-    build_or_job.artifact('path/to/file')
+    job.artifacts.raw('path/to/file')
+
+.. attention::
+
+    An older method ``job.artifact()`` is deprecated and will be
+    removed in a future version.
 
 Get a single artifact file by branch and job::
 
@@ -306,15 +316,15 @@ Get a single artifact file by branch and job::
 
 Mark a job artifact as kept when expiration is set::
 
-    build_or_job.keep_artifacts()
+    job.keep_artifacts()
 
 Delete the artifacts of a job::
 
-    build_or_job.delete_artifacts()
+    job.delete_artifacts()
 
 Get a job trace::
 
-    build_or_job.trace()
+    job.trace()
 
 .. warning::
 
@@ -323,16 +333,16 @@ Get a job trace::
 
 Cancel/retry a job::
 
-    build_or_job.cancel()
-    build_or_job.retry()
+    job.cancel()
+    job.retry()
 
 Play (trigger) a job::
 
-    build_or_job.play()
+    job.play()
 
 Erase a job (artifacts and trace)::
 
-    build_or_job.erase()
+    job.erase()
 
 
 Pipeline bridges
