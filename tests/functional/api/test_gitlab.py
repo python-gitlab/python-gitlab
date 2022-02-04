@@ -81,13 +81,13 @@ def test_template_dockerfile(gl):
 
 
 def test_template_gitignore(gl):
-    assert gl.gitignores.list()
+    assert gl.gitignores.list(all=True)
     gitignore = gl.gitignores.get("Node")
     assert gitignore.content is not None
 
 
 def test_template_gitlabciyml(gl):
-    assert gl.gitlabciymls.list()
+    assert gl.gitlabciymls.list(all=True)
     gitlabciyml = gl.gitlabciymls.get("Nodejs")
     assert gitlabciyml.content is not None
 
