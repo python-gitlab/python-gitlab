@@ -421,9 +421,9 @@ GitLab server can sometimes return a transient HTTP error.
 python-gitlab can automatically retry in such case, when
 ``retry_transient_errors`` argument is set to ``True``.  When enabled,
 HTTP error codes 500 (Internal Server Error), 502 (502 Bad Gateway),
-503 (Service Unavailable), and 504 (Gateway Timeout) are retried.  By
-default an exception is raised for these errors.
-It will retry until reaching `max_retries` value.
+503 (Service Unavailable), and 504 (Gateway Timeout) are retried. It will retry until reaching
+the `max_retries` value. By default, `retry_transient_errors` is set to `False` and an exception
+is raised for these errors.
 
 .. code-block:: python
 
