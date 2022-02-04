@@ -423,6 +423,7 @@ python-gitlab can automatically retry in such case, when
 HTTP error codes 500 (Internal Server Error), 502 (502 Bad Gateway),
 503 (Service Unavailable), and 504 (Gateway Timeout) are retried.  By
 default an exception is raised for these errors.
+It will retry until reaching `max_retries` value.
 
 .. code-block:: python
 
