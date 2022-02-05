@@ -1039,11 +1039,9 @@ class GitlabList:
         return int(self._next_page) if self._next_page else None
 
     @property
-    def per_page(self) -> int:
+    def per_page(self) -> Optional[int]:
         """The number of items per page."""
-        if TYPE_CHECKING:
-            assert self._per_page is not None
-        return int(self._per_page)
+        return int(self._per_page) if self._per_page is not None else None
 
     # NOTE(jlvillal): When a query returns more than 10,000 items, GitLab doesn't return
     # the headers 'x-total-pages' and 'x-total'. In those cases we return None.

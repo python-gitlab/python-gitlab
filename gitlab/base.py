@@ -302,7 +302,7 @@ class RESTObjectList:
         return self._list.next_page
 
     @property
-    def per_page(self) -> int:
+    def per_page(self) -> Optional[int]:
         """The number of items per page."""
         return self._list.per_page
 
