@@ -244,7 +244,7 @@ def test_project_protected_branches(project):
 
 
 def test_project_remote_mirrors(project):
-    mirror_url = "http://gitlab.test/root/mirror.git"
+    mirror_url = "https://gitlab.example.com/root/mirror.git"
 
     mirror = project.remote_mirrors.create({"url": mirror_url})
     assert mirror.url == mirror_url
