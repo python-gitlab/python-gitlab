@@ -15,8 +15,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import pathlib
+import traceback
 import urllib.parse
-from typing import Any, Callable, Dict, Optional, Union
+import warnings
+from typing import Any, Callable, Dict, Optional, Type, Union
 
 import requests
 
@@ -90,3 +93,36 @@ class EncodedId(str):
 
 def remove_none_from_dict(data: Dict[str, Any]) -> Dict[str, Any]:
     return {k: v for k, v in data.items() if v is not None}
+
+
+def warn(
+    message: str,
+    *,
+    category: Optional[Type] = None,
+    source: Optional[Any] = None,
+) -> None:
+    """This `warnings.warn` wrapper function attempts to show the location causing the
+    warning in the user code that called the library.
+
+    It does this by walking up the stack trace to find the first frame located outside
+    the `gitlab/` directory. This is helpful to users as it shows them their code that
+    is causing the warning.
+    """
+    # Get `stacklevel` for user code so we indicate where issue is in
+    # their code.
+    pg_dir = pathlib.Path(__file__).parent.resolve()
+    stack = traceback.extract_stack()
+    stacklevel = 1
+    warning_from = ""
+    for stacklevel, frame in enumerate(reversed(stack), start=1):
+        if stacklevel == 2:
+            warning_from = f" (python-gitlab: {frame.filename}:{frame.lineno})"
+        frame_dir = str(pathlib.Path(frame.filename).parent.resolve())
+        if not frame_dir.startswith(str(pg_dir)):
+            break
+    warnings.warn(
+        message=message + warning_from,
+        category=category,
+        stacklevel=stacklevel,
+        source=source,
+    )
