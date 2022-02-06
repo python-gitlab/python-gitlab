@@ -2,7 +2,6 @@
 GitLab API:
 https://docs.gitlab.com/ee/api/job_artifacts.html
 """
-import warnings
 from typing import Any, Callable, Optional, TYPE_CHECKING
 
 import requests
@@ -34,10 +33,12 @@ class ProjectArtifactManager(RESTManager):
         *args: Any,
         **kwargs: Any,
     ) -> Optional[bytes]:
-        warnings.warn(
-            "The project.artifacts() method is deprecated and will be "
-            "removed in a future version. Use project.artifacts.download() instead.\n",
-            DeprecationWarning,
+        utils.warn(
+            message=(
+                "The project.artifacts() method is deprecated and will be removed in a "
+                "future version. Use project.artifacts.download() instead.\n"
+            ),
+            category=DeprecationWarning,
         )
         return self.download(
             *args,

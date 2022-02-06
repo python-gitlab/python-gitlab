@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
+import warnings
 
 from gitlab import utils
 
@@ -76,3 +77,21 @@ class TestEncodedId:
 
         obj = utils.EncodedId("we got/a/path")
         assert '"we%20got%2Fa%2Fpath"' == json.dumps(obj)
+
+
+class TestWarningsWrapper:
+    def test_warn(self):
+        warn_message = "short and stout"
+        warn_source = "teapot"
+
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            utils.warn(message=warn_message, category=UserWarning, source=warn_source)
+        assert len(caught_warnings) == 1
+        warning = caught_warnings[0]
+        # File name is this file as it is the first file outside of the `gitlab/` path.
+        assert __file__ == warning.filename
+        assert warning.category == UserWarning
+        assert isinstance(warning.message, UserWarning)
+        assert warn_message in str(warning.message)
+        assert __file__ in str(warning.message)
+        assert warn_source == warning.source

@@ -1,4 +1,3 @@
-import warnings
 from typing import Any, Callable, cast, Dict, List, Optional, TYPE_CHECKING, Union
 
 import requests
@@ -548,10 +547,12 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
 
     @cli.register_custom_action("Project", ("to_namespace",))
     def transfer_project(self, *args: Any, **kwargs: Any) -> None:
-        warnings.warn(
-            "The project.transfer_project() method is deprecated and will be "
-            "removed in a future version. Use project.transfer() instead.",
-            DeprecationWarning,
+        utils.warn(
+            message=(
+                "The project.transfer_project() method is deprecated and will be "
+                "removed in a future version. Use project.transfer() instead."
+            ),
+            category=DeprecationWarning,
         )
         return self.transfer(*args, **kwargs)
 
@@ -562,10 +563,12 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         *args: Any,
         **kwargs: Any,
     ) -> Optional[bytes]:
-        warnings.warn(
-            "The project.artifact() method is deprecated and will be "
-            "removed in a future version. Use project.artifacts.raw() instead.",
-            DeprecationWarning,
+        utils.warn(
+            message=(
+                "The project.artifact() method is deprecated and will be "
+                "removed in a future version. Use project.artifacts.raw() instead."
+            ),
+            category=DeprecationWarning,
         )
         return self.artifacts.raw(*args, **kwargs)
 

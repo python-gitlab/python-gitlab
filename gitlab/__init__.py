@@ -20,6 +20,7 @@ import warnings
 from typing import Any
 
 import gitlab.config  # noqa: F401
+from gitlab import utils as _utils
 from gitlab._version import (  # noqa: F401
     __author__,
     __copyright__,
@@ -40,11 +41,13 @@ warnings.filterwarnings("default", category=DeprecationWarning, module="^gitlab"
 def __getattr__(name: str) -> Any:
     # Deprecate direct access to constants without namespace
     if name in gitlab.const._DEPRECATED:
-        warnings.warn(
-            f"\nDirect access to 'gitlab.{name}' is deprecated and will be "
-            f"removed in a future major python-gitlab release. Please "
-            f"use 'gitlab.const.{name}' instead.",
-            DeprecationWarning,
+        _utils.warn(
+            message=(
+                f"\nDirect access to 'gitlab.{name}' is deprecated and will be "
+                f"removed in a future major python-gitlab release. Please "
+                f"use 'gitlab.const.{name}' instead."
+            ),
+            category=DeprecationWarning,
         )
         return getattr(gitlab.const, name)
     raise AttributeError(f"module {__name__} has no attribute {name}")
