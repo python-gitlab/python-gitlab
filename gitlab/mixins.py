@@ -463,7 +463,7 @@ class DeleteMixin(_RestManagerBase):
     gitlab: gitlab.Gitlab
 
     @exc.on_http_error(exc.GitlabDeleteError)
-    def delete(self, id: Union[str, int], **kwargs: Any) -> None:
+    def delete(self, id: Optional[Union[str, int]] = None, **kwargs: Any) -> None:
         """Delete an object on the server.
 
         Args:
@@ -478,6 +478,9 @@ class DeleteMixin(_RestManagerBase):
             path = self.path
         else:
             path = f"{self.path}/{utils.EncodedId(id)}"
+
+        if TYPE_CHECKING:
+            assert path is not None
         self.gitlab.http_delete(path, **kwargs)
 
 
