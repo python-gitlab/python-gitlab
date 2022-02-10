@@ -24,102 +24,7 @@ updated_approval_rule_approvals_required = 1
 
 
 @pytest.fixture
-def resp_snippet():
-    merge_request_content = [
-        {
-            "id": 1,
-            "iid": 1,
-            "project_id": 1,
-            "title": "test1",
-            "description": "fixed login page css paddings",
-            "state": "merged",
-            "merged_by": {
-                "id": 87854,
-                "name": "Douwe Maan",
-                "username": "DouweM",
-                "state": "active",
-                "avatar_url": "https://gitlab.example.com/uploads/-/system/user/avatar/87854/avatar.png",
-                "web_url": "https://gitlab.com/DouweM",
-            },
-            "merged_at": "2018-09-07T11:16:17.520Z",
-            "closed_by": None,
-            "closed_at": None,
-            "created_at": "2017-04-29T08:46:00Z",
-            "updated_at": "2017-04-29T08:46:00Z",
-            "target_branch": "main",
-            "source_branch": "test1",
-            "upvotes": 0,
-            "downvotes": 0,
-            "author": {
-                "id": 1,
-                "name": "Administrator",
-                "username": "admin",
-                "state": "active",
-                "avatar_url": None,
-                "web_url": "https://gitlab.example.com/admin",
-            },
-            "assignee": {
-                "id": 1,
-                "name": "Administrator",
-                "username": "admin",
-                "state": "active",
-                "avatar_url": None,
-                "web_url": "https://gitlab.example.com/admin",
-            },
-            "assignees": [
-                {
-                    "name": "Miss Monserrate Beier",
-                    "username": "axel.block",
-                    "id": 12,
-                    "state": "active",
-                    "avatar_url": "http://www.gravatar.com/avatar/46f6f7dc858ada7be1853f7fb96e81da?s=80&d=identicon",
-                    "web_url": "https://gitlab.example.com/axel.block",
-                }
-            ],
-            "source_project_id": 2,
-            "target_project_id": 3,
-            "labels": ["Community contribution", "Manage"],
-            "work_in_progress": None,
-            "milestone": {
-                "id": 5,
-                "iid": 1,
-                "project_id": 3,
-                "title": "v2.0",
-                "description": "Assumenda aut placeat expedita exercitationem labore sunt enim earum.",
-                "state": "closed",
-                "created_at": "2015-02-02T19:49:26.013Z",
-                "updated_at": "2015-02-02T19:49:26.013Z",
-                "due_date": "2018-09-22",
-                "start_date": "2018-08-08",
-                "web_url": "https://gitlab.example.com/my-group/my-project/milestones/1",
-            },
-            "merge_when_pipeline_succeeds": None,
-            "merge_status": "can_be_merged",
-            "sha": "8888888888888888888888888888888888888888",
-            "merge_commit_sha": None,
-            "squash_commit_sha": None,
-            "user_notes_count": 1,
-            "discussion_locked": None,
-            "should_remove_source_branch": True,
-            "force_remove_source_branch": False,
-            "allow_collaboration": False,
-            "allow_maintainer_to_push": False,
-            "web_url": "http://gitlab.example.com/my-group/my-project/merge_requests/1",
-            "references": {
-                "short": "!1",
-                "relative": "my-group/my-project!1",
-                "full": "my-group/my-project!1",
-            },
-            "time_stats": {
-                "time_estimate": 0,
-                "total_time_spent": 0,
-                "human_time_estimate": None,
-                "human_total_time_spent": None,
-            },
-            "squash": False,
-            "task_completion_status": {"count": 0, "completed_count": 0},
-        }
-    ]
+def resp_mr_approval_rules():
     mr_ars_content = [
         {
             "id": approval_rule_id,
@@ -190,20 +95,6 @@ def resp_snippet():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
             method=responses.GET,
-            url="http://localhost/api/v4/projects/1/merge_requests",
-            json=merge_request_content,
-            content_type="application/json",
-            status=200,
-        )
-        rsps.add(
-            method=responses.GET,
-            url="http://localhost/api/v4/projects/1/merge_requests/1",
-            json=merge_request_content[0],
-            content_type="application/json",
-            status=200,
-        )
-        rsps.add(
-            method=responses.GET,
             url="http://localhost/api/v4/projects/1/merge_requests/1/approval_rules",
             json=mr_ars_content,
             content_type="application/json",
@@ -248,7 +139,7 @@ def resp_snippet():
         yield rsps
 
 
-def test_project_approval_manager_update_uses_post(project, resp_snippet):
+def test_project_approval_manager_update_uses_post(project):
     """Ensure the
     gitlab.v4.objects.merge_request_approvals.ProjectApprovalManager object has
     _update_uses_post set to True"""
@@ -259,15 +150,15 @@ def test_project_approval_manager_update_uses_post(project, resp_snippet):
     assert approvals._update_uses_post is True
 
 
-def test_list_merge_request_approval_rules(project, resp_snippet):
-    approval_rules = project.mergerequests.get(1).approval_rules.list()
+def test_list_merge_request_approval_rules(project, resp_mr_approval_rules):
+    approval_rules = project.mergerequests.get(1, lazy=True).approval_rules.list()
     assert len(approval_rules) == 1
     assert approval_rules[0].name == approval_rule_name
     assert approval_rules[0].id == approval_rule_id
 
 
-def test_update_merge_request_approvals_set_approvers(project, resp_snippet):
-    approvals = project.mergerequests.get(1).approvals
+def test_update_merge_request_approvals_set_approvers(project, resp_mr_approval_rules):
+    approvals = project.mergerequests.get(1, lazy=True).approvals
     assert isinstance(
         approvals,
         gitlab.v4.objects.merge_request_approvals.ProjectMergeRequestApprovalManager,
@@ -286,8 +177,8 @@ def test_update_merge_request_approvals_set_approvers(project, resp_snippet):
     assert response.name == approval_rule_name
 
 
-def test_create_merge_request_approvals_set_approvers(project, resp_snippet):
-    approvals = project.mergerequests.get(1).approvals
+def test_create_merge_request_approvals_set_approvers(project, resp_mr_approval_rules):
+    approvals = project.mergerequests.get(1, lazy=True).approvals
     assert isinstance(
         approvals,
         gitlab.v4.objects.merge_request_approvals.ProjectMergeRequestApprovalManager,
@@ -305,8 +196,8 @@ def test_create_merge_request_approvals_set_approvers(project, resp_snippet):
     assert response.name == new_approval_rule_name
 
 
-def test_create_merge_request_approval_rule(project, resp_snippet):
-    approval_rules = project.mergerequests.get(1).approval_rules
+def test_create_merge_request_approval_rule(project, resp_mr_approval_rules):
+    approval_rules = project.mergerequests.get(1, lazy=True).approval_rules
     data = {
         "name": new_approval_rule_name,
         "approvals_required": new_approval_rule_approvals_required,
@@ -321,8 +212,8 @@ def test_create_merge_request_approval_rule(project, resp_snippet):
     assert response.name == new_approval_rule_name
 
 
-def test_update_merge_request_approval_rule(project, resp_snippet):
-    approval_rules = project.mergerequests.get(1).approval_rules
+def test_update_merge_request_approval_rule(project, resp_mr_approval_rules):
+    approval_rules = project.mergerequests.get(1, lazy=True).approval_rules
     ar_1 = approval_rules.list()[0]
     ar_1.user_ids = updated_approval_rule_user_ids
     ar_1.approvals_required = updated_approval_rule_approvals_required
@@ -333,8 +224,8 @@ def test_update_merge_request_approval_rule(project, resp_snippet):
     assert ar_1.eligible_approvers[0]["id"] == updated_approval_rule_user_ids[0]
 
 
-def test_get_merge_request_approval_state(project, resp_snippet):
-    merge_request = project.mergerequests.get(1)
+def test_get_merge_request_approval_state(project, resp_mr_approval_rules):
+    merge_request = project.mergerequests.get(1, lazy=True)
     approval_state = merge_request.approval_state.get()
     assert isinstance(
         approval_state,
