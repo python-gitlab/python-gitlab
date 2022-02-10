@@ -163,7 +163,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
         return approval_rules.create(data=data)
 
 
-class ProjectMergeRequestApprovalRule(SaveMixin, RESTObject):
+class ProjectMergeRequestApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "approval_rule_id"
     _short_print_attr = "approval_rule"
     id: int
@@ -192,7 +192,7 @@ class ProjectMergeRequestApprovalRule(SaveMixin, RESTObject):
 
 
 class ProjectMergeRequestApprovalRuleManager(
-    ListMixin, UpdateMixin, CreateMixin, RESTManager
+    ListMixin, UpdateMixin, CreateMixin, DeleteMixin, RESTManager
 ):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/approval_rules"
     _obj_cls = ProjectMergeRequestApprovalRule

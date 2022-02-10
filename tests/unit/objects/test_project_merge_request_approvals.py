@@ -139,6 +139,19 @@ def resp_mr_approval_rules():
         yield rsps
 
 
+@pytest.fixture
+def resp_delete_mr_approval_rule(no_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.DELETE,
+            url="http://localhost/api/v4/projects/1/merge_requests/1/approval_rules/1",
+            json=no_content,
+            content_type="application/json",
+            status=204,
+        )
+        yield rsps
+
+
 def test_project_approval_manager_update_uses_post(project):
     """Ensure the
     gitlab.v4.objects.merge_request_approvals.ProjectApprovalManager object has
@@ -155,6 +168,11 @@ def test_list_merge_request_approval_rules(project, resp_mr_approval_rules):
     assert len(approval_rules) == 1
     assert approval_rules[0].name == approval_rule_name
     assert approval_rules[0].id == approval_rule_id
+
+
+def test_delete_merge_request_approval_rule(project, resp_delete_mr_approval_rule):
+    merge_request = project.mergerequests.get(1, lazy=True)
+    merge_request.approval_rules.delete(approval_rule_id)
 
 
 def test_update_merge_request_approvals_set_approvers(project, resp_mr_approval_rules):

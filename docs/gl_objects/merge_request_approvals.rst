@@ -75,6 +75,14 @@ List MR-level MR approval rules::
 
 	mr.approval_rules.list()
 
+Delete MR-level MR approval rule::
+
+    rules = mr.approval_rules.list()
+    rules[0].delete()
+
+    # or
+    mr.approval_rules.delete(approval_id)
+
 Change MR-level MR approval rule::
 
 	mr_approvalrule.user_ids = [105]
