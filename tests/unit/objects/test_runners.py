@@ -174,6 +174,18 @@ def resp_runner_delete():
 
 
 @pytest.fixture
+def resp_runner_delete_by_token():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.DELETE,
+            url="http://localhost/api/v4/runners",
+            status=204,
+            match=[responses.matchers.query_param_matcher({"token": "auth-token"})],
+        )
+        yield rsps
+
+
+@pytest.fixture
 def resp_runner_disable():
     with responses.RequestsMock() as rsps:
         pattern = re.compile(r".*?/projects/1/runners/6")
@@ -242,10 +254,14 @@ def test_get_update_runner(gl: gitlab.Gitlab, resp_runner_detail):
     runner.save()
 
 
-def test_remove_runner(gl: gitlab.Gitlab, resp_runner_delete):
+def test_delete_runner_by_id(gl: gitlab.Gitlab, resp_runner_delete):
     runner = gl.runners.get(6)
     runner.delete()
     gl.runners.delete(6)
+
+
+def test_delete_runner_by_token(gl: gitlab.Gitlab, resp_runner_delete_by_token):
+    gl.runners.delete(token="auth-token")
 
 
 def test_disable_project_runner(gl: gitlab.Gitlab, resp_runner_disable):
