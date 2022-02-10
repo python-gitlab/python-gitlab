@@ -45,6 +45,23 @@ class ProjectArtifactManager(RESTManager):
             **kwargs,
         )
 
+    @exc.on_http_error(exc.GitlabDeleteError)
+    def delete(self, **kwargs: Any) -> None:
+        """Delete the project's artifacts on the server.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the server cannot perform the request
+        """
+        path = self._compute_path("/projects/{project_id}/artifacts")
+
+        if TYPE_CHECKING:
+            assert path is not None
+        self.gitlab.http_delete(path, **kwargs)
+
     @cli.register_custom_action(
         "ProjectArtifactManager", ("ref_name", "job"), ("job_token",)
     )
