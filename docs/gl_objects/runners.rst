@@ -70,6 +70,10 @@ Remove a runner::
     # or
     runner.delete()
 
+Remove a runner by its authentication token::
+
+    gl.runners.delete(token="runner-auth-token")
+
 Verify a registered runner token::
 
     try:

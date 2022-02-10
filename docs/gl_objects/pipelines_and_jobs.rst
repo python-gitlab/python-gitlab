@@ -274,6 +274,10 @@ You can also directly stream the output into a file, and unzip it afterwards::
     subprocess.run(["unzip", "-bo", zipfn])
     os.unlink(zipfn)
 
+Delete all artifacts of a project that can be deleted::
+
+  project.artifacts.delete()
+
 Get a single artifact file::
 
     build_or_job.artifact('path/to/file')
