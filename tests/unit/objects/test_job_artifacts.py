@@ -24,6 +24,24 @@ def resp_artifacts_by_ref_name(binary_content):
         yield rsps
 
 
+@pytest.fixture
+def resp_project_artifacts_delete(no_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.DELETE,
+            url="http://localhost/api/v4/projects/1/artifacts",
+            json=no_content,
+            content_type="application/json",
+            status=204,
+        )
+        yield rsps
+
+
+def test_project_artifacts_delete(gl, resp_project_artifacts_delete):
+    project = gl.projects.get(1, lazy=True)
+    project.artifacts.delete()
+
+
 def test_project_artifacts_download_by_ref_name(
     gl, binary_content, resp_artifacts_by_ref_name
 ):
