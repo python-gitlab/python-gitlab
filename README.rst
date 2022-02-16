@@ -98,8 +98,14 @@ https://github.com/python-gitlab/python-gitlab/issues.
 Gitter Community Chat
 ---------------------
 
-There is a `gitter <https://gitter.im/python-gitlab/Lobby>`_ community chat
-available at https://gitter.im/python-gitlab/Lobby
+We have a `gitter <https://gitter.im/python-gitlab/Lobby>`_ community chat
+available at https://gitter.im/python-gitlab/Lobby, which you can also
+directly access via the Open Chat button below.
+
+If you have a simple question, the community might be able to help already,
+without you opening an issue. If you regularly use python-gitlab, we also
+encourage you to join and participate. You might discover new ideas and
+use cases yourself!
 
 Documentation
 -------------
