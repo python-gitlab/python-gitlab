@@ -700,10 +700,14 @@ class Gitlab:
             if (429 == result.status_code and obey_rate_limit) or (
                 result.status_code in [500, 502, 503, 504] and retry_transient_errors
             ):
+                # Response headers documentation:
+                # https://docs.gitlab.com/ee/user/admin_area/settings/user_and_ip_rate_limits.html#response-headers
                 if max_retries == -1 or cur_retries < max_retries:
                     wait_time = 2 ** cur_retries * 0.1
                     if "Retry-After" in result.headers:
                         wait_time = int(result.headers["Retry-After"])
+                    elif "RateLimit-Reset" in result.headers:
+                        wait_time = int(result.headers["RateLimit-Reset"]) - time.time()
                     cur_retries += 1
                     time.sleep(wait_time)
                     continue
