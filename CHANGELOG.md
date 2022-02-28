@@ -2,6 +2,25 @@
 
 <!--next-version-placeholder-->
 
+## v3.2.0 (2022-02-28)
+### Feature
+* **merge_request_approvals:** Add support for deleting MR approval rules ([`85a734f`](https://github.com/python-gitlab/python-gitlab/commit/85a734fec3111a4a5c4f0ddd7cb36eead96215e9))
+* **artifacts:** Add support for project artifacts delete API ([`c01c034`](https://github.com/python-gitlab/python-gitlab/commit/c01c034169789e1d20fd27a0f39f4c3c3628a2bb))
+* **mixins:** Allow deleting resources without IDs ([`0717517`](https://github.com/python-gitlab/python-gitlab/commit/0717517212b616cfd52cfd38dd5c587ff8f9c47c))
+* **objects:** Add a complete artifacts manager ([`c8c2fa7`](https://github.com/python-gitlab/python-gitlab/commit/c8c2fa763558c4d9906e68031a6602e007fec930))
+
+### Fix
+* **services:** Use slug for id_attr instead of custom methods ([`e30f39d`](https://github.com/python-gitlab/python-gitlab/commit/e30f39dff5726266222b0f56c94f4ccfe38ba527))
+* Remove custom `delete` method for labels ([`0841a2a`](https://github.com/python-gitlab/python-gitlab/commit/0841a2a686c6808e2f3f90960e529b26c26b268f))
+
+### Documentation
+* Enable gitter chat directly in docs ([`bd1ecdd`](https://github.com/python-gitlab/python-gitlab/commit/bd1ecdd5ad654b01b34e7a7a96821cc280b3ca67))
+* Add delete methods for runners and project artifacts ([`5e711fd`](https://github.com/python-gitlab/python-gitlab/commit/5e711fdb747fb3dcde1f5879c64dfd37bf25f3c0))
+* Add retry_transient infos ([`bb1f054`](https://github.com/python-gitlab/python-gitlab/commit/bb1f05402887c78f9898fbd5bd66e149eff134d9))
+* Add transient errors retry info ([`b7a1266`](https://github.com/python-gitlab/python-gitlab/commit/b7a126661175a3b9b73dbb4cb88709868d6d871c))
+* **artifacts:** Deprecate artifacts() and artifact() methods ([`64d01ef`](https://github.com/python-gitlab/python-gitlab/commit/64d01ef23b1269b705350106d8ddc2962a780dce))
+* Revert "chore: add temporary banner for v3" ([#1864](https://github.com/python-gitlab/python-gitlab/issues/1864)) ([`7a13b9b`](https://github.com/python-gitlab/python-gitlab/commit/7a13b9bfa4aead6c731f9a92e0946dba7577c61b))
+
 ## v3.1.1 (2022-01-28)
 ### Fix
 * **cli:** Make 'per_page' and 'page' type explicit ([`d493a5e`](https://github.com/python-gitlab/python-gitlab/commit/d493a5e8685018daa69c92e5942cbe763e5dac62))
