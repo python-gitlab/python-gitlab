@@ -35,6 +35,8 @@ REDIRECT_MSG = (
     "{source!r} to {target!r}"
 )
 
+RETRYABLE_TRANSIENT_ERROR_CODES = [500, 502, 503, 504] + list(range(520, 531))
+
 
 class Gitlab:
     """Represents a GitLab server connection.
@@ -694,9 +696,9 @@ class Gitlab:
                 )
             except requests.ConnectionError:
                 if retry_transient_errors and (
-                        max_retries == -1 or cur_retries < max_retries
+                    max_retries == -1 or cur_retries < max_retries
                 ):
-                    wait_time = 2 ** cur_retries * 0.1
+                    wait_time = 2**cur_retries * 0.1
                     cur_retries += 1
                     time.sleep(wait_time)
                     continue
@@ -712,7 +714,8 @@ class Gitlab:
                 "retry_transient_errors", self.retry_transient_errors
             )
             if (429 == result.status_code and obey_rate_limit) or (
-                result.status_code in [500, 502, 503, 504] and retry_transient_errors
+                result.status_code in RETRYABLE_TRANSIENT_ERROR_CODES
+                and retry_transient_errors
             ):
                 # Response headers documentation:
                 # https://docs.gitlab.com/ee/user/admin_area/settings/user_and_ip_rate_limits.html#response-headers
