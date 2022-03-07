@@ -2,6 +2,6 @@
 furo
 jinja2
 myst-parser
-sphinx==4.3.2
+sphinx==4.4.0
 sphinx_rtd_theme
 sphinxcontrib-autoprogram
