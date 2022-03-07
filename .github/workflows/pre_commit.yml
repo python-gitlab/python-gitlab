@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v3
       - run: pip install --upgrade -r requirements.txt -r requirements-lint.txt pre-commit
       - name: Run pre-commit install
         run: pre-commit install
