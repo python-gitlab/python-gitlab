@@ -4,7 +4,11 @@ GitLab API: https://docs.gitlab.com/ee/api/pipelines.html
 import pytest
 import responses
 
-from gitlab.v4.objects import ProjectPipeline, ProjectPipelineTestReport
+from gitlab.v4.objects import (
+    ProjectPipeline,
+    ProjectPipelineTestReport,
+    ProjectPipelineTestReportSummary,
+)
 
 pipeline_content = {
     "id": 46,
@@ -66,6 +70,32 @@ test_report_content = {
 }
 
 
+test_report_summary_content = {
+    "total": {
+        "time": 1904,
+        "count": 3363,
+        "success": 3351,
+        "failed": 0,
+        "skipped": 12,
+        "error": 0,
+        "suite_error": None,
+    },
+    "test_suites": [
+        {
+            "name": "test",
+            "total_time": 1904,
+            "total_count": 3363,
+            "success_count": 3351,
+            "failed_count": 0,
+            "skipped_count": 12,
+            "error_count": 0,
+            "build_ids": [66004],
+            "suite_error": None,
+        }
+    ],
+}
+
+
 @pytest.fixture
 def resp_get_pipeline():
     with responses.RequestsMock() as rsps:
@@ -118,6 +148,19 @@ def resp_get_pipeline_test_report():
         yield rsps
 
 
+@pytest.fixture
+def resp_get_pipeline_test_report_summary():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/pipelines/1/test_report_summary",
+            json=test_report_summary_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
 def test_get_project_pipeline(project, resp_get_pipeline):
     pipeline = project.pipelines.get(1)
     assert isinstance(pipeline, ProjectPipeline)
@@ -144,3 +187,13 @@ def test_get_project_pipeline_test_report(project, resp_get_pipeline_test_report
     assert isinstance(test_report, ProjectPipelineTestReport)
     assert test_report.total_time == 5
     assert test_report.test_suites[0]["name"] == "Secure"
+
+
+def test_get_project_pipeline_test_report_summary(
+    project, resp_get_pipeline_test_report_summary
+):
+    pipeline = project.pipelines.get(1, lazy=True)
+    test_report_summary = pipeline.test_report_summary.get()
+    assert isinstance(test_report_summary, ProjectPipelineTestReportSummary)
+    assert test_report_summary.total["count"] == 3363
+    assert test_report_summary.test_suites[0]["name"] == "test"
