@@ -34,7 +34,7 @@ jobs:
           TOXENV: docs
         run: tox
       - name: Archive generated docs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: html-docs
           path: build/sphinx/html/
