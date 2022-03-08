@@ -7,4 +7,4 @@ pylint==2.12.2
 pytest==6.2.5
 types-PyYAML==6.0.4
 types-requests==2.27.11
-types-setuptools==57.4.9
+types-setuptools==57.4.10
