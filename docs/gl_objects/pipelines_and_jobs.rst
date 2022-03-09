@@ -369,7 +369,7 @@ Get the test report for a pipeline::
     test_report = pipeline.test_report.get()
 
 Pipeline test report summary
-====================
+============================
 
 Get a pipeline’s test report summary.
 
@@ -380,7 +380,7 @@ Reference
 
   + :class:`gitlab.v4.objects.ProjectPipelineTestReportSummary`
   + :class:`gitlab.v4.objects.ProjectPipelineTestReportSummaryManager`
-  + :attr:`gitlab.v4.objects.ProjectPipeline.test_report)summary`
+  + :attr:`gitlab.v4.objects.ProjectPipeline.test_report_summary`
 
 * GitLab API: https://docs.gitlab.com/ee/api/pipelines.html#get-a-pipelines-test-report-summary
 
