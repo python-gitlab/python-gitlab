@@ -35,6 +35,8 @@ __all__ = [
     "ProjectPipelineScheduleManager",
     "ProjectPipelineTestReport",
     "ProjectPipelineTestReportManager",
+    "ProjectPipelineTestReportSummary",
+    "ProjectPipelineTestReportSummaryManager",
 ]
 
 
@@ -52,6 +54,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
     bridges: "ProjectPipelineBridgeManager"
     jobs: "ProjectPipelineJobManager"
     test_report: "ProjectPipelineTestReportManager"
+    test_report_summary: "ProjectPipelineTestReportSummaryManager"
     variables: "ProjectPipelineVariableManager"
 
     @cli.register_custom_action("ProjectPipeline")
@@ -251,3 +254,20 @@ class ProjectPipelineTestReportManager(GetWithoutIdMixin, RESTManager):
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
     ) -> Optional[ProjectPipelineTestReport]:
         return cast(Optional[ProjectPipelineTestReport], super().get(id=id, **kwargs))
+
+
+class ProjectPipelineTestReportSummary(RESTObject):
+    _id_attr = None
+
+
+class ProjectPipelineTestReportSummaryManager(GetWithoutIdMixin, RESTManager):
+    _path = "/projects/{project_id}/pipelines/{pipeline_id}/test_report_summary"
+    _obj_cls = ProjectPipelineTestReportSummary
+    _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
+
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[ProjectPipelineTestReportSummary]:
+        return cast(
+            Optional[ProjectPipelineTestReportSummary], super().get(id=id, **kwargs)
+        )
