@@ -701,7 +701,7 @@ class Gitlab:
                 result.status_code in [500, 502, 503, 504] and retry_transient_errors
             ):
                 if max_retries == -1 or cur_retries < max_retries:
-                    wait_time = 2 ** cur_retries * 0.1
+                    wait_time = 2**cur_retries * 0.1
                     if "Retry-After" in result.headers:
                         wait_time = int(result.headers["Retry-After"])
                     cur_retries += 1
