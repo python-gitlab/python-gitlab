@@ -4,7 +4,7 @@ flake8==4.0.1
 isort==5.10.1
 mypy==0.940
 pylint==2.12.2
-pytest==7.0.1
+pytest==7.1.0
 types-PyYAML==6.0.4
 types-requests==2.27.11
 types-setuptools==57.4.10
