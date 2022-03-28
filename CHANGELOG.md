@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v3.3.0 (2022-03-28)
+### Feature
+* **object:** Add pipeline test report summary support ([`a97e0cf`](https://github.com/python-gitlab/python-gitlab/commit/a97e0cf81b5394b3a2b73d927b4efe675bc85208))
+
+### Fix
+* Support RateLimit-Reset header ([`4060146`](https://github.com/python-gitlab/python-gitlab/commit/40601463c78a6f5d45081700164899b2559b7e55))
+
+### Documentation
+* Fix typo and incorrect style ([`2828b10`](https://github.com/python-gitlab/python-gitlab/commit/2828b10505611194bebda59a0e9eb41faf24b77b))
+* Add pipeline test report summary support ([`d78afb3`](https://github.com/python-gitlab/python-gitlab/commit/d78afb36e26f41d727dee7b0952d53166e0df850))
+* **chore:** Include docs .js files in sdist ([`3010b40`](https://github.com/python-gitlab/python-gitlab/commit/3010b407bc9baabc6cef071507e8fa47c0f1624d))
+
 ## v3.2.0 (2022-02-28)
 ### Feature
 * **merge_request_approvals:** Add support for deleting MR approval rules ([`85a734f`](https://github.com/python-gitlab/python-gitlab/commit/85a734fec3111a4a5c4f0ddd7cb36eead96215e9))
