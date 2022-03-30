@@ -19,7 +19,7 @@
 import argparse
 import operator
 import sys
-from typing import Any, Dict, List, Optional, Type, TYPE_CHECKING, Union
+from typing import Any, Dict, Iterator, List, Optional, Type, TYPE_CHECKING, Union
 
 import gitlab
 import gitlab.base
@@ -123,6 +123,7 @@ class GitlabCLI:
             data = export_status.download()
             if TYPE_CHECKING:
                 assert data is not None
+                assert not isinstance(data, Iterator)
             sys.stdout.buffer.write(data)
 
         except Exception as e:

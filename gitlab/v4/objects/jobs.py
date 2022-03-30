@@ -1,4 +1,14 @@
-from typing import Any, Callable, cast, Dict, Optional, TYPE_CHECKING, Union
+from typing import (
+    Any,
+    Callable,
+    cast,
+    Dict,
+    Iterator,
+    Literal,
+    Optional,
+    TYPE_CHECKING,
+    Union,
+)
 
 import requests
 
@@ -116,10 +126,10 @@ class ProjectJob(RefreshMixin, RESTObject):
     def artifacts(
         self,
         streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
+        action: Optional[Union[Callable[..., Any], Literal["iterator"]]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Get the job artifacts.
 
         Args:
@@ -152,10 +162,10 @@ class ProjectJob(RefreshMixin, RESTObject):
         self,
         path: str,
         streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
+        action: Optional[Union[Callable[..., Any], Literal["iterator"]]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Get a single artifact file from within the job's artifacts archive.
 
         Args:

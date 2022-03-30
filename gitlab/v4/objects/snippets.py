@@ -1,4 +1,14 @@
-from typing import Any, Callable, cast, List, Optional, TYPE_CHECKING, Union
+from typing import (
+    Any,
+    Callable,
+    cast,
+    Iterator,
+    List,
+    Literal,
+    Optional,
+    TYPE_CHECKING,
+    Union,
+)
 
 import requests
 
@@ -28,10 +38,10 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     def content(
         self,
         streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
+        action: Optional[Union[Callable[..., Any], Literal["iterator"]]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Return the content of a snippet.
 
         Args:
@@ -102,10 +112,10 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
     def content(
         self,
         streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
+        action: Optional[Union[Callable[..., Any], Literal["iterator"]]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Return the content of a snippet.
 
         Args:

@@ -19,7 +19,7 @@ import pathlib
 import traceback
 import urllib.parse
 import warnings
-from typing import Any, Callable, Dict, Optional, Type, Union
+from typing import Any, Callable, Dict, Iterator, Literal, Optional, Type, Union
 
 import requests
 
@@ -32,14 +32,17 @@ class _StdoutStream:
 def response_content(
     response: requests.Response,
     streamed: bool,
-    action: Optional[Callable],
+    action: Optional[Union[Callable, Literal["iterator"]]],
     chunk_size: int,
-) -> Optional[bytes]:
+) -> Optional[Union[bytes, Iterator[Any]]]:
     if streamed is False:
         return response.content
 
     if action is None:
         action = _StdoutStream()
+
+    if action == "iterator":
+        return response.iter_content(chunk_size=chunk_size)
 
     for chunk in response.iter_content(chunk_size=chunk_size):
         if chunk:

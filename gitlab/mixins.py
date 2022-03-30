@@ -20,7 +20,9 @@ from typing import (
     Any,
     Callable,
     Dict,
+    Iterator,
     List,
+    Literal,
     Optional,
     Tuple,
     Type,
@@ -657,10 +659,10 @@ class DownloadMixin(_RestObjectBase):
     def download(
         self,
         streamed: bool = False,
-        action: Optional[Callable] = None,
+        action: Optional[Union[Callable, Literal["iterator"]]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Download the archive of a resource export.
 
         Args:

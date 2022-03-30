@@ -2,7 +2,7 @@
 GitLab API:
 https://docs.gitlab.com/ee/api/job_artifacts.html
 """
-from typing import Any, Callable, Optional, TYPE_CHECKING
+from typing import Any, Callable, Iterator, Literal, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -32,7 +32,7 @@ class ProjectArtifactManager(RESTManager):
         self,
         *args: Any,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         utils.warn(
             message=(
                 "The project.artifacts() method is deprecated and will be removed in a "
@@ -71,10 +71,10 @@ class ProjectArtifactManager(RESTManager):
         ref_name: str,
         job: str,
         streamed: bool = False,
-        action: Optional[Callable] = None,
+        action: Optional[Union[Callable, Literal["iterator"]]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Get the job artifacts archive from a specific tag or branch.
 
         Args:
@@ -86,7 +86,8 @@ class ProjectArtifactManager(RESTManager):
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
             action: Callable responsible of dealing with chunk of
-                data
+                data. May also be the string "iterator" to directly return
+                the response iterator
             chunk_size: Size of each chunk
             **kwargs: Extra options to send to the server (e.g. sudo)
 
@@ -115,10 +116,10 @@ class ProjectArtifactManager(RESTManager):
         artifact_path: str,
         job: str,
         streamed: bool = False,
-        action: Optional[Callable] = None,
+        action: Optional[Union[Callable, Literal["iterator"]]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Download a single artifact file from a specific tag or branch from
         within the job's artifacts archive.
 

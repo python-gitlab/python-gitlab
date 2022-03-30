@@ -1,4 +1,15 @@
-from typing import Any, Callable, cast, Dict, List, Optional, TYPE_CHECKING, Union
+from typing import (
+    Any,
+    Callable,
+    cast,
+    Dict,
+    Iterator,
+    List,
+    Literal,
+    Optional,
+    TYPE_CHECKING,
+    Union,
+)
 
 import requests
 
@@ -457,10 +468,10 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         self,
         wiki: bool = False,
         streamed: bool = False,
-        action: Optional[Callable] = None,
+        action: Optional[Union[Callable, Literal["iterator"]]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Return a snapshot of the repository.
 
         Args:
@@ -562,7 +573,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         self,
         *args: Any,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         utils.warn(
             message=(
                 "The project.artifact() method is deprecated and will be "

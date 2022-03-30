@@ -1,5 +1,16 @@
 import base64
-from typing import Any, Callable, cast, Dict, List, Optional, TYPE_CHECKING
+from typing import (
+    Any,
+    Callable,
+    cast,
+    Dict,
+    Iterator,
+    List,
+    Literal,
+    Optional,
+    TYPE_CHECKING,
+    Union,
+)
 
 import requests
 
@@ -217,10 +228,10 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         file_path: str,
         ref: str,
         streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
+        action: Optional[Union[Callable[..., Any], Literal["iterator"]]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Return the content of a file for a commit.
 
         Args:
