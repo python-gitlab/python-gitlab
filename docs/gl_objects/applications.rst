@@ -22,7 +22,7 @@ List all OAuth applications::
 
 Create an application::
 
-    gl.applications.create({'name': 'your_app', 'redirect_uri': 'http://application.url', 'scopes': ['api']})
+    gl.applications.create({'name': 'your_app', 'redirect_uri': 'http://application.url', 'scopes': 'read_user openid profile email'})
 
 Delete an applications::
 
