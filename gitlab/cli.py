@@ -106,7 +106,7 @@ def cls_to_what(cls: RESTObject) -> str:
 
 def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        add_help=add_help, description="GitLab API Command Line Interface"
+        add_help=add_help, description="GitLab API Command Line Interface", allow_abbrev=False
     )
     parser.add_argument("--version", help="Display the version.", action="store_true")
     parser.add_argument(
