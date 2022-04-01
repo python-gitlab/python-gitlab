@@ -39,3 +39,10 @@ Update a topic::
 
     # or
     gl.topics.update(topic_id, {"description": "My new topic"})
+
+Delete a topic::
+
+    topic.delete()
+
+    # or
+    gl.topics.delete(topic_id)

@@ -16,3 +16,6 @@ def test_topics(gl):
 
     updated_topic = gl.topics.get(topic.id)
     assert updated_topic.description == topic.description
+
+    topic.delete()
+    assert not gl.topics.list()

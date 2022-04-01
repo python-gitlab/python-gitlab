@@ -75,6 +75,19 @@ def resp_update_topic():
         yield rsps
 
 
+@pytest.fixture
+def resp_delete_topic(no_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.DELETE,
+            url=topic_url,
+            json=no_content,
+            content_type="application/json",
+            status=204,
+        )
+        yield rsps
+
+
 def test_list_topics(gl, resp_list_topics):
     topics = gl.topics.list()
     assert isinstance(topics, list)
@@ -99,3 +112,8 @@ def test_update_topic(gl, resp_update_topic):
     topic.name = new_name
     topic.save()
     assert topic.name == new_name
+
+
+def test_delete_topic(gl, resp_delete_topic):
+    topic = gl.topics.get(1, lazy=True)
+    topic.delete()
