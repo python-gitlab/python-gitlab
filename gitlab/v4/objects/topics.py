@@ -2,7 +2,7 @@ from typing import Any, cast, Union
 
 from gitlab import types
 from gitlab.base import RequiredOptional, RESTManager, RESTObject
-from gitlab.mixins import CreateMixin, RetrieveMixin, SaveMixin, UpdateMixin
+from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 
 __all__ = [
     "Topic",
@@ -10,11 +10,11 @@ __all__ = [
 ]
 
 
-class Topic(SaveMixin, RESTObject):
+class Topic(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class TopicManager(CreateMixin, RetrieveMixin, UpdateMixin, RESTManager):
+class TopicManager(CRUDMixin, RESTManager):
     _path = "/topics"
     _obj_cls = Topic
     _create_attrs = RequiredOptional(

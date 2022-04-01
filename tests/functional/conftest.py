@@ -39,6 +39,8 @@ def reset_gitlab(gl):
             )
             deploy_token.delete()
         group.delete()
+    for topic in gl.topics.list():
+        topic.delete()
     for variable in gl.variables.list():
         logging.info(f"Marking for deletion variable: {variable.key!r}")
         variable.delete()
