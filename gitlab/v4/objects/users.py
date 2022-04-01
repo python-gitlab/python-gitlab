@@ -429,11 +429,14 @@ class UserKey(ObjectDeleteMixin, RESTObject):
     pass
 
 
-class UserKeyManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
+class UserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = "/users/{user_id}/keys"
     _obj_cls = UserKey
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(required=("title", "key"))
+
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> UserKey:
+        return cast(UserKey, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class UserIdentityProviderManager(DeleteMixin, RESTManager):

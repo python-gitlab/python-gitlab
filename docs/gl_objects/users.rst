@@ -299,8 +299,12 @@ List SSH keys for a user::
 
 Create an SSH key for a user::
 
-    k = user.keys.create({'title': 'my_key',
+    key = user.keys.create({'title': 'my_key',
                           'key': open('/home/me/.ssh/id_rsa.pub').read()})
+
+Get an SSH key for a user by id::
+
+    key = user.keys.get(key_id)
 
 Delete an SSH key for a user::
 
