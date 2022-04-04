@@ -3,6 +3,7 @@ import requests
 import responses
 
 from gitlab import GitlabHttpError, GitlabList, GitlabParsingError, RedirectError
+from gitlab.client import RETRYABLE_TRANSIENT_ERROR_CODES
 from tests.unit import helpers
 
 MATCH_EMPTY_QUERY_PARAMS = [responses.matchers.query_param_matcher({})]
@@ -51,7 +52,7 @@ def test_http_request_404(gl):
 
 
 @responses.activate
-@pytest.mark.parametrize("status_code", [500, 502, 503, 504])
+@pytest.mark.parametrize("status_code", RETRYABLE_TRANSIENT_ERROR_CODES)
 def test_http_request_with_only_failures(gl, status_code):
     url = "http://localhost/api/v4/projects"
     responses.add(
@@ -98,6 +99,37 @@ def test_http_request_with_retry_on_method_for_transient_failures(gl):
 
 
 @responses.activate
+def test_http_request_with_retry_on_method_for_transient_network_failures(gl):
+    call_count = 0
+    calls_before_success = 3
+
+    url = "http://localhost/api/v4/projects"
+
+    def request_callback(request):
+        nonlocal call_count
+        call_count += 1
+        status_code = 200
+        headers = {}
+        body = "[]"
+
+        if call_count >= calls_before_success:
+            return (status_code, headers, body)
+        raise requests.ConnectionError("Connection aborted.")
+
+    responses.add_callback(
+        method=responses.GET,
+        url=url,
+        callback=request_callback,
+        content_type="application/json",
+    )
+
+    http_r = gl.http_request("get", "/projects", retry_transient_errors=True)
+
+    assert http_r.status_code == 200
+    assert len(responses.calls) == calls_before_success
+
+
+@responses.activate
 def test_http_request_with_retry_on_class_for_transient_failures(gl_retry):
     call_count = 0
     calls_before_success = 3
@@ -112,6 +144,37 @@ def test_http_request_with_retry_on_class_for_transient_failures(gl_retry):
         body = "[]"
 
         return (status_code, headers, body)
+
+    responses.add_callback(
+        method=responses.GET,
+        url=url,
+        callback=request_callback,
+        content_type="application/json",
+    )
+
+    http_r = gl_retry.http_request("get", "/projects", retry_transient_errors=True)
+
+    assert http_r.status_code == 200
+    assert len(responses.calls) == calls_before_success
+
+
+@responses.activate
+def test_http_request_with_retry_on_class_for_transient_network_failures(gl_retry):
+    call_count = 0
+    calls_before_success = 3
+
+    url = "http://localhost/api/v4/projects"
+
+    def request_callback(request: requests.models.PreparedRequest):
+        nonlocal call_count
+        call_count += 1
+        status_code = 200
+        headers = {}
+        body = "[]"
+
+        if call_count >= calls_before_success:
+            return (status_code, headers, body)
+        raise requests.ConnectionError("Connection aborted.")
 
     responses.add_callback(
         method=responses.GET,
@@ -150,6 +213,39 @@ def test_http_request_with_retry_on_class_and_method_for_transient_failures(gl_r
     )
 
     with pytest.raises(GitlabHttpError):
+        gl_retry.http_request("get", "/projects", retry_transient_errors=False)
+
+    assert len(responses.calls) == 1
+
+
+@responses.activate
+def test_http_request_with_retry_on_class_and_method_for_transient_network_failures(
+    gl_retry,
+):
+    call_count = 0
+    calls_before_success = 3
+
+    url = "http://localhost/api/v4/projects"
+
+    def request_callback(request):
+        nonlocal call_count
+        call_count += 1
+        status_code = 200
+        headers = {}
+        body = "[]"
+
+        if call_count >= calls_before_success:
+            return (status_code, headers, body)
+        raise requests.ConnectionError("Connection aborted.")
+
+    responses.add_callback(
+        method=responses.GET,
+        url=url,
+        callback=request_callback,
+        content_type="application/json",
+    )
+
+    with pytest.raises(requests.ConnectionError):
         gl_retry.http_request("get", "/projects", retry_transient_errors=False)
 
     assert len(responses.calls) == 1
