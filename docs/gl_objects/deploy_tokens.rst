@@ -54,6 +54,10 @@ List the deploy tokens for a project::
 
     deploy_tokens = project.deploytokens.list()
 
+Get a deploy token for a project by id::
+
+    deploy_token = project.deploytokens.get(deploy_token_id)
+
 Create a new deploy token to access registry images of a project:
 
 In addition to required parameters ``name`` and ``scopes``, this method accepts
@@ -106,6 +110,10 @@ Examples
 List the deploy tokens for a group::
 
     deploy_tokens = group.deploytokens.list()
+
+Get a deploy token for a group by id::
+
+    deploy_token = group.deploytokens.get(deploy_token_id)
 
 Create a new deploy token to access all repositories of all projects in a group:
 
