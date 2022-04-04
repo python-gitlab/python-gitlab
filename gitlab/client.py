@@ -710,9 +710,6 @@ class Gitlab:
             if 200 <= result.status_code < 300:
                 return result
 
-            retry_transient_errors = kwargs.get(
-                "retry_transient_errors", self.retry_transient_errors
-            )
             if (429 == result.status_code and obey_rate_limit) or (
                 result.status_code in RETRYABLE_TRANSIENT_ERROR_CODES
                 and retry_transient_errors
