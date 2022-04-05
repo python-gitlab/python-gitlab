@@ -75,7 +75,7 @@ jobs:
           TOXENV: ${{ matrix.toxenv }}
         run: tox -- --override-ini='log_cli=True'
       - name: Upload codecov coverage
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           files: ./coverage.xml
           flags: ${{ matrix.toxenv }}
@@ -97,7 +97,7 @@ jobs:
           TOXENV: cover
         run: tox
       - name: Upload codecov coverage
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           files: ./coverage.xml
           flags: unit
