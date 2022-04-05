@@ -38,4 +38,4 @@ repos:
         additional_dependencies:
           - types-PyYAML==6.0.5
           - types-requests==2.27.16
-          - types-setuptools==57.4.11
+          - types-setuptools==57.4.12
