@@ -153,6 +153,16 @@ class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
         required=("branch", "commit_message", "actions"),
         optional=("author_email", "author_name"),
     )
+    _list_filters = (
+        "ref_name",
+        "since",
+        "until",
+        "path",
+        "with_stats",
+        "first_parent",
+        "order",
+        "trailers",
+    )
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any
