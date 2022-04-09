@@ -1,3 +1,4 @@
+import sys
 from typing import (
     Any,
     Callable,
@@ -5,7 +6,6 @@ from typing import (
     Dict,
     Iterator,
     List,
-    Literal,
     Optional,
     TYPE_CHECKING,
     Union,
@@ -81,6 +81,11 @@ from .triggers import ProjectTriggerManager  # noqa: F401
 from .users import ProjectUserManager  # noqa: F401
 from .variables import ProjectVariableManager  # noqa: F401
 from .wikis import ProjectWikiManager  # noqa: F401
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
 
 __all__ = [
     "GroupProject",

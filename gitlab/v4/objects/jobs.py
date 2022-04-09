@@ -1,14 +1,5 @@
-from typing import (
-    Any,
-    Callable,
-    cast,
-    Dict,
-    Iterator,
-    Literal,
-    Optional,
-    TYPE_CHECKING,
-    Union,
-)
+import sys
+from typing import Any, Callable, cast, Dict, Iterator, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -17,6 +8,11 @@ from gitlab import exceptions as exc
 from gitlab import utils
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import RefreshMixin, RetrieveMixin
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
 
 __all__ = [
     "ProjectJob",

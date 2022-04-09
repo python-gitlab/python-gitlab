@@ -3,17 +3,8 @@ GitLab API: https://docs.gitlab.com/ee/api/repositories.html
 
 Currently this module only contains repository-related methods for projects.
 """
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Iterator,
-    List,
-    Literal,
-    Optional,
-    TYPE_CHECKING,
-    Union,
-)
+import sys
+from typing import Any, Callable, Dict, Iterator, List, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -21,6 +12,11 @@ import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import utils
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
 
 if TYPE_CHECKING:
     # When running mypy we use these as the base classes

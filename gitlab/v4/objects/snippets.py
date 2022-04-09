@@ -1,14 +1,5 @@
-from typing import (
-    Any,
-    Callable,
-    cast,
-    Iterator,
-    List,
-    Literal,
-    Optional,
-    TYPE_CHECKING,
-    Union,
-)
+import sys
+from typing import Any, Callable, cast, Iterator, List, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -21,6 +12,11 @@ from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin, UserAgentDeta
 from .award_emojis import ProjectSnippetAwardEmojiManager  # noqa: F401
 from .discussions import ProjectSnippetDiscussionManager  # noqa: F401
 from .notes import ProjectSnippetNoteManager  # noqa: F401
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
 
 __all__ = [
     "Snippet",
