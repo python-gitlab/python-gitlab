@@ -274,6 +274,18 @@ You can also directly stream the output into a file, and unzip it afterwards::
     subprocess.run(["unzip", "-bo", zipfn])
     os.unlink(zipfn)
 
+It is also possible to use the underlying iterator directly::
+
+    artifact_bytes_iterator = build_or_job.artifacts(streamed=True, action='iterator')
+
+This can be used with FastAPI/Starlette StreamingResponse to forward a download from gitlab without having to download
+the entire file server side first::
+
+    @app.get("/download_artifact")
+    def download_artifact():
+        artifact_bytes_iterator = build_or_job.artifacts(streamed=True, action='iterator')
+        return StreamingResponse(artifact_bytes_iterator, media_type="application/zip")
+
 Delete all artifacts of a project that can be deleted::
 
   project.artifacts.delete()
