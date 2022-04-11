@@ -694,7 +694,7 @@ class Gitlab:
                     stream=streamed,
                     **opts,
                 )
-            except requests.ConnectionError:
+            except (requests.ConnectionError, requests.exceptions.ChunkedEncodingError):
                 if retry_transient_errors and (
                     max_retries == -1 or cur_retries < max_retries
                 ):

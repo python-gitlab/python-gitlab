@@ -99,7 +99,16 @@ def test_http_request_with_retry_on_method_for_transient_failures(gl):
 
 
 @responses.activate
-def test_http_request_with_retry_on_method_for_transient_network_failures(gl):
+@pytest.mark.parametrize(
+    "exception",
+    [
+        requests.ConnectionError("Connection aborted."),
+        requests.exceptions.ChunkedEncodingError("Connection broken."),
+    ],
+)
+def test_http_request_with_retry_on_method_for_transient_network_failures(
+    gl, exception
+):
     call_count = 0
     calls_before_success = 3
 
@@ -114,7 +123,7 @@ def test_http_request_with_retry_on_method_for_transient_network_failures(gl):
 
         if call_count >= calls_before_success:
             return (status_code, headers, body)
-        raise requests.ConnectionError("Connection aborted.")
+        raise exception
 
     responses.add_callback(
         method=responses.GET,
