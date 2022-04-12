@@ -24,6 +24,7 @@ import requests
 import requests.utils
 from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
 
+import gitlab
 import gitlab.config
 import gitlab.const
 import gitlab.exceptions
@@ -36,6 +37,12 @@ REDIRECT_MSG = (
 )
 
 RETRYABLE_TRANSIENT_ERROR_CODES = [500, 502, 503, 504] + list(range(520, 531))
+
+# https://docs.gitlab.com/ee/api/#offset-based-pagination
+_PAGINATION_URL = (
+    f"https://python-gitlab.readthedocs.io/en/v{gitlab.__version__}/"
+    f"api-usage.html#pagination"
+)
 
 
 class Gitlab:
@@ -826,20 +833,59 @@ class Gitlab:
         # In case we want to change the default behavior at some point
         as_list = True if as_list is None else as_list
 
-        get_all = kwargs.pop("all", False)
+        get_all = kwargs.pop("all", None)
         url = self._build_url(path)
 
         page = kwargs.get("page")
 
-        if get_all is True and as_list is True:
+        if as_list is False:
+            # Generator requested
+            return GitlabList(self, url, query_data, **kwargs)
+
+        if get_all is True:
             return list(GitlabList(self, url, query_data, **kwargs))
 
-        if page or as_list is True:
-            # pagination requested, we return a list
-            return list(GitlabList(self, url, query_data, get_next=False, **kwargs))
+        # pagination requested, we return a list
+        gl_list = GitlabList(self, url, query_data, get_next=False, **kwargs)
+        items = list(gl_list)
 
-        # No pagination, generator requested
-        return GitlabList(self, url, query_data, **kwargs)
+        def should_emit_warning() -> bool:
+            # No warning is emitted if any of the following conditions apply:
+            # * `all=False` was set in the `list()` call.
+            # * `page` was set in the `list()` call.
+            # * GitLab did not return the `x-per-page` header.
+            # * Number of items received is less than per-page value.
+            # * Number of items received is >= total available.
+            if get_all is False:
+                return False
+            if page is not None:
+                return False
+            if gl_list.per_page is None:
+                return False
+            if len(items) < gl_list.per_page:
+                return False
+            if gl_list.total is not None and len(items) >= gl_list.total:
+                return False
+            return True
+
+        if not should_emit_warning():
+            return items
+
+        # Warn the user that they are only going to retrieve `per_page`
+        # maximum items. This is a common cause of issues filed.
+        total_items = "many" if gl_list.total is None else gl_list.total
+        utils.warn(
+            message=(
+                f"Calling a `list()` method without specifying `all=True` or "
+                f"`as_list=False` will return a maximum of {gl_list.per_page} items. "
+                f"Your query returned {len(items)} of {total_items} items. See "
+                f"{_PAGINATION_URL} for more details. If this was done intentionally, "
+                f"then this warning can be supressed by adding the argument "
+                f"`all=False` to the `list()` call."
+            ),
+            category=UserWarning,
+        )
+        return items
 
     def http_post(
         self,
