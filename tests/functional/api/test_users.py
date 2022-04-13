@@ -106,6 +106,9 @@ def test_user_ssh_keys(gl, user, SSH_KEY):
     key = user.keys.create({"title": "testkey", "key": SSH_KEY})
     assert len(user.keys.list()) == 1
 
+    get_key = user.keys.get(key.id)
+    assert get_key.key == key.key
+
     key.delete()
     assert len(user.keys.list()) == 0
 
