@@ -1,3 +1,6 @@
+import copy
+import warnings
+
 import pytest
 import requests
 import responses
@@ -425,18 +428,113 @@ def test_list_request(gl):
         match=MATCH_EMPTY_QUERY_PARAMS,
     )
 
-    result = gl.http_list("/projects", as_list=True)
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        result = gl.http_list("/projects", as_list=True)
+    assert len(caught_warnings) == 0
     assert isinstance(result, list)
     assert len(result) == 1
 
     result = gl.http_list("/projects", as_list=False)
     assert isinstance(result, GitlabList)
-    assert len(result) == 1
+    assert len(list(result)) == 1
 
     result = gl.http_list("/projects", all=True)
     assert isinstance(result, list)
     assert len(result) == 1
     assert responses.assert_call_count(url, 3) is True
+
+
+large_list_response = {
+    "method": responses.GET,
+    "url": "http://localhost/api/v4/projects",
+    "json": [
+        {"name": "project01"},
+        {"name": "project02"},
+        {"name": "project03"},
+        {"name": "project04"},
+        {"name": "project05"},
+        {"name": "project06"},
+        {"name": "project07"},
+        {"name": "project08"},
+        {"name": "project09"},
+        {"name": "project10"},
+        {"name": "project11"},
+        {"name": "project12"},
+        {"name": "project13"},
+        {"name": "project14"},
+        {"name": "project15"},
+        {"name": "project16"},
+        {"name": "project17"},
+        {"name": "project18"},
+        {"name": "project19"},
+        {"name": "project20"},
+    ],
+    "headers": {"X-Total": "30", "x-per-page": "20"},
+    "status": 200,
+    "match": MATCH_EMPTY_QUERY_PARAMS,
+}
+
+
+@responses.activate
+def test_list_request_pagination_warning(gl):
+    responses.add(**large_list_response)
+
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        result = gl.http_list("/projects", as_list=True)
+    assert len(caught_warnings) == 1
+    warning = caught_warnings[0]
+    assert isinstance(warning.message, UserWarning)
+    message = str(warning.message)
+    assert "Calling a `list()` method" in message
+    assert "python-gitlab.readthedocs.io" in message
+    assert __file__ == warning.filename
+    assert isinstance(result, list)
+    assert len(result) == 20
+    assert len(responses.calls) == 1
+
+
+@responses.activate
+def test_list_request_as_list_false_nowarning(gl):
+    responses.add(**large_list_response)
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        result = gl.http_list("/projects", as_list=False)
+    assert len(caught_warnings) == 0
+    assert isinstance(result, GitlabList)
+    assert len(list(result)) == 20
+    assert len(responses.calls) == 1
+
+
+@responses.activate
+def test_list_request_all_true_nowarning(gl):
+    responses.add(**large_list_response)
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        result = gl.http_list("/projects", all=True)
+    assert len(caught_warnings) == 0
+    assert isinstance(result, list)
+    assert len(result) == 20
+    assert len(responses.calls) == 1
+
+
+@responses.activate
+def test_list_request_all_false_nowarning(gl):
+    responses.add(**large_list_response)
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        result = gl.http_list("/projects", all=False)
+    assert len(caught_warnings) == 0
+    assert isinstance(result, list)
+    assert len(result) == 20
+    assert len(responses.calls) == 1
+
+
+@responses.activate
+def test_list_request_page_nowarning(gl):
+    response_dict = copy.deepcopy(large_list_response)
+    response_dict["match"] = [responses.matchers.query_param_matcher({"page": "1"})]
+    responses.add(**response_dict)
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        gl.http_list("/projects", page=1)
+    assert len(caught_warnings) == 0
+    assert len(responses.calls) == 1
 
 
 @responses.activate

@@ -1,3 +1,5 @@
+import warnings
+
 import pytest
 
 import gitlab
@@ -181,3 +183,46 @@ def test_rate_limits(gl):
     settings.throttle_authenticated_api_enabled = False
     settings.save()
     [project.delete() for project in projects]
+
+
+def test_list_default_warning(gl):
+    """When there are more than 20 items and use default `list()` then warning is
+    generated"""
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        gl.gitlabciymls.list()
+    assert len(caught_warnings) == 1
+    warning = caught_warnings[0]
+    assert isinstance(warning.message, UserWarning)
+    message = str(warning.message)
+    assert "python-gitlab.readthedocs.io" in message
+    assert __file__ == warning.filename
+
+
+def test_list_page_nowarning(gl):
+    """Using `page=X` will disable the warning"""
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        gl.gitlabciymls.list(page=1)
+    assert len(caught_warnings) == 0
+
+
+def test_list_all_false_nowarning(gl):
+    """Using `all=False` will disable the warning"""
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        gl.gitlabciymls.list(all=False)
+    assert len(caught_warnings) == 0
+
+
+def test_list_all_true_nowarning(gl):
+    """Using `all=True` will disable the warning"""
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        items = gl.gitlabciymls.list(all=True)
+    assert len(caught_warnings) == 0
+    assert len(items) > 20
+
+
+def test_list_as_list_false_nowarning(gl):
+    """Using `as_list=False` will disable the warning"""
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        items = gl.gitlabciymls.list(as_list=False)
+    assert len(caught_warnings) == 0
+    assert len(list(items)) > 20
