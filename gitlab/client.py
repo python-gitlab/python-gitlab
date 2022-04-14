@@ -63,8 +63,8 @@ class Gitlab:
         pagination: Can be set to 'keyset' to use keyset pagination
         order_by: Set order_by globally
         user_agent: A custom user agent to use for making HTTP requests.
-        retry_transient_errors: Whether to retry after 500, 502, 503, or
-            504 responses. Defaults to False.
+        retry_transient_errors: Whether to retry after 500, 502, 503, 504
+            or 52x responses. Defaults to False.
     """
 
     def __init__(
@@ -624,6 +624,7 @@ class Gitlab:
         files: Optional[Dict[str, Any]] = None,
         timeout: Optional[float] = None,
         obey_rate_limit: bool = True,
+        retry_transient_errors: Optional[bool] = None,
         max_retries: int = 10,
         **kwargs: Any,
     ) -> requests.Response:
@@ -642,6 +643,8 @@ class Gitlab:
             timeout: The timeout, in seconds, for the request
             obey_rate_limit: Whether to obey 429 Too Many Request
                                     responses. Defaults to True.
+            retry_transient_errors: Whether to retry after 500, 502, 503, 504
+                or 52x responses. Defaults to False.
             max_retries: Max retries after 429 or transient errors,
                                set to -1 to retry forever. Defaults to 10.
             **kwargs: Extra options to send to the server (e.g. sudo)
@@ -679,14 +682,13 @@ class Gitlab:
         # If timeout was passed into kwargs, allow it to override the default
         if timeout is None:
             timeout = opts_timeout
+        if retry_transient_errors is None:
+            retry_transient_errors = self.retry_transient_errors
 
         # We need to deal with json vs. data when uploading files
         json, data, content_type = self._prepare_send_data(files, post_data, raw)
         opts["headers"]["Content-type"] = content_type
 
-        retry_transient_errors = kwargs.get(
-            "retry_transient_errors", self.retry_transient_errors
-        )
         cur_retries = 0
         while True:
             try:
