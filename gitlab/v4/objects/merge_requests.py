@@ -355,13 +355,7 @@ class ProjectMergeRequest(
         ),
     )
     @exc.on_http_error(exc.GitlabMRClosedError)
-    def merge(
-        self,
-        merge_commit_message: Optional[str] = None,
-        should_remove_source_branch: Optional[bool] = None,
-        merge_when_pipeline_succeeds: Optional[bool] = None,
-        **kwargs: Any,
-    ) -> Dict[str, Any]:
+    def merge(self, **kwargs: Any) -> Dict[str, Any]:
         """Accept the merge request.
 
         Args:
@@ -377,15 +371,14 @@ class ProjectMergeRequest(
             GitlabMRClosedError: If the merge failed
         """
         path = f"{self.manager.path}/{self.encoded_id}/merge"
-        data: Dict[str, Any] = {}
-        if merge_commit_message:
-            data["merge_commit_message"] = merge_commit_message
-        if should_remove_source_branch is not None:
-            data["should_remove_source_branch"] = should_remove_source_branch
-        if merge_when_pipeline_succeeds is not None:
-            data["merge_when_pipeline_succeeds"] = merge_when_pipeline_succeeds
+        post_data: Dict[str, Any] = {}
+        data = kwargs.copy()
 
-        server_data = self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+        for key in kwargs.keys():
+            if key in self.merge._custom_args:
+                post_data[key] = data.pop(key)
+
+        server_data = self.manager.gitlab.http_put(path, post_data=post_data, **data)
         if TYPE_CHECKING:
             assert isinstance(server_data, dict)
         self._update_attrs(server_data)
