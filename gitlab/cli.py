@@ -79,6 +79,7 @@ def register_custom_action(
             action = custom_action or f.__name__.replace("_", "-")
             custom_actions[final_name][action] = (mandatory, optional, in_obj)
 
+        wrapped_f._custom_args = mandatory + optional
         return cast(__F, wrapped_f)
 
     return wrap
