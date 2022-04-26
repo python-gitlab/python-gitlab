@@ -350,8 +350,11 @@ class ProjectMergeRequest(
         (),
         (
             "merge_commit_message",
-            "should_remove_source_branch",
             "merge_when_pipeline_succeeds",
+            "sha",
+            "should_remove_source_branch",
+            "squash_commit_message",
+            "squash",
         ),
     )
     @exc.on_http_error(exc.GitlabMRClosedError)
