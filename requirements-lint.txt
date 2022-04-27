@@ -2,7 +2,7 @@ argcomplete==2.0.0
 black==22.3.0
 flake8==4.0.1
 isort==5.10.1
-mypy==0.942
+mypy==0.950
 pylint==2.13.7
 pytest==7.1.2
 types-PyYAML==6.0.7
