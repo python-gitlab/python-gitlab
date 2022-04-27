@@ -6,5 +6,5 @@ mypy==0.942
 pylint==2.13.7
 pytest==7.1.2
 types-PyYAML==6.0.7
-types-requests==2.27.21
+types-requests==2.27.22
 types-setuptools==57.4.14
