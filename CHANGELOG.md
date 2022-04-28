@@ -2,6 +2,23 @@
 
 <!--next-version-placeholder-->
 
+## v3.4.0 (2022-04-28)
+### Feature
+* Emit a warning when using a `list()` method returns max ([`1339d64`](https://github.com/python-gitlab/python-gitlab/commit/1339d645ce58a2e1198b898b9549ba5917b1ff12))
+* **objects:** Support getting project/group deploy tokens by id ([`fcd37fe`](https://github.com/python-gitlab/python-gitlab/commit/fcd37feff132bd5b225cde9d5f9c88e62b3f1fd6))
+* **user:** Support getting user SSH key by id ([`6f93c05`](https://github.com/python-gitlab/python-gitlab/commit/6f93c0520f738950a7c67dbeca8d1ac8257e2661))
+* **api:** Re-add topic delete endpoint ([`d1d96bd`](https://github.com/python-gitlab/python-gitlab/commit/d1d96bda5f1c6991c8ea61dca8f261e5b74b5ab6))
+
+### Fix
+* Add ChunkedEncodingError to list of retryable exceptions ([`7beb20f`](https://github.com/python-gitlab/python-gitlab/commit/7beb20ff7b7b85fb92fc6b647d9c1bdb7568f27c))
+* Avoid passing redundant arguments to API ([`3431887`](https://github.com/python-gitlab/python-gitlab/commit/34318871347b9c563d01a13796431c83b3b1d58c))
+* **cli:** Add missing filters for project commit list ([`149d244`](https://github.com/python-gitlab/python-gitlab/commit/149d2446fcc79b31d3acde6e6d51adaf37cbb5d3))
+* Add 52x range to retry transient failures and tests ([`c3ef1b5`](https://github.com/python-gitlab/python-gitlab/commit/c3ef1b5c1eaf1348a18d753dbf7bda3c129e3262))
+* Also retry HTTP-based transient errors ([`3b49e4d`](https://github.com/python-gitlab/python-gitlab/commit/3b49e4d61e6f360f1c787aa048edf584aec55278))
+
+### Documentation
+* **api-docs:** Docs fix for application scopes ([`e1ad93d`](https://github.com/python-gitlab/python-gitlab/commit/e1ad93df90e80643866611fe52bd5c59428e7a88))
+
 ## v3.3.0 (2022-03-28)
 ### Feature
 * **object:** Add pipeline test report summary support ([`a97e0cf`](https://github.com/python-gitlab/python-gitlab/commit/a97e0cf81b5394b3a2b73d927b4efe675bc85208))
