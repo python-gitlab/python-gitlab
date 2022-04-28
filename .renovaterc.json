@@ -1,7 +1,8 @@
 {
   "extends": [
     "config:base",
-    ":enablePreCommit"
+    ":enablePreCommit",
+    "schedule:weekly"
   ],
   "pip_requirements": {
     "fileMatch": ["^requirements(-[\\w]*)?\\.txt$"]
