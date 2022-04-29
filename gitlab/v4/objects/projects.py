@@ -186,6 +186,16 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     variables: ProjectVariableManager
     wikis: ProjectWikiManager
 
+    def __repr__(self) -> str:
+        project_repr = super().__repr__()
+
+        if hasattr(self, "name_with_namespace"):
+            return (
+                f'{project_repr[:-1]} name_with_namespace:"{self.name_with_namespace}">'
+            )
+        else:
+            return project_repr
+
     @cli.register_custom_action("Project", ("forked_from_id",))
     @exc.on_http_error(exc.GitlabCreateError)
     def create_fork_relation(self, forked_from_id: int, **kwargs: Any) -> None:
