@@ -6,11 +6,10 @@ repos:
     rev: 22.3.0
     hooks:
       - id: black
-  - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v8.0.0
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v2.24.0
     hooks:
-      - id: commitlint
-        additional_dependencies: ['@commitlint/config-conventional']
+      - id: commitizen
         stages: [commit-msg]
   - repo: https://github.com/pycqa/flake8
     rev: 4.0.1
