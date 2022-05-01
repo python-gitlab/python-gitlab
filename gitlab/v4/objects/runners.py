@@ -1,6 +1,6 @@
 from typing import Any, cast, List, Optional, Union
 
-from gitlab import cli
+from gitlab import base, cli
 from gitlab import exceptions as exc
 from gitlab import types
 from gitlab.base import RESTManager, RESTObject
@@ -71,7 +71,8 @@ class RunnerManager(CRUDMixin, RESTManager):
     _list_filters = ("scope", "tag_list")
     _types = {"tag_list": types.CommaSeparatedListAttribute}
 
-    @cli.register_custom_action("RunnerManager", (), ("scope",))
+    @cli.register_custom_action("RunnerManager")
+    @base.custom_attrs(optional=("scope",))
     @exc.on_http_error(exc.GitlabListError)
     def all(self, scope: Optional[str] = None, **kwargs: Any) -> List[Runner]:
         """List all the runners.
@@ -100,7 +101,8 @@ class RunnerManager(CRUDMixin, RESTManager):
         obj = self.gitlab.http_list(path, query_data, **kwargs)
         return [self._obj_cls(self, item) for item in obj]
 
-    @cli.register_custom_action("RunnerManager", ("token",))
+    @cli.register_custom_action("RunnerManager")
+    @base.custom_attrs(required=("token",))
     @exc.on_http_error(exc.GitlabVerifyError)
     def verify(self, token: str, **kwargs: Any) -> None:
         """Validates authentication credentials for a registered Runner.

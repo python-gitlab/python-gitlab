@@ -2,7 +2,7 @@ from typing import Any, Callable, cast, Dict, List, Optional, TYPE_CHECKING, Uni
 
 import requests
 
-from gitlab import cli, client
+from gitlab import base, cli, client
 from gitlab import exceptions as exc
 from gitlab import types, utils
 from gitlab.base import RESTManager, RESTObject
@@ -191,7 +191,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     variables: ProjectVariableManager
     wikis: ProjectWikiManager
 
-    @cli.register_custom_action("Project", ("forked_from_id",))
+    @cli.register_custom_action("Project")
+    @base.custom_attrs(required=("forked_from_id",))
     @exc.on_http_error(exc.GitlabCreateError)
     def create_fork_relation(self, forked_from_id: int, **kwargs: Any) -> None:
         """Create a forked from/to relation between existing projects.
@@ -309,9 +310,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action(
-        "Project", ("group_id", "group_access"), ("expires_at",)
-    )
+    @cli.register_custom_action("Project")
+    @base.custom_attrs(required=("group_id", "group_access"), optional=("expires_at",))
     @exc.on_http_error(exc.GitlabCreateError)
     def share(
         self,
@@ -339,7 +339,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         }
         self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
-    @cli.register_custom_action("Project", ("group_id",))
+    @cli.register_custom_action("Project")
+    @base.custom_attrs(required=("group_id",))
     @exc.on_http_error(exc.GitlabDeleteError)
     def unshare(self, group_id: int, **kwargs: Any) -> None:
         """Delete a shared project link within a group.
@@ -356,7 +357,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         self.manager.gitlab.http_delete(path, **kwargs)
 
     # variables not supported in CLI
-    @cli.register_custom_action("Project", ("ref", "token"))
+    @cli.register_custom_action("Project")
+    @base.custom_attrs(required=("ref", "token"))
     @exc.on_http_error(exc.GitlabCreateError)
     def trigger_pipeline(
         self,
@@ -404,7 +406,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         self.manager.gitlab.http_post(path, **kwargs)
 
     # see #56 - add file attachment features
-    @cli.register_custom_action("Project", ("filename", "filepath"))
+    @cli.register_custom_action("Project")
+    @base.custom_attrs(required=("filename", "filepath"))
     @exc.on_http_error(exc.GitlabUploadError)
     def upload(
         self,
@@ -456,7 +459,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             assert isinstance(data, dict)
         return {"alt": data["alt"], "url": data["url"], "markdown": data["markdown"]}
 
-    @cli.register_custom_action("Project", optional=("wiki",))
+    @cli.register_custom_action("Project")
+    @base.custom_attrs(optional=("wiki",))
     @exc.on_http_error(exc.GitlabGetError)
     def snapshot(
         self,
@@ -493,7 +497,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             assert isinstance(result, requests.Response)
         return utils.response_content(result, streamed, action, chunk_size)
 
-    @cli.register_custom_action("Project", ("scope", "search"))
+    @cli.register_custom_action("Project")
+    @base.custom_attrs(required=("scope", "search"))
     @exc.on_http_error(exc.GitlabSearchError)
     def search(
         self, scope: str, search: str, **kwargs: Any
@@ -531,7 +536,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         path = f"/projects/{self.encoded_id}/mirror/pull"
         self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("Project", ("to_namespace",))
+    @cli.register_custom_action("Project")
+    @base.custom_attrs(required=("to_namespace",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
     def transfer(self, to_namespace: Union[int, str], **kwargs: Any) -> None:
         """Transfer a project to the given namespace ID
@@ -550,7 +556,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             path, post_data={"namespace": to_namespace}, **kwargs
         )
 
-    @cli.register_custom_action("Project", ("to_namespace",))
+    @cli.register_custom_action("Project")
+    @base.custom_attrs(required=("to_namespace",))
     def transfer_project(self, *args: Any, **kwargs: Any) -> None:
         utils.warn(
             message=(
@@ -561,7 +568,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         )
         return self.transfer(*args, **kwargs)
 
-    @cli.register_custom_action("Project", ("ref_name", "artifact_path", "job"))
+    @cli.register_custom_action("Project")
+    @base.custom_attrs(required=("ref_name", "artifact_path", "job"))
     @exc.on_http_error(exc.GitlabGetError)
     def artifact(
         self,

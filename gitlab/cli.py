@@ -23,12 +23,13 @@ import os
 import re
 import sys
 from types import ModuleType
-from typing import Any, Callable, cast, Dict, Optional, Tuple, Type, TypeVar, Union
+from typing import Any, Callable, cast, Dict, Optional, Tuple, Type, Union
 
 from requests.structures import CaseInsensitiveDict
 
 import gitlab.config
 from gitlab.base import RESTObject
+from gitlab.types import F, RequiredOptional
 
 # This regex is based on:
 # https://github.com/jpvanhal/inflection/blob/master/inflection/__init__.py
@@ -43,23 +44,17 @@ camel_lowerupper_regex = re.compile(r"([a-z\d])([A-Z])")
 custom_actions: Dict[str, Dict[str, Tuple[Tuple[str, ...], Tuple[str, ...], bool]]] = {}
 
 
-# For an explanation of how these type-hints work see:
-# https://mypy.readthedocs.io/en/stable/generics.html#declaring-decorators
-#
-# The goal here is that functions which get decorated will retain their types.
-__F = TypeVar("__F", bound=Callable[..., Any])
-
-
 def register_custom_action(
     cls_names: Union[str, Tuple[str, ...]],
-    mandatory: Tuple[str, ...] = (),
-    optional: Tuple[str, ...] = (),
     custom_action: Optional[str] = None,
-) -> Callable[[__F], __F]:
-    def wrap(f: __F) -> __F:
+) -> Callable[[F], F]:
+    def wrap(f: F) -> F:
         @functools.wraps(f)
         def wrapped_f(*args: Any, **kwargs: Any) -> Any:
             return f(*args, **kwargs)
+
+        action = custom_action or f.__name__.replace("_", "-")
+        custom_attrs = getattr(f, "_custom_attrs", RequiredOptional())
 
         # in_obj defines whether the method belongs to the obj or the manager
         in_obj = True
@@ -76,10 +71,13 @@ def register_custom_action(
             if final_name not in custom_actions:
                 custom_actions[final_name] = {}
 
-            action = custom_action or f.__name__.replace("_", "-")
-            custom_actions[final_name][action] = (mandatory, optional, in_obj)
+            custom_actions[final_name][action] = (
+                custom_attrs.required,
+                custom_attrs.optional,
+                in_obj,
+            )
 
-        return cast(__F, wrapped_f)
+        return cast(F, wrapped_f)
 
     return wrap
 

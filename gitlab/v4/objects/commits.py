@@ -3,7 +3,7 @@ from typing import Any, cast, Dict, List, Optional, TYPE_CHECKING, Union
 import requests
 
 import gitlab
-from gitlab import cli
+from gitlab import base, cli
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, ListMixin, RefreshMixin, RetrieveMixin
@@ -46,7 +46,8 @@ class ProjectCommit(RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/diff"
         return self.manager.gitlab.http_list(path, **kwargs)
 
-    @cli.register_custom_action("ProjectCommit", ("branch",))
+    @cli.register_custom_action("ProjectCommit")
+    @base.custom_attrs(required=("branch",))
     @exc.on_http_error(exc.GitlabCherryPickError)
     def cherry_pick(self, branch: str, **kwargs: Any) -> None:
         """Cherry-pick a commit into a branch.
@@ -63,7 +64,8 @@ class ProjectCommit(RESTObject):
         post_data = {"branch": branch}
         self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
-    @cli.register_custom_action("ProjectCommit", optional=("type",))
+    @cli.register_custom_action("ProjectCommit")
+    @base.custom_attrs(optional=("type",))
     @exc.on_http_error(exc.GitlabGetError)
     def refs(
         self, type: str = "all", **kwargs: Any
@@ -105,7 +107,8 @@ class ProjectCommit(RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/merge_requests"
         return self.manager.gitlab.http_list(path, **kwargs)
 
-    @cli.register_custom_action("ProjectCommit", ("branch",))
+    @cli.register_custom_action("ProjectCommit")
+    @base.custom_attrs(required=("branch",))
     @exc.on_http_error(exc.GitlabRevertError)
     def revert(
         self, branch: str, **kwargs: Any

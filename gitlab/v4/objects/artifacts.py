@@ -9,7 +9,7 @@ import requests
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import utils
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import custom_attrs, RESTManager, RESTObject
 
 __all__ = ["ProjectArtifact", "ProjectArtifactManager"]
 
@@ -25,9 +25,8 @@ class ProjectArtifactManager(RESTManager):
     _path = "/projects/{project_id}/jobs/artifacts"
     _from_parent_attrs = {"project_id": "id"}
 
-    @cli.register_custom_action(
-        "Project", ("ref_name", "job"), ("job_token",), custom_action="artifacts"
-    )
+    @cli.register_custom_action("Project", custom_action="artifacts")
+    @custom_attrs(required=("ref_name", "job"), optional=("job_token",))
     def __call__(
         self,
         *args: Any,
@@ -62,9 +61,8 @@ class ProjectArtifactManager(RESTManager):
             assert path is not None
         self.gitlab.http_delete(path, **kwargs)
 
-    @cli.register_custom_action(
-        "ProjectArtifactManager", ("ref_name", "job"), ("job_token",)
-    )
+    @cli.register_custom_action("ProjectArtifactManager")
+    @custom_attrs(required=("ref_name", "job"), optional=("job_token",))
     @exc.on_http_error(exc.GitlabGetError)
     def download(
         self,
@@ -105,9 +103,8 @@ class ProjectArtifactManager(RESTManager):
             assert isinstance(result, requests.Response)
         return utils.response_content(result, streamed, action, chunk_size)
 
-    @cli.register_custom_action(
-        "ProjectArtifactManager", ("ref_name", "artifact_path", "job")
-    )
+    @cli.register_custom_action("ProjectArtifactManager")
+    @custom_attrs(required=("ref_name", "artifact_path", "job"))
     @exc.on_http_error(exc.GitlabGetError)
     def raw(
         self,

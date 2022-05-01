@@ -3,7 +3,7 @@ from typing import Any, BinaryIO, cast, Dict, List, Optional, Type, TYPE_CHECKIN
 import requests
 
 import gitlab
-from gitlab import cli
+from gitlab import base, cli
 from gitlab import exceptions as exc
 from gitlab import types
 from gitlab.base import RESTManager, RESTObject
@@ -80,7 +80,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     variables: GroupVariableManager
     wikis: GroupWikiManager
 
-    @cli.register_custom_action("Group", ("project_id",))
+    @cli.register_custom_action("Group")
+    @base.custom_attrs(required=("project_id",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
     def transfer_project(self, project_id: int, **kwargs: Any) -> None:
         """Transfer a project to this group.
@@ -96,7 +97,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"/groups/{self.encoded_id}/projects/{project_id}"
         self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("Group", (), ("group_id",))
+    @cli.register_custom_action("Group")
+    @base.custom_attrs(optional=("group_id",))
     @exc.on_http_error(exc.GitlabGroupTransferError)
     def transfer(self, group_id: Optional[int] = None, **kwargs: Any) -> None:
         """Transfer the group to a new parent group or make it a top-level group.
@@ -118,7 +120,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             post_data["group_id"] = group_id
         self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
-    @cli.register_custom_action("Group", ("scope", "search"))
+    @cli.register_custom_action("Group")
+    @base.custom_attrs(required=("scope", "search"))
     @exc.on_http_error(exc.GitlabSearchError)
     def search(
         self, scope: str, search: str, **kwargs: Any
@@ -141,7 +144,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"/groups/{self.encoded_id}/search"
         return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
 
-    @cli.register_custom_action("Group", ("cn", "group_access", "provider"))
+    @cli.register_custom_action("Group")
+    @base.custom_attrs(required=("cn", "group_access", "provider"))
     @exc.on_http_error(exc.GitlabCreateError)
     def add_ldap_group_link(
         self, cn: str, group_access: int, provider: str, **kwargs: Any
@@ -163,7 +167,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         data = {"cn": cn, "group_access": group_access, "provider": provider}
         self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
-    @cli.register_custom_action("Group", ("cn",), ("provider",))
+    @cli.register_custom_action("Group")
+    @base.custom_attrs(required=("cn",), optional=("provider",))
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete_ldap_group_link(
         self, cn: str, provider: Optional[str] = None, **kwargs: Any
@@ -200,7 +205,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"/groups/{self.encoded_id}/ldap_sync"
         self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("Group", ("group_id", "group_access"), ("expires_at",))
+    @cli.register_custom_action("Group")
+    @base.custom_attrs(required=("group_id", "group_access"), optional=("expires_at",))
     @exc.on_http_error(exc.GitlabCreateError)
     def share(
         self,
@@ -234,7 +240,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action("Group", ("group_id",))
+    @cli.register_custom_action("Group")
+    @base.custom_attrs(required=("group_id",))
     @exc.on_http_error(exc.GitlabDeleteError)
     def unshare(self, group_id: int, **kwargs: Any) -> None:
         """Delete a shared group link within a group.

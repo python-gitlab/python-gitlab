@@ -16,7 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import functools
-from typing import Any, Callable, cast, Optional, Type, TYPE_CHECKING, TypeVar, Union
+from typing import Any, Callable, cast, Optional, Type, TYPE_CHECKING, Union
+
+from gitlab.types import F
 
 
 class GitlabError(Exception):
@@ -286,14 +288,7 @@ class GitlabUnfollowError(GitlabOperationError):
     pass
 
 
-# For an explanation of how these type-hints work see:
-# https://mypy.readthedocs.io/en/stable/generics.html#declaring-decorators
-#
-# The goal here is that functions which get decorated will retain their types.
-__F = TypeVar("__F", bound=Callable[..., Any])
-
-
-def on_http_error(error: Type[Exception]) -> Callable[[__F], __F]:
+def on_http_error(error: Type[Exception]) -> Callable[[F], F]:
     """Manage GitlabHttpError exceptions.
 
     This decorator function can be used to catch GitlabHttpError exceptions
@@ -303,7 +298,7 @@ def on_http_error(error: Type[Exception]) -> Callable[[__F], __F]:
         The exception type to raise -- must inherit from GitlabError
     """
 
-    def wrap(f: __F) -> __F:
+    def wrap(f: F) -> F:
         @functools.wraps(f)
         def wrapped_f(*args: Any, **kwargs: Any) -> Any:
             try:
@@ -311,6 +306,6 @@ def on_http_error(error: Type[Exception]) -> Callable[[__F], __F]:
             except GitlabHttpError as e:
                 raise error(e.error_message, e.response_code, e.response_body) from e
 
-        return cast(__F, wrapped_f)
+        return cast(F, wrapped_f)
 
     return wrap

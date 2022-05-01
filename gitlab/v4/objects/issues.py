@@ -1,6 +1,6 @@
 from typing import Any, cast, Dict, Tuple, TYPE_CHECKING, Union
 
-from gitlab import cli
+from gitlab import base, cli
 from gitlab import exceptions as exc
 from gitlab import types
 from gitlab.base import RESTManager, RESTObject
@@ -120,7 +120,8 @@ class ProjectIssue(
     resourcemilestoneevents: ProjectIssueResourceMilestoneEventManager
     resourcestateevents: ProjectIssueResourceStateEventManager
 
-    @cli.register_custom_action("ProjectIssue", ("to_project_id",))
+    @cli.register_custom_action("ProjectIssue")
+    @base.custom_attrs(required=("to_project_id",))
     @exc.on_http_error(exc.GitlabUpdateError)
     def move(self, to_project_id: int, **kwargs: Any) -> None:
         """Move the issue to another project.

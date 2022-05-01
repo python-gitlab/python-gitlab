@@ -547,9 +547,8 @@ class AccessRequestMixin(_RestObjectBase):
     _updated_attrs: Dict[str, Any]
     manager: base.RESTManager
 
-    @cli.register_custom_action(
-        ("ProjectAccessRequest", "GroupAccessRequest"), (), ("access_level",)
-    )
+    @cli.register_custom_action(("ProjectAccessRequest", "GroupAccessRequest"))
+    @base.custom_attrs(optional=("access_level",))
     @exc.on_http_error(exc.GitlabUpdateError)
     def approve(
         self, access_level: int = gitlab.const.DEVELOPER_ACCESS, **kwargs: Any
@@ -721,7 +720,8 @@ class TimeTrackingMixin(_RestObjectBase):
             assert not isinstance(result, requests.Response)
         return result
 
-    @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"), ("duration",))
+    @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
+    @base.custom_attrs(required=("duration",))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def time_estimate(self, duration: str, **kwargs: Any) -> Dict[str, Any]:
         """Set an estimated time of work for the object.
@@ -759,7 +759,8 @@ class TimeTrackingMixin(_RestObjectBase):
             assert not isinstance(result, requests.Response)
         return result
 
-    @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"), ("duration",))
+    @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
+    @base.custom_attrs(required=("duration",))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
     def add_spent_time(self, duration: str, **kwargs: Any) -> Dict[str, Any]:
         """Add time spent working on the object.
@@ -833,9 +834,8 @@ class ParticipantsMixin(_RestObjectBase):
 
 
 class BadgeRenderMixin(_RestManagerBase):
-    @cli.register_custom_action(
-        ("GroupBadgeManager", "ProjectBadgeManager"), ("link_url", "image_url")
-    )
+    @cli.register_custom_action(("GroupBadgeManager", "ProjectBadgeManager"))
+    @base.custom_attrs(required=("link_url", "image_url"))
     @exc.on_http_error(exc.GitlabRenderError)
     def render(self, link_url: str, image_url: str, **kwargs: Any) -> Dict[str, Any]:
         """Preview link_url and image_url after interpolation.

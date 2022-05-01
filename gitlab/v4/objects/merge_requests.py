@@ -8,7 +8,7 @@ from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
 import requests
 
 import gitlab
-from gitlab import cli
+from gitlab import base, cli
 from gitlab import exceptions as exc
 from gitlab import types
 from gitlab.base import RESTManager, RESTObject, RESTObjectList
@@ -260,7 +260,8 @@ class ProjectMergeRequest(
         path = f"{self.manager.path}/{self.encoded_id}/changes"
         return self.manager.gitlab.http_get(path, **kwargs)
 
-    @cli.register_custom_action("ProjectMergeRequest", (), ("sha",))
+    @cli.register_custom_action("ProjectMergeRequest")
+    @base.custom_attrs(optional=("sha",))
     @exc.on_http_error(exc.GitlabMRApprovalError)
     def approve(self, sha: Optional[str] = None, **kwargs: Any) -> Dict[str, Any]:
         """Approve the merge request.
@@ -342,10 +343,9 @@ class ProjectMergeRequest(
         path = f"{self.manager.path}/{self.encoded_id}/merge_ref"
         return self.manager.gitlab.http_get(path, **kwargs)
 
-    @cli.register_custom_action(
-        "ProjectMergeRequest",
-        (),
-        (
+    @cli.register_custom_action("ProjectMergeRequest")
+    @base.custom_attrs(
+        optional=(
             "merge_commit_message",
             "should_remove_source_branch",
             "merge_when_pipeline_succeeds",

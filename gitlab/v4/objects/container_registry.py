@@ -1,6 +1,6 @@
 from typing import Any, cast, TYPE_CHECKING, Union
 
-from gitlab import cli
+from gitlab import base, cli
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import DeleteMixin, ListMixin, ObjectDeleteMixin, RetrieveMixin
@@ -32,9 +32,9 @@ class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
     _from_parent_attrs = {"project_id": "project_id", "repository_id": "id"}
     _path = "/projects/{project_id}/registry/repositories/{repository_id}/tags"
 
-    @cli.register_custom_action(
-        "ProjectRegistryTagManager",
-        ("name_regex_delete",),
+    @cli.register_custom_action("ProjectRegistryTagManager")
+    @base.custom_attrs(
+        required=("name_regex_delete",),
         optional=("keep_n", "name_regex_keep", "older_than"),
     )
     @exc.on_http_error(exc.GitlabDeleteError)

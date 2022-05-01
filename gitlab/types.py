@@ -16,7 +16,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import dataclasses
-from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
+from typing import Any, Callable, Dict, List, Optional, Tuple, TYPE_CHECKING, TypeVar
+
+# TypeVar for decorators so that decorated functions retain their signatures.
+# See https://mypy.readthedocs.io/en/stable/generics.html#declaring-decorators
+F = TypeVar("F", bound=Callable[..., Any])
 
 
 @dataclasses.dataclass(frozen=True)

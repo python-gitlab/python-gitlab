@@ -9,7 +9,7 @@ from typing import Any, Callable, cast, Optional, TYPE_CHECKING, Union
 
 import requests
 
-from gitlab import cli
+from gitlab import base, cli
 from gitlab import exceptions as exc
 from gitlab import utils
 from gitlab.base import RESTManager, RESTObject
@@ -36,9 +36,9 @@ class GenericPackageManager(RESTManager):
     _obj_cls = GenericPackage
     _from_parent_attrs = {"project_id": "id"}
 
-    @cli.register_custom_action(
-        "GenericPackageManager",
-        ("package_name", "package_version", "file_name", "path"),
+    @cli.register_custom_action("GenericPackageManager")
+    @base.custom_attrs(
+        required=("package_name", "package_version", "file_name", "path")
     )
     @exc.on_http_error(exc.GitlabUploadError)
     def upload(
@@ -92,10 +92,8 @@ class GenericPackageManager(RESTManager):
             },
         )
 
-    @cli.register_custom_action(
-        "GenericPackageManager",
-        ("package_name", "package_version", "file_name"),
-    )
+    @cli.register_custom_action("GenericPackageManager")
+    @base.custom_attrs(required=("package_name", "package_version", "file_name"))
     @exc.on_http_error(exc.GitlabGetError)
     def download(
         self,
