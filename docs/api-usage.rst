@@ -406,6 +406,27 @@ user. For example:
 
    p = gl.projects.create({'name': 'awesome_project'}, sudo='user1')
 
+Logging
+=======
+
+To enable debug logging from the underlying ``requests`` and ``http.client`` calls,
+you can use ``enable_debug()`` on your ``Gitlab`` instance. For example:
+
+.. code-block:: python
+
+   import os
+   import gitlab
+
+   gl = gitlab.Gitlab(private_token=os.getenv("GITLAB_TOKEN"))
+   gl.enable_debug()
+
+By default, python-gitlab will mask the token used for authentication in logging output.
+If you'd like to debug credentials sent to the API, you can disable masking explicitly:
+
+.. code-block:: python
+
+   gl.enable_debug(mask_credentials=False)
+
 .. _object_attributes:
 
 Attributes in updated objects
