@@ -36,5 +36,5 @@ repos:
         args: []
         additional_dependencies:
           - types-PyYAML==6.0.7
-          - types-requests==2.27.24
+          - types-requests==2.27.25
           - types-setuptools==57.4.14
