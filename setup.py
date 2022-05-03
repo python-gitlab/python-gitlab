@@ -52,6 +52,7 @@ setup(
     ],
     extras_require={
         "autocompletion": ["argcomplete>=1.10.0,<3"],
+        "graphql": ["gql[requests]>=3.2.0,<4"],
         "yaml": ["PyYaml>=5.2"],
     },
 )

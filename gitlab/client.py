@@ -1,7 +1,9 @@
 """Wrapper for the GitLab API."""
 
+import abc
 import os
 import re
+import sys
 import time
 from typing import Any, cast, Dict, List, Optional, Tuple, Type, TYPE_CHECKING, Union
 from urllib import parse
@@ -15,6 +17,10 @@ import gitlab.config
 import gitlab.const
 import gitlab.exceptions
 from gitlab import http_backends, utils
+
+if TYPE_CHECKING or ("sphinx" in sys.modules):
+    import gql
+    from graphql import DocumentNode
 
 REDIRECT_MSG = (
     "python-gitlab detected a {status_code} ({reason!r}) redirection. You must update "
@@ -30,8 +36,153 @@ _PAGINATION_URL = (
 )
 
 
-class Gitlab:
+class _BaseGitlab:
+    """Represents a GitLab server connection.
 
+    Args:
+        url: The URL of the GitLab server (defaults to https://gitlab.com).
+        private_token: The user private token
+        oauth_token: An oauth token
+        job_token: A CI job token
+        ssl_verify: Whether SSL certificates should be validated. If
+            the value is a string, it is the path to a CA file used for
+            certificate validation.
+        timeout: Timeout to use for requests to the GitLab server.
+        http_username: Username for HTTP authentication
+        http_password: Password for HTTP authentication
+        api_version: Gitlab API version to use (support for 4 only)
+        pagination: Can be set to 'keyset' to use keyset pagination
+        order_by: Set order_by globally
+        user_agent: A custom user agent to use for making HTTP requests.
+        retry_transient_errors: Whether to retry after 500, 502, 503, 504
+            or 52x responses. Defaults to False.
+        keep_base_url: keep user-provided base URL for pagination if it
+            differs from response headers
+    """
+
+    def __init__(
+        self,
+        url: Optional[str] = None,
+        private_token: Optional[str] = None,
+        oauth_token: Optional[str] = None,
+        job_token: Optional[str] = None,
+        ssl_verify: Union[bool, str] = True,
+        http_username: Optional[str] = None,
+        http_password: Optional[str] = None,
+        timeout: Optional[float] = None,
+        user_agent: str = gitlab.const.USER_AGENT,
+        retry_transient_errors: bool = False,
+        keep_base_url: bool = False,
+        **kwargs: Any,
+    ) -> None:
+        self._server_version: Optional[str] = None
+        self._server_revision: Optional[str] = None
+        self._base_url = self._get_base_url(url)
+        #: Timeout to use for requests to gitlab server
+        self.timeout = timeout
+        self.retry_transient_errors = retry_transient_errors
+        self.keep_base_url = keep_base_url
+        #: Headers that will be used in request to GitLab
+        self.headers = {"User-Agent": user_agent}
+
+        #: Whether SSL certificates should be validated
+        self.ssl_verify = ssl_verify
+
+        self.private_token = private_token
+        self.http_username = http_username
+        self.http_password = http_password
+        self.oauth_token = oauth_token
+        self.job_token = job_token
+
+        #: Create a session object for requests
+        http_backend: Type[http_backends.DefaultBackend] = kwargs.pop(
+            "http_backend", http_backends.DefaultBackend
+        )
+        self.http_backend = http_backend(**kwargs)
+        self.session = self.http_backend.client
+
+    @staticmethod
+    def _get_base_url(url: Optional[str] = None) -> str:
+        """Return the base URL with the trailing slash stripped.
+        If the URL is a Falsy value, return the default URL.
+        Returns:
+            The base URL
+        """
+        if not url:
+            return gitlab.const.DEFAULT_URL
+
+        return url.rstrip("/")
+
+    def _get_session_opts(self) -> Dict[str, Any]:
+        return {
+            "headers": self.headers.copy(),
+            "auth": self._http_auth,
+            "timeout": self.timeout,
+            "verify": self.ssl_verify,
+        }
+
+    @property
+    def url(self) -> str:
+        """The user-provided server URL."""
+        return self._base_url
+
+    def _set_auth_info(self) -> None:
+        tokens = [
+            token
+            for token in [self.private_token, self.oauth_token, self.job_token]
+            if token
+        ]
+        if len(tokens) > 1:
+            raise ValueError(
+                "Only one of private_token, oauth_token or job_token should "
+                "be defined"
+            )
+        if (self.http_username and not self.http_password) or (
+            not self.http_username and self.http_password
+        ):
+            raise ValueError(
+                "Both http_username and http_password should " "be defined"
+            )
+        if self.oauth_token and self.http_username:
+            raise ValueError(
+                "Only one of oauth authentication or http "
+                "authentication should be defined"
+            )
+
+        self._http_auth = None
+        if self.private_token:
+            self.headers.pop("Authorization", None)
+            self.headers["PRIVATE-TOKEN"] = self.private_token
+            self.headers.pop("JOB-TOKEN", None)
+
+        if self.oauth_token:
+            self.headers["Authorization"] = f"Bearer {self.oauth_token}"
+            self.headers.pop("PRIVATE-TOKEN", None)
+            self.headers.pop("JOB-TOKEN", None)
+
+        if self.job_token:
+            self.headers.pop("Authorization", None)
+            self.headers.pop("PRIVATE-TOKEN", None)
+            self.headers["JOB-TOKEN"] = self.job_token
+
+        if self.http_username:
+            self._http_auth = requests.auth.HTTPBasicAuth(
+                self.http_username, self.http_password
+            )
+
+    def enable_debug(self) -> None:
+        import logging
+        from http.client import HTTPConnection  # noqa
+
+        HTTPConnection.debuglevel = 1
+        logging.basicConfig()
+        logging.getLogger().setLevel(logging.DEBUG)
+        requests_log = logging.getLogger("requests.packages.urllib3")
+        requests_log.setLevel(logging.DEBUG)
+        requests_log.propagate = True
+
+
+class Gitlab(_BaseGitlab):
     """Represents a GitLab server connection.
 
     Args:
@@ -78,35 +229,23 @@ class Gitlab:
         keep_base_url: bool = False,
         **kwargs: Any,
     ) -> None:
-        self._api_version = str(api_version)
-        self._server_version: Optional[str] = None
-        self._server_revision: Optional[str] = None
-        self._base_url = self._get_base_url(url)
-        self._url = f"{self._base_url}/api/v{api_version}"
-        #: Timeout to use for requests to gitlab server
-        self.timeout = timeout
-        self.retry_transient_errors = retry_transient_errors
-        self.keep_base_url = keep_base_url
-        #: Headers that will be used in request to GitLab
-        self.headers = {"User-Agent": user_agent}
-
-        #: Whether SSL certificates should be validated
-        self.ssl_verify = ssl_verify
-
-        self.private_token = private_token
-        self.http_username = http_username
-        self.http_password = http_password
-        self.oauth_token = oauth_token
-        self.job_token = job_token
-        self._set_auth_info()
-
-        #: Create a session object for requests
-        http_backend: Type[http_backends.DefaultBackend] = kwargs.pop(
-            "http_backend", http_backends.DefaultBackend
+        super().__init__(
+            url,
+            private_token,
+            oauth_token,
+            job_token,
+            ssl_verify,
+            http_username,
+            http_password,
+            timeout,
+            user_agent,
+            retry_transient_errors,
+            keep_base_url,
+            **kwargs,
         )
-        self.http_backend = http_backend(**kwargs)
-        self.session = self.http_backend.client
-
+        self._api_version = str(api_version)
+        self._url = f"{self._base_url}/api/v{api_version}"
+        self._set_auth_info()
         self.per_page = per_page
         self.pagination = pagination
         self.order_by = order_by
@@ -221,11 +360,6 @@ class Gitlab:
         from gitlab.v4 import objects
 
         self._objects = objects
-
-    @property
-    def url(self) -> str:
-        """The user-provided server URL."""
-        return self._base_url
 
     @property
     def api_url(self) -> str:
@@ -493,80 +627,6 @@ class Gitlab:
         if TYPE_CHECKING:
             assert not isinstance(result, requests.Response)
         return result
-
-    def _set_auth_info(self) -> None:
-        tokens = [
-            token
-            for token in [self.private_token, self.oauth_token, self.job_token]
-            if token
-        ]
-        if len(tokens) > 1:
-            raise ValueError(
-                "Only one of private_token, oauth_token or job_token should "
-                "be defined"
-            )
-        if (self.http_username and not self.http_password) or (
-            not self.http_username and self.http_password
-        ):
-            raise ValueError("Both http_username and http_password should be defined")
-        if self.oauth_token and self.http_username:
-            raise ValueError(
-                "Only one of oauth authentication or http "
-                "authentication should be defined"
-            )
-
-        self._http_auth = None
-        if self.private_token:
-            self.headers.pop("Authorization", None)
-            self.headers["PRIVATE-TOKEN"] = self.private_token
-            self.headers.pop("JOB-TOKEN", None)
-
-        if self.oauth_token:
-            self.headers["Authorization"] = f"Bearer {self.oauth_token}"
-            self.headers.pop("PRIVATE-TOKEN", None)
-            self.headers.pop("JOB-TOKEN", None)
-
-        if self.job_token:
-            self.headers.pop("Authorization", None)
-            self.headers.pop("PRIVATE-TOKEN", None)
-            self.headers["JOB-TOKEN"] = self.job_token
-
-        if self.http_username:
-            self._http_auth = requests.auth.HTTPBasicAuth(
-                self.http_username, self.http_password
-            )
-
-    @staticmethod
-    def enable_debug() -> None:
-        import logging
-        from http.client import HTTPConnection  # noqa
-
-        HTTPConnection.debuglevel = 1
-        logging.basicConfig()
-        logging.getLogger().setLevel(logging.DEBUG)
-        requests_log = logging.getLogger("requests.packages.urllib3")
-        requests_log.setLevel(logging.DEBUG)
-        requests_log.propagate = True
-
-    def _get_session_opts(self) -> Dict[str, Any]:
-        return {
-            "headers": self.headers.copy(),
-            "auth": self._http_auth,
-            "timeout": self.timeout,
-            "verify": self.ssl_verify,
-        }
-
-    @staticmethod
-    def _get_base_url(url: Optional[str] = None) -> str:
-        """Return the base URL with the trailing slash stripped.
-        If the URL is a Falsy value, return the default URL.
-        Returns:
-            The base URL
-        """
-        if not url:
-            return gitlab.const.DEFAULT_URL
-
-        return url.rstrip("/")
 
     def _build_url(self, path: str) -> str:
         """Returns the full url from path.
@@ -1259,3 +1319,60 @@ class GitlabList:
             return self.next()
 
         raise StopIteration
+
+
+class GraphQLGitlab(_BaseGitlab):
+    def __init__(
+        self,
+        url: Optional[str] = None,
+        private_token: Optional[str] = None,
+        oauth_token: Optional[str] = None,
+        job_token: Optional[str] = None,
+        ssl_verify: Union[bool, str] = True,
+        http_username: Optional[str] = None,
+        http_password: Optional[str] = None,
+        session: Optional[requests.Session] = None,
+        timeout: Optional[float] = None,
+        user_agent: str = gitlab.const.USER_AGENT,
+        retry_transient_errors: bool = False,
+        fetch_schema_from_transport: bool = False,
+    ) -> None:
+        super().__init__(
+            url,
+            private_token,
+            oauth_token,
+            job_token,
+            ssl_verify,
+            http_username,
+            http_password,
+            session,
+            timeout,
+            user_agent,
+            retry_transient_errors,
+        )
+        self._url = f"{self._base_url}/api/graphql"
+        self.fetch_schema_from_transport = fetch_schema_from_transport
+
+        try:
+            import gql
+
+            from .graphql.transport import GitlabSyncTransport
+        except ImportError:
+            raise ImportError(
+                "The GraphQLGitlab client could not be initialized because "
+                "the gql dependency is not installed. "
+                "Install it with 'pip install python-gitlab[graphql]'"
+            )
+
+        opts = self._get_session_opts()
+
+        self._gql = gql
+        self._transport = GitlabSyncTransport(self._url, session=self.session, **opts)
+        self._client = self._gql.Client(
+            transport=self._transport,
+            fetch_schema_from_transport=fetch_schema_from_transport,
+        )
+
+    def execute(self, request: str, *args, **kwargs) -> Any:
+        parsed_document = self._gql.gql(request)
+        return self._client.execute(parsed_document, *args, **kwargs)

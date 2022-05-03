@@ -1,6 +1,6 @@
-############################
-Getting started with the CLI
-############################
+#############
+Using the CLI
+#############
 
 ``python-gitlab`` provides a :command:`gitlab` command-line tool to interact
 with GitLab servers.

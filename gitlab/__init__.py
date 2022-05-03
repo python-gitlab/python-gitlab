@@ -29,7 +29,7 @@ from gitlab._version import (  # noqa: F401
     __title__,
     __version__,
 )
-from gitlab.client import Gitlab, GitlabList  # noqa: F401
+from gitlab.client import Gitlab, GitlabList, GraphQLGitlab  # noqa: F401
 from gitlab.exceptions import *  # noqa: F401,F403
 
 warnings.filterwarnings("default", category=DeprecationWarning, module="^gitlab")
