@@ -78,10 +78,13 @@ List MRs for a project::
 
 You can filter and sort the returned list with the following parameters:
 
-* ``state``: state of the MR. It can be one of ``all``, ``merged``, ``opened``
-  or ``closed``
+* ``state``: state of the MR. It can be one of ``all``, ``merged``, ``opened``,
+   ``closed`` or ``locked``
 * ``order_by``: sort by ``created_at`` or ``updated_at``
 * ``sort``: sort order (``asc`` or ``desc``)
+
+You can find a full updated list of parameters here:
+https://docs.gitlab.com/ee/api/merge_requests.html#list-merge-requests
 
 For example::
 
