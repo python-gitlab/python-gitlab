@@ -5,6 +5,7 @@ order_by_type = false
 
 [tool.mypy]
 files = "."
+exclude = "build/.*"
 
 # 'strict = true' is equivalent to the following:
 check_untyped_defs = true
