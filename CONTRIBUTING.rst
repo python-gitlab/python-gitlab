@@ -27,7 +27,7 @@ Please provide your patches as GitHub pull requests. Thanks!
 Commit message guidelines
 -------------------------
 
-We enforce commit messages to be formatted using the `conventional-changelog <https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-guidelines>`_.
+We enforce commit messages to be formatted using the `conventional-changelog <https://github.com/angular/angular/blob/main/CONTRIBUTING.md#commit>`_.
 This leads to more readable messages that are easy to follow when looking through the project history.
 
 Code-Style
