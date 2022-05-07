@@ -18,7 +18,7 @@
 import json
 import warnings
 
-from gitlab import utils
+from gitlab import types, utils
 
 
 class TestEncodedId:
@@ -95,3 +95,30 @@ class TestWarningsWrapper:
         assert warn_message in str(warning.message)
         assert __file__ in str(warning.message)
         assert warn_source == warning.source
+
+
+def test_transform_types_copies_data_with_empty_files():
+    data = {"attr": "spam"}
+    new_data, files = utils._transform_types(data, {})
+
+    assert new_data is not data
+    assert new_data == data
+    assert files == {}
+
+
+def test_transform_types_with_transform_files_populates_files():
+    custom_types = {"attr": types.FileAttribute}
+    data = {"attr": "spam"}
+    new_data, files = utils._transform_types(data, custom_types)
+
+    assert new_data == {}
+    assert files["attr"] == ("attr", "spam")
+
+
+def test_transform_types_without_transform_files_populates_data_with_empty_files():
+    custom_types = {"attr": types.FileAttribute}
+    data = {"attr": "spam"}
+    new_data, files = utils._transform_types(data, custom_types, transform_files=False)
+
+    assert new_data == {"attr": "spam"}
+    assert files == {}

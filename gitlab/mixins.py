@@ -33,7 +33,6 @@ import requests
 import gitlab
 from gitlab import base, cli
 from gitlab import exceptions as exc
-from gitlab import types as g_types
 from gitlab import utils
 
 __all__ = [
@@ -214,8 +213,8 @@ class ListMixin(_RestManagerBase):
             GitlabListError: If the server cannot perform the request
         """
 
-        # Duplicate data to avoid messing with what the user sent us
-        data = kwargs.copy()
+        data, _ = utils._transform_types(kwargs, self._types, transform_files=False)
+
         if self.gitlab.per_page:
             data.setdefault("per_page", self.gitlab.per_page)
 
@@ -225,13 +224,6 @@ class ListMixin(_RestManagerBase):
 
         if self.gitlab.order_by:
             data.setdefault("order_by", self.gitlab.order_by)
-
-        # We get the attributes that need some special transformation
-        if self._types:
-            for attr_name, type_cls in self._types.items():
-                if attr_name in data.keys():
-                    type_obj = type_cls(data[attr_name])
-                    data[attr_name] = type_obj.get_for_api()
 
         # Allow to overwrite the path, handy for custom listings
         path = data.pop("path", self.path)
@@ -298,23 +290,7 @@ class CreateMixin(_RestManagerBase):
             data = {}
 
         self._check_missing_create_attrs(data)
-        files = {}
-
-        # We get the attributes that need some special transformation
-        if self._types:
-            # Duplicate data to avoid messing with what the user sent us
-            data = data.copy()
-            for attr_name, type_cls in self._types.items():
-                if attr_name in data.keys():
-                    type_obj = type_cls(data[attr_name])
-
-                    # if the type if FileAttribute we need to pass the data as
-                    # file
-                    if isinstance(type_obj, g_types.FileAttribute):
-                        k = type_obj.get_file_name(attr_name)
-                        files[attr_name] = (k, data.pop(attr_name))
-                    else:
-                        data[attr_name] = type_obj.get_for_api()
+        data, files = utils._transform_types(data, self._types)
 
         # Handle specific URL for creation
         path = kwargs.pop("path", self.path)
@@ -394,23 +370,7 @@ class UpdateMixin(_RestManagerBase):
             path = f"{self.path}/{utils.EncodedId(id)}"
 
         self._check_missing_update_attrs(new_data)
-        files = {}
-
-        # We get the attributes that need some special transformation
-        if self._types:
-            # Duplicate data to avoid messing with what the user sent us
-            new_data = new_data.copy()
-            for attr_name, type_cls in self._types.items():
-                if attr_name in new_data.keys():
-                    type_obj = type_cls(new_data[attr_name])
-
-                    # if the type if FileAttribute we need to pass the data as
-                    # file
-                    if isinstance(type_obj, g_types.FileAttribute):
-                        k = type_obj.get_file_name(attr_name)
-                        files[attr_name] = (k, new_data.pop(attr_name))
-                    else:
-                        new_data[attr_name] = type_obj.get_for_api()
+        new_data, files = utils._transform_types(new_data, self._types)
 
         http_method = self._get_update_method()
         result = http_method(path, post_data=new_data, files=files, **kwargs)
