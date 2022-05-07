@@ -42,7 +42,7 @@ __all__ = [
 
 class Issue(RESTObject):
     _url = "/issues"
-    _short_print_attr = "title"
+    _repr_attr = "title"
 
 
 class IssueManager(RetrieveMixin, RESTManager):
@@ -108,7 +108,7 @@ class ProjectIssue(
     ObjectDeleteMixin,
     RESTObject,
 ):
-    _short_print_attr = "title"
+    _repr_attr = "title"
     _id_attr = "iid"
 
     awardemojis: ProjectIssueAwardEmojiManager

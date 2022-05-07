@@ -48,7 +48,7 @@ __all__ = [
 
 
 class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "name"
+    _repr_attr = "name"
 
     access_tokens: GroupAccessTokenManager
     accessrequests: GroupAccessRequestManager

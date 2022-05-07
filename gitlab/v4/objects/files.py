@@ -24,7 +24,7 @@ __all__ = [
 
 class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "file_path"
-    _short_print_attr = "file_path"
+    _repr_attr = "file_path"
     file_path: str
     manager: "ProjectFileManager"
 

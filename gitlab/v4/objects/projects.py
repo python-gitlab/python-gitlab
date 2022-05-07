@@ -129,7 +129,7 @@ class ProjectGroupManager(ListMixin, RESTManager):
 
 
 class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTObject):
-    _short_print_attr = "path"
+    _repr_attr = "path"
 
     access_tokens: ProjectAccessTokenManager
     accessrequests: ProjectAccessRequestManager
@@ -185,16 +185,6 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     users: ProjectUserManager
     variables: ProjectVariableManager
     wikis: ProjectWikiManager
-
-    def __repr__(self) -> str:
-        project_repr = super().__repr__()
-
-        if hasattr(self, "name_with_namespace"):
-            return (
-                f'{project_repr[:-1]} name_with_namespace:"{self.name_with_namespace}">'
-            )
-        else:
-            return project_repr
 
     @cli.register_custom_action("Project", ("forked_from_id",))
     @exc.on_http_error(exc.GitlabCreateError)

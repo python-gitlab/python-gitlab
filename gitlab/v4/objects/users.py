@@ -66,7 +66,7 @@ __all__ = [
 
 
 class CurrentUserEmail(ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "email"
+    _repr_attr = "email"
 
 
 class CurrentUserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
@@ -96,7 +96,7 @@ class CurrentUserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTMana
 
 
 class CurrentUserKey(ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "title"
+    _repr_attr = "title"
 
 
 class CurrentUserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
@@ -112,7 +112,7 @@ class CurrentUserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager
 
 class CurrentUserStatus(SaveMixin, RESTObject):
     _id_attr = None
-    _short_print_attr = "message"
+    _repr_attr = "message"
 
 
 class CurrentUserStatusManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
@@ -128,7 +128,7 @@ class CurrentUserStatusManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
 
 class CurrentUser(RESTObject):
     _id_attr = None
-    _short_print_attr = "username"
+    _repr_attr = "username"
 
     emails: CurrentUserEmailManager
     gpgkeys: CurrentUserGPGKeyManager
@@ -147,7 +147,7 @@ class CurrentUserManager(GetWithoutIdMixin, RESTManager):
 
 
 class User(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "username"
+    _repr_attr = "username"
 
     customattributes: UserCustomAttributeManager
     emails: "UserEmailManager"
@@ -373,7 +373,7 @@ class ProjectUserManager(ListMixin, RESTManager):
 
 
 class UserEmail(ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "email"
+    _repr_attr = "email"
 
 
 class UserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
@@ -392,7 +392,7 @@ class UserActivities(RESTObject):
 
 class UserStatus(RESTObject):
     _id_attr = None
-    _short_print_attr = "message"
+    _repr_attr = "message"
 
 
 class UserStatusManager(GetWithoutIdMixin, RESTManager):

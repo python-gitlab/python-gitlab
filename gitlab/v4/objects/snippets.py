@@ -21,7 +21,7 @@ __all__ = [
 
 
 class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "title"
+    _repr_attr = "title"
 
     @cli.register_custom_action("Snippet")
     @exc.on_http_error(exc.GitlabGetError)
@@ -91,7 +91,7 @@ class SnippetManager(CRUDMixin, RESTManager):
 
 class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _url = "/projects/{project_id}/snippets"
-    _short_print_attr = "title"
+    _repr_attr = "title"
 
     awardemojis: ProjectSnippetAwardEmojiManager
     discussions: ProjectSnippetDiscussionManager

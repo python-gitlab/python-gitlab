@@ -9,7 +9,7 @@ __all__ = [
 
 class Application(ObjectDeleteMixin, RESTObject):
     _url = "/applications"
-    _short_print_attr = "name"
+    _repr_attr = "name"
 
 
 class ApplicationManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):

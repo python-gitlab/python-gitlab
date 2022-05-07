@@ -15,7 +15,7 @@ __all__ = [
 
 class Hook(ObjectDeleteMixin, RESTObject):
     _url = "/hooks"
-    _short_print_attr = "url"
+    _repr_attr = "url"
 
 
 class HookManager(NoUpdateMixin, RESTManager):
@@ -28,7 +28,7 @@ class HookManager(NoUpdateMixin, RESTManager):
 
 
 class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "url"
+    _repr_attr = "url"
 
 
 class ProjectHookManager(CRUDMixin, RESTManager):
@@ -75,7 +75,7 @@ class ProjectHookManager(CRUDMixin, RESTManager):
 
 
 class GroupHook(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "url"
+    _repr_attr = "url"
 
 
 class GroupHookManager(CRUDMixin, RESTManager):

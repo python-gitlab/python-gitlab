@@ -165,7 +165,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
 
 class ProjectMergeRequestApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "approval_rule_id"
-    _short_print_attr = "approval_rule"
+    _repr_attr = "approval_rule"
     id: int
 
     @exc.on_http_error(exc.GitlabUpdateError)

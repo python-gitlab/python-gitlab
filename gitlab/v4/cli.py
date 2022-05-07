@@ -449,12 +449,12 @@ class LegacyPrinter:
             if obj._id_attr:
                 id = getattr(obj, obj._id_attr)
                 print(f"{obj._id_attr.replace('_', '-')}: {id}")
-            if obj._short_print_attr:
-                value = getattr(obj, obj._short_print_attr) or "None"
+            if obj._repr_attr:
+                value = getattr(obj, obj._repr_attr, "None")
                 value = value.replace("\r", "").replace("\n", " ")
                 # If the attribute is a note (ProjectCommitComment) then we do
                 # some modifications to fit everything on one line
-                line = f"{obj._short_print_attr}: {value}"
+                line = f"{obj._repr_attr}: {value}"
                 # ellipsize long lines (comments)
                 if len(line) > 79:
                     line = f"{line[:76]}..."
