@@ -49,8 +49,12 @@ class RESTObject:
     another. This allows smart updates, if the object allows it.
 
     You can redefine ``_id_attr`` in child classes to specify which attribute
-    must be used as uniq ID. ``None`` means that the object can be updated
+    must be used as the unique ID. ``None`` means that the object can be updated
     without ID in the url.
+
+    Likewise, you can define a ``_repr_attr`` in subclasses to specify which
+    attribute should be added as a human-readable identifier when called in the
+    object's ``__repr__()`` method.
     """
 
     _id_attr: Optional[str] = "id"
@@ -58,7 +62,7 @@ class RESTObject:
     _created_from_list: bool  # Indicates if object was created from a list() action
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
-    _short_print_attr: Optional[str] = None
+    _repr_attr: Optional[str] = None
     _updated_attrs: Dict[str, Any]
     manager: "RESTManager"
 
@@ -158,10 +162,19 @@ class RESTObject:
         print(self.pformat())
 
     def __repr__(self) -> str:
+        name = self.__class__.__name__
+
+        if (self._id_attr and self._repr_attr) and (self._id_attr != self._repr_attr):
+            return (
+                f"<{name} {self._id_attr}:{self.get_id()} "
+                f"{self._repr_attr}:{getattr(self, self._repr_attr)}>"
+            )
         if self._id_attr:
-            return f"<{self.__class__.__name__} {self._id_attr}:{self.get_id()}>"
-        else:
-            return f"<{self.__class__.__name__}>"
+            return f"<{name} {self._id_attr}:{self.get_id()}>"
+        if self._repr_attr:
+            return f"<{name} {self._repr_attr}:{getattr(self, self._repr_attr)}>"
+
+        return f"<{name}>"
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, RESTObject):

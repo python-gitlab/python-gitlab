@@ -226,6 +226,37 @@ class TestRESTObject:
             "<class 'tests.unit.test_base.FakeObject'> => {'attr1': 'foo'}"
         )
 
+    @pytest.mark.parametrize(
+        "id_attr,repr_attr, attrs, expected_repr",
+        [
+            ("id", None, {"id": 1}, "<ReprObject id:1>"),
+            (
+                "id",
+                "name",
+                {"id": 1, "name": "fake"},
+                "<ReprObject id:1 name:fake>",
+            ),
+            ("name", "name", {"name": "fake"}, "<ReprObject name:fake>"),
+            (None, None, {}, "<ReprObject>"),
+            (None, "name", {"name": "fake"}, "<ReprObject name:fake>"),
+        ],
+        ids=[
+            "GetMixin with id",
+            "GetMixin with id and _repr_attr",
+            "GetMixin with _repr_attr matching _id_attr",
+            "GetWithoutIDMixin",
+            "GetWithoutIDMixin with _repr_attr",
+        ],
+    )
+    def test_dunder_repr(self, fake_manager, id_attr, repr_attr, attrs, expected_repr):
+        class ReprObject(FakeObject):
+            _id_attr = id_attr
+            _repr_attr = repr_attr
+
+        fake_object = ReprObject(fake_manager, attrs)
+
+        assert repr(fake_object) == expected_repr
+
     def test_pformat(self, fake_manager):
         fake_object = FakeObject(
             fake_manager, {"attr1": "foo" * 10, "ham": "eggs" * 15}

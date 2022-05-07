@@ -22,7 +22,7 @@ __all__ = [
 
 
 class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "title"
+    _repr_attr = "title"
 
     @cli.register_custom_action("GroupMilestone")
     @exc.on_http_error(exc.GitlabListError)
@@ -102,7 +102,7 @@ class GroupMilestoneManager(CRUDMixin, RESTManager):
 
 
 class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "title"
+    _repr_attr = "title"
     _update_uses_post = True
 
     @cli.register_custom_action("ProjectMilestone")

@@ -13,7 +13,7 @@ __all__ = [
 
 class ProjectTag(ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
-    _short_print_attr = "name"
+    _repr_attr = "name"
 
 
 class ProjectTagManager(NoUpdateMixin, RESTManager):
@@ -30,7 +30,7 @@ class ProjectTagManager(NoUpdateMixin, RESTManager):
 
 class ProjectProtectedTag(ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
-    _short_print_attr = "name"
+    _repr_attr = "name"
 
 
 class ProjectProtectedTagManager(NoUpdateMixin, RESTManager):

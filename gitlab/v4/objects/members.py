@@ -28,7 +28,7 @@ __all__ = [
 
 
 class GroupMember(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "username"
+    _repr_attr = "username"
 
 
 class GroupMemberManager(CRUDMixin, RESTManager):
@@ -50,7 +50,7 @@ class GroupMemberManager(CRUDMixin, RESTManager):
 
 
 class GroupBillableMember(ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "username"
+    _repr_attr = "username"
 
     memberships: "GroupBillableMemberMembershipManager"
 
@@ -73,7 +73,7 @@ class GroupBillableMemberMembershipManager(ListMixin, RESTManager):
 
 
 class GroupMemberAll(RESTObject):
-    _short_print_attr = "username"
+    _repr_attr = "username"
 
 
 class GroupMemberAllManager(RetrieveMixin, RESTManager):
@@ -88,7 +88,7 @@ class GroupMemberAllManager(RetrieveMixin, RESTManager):
 
 
 class ProjectMember(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "username"
+    _repr_attr = "username"
 
 
 class ProjectMemberManager(CRUDMixin, RESTManager):
@@ -110,7 +110,7 @@ class ProjectMemberManager(CRUDMixin, RESTManager):
 
 
 class ProjectMemberAll(RESTObject):
-    _short_print_attr = "username"
+    _repr_attr = "username"
 
 
 class ProjectMemberAllManager(RetrieveMixin, RESTManager):

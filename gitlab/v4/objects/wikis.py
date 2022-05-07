@@ -13,7 +13,7 @@ __all__ = [
 
 class ProjectWiki(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "slug"
-    _short_print_attr = "slug"
+    _repr_attr = "slug"
 
 
 class ProjectWikiManager(CRUDMixin, RESTManager):
@@ -34,7 +34,7 @@ class ProjectWikiManager(CRUDMixin, RESTManager):
 
 class GroupWiki(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "slug"
-    _short_print_attr = "slug"
+    _repr_attr = "slug"
 
 
 class GroupWikiManager(CRUDMixin, RESTManager):
