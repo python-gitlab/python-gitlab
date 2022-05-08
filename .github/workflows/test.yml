@@ -27,23 +27,30 @@ jobs:
         python:
           - version: "3.7"
             toxenv: py37
+            experimental: false
           - version: "3.8"
             toxenv: py38
+            experimental: false
           - version: "3.9"
             toxenv: py39
+            experimental: false
           - version: "3.10"
             toxenv: py310,smoke
+            experimental: false
           - version: '3.11.0-alpha - 3.11' # SemVer's version range syntax
             toxenv: py311,smoke
+            experimental: true
         include:
           - os: macos-latest
             python:
               version: "3.10"
               toxenv: py310,smoke
+              experimental: false
           - os: windows-latest
             python:
               version: "3.10"
               toxenv: py310,smoke
+              experimental: false
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python.version }}
@@ -53,6 +60,7 @@ jobs:
       - name: Install dependencies
         run: pip3 install tox pytest-github-actions-annotate-failures
       - name: Run tests
+        continue-on-error: ${{ matrix.python.experimental }}
         env:
           TOXENV: ${{ matrix.python.toxenv }}
         run: tox --skip-missing-interpreters false
