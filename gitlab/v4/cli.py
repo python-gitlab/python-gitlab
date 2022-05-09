@@ -200,11 +200,15 @@ def _populate_sub_parser_by_class(
     mgr_cls_name = f"{cls.__name__}Manager"
     mgr_cls = getattr(gitlab.v4.objects, mgr_cls_name)
 
+    action_parsers: Dict[str, argparse.ArgumentParser] = {}
     for action_name in ["list", "get", "create", "update", "delete"]:
         if not hasattr(mgr_cls, action_name):
             continue
 
-        sub_parser_action = sub_parser.add_parser(action_name)
+        sub_parser_action = sub_parser.add_parser(
+            action_name, conflict_handler="resolve"
+        )
+        action_parsers[action_name] = sub_parser_action
         sub_parser_action.add_argument("--sudo", required=False)
         if mgr_cls._from_parent_attrs:
             for x in mgr_cls._from_parent_attrs:
@@ -268,7 +272,11 @@ def _populate_sub_parser_by_class(
     if cls.__name__ in cli.custom_actions:
         name = cls.__name__
         for action_name in cli.custom_actions[name]:
-            sub_parser_action = sub_parser.add_parser(action_name)
+            # NOTE(jlvillal): If we put a function for the `default` value of
+            # the `get` it will always get called, which will break things.
+            sub_parser_action = action_parsers.get(action_name)
+            if sub_parser_action is None:
+                sub_parser_action = sub_parser.add_parser(action_name)
             # Get the attributes for URL/path construction
             if mgr_cls._from_parent_attrs:
                 for x in mgr_cls._from_parent_attrs:
@@ -298,7 +306,11 @@ def _populate_sub_parser_by_class(
     if mgr_cls.__name__ in cli.custom_actions:
         name = mgr_cls.__name__
         for action_name in cli.custom_actions[name]:
-            sub_parser_action = sub_parser.add_parser(action_name)
+            # NOTE(jlvillal): If we put a function for the `default` value of
+            # the `get` it will always get called, which will break things.
+            sub_parser_action = action_parsers.get(action_name)
+            if sub_parser_action is None:
+                sub_parser_action = sub_parser.add_parser(action_name)
             if mgr_cls._from_parent_attrs:
                 for x in mgr_cls._from_parent_attrs:
                     sub_parser_action.add_argument(
@@ -326,16 +338,15 @@ def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     subparsers.required = True
 
     # populate argparse for all Gitlab Object
-    classes = []
+    classes = set()
     for cls in gitlab.v4.objects.__dict__.values():
         if not isinstance(cls, type):
             continue
         if issubclass(cls, gitlab.base.RESTManager):
             if cls._obj_cls is not None:
-                classes.append(cls._obj_cls)
-    classes.sort(key=operator.attrgetter("__name__"))
+                classes.add(cls._obj_cls)
 
-    for cls in classes:
+    for cls in sorted(classes, key=operator.attrgetter("__name__")):
         arg_name = cli.cls_to_what(cls)
         object_group = subparsers.add_parser(arg_name)
 
