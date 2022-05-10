@@ -32,7 +32,7 @@ jobs:
       - name: Run black code formatter (https://black.readthedocs.io/en/stable/)
         run: tox -e black -- --check
       - name: Run flake8 (https://flake8.pycqa.org/en/latest/)
-        run: tox -e pep8
+        run: tox -e flake8
       - name: Run mypy static typing checker (http://mypy-lang.org/)
         run: tox -e mypy
       - name: Run isort import order checker (https://pycqa.github.io/isort/)
