@@ -192,6 +192,16 @@ You can print a Gitlab Object. For example:
    # Or explicitly via `pformat()`. This is equivalent to the above.
    print(project.pformat())
 
+You can also extend the object if the parameter isn't explicitly listed. For example,
+if you want to update a field that has been newly introduced to the Gitlab API, setting
+the value on the object is accepted:
+
+.. code-block:: python
+
+   issues = project.issues.list(state='opened')
+   for issue in issues:
+      issue.my_super_awesome_feature_flag = "random_value"
+      issue.save()
 
 Base types
 ==========

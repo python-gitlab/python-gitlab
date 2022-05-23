@@ -133,6 +133,17 @@ Delete an issue (admin or project owner only)::
     # pr
     issue.delete()
 
+Assign the issues::
+
+    issue = gl.issues.list()[0]
+    issue.assignee_ids = [25, 10, 31, 12]
+    issue.save()
+
+.. note::
+    The Gitlab API explicitly references that the `assignee_id` field is deprecated, 
+    so using a list of user IDs for `assignee_ids` is how to assign an issue to a user(s).
+
+
 Subscribe / unsubscribe from an issue::
 
     issue.subscribe()
