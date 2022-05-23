@@ -4,7 +4,7 @@ commitizen==2.24.0
 flake8==4.0.1
 isort==5.10.1
 mypy==0.950
-pylint==2.13.8
+pylint==2.13.9
 pytest==7.1.2
 types-PyYAML==6.0.7
 types-requests==2.27.25
