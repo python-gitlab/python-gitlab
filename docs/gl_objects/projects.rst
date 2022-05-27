@@ -783,3 +783,30 @@ Get all additional statistics of a project::
 Get total fetches in last 30 days of a project::
 
     total_fetches = project.additionalstatistics.get().fetches['total']
+
+Project storage
+=============================
+
+This endpoint requires admin access.
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectStorage`
+  + :class:`gitlab.v4.objects.ProjectStorageManager`
+  + :attr:`gitlab.v4.objects.Project.storage`
+
+* GitLab API: https://docs.gitlab.com/ee/api/projects.html#get-the-path-to-repository-storage
+
+Examples
+---------
+
+Get the repository storage details for a project::
+
+    storage = project.storage.get()
+
+Get the repository storage disk path::
+
+    disk_path = project.storage.get().disk_path

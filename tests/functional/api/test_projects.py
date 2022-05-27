@@ -3,6 +3,7 @@ import uuid
 import pytest
 
 import gitlab
+from gitlab.v4.objects.projects import ProjectStorage
 
 
 def test_create_project(gl, user):
@@ -283,6 +284,12 @@ def test_project_stars(project):
 
     project.unstar()
     assert project.star_count == 0
+
+
+def test_project_storage(project):
+    storage = project.storage.get()
+    assert isinstance(storage, ProjectStorage)
+    assert storage.repository_storage == "default"
 
 
 def test_project_tags(project, project_file):

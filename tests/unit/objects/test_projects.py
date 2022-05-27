@@ -12,6 +12,7 @@ from gitlab.v4.objects import (
     StarredProject,
     UserProject,
 )
+from gitlab.v4.objects.projects import ProjectStorage
 
 project_content = {"name": "name", "id": 1}
 languages_content = {
@@ -43,6 +44,19 @@ def resp_get_project():
             method=responses.GET,
             url="http://localhost/api/v4/projects/1",
             json=project_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_get_project_storage():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/storage",
+            json={"project_id": 1, "disk_path": "/disk/path"},
             content_type="application/json",
             status=200,
         )
@@ -254,6 +268,12 @@ def test_get_project_languages(project, resp_list_languages):
     assert python == 80.00
     assert ruby == 99.99
     assert coffee_script == 00.01
+
+
+def test_get_project_storage(project, resp_get_project_storage):
+    storage = project.storage.get()
+    assert isinstance(storage, ProjectStorage)
+    assert storage.disk_path == "/disk/path"
 
 
 @pytest.mark.skip(reason="missing test")
