@@ -9,6 +9,7 @@ from gitlab.base import RequiredOptional, RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
+    GetWithoutIdMixin,
     ListMixin,
     ObjectDeleteMixin,
     RefreshMixin,
@@ -80,6 +81,8 @@ __all__ = [
     "ProjectForkManager",
     "ProjectRemoteMirror",
     "ProjectRemoteMirrorManager",
+    "ProjectStorage",
+    "ProjectStorageManager",
 ]
 
 
@@ -180,6 +183,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     runners: ProjectRunnerManager
     services: ProjectServiceManager
     snippets: ProjectSnippetManager
+    storage: "ProjectStorageManager"
     tags: ProjectTagManager
     triggers: ProjectTriggerManager
     users: ProjectUserManager
@@ -1013,3 +1017,18 @@ class ProjectRemoteMirrorManager(ListMixin, CreateMixin, UpdateMixin, RESTManage
         required=("url",), optional=("enabled", "only_protected_branches")
     )
     _update_attrs = RequiredOptional(optional=("enabled", "only_protected_branches"))
+
+
+class ProjectStorage(RefreshMixin, RESTObject):
+    pass
+
+
+class ProjectStorageManager(GetWithoutIdMixin, RESTManager):
+    _path = "/projects/{project_id}/storage"
+    _obj_cls = ProjectStorage
+    _from_parent_attrs = {"project_id": "id"}
+
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> Optional[ProjectStorage]:
+        return cast(Optional[ProjectStorage], super().get(id=id, **kwargs))
