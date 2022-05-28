@@ -2,6 +2,22 @@
 
 <!--next-version-placeholder-->
 
+## v3.5.0 (2022-05-28)
+### Feature
+* **objects:** Support get project storage endpoint ([`8867ee5`](https://github.com/python-gitlab/python-gitlab/commit/8867ee59884ae81d6457ad6e561a0573017cf6b2))
+* Display human-readable attribute in `repr()` if present ([`6b47c26`](https://github.com/python-gitlab/python-gitlab/commit/6b47c26d053fe352d68eb22a1eaf4b9a3c1c93e7))
+* **ux:** Display project.name_with_namespace on project repr ([`e598762`](https://github.com/python-gitlab/python-gitlab/commit/e5987626ca1643521b16658555f088412be2a339))
+
+### Fix
+* **cli:** Changed default `allow_abbrev` value to fix arguments collision problem ([#2013](https://github.com/python-gitlab/python-gitlab/issues/2013)) ([`d68cacf`](https://github.com/python-gitlab/python-gitlab/commit/d68cacfeda5599c62a593ecb9da2505c22326644))
+* Duplicate subparsers being added to argparse ([`f553fd3`](https://github.com/python-gitlab/python-gitlab/commit/f553fd3c79579ab596230edea5899dc5189b0ac6))
+
+### Documentation
+* Update issue example and extend API usage docs ([`aad71d2`](https://github.com/python-gitlab/python-gitlab/commit/aad71d282d60dc328b364bcc951d0c9b44ab13fa))
+* **CONTRIBUTING.rst:** Fix link to conventional-changelog commit format documentation ([`2373a4f`](https://github.com/python-gitlab/python-gitlab/commit/2373a4f13ee4e5279a424416cdf46782a5627067))
+* Add missing Admin access const value ([`3e0d4d9`](https://github.com/python-gitlab/python-gitlab/commit/3e0d4d9006e2ca6effae2b01cef3926dd0850e52))
+* **merge_requests:** Add new possible merge request state and link to the upstream docs ([`e660fa8`](https://github.com/python-gitlab/python-gitlab/commit/e660fa8386ed7783da5c076bc0fef83e6a66f9a8))
+
 ## v3.4.0 (2022-04-28)
 ### Feature
 * Emit a warning when using a `list()` method returns max ([`1339d64`](https://github.com/python-gitlab/python-gitlab/commit/1339d645ce58a2e1198b898b9549ba5917b1ff12))
