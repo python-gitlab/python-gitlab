@@ -93,19 +93,25 @@ Examples:
 .. code-block:: python
 
    # list all the projects
-   projects = gl.projects.list()
+   projects = gl.projects.list(as_list=False)
    for project in projects:
        print(project)
 
    # get the group with id == 2
    group = gl.groups.get(2)
-   for project in group.projects.list():
+   for project in group.projects.list(as_list=False):
        print(project)
 
    # create a new user
    user_data = {'email': 'jen@foo.com', 'username': 'jen', 'name': 'Jen'}
    user = gl.users.create(user_data)
    print(user)
+
+.. warning::
+   Calling ``list()`` without any arguments will by default not return the complete list
+   of items. Use either the ``all=True`` or ``as_list=False`` parameters to get all the
+   items when using listing methods. See the :ref:`pagination` section for more
+   information.
 
 You can list the mandatory and optional attributes for object creation and
 update with the manager's ``get_create_attrs()`` and ``get_update_attrs()``
@@ -133,7 +139,7 @@ Some objects also provide managers to access related GitLab resources:
 
    # list the issues for a project
    project = gl.projects.get(1)
-   issues = project.issues.list()
+   issues = project.issues.list(all=True)
 
 python-gitlab allows to send any data to the GitLab server when making queries.
 In case of invalid or missing arguments python-gitlab will raise an exception
@@ -150,9 +156,9 @@ conflict with python or python-gitlab when using them as kwargs:
 
 .. code-block:: python
 
-   gl.user_activities.list(from='2019-01-01')  ## invalid
+   gl.user_activities.list(from='2019-01-01', as_list=False)  ## invalid
 
-   gl.user_activities.list(query_parameters={'from': '2019-01-01'})  # OK
+   gl.user_activities.list(query_parameters={'from': '2019-01-01'}, as_list=False)  # OK
 
 Gitlab Objects
 ==============
@@ -232,6 +238,8 @@ a project (the previous example used 2 API calls):
    # star a git repository
    project = gl.projects.get(1, lazy=True)  # no API call
    project.star()  # API call
+
+.. _pagination:
 
 Pagination
 ==========
