@@ -199,8 +199,6 @@ class ProjectMergeRequest(
             all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
-            as_list: If set to False and no pagination option is
-                defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -211,7 +209,7 @@ class ProjectMergeRequest(
             List of issues
         """
         path = f"{self.manager.path}/{self.encoded_id}/closes_issues"
-        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, gitlab.GitlabList)
         manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
@@ -226,8 +224,6 @@ class ProjectMergeRequest(
             all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
-            as_list: If set to False and no pagination option is
-                defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -239,7 +235,7 @@ class ProjectMergeRequest(
         """
 
         path = f"{self.manager.path}/{self.encoded_id}/commits"
-        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, gitlab.GitlabList)
         manager = ProjectCommitManager(self.manager.gitlab, parent=self.manager._parent)

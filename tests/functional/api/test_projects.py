@@ -15,7 +15,7 @@ def test_create_project(gl, user):
     sudo_project = gl.projects.create({"name": "sudo_project"}, sudo=user.id)
 
     created = gl.projects.list()
-    created_gen = gl.projects.list(as_list=False)
+    created_gen = gl.projects.list(iterator=True)
     owned = gl.projects.list(owned=True)
 
     assert admin_project in created and sudo_project in created
