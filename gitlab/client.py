@@ -807,7 +807,9 @@ class Gitlab:
         self,
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
-        as_list: Optional[bool] = None,
+        *,
+        as_list: Optional[bool] = None,  # Deprecated in favor of `iterator`
+        iterator: Optional[bool] = None,
         **kwargs: Any,
     ) -> Union["GitlabList", List[Dict[str, Any]]]:
         """Make a GET request to the Gitlab server for list-oriented queries.
@@ -816,12 +818,13 @@ class Gitlab:
             path: Path or full URL to query ('/projects' or
                         'http://whatever/v4/api/projects')
             query_data: Data to send as query parameters
+            iterator: Indicate if should return a generator (True)
             **kwargs: Extra options to send to the server (e.g. sudo, page,
                       per_page)
 
         Returns:
-            A list of the objects returned by the server. If `as_list` is
-            False and no pagination-related arguments (`page`, `per_page`,
+            A list of the objects returned by the server. If `iterator` is
+            True and no pagination-related arguments (`page`, `per_page`,
             `all`) are defined then a GitlabList object (generator) is returned
             instead. This object will make API calls when needed to fetch the
             next items from the server.
@@ -832,15 +835,29 @@ class Gitlab:
         """
         query_data = query_data or {}
 
-        # In case we want to change the default behavior at some point
-        as_list = True if as_list is None else as_list
+        # Don't allow both `as_list` and `iterator` to be set.
+        if as_list is not None and iterator is not None:
+            raise ValueError(
+                "Only one of `as_list` or `iterator` can be used. "
+                "Use `iterator` instead of `as_list`. `as_list` is deprecated."
+            )
+
+        if as_list is not None:
+            iterator = not as_list
+            utils.warn(
+                message=(
+                    f"`as_list={as_list}` is deprecated and will be removed in a "
+                    f"future version. Use `iterator={iterator}` instead."
+                ),
+                category=DeprecationWarning,
+            )
 
         get_all = kwargs.pop("all", None)
         url = self._build_url(path)
 
         page = kwargs.get("page")
 
-        if as_list is False:
+        if iterator:
             # Generator requested
             return GitlabList(self, url, query_data, **kwargs)
 
@@ -879,7 +896,7 @@ class Gitlab:
         utils.warn(
             message=(
                 f"Calling a `list()` method without specifying `all=True` or "
-                f"`as_list=False` will return a maximum of {gl_list.per_page} items. "
+                f"`iterator=True` will return a maximum of {gl_list.per_page} items. "
                 f"Your query returned {len(items)} of {total_items} items. See "
                 f"{_PAGINATION_URL} for more details. If this was done intentionally, "
                 f"then this warning can be supressed by adding the argument "

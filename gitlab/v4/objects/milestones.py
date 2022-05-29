@@ -33,8 +33,6 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
             all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
-            as_list: If set to False and no pagination option is
-                defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -46,7 +44,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
 
         path = f"{self.manager.path}/{self.encoded_id}/issues"
-        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, RESTObjectList)
         manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
@@ -62,8 +60,6 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
             all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
-            as_list: If set to False and no pagination option is
-                defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -74,7 +70,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
             The list of merge requests
         """
         path = f"{self.manager.path}/{self.encoded_id}/merge_requests"
-        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, RESTObjectList)
         manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
@@ -114,8 +110,6 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
             all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
-            as_list: If set to False and no pagination option is
-                defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -127,7 +121,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         """
 
         path = f"{self.manager.path}/{self.encoded_id}/issues"
-        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, RESTObjectList)
         manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
@@ -143,8 +137,6 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
             all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
-            as_list: If set to False and no pagination option is
-                defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -155,7 +147,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
             The list of merge requests
         """
         path = f"{self.manager.path}/{self.encoded_id}/merge_requests"
-        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, RESTObjectList)
         manager = ProjectMergeRequestManager(

@@ -63,13 +63,13 @@ The ``search()`` methods implement the pagination support::
 
     # get a generator that will automatically make required API calls for
     # pagination
-    for item in gl.search(gitlab.const.SEARCH_SCOPE_ISSUES, search_str, as_list=False):
+    for item in gl.search(gitlab.const.SEARCH_SCOPE_ISSUES, search_str, iterator=True):
         do_something(item)
 
 The search API doesn't return objects, but dicts. If you need to act on
 objects, you need to create them explicitly::
 
-    for item in gl.search(gitlab.const.SEARCH_SCOPE_ISSUES, search_str, as_list=False):
+    for item in gl.search(gitlab.const.SEARCH_SCOPE_ISSUES, search_str, iterator=True):
         issue_project = gl.projects.get(item['project_id'], lazy=True)
         issue = issue_project.issues.get(item['iid'])
         issue.state = 'closed'

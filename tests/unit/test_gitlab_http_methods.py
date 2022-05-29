@@ -438,12 +438,12 @@ def test_list_request(gl):
     )
 
     with warnings.catch_warnings(record=True) as caught_warnings:
-        result = gl.http_list("/projects", as_list=True)
+        result = gl.http_list("/projects", iterator=False)
     assert len(caught_warnings) == 0
     assert isinstance(result, list)
     assert len(result) == 1
 
-    result = gl.http_list("/projects", as_list=False)
+    result = gl.http_list("/projects", iterator=True)
     assert isinstance(result, GitlabList)
     assert len(list(result)) == 1
 
@@ -485,11 +485,29 @@ large_list_response = {
 
 
 @responses.activate
+def test_as_list_deprecation_warning(gl):
+    responses.add(**large_list_response)
+
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        result = gl.http_list("/projects", as_list=False)
+    assert len(caught_warnings) == 1
+    warning = caught_warnings[0]
+    assert isinstance(warning.message, DeprecationWarning)
+    message = str(warning.message)
+    assert "`as_list=False` is deprecated" in message
+    assert "Use `iterator=True` instead" in message
+    assert __file__ == warning.filename
+    assert not isinstance(result, list)
+    assert len(list(result)) == 20
+    assert len(responses.calls) == 1
+
+
+@responses.activate
 def test_list_request_pagination_warning(gl):
     responses.add(**large_list_response)
 
     with warnings.catch_warnings(record=True) as caught_warnings:
-        result = gl.http_list("/projects", as_list=True)
+        result = gl.http_list("/projects", iterator=False)
     assert len(caught_warnings) == 1
     warning = caught_warnings[0]
     assert isinstance(warning.message, UserWarning)
@@ -503,10 +521,10 @@ def test_list_request_pagination_warning(gl):
 
 
 @responses.activate
-def test_list_request_as_list_false_nowarning(gl):
+def test_list_request_iterator_true_nowarning(gl):
     responses.add(**large_list_response)
     with warnings.catch_warnings(record=True) as caught_warnings:
-        result = gl.http_list("/projects", as_list=False)
+        result = gl.http_list("/projects", iterator=True)
     assert len(caught_warnings) == 0
     assert isinstance(result, GitlabList)
     assert len(list(result)) == 20

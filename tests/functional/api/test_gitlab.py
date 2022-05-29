@@ -220,9 +220,20 @@ def test_list_all_true_nowarning(gl):
     assert len(items) > 20
 
 
-def test_list_as_list_false_nowarning(gl):
-    """Using `as_list=False` will disable the warning"""
+def test_list_iterator_true_nowarning(gl):
+    """Using `iterator=True` will disable the warning"""
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        items = gl.gitlabciymls.list(iterator=True)
+    assert len(caught_warnings) == 0
+    assert len(list(items)) > 20
+
+
+def test_list_as_list_false_warnings(gl):
+    """Using `as_list=False` will disable the UserWarning but cause a
+    DeprecationWarning"""
     with warnings.catch_warnings(record=True) as caught_warnings:
         items = gl.gitlabciymls.list(as_list=False)
-    assert len(caught_warnings) == 0
+    assert len(caught_warnings) == 1
+    for warning in caught_warnings:
+        assert isinstance(warning.message, DeprecationWarning)
     assert len(list(items)) > 20

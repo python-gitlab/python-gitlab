@@ -107,7 +107,7 @@ def test_list_mixin(gl):
 
     # test RESTObjectList
     mgr = M(gl)
-    obj_list = mgr.list(as_list=False)
+    obj_list = mgr.list(iterator=True)
     assert isinstance(obj_list, base.RESTObjectList)
     for obj in obj_list:
         assert isinstance(obj, FakeObject)
@@ -138,7 +138,7 @@ def test_list_other_url(gl):
     )
 
     mgr = M(gl)
-    obj_list = mgr.list(path="/others", as_list=False)
+    obj_list = mgr.list(path="/others", iterator=True)
     assert isinstance(obj_list, base.RESTObjectList)
     obj = obj_list.next()
     assert obj.id == 42

@@ -93,13 +93,13 @@ Examples:
 .. code-block:: python
 
    # list all the projects
-   projects = gl.projects.list(as_list=False)
+   projects = gl.projects.list(iterator=True)
    for project in projects:
        print(project)
 
    # get the group with id == 2
    group = gl.groups.get(2)
-   for project in group.projects.list(as_list=False):
+   for project in group.projects.list(iterator=True):
        print(project)
 
    # create a new user
@@ -109,7 +109,7 @@ Examples:
 
 .. warning::
    Calling ``list()`` without any arguments will by default not return the complete list
-   of items. Use either the ``all=True`` or ``as_list=False`` parameters to get all the
+   of items. Use either the ``all=True`` or ``iterator=True`` parameters to get all the
    items when using listing methods. See the :ref:`pagination` section for more
    information.
 
@@ -156,9 +156,9 @@ conflict with python or python-gitlab when using them as kwargs:
 
 .. code-block:: python
 
-   gl.user_activities.list(from='2019-01-01', as_list=False)  ## invalid
+   gl.user_activities.list(from='2019-01-01', iterator=True)  ## invalid
 
-   gl.user_activities.list(query_parameters={'from': '2019-01-01'}, as_list=False)  # OK
+   gl.user_activities.list(query_parameters={'from': '2019-01-01'}, iterator=True)  # OK
 
 Gitlab Objects
 ==============
@@ -282,13 +282,13 @@ order options. At the time of writing, only ``order_by="id"`` works.
 Reference:
 https://docs.gitlab.com/ce/api/README.html#keyset-based-pagination
 
-``list()`` methods can also return a generator object which will handle the
-next calls to the API when required. This is the recommended way to iterate
-through a large number of items:
+``list()`` methods can also return a generator object, by passing the argument
+``iterator=True``, which will handle the next calls to the API when required. This
+is the recommended way to iterate through a large number of items:
 
 .. code-block:: python
 
-   items = gl.groups.list(as_list=False)
+   items = gl.groups.list(iterator=True)
    for item in items:
        print(item.attributes)
 
@@ -309,6 +309,10 @@ The generator exposes extra listing information as received from the server:
 
    For more information see:
    https://docs.gitlab.com/ee/user/gitlab_com/index.html#pagination-response-headers
+
+.. note::
+   Prior to python-gitlab 3.6.0 the argument ``as_list`` was used instead of
+   ``iterator``.  ``as_list=False`` is the equivalent of ``iterator=True``.
 
 Sudo
 ====

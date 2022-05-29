@@ -87,7 +87,7 @@ def resp_page_2():
 @responses.activate
 def test_gitlab_build_list(gl, resp_page_1, resp_page_2):
     responses.add(**resp_page_1)
-    obj = gl.http_list("/tests", as_list=False)
+    obj = gl.http_list("/tests", iterator=True)
     assert len(obj) == 2
     assert obj._next_url == "http://localhost/api/v4/tests?per_page=1&page=2"
     assert obj.current_page == 1
@@ -122,7 +122,7 @@ def test_gitlab_build_list_missing_headers(gl, resp_page_1, resp_page_2):
     stripped_page_2 = _strip_pagination_headers(resp_page_2)
 
     responses.add(**stripped_page_1)
-    obj = gl.http_list("/tests", as_list=False)
+    obj = gl.http_list("/tests", iterator=True)
     assert len(obj) == 0  # Lazy generator has no knowledge of total items
     assert obj.total_pages is None
     assert obj.total is None
@@ -133,10 +133,10 @@ def test_gitlab_build_list_missing_headers(gl, resp_page_1, resp_page_2):
 
 
 @responses.activate
-def test_gitlab_all_omitted_when_as_list(gl, resp_page_1, resp_page_2):
+def test_gitlab_all_omitted_when_iterator(gl, resp_page_1, resp_page_2):
     responses.add(**resp_page_1)
     responses.add(**resp_page_2)
-    result = gl.http_list("/tests", as_list=False, all=True)
+    result = gl.http_list("/tests", iterator=True, all=True)
     assert isinstance(result, gitlab.GitlabList)
 
 

@@ -413,4 +413,4 @@ Get the users activities::
 
     activities = gl.user_activities.list(
         query_parameters={'from': '2018-07-01'},
-        all=True, as_list=False)
+        all=True, iterator=True)
