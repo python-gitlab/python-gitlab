@@ -142,8 +142,6 @@ class GetWithoutIdMixin(_RestManagerBase):
         if TYPE_CHECKING:
             assert self.path is not None
         server_data = self.gitlab.http_get(self.path, **kwargs)
-        if server_data is None:
-            return None
         if TYPE_CHECKING:
             assert not isinstance(server_data, requests.Response)
             assert self._obj_cls is not None
