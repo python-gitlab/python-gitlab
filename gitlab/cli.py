@@ -301,7 +301,7 @@ def main() -> None:
         sys.exit(e)
     # We only support v4 API at this time
     if config.api_version not in ("4",):  # dead code # pragma: no cover
-        raise ModuleNotFoundError(name=f"gitlab.v{config.api_version}.cli")
+        raise ModuleNotFoundError(f"gitlab.v{config.api_version}.cli")
 
     # Now we build the entire set of subcommands and do the complete parsing
     parser = _get_parser()
