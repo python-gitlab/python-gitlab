@@ -1030,5 +1030,5 @@ class ProjectStorageManager(GetWithoutIdMixin, RESTManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[ProjectStorage]:
-        return cast(Optional[ProjectStorage], super().get(id=id, **kwargs))
+    ) -> ProjectStorage:
+        return cast(ProjectStorage, super().get(id=id, **kwargs))

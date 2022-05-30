@@ -47,8 +47,8 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[ProjectApproval]:
-        return cast(Optional[ProjectApproval], super().get(id=id, **kwargs))
+    ) -> ProjectApproval:
+        return cast(ProjectApproval, super().get(id=id, **kwargs))
 
     @exc.on_http_error(exc.GitlabUpdateError)
     def set_approvers(
@@ -112,8 +112,8 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[ProjectMergeRequestApproval]:
-        return cast(Optional[ProjectMergeRequestApproval], super().get(id=id, **kwargs))
+    ) -> ProjectMergeRequestApproval:
+        return cast(ProjectMergeRequestApproval, super().get(id=id, **kwargs))
 
     @exc.on_http_error(exc.GitlabUpdateError)
     def set_approvers(
@@ -254,7 +254,5 @@ class ProjectMergeRequestApprovalStateManager(GetWithoutIdMixin, RESTManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[ProjectMergeRequestApprovalState]:
-        return cast(
-            Optional[ProjectMergeRequestApprovalState], super().get(id=id, **kwargs)
-        )
+    ) -> ProjectMergeRequestApprovalState:
+        return cast(ProjectMergeRequestApprovalState, super().get(id=id, **kwargs))

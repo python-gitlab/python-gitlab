@@ -252,8 +252,8 @@ class ProjectPipelineTestReportManager(GetWithoutIdMixin, RESTManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[ProjectPipelineTestReport]:
-        return cast(Optional[ProjectPipelineTestReport], super().get(id=id, **kwargs))
+    ) -> ProjectPipelineTestReport:
+        return cast(ProjectPipelineTestReport, super().get(id=id, **kwargs))
 
 
 class ProjectPipelineTestReportSummary(RESTObject):
@@ -267,7 +267,5 @@ class ProjectPipelineTestReportSummaryManager(GetWithoutIdMixin, RESTManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[ProjectPipelineTestReportSummary]:
-        return cast(
-            Optional[ProjectPipelineTestReportSummary], super().get(id=id, **kwargs)
-        )
+    ) -> ProjectPipelineTestReportSummary:
+        return cast(ProjectPipelineTestReportSummary, super().get(id=id, **kwargs))

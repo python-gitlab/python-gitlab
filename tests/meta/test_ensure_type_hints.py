@@ -72,8 +72,8 @@ from typing import Any, cast, Union"
 GET_WITHOUT_ID_METHOD_TEMPLATE = """
 def get(
     self, id: Optional[Union[int, str]] = None, **kwargs: Any
-) -> Optional[{obj_cls.__name__}]:
-    return cast(Optional[{obj_cls.__name__}], super().get(id=id, **kwargs))
+) -> {obj_cls.__name__}:
+    return cast({obj_cls.__name__}, super().get(id=id, **kwargs))
 
 You may also need to add the following imports:
 from typing import Any, cast, Optional, Union"
@@ -102,7 +102,7 @@ class TestTypeHints:
             base_type=gitlab.mixins.GetWithoutIdMixin,
             class_info=class_info,
             method_template=GET_WITHOUT_ID_METHOD_TEMPLATE,
-            optional_return=True,
+            optional_return=False,
         )
 
     def get_check_helper(

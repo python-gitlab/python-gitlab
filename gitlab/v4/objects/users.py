@@ -122,8 +122,8 @@ class CurrentUserStatusManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[CurrentUserStatus]:
-        return cast(Optional[CurrentUserStatus], super().get(id=id, **kwargs))
+    ) -> CurrentUserStatus:
+        return cast(CurrentUserStatus, super().get(id=id, **kwargs))
 
 
 class CurrentUser(RESTObject):
@@ -140,10 +140,8 @@ class CurrentUserManager(GetWithoutIdMixin, RESTManager):
     _path = "/user"
     _obj_cls = CurrentUser
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[CurrentUser]:
-        return cast(Optional[CurrentUser], super().get(id=id, **kwargs))
+    def get(self, id: Optional[Union[int, str]] = None, **kwargs: Any) -> CurrentUser:
+        return cast(CurrentUser, super().get(id=id, **kwargs))
 
 
 class User(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -400,10 +398,8 @@ class UserStatusManager(GetWithoutIdMixin, RESTManager):
     _obj_cls = UserStatus
     _from_parent_attrs = {"user_id": "id"}
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[UserStatus]:
-        return cast(Optional[UserStatus], super().get(id=id, **kwargs))
+    def get(self, id: Optional[Union[int, str]] = None, **kwargs: Any) -> UserStatus:
+        return cast(UserStatus, super().get(id=id, **kwargs))
 
 
 class UserActivitiesManager(ListMixin, RESTManager):
