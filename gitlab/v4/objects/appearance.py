@@ -59,7 +59,5 @@ class ApplicationAppearanceManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         data = new_data.copy()
         return super().update(id, data, **kwargs)
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> ApplicationAppearance:
-        return cast(ApplicationAppearance, super().get(id=id, **kwargs))
+    def get(self, **kwargs: Any) -> ApplicationAppearance:
+        return cast(ApplicationAppearance, super().get(**kwargs))

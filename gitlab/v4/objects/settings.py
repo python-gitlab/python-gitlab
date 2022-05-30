@@ -116,7 +116,5 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
             data.pop("domain_whitelist")
         return super().update(id, data, **kwargs)
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> ApplicationSettings:
-        return cast(ApplicationSettings, super().get(id=id, **kwargs))
+    def get(self, **kwargs: Any) -> ApplicationSettings:
+        return cast(ApplicationSettings, super().get(**kwargs))

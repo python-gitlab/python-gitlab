@@ -1,4 +1,4 @@
-from typing import Any, cast, Optional, Union
+from typing import Any, cast
 
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import GetWithoutIdMixin, RefreshMixin
@@ -24,10 +24,8 @@ class ProjectAdditionalStatisticsManager(GetWithoutIdMixin, RESTManager):
     _obj_cls = ProjectAdditionalStatistics
     _from_parent_attrs = {"project_id": "id"}
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> ProjectAdditionalStatistics:
-        return cast(ProjectAdditionalStatistics, super().get(id=id, **kwargs))
+    def get(self, **kwargs: Any) -> ProjectAdditionalStatistics:
+        return cast(ProjectAdditionalStatistics, super().get(**kwargs))
 
 
 class IssuesStatistics(RefreshMixin, RESTObject):
@@ -38,10 +36,8 @@ class IssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
     _path = "/issues_statistics"
     _obj_cls = IssuesStatistics
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> IssuesStatistics:
-        return cast(IssuesStatistics, super().get(id=id, **kwargs))
+    def get(self, **kwargs: Any) -> IssuesStatistics:
+        return cast(IssuesStatistics, super().get(**kwargs))
 
 
 class GroupIssuesStatistics(RefreshMixin, RESTObject):
@@ -53,10 +49,8 @@ class GroupIssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
     _obj_cls = GroupIssuesStatistics
     _from_parent_attrs = {"group_id": "id"}
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> GroupIssuesStatistics:
-        return cast(GroupIssuesStatistics, super().get(id=id, **kwargs))
+    def get(self, **kwargs: Any) -> GroupIssuesStatistics:
+        return cast(GroupIssuesStatistics, super().get(**kwargs))
 
 
 class ProjectIssuesStatistics(RefreshMixin, RESTObject):
@@ -68,7 +62,5 @@ class ProjectIssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
     _obj_cls = ProjectIssuesStatistics
     _from_parent_attrs = {"project_id": "id"}
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> ProjectIssuesStatistics:
-        return cast(ProjectIssuesStatistics, super().get(id=id, **kwargs))
+    def get(self, **kwargs: Any) -> ProjectIssuesStatistics:
+        return cast(ProjectIssuesStatistics, super().get(**kwargs))
