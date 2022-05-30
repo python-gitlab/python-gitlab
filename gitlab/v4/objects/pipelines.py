@@ -251,10 +251,8 @@ class ProjectPipelineTestReportManager(GetWithoutIdMixin, RESTManager):
     _obj_cls = ProjectPipelineTestReport
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> ProjectPipelineTestReport:
-        return cast(ProjectPipelineTestReport, super().get(id=id, **kwargs))
+    def get(self, **kwargs: Any) -> ProjectPipelineTestReport:
+        return cast(ProjectPipelineTestReport, super().get(**kwargs))
 
 
 class ProjectPipelineTestReportSummary(RESTObject):
@@ -266,7 +264,5 @@ class ProjectPipelineTestReportSummaryManager(GetWithoutIdMixin, RESTManager):
     _obj_cls = ProjectPipelineTestReportSummary
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> ProjectPipelineTestReportSummary:
-        return cast(ProjectPipelineTestReportSummary, super().get(id=id, **kwargs))
+    def get(self, **kwargs: Any) -> ProjectPipelineTestReportSummary:
+        return cast(ProjectPipelineTestReportSummary, super().get(**kwargs))

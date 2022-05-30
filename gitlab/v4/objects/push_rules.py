@@ -1,4 +1,4 @@
-from typing import Any, cast, Optional, Union
+from typing import Any, cast
 
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
@@ -52,7 +52,5 @@ class ProjectPushRulesManager(
         ),
     )
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> ProjectPushRules:
-        return cast(ProjectPushRules, super().get(id=id, **kwargs))
+    def get(self, **kwargs: Any) -> ProjectPushRules:
+        return cast(ProjectPushRules, super().get(**kwargs))

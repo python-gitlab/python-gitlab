@@ -1,4 +1,4 @@
-from typing import Any, cast, Optional, Union
+from typing import Any, cast
 
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
@@ -39,10 +39,8 @@ class NotificationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         ),
     )
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> NotificationSettings:
-        return cast(NotificationSettings, super().get(id=id, **kwargs))
+    def get(self, **kwargs: Any) -> NotificationSettings:
+        return cast(NotificationSettings, super().get(**kwargs))
 
 
 class GroupNotificationSettings(NotificationSettings):
@@ -54,9 +52,7 @@ class GroupNotificationSettingsManager(NotificationSettingsManager):
     _obj_cls = GroupNotificationSettings
     _from_parent_attrs = {"group_id": "id"}
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> GroupNotificationSettings:
+    def get(self, **kwargs: Any) -> GroupNotificationSettings:
         return cast(GroupNotificationSettings, super().get(id=id, **kwargs))
 
 
@@ -69,7 +65,5 @@ class ProjectNotificationSettingsManager(NotificationSettingsManager):
     _obj_cls = ProjectNotificationSettings
     _from_parent_attrs = {"project_id": "id"}
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> ProjectNotificationSettings:
+    def get(self, **kwargs: Any) -> ProjectNotificationSettings:
         return cast(ProjectNotificationSettings, super().get(id=id, **kwargs))

@@ -70,13 +70,11 @@ from typing import Any, cast, Union"
 """
 
 GET_WITHOUT_ID_METHOD_TEMPLATE = """
-def get(
-    self, id: Optional[Union[int, str]] = None, **kwargs: Any
-) -> {obj_cls.__name__}:
-    return cast({obj_cls.__name__}, super().get(id=id, **kwargs))
+def get(self, **kwargs: Any) -> {obj_cls.__name__}:
+    return cast({obj_cls.__name__}, super().get(**kwargs))
 
 You may also need to add the following imports:
-from typing import Any, cast, Optional, Union"
+from typing import Any, cast"
 """
 
 

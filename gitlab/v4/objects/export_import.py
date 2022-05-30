@@ -1,4 +1,4 @@
-from typing import Any, cast, Optional, Union
+from typing import Any, cast
 
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, DownloadMixin, GetWithoutIdMixin, RefreshMixin
@@ -25,8 +25,8 @@ class GroupExportManager(GetWithoutIdMixin, CreateMixin, RESTManager):
     _obj_cls = GroupExport
     _from_parent_attrs = {"group_id": "id"}
 
-    def get(self, id: Optional[Union[int, str]] = None, **kwargs: Any) -> GroupExport:
-        return cast(GroupExport, super().get(id=id, **kwargs))
+    def get(self, **kwargs: Any) -> GroupExport:
+        return cast(GroupExport, super().get(**kwargs))
 
 
 class GroupImport(RESTObject):
@@ -38,8 +38,8 @@ class GroupImportManager(GetWithoutIdMixin, RESTManager):
     _obj_cls = GroupImport
     _from_parent_attrs = {"group_id": "id"}
 
-    def get(self, id: Optional[Union[int, str]] = None, **kwargs: Any) -> GroupImport:
-        return cast(GroupImport, super().get(id=id, **kwargs))
+    def get(self, **kwargs: Any) -> GroupImport:
+        return cast(GroupImport, super().get(**kwargs))
 
 
 class ProjectExport(DownloadMixin, RefreshMixin, RESTObject):
@@ -52,8 +52,8 @@ class ProjectExportManager(GetWithoutIdMixin, CreateMixin, RESTManager):
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(optional=("description",))
 
-    def get(self, id: Optional[Union[int, str]] = None, **kwargs: Any) -> ProjectExport:
-        return cast(ProjectExport, super().get(id=id, **kwargs))
+    def get(self, **kwargs: Any) -> ProjectExport:
+        return cast(ProjectExport, super().get(**kwargs))
 
 
 class ProjectImport(RefreshMixin, RESTObject):
@@ -65,5 +65,5 @@ class ProjectImportManager(GetWithoutIdMixin, RESTManager):
     _obj_cls = ProjectImport
     _from_parent_attrs = {"project_id": "id"}
 
-    def get(self, id: Optional[Union[int, str]] = None, **kwargs: Any) -> ProjectImport:
-        return cast(ProjectImport, super().get(id=id, **kwargs))
+    def get(self, **kwargs: Any) -> ProjectImport:
+        return cast(ProjectImport, super().get(**kwargs))
