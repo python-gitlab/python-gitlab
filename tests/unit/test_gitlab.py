@@ -91,7 +91,7 @@ def test_gitlab_init_with_valid_api_version():
 
 
 def test_gitlab_init_with_invalid_api_version():
-    with pytest.raises(ModuleNotFoundError):
+    with pytest.raises(ModuleNotFoundError, match="gitlab.v1.objects"):
         gitlab.Gitlab(api_version="1")
 
 

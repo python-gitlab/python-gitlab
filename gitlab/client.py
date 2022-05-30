@@ -116,7 +116,7 @@ class Gitlab:
 
         # We only support v4 API at this time
         if self._api_version not in ("4",):
-            raise ModuleNotFoundError(name=f"gitlab.v{self._api_version}.objects")
+            raise ModuleNotFoundError(f"gitlab.v{self._api_version}.objects")
         # NOTE: We must delay import of gitlab.v4.objects until now or
         # otherwise it will cause circular import errors
         import gitlab.v4.objects
@@ -209,7 +209,7 @@ class Gitlab:
         # We only support v4 API at this time
         if self._api_version not in ("4",):
             raise ModuleNotFoundError(
-                name=f"gitlab.v{self._api_version}.objects"
+                f"gitlab.v{self._api_version}.objects"
             )  # pragma: no cover, dead code currently
         # NOTE: We must delay import of gitlab.v4.objects until now or
         # otherwise it will cause circular import errors
