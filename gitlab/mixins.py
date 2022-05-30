@@ -126,7 +126,7 @@ class GetWithoutIdMixin(_RestManagerBase):
     @exc.on_http_error(exc.GitlabGetError)
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[base.RESTObject]:
+    ) -> base.RESTObject:
         """Retrieve a single object.
 
         Args:

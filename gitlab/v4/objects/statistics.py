@@ -26,8 +26,8 @@ class ProjectAdditionalStatisticsManager(GetWithoutIdMixin, RESTManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[ProjectAdditionalStatistics]:
-        return cast(Optional[ProjectAdditionalStatistics], super().get(id=id, **kwargs))
+    ) -> ProjectAdditionalStatistics:
+        return cast(ProjectAdditionalStatistics, super().get(id=id, **kwargs))
 
 
 class IssuesStatistics(RefreshMixin, RESTObject):
@@ -40,8 +40,8 @@ class IssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[IssuesStatistics]:
-        return cast(Optional[IssuesStatistics], super().get(id=id, **kwargs))
+    ) -> IssuesStatistics:
+        return cast(IssuesStatistics, super().get(id=id, **kwargs))
 
 
 class GroupIssuesStatistics(RefreshMixin, RESTObject):
@@ -55,8 +55,8 @@ class GroupIssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[GroupIssuesStatistics]:
-        return cast(Optional[GroupIssuesStatistics], super().get(id=id, **kwargs))
+    ) -> GroupIssuesStatistics:
+        return cast(GroupIssuesStatistics, super().get(id=id, **kwargs))
 
 
 class ProjectIssuesStatistics(RefreshMixin, RESTObject):
@@ -70,5 +70,5 @@ class ProjectIssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[ProjectIssuesStatistics]:
-        return cast(Optional[ProjectIssuesStatistics], super().get(id=id, **kwargs))
+    ) -> ProjectIssuesStatistics:
+        return cast(ProjectIssuesStatistics, super().get(id=id, **kwargs))

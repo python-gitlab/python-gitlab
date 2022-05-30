@@ -40,8 +40,8 @@ class NotificationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[NotificationSettings]:
-        return cast(Optional[NotificationSettings], super().get(id=id, **kwargs))
+    ) -> NotificationSettings:
+        return cast(NotificationSettings, super().get(id=id, **kwargs))
 
 
 class GroupNotificationSettings(NotificationSettings):
@@ -55,8 +55,8 @@ class GroupNotificationSettingsManager(NotificationSettingsManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[GroupNotificationSettings]:
-        return cast(Optional[GroupNotificationSettings], super().get(id=id, **kwargs))
+    ) -> GroupNotificationSettings:
+        return cast(GroupNotificationSettings, super().get(id=id, **kwargs))
 
 
 class ProjectNotificationSettings(NotificationSettings):
@@ -70,5 +70,5 @@ class ProjectNotificationSettingsManager(NotificationSettingsManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[ProjectNotificationSettings]:
-        return cast(Optional[ProjectNotificationSettings], super().get(id=id, **kwargs))
+    ) -> ProjectNotificationSettings:
+        return cast(ProjectNotificationSettings, super().get(id=id, **kwargs))

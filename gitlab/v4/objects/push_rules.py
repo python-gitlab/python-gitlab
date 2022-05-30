@@ -53,5 +53,5 @@ class ProjectPushRulesManager(
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[ProjectPushRules]:
-        return cast(Optional[ProjectPushRules], super().get(id=id, **kwargs))
+    ) -> ProjectPushRules:
+        return cast(ProjectPushRules, super().get(id=id, **kwargs))
