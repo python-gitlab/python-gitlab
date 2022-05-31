@@ -46,7 +46,8 @@ def project_export(project):
     return export
 
 
-def test_project_export_download(gitlab_config, project_export):
+def test_project_export_download_custom_action(gitlab_config, project_export):
+    """Tests custom action on ProjectManager"""
     cmd = [
         "gitlab",
         "--config-file",
@@ -59,3 +60,10 @@ def test_project_export_download(gitlab_config, project_export):
 
     export = subprocess.run(cmd, capture_output=True, check=True)
     assert export.returncode == 0
+
+
+def test_project_languages_custom_action(gitlab_cli, project, project_file):
+    """Tests custom action on Project/RESTObject"""
+    cmd = ["project", "languages", "--id", project.id]
+    ret = gitlab_cli(cmd)
+    assert ret.success
