@@ -48,16 +48,18 @@ class TestEncodedId:
         assert "Hello" == obj
         assert "Hello" == str(obj)
         assert "Hello" == f"{obj}"
+        assert isinstance(obj, utils.EncodedId)
 
         obj = utils.EncodedId("this/is a/path")
         assert "this%2Fis%20a%2Fpath" == str(obj)
         assert "this%2Fis%20a%2Fpath" == f"{obj}"
+        assert isinstance(obj, utils.EncodedId)
 
     def test_init_int(self):
         obj = utils.EncodedId(23)
-        assert 23 == obj
-        assert "23" == str(obj)
+        assert "23" == obj
         assert "23" == f"{obj}"
+        assert isinstance(obj, utils.EncodedId)
 
     def test_init_invalid_type_raises(self):
         with pytest.raises(TypeError):
