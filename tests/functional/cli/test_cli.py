@@ -8,6 +8,7 @@ import json
 
 import pytest
 import responses
+import yaml
 
 from gitlab import __version__, config
 from gitlab.const import DEFAULT_URL
@@ -135,11 +136,36 @@ def test_invalid_auth_config(script_runner, monkeypatch, fixture_dir):
     assert "401" in ret.stderr
 
 
-def test_fields(gitlab_cli, project_file):
-    cmd = "-o", "json", "--fields", "default_branch", "project", "list"
+format_matrix = [
+    ("json", json.loads),
+    ("yaml", yaml.safe_load),
+]
+
+
+@pytest.mark.parametrize("format,loader", format_matrix)
+def test_cli_display(gitlab_cli, project, format, loader):
+    cmd = ["-o", format, "project", "get", "--id", project.id]
 
     ret = gitlab_cli(cmd)
     assert ret.success
 
-    content = json.loads(ret.stdout.strip())
+    content = loader(ret.stdout.strip())
+    assert content["id"] == project.id
+
+
+@pytest.mark.parametrize("format,loader", format_matrix)
+def test_cli_fields_in_list(gitlab_cli, project_file, format, loader):
+    cmd = [
+        "-o",
+        format,
+        "--fields",
+        "default_branch",
+        "project",
+        "list",
+    ]
+
+    ret = gitlab_cli(cmd)
+    assert ret.success
+
+    content = loader(ret.stdout.strip())
     assert ["default_branch" in item for item in content]
