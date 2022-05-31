@@ -125,7 +125,7 @@ class GitlabCLI:
                 assert data is not None
             sys.stdout.buffer.write(data)
 
-        except Exception as e:
+        except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to download the export", e)
 
     def do_create(self) -> gitlab.base.RESTObject:
@@ -133,7 +133,7 @@ class GitlabCLI:
             assert isinstance(self.mgr, gitlab.mixins.CreateMixin)
         try:
             result = self.mgr.create(self.args)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to create object", e)
         return result
 
@@ -144,7 +144,7 @@ class GitlabCLI:
             assert isinstance(self.mgr, gitlab.mixins.ListMixin)
         try:
             result = self.mgr.list(**self.args)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to list objects", e)
         return result
 
@@ -152,7 +152,7 @@ class GitlabCLI:
         if isinstance(self.mgr, gitlab.mixins.GetWithoutIdMixin):
             try:
                 result = self.mgr.get(id=None, **self.args)
-            except Exception as e:
+            except Exception as e:  # pragma: no cover, cli.die is unit-tested
                 cli.die("Impossible to get object", e)
             return result
 
@@ -163,7 +163,7 @@ class GitlabCLI:
         id = self.args.pop(self.cls._id_attr)
         try:
             result = self.mgr.get(id, lazy=False, **self.args)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to get object", e)
         return result
 
@@ -174,7 +174,7 @@ class GitlabCLI:
         id = self.args.pop(self.cls._id_attr)
         try:
             self.mgr.delete(id, **self.args)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to destroy object", e)
 
     def do_update(self) -> Dict[str, Any]:
@@ -189,7 +189,7 @@ class GitlabCLI:
 
         try:
             result = self.mgr.update(id, self.args)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to update object", e)
         return result
 
