@@ -113,16 +113,14 @@ class EncodedId(str):
         https://docs.gitlab.com/ee/api/index.html#path-parameters
     """
 
-    # mypy complains if return type other than the class type. So we ignore issue.
-    def __new__(  # type: ignore
-        cls, value: Union[str, int, "EncodedId"]
-    ) -> Union[int, "EncodedId"]:
-        if isinstance(value, (int, EncodedId)):
+    def __new__(cls, value: Union[str, int, "EncodedId"]) -> "EncodedId":
+        if isinstance(value, EncodedId):
             return value
 
-        if not isinstance(value, str):
+        if not isinstance(value, (int, str)):
             raise TypeError(f"Unsupported type received: {type(value)}")
-        value = urllib.parse.quote(value, safe="")
+        if isinstance(value, str):
+            value = urllib.parse.quote(value, safe="")
         return super().__new__(cls, value)
 
 
