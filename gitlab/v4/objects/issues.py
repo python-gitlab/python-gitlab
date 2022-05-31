@@ -2,7 +2,7 @@ from typing import Any, cast, Dict, Tuple, TYPE_CHECKING, Union
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab import types
+from gitlab import types, utils
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
@@ -272,7 +272,7 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server cannot perform the request
         """
-        self._check_missing_create_attrs(data)
+        utils._validate_attrs(data=data, attributes=self._create_attrs)
         if TYPE_CHECKING:
             assert self.path is not None
         server_data = self.gitlab.http_post(self.path, post_data=data, **kwargs)

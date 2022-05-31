@@ -23,6 +23,7 @@ from typing import Any, Optional, Tuple, TYPE_CHECKING
 class RequiredOptional:
     required: Tuple[str, ...] = ()
     optional: Tuple[str, ...] = ()
+    exclusive: Tuple[str, ...] = ()
 
 
 class GitlabAttribute:
