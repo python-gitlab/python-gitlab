@@ -1,8 +1,9 @@
 from typing import Any, cast, Union
 
 from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
+from gitlab.types import RequiredOptional
 
 __all__ = [
     "Topic",

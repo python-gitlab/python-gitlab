@@ -2,6 +2,7 @@ import pytest
 import responses
 
 from gitlab import base
+from gitlab import types as gl_types
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -166,7 +167,7 @@ def test_list_other_url(gl):
 
 def test_create_mixin_missing_attrs(gl):
     class M(CreateMixin, FakeManager):
-        _create_attrs = base.RequiredOptional(
+        _create_attrs = gl_types.RequiredOptional(
             required=("foo",), optional=("bar", "baz")
         )
 
@@ -183,10 +184,10 @@ def test_create_mixin_missing_attrs(gl):
 @responses.activate
 def test_create_mixin(gl):
     class M(CreateMixin, FakeManager):
-        _create_attrs = base.RequiredOptional(
+        _create_attrs = gl_types.RequiredOptional(
             required=("foo",), optional=("bar", "baz")
         )
-        _update_attrs = base.RequiredOptional(required=("foo",), optional=("bam",))
+        _update_attrs = gl_types.RequiredOptional(required=("foo",), optional=("bam",))
 
     url = "http://localhost/api/v4/tests"
     responses.add(
@@ -208,10 +209,10 @@ def test_create_mixin(gl):
 @responses.activate
 def test_create_mixin_custom_path(gl):
     class M(CreateMixin, FakeManager):
-        _create_attrs = base.RequiredOptional(
+        _create_attrs = gl_types.RequiredOptional(
             required=("foo",), optional=("bar", "baz")
         )
-        _update_attrs = base.RequiredOptional(required=("foo",), optional=("bam",))
+        _update_attrs = gl_types.RequiredOptional(required=("foo",), optional=("bam",))
 
     url = "http://localhost/api/v4/others"
     responses.add(
@@ -232,7 +233,7 @@ def test_create_mixin_custom_path(gl):
 
 def test_update_mixin_missing_attrs(gl):
     class M(UpdateMixin, FakeManager):
-        _update_attrs = base.RequiredOptional(
+        _update_attrs = gl_types.RequiredOptional(
             required=("foo",), optional=("bar", "baz")
         )
 
@@ -249,10 +250,10 @@ def test_update_mixin_missing_attrs(gl):
 @responses.activate
 def test_update_mixin(gl):
     class M(UpdateMixin, FakeManager):
-        _create_attrs = base.RequiredOptional(
+        _create_attrs = gl_types.RequiredOptional(
             required=("foo",), optional=("bar", "baz")
         )
-        _update_attrs = base.RequiredOptional(required=("foo",), optional=("bam",))
+        _update_attrs = gl_types.RequiredOptional(required=("foo",), optional=("bam",))
 
     url = "http://localhost/api/v4/tests/42"
     responses.add(
@@ -293,10 +294,10 @@ def test_update_mixin_uses_post(gl):
 @responses.activate
 def test_update_mixin_no_id(gl):
     class M(UpdateMixin, FakeManager):
-        _create_attrs = base.RequiredOptional(
+        _create_attrs = gl_types.RequiredOptional(
             required=("foo",), optional=("bar", "baz")
         )
-        _update_attrs = base.RequiredOptional(required=("foo",), optional=("bam",))
+        _update_attrs = gl_types.RequiredOptional(required=("foo",), optional=("bam",))
 
     url = "http://localhost/api/v4/tests"
     responses.add(

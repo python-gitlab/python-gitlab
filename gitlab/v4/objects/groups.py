@@ -6,8 +6,9 @@ import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
+from gitlab.types import RequiredOptional
 
 from .access_requests import GroupAccessRequestManager  # noqa: F401
 from .audit_events import GroupAuditEventManager  # noqa: F401
