@@ -15,7 +15,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Any, Optional, TYPE_CHECKING
+import dataclasses
+from typing import Any, Optional, Tuple, TYPE_CHECKING
+
+
+@dataclasses.dataclass(frozen=True)
+class RequiredOptional:
+    required: Tuple[str, ...] = ()
+    optional: Tuple[str, ...] = ()
 
 
 class GitlabAttribute:

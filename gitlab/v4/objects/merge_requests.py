@@ -11,7 +11,7 @@ import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
+from gitlab.base import RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import (
     CRUDMixin,
     ListMixin,
@@ -23,6 +23,7 @@ from gitlab.mixins import (
     TimeTrackingMixin,
     TodoMixin,
 )
+from gitlab.types import RequiredOptional
 
 from .award_emojis import ProjectMergeRequestAwardEmojiManager  # noqa: F401
 from .commits import ProjectCommit, ProjectCommitManager

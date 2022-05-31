@@ -1,5 +1,6 @@
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, DeleteMixin, ListMixin, ObjectDeleteMixin
+from gitlab.types import RequiredOptional
 
 __all__ = [
     "PersonalAccessToken",

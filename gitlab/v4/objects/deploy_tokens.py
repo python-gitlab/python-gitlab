@@ -1,7 +1,7 @@
 from typing import Any, cast, Union
 
 from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -9,6 +9,7 @@ from gitlab.mixins import (
     ObjectDeleteMixin,
     RetrieveMixin,
 )
+from gitlab.types import RequiredOptional
 
 __all__ = [
     "DeployToken",

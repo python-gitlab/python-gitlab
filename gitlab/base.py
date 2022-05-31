@@ -18,9 +18,8 @@
 import importlib
 import pprint
 import textwrap
-from dataclasses import dataclass
 from types import ModuleType
-from typing import Any, Dict, Iterable, Optional, Tuple, Type, Union
+from typing import Any, Dict, Iterable, Optional, Type, Union
 
 import gitlab
 from gitlab import types as g_types
@@ -29,7 +28,6 @@ from gitlab.exceptions import GitlabParsingError
 from .client import Gitlab, GitlabList
 
 __all__ = [
-    "RequiredOptional",
     "RESTObject",
     "RESTObjectList",
     "RESTManager",
@@ -330,12 +328,6 @@ class RESTObjectList:
         return self._list.total
 
 
-@dataclass(frozen=True)
-class RequiredOptional:
-    required: Tuple[str, ...] = ()
-    optional: Tuple[str, ...] = ()
-
-
 class RESTManager:
     """Base class for CRUD operations on objects.
 
@@ -345,8 +337,8 @@ class RESTManager:
     ``_obj_cls``: The class of objects that will be created
     """
 
-    _create_attrs: RequiredOptional = RequiredOptional()
-    _update_attrs: RequiredOptional = RequiredOptional()
+    _create_attrs: g_types.RequiredOptional = g_types.RequiredOptional()
+    _update_attrs: g_types.RequiredOptional = g_types.RequiredOptional()
     _path: Optional[str] = None
     _obj_cls: Optional[Type[RESTObject]] = None
     _from_parent_attrs: Dict[str, Any] = {}

@@ -3,7 +3,7 @@ from typing import Any, cast, Dict, Tuple, TYPE_CHECKING, Union
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -18,6 +18,7 @@ from gitlab.mixins import (
     TodoMixin,
     UserAgentDetailMixin,
 )
+from gitlab.types import RequiredOptional
 
 from .award_emojis import ProjectIssueAwardEmojiManager  # noqa: F401
 from .discussions import ProjectIssueDiscussionManager  # noqa: F401
