@@ -24,7 +24,9 @@ class GroupBoardListManager(CRUDMixin, RESTManager):
     _path = "/groups/{group_id}/boards/{board_id}/lists"
     _obj_cls = GroupBoardList
     _from_parent_attrs = {"group_id": "group_id", "board_id": "id"}
-    _create_attrs = RequiredOptional(required=("label_id",))
+    _create_attrs = RequiredOptional(
+        exclusive=("label_id", "assignee_id", "milestone_id")
+    )
     _update_attrs = RequiredOptional(required=("position",))
 
     def get(
@@ -55,7 +57,9 @@ class ProjectBoardListManager(CRUDMixin, RESTManager):
     _path = "/projects/{project_id}/boards/{board_id}/lists"
     _obj_cls = ProjectBoardList
     _from_parent_attrs = {"project_id": "project_id", "board_id": "id"}
-    _create_attrs = RequiredOptional(required=("label_id",))
+    _create_attrs = RequiredOptional(
+        exclusive=("label_id", "assignee_id", "milestone_id")
+    )
     _update_attrs = RequiredOptional(required=("position",))
 
     def get(

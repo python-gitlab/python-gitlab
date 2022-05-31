@@ -3,6 +3,7 @@ import responses
 
 from gitlab import base
 from gitlab import types as gl_types
+from gitlab import utils
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -173,11 +174,11 @@ def test_create_mixin_missing_attrs(gl):
 
     mgr = M(gl)
     data = {"foo": "bar", "baz": "blah"}
-    mgr._check_missing_create_attrs(data)
+    utils._validate_attrs(data=data, attributes=mgr._create_attrs)
 
     data = {"baz": "blah"}
     with pytest.raises(AttributeError) as error:
-        mgr._check_missing_create_attrs(data)
+        utils._validate_attrs(data=data, attributes=mgr._create_attrs)
     assert "foo" in str(error.value)
 
 
@@ -239,11 +240,11 @@ def test_update_mixin_missing_attrs(gl):
 
     mgr = M(gl)
     data = {"foo": "bar", "baz": "blah"}
-    mgr._check_missing_update_attrs(data)
+    utils._validate_attrs(data=data, attributes=mgr._update_attrs)
 
     data = {"baz": "blah"}
     with pytest.raises(AttributeError) as error:
-        mgr._check_missing_update_attrs(data)
+        utils._validate_attrs(data=data, attributes=mgr._update_attrs)
     assert "foo" in str(error.value)
 
 

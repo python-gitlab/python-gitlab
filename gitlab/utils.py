@@ -19,7 +19,7 @@ import pathlib
 import traceback
 import urllib.parse
 import warnings
-from typing import Any, Callable, Dict, Optional, Tuple, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
 import requests
 
@@ -161,3 +161,30 @@ def warn(
         stacklevel=stacklevel,
         source=source,
     )
+
+
+def _validate_attrs(
+    data: Dict[str, Any],
+    attributes: types.RequiredOptional,
+    excludes: Optional[List[str]] = None,
+) -> None:
+    if excludes is None:
+        excludes = []
+
+    if attributes.required:
+        required = [k for k in attributes.required if k not in excludes]
+        missing = [attr for attr in required if attr not in data]
+        if missing:
+            raise AttributeError(f"Missing attributes: {', '.join(missing)}")
+
+    if attributes.exclusive:
+        exclusives = [attr for attr in data if attr in attributes.exclusive]
+        if len(exclusives) > 1:
+            raise AttributeError(
+                f"Provide only one of these attributes: {', '.join(exclusives)}"
+            )
+        if not exclusives:
+            raise AttributeError(
+                "Must provide one of these attributes: %(attrs)s"
+                % {"attrs": ", ".join(attributes.exclusive)}
+            )

@@ -256,15 +256,6 @@ class CreateMixin(_RestManagerBase):
     _path: Optional[str]
     gitlab: gitlab.Gitlab
 
-    def _check_missing_create_attrs(self, data: Dict[str, Any]) -> None:
-        missing = []
-        for attr in self._create_attrs.required:
-            if attr not in data:
-                missing.append(attr)
-                continue
-        if missing:
-            raise AttributeError(f"Missing attributes: {', '.join(missing)}")
-
     @exc.on_http_error(exc.GitlabCreateError)
     def create(
         self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
@@ -287,7 +278,7 @@ class CreateMixin(_RestManagerBase):
         if data is None:
             data = {}
 
-        self._check_missing_create_attrs(data)
+        utils._validate_attrs(data=data, attributes=self._create_attrs)
         data, files = utils._transform_types(data, self._types)
 
         # Handle specific URL for creation
@@ -308,22 +299,6 @@ class UpdateMixin(_RestManagerBase):
     _path: Optional[str]
     _update_uses_post: bool = False
     gitlab: gitlab.Gitlab
-
-    def _check_missing_update_attrs(self, data: Dict[str, Any]) -> None:
-        if TYPE_CHECKING:
-            assert self._obj_cls is not None
-        # Remove the id field from the required list as it was previously moved
-        # to the http path.
-        required = tuple(
-            [k for k in self._update_attrs.required if k != self._obj_cls._id_attr]
-        )
-        missing = []
-        for attr in required:
-            if attr not in data:
-                missing.append(attr)
-                continue
-        if missing:
-            raise AttributeError(f"Missing attributes: {', '.join(missing)}")
 
     def _get_update_method(
         self,
@@ -367,7 +342,12 @@ class UpdateMixin(_RestManagerBase):
         else:
             path = f"{self.path}/{utils.EncodedId(id)}"
 
-        self._check_missing_update_attrs(new_data)
+        excludes = []
+        if self._obj_cls is not None and self._obj_cls._id_attr is not None:
+            excludes = [self._obj_cls._id_attr]
+        utils._validate_attrs(
+            data=new_data, attributes=self._update_attrs, excludes=excludes
+        )
         new_data, files = utils._transform_types(new_data, self._types)
 
         http_method = self._get_update_method()
