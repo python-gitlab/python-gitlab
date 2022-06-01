@@ -1,7 +1,7 @@
 from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
 
 from gitlab import exceptions as exc
-from gitlab import types, utils
+from gitlab import types
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
@@ -107,7 +107,7 @@ class GroupEpicIssueManager(
         """
         if TYPE_CHECKING:
             assert data is not None
-        utils._validate_attrs(data=data, attributes=self._create_attrs)
+        self._create_attrs.validate_attrs(data=data)
         path = f"{self.path}/{data.pop('issue_id')}"
         server_data = self.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
