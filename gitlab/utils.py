@@ -183,6 +183,6 @@ def _validate_attrs(
             )
         if not exclusives:
             raise AttributeError(
-                "Must provide one of these attributes: %(attrs)s"
-                % {"attrs": ", ".join(attributes.exclusive)}
+                f"Must provide one of these attributes: "
+                f"{', '.join(attributes.exclusive)}"
             )
