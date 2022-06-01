@@ -17,8 +17,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import copy
+import logging
 import pickle
 import warnings
+from http.client import HTTPConnection
 
 import pytest
 import responses
@@ -100,6 +102,14 @@ def test_gitlab_as_context_manager():
         assert isinstance(gl, gitlab.Gitlab)
 
 
+def test_gitlab_enable_debug(gl):
+    gl.enable_debug()
+
+    logger = logging.getLogger("requests.packages.urllib3")
+    assert logger.level == logging.DEBUG
+    assert HTTPConnection.debuglevel == 1
+
+
 @responses.activate
 @pytest.mark.parametrize(
     "status_code,response_json,expected",
@@ -141,6 +151,20 @@ def test_gitlab_get_license(gl, response_json, expected):
 
     gitlab_license = gl.get_license()
     assert gitlab_license == expected
+
+
+@responses.activate
+def test_gitlab_set_license(gl):
+    responses.add(
+        method=responses.POST,
+        url="http://localhost/api/v4/license",
+        json={"id": 1, "plan": "premium"},
+        status=201,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+    )
+
+    gitlab_license = gl.set_license("yJkYXRhIjoiMHM5Q")
+    assert gitlab_license["plan"] == "premium"
 
 
 @responses.activate

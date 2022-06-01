@@ -35,6 +35,11 @@ def test_markdown(gl):
     assert "foo" in html
 
 
+def test_markdown_in_project(gl, project):
+    html = gl.markdown("foo", project=project.path_with_namespace)
+    assert "foo" in html
+
+
 def test_lint(gl):
     success, errors = gl.lint("Invalid")
     assert success is False
@@ -125,6 +130,11 @@ def test_notification_settings(gl):
 
     settings = gl.notificationsettings.get()
     assert settings.level == gitlab.const.NOTIFICATION_LEVEL_WATCH
+
+
+def test_search(gl):
+    result = gl.search(scope=gitlab.const.SEARCH_SCOPE_USERS, search="Administrator")
+    assert result[0]["id"] == 1
 
 
 def test_user_activities(gl):
@@ -237,3 +247,8 @@ def test_list_as_list_false_warnings(gl):
     for warning in caught_warnings:
         assert isinstance(warning.message, DeprecationWarning)
     assert len(list(items)) > 20
+
+
+def test_list_with_as_list_and_iterator_raises(gl):
+    with pytest.raises(ValueError, match="`as_list` or `iterator`"):
+        gl.gitlabciymls.list(as_list=False, iterator=True)
