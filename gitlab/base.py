@@ -73,9 +73,9 @@ class RESTObject:
     ) -> None:
         if not isinstance(attrs, dict):
             raise GitlabParsingError(
-                "Attempted to initialize RESTObject with a non-dictionary value: "
-                "{!r}\nThis likely indicates an incorrect or malformed server "
-                "response.".format(attrs)
+                f"Attempted to initialize RESTObject with a non-dictionary value: "
+                f"{attrs!r}\nThis likely indicates an incorrect or malformed server "
+                f"response."
             )
         self.__dict__.update(
             {

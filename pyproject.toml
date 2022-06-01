@@ -51,7 +51,6 @@ disable = [
     "arguments-renamed",
     "attribute-defined-outside-init",
     "broad-except",
-    "consider-using-f-string",
     "consider-using-generator",
     "consider-using-sys-exit",
     "cyclic-import",
