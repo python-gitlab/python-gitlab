@@ -15,7 +15,56 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import pytest
+
 from gitlab import types
+
+
+class TestRequiredOptional:
+    def test_requiredoptional_empty(self):
+        b = types.RequiredOptional()
+        assert not b.required
+        assert not b.optional
+        assert not b.exclusive
+
+    def test_requiredoptional_values_no_keywords(self):
+        b = types.RequiredOptional(
+            ("required1", "required2"),
+            ("optional1", "optional2"),
+            ("exclusive1", "exclusive2"),
+        )
+        assert b.required == ("required1", "required2")
+        assert b.optional == ("optional1", "optional2")
+        assert b.exclusive == ("exclusive1", "exclusive2")
+
+    def test_requiredoptional_values_keywords(self):
+        b = types.RequiredOptional(
+            exclusive=("exclusive1", "exclusive2"),
+            optional=("optional1", "optional2"),
+            required=("required1", "required2"),
+        )
+        assert b.required == ("required1", "required2")
+        assert b.optional == ("optional1", "optional2")
+        assert b.exclusive == ("exclusive1", "exclusive2")
+
+    def test_validate_attrs_required(self):
+        data = {"required1": 1, "optional2": 2}
+        rq = types.RequiredOptional(required=("required1",))
+        rq.validate_attrs(data=data)
+        data = {"optional1": 1, "optional2": 2}
+        with pytest.raises(AttributeError, match="Missing attributes: required1"):
+            rq.validate_attrs(data=data)
+
+    def test_validate_attrs_exclusive(self):
+        data = {"exclusive1": 1, "optional1": 1}
+        rq = types.RequiredOptional(exclusive=("exclusive1", "exclusive2"))
+        rq.validate_attrs(data=data)
+        data = {"exclusive1": 1, "exclusive2": 2, "optional1": 1}
+        with pytest.raises(
+            AttributeError,
+            match="Provide only one of these attributes: exclusive1, exclusive2",
+        ):
+            rq.validate_attrs(data=data)
 
 
 def test_gitlab_attribute_get():
