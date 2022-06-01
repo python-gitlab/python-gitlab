@@ -278,7 +278,7 @@ class CreateMixin(_RestManagerBase):
         if data is None:
             data = {}
 
-        utils._validate_attrs(data=data, attributes=self._create_attrs)
+        self._create_attrs.validate_attrs(data=data)
         data, files = utils._transform_types(data, self._types)
 
         # Handle specific URL for creation
@@ -345,9 +345,7 @@ class UpdateMixin(_RestManagerBase):
         excludes = []
         if self._obj_cls is not None and self._obj_cls._id_attr is not None:
             excludes = [self._obj_cls._id_attr]
-        utils._validate_attrs(
-            data=new_data, attributes=self._update_attrs, excludes=excludes
-        )
+        self._update_attrs.validate_attrs(data=new_data, excludes=excludes)
         new_data, files = utils._transform_types(new_data, self._types)
 
         http_method = self._get_update_method()

@@ -145,7 +145,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
 
         if TYPE_CHECKING:
             assert data is not None
-        utils._validate_attrs(data=data, attributes=self._create_attrs)
+        self._create_attrs.validate_attrs(data=data)
         new_data = data.copy()
         file_path = utils.EncodedId(new_data.pop("file_path"))
         path = f"{self.path}/{file_path}"
@@ -179,7 +179,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         file_path = utils.EncodedId(file_path)
         data["file_path"] = file_path
         path = f"{self.path}/{file_path}"
-        utils._validate_attrs(data=data, attributes=self._update_attrs)
+        self._update_attrs.validate_attrs(data=data)
         result = self.gitlab.http_put(path, post_data=data, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(result, dict)
