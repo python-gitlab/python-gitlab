@@ -61,7 +61,6 @@ disable = [
     "no-else-return",
     "no-self-use",
     "protected-access",
-    "raise-missing-from",
     "redefined-builtin",
     "redefined-outer-name",
     "signature-differs",
