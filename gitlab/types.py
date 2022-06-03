@@ -103,10 +103,12 @@ class LowercaseStringAttribute(GitlabAttribute):
 
 
 class FileAttribute(GitlabAttribute):
-    def get_file_name(self, attr_name: Optional[str] = None) -> Optional[str]:
+    @staticmethod
+    def get_file_name(attr_name: Optional[str] = None) -> Optional[str]:
         return attr_name
 
 
 class ImageAttribute(FileAttribute):
-    def get_file_name(self, attr_name: Optional[str] = None) -> str:
+    @staticmethod
+    def get_file_name(attr_name: Optional[str] = None) -> str:
         return f"{attr_name}.png" if attr_name else "image.png"
