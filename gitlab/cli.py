@@ -263,7 +263,7 @@ def _parse_value(v: Any) -> Any:
         # If the user-provided value starts with @, we try to read the file
         # path provided after @ as the real value. Exit on any error.
         try:
-            with open(v[1:]) as f:
+            with open(v[1:], encoding="utf-8") as f:
                 return f.read()
         except Exception as e:
             sys.stderr.write(f"{e}\n")

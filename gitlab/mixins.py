@@ -244,8 +244,6 @@ class RetrieveMixin(ListMixin, GetMixin):
     _path: Optional[str]
     gitlab: gitlab.Gitlab
 
-    pass
-
 
 class CreateMixin(_RestManagerBase):
     _computed_path: Optional[str]
@@ -429,8 +427,6 @@ class CRUDMixin(GetMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin):
     _path: Optional[str]
     gitlab: gitlab.Gitlab
 
-    pass
-
 
 class NoUpdateMixin(GetMixin, ListMixin, CreateMixin, DeleteMixin):
     _computed_path: Optional[str]
@@ -440,8 +436,6 @@ class NoUpdateMixin(GetMixin, ListMixin, CreateMixin, DeleteMixin):
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
-
-    pass
 
 
 class SaveMixin(_RestObjectBase):

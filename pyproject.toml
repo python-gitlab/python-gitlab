@@ -78,8 +78,6 @@ disable = [
     "too-many-locals",
     "too-many-statements",
     "unexpected-keyword-arg",
-    "unnecessary-pass",
-    "unspecified-encoding",
     "unsubscriptable-object",
     "unused-argument",
     "useless-import-alias",
