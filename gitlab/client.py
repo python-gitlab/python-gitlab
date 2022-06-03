@@ -556,8 +556,7 @@ class Gitlab:
         """
         if path.startswith("http://") or path.startswith("https://"):
             return path
-        else:
-            return f"{self._url}{path}"
+        return f"{self._url}{path}"
 
     def _check_redirects(self, result: requests.Response) -> None:
         # Check the requests history to detect 301/302 redirections.

@@ -231,8 +231,7 @@ class ListMixin(_RestManagerBase):
         obj = self.gitlab.http_list(path, **data)
         if isinstance(obj, list):
             return [self._obj_cls(self, item, created_from_list=True) for item in obj]
-        else:
-            return base.RESTObjectList(self, self._obj_cls, obj)
+        return base.RESTObjectList(self, self._obj_cls, obj)
 
 
 class RetrieveMixin(ListMixin, GetMixin):
