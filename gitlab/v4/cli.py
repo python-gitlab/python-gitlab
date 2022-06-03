@@ -394,7 +394,7 @@ class YAMLPrinter:
 
             print(yaml.safe_dump(d, default_flow_style=False))
         except ImportError:
-            exit(
+            sys.exit(
                 "PyYaml is not installed.\n"
                 "Install it with `pip install PyYaml` "
                 "to use the yaml output feature"
@@ -415,7 +415,7 @@ class YAMLPrinter:
                 )
             )
         except ImportError:
-            exit(
+            sys.exit(
                 "PyYaml is not installed.\n"
                 "Install it with `pip install PyYaml` "
                 "to use the yaml output feature"

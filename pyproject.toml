@@ -52,7 +52,6 @@ disable = [
     "attribute-defined-outside-init",
     "broad-except",
     "consider-using-generator",
-    "consider-using-sys-exit",
     "cyclic-import",
     "duplicate-code",
     "fixme",
