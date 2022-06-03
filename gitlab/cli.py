@@ -252,10 +252,10 @@ def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
 def _get_parser() -> argparse.ArgumentParser:
     # NOTE: We must delay import of gitlab.v4.cli until now or
     # otherwise it will cause circular import errors
-    import gitlab.v4.cli
+    from gitlab.v4 import cli as v4_cli
 
     parser = _get_base_parser()
-    return gitlab.v4.cli.extend_parser(parser)
+    return v4_cli.extend_parser(parser)
 
 
 def _parse_value(v: Any) -> Any:

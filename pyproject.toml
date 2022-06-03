@@ -59,7 +59,6 @@ disable = [
     "missing-module-docstring",
     "protected-access",
     "redefined-builtin",
-    "redefined-outer-name",
     "signature-differs",
     "too-few-public-methods",
     "too-many-ancestors",

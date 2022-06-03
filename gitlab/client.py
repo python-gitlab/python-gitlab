@@ -119,9 +119,8 @@ class Gitlab:
             raise ModuleNotFoundError(f"gitlab.v{self._api_version}.objects")
         # NOTE: We must delay import of gitlab.v4.objects until now or
         # otherwise it will cause circular import errors
-        import gitlab.v4.objects
+        from gitlab.v4 import objects
 
-        objects = gitlab.v4.objects
         self._objects = objects
         self.user: Optional[objects.CurrentUser] = None
 
@@ -214,9 +213,9 @@ class Gitlab:
             )  # pragma: no cover, dead code currently
         # NOTE: We must delay import of gitlab.v4.objects until now or
         # otherwise it will cause circular import errors
-        import gitlab.v4.objects
+        from gitlab.v4 import objects
 
-        self._objects = gitlab.v4.objects
+        self._objects = objects
 
     @property
     def url(self) -> str:
