@@ -123,6 +123,7 @@ class Gitlab:
 
         objects = gitlab.v4.objects
         self._objects = objects
+        self.user: Optional[objects.CurrentUser] = None
 
         self.broadcastmessages = objects.BroadcastMessageManager(self)
         """See :class:`~gitlab.v4.objects.BroadcastMessageManager`"""

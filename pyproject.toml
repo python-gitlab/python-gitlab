@@ -49,7 +49,6 @@ max-line-length = 88
 disable = [
     "arguments-differ",
     "arguments-renamed",
-    "attribute-defined-outside-init",
     "broad-except",
     "cyclic-import",
     "duplicate-code",
