@@ -29,13 +29,13 @@ from gitlab import cli
 
 class GitlabCLI:
     def __init__(
-        self, gl: gitlab.Gitlab, what: str, action: str, args: Dict[str, str]
+        self, gl: gitlab.Gitlab, gitlab_resource: str, action: str, args: Dict[str, str]
     ) -> None:
-        self.cls: Type[gitlab.base.RESTObject] = cli.what_to_cls(
-            what, namespace=gitlab.v4.objects
+        self.cls: Type[gitlab.base.RESTObject] = cli.gitlab_resource_to_cls(
+            gitlab_resource, namespace=gitlab.v4.objects
         )
         self.cls_name = self.cls.__name__
-        self.what = what.replace("-", "_")
+        self.gitlab_resource = gitlab_resource.replace("-", "_")
         self.action = action.lower()
         self.gl = gl
         self.args = args
@@ -81,7 +81,7 @@ class GitlabCLI:
 
     def run(self) -> Any:
         # Check for a method that matches object + action
-        method = f"do_{self.what}_{self.action}"
+        method = f"do_{self.gitlab_resource}_{self.action}"
         if hasattr(self, method):
             return getattr(self, method)()
 
@@ -333,7 +333,7 @@ def _populate_sub_parser_by_class(
 
 def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(
-        title="object", dest="what", help="Object to manipulate."
+        title="object", dest="gitlab_resource", help="Object to manipulate."
     )
     subparsers.required = True
 
@@ -347,7 +347,7 @@ def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
                 classes.add(cls._obj_cls)
 
     for cls in sorted(classes, key=operator.attrgetter("__name__")):
-        arg_name = cli.cls_to_what(cls)
+        arg_name = cli.cls_to_gitlab_resource(cls)
         object_group = subparsers.add_parser(arg_name)
 
         object_subparsers = object_group.add_subparsers(
@@ -497,14 +497,14 @@ PRINTERS: Dict[
 
 def run(
     gl: gitlab.Gitlab,
-    what: str,
+    gitlab_resource: str,
     action: str,
     args: Dict[str, Any],
     verbose: bool,
     output: str,
     fields: List[str],
 ) -> None:
-    g_cli = GitlabCLI(gl=gl, what=what, action=action, args=args)
+    g_cli = GitlabCLI(gl=gl, gitlab_resource=gitlab_resource, action=action, args=args)
     data = g_cli.run()
 
     printer: Union[JSONPrinter, LegacyPrinter, YAMLPrinter] = PRINTERS[output]()

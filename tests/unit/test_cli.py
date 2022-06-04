@@ -29,7 +29,7 @@ from gitlab.exceptions import GitlabError
 
 
 @pytest.mark.parametrize(
-    "what,expected_class",
+    "gitlab_resource,expected_class",
     [
         ("class", "Class"),
         ("test-class", "TestClass"),
@@ -39,18 +39,18 @@ from gitlab.exceptions import GitlabError
         ("ldap-group", "LDAPGroup"),
     ],
 )
-def test_what_to_cls(what, expected_class):
+def test_gitlab_resource_to_cls(gitlab_resource, expected_class):
     def _namespace():
         pass
 
     ExpectedClass = type(expected_class, (), {})
     _namespace.__dict__[expected_class] = ExpectedClass
 
-    assert cli.what_to_cls(what, _namespace) == ExpectedClass
+    assert cli.gitlab_resource_to_cls(gitlab_resource, _namespace) == ExpectedClass
 
 
 @pytest.mark.parametrize(
-    "class_name,expected_what",
+    "class_name,expected_gitlab_resource",
     [
         ("Class", "class"),
         ("TestClass", "test-class"),
@@ -61,10 +61,10 @@ def test_what_to_cls(what, expected_class):
         ("LDAPGroup", "ldap-group"),
     ],
 )
-def test_cls_to_what(class_name, expected_what):
+def test_cls_to_gitlab_resource(class_name, expected_gitlab_resource):
     TestClass = type(class_name, (), {})
 
-    assert cli.cls_to_what(TestClass) == expected_what
+    assert cli.cls_to_gitlab_resource(TestClass) == expected_gitlab_resource
 
 
 @pytest.mark.parametrize(
@@ -125,7 +125,7 @@ def test_base_parser():
 def test_v4_parse_args():
     parser = cli._get_parser()
     args = parser.parse_args(["project", "list"])
-    assert args.what == "project"
+    assert args.gitlab_resource == "project"
     assert args.whaction == "list"
 
 
