@@ -91,14 +91,16 @@ def die(msg: str, e: Optional[Exception] = None) -> None:
     sys.exit(1)
 
 
-def what_to_cls(what: str, namespace: ModuleType) -> Type[RESTObject]:
+def gitlab_resource_to_cls(
+    gitlab_resource: str, namespace: ModuleType
+) -> Type[RESTObject]:
     classes = CaseInsensitiveDict(namespace.__dict__)
-    lowercase_class = what.replace("-", "")
+    lowercase_class = gitlab_resource.replace("-", "")
 
     return classes[lowercase_class]
 
 
-def cls_to_what(cls: RESTObject) -> str:
+def cls_to_gitlab_resource(cls: RESTObject) -> str:
     dasherized_uppercase = camel_upperlower_regex.sub(r"\1-\2", cls.__name__)
     dasherized_lowercase = camel_lowerupper_regex.sub(r"\1-\2", dasherized_uppercase)
     return dasherized_lowercase.lower()
@@ -322,7 +324,7 @@ def main() -> None:
         fields = [x.strip() for x in args.fields.split(",")]
     debug = args.debug
     action = args.whaction
-    what = args.what
+    gitlab_resource = args.gitlab_resource
 
     args_dict = vars(args)
     # Remove CLI behavior-related args
@@ -331,7 +333,7 @@ def main() -> None:
         "config_file",
         "verbose",
         "debug",
-        "what",
+        "gitlab_resource",
         "whaction",
         "version",
         "output",
@@ -359,4 +361,4 @@ def main() -> None:
     if debug:
         gl.enable_debug()
 
-    gitlab.v4.cli.run(gl, what, action, args_dict, verbose, output, fields)
+    gitlab.v4.cli.run(gl, gitlab_resource, action, args_dict, verbose, output, fields)
