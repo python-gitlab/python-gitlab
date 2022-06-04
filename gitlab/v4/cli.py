@@ -79,7 +79,7 @@ class GitlabCLI:
             # If we don't delete it then it will be added to the URL as a query-string
             del self.args[key]
 
-    def __call__(self) -> Any:
+    def run(self) -> Any:
         # Check for a method that matches object + action
         method = f"do_{self.what}_{self.action}"
         if hasattr(self, method):
@@ -505,7 +505,7 @@ def run(
     fields: List[str],
 ) -> None:
     g_cli = GitlabCLI(gl=gl, what=what, action=action, args=args)
-    data = g_cli()
+    data = g_cli.run()
 
     printer: Union[JSONPrinter, LegacyPrinter, YAMLPrinter] = PRINTERS[output]()
 
