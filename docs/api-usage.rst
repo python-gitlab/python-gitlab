@@ -113,10 +113,11 @@ Examples:
    items when using listing methods. See the :ref:`pagination` section for more
    information.
 
-You can list the mandatory and optional attributes for object creation and
-update with the manager's ``get_create_attrs()`` and ``get_update_attrs()``
-methods. They return 2 tuples, the first one is the list of mandatory
-attributes, the second one is the list of optional attribute:
+You can list the mandatory, optional, and mutually exclusive attributes for object
+creation and update with the manager's ``get_create_attrs()`` and ``get_update_attrs()``
+methods. They return 3 tuples. The first tuple is the list of mandatory attributes.
+The second tuple is the list of optional attributes. The third tuple is the mutually
+exclusive attributes:
 
 .. code-block:: python
 
