@@ -29,14 +29,18 @@ from gitlab import cli
 
 class GitlabCLI:
     def __init__(
-        self, gl: gitlab.Gitlab, gitlab_resource: str, action: str, args: Dict[str, str]
+        self,
+        gl: gitlab.Gitlab,
+        gitlab_resource: str,
+        resource_action: str,
+        args: Dict[str, str],
     ) -> None:
         self.cls: Type[gitlab.base.RESTObject] = cli.gitlab_resource_to_cls(
             gitlab_resource, namespace=gitlab.v4.objects
         )
         self.cls_name = self.cls.__name__
         self.gitlab_resource = gitlab_resource.replace("-", "_")
-        self.action = action.lower()
+        self.resource_action = resource_action.lower()
         self.gl = gl
         self.args = args
         self.parent_args: Dict[str, Any] = {}
@@ -80,13 +84,13 @@ class GitlabCLI:
             del self.args[key]
 
     def run(self) -> Any:
-        # Check for a method that matches object + action
-        method = f"do_{self.gitlab_resource}_{self.action}"
+        # Check for a method that matches gitlab_resource + action
+        method = f"do_{self.gitlab_resource}_{self.resource_action}"
         if hasattr(self, method):
             return getattr(self, method)()
 
         # Fallback to standard actions (get, list, create, ...)
-        method = f"do_{self.action}"
+        method = f"do_{self.resource_action}"
         if hasattr(self, method):
             return getattr(self, method)()
 
@@ -95,7 +99,7 @@ class GitlabCLI:
 
     def do_custom(self) -> Any:
         class_instance: Union[gitlab.base.RESTManager, gitlab.base.RESTObject]
-        in_obj = cli.custom_actions[self.cls_name][self.action][2]
+        in_obj = cli.custom_actions[self.cls_name][self.resource_action][2]
 
         # Get the object (lazy), then act
         if in_obj:
@@ -111,7 +115,7 @@ class GitlabCLI:
         else:
             class_instance = self.mgr
 
-        method_name = self.action.replace("-", "_")
+        method_name = self.resource_action.replace("-", "_")
         return getattr(class_instance, method_name)(**self.args)
 
     def do_project_export_download(self) -> None:
@@ -351,7 +355,9 @@ def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
         object_group = subparsers.add_parser(arg_name)
 
         object_subparsers = object_group.add_subparsers(
-            title="action", dest="whaction", help="Action to execute."
+            title="action",
+            dest="resource_action",
+            help="Action to execute on the GitLab resource.",
         )
         _populate_sub_parser_by_class(cls, object_subparsers)
         object_subparsers.required = True
@@ -498,13 +504,18 @@ PRINTERS: Dict[
 def run(
     gl: gitlab.Gitlab,
     gitlab_resource: str,
-    action: str,
+    resource_action: str,
     args: Dict[str, Any],
     verbose: bool,
     output: str,
     fields: List[str],
 ) -> None:
-    g_cli = GitlabCLI(gl=gl, gitlab_resource=gitlab_resource, action=action, args=args)
+    g_cli = GitlabCLI(
+        gl=gl,
+        gitlab_resource=gitlab_resource,
+        resource_action=resource_action,
+        args=args,
+    )
     data = g_cli.run()
 
     printer: Union[JSONPrinter, LegacyPrinter, YAMLPrinter] = PRINTERS[output]()

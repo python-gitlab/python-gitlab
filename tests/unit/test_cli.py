@@ -126,7 +126,7 @@ def test_v4_parse_args():
     parser = cli._get_parser()
     args = parser.parse_args(["project", "list"])
     assert args.gitlab_resource == "project"
-    assert args.whaction == "list"
+    assert args.resource_action == "list"
 
 
 def test_v4_parser():
