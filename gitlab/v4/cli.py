@@ -337,7 +337,9 @@ def _populate_sub_parser_by_class(
 
 def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(
-        title="object", dest="gitlab_resource", help="Object to manipulate."
+        title="resource",
+        dest="gitlab_resource",
+        help="The GitLab resource to manipulate.",
     )
     subparsers.required = True
 
