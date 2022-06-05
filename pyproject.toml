@@ -45,6 +45,7 @@ commit_message = ""
 
 [tool.pylint.messages_control]
 max-line-length = 88
+jobs = 0  # Use auto-detected number of multiple processes to speed up Pylint.
 # TODO(jlvilla): Work on removing these disables over time.
 disable = [
     "arguments-differ",
