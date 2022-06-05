@@ -323,8 +323,8 @@ def main() -> None:
     if args.fields:
         fields = [x.strip() for x in args.fields.split(",")]
     debug = args.debug
-    action = args.whaction
     gitlab_resource = args.gitlab_resource
+    resource_action = args.resource_action
 
     args_dict = vars(args)
     # Remove CLI behavior-related args
@@ -334,7 +334,7 @@ def main() -> None:
         "verbose",
         "debug",
         "gitlab_resource",
-        "whaction",
+        "resource_action",
         "version",
         "output",
         "fields",
@@ -361,4 +361,6 @@ def main() -> None:
     if debug:
         gl.enable_debug()
 
-    gitlab.v4.cli.run(gl, gitlab_resource, action, args_dict, verbose, output, fields)
+    gitlab.v4.cli.run(
+        gl, gitlab_resource, resource_action, args_dict, verbose, output, fields
+    )
