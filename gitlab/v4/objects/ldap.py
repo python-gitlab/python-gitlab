@@ -49,5 +49,4 @@ class LDAPGroupManager(RESTManager):
         obj = self.gitlab.http_list(path, **data)
         if isinstance(obj, list):
             return [self._obj_cls(self, item) for item in obj]
-        else:
-            return RESTObjectList(self, self._obj_cls, obj)
+        return RESTObjectList(self, self._obj_cls, obj)

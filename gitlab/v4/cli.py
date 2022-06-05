@@ -377,13 +377,14 @@ def get_dict(
 
 
 class JSONPrinter:
-    def display(self, d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
+    @staticmethod
+    def display(d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
         import json  # noqa
 
         print(json.dumps(d))
 
+    @staticmethod
     def display_list(
-        self,
         data: List[Union[str, gitlab.base.RESTObject]],
         fields: List[str],
         **kwargs: Any,
@@ -394,7 +395,8 @@ class JSONPrinter:
 
 
 class YAMLPrinter:
-    def display(self, d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
+    @staticmethod
+    def display(d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
         try:
             import yaml  # noqa
 
@@ -406,8 +408,8 @@ class YAMLPrinter:
                 "to use the yaml output feature"
             )
 
+    @staticmethod
     def display_list(
-        self,
         data: List[Union[str, gitlab.base.RESTObject]],
         fields: List[str],
         **kwargs: Any,

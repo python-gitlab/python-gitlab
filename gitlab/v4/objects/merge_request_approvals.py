@@ -168,6 +168,8 @@ class ProjectMergeRequestApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "approval_rule_id"
     _repr_attr = "approval_rule"
     id: int
+    approval_rule_id: int
+    merge_request_iid: int
 
     @exc.on_http_error(exc.GitlabUpdateError)
     def save(self, **kwargs: Any) -> None:

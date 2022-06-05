@@ -56,7 +56,9 @@ def _get_config_files(
             try:
                 resolved = _resolve_file(config_file)
             except OSError as e:
-                raise GitlabConfigMissingError(f"Cannot read config from file: {e}")
+                raise GitlabConfigMissingError(
+                    f"Cannot read config from file: {e}"
+                ) from e
             resolved_files.append(resolved)
 
         return resolved_files
@@ -69,7 +71,7 @@ def _get_config_files(
     except OSError as e:
         raise GitlabConfigMissingError(
             f"Cannot read config from PYTHON_GITLAB_CFG: {e}"
-        )
+        ) from e
 
     for config_file in _DEFAULT_FILES:
         try:

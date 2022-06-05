@@ -231,8 +231,7 @@ class ListMixin(_RestManagerBase):
         obj = self.gitlab.http_list(path, **data)
         if isinstance(obj, list):
             return [self._obj_cls(self, item, created_from_list=True) for item in obj]
-        else:
-            return base.RESTObjectList(self, self._obj_cls, obj)
+        return base.RESTObjectList(self, self._obj_cls, obj)
 
 
 class RetrieveMixin(ListMixin, GetMixin):
@@ -243,8 +242,6 @@ class RetrieveMixin(ListMixin, GetMixin):
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
-
-    pass
 
 
 class CreateMixin(_RestManagerBase):
@@ -429,8 +426,6 @@ class CRUDMixin(GetMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin):
     _path: Optional[str]
     gitlab: gitlab.Gitlab
 
-    pass
-
 
 class NoUpdateMixin(GetMixin, ListMixin, CreateMixin, DeleteMixin):
     _computed_path: Optional[str]
@@ -440,8 +435,6 @@ class NoUpdateMixin(GetMixin, ListMixin, CreateMixin, DeleteMixin):
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
-
-    pass
 
 
 class SaveMixin(_RestObjectBase):

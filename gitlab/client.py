@@ -119,10 +119,10 @@ class Gitlab:
             raise ModuleNotFoundError(f"gitlab.v{self._api_version}.objects")
         # NOTE: We must delay import of gitlab.v4.objects until now or
         # otherwise it will cause circular import errors
-        import gitlab.v4.objects
+        from gitlab.v4 import objects
 
-        objects = gitlab.v4.objects
         self._objects = objects
+        self.user: Optional[objects.CurrentUser] = None
 
         self.broadcastmessages = objects.BroadcastMessageManager(self)
         """See :class:`~gitlab.v4.objects.BroadcastMessageManager`"""
@@ -213,9 +213,9 @@ class Gitlab:
             )  # pragma: no cover, dead code currently
         # NOTE: We must delay import of gitlab.v4.objects until now or
         # otherwise it will cause circular import errors
-        import gitlab.v4.objects
+        from gitlab.v4 import objects
 
-        self._objects = gitlab.v4.objects
+        self._objects = objects
 
     @property
     def url(self) -> str:
@@ -514,7 +514,8 @@ class Gitlab:
                 self.http_username, self.http_password
             )
 
-    def enable_debug(self) -> None:
+    @staticmethod
+    def enable_debug() -> None:
         import logging
         from http.client import HTTPConnection  # noqa
 
@@ -533,7 +534,8 @@ class Gitlab:
             "verify": self.ssl_verify,
         }
 
-    def _get_base_url(self, url: Optional[str] = None) -> str:
+    @staticmethod
+    def _get_base_url(url: Optional[str] = None) -> str:
         """Return the base URL with the trailing slash stripped.
         If the URL is a Falsy value, return the default URL.
         Returns:
@@ -555,10 +557,10 @@ class Gitlab:
         """
         if path.startswith("http://") or path.startswith("https://"):
             return path
-        else:
-            return f"{self._url}{path}"
+        return f"{self._url}{path}"
 
-    def _check_redirects(self, result: requests.Response) -> None:
+    @staticmethod
+    def _check_redirects(result: requests.Response) -> None:
         # Check the requests history to detect 301/302 redirections.
         # If the initial verb is POST or PUT, the redirected request will use a
         # GET request, leading to unwanted behaviour.
@@ -583,8 +585,8 @@ class Gitlab:
                 )
             )
 
+    @staticmethod
     def _prepare_send_data(
-        self,
         files: Optional[Dict[str, Any]] = None,
         post_data: Optional[Union[Dict[str, Any], bytes]] = None,
         raw: bool = False,

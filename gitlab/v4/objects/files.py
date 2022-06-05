@@ -26,6 +26,8 @@ __all__ = [
 class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "file_path"
     _repr_attr = "file_path"
+    branch: str
+    commit_message: str
     file_path: str
     manager: "ProjectFileManager"
 
