@@ -6,6 +6,6 @@ isort==5.10.1
 mypy==0.960
 pylint==2.13.9
 pytest==7.1.2
-types-PyYAML==6.0.7
-types-requests==2.27.29
+types-PyYAML==6.0.8
+types-requests==2.27.30
 types-setuptools==57.4.17
