@@ -102,28 +102,26 @@ Examples:
    for project in group.projects.list(iterator=True):
        print(project)
 
-   # create a new user
-   user_data = {'email': 'jen@foo.com', 'username': 'jen', 'name': 'Jen'}
-   user = gl.users.create(user_data)
-   print(user)
-
 .. warning::
    Calling ``list()`` without any arguments will by default not return the complete list
    of items. Use either the ``all=True`` or ``iterator=True`` parameters to get all the
    items when using listing methods. See the :ref:`pagination` section for more
    information.
 
-You can list the mandatory, optional, and mutually exclusive attributes for object
-creation and update with the manager's ``get_create_attrs()`` and ``get_update_attrs()``
-methods. They return 3 tuples. The first tuple is the list of mandatory attributes.
-The second tuple is the list of optional attributes. The third tuple is the mutually
-exclusive attributes:
-
 .. code-block:: python
 
-   # v4 only
-   print(gl.projects.get_create_attrs())
-   (('name',), ('path', 'namespace_id', ...))
+   # create a new user
+   user_data = {'email': 'jen@foo.com', 'username': 'jen', 'name': 'Jen'}
+   user = gl.users.create(user_data)
+   print(user)
+
+.. note:: 
+   python-gitlab attempts to sync the required, optional, and mutually exclusive attributes
+   for resource creation and update with the upstream API.
+   
+   You are encouraged to follow upstream API documentation for each resource to find these -
+   each resource documented here links to the corresponding upstream resource documentation
+   at the top of the page.
 
 The attributes of objects are defined upon object creation, and depend on the
 GitLab API itself. To list the available information associated with an object
