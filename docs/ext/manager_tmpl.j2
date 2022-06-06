@@ -7,21 +7,21 @@
 
 {% if cls._create_attrs %}
 **Object Creation**
-{% if cls._create_attrs[0] %}
-Mandatory attributes for object create:
+{% if cls._create_attrs.required %}
+Required attributes for object create:
 {% for item in cls._create_attrs.required %}
 - ``{{ item }}``
 {% endfor %}
 {% endif %}
-{% if cls._create_attrs[1] %}
+{% if cls._create_attrs.optional %}
 Optional attributes for object create:
 {% for item in cls._create_attrs.optional %}
 - ``{{ item }}``
 {% endfor %}
 {% endif %}
-{% if cls._create_attrs[2] %}
+{% if cls._create_attrs.exclusive %}
 Mutually exclusive attributes for object create:
-{% for item in cls._create_attrs.exlusive %}
+{% for item in cls._create_attrs.exclusive %}
 - ``{{ item }}``
 {% endfor %}
 {% endif %}
@@ -29,21 +29,21 @@ Mutually exclusive attributes for object create:
 
 {% if cls._update_attrs %}
 **Object update**
-{% if cls._update_attrs[0] %}
-Mandatory attributes for object update:
+{% if cls._update_attrs.required %}
+Required attributes for object update:
 {% for item in cls._update_attrs.required %}
 - ``{{ item }}``
 {% endfor %}
 {% endif %}
-{% if cls._update_attrs[1] %}
+{% if cls._update_attrs.optional %}
 Optional attributes for object update:
 {% for item in cls._update_attrs.optional %}
 - ``{{ item }}``
 {% endfor %}
 {% endif %}
-{% if cls._update_attrs[2] %}
+{% if cls._update_attrs.exclusive %}
 Mutually exclusive attributes for object update:
-{% for item in cls._update_attrs.exlusive %}
+{% for item in cls._update_attrs.exclusive %}
 - ``{{ item }}``
 {% endfor %}
 {% endif %}
