@@ -81,6 +81,32 @@ def resp_activate():
 
 
 @pytest.fixture
+def resp_approve():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/users/1/approve",
+            json={"message": "Success"},
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_reject():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/users/1/reject",
+            json={"message": "Success"},
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
 def resp_ban():
     with responses.RequestsMock() as rsps:
         rsps.add(
@@ -240,6 +266,14 @@ def test_user_status(user, resp_get_user_status):
 def test_user_activate_deactivate(user, resp_activate):
     user.activate()
     user.deactivate()
+
+
+def test_user_approve_(user, resp_approve):
+    user.approve()
+
+
+def test_user_approve_reject(user, resp_reject):
+    user.reject()
 
 
 def test_user_ban(user, resp_ban):

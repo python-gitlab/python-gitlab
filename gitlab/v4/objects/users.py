@@ -284,6 +284,42 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         return server_data
 
     @cli.register_custom_action("User")
+    @exc.on_http_error(exc.GitlabUserApproveError)
+    def approve(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+        """Approve a user creation request.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUserApproveError: If the user could not be activated
+
+        Returns:
+            The new object data (*not* a RESTObject)
+        """
+        path = f"/users/{self.encoded_id}/approve"
+        return self.manager.gitlab.http_post(path, **kwargs)
+
+    @cli.register_custom_action("User")
+    @exc.on_http_error(exc.GitlabUserRejectError)
+    def reject(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+        """Reject a user creation request.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUserRejectError: If the user could not be rejected
+
+        Returns:
+            The new object data (*not* a RESTObject)
+        """
+        path = f"/users/{self.encoded_id}/reject"
+        return self.manager.gitlab.http_post(path, **kwargs)
+
+    @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabBanError)
     def ban(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Ban the user.

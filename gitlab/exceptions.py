@@ -294,6 +294,14 @@ class GitlabUnfollowError(GitlabOperationError):
     pass
 
 
+class GitlabUserApproveError(GitlabOperationError):
+    pass
+
+
+class GitlabUserRejectError(GitlabOperationError):
+    pass
+
+
 # For an explanation of how these type-hints work see:
 # https://mypy.readthedocs.io/en/stable/generics.html#declaring-decorators
 #
