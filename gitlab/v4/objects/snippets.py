@@ -1,4 +1,4 @@
-from typing import Any, Callable, cast, List, Optional, TYPE_CHECKING, Union
+from typing import Any, Callable, cast, Iterable, List, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -71,7 +71,7 @@ class SnippetManager(CRUDMixin, RESTManager):
     )
 
     @cli.register_custom_action("SnippetManager")
-    def public(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+    def public(self, **kwargs: Any) -> Iterable[Snippet]:
         """List all the public snippets.
 
         Args:

@@ -3,7 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ee/api/users.html
 https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
 """
-from typing import Any, cast, Dict, List, Optional, Union
+from typing import Any, cast, Dict, Iterable, List, Optional, Union
 
 import requests
 
@@ -532,7 +532,7 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
         "id_before",
     )
 
-    def list(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+    def list(self, **kwargs: Any) -> Iterable[UserProject]:
         """Retrieve a list of objects.
 
         Args:

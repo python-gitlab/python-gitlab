@@ -19,7 +19,7 @@
 import argparse
 import operator
 import sys
-from typing import Any, Dict, List, Optional, Type, TYPE_CHECKING, Union
+from typing import Any, Dict, Iterable, List, Optional, Type, TYPE_CHECKING, Union
 
 import gitlab
 import gitlab.base
@@ -143,7 +143,7 @@ class GitlabCLI:
 
     def do_list(
         self,
-    ) -> Union[gitlab.base.RESTObjectList, List[gitlab.base.RESTObject]]:
+    ) -> Iterable[gitlab.base.RESTObjectList]:
         if TYPE_CHECKING:
             assert isinstance(self.mgr, gitlab.mixins.ListMixin)
         try:

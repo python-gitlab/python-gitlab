@@ -19,7 +19,7 @@ import importlib
 import pprint
 import textwrap
 from types import ModuleType
-from typing import Any, Dict, Iterable, Optional, Type, Union
+from typing import Any, Dict, Generic, Iterable, Iterator, Optional, Collection, Type, TypeVar, Union
 
 import gitlab
 from gitlab import types as g_types
@@ -245,8 +245,9 @@ class RESTObject:
         d.update(self.__dict__["_parent_attrs"])
         return d
 
+T = TypeVar("T", bound=RESTObject)
 
-class RESTObjectList:
+class RESTObjectList(Generic[T], Iterable[T]):
     """Generator object representing a list of RESTObject's.
 
     This generator uses the Gitlab pagination system to fetch new data when
@@ -262,7 +263,7 @@ class RESTObjectList:
     """
 
     def __init__(
-        self, manager: "RESTManager", obj_cls: Type[RESTObject], _list: GitlabList
+        self, manager: "RESTManager", obj_cls: Type[T], _list: GitlabList
     ) -> None:
         """Creates an objects list from a GitlabList.
 
@@ -278,16 +279,16 @@ class RESTObjectList:
         self._obj_cls = obj_cls
         self._list = _list
 
-    def __iter__(self) -> "RESTObjectList":
+    def __iter__(self) -> Iterator[T]:
         return self
 
     def __len__(self) -> int:
         return len(self._list)
 
-    def __next__(self) -> RESTObject:
+    def __next__(self) -> T:
         return self.next()
 
-    def next(self) -> RESTObject:
+    def next(self) -> T:
         data = self._list.next()
         return self._obj_cls(self.manager, data, created_from_list=True)
 

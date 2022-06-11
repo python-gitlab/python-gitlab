@@ -815,7 +815,7 @@ class Gitlab:
         as_list: Optional[bool] = None,  # Deprecated in favor of `iterator`
         iterator: Optional[bool] = None,
         **kwargs: Any,
-    ) -> Union["GitlabList", List[Dict[str, Any]]]:
+    ) -> Union[GitlabList, List[Dict[str, int]]]:
         """Make a GET request to the Gitlab server for list-oriented queries.
 
         Args:

@@ -3,6 +3,7 @@ from typing import Any, cast, TYPE_CHECKING, Union
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
+from gitlab.client import GitlabList
 from gitlab.base import RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, PromoteMixin, SaveMixin
 from gitlab.types import RequiredOptional
@@ -47,7 +48,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/issues"
         data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
-            assert isinstance(data_list, RESTObjectList)
+            assert isinstance(data_list, GitlabList)
         manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, GroupIssue, data_list)
@@ -73,7 +74,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/merge_requests"
         data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
-            assert isinstance(data_list, RESTObjectList)
+            assert isinstance(data_list, GitlabList)
         manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, GroupMergeRequest, data_list)
@@ -124,7 +125,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/issues"
         data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
-            assert isinstance(data_list, RESTObjectList)
+            assert isinstance(data_list, GitlabList)
         manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, ProjectIssue, data_list)
@@ -150,7 +151,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/merge_requests"
         data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
-            assert isinstance(data_list, RESTObjectList)
+            assert isinstance(data_list, GitlabList)
         manager = ProjectMergeRequestManager(
             self.manager.gitlab, parent=self.manager._parent
         )
