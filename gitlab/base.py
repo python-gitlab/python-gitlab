@@ -328,8 +328,10 @@ class RESTObjectList(Generic[T], Iterable[T]):
         """The total number of items."""
         return self._list.total
 
+T_obj = TypeVar("T_obj", bound=RESTObject)
+T_parent = TypeVar("T_parent", bound=Optional[RESTObject])
 
-class RESTManager:
+class RESTManager(Generic[T_obj, T_parent]):
     """Base class for CRUD operations on objects.
 
     Derived class must define ``_path`` and ``_obj_cls``.
@@ -341,16 +343,16 @@ class RESTManager:
     _create_attrs: g_types.RequiredOptional = g_types.RequiredOptional()
     _update_attrs: g_types.RequiredOptional = g_types.RequiredOptional()
     _path: Optional[str] = None
-    _obj_cls: Optional[Type[RESTObject]] = None
+    _obj_cls: Type[T_obj]
     _from_parent_attrs: Dict[str, Any] = {}
     _types: Dict[str, Type[g_types.GitlabAttribute]] = {}
 
     _computed_path: Optional[str]
-    _parent: Optional[RESTObject]
+    _parent: Optional[T_parent]
     _parent_attrs: Dict[str, Any]
     gitlab: Gitlab
 
-    def __init__(self, gl: Gitlab, parent: Optional[RESTObject] = None) -> None:
+    def __init__(self, gl: Gitlab, parent: Optional[T_parent] = None) -> None:
         """REST manager constructor.
 
         Args:
