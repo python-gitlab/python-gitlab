@@ -56,13 +56,22 @@ class RESTObject:
     """
 
     _id_attr: Optional[str] = "id"
+    """The unique ID the GitLab resource, used to get the resource or returned
+    from the server after creation."""
     _attrs: Dict[str, Any]
-    _created_from_list: bool  # Indicates if object was created from a list() action
+    "Stores the GitLab resource attributes returned from the server."
+    _created_from_list: bool
+    "Indicates if the object was created from a ``list()`` action."
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
+    "Stores the IDs of parent resources to construct the resource URL."
     _repr_attr: Optional[str] = None
+    """The human-readable attribute of the GitLab resource, used in ``repr()``
+    methods, if previously returned in the server response."""
     _updated_attrs: Dict[str, Any]
+    "Stores attributes updated locally by the user before being sent to the server."
     manager: "RESTManager"
+    "The type of ``RESTManager`` class used to manage the GitLab resource."
 
     def __init__(
         self,
