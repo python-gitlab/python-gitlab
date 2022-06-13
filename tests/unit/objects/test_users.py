@@ -81,6 +81,32 @@ def resp_activate():
 
 
 @pytest.fixture
+def resp_ban():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/users/1/ban",
+            json={},
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_unban():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/users/1/unban",
+            json={},
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
 def resp_get_user_status():
     content = {
         "message": "test",
@@ -214,6 +240,14 @@ def test_user_status(user, resp_get_user_status):
 def test_user_activate_deactivate(user, resp_activate):
     user.activate()
     user.deactivate()
+
+
+def test_user_ban(user, resp_ban):
+    user.ban()
+
+
+def test_user_unban(user, resp_unban):
+    user.unban()
 
 
 def test_delete_user_identity(user, resp_delete_user_identity):

@@ -186,6 +186,14 @@ class GitlabActivateError(GitlabOperationError):
     pass
 
 
+class GitlabBanError(GitlabOperationError):
+    pass
+
+
+class GitlabUnbanError(GitlabOperationError):
+    pass
+
+
 class GitlabSubscribeError(GitlabOperationError):
     pass
 

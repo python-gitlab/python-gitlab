@@ -283,6 +283,48 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             self._attrs["state"] = "active"
         return server_data
 
+    @cli.register_custom_action("User")
+    @exc.on_http_error(exc.GitlabBanError)
+    def ban(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+        """Ban the user.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabBanError: If the user could not be banned
+
+        Returns:
+            Whether the user has been banned
+        """
+        path = f"/users/{self.encoded_id}/ban"
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if server_data:
+            self._attrs["state"] = "banned"
+        return server_data
+
+    @cli.register_custom_action("User")
+    @exc.on_http_error(exc.GitlabUnbanError)
+    def unban(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+        """Unban the user.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUnbanError: If the user could not be unbanned
+
+        Returns:
+            Whether the user has been unbanned
+        """
+        path = f"/users/{self.encoded_id}/unban"
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if server_data:
+            self._attrs["state"] = "active"
+        return server_data
+
 
 class UserManager(CRUDMixin, RESTManager):
     _path = "/users"
