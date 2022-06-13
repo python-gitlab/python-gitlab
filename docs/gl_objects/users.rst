@@ -72,6 +72,11 @@ Activate/Deactivate a user::
     user.activate()
     user.deactivate()
 
+Ban/Unban a user::
+
+    user.ban()
+    user.unban()
+
 Follow/Unfollow a user::
 
     user.follow()

@@ -37,6 +37,16 @@ def test_block_user(gl, user):
     assert user in users
 
 
+def test_ban_user(gl, user):
+    user.ban()
+    retrieved_user = gl.users.get(user.id)
+    assert retrieved_user.state == "banned"
+
+    user.unban()
+    retrieved_user = gl.users.get(user.id)
+    assert retrieved_user.state == "active"
+
+
 def test_delete_user(gl, wait_for_sidekiq):
     new_user = gl.users.create(
         {
