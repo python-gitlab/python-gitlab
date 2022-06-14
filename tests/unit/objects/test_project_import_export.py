@@ -73,8 +73,36 @@ def resp_import_github():
         yield rsps
 
 
+@pytest.fixture
+def resp_import_bitbucket_server():
+    content = {
+        "id": 1,
+        "name": "project",
+        "import_status": "scheduled",
+    }
+
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/import/bitbucket_server",
+            json=content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
 def test_import_project(gl, resp_import_project):
-    project_import = gl.projects.import_project("file", "api-project")
+    project_import = gl.projects.import_project(
+        "file", "api-project", "api-project", "root"
+    )
+    assert project_import["import_status"] == "scheduled"
+
+
+def test_import_project_with_override_params(gl, resp_import_project):
+    project_import = gl.projects.import_project(
+        "file", "api-project", override_params={"visibility": "private"}
+    )
     assert project_import["import_status"] == "scheduled"
 
 
@@ -92,6 +120,21 @@ def test_import_github(gl, resp_import_github):
     assert ret["name"] == name
     assert ret["full_path"] == "/".join((base_path, name))
     assert ret["full_name"].endswith(name)
+
+
+def test_import_bitbucket_server(gl, resp_import_bitbucket_server):
+    res = gl.projects.import_bitbucket_server(
+        bitbucket_server_project="project",
+        bitbucket_server_repo="repo",
+        bitbucket_server_url="url",
+        bitbucket_server_username="username",
+        personal_access_token="token",
+        new_name="new_name",
+        target_namespace="namespace",
+    )
+    assert res["id"] == 1
+    assert res["name"] == "project"
+    assert res["import_status"] == "scheduled"
 
 
 def test_create_project_export(project, resp_export):

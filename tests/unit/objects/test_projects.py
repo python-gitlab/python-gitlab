@@ -2,9 +2,13 @@
 GitLab API: https://docs.gitlab.com/ce/api/projects.html
 """
 
+from unittest.mock import mock_open, patch
+
 import pytest
 import responses
 
+from gitlab import exceptions
+from gitlab.const import DEVELOPER_ACCESS, SEARCH_SCOPE_ISSUES
 from gitlab.v4.objects import (
     Project,
     ProjectFork,
@@ -15,6 +19,11 @@ from gitlab.v4.objects import (
 from gitlab.v4.objects.projects import ProjectStorage
 
 project_content = {"name": "name", "id": 1}
+project_with_owner_content = {
+    "name": "name",
+    "id": 1,
+    "owner": {"id": 1, "username": "owner_username", "name": "owner_name"},
+}
 languages_content = {
     "python": 80.00,
     "ruby": 99.99,
@@ -30,10 +39,49 @@ forks_content = [
         "id": 1,
     },
 ]
-import_content = {
+project_forked_from_content = {
+    "name": "name",
+    "id": 2,
+    "forks_count": 0,
+    "forked_from_project": {"id": 1, "name": "name", "forks_count": 1},
+}
+project_starrers_content = {
+    "starred_since": "2019-01-28T14:47:30.642Z",
+    "user": {
+        "id": 1,
+        "name": "name",
+    },
+}
+delete_project_content = {"message": "202 Accepted"}
+upload_file_content = {
+    "alt": "filename",
+    "url": "/uploads/66dbcd21ec5d24ed6ea225176098d52b/filename.png",
+    "full_path": "/namespace/project/uploads/66dbcd21ec5d24ed6ea225176098d52b/filename.png",
+    "markdown": "![dk](/uploads/66dbcd21ec5d24ed6ea225176098d52b/filename.png)",
+}
+share_project_content = {
     "id": 1,
-    "name": "project",
-    "import_status": "scheduled",
+    "project_id": 1,
+    "group_id": 1,
+    "group_access": 30,
+    "expires_at": None,
+}
+push_rules_content = {"id": 1, "deny_delete_tag": True}
+search_issues_content = [
+    {
+        "id": 1,
+        "iid": 1,
+        "project_id": 1,
+        "title": "Issue",
+    }
+]
+pipeline_trigger_content = {
+    "id": 1,
+    "iid": 1,
+    "project_id": 1,
+    "ref": "main",
+    "status": "created",
+    "source": "trigger",
 }
 
 
@@ -46,6 +94,58 @@ def resp_get_project():
             json=project_content,
             content_type="application/json",
             status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_post_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects",
+            json=project_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_post_project_user():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/user/1",
+            json=project_with_owner_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_post_fork_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/fork",
+            json=project_forked_from_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_put_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.PUT,
+            url="http://localhost/api/v4/projects/1",
+            json=project_content,
+            content_type="application/json",
+            status=201,
         )
         yield rsps
 
@@ -70,6 +170,45 @@ def resp_user_projects():
             method=responses.GET,
             url="http://localhost/api/v4/users/1/projects",
             json=[project_content],
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_star_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/star",
+            json=project_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_unstar_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/unstar",
+            json=project_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_project_starrers():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/starrers",
+            json=[project_starrers_content],
             content_type="application/json",
             status=200,
         )
@@ -142,19 +281,6 @@ def resp_list_projects():
 
 
 @pytest.fixture
-def resp_import_bitbucket_server():
-    with responses.RequestsMock() as rsps:
-        rsps.add(
-            method=responses.POST,
-            url="http://localhost/api/v4/import/bitbucket_server",
-            json=import_content,
-            content_type="application/json",
-            status=201,
-        )
-        yield rsps
-
-
-@pytest.fixture
 def resp_transfer_project():
     with responses.RequestsMock() as rsps:
         rsps.add(
@@ -170,6 +296,252 @@ def resp_transfer_project():
         yield rsps
 
 
+@pytest.fixture
+def resp_archive_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/archive",
+            json=project_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_unarchive_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/unarchive",
+            json=project_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_delete_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.DELETE,
+            url="http://localhost/api/v4/projects/1",
+            json=delete_project_content,
+            content_type="application/json",
+            status=202,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_upload_file_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/uploads",
+            json=upload_file_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_share_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/share",
+            json=share_project_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_unshare_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.DELETE,
+            url="http://localhost/api/v4/projects/1/share/1",
+            json=None,
+            content_type="application/json",
+            status=204,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_create_fork_relation():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/2/fork/1",
+            json=project_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_delete_fork_relation():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.DELETE,
+            url="http://localhost/api/v4/projects/2/fork",
+            json=None,
+            content_type="application/json",
+            status=204,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_trigger_pipeline():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/trigger/pipeline",
+            json=pipeline_trigger_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_search_project_resources_by_name():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/search?scope=issues&search=Issue",
+            json=search_issues_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_start_housekeeping():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/housekeeping",
+            json="0ee4c430667fb7be8461f310",
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_get_push_rules_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/push_rule",
+            json=push_rules_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_post_push_rules_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/push_rule",
+            json=push_rules_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_update_push_rules_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/push_rule",
+            json=push_rules_content,
+            content_type="application/json",
+            status=200,
+        )
+        rsps.add(
+            method=responses.PUT,
+            url="http://localhost/api/v4/projects/1/push_rule",
+            json=push_rules_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_delete_push_rules_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/push_rule",
+            json=push_rules_content,
+            content_type="application/json",
+            status=200,
+        )
+        rsps.add(
+            method=responses.DELETE,
+            url="http://localhost/api/v4/projects/1/push_rule",
+            json=None,
+            content_type="application/json",
+            status=204,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_start_pull_mirroring_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/mirror/pull",
+            json={},
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_snapshot_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/snapshot",
+            content_type="application/x-tar",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_artifact():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/jobs/artifacts/ref_name/raw/artifact_path?job=job",
+            content_type="application/x-tar",
+            status=200,
+        )
+        yield rsps
+
+
 def test_get_project(gl, resp_get_project):
     data = gl.projects.get(1)
     assert isinstance(data, Project)
@@ -181,21 +553,6 @@ def test_list_projects(gl, resp_list_projects):
     projects = gl.projects.list()
     assert isinstance(projects[0], Project)
     assert projects[0].name == "name"
-
-
-def test_import_bitbucket_server(gl, resp_import_bitbucket_server):
-    res = gl.projects.import_bitbucket_server(
-        bitbucket_server_project="project",
-        bitbucket_server_repo="repo",
-        bitbucket_server_url="url",
-        bitbucket_server_username="username",
-        personal_access_token="token",
-        new_name="new_name",
-        target_namespace="namespace",
-    )
-    assert res["id"] == 1
-    assert res["name"] == "project"
-    assert res["import_status"] == "scheduled"
 
 
 def test_list_user_projects(user, resp_user_projects):
@@ -220,24 +577,36 @@ def test_list_project_users(project, resp_list_users):
     assert user.state == "active"
 
 
-@pytest.mark.skip(reason="missing test")
-def test_create_project(gl):
-    pass
+def test_create_project(gl, resp_post_project):
+    project = gl.projects.create({"name": "name"})
+    assert project.id == 1
+    assert project.name == "name"
 
 
-@pytest.mark.skip(reason="missing test")
-def test_create_user_project(gl):
-    pass
+def test_create_user_project(user, resp_post_project_user):
+    user_project = user.projects.create({"name": "name"})
+    assert user_project.id == 1
+    assert user_project.name == "name"
+    assert user_project.owner
+    assert user_project.owner.get("id") == user.id
+    assert user_project.owner.get("name") == "owner_name"
+    assert user_project.owner.get("username") == "owner_username"
 
 
-@pytest.mark.skip(reason="missing test")
-def test_update_project(gl):
-    pass
+def test_update_project(project, resp_put_project):
+    project.snippets_enabled = 1
+    project.save()
 
 
-@pytest.mark.skip(reason="missing test")
-def test_fork_project(gl):
-    pass
+def test_fork_project(project, resp_post_fork_project):
+    fork = project.forks.create({})
+    assert fork.id == 2
+    assert fork.name == "name"
+    assert fork.forks_count == 0
+    assert fork.forked_from_project
+    assert fork.forked_from_project.get("id") == project.id
+    assert fork.forked_from_project.get("name") == "name"
+    assert fork.forked_from_project.get("forks_count") == 1
 
 
 def test_list_project_forks(project, resp_list_forks):
@@ -246,18 +615,16 @@ def test_list_project_forks(project, resp_list_forks):
     assert fork.id == 1
 
 
-@pytest.mark.skip(reason="missing test")
-def test_star_project(gl):
-    pass
+def test_star_project(project, resp_star_project):
+    project.star()
+
+
+def test_unstar_project(project, resp_unstar_project):
+    project.unstar()
 
 
 @pytest.mark.skip(reason="missing test")
-def test_unstar_project(gl):
-    pass
-
-
-@pytest.mark.skip(reason="missing test")
-def test_list_project_starrers(gl):
+def test_list_project_starrers(project, resp_project_starrers):
     pass
 
 
@@ -276,19 +643,16 @@ def test_get_project_storage(project, resp_get_project_storage):
     assert storage.disk_path == "/disk/path"
 
 
-@pytest.mark.skip(reason="missing test")
-def test_archive_project(gl):
-    pass
+def test_archive_project(project, resp_archive_project):
+    project.archive()
 
 
-@pytest.mark.skip(reason="missing test")
-def test_unarchive_project(gl):
-    pass
+def test_unarchive_project(project, resp_unarchive_project):
+    project.unarchive()
 
 
-@pytest.mark.skip(reason="missing test")
-def test_remove_project(gl):
-    pass
+def test_delete_project(project, resp_delete_project):
+    project.delete()
 
 
 @pytest.mark.skip(reason="missing test")
@@ -296,63 +660,94 @@ def test_restore_project(gl):
     pass
 
 
-@pytest.mark.skip(reason="missing test")
-def test_upload_file(gl):
-    pass
+def test_upload_file(project, resp_upload_file_project):
+    project.upload("filename.png", "raw\nfile\ndata")
 
 
-@pytest.mark.skip(reason="missing test")
-def test_share_project(gl):
-    pass
+def test_upload_file_with_filepath(project, resp_upload_file_project):
+    with patch("builtins.open", mock_open(read_data="raw\nfile\ndata")):
+        project.upload("filename.png", None, "/filepath")
 
 
-@pytest.mark.skip(reason="missing test")
-def test_delete_shared_project_link(gl):
-    pass
+def test_upload_file_without_filepath_nor_filedata(project):
+    with pytest.raises(
+        exceptions.GitlabUploadError, match="No file contents or path specified"
+    ):
+        project.upload("filename.png")
 
 
-@pytest.mark.skip(reason="missing test")
-def test_create_forked_from_relationship(gl):
-    pass
+def test_upload_file_with_filepath_and_filedata(project):
+    with pytest.raises(
+        exceptions.GitlabUploadError, match="File contents and file path specified"
+    ):
+        project.upload("filename.png", "filedata", "/filepath")
 
 
-@pytest.mark.skip(reason="missing test")
-def test_delete_forked_from_relationship(gl):
-    pass
+def test_share_project(project, group, resp_share_project):
+    project.share(group.id, DEVELOPER_ACCESS)
 
 
-@pytest.mark.skip(reason="missing test")
-def test_search_projects_by_name(gl):
-    pass
+def test_delete_shared_project_link(project, group, resp_unshare_project):
+    project.unshare(group.id)
 
 
-@pytest.mark.skip(reason="missing test")
-def test_project_housekeeping(gl):
-    pass
+def test_trigger_pipeline_project(project, resp_trigger_pipeline):
+    project.trigger_pipeline("MOCK_PIPELINE_TRIGGER_TOKEN", "main")
 
 
-@pytest.mark.skip(reason="missing test")
-def test_get_project_push_rules(gl):
-    pass
+def test_create_forked_from_relationship(
+    project, another_project, resp_create_fork_relation
+):
+    another_project.create_fork_relation(project.id)
 
 
-@pytest.mark.skip(reason="missing test")
-def test_create_project_push_rule(gl):
-    pass
+def test_delete_forked_from_relationship(another_project, resp_delete_fork_relation):
+    another_project.delete_fork_relation()
 
 
-@pytest.mark.skip(reason="missing test")
-def test_update_project_push_rule(gl):
-    pass
+def test_search_project_resources_by_name(
+    project, resp_search_project_resources_by_name
+):
+    issue = project.search(SEARCH_SCOPE_ISSUES, "Issue")[0]
+    assert issue
+    assert issue.get("title") == "Issue"
 
 
-@pytest.mark.skip(reason="missing test")
-def test_delete_project_push_rule(gl):
-    pass
+def test_project_housekeeping(project, resp_start_housekeeping):
+    project.housekeeping()
+
+
+def test_get_project_push_rules(project, resp_get_push_rules_project):
+    pr = project.pushrules.get()
+    assert pr
+    assert pr.deny_delete_tag
+
+
+def test_create_project_push_rule(project, resp_post_push_rules_project):
+    project.pushrules.create({"deny_delete_tag": True})
+
+
+def test_update_project_push_rule(
+    project,
+    resp_update_push_rules_project,
+):
+    pr = project.pushrules.get()
+    pr.deny_delete_tag = False
+    pr.save()
+
+
+def test_delete_project_push_rule(project, resp_delete_push_rules_project):
+    pr = project.pushrules.get()
+    pr.delete()
 
 
 def test_transfer_project(project, resp_transfer_project):
     project.transfer("test-namespace")
+
+
+def test_artifact_project(project, resp_artifact):
+    with pytest.warns(DeprecationWarning):
+        project.artifact("ref_name", "artifact_path", "job")
 
 
 def test_transfer_project_deprecated_warns(project, resp_transfer_project):
@@ -360,16 +755,10 @@ def test_transfer_project_deprecated_warns(project, resp_transfer_project):
         project.transfer_project("test-namespace")
 
 
-@pytest.mark.skip(reason="missing test")
-def test_project_pull_mirror(gl):
-    pass
+def test_project_pull_mirror(project, resp_start_pull_mirroring_project):
+    project.mirror_pull()
 
 
-@pytest.mark.skip(reason="missing test")
-def test_project_snapshot(gl):
-    pass
-
-
-@pytest.mark.skip(reason="missing test")
-def test_import_github(gl):
-    pass
+def test_project_snapshot(project, resp_snapshot_project):
+    tar_file = project.snapshot()
+    assert isinstance(tar_file, bytes)
