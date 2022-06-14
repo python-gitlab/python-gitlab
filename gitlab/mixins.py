@@ -21,13 +21,12 @@ from typing import (
     Callable,
     Dict,
     Generic,
-    List,
-    Optional,
     Iterable,
+    Optional,
     Tuple,
     Type,
-    TypeVar,
     TYPE_CHECKING,
+    TypeVar,
     Union,
 )
 
@@ -62,16 +61,22 @@ __all__ = [
     "BadgeRenderMixin",
 ]
 
+T_obj = TypeVar("T_obj", bound=base.RESTObject)
+T_parent = TypeVar("T_parent", bound=Optional[base.RESTObject])
+
 if TYPE_CHECKING:
     # When running mypy we use these as the base classes
     _RestManagerBase = base.RESTManager
     _RestObjectBase = base.RESTObject
 else:
-    _RestManagerBase = object
-    _RestObjectBase = object
 
-T_obj = TypeVar("T_obj", bound=base.RESTObject)
-T_parent = TypeVar("T_parent", bound=Optional[base.RESTObject])
+    class _RestManagerBase(Generic[T_obj, T_parent]):
+        _obj_cls: Type[T_obj]
+        _parent: Optional[T_parent]
+
+    class _RestObjectBase(Generic[T_obj, T_parent]):
+        _obj_cls: Type[T_obj]
+        _parent: Optional[T_parent]
 
 
 class GetMixin(_RestManagerBase[T_obj, T_parent], Generic[T_obj, T_parent]):
@@ -83,9 +88,7 @@ class GetMixin(_RestManagerBase[T_obj, T_parent], Generic[T_obj, T_parent]):
     gitlab: gitlab.Gitlab
 
     @exc.on_http_error(exc.GitlabGetError)
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> T_obj:
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> T_obj:
         """Retrieve a single object.
 
         Args:
@@ -234,7 +237,9 @@ class ListMixin(_RestManagerBase[T_obj, T_parent], Generic[T_obj, T_parent]):
         return base.RESTObjectList(self, self._obj_cls, obj)
 
 
-class RetrieveMixin(ListMixin[T_obj, T_parent], GetMixin[T_obj, T_parent], Generic[T_obj, T_parent]):
+class RetrieveMixin(
+    ListMixin[T_obj, T_parent], GetMixin[T_obj, T_parent], Generic[T_obj, T_parent]
+):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _parent_attrs: Dict[str, Any]
@@ -407,7 +412,14 @@ class DeleteMixin(_RestManagerBase[T_obj, T_parent], Generic[T_obj, T_parent]):
         self.gitlab.http_delete(path, **kwargs)
 
 
-class CRUDMixin(GetMixin[T_obj, T_parent], ListMixin[T_obj, T_parent], CreateMixin[T_obj, T_parent], UpdateMixin[T_obj, T_parent], DeleteMixin[T_obj, T_parent], Generic[T_obj, T_parent]):
+class CRUDMixin(
+    GetMixin[T_obj, T_parent],
+    ListMixin[T_obj, T_parent],
+    CreateMixin[T_obj, T_parent],
+    UpdateMixin[T_obj, T_parent],
+    DeleteMixin[T_obj, T_parent],
+    Generic[T_obj, T_parent],
+):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _parent_attrs: Dict[str, Any]
@@ -415,7 +427,13 @@ class CRUDMixin(GetMixin[T_obj, T_parent], ListMixin[T_obj, T_parent], CreateMix
     gitlab: gitlab.Gitlab
 
 
-class NoUpdateMixin(GetMixin[T_obj, T_parent], ListMixin[T_obj, T_parent], CreateMixin[T_obj, T_parent], DeleteMixin[T_obj, T_parent], Generic[T_obj, T_parent]):
+class NoUpdateMixin(
+    GetMixin[T_obj, T_parent],
+    ListMixin[T_obj, T_parent],
+    CreateMixin[T_obj, T_parent],
+    DeleteMixin[T_obj, T_parent],
+    Generic[T_obj, T_parent],
+):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _parent_attrs: Dict[str, Any]

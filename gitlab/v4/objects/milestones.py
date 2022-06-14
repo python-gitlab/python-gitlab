@@ -3,8 +3,8 @@ from typing import Any, cast, TYPE_CHECKING, Union
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.client import GitlabList
 from gitlab.base import RESTManager, RESTObject, RESTObjectList
+from gitlab.client import GitlabList
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, PromoteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 

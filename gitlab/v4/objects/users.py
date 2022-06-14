@@ -3,14 +3,14 @@ GitLab API:
 https://docs.gitlab.com/ee/api/users.html
 https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
 """
-from typing import Any, cast, Dict, Iterable, List, Optional, Union
+from typing import Any, cast, Dict, Iterable, Optional, Union
 
 import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject, RESTObjectList
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,

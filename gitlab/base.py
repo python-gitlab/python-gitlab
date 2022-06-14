@@ -19,7 +19,17 @@ import importlib
 import pprint
 import textwrap
 from types import ModuleType
-from typing import Any, Dict, Generic, Iterable, Iterator, Optional, Collection, Type, TypeVar, Union
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    Iterator,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+)
 
 import gitlab
 from gitlab import types as g_types
@@ -245,7 +255,9 @@ class RESTObject:
         d.update(self.__dict__["_parent_attrs"])
         return d
 
+
 T = TypeVar("T", bound=RESTObject)
+
 
 class RESTObjectList(Generic[T], Iterable[T]):
     """Generator object representing a list of RESTObject's.
@@ -328,8 +340,10 @@ class RESTObjectList(Generic[T], Iterable[T]):
         """The total number of items."""
         return self._list.total
 
+
 T_obj = TypeVar("T_obj", bound=RESTObject)
 T_parent = TypeVar("T_parent", bound=Optional[RESTObject])
+
 
 class RESTManager(Generic[T_obj, T_parent]):
     """Base class for CRUD operations on objects.

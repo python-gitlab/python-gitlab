@@ -1,11 +1,11 @@
-from typing import Any, Callable, cast, Iterable, List, Optional, TYPE_CHECKING, Union
+from typing import Any, Callable, cast, Iterable, Optional, TYPE_CHECKING, Union
 
 import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import utils
-from gitlab.base import RESTManager, RESTObject, RESTObjectList
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin, UserAgentDetailMixin
 from gitlab.types import RequiredOptional
 
