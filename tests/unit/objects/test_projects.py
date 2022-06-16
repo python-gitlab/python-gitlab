@@ -655,11 +655,6 @@ def test_delete_project(project, resp_delete_project):
     project.delete()
 
 
-@pytest.mark.skip(reason="missing test")
-def test_restore_project(gl):
-    pass
-
-
 def test_upload_file(project, resp_upload_file_project):
     project.upload("filename.png", "raw\nfile\ndata")
 
