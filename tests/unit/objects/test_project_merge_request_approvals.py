@@ -168,6 +168,7 @@ def test_list_merge_request_approval_rules(project, resp_mr_approval_rules):
     assert len(approval_rules) == 1
     assert approval_rules[0].name == approval_rule_name
     assert approval_rules[0].id == approval_rule_id
+    repr(approval_rules)  # ensure that `repr()` doesn't raise an exception
 
 
 def test_delete_merge_request_approval_rule(project, resp_delete_mr_approval_rule):
