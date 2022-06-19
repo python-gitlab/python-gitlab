@@ -729,8 +729,10 @@ class Gitlab:
             ):
                 # Response headers documentation:
                 # https://docs.gitlab.com/ee/user/admin_area/settings/user_and_ip_rate_limits.html#response-headers
+                # For gitlab.com:
+                # https://docs.gitlab.com/ee/user/gitlab_com/index.html#gitlabcom-specific-rate-limits
                 if max_retries == -1 or cur_retries < max_retries:
-                    wait_time = 2**cur_retries * 0.1
+                    wait_time = 60  # In gitlab.com limits are calculated per minute. Better to be on the safe side in case headers are missing
                     if "Retry-After" in result.headers:
                         wait_time = int(result.headers["Retry-After"])
                     elif "RateLimit-Reset" in result.headers:
