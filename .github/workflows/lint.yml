@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v3
       - run: pip install --upgrade tox
-      - name: Run commitizen
+      - name: Run commitizen (https://commitizen-tools.github.io/commitizen/)
         run: tox -e cz
       - name: Run black code formatter (https://black.readthedocs.io/en/stable/)
         run: tox -e black -- --check
