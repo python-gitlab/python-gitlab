@@ -484,9 +484,7 @@ class Gitlab:
         if (self.http_username and not self.http_password) or (
             not self.http_username and self.http_password
         ):
-            raise ValueError(
-                "Both http_username and http_password should " "be defined"
-            )
+            raise ValueError("Both http_username and http_password should be defined")
         if self.oauth_token and self.http_username:
             raise ValueError(
                 "Only one of oauth authentication or http "
