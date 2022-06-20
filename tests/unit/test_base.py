@@ -251,15 +251,19 @@ class TestRESTObject:
                 "<ReprObject id:1 name:fake>",
             ),
             ("name", "name", {"name": "fake"}, "<ReprObject name:fake>"),
+            ("id", "name", {"id": 1}, "<ReprObject id:1>"),
             (None, None, {}, "<ReprObject>"),
             (None, "name", {"name": "fake"}, "<ReprObject name:fake>"),
+            (None, "name", {}, "<ReprObject>"),
         ],
         ids=[
             "GetMixin with id",
             "GetMixin with id and _repr_attr",
             "GetMixin with _repr_attr matching _id_attr",
+            "GetMixin with _repr_attr without _repr_attr value defined",
             "GetWithoutIDMixin",
             "GetWithoutIDMixin with _repr_attr",
+            "GetWithoutIDMixin with _repr_attr without _repr_attr value defined",
         ],
     )
     def test_dunder_repr(self, fake_manager, id_attr, repr_attr, attrs, expected_repr):
