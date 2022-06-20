@@ -162,15 +162,15 @@ class RESTObject:
     def __repr__(self) -> str:
         name = self.__class__.__name__
 
-        if (self._id_attr and self._repr_attr) and (self._id_attr != self._repr_attr):
+        if (self._id_attr and self._repr_value) and (self._id_attr != self._repr_attr):
             return (
                 f"<{name} {self._id_attr}:{self.get_id()} "
-                f"{self._repr_attr}:{getattr(self, self._repr_attr)}>"
+                f"{self._repr_attr}:{self._repr_value}>"
             )
         if self._id_attr:
             return f"<{name} {self._id_attr}:{self.get_id()}>"
-        if self._repr_attr:
-            return f"<{name} {self._repr_attr}:{getattr(self, self._repr_attr)}>"
+        if self._repr_value:
+            return f"<{name} {self._repr_attr}:{self._repr_value}>"
 
         return f"<{name}>"
 
@@ -228,6 +228,13 @@ class RESTObject:
         if self._id_attr is None or not hasattr(self, self._id_attr):
             return None
         return getattr(self, self._id_attr)
+
+    @property
+    def _repr_value(self) -> Optional[str]:
+        """Safely returns the human-readable resource name if present."""
+        if self._repr_attr is None or not hasattr(self, self._repr_attr):
+            return None
+        return getattr(self, self._repr_attr)
 
     @property
     def encoded_id(self) -> Optional[Union[int, str]]:
