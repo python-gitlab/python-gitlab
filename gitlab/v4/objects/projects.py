@@ -31,7 +31,10 @@ from .custom_attributes import ProjectCustomAttributeManager  # noqa: F401
 from .deploy_keys import ProjectKeyManager  # noqa: F401
 from .deploy_tokens import ProjectDeployTokenManager  # noqa: F401
 from .deployments import ProjectDeploymentManager  # noqa: F401
-from .environments import ProjectEnvironmentManager  # noqa: F401
+from .environments import (  # noqa: F401
+    ProjectEnvironmentManager,
+    ProjectProtectedEnvironmentManager,
+)
 from .events import ProjectEventManager  # noqa: F401
 from .export_import import ProjectExportManager, ProjectImportManager  # noqa: F401
 from .files import ProjectFileManager  # noqa: F401
@@ -175,6 +178,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     pagesdomains: ProjectPagesDomainManager
     pipelines: ProjectPipelineManager
     pipelineschedules: ProjectPipelineScheduleManager
+    protected_environments: ProjectProtectedEnvironmentManager
     protectedbranches: ProjectProtectedBranchManager
     protectedtags: ProjectProtectedTagManager
     pushrules: ProjectPushRulesManager
