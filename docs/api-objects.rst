@@ -43,6 +43,7 @@ API examples
    gl_objects/projects
    gl_objects/project_access_tokens
    gl_objects/protected_branches
+   gl_objects/protected_environments
    gl_objects/releases
    gl_objects/runners
    gl_objects/remote_mirrors

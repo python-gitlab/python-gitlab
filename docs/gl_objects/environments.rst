@@ -39,6 +39,8 @@ Delete an environment for a project::
     # or
     environment.delete()
 
-Stop an environments::
+Stop an environment::
 
     environment.stop()
+
+To manage protected environments, see :doc:`/gl_objects/protected_environments`.
