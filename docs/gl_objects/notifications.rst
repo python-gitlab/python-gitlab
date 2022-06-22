@@ -5,12 +5,12 @@ Notification settings
 You can define notification settings globally, for groups and for projects.
 Valid levels are defined as constants:
 
-* ``gitlab.const.NOTIFICATION_LEVEL_DISABLED``
-* ``gitlab.const.NOTIFICATION_LEVEL_PARTICIPATING``
-* ``gitlab.const.NOTIFICATION_LEVEL_WATCH``
-* ``gitlab.const.NOTIFICATION_LEVEL_GLOBAL``
-* ``gitlab.const.NOTIFICATION_LEVEL_MENTION``
-* ``gitlab.const.NOTIFICATION_LEVEL_CUSTOM``
+* ``gitlab.const.NotificationLevel.DISABLED``
+* ``gitlab.const.NotificationLevel.PARTICIPATING``
+* ``gitlab.const.NotificationLevel.WATCH``
+* ``gitlab.const.NotificationLevel.GLOBAL``
+* ``gitlab.const.NotificationLevel.MENTION``
+* ``gitlab.const.NotificationLevel.CUSTOM``
 
 You get access to fine-grained settings if you use the
 ``NOTIFICATION_LEVEL_CUSTOM`` level.
@@ -47,10 +47,10 @@ Get the notifications settings::
 Update the notifications settings::
 
     # use a predefined level
-    settings.level = gitlab.const.NOTIFICATION_LEVEL_WATCH
+    settings.level = gitlab.const.NotificationLevel.WATCH.value
 
     # create a custom setup
-    settings.level = gitlab.const.NOTIFICATION_LEVEL_CUSTOM
+    settings.level = gitlab.const.NotificationLevel.CUSTOM.value
     settings.save()  # will create additional attributes, but not mandatory
 
     settings.new_merge_request = True
