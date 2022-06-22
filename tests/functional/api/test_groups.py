@@ -43,17 +43,17 @@ def test_groups(gl):
     assert group4 in filtered_groups
 
     group1.members.create(
-        {"access_level": gitlab.const.OWNER_ACCESS, "user_id": user.id}
+        {"access_level": gitlab.const.AccessLevel.OWNER, "user_id": user.id}
     )
     group1.members.create(
-        {"access_level": gitlab.const.GUEST_ACCESS, "user_id": user2.id}
+        {"access_level": gitlab.const.AccessLevel.GUEST, "user_id": user2.id}
     )
     group2.members.create(
-        {"access_level": gitlab.const.OWNER_ACCESS, "user_id": user2.id}
+        {"access_level": gitlab.const.AccessLevel.OWNER, "user_id": user2.id}
     )
 
-    group4.share(group1.id, gitlab.const.DEVELOPER_ACCESS)
-    group4.share(group2.id, gitlab.const.MAINTAINER_ACCESS)
+    group4.share(group1.id, gitlab.const.AccessLevel.DEVELOPER)
+    group4.share(group2.id, gitlab.const.AccessLevel.MAINTAINER)
     # Reload group4 to have updated shared_with_groups
     group4 = gl.groups.get(group4.id)
     assert len(group4.shared_with_groups) == 2
@@ -71,7 +71,7 @@ def test_groups(gl):
 
     membership = memberships1[0]
     assert membership.source_type == "Namespace"
-    assert membership.access_level == gitlab.const.OWNER_ACCESS
+    assert membership.access_level == gitlab.const.AccessLevel.OWNER
 
     project_memberships = user.memberships.list(type="Project")
     assert len(project_memberships) == 0
@@ -95,10 +95,10 @@ def test_groups(gl):
     assert len(group1.members.list()) == 2
     assert len(group1.members_all.list())
     member = group1.members.get(user2.id)
-    member.access_level = gitlab.const.OWNER_ACCESS
+    member.access_level = gitlab.const.AccessLevel.OWNER
     member.save()
     member = group1.members.get(user2.id)
-    assert member.access_level == gitlab.const.OWNER_ACCESS
+    assert member.access_level == gitlab.const.AccessLevel.OWNER
 
     gl.auth()
     group2.members.delete(gl.user.id)

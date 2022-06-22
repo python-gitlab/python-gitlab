@@ -31,8 +31,8 @@ Create a protected branch::
 
     p_branch = project.protectedbranches.create({
         'name': '*-stable',
-        'merge_access_level': gitlab.const.AccessLevel.DEVELOPER.value,
-        'push_access_level': gitlab.const.AccessLevel.MAINTAINER.value
+        'merge_access_level': gitlab.const.AccessLevel.DEVELOPER,
+        'push_access_level': gitlab.const.AccessLevel.MAINTAINER
     })
 
 Create a protected branch with more granular access control::
@@ -41,7 +41,7 @@ Create a protected branch with more granular access control::
         'name': '*-stable',
         'allowed_to_push': [{"user_id": 99}, {"user_id": 98}],
         'allowed_to_merge': [{"group_id": 653}],
-        'allowed_to_unprotect': [{"access_level": gitlab.const.AccessLevel.MAINTAINER.value}]
+        'allowed_to_unprotect': [{"access_level": gitlab.const.AccessLevel.MAINTAINER}]
     })
 
 Delete a protected branch::

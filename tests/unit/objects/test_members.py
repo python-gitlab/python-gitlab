@@ -4,6 +4,7 @@ GitLab API: https://docs.gitlab.com/ee/api/members.html
 import pytest
 import responses
 
+from gitlab.const import AccessLevel
 from gitlab.v4.objects import GroupBillableMember
 
 billable_members_content = [
@@ -19,6 +20,19 @@ billable_members_content = [
         "removable": True,
     }
 ]
+
+
+@pytest.fixture
+def resp_create_group_member(no_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/groups/1/members",
+            json={"id": 1, "username": "jane_doe", "access_level": 30},
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
 
 
 @pytest.fixture
@@ -45,6 +59,11 @@ def resp_delete_billable_group_member(no_content):
             status=204,
         )
         yield rsps
+
+
+def test_create_group_member(group, resp_create_group_member):
+    member = group.members.create({"user_id": 1, "access_level": AccessLevel.DEVELOPER})
+    assert member.access_level == 30
 
 
 def test_list_group_billable_members(group, resp_list_billable_group_members):

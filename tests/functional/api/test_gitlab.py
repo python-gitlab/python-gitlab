@@ -125,15 +125,15 @@ def test_namespaces(gl):
 
 def test_notification_settings(gl):
     settings = gl.notificationsettings.get()
-    settings.level = gitlab.const.NOTIFICATION_LEVEL_WATCH
+    settings.level = gitlab.const.NotificationLevel.WATCH
     settings.save()
 
     settings = gl.notificationsettings.get()
-    assert settings.level == gitlab.const.NOTIFICATION_LEVEL_WATCH
+    assert settings.level == gitlab.const.NotificationLevel.WATCH
 
 
 def test_search(gl):
-    result = gl.search(scope=gitlab.const.SEARCH_SCOPE_USERS, search="Administrator")
+    result = gl.search(scope=gitlab.const.SearchScope.USERS, search="Administrator")
     assert result[0]["id"] == 1
 
 

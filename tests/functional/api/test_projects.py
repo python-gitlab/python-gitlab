@@ -3,6 +3,7 @@ import uuid
 import pytest
 
 import gitlab
+from gitlab.const import AccessLevel
 from gitlab.v4.objects.projects import ProjectStorage
 
 
@@ -34,6 +35,17 @@ def test_create_project(gl, user):
 
     admin_project.delete()
     sudo_project.delete()
+
+
+def test_project_members(user, project):
+    member = project.members.create(
+        {"user_id": user.id, "access_level": AccessLevel.DEVELOPER}
+    )
+    assert member in project.members.list()
+    assert member.access_level == 30
+
+    member.delete()
+    assert member not in project.members.list()
 
 
 def test_project_badges(project):

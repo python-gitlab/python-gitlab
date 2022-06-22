@@ -19,7 +19,6 @@
 import copy
 import logging
 import pickle
-import warnings
 from http.client import HTTPConnection
 
 import pytest
@@ -321,16 +320,25 @@ def test_gitlab_user_agent(kwargs, expected_agent):
     assert gl.headers["User-Agent"] == expected_agent
 
 
-def test_gitlab_deprecated_const():
-    with warnings.catch_warnings(record=True) as caught_warnings:
-        gitlab.NO_ACCESS
-    assert len(caught_warnings) == 1
-    warning = caught_warnings[0]
-    assert isinstance(warning.message, DeprecationWarning)
-    message = str(caught_warnings[0].message)
-    assert "deprecated" in message
-    assert "gitlab.const.NO_ACCESS" in message
+def test_gitlab_deprecated_global_const_warns():
+    with pytest.deprecated_call(
+        match="'gitlab.NO_ACCESS' is deprecated.*constants in the 'gitlab.const'"
+    ) as record:
+        no_access = gitlab.NO_ACCESS
 
-    with warnings.catch_warnings(record=True) as caught_warnings:
-        gitlab.const.NO_ACCESS
-    assert len(caught_warnings) == 0
+    assert len(record) == 1
+    assert no_access == 0
+
+
+def test_gitlab_enum_const_does_not_warn(recwarn):
+    no_access = gitlab.const.AccessLevel.NO_ACCESS
+
+    assert not recwarn
+    assert no_access == 0
+
+
+def test_gitlab_plain_const_does_not_warn(recwarn):
+    no_access = gitlab.const.NO_ACCESS
+
+    assert not recwarn
+    assert no_access == 0
