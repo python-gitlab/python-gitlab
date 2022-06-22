@@ -44,7 +44,7 @@ Create a snippet::
 
 Update the snippet attributes::
 
-    snippet.visibility_level = gitlab.const.Visibility.PUBLIC.value
+    snippet.visibility_level = gitlab.const.Visibility.PUBLIC
     snippet.save()
 
 To update a snippet code you need to create a ``ProjectSnippet`` object::

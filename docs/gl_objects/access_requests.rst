@@ -43,7 +43,7 @@ Create an access request::
 Approve an access request::
 
     ar.approve()  # defaults to DEVELOPER level
-    ar.approve(access_level=gitlab.const.AccessLevel.MAINTAINER.value)  # explicitly set access level
+    ar.approve(access_level=gitlab.const.AccessLevel.MAINTAINER)  # explicitly set access level
 
 Deny (delete) an access request::
 
