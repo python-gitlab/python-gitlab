@@ -43,9 +43,9 @@ def __getattr__(name: str) -> Any:
     if name in gitlab.const._DEPRECATED:
         _utils.warn(
             message=(
-                f"\nDirect access to 'gitlab.{name}' is deprecated and will be "
-                f"removed in a future major python-gitlab release. Please "
-                f"use 'gitlab.const.{name}' instead."
+                f"\nDirect access to constants as 'gitlab.{name}' is deprecated and "
+                f"will be removed in a future major python-gitlab release. Please "
+                f"see the usage of constants in the 'gitlab.const' module instead."
             ),
             category=DeprecationWarning,
         )
