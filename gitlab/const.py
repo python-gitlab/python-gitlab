@@ -143,3 +143,11 @@ SEARCH_SCOPE_GLOBAL_SNIPPET_TITLES = SearchScope.GLOBAL_SNIPPET_TITLES.value
 SEARCH_SCOPE_PROJECT_NOTES = SearchScope.PROJECT_NOTES.value
 
 USER_AGENT: str = f"{__title__}/{__version__}"
+
+__all__ = [
+    "AccessLevel",
+    "Visibility",
+    "NotificationLevel",
+    "SearchScope",
+]
+__all__.extend(_DEPRECATED)

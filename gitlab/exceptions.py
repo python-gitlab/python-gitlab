@@ -322,3 +322,6 @@ def on_http_error(error: Type[Exception]) -> Callable[[__F], __F]:
         return cast(__F, wrapped_f)
 
     return wrap
+
+
+__all__ = [name for name in dir() if name.endswith("Error")]
