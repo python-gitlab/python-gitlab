@@ -19,9 +19,29 @@ import os
 import sys
 from datetime import datetime
 
+from sphinx.domains.python import PythonDomain
+
 sys.path.append("../")
 sys.path.append(os.path.dirname(__file__))
 import gitlab  # noqa: E402. Needed purely for readthedocs' build
+
+
+# Sphinx will warn when attributes are exported in multiple places. See workaround:
+# https://github.com/sphinx-doc/sphinx/issues/3866#issuecomment-768167824
+# This patch can be removed when this issue is resolved:
+# https://github.com/sphinx-doc/sphinx/issues/4961
+class PatchedPythonDomain(PythonDomain):
+    def resolve_xref(self, env, fromdocname, builder, typ, target, node, contnode):
+        if "refspecific" in node:
+            del node["refspecific"]
+        return super(PatchedPythonDomain, self).resolve_xref(
+            env, fromdocname, builder, typ, target, node, contnode
+        )
+
+
+def setup(sphinx):
+    sphinx.add_domain(PatchedPythonDomain, override=True)
+
 
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 year = datetime.now().year
