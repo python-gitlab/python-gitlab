@@ -287,6 +287,7 @@ man_pages = [
 # If true, show URL addresses after external links.
 # man_show_urls = False
 
+nitpick_ignore_regex = [(r"py:.*", r".*")]
 
 # -- Options for Texinfo output -------------------------------------------
 
