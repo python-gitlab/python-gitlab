@@ -47,10 +47,10 @@ Get the notifications settings::
 Update the notifications settings::
 
     # use a predefined level
-    settings.level = gitlab.const.NotificationLevel.WATCH.value
+    settings.level = gitlab.const.NotificationLevel.WATCH
 
     # create a custom setup
-    settings.level = gitlab.const.NotificationLevel.CUSTOM.value
+    settings.level = gitlab.const.NotificationLevel.CUSTOM
     settings.save()  # will create additional attributes, but not mandatory
 
     settings.new_merge_request = True

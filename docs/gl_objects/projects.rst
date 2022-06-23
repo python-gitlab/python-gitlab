@@ -487,7 +487,7 @@ Create a snippet::
                                        'file_name': 'foo.py',
                                        'code': 'import gitlab',
                                        'visibility_level':
-                                       gitlab.const.Visibility.PRIVATE.value})
+                                       gitlab.const.Visibility.PRIVATE})
 
 Update a snippet::
 
@@ -553,11 +553,11 @@ Get a member of a project, including members inherited through ancestor groups::
 Add a project member::
 
     member = project.members.create({'user_id': user.id, 'access_level':
-                                     gitlab.const.AccessLevel.DEVELOPER.value})
+                                     gitlab.const.AccessLevel.DEVELOPER})
 
 Modify a project member (change the access level)::
 
-    member.access_level = gitlab.const.AccessLevel.MAINTAINER.value
+    member.access_level = gitlab.const.AccessLevel.MAINTAINER
     member.save()
 
 Remove a member from the project team::
@@ -568,7 +568,7 @@ Remove a member from the project team::
 
 Share/unshare the project with a group::
 
-    project.share(group.id, gitlab.const.AccessLevel.DEVELOPER.value)
+    project.share(group.id, gitlab.const.AccessLevel.DEVELOPER)
     project.unshare(group.id)
 
 Project hooks

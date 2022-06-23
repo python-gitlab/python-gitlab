@@ -46,30 +46,30 @@ Examples
 Search for issues matching a specific string::
 
     # global search
-    gl.search(gitlab.const.SearchScope.ISSUES.value, 'regression')
+    gl.search(gitlab.const.SearchScope.ISSUES, 'regression')
 
     # group search
     group = gl.groups.get('mygroup')
-    group.search(gitlab.const.SearchScope.ISSUES.value, 'regression')
+    group.search(gitlab.const.SearchScope.ISSUES, 'regression')
 
     # project search
     project = gl.projects.get('myproject')
-    project.search(gitlab.const.SearchScope.ISSUES.value, 'regression')
+    project.search(gitlab.const.SearchScope.ISSUES, 'regression')
 
 The ``search()`` methods implement the pagination support::
 
     # get lists of 10 items, and start at page 2
-    gl.search(gitlab.const.SearchScope.ISSUES.value, search_str, page=2, per_page=10)
+    gl.search(gitlab.const.SearchScope.ISSUES, search_str, page=2, per_page=10)
 
     # get a generator that will automatically make required API calls for
     # pagination
-    for item in gl.search(gitlab.const.SearchScope.ISSUES.value, search_str, iterator=True):
+    for item in gl.search(gitlab.const.SearchScope.ISSUES, search_str, iterator=True):
         do_something(item)
 
 The search API doesn't return objects, but dicts. If you need to act on
 objects, you need to create them explicitly::
 
-    for item in gl.search(gitlab.const.SearchScope.ISSUES.value, search_str, iterator=True):
+    for item in gl.search(gitlab.const.SearchScope.ISSUES, search_str, iterator=True):
         issue_project = gl.projects.get(item['project_id'], lazy=True)
         issue = issue_project.issues.get(item['iid'])
         issue.state = 'closed'

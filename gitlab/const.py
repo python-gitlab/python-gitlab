@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2016-2017 Gauvain Pocentek <gauvain@pocentek.net>
-#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +13,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from enum import Enum, IntEnum
+from typing import Any
 
 from gitlab._version import __title__, __version__
 
@@ -56,8 +54,18 @@ _DEPRECATED = [
 ]
 
 
+class GitlabConstant:
+    def __new__(cls, value: Any) -> str:  # type: ignore
+        # This allows us to get a string representation of a value.
+        # For example: AccessLevel(10)
+        for attr, attr_value in cls.__dict__.items():
+            if value == attr_value:
+                return attr
+        raise ValueError(f"{value!r} is not a valid {cls.__qualname__}")
+
+
 # https://gitlab.com/gitlab-org/gitlab/-/blob/e97357824bedf007e75f8782259fe07435b64fbb/lib/gitlab/access.rb#L12-18
-class AccessLevel(IntEnum):
+class AccessLevel(GitlabConstant):
     NO_ACCESS: int = 0
     MINIMAL_ACCESS: int = 5
     GUEST: int = 10
@@ -69,13 +77,13 @@ class AccessLevel(IntEnum):
 
 
 # https://gitlab.com/gitlab-org/gitlab/-/blob/e97357824bedf007e75f8782259fe07435b64fbb/lib/gitlab/visibility_level.rb#L23-25
-class Visibility(Enum):
+class Visibility(GitlabConstant):
     PRIVATE: str = "private"
     INTERNAL: str = "internal"
     PUBLIC: str = "public"
 
 
-class NotificationLevel(Enum):
+class NotificationLevel(GitlabConstant):
     DISABLED: str = "disabled"
     PARTICIPATING: str = "participating"
     WATCH: str = "watch"
@@ -85,7 +93,7 @@ class NotificationLevel(Enum):
 
 
 # https://gitlab.com/gitlab-org/gitlab/-/blob/e97357824bedf007e75f8782259fe07435b64fbb/app/views/search/_category.html.haml#L10-37
-class SearchScope(Enum):
+class SearchScope(GitlabConstant):
     # all scopes (global, group and  project)
     PROJECTS: str = "projects"
     ISSUES: str = "issues"
@@ -105,41 +113,41 @@ class SearchScope(Enum):
 
 DEFAULT_URL: str = "https://gitlab.com"
 
-NO_ACCESS = AccessLevel.NO_ACCESS.value
-MINIMAL_ACCESS = AccessLevel.MINIMAL_ACCESS.value
-GUEST_ACCESS = AccessLevel.GUEST.value
-REPORTER_ACCESS = AccessLevel.REPORTER.value
-DEVELOPER_ACCESS = AccessLevel.DEVELOPER.value
-MAINTAINER_ACCESS = AccessLevel.MAINTAINER.value
-OWNER_ACCESS = AccessLevel.OWNER.value
-ADMIN_ACCESS = AccessLevel.ADMIN.value
+NO_ACCESS = AccessLevel.NO_ACCESS
+MINIMAL_ACCESS = AccessLevel.MINIMAL_ACCESS
+GUEST_ACCESS = AccessLevel.GUEST
+REPORTER_ACCESS = AccessLevel.REPORTER
+DEVELOPER_ACCESS = AccessLevel.DEVELOPER
+MAINTAINER_ACCESS = AccessLevel.MAINTAINER
+OWNER_ACCESS = AccessLevel.OWNER
+ADMIN_ACCESS = AccessLevel.ADMIN
 
-VISIBILITY_PRIVATE = Visibility.PRIVATE.value
-VISIBILITY_INTERNAL = Visibility.INTERNAL.value
-VISIBILITY_PUBLIC = Visibility.PUBLIC.value
+VISIBILITY_PRIVATE = Visibility.PRIVATE
+VISIBILITY_INTERNAL = Visibility.INTERNAL
+VISIBILITY_PUBLIC = Visibility.PUBLIC
 
-NOTIFICATION_LEVEL_DISABLED = NotificationLevel.DISABLED.value
-NOTIFICATION_LEVEL_PARTICIPATING = NotificationLevel.PARTICIPATING.value
-NOTIFICATION_LEVEL_WATCH = NotificationLevel.WATCH.value
-NOTIFICATION_LEVEL_GLOBAL = NotificationLevel.GLOBAL.value
-NOTIFICATION_LEVEL_MENTION = NotificationLevel.MENTION.value
-NOTIFICATION_LEVEL_CUSTOM = NotificationLevel.CUSTOM.value
+NOTIFICATION_LEVEL_DISABLED = NotificationLevel.DISABLED
+NOTIFICATION_LEVEL_PARTICIPATING = NotificationLevel.PARTICIPATING
+NOTIFICATION_LEVEL_WATCH = NotificationLevel.WATCH
+NOTIFICATION_LEVEL_GLOBAL = NotificationLevel.GLOBAL
+NOTIFICATION_LEVEL_MENTION = NotificationLevel.MENTION
+NOTIFICATION_LEVEL_CUSTOM = NotificationLevel.CUSTOM
 
 # Search scopes
 # all scopes (global, group and  project)
-SEARCH_SCOPE_PROJECTS = SearchScope.PROJECTS.value
-SEARCH_SCOPE_ISSUES = SearchScope.ISSUES.value
-SEARCH_SCOPE_MERGE_REQUESTS = SearchScope.MERGE_REQUESTS.value
-SEARCH_SCOPE_MILESTONES = SearchScope.MILESTONES.value
-SEARCH_SCOPE_WIKI_BLOBS = SearchScope.WIKI_BLOBS.value
-SEARCH_SCOPE_COMMITS = SearchScope.COMMITS.value
-SEARCH_SCOPE_BLOBS = SearchScope.BLOBS.value
-SEARCH_SCOPE_USERS = SearchScope.USERS.value
+SEARCH_SCOPE_PROJECTS = SearchScope.PROJECTS
+SEARCH_SCOPE_ISSUES = SearchScope.ISSUES
+SEARCH_SCOPE_MERGE_REQUESTS = SearchScope.MERGE_REQUESTS
+SEARCH_SCOPE_MILESTONES = SearchScope.MILESTONES
+SEARCH_SCOPE_WIKI_BLOBS = SearchScope.WIKI_BLOBS
+SEARCH_SCOPE_COMMITS = SearchScope.COMMITS
+SEARCH_SCOPE_BLOBS = SearchScope.BLOBS
+SEARCH_SCOPE_USERS = SearchScope.USERS
 
 # specific global scope
-SEARCH_SCOPE_GLOBAL_SNIPPET_TITLES = SearchScope.GLOBAL_SNIPPET_TITLES.value
+SEARCH_SCOPE_GLOBAL_SNIPPET_TITLES = SearchScope.GLOBAL_SNIPPET_TITLES
 
 # specific project scope
-SEARCH_SCOPE_PROJECT_NOTES = SearchScope.PROJECT_NOTES.value
+SEARCH_SCOPE_PROJECT_NOTES = SearchScope.PROJECT_NOTES
 
 USER_AGENT: str = f"{__title__}/{__version__}"
