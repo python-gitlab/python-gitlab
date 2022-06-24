@@ -424,6 +424,22 @@ def test_get_request_invalid_data(gl):
 
 
 @responses.activate
+def test_head_request(gl):
+    url = "http://localhost/api/v4/projects"
+    responses.add(
+        method=responses.HEAD,
+        url=url,
+        headers={"X-Total": "1"},
+        status=200,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+    )
+
+    result = gl.http_head("/projects")
+    assert isinstance(result, requests.structures.CaseInsensitiveDict)
+    assert result["X-Total"] == "1"
+
+
+@responses.activate
 def test_list_request(gl):
     url = "http://localhost/api/v4/projects"
     responses.add(
