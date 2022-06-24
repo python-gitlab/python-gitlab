@@ -357,6 +357,7 @@ python-gitlab:
 
 .. code-block:: python
 
+   import os
    import gitlab
    import requests
 
