@@ -154,8 +154,13 @@ def check_is_alive():
     Return a healthcheck function fixture for the GitLab container spinup.
     """
 
-    def _check(container):
-        logging.info("Checking if GitLab container is up...")
+    def _check(container: str, start_time: float) -> bool:
+        setup_time = time.perf_counter() - start_time
+        minutes, seconds = int(setup_time / 60), int(setup_time % 60)
+        logging.info(
+            f"Checking if GitLab container is up. "
+            f"Have been checking for {minutes} minute(s), {seconds} seconds ..."
+        )
         logs = ["docker", "logs", container]
         return "gitlab Reconfigured!" in check_output(logs).decode()
 
@@ -191,11 +196,18 @@ def gitlab_config(check_is_alive, docker_ip, docker_services, temp_dir, fixture_
     config_file = temp_dir / "python-gitlab.cfg"
     port = docker_services.port_for("gitlab", 80)
 
+    start_time = time.perf_counter()
     logging.info("Waiting for GitLab container to become ready.")
     docker_services.wait_until_responsive(
-        timeout=200, pause=10, check=lambda: check_is_alive("gitlab-test")
+        timeout=300,
+        pause=10,
+        check=lambda: check_is_alive("gitlab-test", start_time=start_time),
     )
-    logging.info("GitLab container is now ready.")
+    setup_time = time.perf_counter() - start_time
+    minutes, seconds = int(setup_time / 60), int(setup_time % 60)
+    logging.info(
+        f"GitLab container is now ready after {minutes} minute(s), {seconds} seconds"
+    )
 
     token = set_token("gitlab-test", fixture_dir=fixture_dir)
 
