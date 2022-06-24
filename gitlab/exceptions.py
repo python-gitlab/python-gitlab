@@ -82,6 +82,10 @@ class GitlabGetError(GitlabOperationError):
     pass
 
 
+class GitlabHeadError(GitlabOperationError):
+    pass
+
+
 class GitlabCreateError(GitlabOperationError):
     pass
 

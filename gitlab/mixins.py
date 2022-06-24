@@ -68,7 +68,35 @@ else:
     _RestObjectBase = object
 
 
-class GetMixin(_RestManagerBase):
+class HeadMixin(_RestManagerBase):
+    @exc.on_http_error(exc.GitlabHeadError)
+    def head(
+        self, id: Optional[Union[str, int]] = None, **kwargs: Any
+    ) -> requests.structures.CaseInsensitiveDict:
+        """Retrieve headers from an endpoint.
+
+        Args:
+            id: ID of the object to retrieve
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Returns:
+            A requests header object.
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabHeadError: If the server cannot perform the request
+        """
+        if TYPE_CHECKING:
+            assert self.path is not None
+
+        path = self.path
+        if id is not None:
+            path = f"{path}/{utils.EncodedId(id)}"
+
+        return self.gitlab.http_head(path, **kwargs)
+
+
+class GetMixin(HeadMixin, _RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _obj_cls: Optional[Type[base.RESTObject]]
@@ -113,7 +141,7 @@ class GetMixin(_RestManagerBase):
         return self._obj_cls(self, server_data)
 
 
-class GetWithoutIdMixin(_RestManagerBase):
+class GetWithoutIdMixin(HeadMixin, _RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _obj_cls: Optional[Type[base.RESTObject]]
@@ -181,7 +209,7 @@ class RefreshMixin(_RestObjectBase):
         self._update_attrs(server_data)
 
 
-class ListMixin(_RestManagerBase):
+class ListMixin(HeadMixin, _RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _list_filters: Tuple[str, ...] = ()

@@ -6,6 +6,16 @@ import gitlab
 from gitlab.v4.objects.projects import ProjectStorage
 
 
+def test_projects_head(gl):
+    headers = gl.projects.head()
+    assert headers["x-total"]
+
+
+def test_project_head(gl, project):
+    headers = gl.projects.head(project.id)
+    assert headers["content-type"] == "application/json"
+
+
 def test_create_project(gl, user):
     # Moved from group tests chunk in legacy tests, TODO cleanup
     admin_project = gl.projects.create({"name": "admin_project"})

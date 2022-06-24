@@ -1,4 +1,5 @@
 import pytest
+import requests
 import responses
 
 from gitlab import base
@@ -45,6 +46,26 @@ def test_get_mixin(gl):
     assert obj.foo == "bar"
     assert obj.id == 42
     assert responses.assert_call_count(url, 1) is True
+
+
+@responses.activate
+def test_head_mixin(gl):
+    class M(GetMixin, FakeManager):
+        pass
+
+    url = "http://localhost/api/v4/tests/42"
+    responses.add(
+        method=responses.HEAD,
+        url=url,
+        headers={"X-GitLab-Header": "test"},
+        status=200,
+        match=[responses.matchers.query_param_matcher({})],
+    )
+
+    manager = M(gl)
+    result = manager.head(42)
+    assert isinstance(result, requests.structures.CaseInsensitiveDict)
+    assert result["x-gitlab-header"] == "test"
 
 
 @responses.activate
