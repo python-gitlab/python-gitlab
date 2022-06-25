@@ -380,7 +380,16 @@ Get a file::
 
     # get the decoded content
     print(f.decode())
-    
+
+Get file details from headers, without fetching its entire content::
+
+    headers = project.files.head('README.rst', ref='main')
+
+    # Get the file size:
+    # For a full list of headers returned, see upstream documentation.
+    # https://docs.gitlab.com/ee/api/repository_files.html#get-file-from-repository
+    print(headers["X-Gitlab-Size"])
+
 Get a raw file::
     
     raw_content = project.files.raw(file_path='README.rst', ref='main')
