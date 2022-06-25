@@ -3,7 +3,7 @@ GitLab API: https://docs.gitlab.com/ee/api/repositories.html
 
 Currently this module only contains repository-related methods for projects.
 """
-from typing import Any, Callable, Dict, List, Optional, TYPE_CHECKING, Union
+from typing import Any, Callable, Dict, Iterator, List, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -107,10 +107,11 @@ class RepositoryMixin(_RestObjectBase):
         self,
         sha: str,
         streamed: bool = False,
+        iterator: bool = False,
         action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Return the raw file contents for a blob.
 
         Args:
@@ -118,6 +119,8 @@ class RepositoryMixin(_RestObjectBase):
             streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
+            iterator: If True directly return the underlying response
+                iterator
             action: Callable responsible of dealing with chunk of
                 data
             chunk_size: Size of each chunk
@@ -136,7 +139,7 @@ class RepositoryMixin(_RestObjectBase):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, action, chunk_size)
+        return utils.response_content(result, streamed, iterator, action, chunk_size)
 
     @cli.register_custom_action("Project", ("from_", "to"))
     @exc.on_http_error(exc.GitlabGetError)
@@ -192,11 +195,12 @@ class RepositoryMixin(_RestObjectBase):
         self,
         sha: str = None,
         streamed: bool = False,
+        iterator: bool = False,
         action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
         format: Optional[str] = None,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Return an archive of the repository.
 
         Args:
@@ -204,6 +208,8 @@ class RepositoryMixin(_RestObjectBase):
             streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
+            iterator: If True directly return the underlying response
+                iterator
             action: Callable responsible of dealing with chunk of
                 data
             chunk_size: Size of each chunk
@@ -228,7 +234,7 @@ class RepositoryMixin(_RestObjectBase):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, action, chunk_size)
+        return utils.response_content(result, streamed, iterator, action, chunk_size)
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabDeleteError)

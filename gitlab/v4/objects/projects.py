@@ -1,4 +1,14 @@
-from typing import Any, Callable, cast, Dict, List, Optional, TYPE_CHECKING, Union
+from typing import (
+    Any,
+    Callable,
+    cast,
+    Dict,
+    Iterator,
+    List,
+    Optional,
+    TYPE_CHECKING,
+    Union,
+)
 
 import requests
 
@@ -466,10 +476,11 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         self,
         wiki: bool = False,
         streamed: bool = False,
+        iterator: bool = False,
         action: Optional[Callable] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Return a snapshot of the repository.
 
         Args:
@@ -477,6 +488,8 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment.
+            iterator: If True directly return the underlying response
+                iterator
             action: Callable responsible of dealing with chunk of
                 data
             chunk_size: Size of each chunk
@@ -495,7 +508,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, action, chunk_size)
+        return utils.response_content(result, streamed, iterator, action, chunk_size)
 
     @cli.register_custom_action("Project", ("scope", "search"))
     @exc.on_http_error(exc.GitlabSearchError)
@@ -579,7 +592,11 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             ),
             category=DeprecationWarning,
         )
-        return self.artifacts.raw(*args, **kwargs)
+        data = self.artifacts.raw(*args, **kwargs)
+        if TYPE_CHECKING:
+            assert data is not None
+            assert isinstance(data, bytes)
+        return data
 
 
 class ProjectManager(CRUDMixin, RESTManager):

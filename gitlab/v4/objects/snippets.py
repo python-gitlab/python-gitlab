@@ -1,4 +1,4 @@
-from typing import Any, Callable, cast, List, Optional, TYPE_CHECKING, Union
+from typing import Any, Callable, cast, Iterator, List, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -29,16 +29,19 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     def content(
         self,
         streamed: bool = False,
+        iterator: bool = False,
         action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Return the content of a snippet.
 
         Args:
             streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment.
+            iterator: If True directly return the underlying response
+                iterator
             action: Callable responsible of dealing with chunk of
                 data
             chunk_size: Size of each chunk
@@ -57,7 +60,7 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, action, chunk_size)
+        return utils.response_content(result, streamed, iterator, action, chunk_size)
 
 
 class SnippetManager(CRUDMixin, RESTManager):
@@ -103,16 +106,19 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
     def content(
         self,
         streamed: bool = False,
+        iterator: bool = False,
         action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Return the content of a snippet.
 
         Args:
             streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment.
+            iterator: If True directly return the underlying response
+                iterator
             action: Callable responsible of dealing with chunk of
                 data
             chunk_size: Size of each chunk
@@ -131,7 +137,7 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, action, chunk_size)
+        return utils.response_content(result, streamed, iterator, action, chunk_size)
 
 
 class ProjectSnippetManager(CRUDMixin, RESTManager):

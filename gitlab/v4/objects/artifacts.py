@@ -2,7 +2,7 @@
 GitLab API:
 https://docs.gitlab.com/ee/api/job_artifacts.html
 """
-from typing import Any, Callable, Optional, TYPE_CHECKING
+from typing import Any, Callable, Iterator, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -40,10 +40,14 @@ class ProjectArtifactManager(RESTManager):
             ),
             category=DeprecationWarning,
         )
-        return self.download(
+        data = self.download(
             *args,
             **kwargs,
         )
+        if TYPE_CHECKING:
+            assert data is not None
+            assert isinstance(data, bytes)
+        return data
 
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete(self, **kwargs: Any) -> None:
@@ -71,10 +75,11 @@ class ProjectArtifactManager(RESTManager):
         ref_name: str,
         job: str,
         streamed: bool = False,
+        iterator: bool = False,
         action: Optional[Callable] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Get the job artifacts archive from a specific tag or branch.
 
         Args:
@@ -85,6 +90,8 @@ class ProjectArtifactManager(RESTManager):
             streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
+            iterator: If True directly return the underlying response
+                iterator
             action: Callable responsible of dealing with chunk of
                 data
             chunk_size: Size of each chunk
@@ -103,7 +110,7 @@ class ProjectArtifactManager(RESTManager):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, action, chunk_size)
+        return utils.response_content(result, streamed, iterator, action, chunk_size)
 
     @cli.register_custom_action(
         "ProjectArtifactManager", ("ref_name", "artifact_path", "job")
@@ -115,10 +122,11 @@ class ProjectArtifactManager(RESTManager):
         artifact_path: str,
         job: str,
         streamed: bool = False,
+        iterator: bool = False,
         action: Optional[Callable] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Download a single artifact file from a specific tag or branch from
         within the job's artifacts archive.
 
@@ -130,6 +138,8 @@ class ProjectArtifactManager(RESTManager):
             streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
+            iterator: If True directly return the underlying response
+                iterator
             action: Callable responsible of dealing with chunk of
                 data
             chunk_size: Size of each chunk
@@ -148,4 +158,4 @@ class ProjectArtifactManager(RESTManager):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, action, chunk_size)
+        return utils.response_content(result, streamed, iterator, action, chunk_size)

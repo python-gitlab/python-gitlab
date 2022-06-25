@@ -5,7 +5,7 @@ https://docs.gitlab.com/ee/user/packages/generic_packages/
 """
 
 from pathlib import Path
-from typing import Any, Callable, cast, Optional, TYPE_CHECKING, Union
+from typing import Any, Callable, cast, Iterator, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -103,10 +103,11 @@ class GenericPackageManager(RESTManager):
         package_version: str,
         file_name: str,
         streamed: bool = False,
+        iterator: bool = False,
         action: Optional[Callable] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Download a generic package.
 
         Args:
@@ -116,6 +117,8 @@ class GenericPackageManager(RESTManager):
             streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
+            iterator: If True directly return the underlying response
+                iterator
             action: Callable responsible of dealing with chunk of
                 data
             chunk_size: Size of each chunk
@@ -132,7 +135,7 @@ class GenericPackageManager(RESTManager):
         result = self.gitlab.http_get(path, streamed=streamed, raw=True, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, action, chunk_size)
+        return utils.response_content(result, streamed, iterator, action, chunk_size)
 
 
 class GroupPackage(RESTObject):
