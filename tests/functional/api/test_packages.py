@@ -53,8 +53,7 @@ def test_stream_generic_package(project):
         package_name=package_name,
         package_version=package_version,
         file_name=file_name,
-        streamed=True,
-        action="iterator",
+        iterator=True,
     )
 
     assert isinstance(bytes_iterator, Iterator)
@@ -90,8 +89,7 @@ def test_stream_generic_package_to_file(tmp_path, project):
         package_name=package_name,
         package_version=package_version,
         file_name=file_name,
-        streamed=True,
-        action="iterator",
+        iterator=True,
     )
 
     with open(path, "wb") as f:
