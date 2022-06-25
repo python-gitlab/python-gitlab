@@ -369,7 +369,7 @@ python-gitlab:
    gl = gitlab.gitlab(url, token, api_version=4, session=session)
 
 Reference:
-https://2.python-requests.org/en/master/user/advanced/#proxies
+https://requests.readthedocs.io/en/latest/user/advanced/#proxies
 
 SSL certificate verification
 ----------------------------
@@ -381,7 +381,7 @@ If you need python-gitlab to use your system CA store instead, you can provide
 the path to the CA bundle in the `REQUESTS_CA_BUNDLE` environment variable.
 
 Reference:
-https://2.python-requests.org/en/master/user/advanced/#ssl-cert-verification
+https://requests.readthedocs.io/en/latest/user/advanced/#ssl-cert-verification
 
 Client side certificate
 -----------------------
@@ -398,7 +398,7 @@ The following sample illustrates how to use a client-side certificate:
    gl = gitlab.gitlab(url, token, api_version=4, session=session)
 
 Reference:
-https://2.python-requests.org/en/master/user/advanced/#client-side-certificates
+https://requests.readthedocs.io/en/latest/user/advanced/#client-side-certificates
 
 Rate limits
 -----------
