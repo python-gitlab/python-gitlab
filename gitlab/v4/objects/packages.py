@@ -4,9 +4,17 @@ https://docs.gitlab.com/ee/api/packages.html
 https://docs.gitlab.com/ee/user/packages/generic_packages/
 """
 
-import sys
 from pathlib import Path
-from typing import Any, Callable, cast, Iterator, Optional, TYPE_CHECKING, Union
+from typing import (
+    Any,
+    Callable,
+    cast,
+    Iterator,
+    Literal,
+    Optional,
+    TYPE_CHECKING,
+    Union,
+)
 
 import requests
 
@@ -15,11 +23,6 @@ from gitlab import exceptions as exc
 from gitlab import utils
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import DeleteMixin, GetMixin, ListMixin, ObjectDeleteMixin
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 __all__ = [
     "GenericPackage",

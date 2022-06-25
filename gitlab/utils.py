@@ -16,18 +16,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pathlib
-import sys
 import traceback
 import urllib.parse
 import warnings
-from typing import Any, Callable, Dict, Iterator, Optional, Type, Union
+from typing import Any, Callable, Dict, Iterator, Literal, Optional, Type, Union
 
 import requests
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 
 class _StdoutStream:

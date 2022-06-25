@@ -1,5 +1,4 @@
 import base64
-import sys
 from typing import (
     Any,
     Callable,
@@ -7,6 +6,7 @@ from typing import (
     Dict,
     Iterator,
     List,
+    Literal,
     Optional,
     TYPE_CHECKING,
     Union,
@@ -26,11 +26,6 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 __all__ = [
     "ProjectFile",

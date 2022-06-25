@@ -2,8 +2,7 @@
 GitLab API:
 https://docs.gitlab.com/ee/api/job_artifacts.html
 """
-import sys
-from typing import Any, Callable, Iterator, Optional, TYPE_CHECKING, Union
+from typing import Any, Callable, Iterator, Literal, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -11,11 +10,6 @@ from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import utils
 from gitlab.base import RESTManager, RESTObject
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 __all__ = ["ProjectArtifact", "ProjectArtifactManager"]
 

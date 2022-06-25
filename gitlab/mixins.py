@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
 from types import ModuleType
 from typing import (
     Any,
@@ -23,6 +22,7 @@ from typing import (
     Dict,
     Iterator,
     List,
+    Literal,
     Optional,
     Tuple,
     Type,
@@ -37,11 +37,6 @@ from gitlab import base, cli
 from gitlab import exceptions as exc
 from gitlab import types as g_types
 from gitlab import utils
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 __all__ = [
     "GetMixin",
