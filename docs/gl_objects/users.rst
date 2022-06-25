@@ -111,6 +111,13 @@ List a user's starred projects
 
     user.starred_projects.list()
 
+If the GitLab instance has new user account approval enabled some users may
+have ``user.state == 'blocked_pending_approval'``. Administrators can approve
+and reject such users::
+
+    user.approve()
+    user.reject()
+
 User custom attributes
 ======================
 
