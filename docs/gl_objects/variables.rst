@@ -5,6 +5,12 @@ CI/CD Variables
 You can configure variables at the instance-level (admin only), or associate
 variables to projects and groups, to modify pipeline/job scripts behavior.
 
+.. warning::
+
+    Please always follow GitLab's `rules for CI/CD variables`_, especially for values
+    in masked variables. If you do not, your variables may silently fail to save.
+
+.. _rules for CI/CD variables: https://docs.gitlab.com/ee/ci/variables/#add-a-cicd-variable-to-a-project
 
 Instance-level variables
 ========================
