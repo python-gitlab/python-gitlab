@@ -18,6 +18,10 @@
 import functools
 from typing import Any, Callable, cast, Optional, Type, TYPE_CHECKING, TypeVar, Union
 
+from . import _version as _gl_version
+
+_PG_VERSION = f" (python-gitlab version: {_gl_version.__version__})"
+
 
 class GitlabError(Exception):
     def __init__(
@@ -27,6 +31,10 @@ class GitlabError(Exception):
         response_body: Optional[bytes] = None,
     ) -> None:
 
+        if isinstance(error_message, str):
+            error_message += _PG_VERSION
+        else:
+            error_message += bytes(_PG_VERSION, encoding="ascii")
         Exception.__init__(self, error_message)
         # Http status code
         self.response_code = response_code

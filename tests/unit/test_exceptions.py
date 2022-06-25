@@ -6,8 +6,11 @@ from gitlab import exceptions
 @pytest.mark.parametrize(
     "kwargs,expected",
     [
-        ({"error_message": "foo"}, "foo"),
-        ({"error_message": "foo", "response_code": "400"}, "400: foo"),
+        ({"error_message": "foo"}, f"foo{exceptions._PG_VERSION}"),
+        (
+            {"error_message": "foo", "response_code": "400"},
+            f"400: foo{exceptions._PG_VERSION}",
+        ),
     ],
 )
 def test_gitlab_error(kwargs, expected):
