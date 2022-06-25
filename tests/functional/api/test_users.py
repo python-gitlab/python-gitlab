@@ -37,6 +37,16 @@ def test_block_user(gl, user):
     assert user in users
 
 
+def test_ban_user(gl, user):
+    user.ban()
+    retrieved_user = gl.users.get(user.id)
+    assert retrieved_user.state == "banned"
+
+    user.unban()
+    retrieved_user = gl.users.get(user.id)
+    assert retrieved_user.state == "active"
+
+
 def test_delete_user(gl, wait_for_sidekiq):
     new_user = gl.users.create(
         {
@@ -105,6 +115,9 @@ def test_user_gpg_keys(gl, user, GPG_KEY):
 def test_user_ssh_keys(gl, user, SSH_KEY):
     key = user.keys.create({"title": "testkey", "key": SSH_KEY})
     assert len(user.keys.list()) == 1
+
+    get_key = user.keys.get(key.id)
+    assert get_key.key == key.key
 
     key.delete()
     assert len(user.keys.list()) == 0

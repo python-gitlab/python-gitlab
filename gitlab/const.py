@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from enum import Enum, IntEnum
+
 from gitlab._version import __title__, __version__
 
 # NOTE(jlvillal): '_DEPRECATED' only affects users accessing constants via the
@@ -22,6 +24,7 @@ from gitlab._version import __title__, __version__
 # consumer of '_DEPRECATED' For example 'x = gitlab.NO_ACCESS'.  We want users
 # to instead use constants by doing code like: gitlab.const.NO_ACCESS.
 _DEPRECATED = [
+    "ADMIN_ACCESS",
     "DEFAULT_URL",
     "DEVELOPER_ACCESS",
     "GUEST_ACCESS",
@@ -52,42 +55,99 @@ _DEPRECATED = [
     "VISIBILITY_PUBLIC",
 ]
 
+
+# https://gitlab.com/gitlab-org/gitlab/-/blob/e97357824bedf007e75f8782259fe07435b64fbb/lib/gitlab/access.rb#L12-18
+class AccessLevel(IntEnum):
+    NO_ACCESS: int = 0
+    MINIMAL_ACCESS: int = 5
+    GUEST: int = 10
+    REPORTER: int = 20
+    DEVELOPER: int = 30
+    MAINTAINER: int = 40
+    OWNER: int = 50
+    ADMIN: int = 60
+
+
+# https://gitlab.com/gitlab-org/gitlab/-/blob/e97357824bedf007e75f8782259fe07435b64fbb/lib/gitlab/visibility_level.rb#L23-25
+class Visibility(Enum):
+    PRIVATE: str = "private"
+    INTERNAL: str = "internal"
+    PUBLIC: str = "public"
+
+
+class NotificationLevel(Enum):
+    DISABLED: str = "disabled"
+    PARTICIPATING: str = "participating"
+    WATCH: str = "watch"
+    GLOBAL: str = "global"
+    MENTION: str = "mention"
+    CUSTOM: str = "custom"
+
+
+# https://gitlab.com/gitlab-org/gitlab/-/blob/e97357824bedf007e75f8782259fe07435b64fbb/app/views/search/_category.html.haml#L10-37
+class SearchScope(Enum):
+    # all scopes (global, group and  project)
+    PROJECTS: str = "projects"
+    ISSUES: str = "issues"
+    MERGE_REQUESTS: str = "merge_requests"
+    MILESTONES: str = "milestones"
+    WIKI_BLOBS: str = "wiki_blobs"
+    COMMITS: str = "commits"
+    BLOBS: str = "blobs"
+    USERS: str = "users"
+
+    # specific global scope
+    GLOBAL_SNIPPET_TITLES: str = "snippet_titles"
+
+    # specific project scope
+    PROJECT_NOTES: str = "notes"
+
+
 DEFAULT_URL: str = "https://gitlab.com"
 
-NO_ACCESS: int = 0
-MINIMAL_ACCESS: int = 5
-GUEST_ACCESS: int = 10
-REPORTER_ACCESS: int = 20
-DEVELOPER_ACCESS: int = 30
-MAINTAINER_ACCESS: int = 40
-OWNER_ACCESS: int = 50
+NO_ACCESS = AccessLevel.NO_ACCESS.value
+MINIMAL_ACCESS = AccessLevel.MINIMAL_ACCESS.value
+GUEST_ACCESS = AccessLevel.GUEST.value
+REPORTER_ACCESS = AccessLevel.REPORTER.value
+DEVELOPER_ACCESS = AccessLevel.DEVELOPER.value
+MAINTAINER_ACCESS = AccessLevel.MAINTAINER.value
+OWNER_ACCESS = AccessLevel.OWNER.value
+ADMIN_ACCESS = AccessLevel.ADMIN.value
 
-VISIBILITY_PRIVATE: str = "private"
-VISIBILITY_INTERNAL: str = "internal"
-VISIBILITY_PUBLIC: str = "public"
+VISIBILITY_PRIVATE = Visibility.PRIVATE.value
+VISIBILITY_INTERNAL = Visibility.INTERNAL.value
+VISIBILITY_PUBLIC = Visibility.PUBLIC.value
 
-NOTIFICATION_LEVEL_DISABLED: str = "disabled"
-NOTIFICATION_LEVEL_PARTICIPATING: str = "participating"
-NOTIFICATION_LEVEL_WATCH: str = "watch"
-NOTIFICATION_LEVEL_GLOBAL: str = "global"
-NOTIFICATION_LEVEL_MENTION: str = "mention"
-NOTIFICATION_LEVEL_CUSTOM: str = "custom"
+NOTIFICATION_LEVEL_DISABLED = NotificationLevel.DISABLED.value
+NOTIFICATION_LEVEL_PARTICIPATING = NotificationLevel.PARTICIPATING.value
+NOTIFICATION_LEVEL_WATCH = NotificationLevel.WATCH.value
+NOTIFICATION_LEVEL_GLOBAL = NotificationLevel.GLOBAL.value
+NOTIFICATION_LEVEL_MENTION = NotificationLevel.MENTION.value
+NOTIFICATION_LEVEL_CUSTOM = NotificationLevel.CUSTOM.value
 
 # Search scopes
 # all scopes (global, group and  project)
-SEARCH_SCOPE_PROJECTS: str = "projects"
-SEARCH_SCOPE_ISSUES: str = "issues"
-SEARCH_SCOPE_MERGE_REQUESTS: str = "merge_requests"
-SEARCH_SCOPE_MILESTONES: str = "milestones"
-SEARCH_SCOPE_WIKI_BLOBS: str = "wiki_blobs"
-SEARCH_SCOPE_COMMITS: str = "commits"
-SEARCH_SCOPE_BLOBS: str = "blobs"
-SEARCH_SCOPE_USERS: str = "users"
+SEARCH_SCOPE_PROJECTS = SearchScope.PROJECTS.value
+SEARCH_SCOPE_ISSUES = SearchScope.ISSUES.value
+SEARCH_SCOPE_MERGE_REQUESTS = SearchScope.MERGE_REQUESTS.value
+SEARCH_SCOPE_MILESTONES = SearchScope.MILESTONES.value
+SEARCH_SCOPE_WIKI_BLOBS = SearchScope.WIKI_BLOBS.value
+SEARCH_SCOPE_COMMITS = SearchScope.COMMITS.value
+SEARCH_SCOPE_BLOBS = SearchScope.BLOBS.value
+SEARCH_SCOPE_USERS = SearchScope.USERS.value
 
 # specific global scope
-SEARCH_SCOPE_GLOBAL_SNIPPET_TITLES: str = "snippet_titles"
+SEARCH_SCOPE_GLOBAL_SNIPPET_TITLES = SearchScope.GLOBAL_SNIPPET_TITLES.value
 
 # specific project scope
-SEARCH_SCOPE_PROJECT_NOTES: str = "notes"
+SEARCH_SCOPE_PROJECT_NOTES = SearchScope.PROJECT_NOTES.value
 
 USER_AGENT: str = f"{__title__}/{__version__}"
+
+__all__ = [
+    "AccessLevel",
+    "Visibility",
+    "NotificationLevel",
+    "SearchScope",
+]
+__all__.extend(_DEPRECATED)

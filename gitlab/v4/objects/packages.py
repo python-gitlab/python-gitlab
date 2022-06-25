@@ -73,8 +73,8 @@ class GenericPackageManager(RESTManager):
         try:
             with open(path, "rb") as f:
                 file_data = f.read()
-        except OSError:
-            raise exc.GitlabUploadError(f"Failed to read package file {path}")
+        except OSError as e:
+            raise exc.GitlabUploadError(f"Failed to read package file {path}") from e
 
         url = f"{self._computed_path}/{package_name}/{package_version}/{file_name}"
         server_data = self.gitlab.http_put(url, post_data=file_data, raw=True, **kwargs)

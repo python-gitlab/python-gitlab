@@ -2,6 +2,39 @@
 
 <!--next-version-placeholder-->
 
+## v3.5.0 (2022-05-28)
+### Feature
+* **objects:** Support get project storage endpoint ([`8867ee5`](https://github.com/python-gitlab/python-gitlab/commit/8867ee59884ae81d6457ad6e561a0573017cf6b2))
+* Display human-readable attribute in `repr()` if present ([`6b47c26`](https://github.com/python-gitlab/python-gitlab/commit/6b47c26d053fe352d68eb22a1eaf4b9a3c1c93e7))
+* **ux:** Display project.name_with_namespace on project repr ([`e598762`](https://github.com/python-gitlab/python-gitlab/commit/e5987626ca1643521b16658555f088412be2a339))
+
+### Fix
+* **cli:** Changed default `allow_abbrev` value to fix arguments collision problem ([#2013](https://github.com/python-gitlab/python-gitlab/issues/2013)) ([`d68cacf`](https://github.com/python-gitlab/python-gitlab/commit/d68cacfeda5599c62a593ecb9da2505c22326644))
+* Duplicate subparsers being added to argparse ([`f553fd3`](https://github.com/python-gitlab/python-gitlab/commit/f553fd3c79579ab596230edea5899dc5189b0ac6))
+
+### Documentation
+* Update issue example and extend API usage docs ([`aad71d2`](https://github.com/python-gitlab/python-gitlab/commit/aad71d282d60dc328b364bcc951d0c9b44ab13fa))
+* **CONTRIBUTING.rst:** Fix link to conventional-changelog commit format documentation ([`2373a4f`](https://github.com/python-gitlab/python-gitlab/commit/2373a4f13ee4e5279a424416cdf46782a5627067))
+* Add missing Admin access const value ([`3e0d4d9`](https://github.com/python-gitlab/python-gitlab/commit/3e0d4d9006e2ca6effae2b01cef3926dd0850e52))
+* **merge_requests:** Add new possible merge request state and link to the upstream docs ([`e660fa8`](https://github.com/python-gitlab/python-gitlab/commit/e660fa8386ed7783da5c076bc0fef83e6a66f9a8))
+
+## v3.4.0 (2022-04-28)
+### Feature
+* Emit a warning when using a `list()` method returns max ([`1339d64`](https://github.com/python-gitlab/python-gitlab/commit/1339d645ce58a2e1198b898b9549ba5917b1ff12))
+* **objects:** Support getting project/group deploy tokens by id ([`fcd37fe`](https://github.com/python-gitlab/python-gitlab/commit/fcd37feff132bd5b225cde9d5f9c88e62b3f1fd6))
+* **user:** Support getting user SSH key by id ([`6f93c05`](https://github.com/python-gitlab/python-gitlab/commit/6f93c0520f738950a7c67dbeca8d1ac8257e2661))
+* **api:** Re-add topic delete endpoint ([`d1d96bd`](https://github.com/python-gitlab/python-gitlab/commit/d1d96bda5f1c6991c8ea61dca8f261e5b74b5ab6))
+
+### Fix
+* Add ChunkedEncodingError to list of retryable exceptions ([`7beb20f`](https://github.com/python-gitlab/python-gitlab/commit/7beb20ff7b7b85fb92fc6b647d9c1bdb7568f27c))
+* Avoid passing redundant arguments to API ([`3431887`](https://github.com/python-gitlab/python-gitlab/commit/34318871347b9c563d01a13796431c83b3b1d58c))
+* **cli:** Add missing filters for project commit list ([`149d244`](https://github.com/python-gitlab/python-gitlab/commit/149d2446fcc79b31d3acde6e6d51adaf37cbb5d3))
+* Add 52x range to retry transient failures and tests ([`c3ef1b5`](https://github.com/python-gitlab/python-gitlab/commit/c3ef1b5c1eaf1348a18d753dbf7bda3c129e3262))
+* Also retry HTTP-based transient errors ([`3b49e4d`](https://github.com/python-gitlab/python-gitlab/commit/3b49e4d61e6f360f1c787aa048edf584aec55278))
+
+### Documentation
+* **api-docs:** Docs fix for application scopes ([`e1ad93d`](https://github.com/python-gitlab/python-gitlab/commit/e1ad93df90e80643866611fe52bd5c59428e7a88))
+
 ## v3.3.0 (2022-03-28)
 ### Feature
 * **object:** Add pipeline test report summary support ([`a97e0cf`](https://github.com/python-gitlab/python-gitlab/commit/a97e0cf81b5394b3a2b73d927b4efe675bc85208))

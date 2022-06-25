@@ -26,12 +26,12 @@ class LDAPGroupManager(RESTManager):
             all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
-            as_list: If set to False and no pagination option is
+            iterator: If set to True and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            The list of objects, or a generator if `as_list` is False
+            The list of objects, or a generator if `iterator` is True
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
@@ -49,5 +49,4 @@ class LDAPGroupManager(RESTManager):
         obj = self.gitlab.http_list(path, **data)
         if isinstance(obj, list):
             return [self._obj_cls(self, item) for item in obj]
-        else:
-            return RESTObjectList(self, self._obj_cls, obj)
+        return RESTObjectList(self, self._obj_cls, obj)

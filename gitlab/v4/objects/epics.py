@@ -2,7 +2,7 @@ from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
 
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -12,6 +12,7 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
+from gitlab.types import RequiredOptional
 
 from .events import GroupEpicResourceLabelEventManager  # noqa: F401
 
@@ -106,7 +107,7 @@ class GroupEpicIssueManager(
         """
         if TYPE_CHECKING:
             assert data is not None
-        CreateMixin._check_missing_create_attrs(self, data)
+        self._create_attrs.validate_attrs(data=data)
         path = f"{self.path}/{data.pop('issue_id')}"
         server_data = self.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:

@@ -3,7 +3,7 @@ from typing import Any, cast, List, Optional, Union
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -12,6 +12,7 @@ from gitlab.mixins import (
     ObjectDeleteMixin,
     SaveMixin,
 )
+from gitlab.types import RequiredOptional
 
 __all__ = [
     "RunnerJob",
@@ -81,7 +82,7 @@ class RunnerManager(CRUDMixin, RESTManager):
             all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
-            as_list: If set to False and no pagination option is
+            iterator: If set to True and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 

@@ -5,8 +5,9 @@ import requests
 import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, ListMixin, RefreshMixin, RetrieveMixin
+from gitlab.types import RequiredOptional
 
 from .discussions import ProjectCommitDiscussionManager  # noqa: F401
 
@@ -21,7 +22,7 @@ __all__ = [
 
 
 class ProjectCommit(RESTObject):
-    _short_print_attr = "title"
+    _repr_attr = "title"
 
     comments: "ProjectCommitCommentManager"
     discussions: ProjectCommitDiscussionManager
@@ -172,7 +173,7 @@ class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
 
 class ProjectCommitComment(RESTObject):
     _id_attr = None
-    _short_print_attr = "note"
+    _repr_attr = "note"
 
 
 class ProjectCommitCommentManager(ListMixin, CreateMixin, RESTManager):

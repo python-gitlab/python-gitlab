@@ -47,8 +47,7 @@ class GitlabError(Exception):
     def __str__(self) -> str:
         if self.response_code is not None:
             return f"{self.response_code}: {self.error_message}"
-        else:
-            return f"{self.error_message}"
+        return f"{self.error_message}"
 
 
 class GitlabAuthenticationError(GitlabError):
@@ -80,6 +79,10 @@ class GitlabListError(GitlabOperationError):
 
 
 class GitlabGetError(GitlabOperationError):
+    pass
+
+
+class GitlabHeadError(GitlabOperationError):
     pass
 
 
@@ -187,6 +190,14 @@ class GitlabActivateError(GitlabOperationError):
     pass
 
 
+class GitlabBanError(GitlabOperationError):
+    pass
+
+
+class GitlabUnbanError(GitlabOperationError):
+    pass
+
+
 class GitlabSubscribeError(GitlabOperationError):
     pass
 
@@ -287,6 +298,14 @@ class GitlabUnfollowError(GitlabOperationError):
     pass
 
 
+class GitlabUserApproveError(GitlabOperationError):
+    pass
+
+
+class GitlabUserRejectError(GitlabOperationError):
+    pass
+
+
 # For an explanation of how these type-hints work see:
 # https://mypy.readthedocs.io/en/stable/generics.html#declaring-decorators
 #
@@ -315,3 +334,6 @@ def on_http_error(error: Type[Exception]) -> Callable[[__F], __F]:
         return cast(__F, wrapped_f)
 
     return wrap
+
+
+__all__ = [name for name in dir() if name.endswith("Error")]

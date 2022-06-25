@@ -1,7 +1,9 @@
 import pytest
+import requests
 import responses
 
 from gitlab import base
+from gitlab import types as gl_types
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -44,6 +46,26 @@ def test_get_mixin(gl):
     assert obj.foo == "bar"
     assert obj.id == 42
     assert responses.assert_call_count(url, 1) is True
+
+
+@responses.activate
+def test_head_mixin(gl):
+    class M(GetMixin, FakeManager):
+        pass
+
+    url = "http://localhost/api/v4/tests/42"
+    responses.add(
+        method=responses.HEAD,
+        url=url,
+        headers={"X-GitLab-Header": "test"},
+        status=200,
+        match=[responses.matchers.query_param_matcher({})],
+    )
+
+    manager = M(gl)
+    result = manager.head(42)
+    assert isinstance(result, requests.structures.CaseInsensitiveDict)
+    assert result["x-gitlab-header"] == "test"
 
 
 @responses.activate
@@ -97,8 +119,17 @@ def test_list_mixin(gl):
         pass
 
     url = "http://localhost/api/v4/tests"
+    headers = {
+        "X-Page": "1",
+        "X-Next-Page": "2",
+        "X-Per-Page": "1",
+        "X-Total-Pages": "2",
+        "X-Total": "2",
+        "Link": ("<http://localhost/api/v4/tests" ' rel="next"'),
+    }
     responses.add(
         method=responses.GET,
+        headers=headers,
         url=url,
         json=[{"id": 42, "foo": "bar"}, {"id": 43, "foo": "baz"}],
         status=200,
@@ -107,8 +138,16 @@ def test_list_mixin(gl):
 
     # test RESTObjectList
     mgr = M(gl)
-    obj_list = mgr.list(as_list=False)
+    obj_list = mgr.list(iterator=True)
     assert isinstance(obj_list, base.RESTObjectList)
+    assert obj_list.current_page == 1
+    assert obj_list.prev_page is None
+    assert obj_list.next_page == 2
+    assert obj_list.per_page == 1
+    assert obj_list.total == 2
+    assert obj_list.total_pages == 2
+    assert len(obj_list) == 2
+
     for obj in obj_list:
         assert isinstance(obj, FakeObject)
         assert obj.id in (42, 43)
@@ -138,7 +177,7 @@ def test_list_other_url(gl):
     )
 
     mgr = M(gl)
-    obj_list = mgr.list(path="/others", as_list=False)
+    obj_list = mgr.list(path="/others", iterator=True)
     assert isinstance(obj_list, base.RESTObjectList)
     obj = obj_list.next()
     assert obj.id == 42
@@ -149,27 +188,27 @@ def test_list_other_url(gl):
 
 def test_create_mixin_missing_attrs(gl):
     class M(CreateMixin, FakeManager):
-        _create_attrs = base.RequiredOptional(
+        _create_attrs = gl_types.RequiredOptional(
             required=("foo",), optional=("bar", "baz")
         )
 
     mgr = M(gl)
     data = {"foo": "bar", "baz": "blah"}
-    mgr._check_missing_create_attrs(data)
+    mgr._create_attrs.validate_attrs(data=data)
 
     data = {"baz": "blah"}
     with pytest.raises(AttributeError) as error:
-        mgr._check_missing_create_attrs(data)
+        mgr._create_attrs.validate_attrs(data=data)
     assert "foo" in str(error.value)
 
 
 @responses.activate
 def test_create_mixin(gl):
     class M(CreateMixin, FakeManager):
-        _create_attrs = base.RequiredOptional(
+        _create_attrs = gl_types.RequiredOptional(
             required=("foo",), optional=("bar", "baz")
         )
-        _update_attrs = base.RequiredOptional(required=("foo",), optional=("bam",))
+        _update_attrs = gl_types.RequiredOptional(required=("foo",), optional=("bam",))
 
     url = "http://localhost/api/v4/tests"
     responses.add(
@@ -191,10 +230,10 @@ def test_create_mixin(gl):
 @responses.activate
 def test_create_mixin_custom_path(gl):
     class M(CreateMixin, FakeManager):
-        _create_attrs = base.RequiredOptional(
+        _create_attrs = gl_types.RequiredOptional(
             required=("foo",), optional=("bar", "baz")
         )
-        _update_attrs = base.RequiredOptional(required=("foo",), optional=("bam",))
+        _update_attrs = gl_types.RequiredOptional(required=("foo",), optional=("bam",))
 
     url = "http://localhost/api/v4/others"
     responses.add(
@@ -215,27 +254,27 @@ def test_create_mixin_custom_path(gl):
 
 def test_update_mixin_missing_attrs(gl):
     class M(UpdateMixin, FakeManager):
-        _update_attrs = base.RequiredOptional(
+        _update_attrs = gl_types.RequiredOptional(
             required=("foo",), optional=("bar", "baz")
         )
 
     mgr = M(gl)
     data = {"foo": "bar", "baz": "blah"}
-    mgr._check_missing_update_attrs(data)
+    mgr._update_attrs.validate_attrs(data=data)
 
     data = {"baz": "blah"}
     with pytest.raises(AttributeError) as error:
-        mgr._check_missing_update_attrs(data)
+        mgr._update_attrs.validate_attrs(data=data)
     assert "foo" in str(error.value)
 
 
 @responses.activate
 def test_update_mixin(gl):
     class M(UpdateMixin, FakeManager):
-        _create_attrs = base.RequiredOptional(
+        _create_attrs = gl_types.RequiredOptional(
             required=("foo",), optional=("bar", "baz")
         )
-        _update_attrs = base.RequiredOptional(required=("foo",), optional=("bam",))
+        _update_attrs = gl_types.RequiredOptional(required=("foo",), optional=("bam",))
 
     url = "http://localhost/api/v4/tests/42"
     responses.add(
@@ -255,12 +294,31 @@ def test_update_mixin(gl):
 
 
 @responses.activate
+def test_update_mixin_uses_post(gl):
+    class M(UpdateMixin, FakeManager):
+        _update_uses_post = True
+
+    url = "http://localhost/api/v4/tests/1"
+    responses.add(
+        method=responses.POST,
+        url=url,
+        json={},
+        status=200,
+        match=[responses.matchers.query_param_matcher({})],
+    )
+
+    mgr = M(gl)
+    mgr.update(1, {})
+    assert responses.assert_call_count(url, 1) is True
+
+
+@responses.activate
 def test_update_mixin_no_id(gl):
     class M(UpdateMixin, FakeManager):
-        _create_attrs = base.RequiredOptional(
+        _create_attrs = gl_types.RequiredOptional(
             required=("foo",), optional=("bar", "baz")
         )
-        _update_attrs = base.RequiredOptional(required=("foo",), optional=("bam",))
+        _update_attrs = gl_types.RequiredOptional(required=("foo",), optional=("bam",))
 
     url = "http://localhost/api/v4/tests"
     responses.add(
@@ -321,6 +379,25 @@ def test_save_mixin(gl):
     assert obj._attrs["foo"] == "baz"
     assert obj._updated_attrs == {}
     assert responses.assert_call_count(url, 1) is True
+
+
+@responses.activate
+def test_save_mixin_without_new_data(gl):
+    class M(UpdateMixin, FakeManager):
+        pass
+
+    class TestClass(SaveMixin, base.RESTObject):
+        pass
+
+    url = "http://localhost/api/v4/tests/1"
+    responses.add(method=responses.PUT, url=url)
+
+    mgr = M(gl)
+    obj = TestClass(mgr, {"id": 1, "foo": "bar"})
+    obj.save()
+
+    assert obj._attrs["foo"] == "bar"
+    assert responses.assert_call_count(url, 0) is True
 
 
 @responses.activate

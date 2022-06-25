@@ -3,7 +3,7 @@ from typing import Any, cast, Dict, Tuple, TYPE_CHECKING, Union
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -18,6 +18,7 @@ from gitlab.mixins import (
     TodoMixin,
     UserAgentDetailMixin,
 )
+from gitlab.types import RequiredOptional
 
 from .award_emojis import ProjectIssueAwardEmojiManager  # noqa: F401
 from .discussions import ProjectIssueDiscussionManager  # noqa: F401
@@ -42,7 +43,7 @@ __all__ = [
 
 class Issue(RESTObject):
     _url = "/issues"
-    _short_print_attr = "title"
+    _repr_attr = "title"
 
 
 class IssueManager(RetrieveMixin, RESTManager):
@@ -108,7 +109,7 @@ class ProjectIssue(
     ObjectDeleteMixin,
     RESTObject,
 ):
-    _short_print_attr = "title"
+    _repr_attr = "title"
     _id_attr = "iid"
 
     awardemojis: ProjectIssueAwardEmojiManager
@@ -271,7 +272,7 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server cannot perform the request
         """
-        self._check_missing_create_attrs(data)
+        self._create_attrs.validate_attrs(data=data)
         if TYPE_CHECKING:
             assert self.path is not None
         server_data = self.gitlab.http_post(self.path, post_data=data, **kwargs)

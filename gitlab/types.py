@@ -15,7 +15,42 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Any, Optional, TYPE_CHECKING
+import dataclasses
+from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
+
+
+@dataclasses.dataclass(frozen=True)
+class RequiredOptional:
+    required: Tuple[str, ...] = ()
+    optional: Tuple[str, ...] = ()
+    exclusive: Tuple[str, ...] = ()
+
+    def validate_attrs(
+        self,
+        *,
+        data: Dict[str, Any],
+        excludes: Optional[List[str]] = None,
+    ) -> None:
+        if excludes is None:
+            excludes = []
+
+        if self.required:
+            required = [k for k in self.required if k not in excludes]
+            missing = [attr for attr in required if attr not in data]
+            if missing:
+                raise AttributeError(f"Missing attributes: {', '.join(missing)}")
+
+        if self.exclusive:
+            exclusives = [attr for attr in data if attr in self.exclusive]
+            if len(exclusives) > 1:
+                raise AttributeError(
+                    f"Provide only one of these attributes: {', '.join(exclusives)}"
+                )
+            if not exclusives:
+                raise AttributeError(
+                    f"Must provide one of these attributes: "
+                    f"{', '.join(self.exclusive)}"
+                )
 
 
 class GitlabAttribute:
@@ -68,10 +103,12 @@ class LowercaseStringAttribute(GitlabAttribute):
 
 
 class FileAttribute(GitlabAttribute):
-    def get_file_name(self, attr_name: Optional[str] = None) -> Optional[str]:
+    @staticmethod
+    def get_file_name(attr_name: Optional[str] = None) -> Optional[str]:
         return attr_name
 
 
 class ImageAttribute(FileAttribute):
-    def get_file_name(self, attr_name: Optional[str] = None) -> str:
+    @staticmethod
+    def get_file_name(attr_name: Optional[str] = None) -> str:
         return f"{attr_name}.png" if attr_name else "image.png"

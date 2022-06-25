@@ -3,6 +3,17 @@ import uuid
 import pytest
 
 import gitlab
+from gitlab.v4.objects.projects import ProjectStorage
+
+
+def test_projects_head(gl):
+    headers = gl.projects.head()
+    assert headers["x-total"]
+
+
+def test_project_head(gl, project):
+    headers = gl.projects.head(project.id)
+    assert headers["content-type"] == "application/json"
 
 
 def test_create_project(gl, user):
@@ -14,7 +25,7 @@ def test_create_project(gl, user):
     sudo_project = gl.projects.create({"name": "sudo_project"}, sudo=user.id)
 
     created = gl.projects.list()
-    created_gen = gl.projects.list(as_list=False)
+    created_gen = gl.projects.list(iterator=True)
     owned = gl.projects.list(owned=True)
 
     assert admin_project in created and sudo_project in created
@@ -283,6 +294,12 @@ def test_project_stars(project):
 
     project.unstar()
     assert project.star_count == 0
+
+
+def test_project_storage(project):
+    storage = project.storage.get()
+    assert isinstance(storage, ProjectStorage)
+    assert storage.repository_storage == "default"
 
 
 def test_project_tags(project, project_file):

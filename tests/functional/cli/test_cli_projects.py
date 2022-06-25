@@ -1,3 +1,6 @@
+import subprocess
+import time
+
 import pytest
 import responses
 
@@ -24,4 +27,43 @@ def test_project_registry_delete_in_bulk(
         ".*",
     ]
     ret = ret = script_runner.run(*cmd)
+    assert ret.success
+
+
+@pytest.fixture
+def project_export(project):
+    export = project.exports.create()
+    export.refresh()
+
+    count = 0
+    while export.export_status != "finished":
+        time.sleep(0.5)
+        export.refresh()
+        count += 1
+        if count == 30:
+            raise Exception("Project export taking too much time")
+
+    return export
+
+
+def test_project_export_download_custom_action(gitlab_config, project_export):
+    """Tests custom action on ProjectManager"""
+    cmd = [
+        "gitlab",
+        "--config-file",
+        gitlab_config,
+        "project-export",
+        "download",
+        "--project-id",
+        str(project_export.id),
+    ]
+
+    export = subprocess.run(cmd, capture_output=True, check=True)
+    assert export.returncode == 0
+
+
+def test_project_languages_custom_action(gitlab_cli, project, project_file):
+    """Tests custom action on Project/RESTObject"""
+    cmd = ["project", "languages", "--id", project.id]
+    ret = gitlab_cli(cmd)
     assert ret.success

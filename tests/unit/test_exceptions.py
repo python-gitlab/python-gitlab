@@ -3,6 +3,18 @@ import pytest
 from gitlab import exceptions
 
 
+@pytest.mark.parametrize(
+    "kwargs,expected",
+    [
+        ({"error_message": "foo"}, "foo"),
+        ({"error_message": "foo", "response_code": "400"}, "400: foo"),
+    ],
+)
+def test_gitlab_error(kwargs, expected):
+    error = exceptions.GitlabError(**kwargs)
+    assert str(error) == expected
+
+
 def test_error_raises_from_http_error():
     """Methods decorated with @on_http_error should raise from GitlabHttpError."""
 

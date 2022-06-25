@@ -24,6 +24,7 @@ import requests
 import requests.utils
 from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
 
+import gitlab
 import gitlab.config
 import gitlab.const
 import gitlab.exceptions
@@ -36,6 +37,12 @@ REDIRECT_MSG = (
 )
 
 RETRYABLE_TRANSIENT_ERROR_CODES = [500, 502, 503, 504] + list(range(520, 531))
+
+# https://docs.gitlab.com/ee/api/#offset-based-pagination
+_PAGINATION_URL = (
+    f"https://python-gitlab.readthedocs.io/en/v{gitlab.__version__}/"
+    f"api-usage.html#pagination"
+)
 
 
 class Gitlab:
@@ -56,8 +63,8 @@ class Gitlab:
         pagination: Can be set to 'keyset' to use keyset pagination
         order_by: Set order_by globally
         user_agent: A custom user agent to use for making HTTP requests.
-        retry_transient_errors: Whether to retry after 500, 502, 503, or
-            504 responses. Defaults to False.
+        retry_transient_errors: Whether to retry after 500, 502, 503, 504
+            or 52x responses. Defaults to False.
     """
 
     def __init__(
@@ -109,13 +116,13 @@ class Gitlab:
 
         # We only support v4 API at this time
         if self._api_version not in ("4",):
-            raise ModuleNotFoundError(name=f"gitlab.v{self._api_version}.objects")
+            raise ModuleNotFoundError(f"gitlab.v{self._api_version}.objects")
         # NOTE: We must delay import of gitlab.v4.objects until now or
         # otherwise it will cause circular import errors
-        import gitlab.v4.objects
+        from gitlab.v4 import objects
 
-        objects = gitlab.v4.objects
         self._objects = objects
+        self.user: Optional[objects.CurrentUser] = None
 
         self.broadcastmessages = objects.BroadcastMessageManager(self)
         """See :class:`~gitlab.v4.objects.BroadcastMessageManager`"""
@@ -201,12 +208,14 @@ class Gitlab:
         self.__dict__.update(state)
         # We only support v4 API at this time
         if self._api_version not in ("4",):
-            raise ModuleNotFoundError(name=f"gitlab.v{self._api_version}.objects")
+            raise ModuleNotFoundError(
+                f"gitlab.v{self._api_version}.objects"
+            )  # pragma: no cover, dead code currently
         # NOTE: We must delay import of gitlab.v4.objects until now or
         # otherwise it will cause circular import errors
-        import gitlab.v4.objects
+        from gitlab.v4 import objects
 
-        self._objects = gitlab.v4.objects
+        self._objects = objects
 
     @property
     def url(self) -> str:
@@ -475,9 +484,7 @@ class Gitlab:
         if (self.http_username and not self.http_password) or (
             not self.http_username and self.http_password
         ):
-            raise ValueError(
-                "Both http_username and http_password should " "be defined"
-            )
+            raise ValueError("Both http_username and http_password should be defined")
         if self.oauth_token and self.http_username:
             raise ValueError(
                 "Only one of oauth authentication or http "
@@ -505,7 +512,8 @@ class Gitlab:
                 self.http_username, self.http_password
             )
 
-    def enable_debug(self) -> None:
+    @staticmethod
+    def enable_debug() -> None:
         import logging
         from http.client import HTTPConnection  # noqa
 
@@ -524,7 +532,8 @@ class Gitlab:
             "verify": self.ssl_verify,
         }
 
-    def _get_base_url(self, url: Optional[str] = None) -> str:
+    @staticmethod
+    def _get_base_url(url: Optional[str] = None) -> str:
         """Return the base URL with the trailing slash stripped.
         If the URL is a Falsy value, return the default URL.
         Returns:
@@ -546,10 +555,10 @@ class Gitlab:
         """
         if path.startswith("http://") or path.startswith("https://"):
             return path
-        else:
-            return f"{self._url}{path}"
+        return f"{self._url}{path}"
 
-    def _check_redirects(self, result: requests.Response) -> None:
+    @staticmethod
+    def _check_redirects(result: requests.Response) -> None:
         # Check the requests history to detect 301/302 redirections.
         # If the initial verb is POST or PUT, the redirected request will use a
         # GET request, leading to unwanted behaviour.
@@ -574,8 +583,8 @@ class Gitlab:
                 )
             )
 
+    @staticmethod
     def _prepare_send_data(
-        self,
         files: Optional[Dict[str, Any]] = None,
         post_data: Optional[Union[Dict[str, Any], bytes]] = None,
         raw: bool = False,
@@ -617,6 +626,7 @@ class Gitlab:
         files: Optional[Dict[str, Any]] = None,
         timeout: Optional[float] = None,
         obey_rate_limit: bool = True,
+        retry_transient_errors: Optional[bool] = None,
         max_retries: int = 10,
         **kwargs: Any,
     ) -> requests.Response:
@@ -635,6 +645,8 @@ class Gitlab:
             timeout: The timeout, in seconds, for the request
             obey_rate_limit: Whether to obey 429 Too Many Request
                                     responses. Defaults to True.
+            retry_transient_errors: Whether to retry after 500, 502, 503, 504
+                or 52x responses. Defaults to False.
             max_retries: Max retries after 429 or transient errors,
                                set to -1 to retry forever. Defaults to 10.
             **kwargs: Extra options to send to the server (e.g. sudo)
@@ -672,14 +684,13 @@ class Gitlab:
         # If timeout was passed into kwargs, allow it to override the default
         if timeout is None:
             timeout = opts_timeout
+        if retry_transient_errors is None:
+            retry_transient_errors = self.retry_transient_errors
 
         # We need to deal with json vs. data when uploading files
         json, data, content_type = self._prepare_send_data(files, post_data, raw)
         opts["headers"]["Content-type"] = content_type
 
-        retry_transient_errors = kwargs.get(
-            "retry_transient_errors", self.retry_transient_errors
-        )
         cur_retries = 0
         while True:
             try:
@@ -694,7 +705,7 @@ class Gitlab:
                     stream=streamed,
                     **opts,
                 )
-            except requests.ConnectionError:
+            except (requests.ConnectionError, requests.exceptions.ChunkedEncodingError):
                 if retry_transient_errors and (
                     max_retries == -1 or cur_retries < max_retries
                 ):
@@ -794,11 +805,34 @@ class Gitlab:
         else:
             return result
 
+    def http_head(
+        self, path: str, query_data: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> requests.structures.CaseInsensitiveDict:
+        """Make a HEAD request to the Gitlab server.
+
+        Args:
+            path: Path or full URL to query ('/projects' or
+                        'http://whatever/v4/api/projecs')
+            query_data: Data to send as query parameters
+            **kwargs: Extra options to send to the server (e.g. sudo, page,
+                      per_page)
+        Returns:
+            A requests.header object
+        Raises:
+            GitlabHttpError: When the return code is not 2xx
+        """
+
+        query_data = query_data or {}
+        result = self.http_request("head", path, query_data=query_data, **kwargs)
+        return result.headers
+
     def http_list(
         self,
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
-        as_list: Optional[bool] = None,
+        *,
+        as_list: Optional[bool] = None,  # Deprecated in favor of `iterator`
+        iterator: Optional[bool] = None,
         **kwargs: Any,
     ) -> Union["GitlabList", List[Dict[str, Any]]]:
         """Make a GET request to the Gitlab server for list-oriented queries.
@@ -807,12 +841,13 @@ class Gitlab:
             path: Path or full URL to query ('/projects' or
                         'http://whatever/v4/api/projects')
             query_data: Data to send as query parameters
+            iterator: Indicate if should return a generator (True)
             **kwargs: Extra options to send to the server (e.g. sudo, page,
                       per_page)
 
         Returns:
-            A list of the objects returned by the server. If `as_list` is
-            False and no pagination-related arguments (`page`, `per_page`,
+            A list of the objects returned by the server. If `iterator` is
+            True and no pagination-related arguments (`page`, `per_page`,
             `all`) are defined then a GitlabList object (generator) is returned
             instead. This object will make API calls when needed to fetch the
             next items from the server.
@@ -823,23 +858,76 @@ class Gitlab:
         """
         query_data = query_data or {}
 
-        # In case we want to change the default behavior at some point
-        as_list = True if as_list is None else as_list
+        # Don't allow both `as_list` and `iterator` to be set.
+        if as_list is not None and iterator is not None:
+            raise ValueError(
+                "Only one of `as_list` or `iterator` can be used. "
+                "Use `iterator` instead of `as_list`. `as_list` is deprecated."
+            )
 
-        get_all = kwargs.pop("all", False)
+        if as_list is not None:
+            iterator = not as_list
+            utils.warn(
+                message=(
+                    f"`as_list={as_list}` is deprecated and will be removed in a "
+                    f"future version. Use `iterator={iterator}` instead."
+                ),
+                category=DeprecationWarning,
+            )
+
+        get_all = kwargs.pop("all", None)
         url = self._build_url(path)
 
         page = kwargs.get("page")
 
-        if get_all is True and as_list is True:
+        if iterator:
+            # Generator requested
+            return GitlabList(self, url, query_data, **kwargs)
+
+        if get_all is True:
             return list(GitlabList(self, url, query_data, **kwargs))
 
-        if page or as_list is True:
-            # pagination requested, we return a list
-            return list(GitlabList(self, url, query_data, get_next=False, **kwargs))
+        # pagination requested, we return a list
+        gl_list = GitlabList(self, url, query_data, get_next=False, **kwargs)
+        items = list(gl_list)
 
-        # No pagination, generator requested
-        return GitlabList(self, url, query_data, **kwargs)
+        def should_emit_warning() -> bool:
+            # No warning is emitted if any of the following conditions apply:
+            # * `all=False` was set in the `list()` call.
+            # * `page` was set in the `list()` call.
+            # * GitLab did not return the `x-per-page` header.
+            # * Number of items received is less than per-page value.
+            # * Number of items received is >= total available.
+            if get_all is False:
+                return False
+            if page is not None:
+                return False
+            if gl_list.per_page is None:
+                return False
+            if len(items) < gl_list.per_page:
+                return False
+            if gl_list.total is not None and len(items) >= gl_list.total:
+                return False
+            return True
+
+        if not should_emit_warning():
+            return items
+
+        # Warn the user that they are only going to retrieve `per_page`
+        # maximum items. This is a common cause of issues filed.
+        total_items = "many" if gl_list.total is None else gl_list.total
+        utils.warn(
+            message=(
+                f"Calling a `list()` method without specifying `all=True` or "
+                f"`iterator=True` will return a maximum of {gl_list.per_page} items. "
+                f"Your query returned {len(items)} of {total_items} items. See "
+                f"{_PAGINATION_URL} for more details. If this was done intentionally, "
+                f"then this warning can be supressed by adding the argument "
+                f"`all=False` to the `list()` call."
+            ),
+            category=UserWarning,
+        )
+        return items
 
     def http_post(
         self,

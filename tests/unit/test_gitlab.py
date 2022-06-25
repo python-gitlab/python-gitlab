@@ -17,13 +17,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import copy
+import logging
 import pickle
 import warnings
+from http.client import HTTPConnection
 
 import pytest
 import responses
 
 import gitlab
+from tests.unit import helpers
 
 localhost = "http://localhost"
 token = "abc123"
@@ -58,7 +61,7 @@ def resp_page_1():
         "headers": headers,
         "content_type": "application/json",
         "status": 200,
-        "match": [responses.matchers.query_param_matcher({})],
+        "match": helpers.MATCH_EMPTY_QUERY_PARAMS,
     }
 
 
@@ -84,10 +87,90 @@ def resp_page_2():
     }
 
 
+def test_gitlab_init_with_valid_api_version():
+    gl = gitlab.Gitlab(api_version="4")
+    assert gl.api_version == "4"
+
+
+def test_gitlab_init_with_invalid_api_version():
+    with pytest.raises(ModuleNotFoundError, match="gitlab.v1.objects"):
+        gitlab.Gitlab(api_version="1")
+
+
+def test_gitlab_as_context_manager():
+    with gitlab.Gitlab() as gl:
+        assert isinstance(gl, gitlab.Gitlab)
+
+
+def test_gitlab_enable_debug(gl):
+    gl.enable_debug()
+
+    logger = logging.getLogger("requests.packages.urllib3")
+    assert logger.level == logging.DEBUG
+    assert HTTPConnection.debuglevel == 1
+
+
+@responses.activate
+@pytest.mark.parametrize(
+    "status_code,response_json,expected",
+    [
+        (200, {"version": "0.0.0-pre", "revision": "abcdef"}, ("0.0.0-pre", "abcdef")),
+        (200, None, ("unknown", "unknown")),
+        (401, None, ("unknown", "unknown")),
+    ],
+)
+def test_gitlab_get_version(gl, status_code, response_json, expected):
+    responses.add(
+        method=responses.GET,
+        url="http://localhost/api/v4/version",
+        json=response_json,
+        status=status_code,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+    )
+
+    version = gl.version()
+    assert version == expected
+
+
+@responses.activate
+@pytest.mark.parametrize(
+    "response_json,expected",
+    [
+        ({"id": "1", "plan": "premium"}, {"id": "1", "plan": "premium"}),
+        (None, {}),
+    ],
+)
+def test_gitlab_get_license(gl, response_json, expected):
+    responses.add(
+        method=responses.GET,
+        url="http://localhost/api/v4/license",
+        json=response_json,
+        status=200,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+    )
+
+    gitlab_license = gl.get_license()
+    assert gitlab_license == expected
+
+
+@responses.activate
+def test_gitlab_set_license(gl):
+    responses.add(
+        method=responses.POST,
+        url="http://localhost/api/v4/license",
+        json={"id": 1, "plan": "premium"},
+        status=201,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+    )
+
+    gitlab_license = gl.set_license("yJkYXRhIjoiMHM5Q")
+    assert gitlab_license["plan"] == "premium"
+
+
 @responses.activate
 def test_gitlab_build_list(gl, resp_page_1, resp_page_2):
     responses.add(**resp_page_1)
-    obj = gl.http_list("/tests", as_list=False)
+    obj = gl.http_list("/tests", iterator=True)
     assert len(obj) == 2
     assert obj._next_url == "http://localhost/api/v4/tests?per_page=1&page=2"
     assert obj.current_page == 1
@@ -122,7 +205,7 @@ def test_gitlab_build_list_missing_headers(gl, resp_page_1, resp_page_2):
     stripped_page_2 = _strip_pagination_headers(resp_page_2)
 
     responses.add(**stripped_page_1)
-    obj = gl.http_list("/tests", as_list=False)
+    obj = gl.http_list("/tests", iterator=True)
     assert len(obj) == 0  # Lazy generator has no knowledge of total items
     assert obj.total_pages is None
     assert obj.total is None
@@ -133,10 +216,10 @@ def test_gitlab_build_list_missing_headers(gl, resp_page_1, resp_page_2):
 
 
 @responses.activate
-def test_gitlab_all_omitted_when_as_list(gl, resp_page_1, resp_page_2):
+def test_gitlab_all_omitted_when_iterator(gl, resp_page_1, resp_page_2):
     responses.add(**resp_page_1)
     responses.add(**resp_page_2)
-    result = gl.http_list("/tests", as_list=False, all=True)
+    result = gl.http_list("/tests", iterator=True, all=True)
     assert isinstance(result, gitlab.GitlabList)
 
 

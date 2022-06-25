@@ -3,8 +3,9 @@ from typing import Any, cast, TYPE_CHECKING, Union
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
+from gitlab.base import RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, PromoteMixin, SaveMixin
+from gitlab.types import RequiredOptional
 
 from .issues import GroupIssue, GroupIssueManager, ProjectIssue, ProjectIssueManager
 from .merge_requests import (
@@ -22,7 +23,7 @@ __all__ = [
 
 
 class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "title"
+    _repr_attr = "title"
 
     @cli.register_custom_action("GroupMilestone")
     @exc.on_http_error(exc.GitlabListError)
@@ -33,8 +34,6 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
             all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
-            as_list: If set to False and no pagination option is
-                defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -46,7 +45,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
 
         path = f"{self.manager.path}/{self.encoded_id}/issues"
-        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, RESTObjectList)
         manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
@@ -62,8 +61,6 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
             all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
-            as_list: If set to False and no pagination option is
-                defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -74,7 +71,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
             The list of merge requests
         """
         path = f"{self.manager.path}/{self.encoded_id}/merge_requests"
-        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, RESTObjectList)
         manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
@@ -102,7 +99,7 @@ class GroupMilestoneManager(CRUDMixin, RESTManager):
 
 
 class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "title"
+    _repr_attr = "title"
     _update_uses_post = True
 
     @cli.register_custom_action("ProjectMilestone")
@@ -114,8 +111,6 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
             all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
-            as_list: If set to False and no pagination option is
-                defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -127,7 +122,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         """
 
         path = f"{self.manager.path}/{self.encoded_id}/issues"
-        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, RESTObjectList)
         manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
@@ -143,8 +138,6 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
             all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
-            as_list: If set to False and no pagination option is
-                defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -155,7 +148,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
             The list of merge requests
         """
         path = f"{self.manager.path}/{self.encoded_id}/merge_requests"
-        data_list = self.manager.gitlab.http_list(path, as_list=False, **kwargs)
+        data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(data_list, RESTObjectList)
         manager = ProjectMergeRequestManager(

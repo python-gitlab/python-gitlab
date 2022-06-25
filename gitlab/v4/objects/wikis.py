@@ -1,7 +1,8 @@
 from typing import Any, cast, Union
 
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
+from gitlab.types import RequiredOptional
 
 __all__ = [
     "ProjectWiki",
@@ -13,7 +14,7 @@ __all__ = [
 
 class ProjectWiki(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "slug"
-    _short_print_attr = "slug"
+    _repr_attr = "slug"
 
 
 class ProjectWikiManager(CRUDMixin, RESTManager):
@@ -34,7 +35,7 @@ class ProjectWikiManager(CRUDMixin, RESTManager):
 
 class GroupWiki(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "slug"
-    _short_print_attr = "slug"
+    _repr_attr = "slug"
 
 
 class GroupWikiManager(CRUDMixin, RESTManager):

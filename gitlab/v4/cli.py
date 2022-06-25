@@ -29,14 +29,18 @@ from gitlab import cli
 
 class GitlabCLI:
     def __init__(
-        self, gl: gitlab.Gitlab, what: str, action: str, args: Dict[str, str]
+        self,
+        gl: gitlab.Gitlab,
+        gitlab_resource: str,
+        resource_action: str,
+        args: Dict[str, str],
     ) -> None:
-        self.cls: Type[gitlab.base.RESTObject] = cli.what_to_cls(
-            what, namespace=gitlab.v4.objects
+        self.cls: Type[gitlab.base.RESTObject] = cli.gitlab_resource_to_cls(
+            gitlab_resource, namespace=gitlab.v4.objects
         )
         self.cls_name = self.cls.__name__
-        self.what = what.replace("-", "_")
-        self.action = action.lower()
+        self.gitlab_resource = gitlab_resource.replace("-", "_")
+        self.resource_action = resource_action.lower()
         self.gl = gl
         self.args = args
         self.parent_args: Dict[str, Any] = {}
@@ -79,14 +83,14 @@ class GitlabCLI:
             # If we don't delete it then it will be added to the URL as a query-string
             del self.args[key]
 
-    def __call__(self) -> Any:
-        # Check for a method that matches object + action
-        method = f"do_{self.what}_{self.action}"
+    def run(self) -> Any:
+        # Check for a method that matches gitlab_resource + action
+        method = f"do_{self.gitlab_resource}_{self.resource_action}"
         if hasattr(self, method):
             return getattr(self, method)()
 
         # Fallback to standard actions (get, list, create, ...)
-        method = f"do_{self.action}"
+        method = f"do_{self.resource_action}"
         if hasattr(self, method):
             return getattr(self, method)()
 
@@ -95,7 +99,7 @@ class GitlabCLI:
 
     def do_custom(self) -> Any:
         class_instance: Union[gitlab.base.RESTManager, gitlab.base.RESTObject]
-        in_obj = cli.custom_actions[self.cls_name][self.action][2]
+        in_obj = cli.custom_actions[self.cls_name][self.resource_action][2]
 
         # Get the object (lazy), then act
         if in_obj:
@@ -111,12 +115,12 @@ class GitlabCLI:
         else:
             class_instance = self.mgr
 
-        method_name = self.action.replace("-", "_")
+        method_name = self.resource_action.replace("-", "_")
         return getattr(class_instance, method_name)(**self.args)
 
     def do_project_export_download(self) -> None:
         try:
-            project = self.gl.projects.get(int(self.args["project_id"]), lazy=True)
+            project = self.gl.projects.get(self.parent_args["project_id"], lazy=True)
             export_status = project.exports.get()
             if TYPE_CHECKING:
                 assert export_status is not None
@@ -125,7 +129,7 @@ class GitlabCLI:
                 assert data is not None
             sys.stdout.buffer.write(data)
 
-        except Exception as e:
+        except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to download the export", e)
 
     def do_create(self) -> gitlab.base.RESTObject:
@@ -133,7 +137,7 @@ class GitlabCLI:
             assert isinstance(self.mgr, gitlab.mixins.CreateMixin)
         try:
             result = self.mgr.create(self.args)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to create object", e)
         return result
 
@@ -144,7 +148,7 @@ class GitlabCLI:
             assert isinstance(self.mgr, gitlab.mixins.ListMixin)
         try:
             result = self.mgr.list(**self.args)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to list objects", e)
         return result
 
@@ -152,7 +156,7 @@ class GitlabCLI:
         if isinstance(self.mgr, gitlab.mixins.GetWithoutIdMixin):
             try:
                 result = self.mgr.get(id=None, **self.args)
-            except Exception as e:
+            except Exception as e:  # pragma: no cover, cli.die is unit-tested
                 cli.die("Impossible to get object", e)
             return result
 
@@ -163,7 +167,7 @@ class GitlabCLI:
         id = self.args.pop(self.cls._id_attr)
         try:
             result = self.mgr.get(id, lazy=False, **self.args)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to get object", e)
         return result
 
@@ -174,7 +178,7 @@ class GitlabCLI:
         id = self.args.pop(self.cls._id_attr)
         try:
             self.mgr.delete(id, **self.args)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to destroy object", e)
 
     def do_update(self) -> Dict[str, Any]:
@@ -189,7 +193,7 @@ class GitlabCLI:
 
         try:
             result = self.mgr.update(id, self.args)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to update object", e)
         return result
 
@@ -200,11 +204,15 @@ def _populate_sub_parser_by_class(
     mgr_cls_name = f"{cls.__name__}Manager"
     mgr_cls = getattr(gitlab.v4.objects, mgr_cls_name)
 
+    action_parsers: Dict[str, argparse.ArgumentParser] = {}
     for action_name in ["list", "get", "create", "update", "delete"]:
         if not hasattr(mgr_cls, action_name):
             continue
 
-        sub_parser_action = sub_parser.add_parser(action_name)
+        sub_parser_action = sub_parser.add_parser(
+            action_name, conflict_handler="resolve"
+        )
+        action_parsers[action_name] = sub_parser_action
         sub_parser_action.add_argument("--sudo", required=False)
         if mgr_cls._from_parent_attrs:
             for x in mgr_cls._from_parent_attrs:
@@ -268,7 +276,11 @@ def _populate_sub_parser_by_class(
     if cls.__name__ in cli.custom_actions:
         name = cls.__name__
         for action_name in cli.custom_actions[name]:
-            sub_parser_action = sub_parser.add_parser(action_name)
+            # NOTE(jlvillal): If we put a function for the `default` value of
+            # the `get` it will always get called, which will break things.
+            sub_parser_action = action_parsers.get(action_name)
+            if sub_parser_action is None:
+                sub_parser_action = sub_parser.add_parser(action_name)
             # Get the attributes for URL/path construction
             if mgr_cls._from_parent_attrs:
                 for x in mgr_cls._from_parent_attrs:
@@ -298,7 +310,11 @@ def _populate_sub_parser_by_class(
     if mgr_cls.__name__ in cli.custom_actions:
         name = mgr_cls.__name__
         for action_name in cli.custom_actions[name]:
-            sub_parser_action = sub_parser.add_parser(action_name)
+            # NOTE(jlvillal): If we put a function for the `default` value of
+            # the `get` it will always get called, which will break things.
+            sub_parser_action = action_parsers.get(action_name)
+            if sub_parser_action is None:
+                sub_parser_action = sub_parser.add_parser(action_name)
             if mgr_cls._from_parent_attrs:
                 for x in mgr_cls._from_parent_attrs:
                     sub_parser_action.add_argument(
@@ -321,26 +337,29 @@ def _populate_sub_parser_by_class(
 
 def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(
-        title="object", dest="what", help="Object to manipulate."
+        title="resource",
+        dest="gitlab_resource",
+        help="The GitLab resource to manipulate.",
     )
     subparsers.required = True
 
     # populate argparse for all Gitlab Object
-    classes = []
+    classes = set()
     for cls in gitlab.v4.objects.__dict__.values():
         if not isinstance(cls, type):
             continue
         if issubclass(cls, gitlab.base.RESTManager):
             if cls._obj_cls is not None:
-                classes.append(cls._obj_cls)
-    classes.sort(key=operator.attrgetter("__name__"))
+                classes.add(cls._obj_cls)
 
-    for cls in classes:
-        arg_name = cli.cls_to_what(cls)
+    for cls in sorted(classes, key=operator.attrgetter("__name__")):
+        arg_name = cli.cls_to_gitlab_resource(cls)
         object_group = subparsers.add_parser(arg_name)
 
         object_subparsers = object_group.add_subparsers(
-            title="action", dest="whaction", help="Action to execute."
+            title="action",
+            dest="resource_action",
+            help="Action to execute on the GitLab resource.",
         )
         _populate_sub_parser_by_class(cls, object_subparsers)
         object_subparsers.required = True
@@ -360,13 +379,14 @@ def get_dict(
 
 
 class JSONPrinter:
-    def display(self, d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
+    @staticmethod
+    def display(d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
         import json  # noqa
 
         print(json.dumps(d))
 
+    @staticmethod
     def display_list(
-        self,
         data: List[Union[str, gitlab.base.RESTObject]],
         fields: List[str],
         **kwargs: Any,
@@ -377,20 +397,21 @@ class JSONPrinter:
 
 
 class YAMLPrinter:
-    def display(self, d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
+    @staticmethod
+    def display(d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
         try:
             import yaml  # noqa
 
             print(yaml.safe_dump(d, default_flow_style=False))
         except ImportError:
-            exit(
+            sys.exit(
                 "PyYaml is not installed.\n"
                 "Install it with `pip install PyYaml` "
                 "to use the yaml output feature"
             )
 
+    @staticmethod
     def display_list(
-        self,
         data: List[Union[str, gitlab.base.RESTObject]],
         fields: List[str],
         **kwargs: Any,
@@ -404,7 +425,7 @@ class YAMLPrinter:
                 )
             )
         except ImportError:
-            exit(
+            sys.exit(
                 "PyYaml is not installed.\n"
                 "Install it with `pip install PyYaml` "
                 "to use the yaml output feature"
@@ -449,12 +470,12 @@ class LegacyPrinter:
             if obj._id_attr:
                 id = getattr(obj, obj._id_attr)
                 print(f"{obj._id_attr.replace('_', '-')}: {id}")
-            if obj._short_print_attr:
-                value = getattr(obj, obj._short_print_attr) or "None"
+            if obj._repr_attr:
+                value = getattr(obj, obj._repr_attr, "None")
                 value = value.replace("\r", "").replace("\n", " ")
                 # If the attribute is a note (ProjectCommitComment) then we do
                 # some modifications to fit everything on one line
-                line = f"{obj._short_print_attr}: {value}"
+                line = f"{obj._repr_attr}: {value}"
                 # ellipsize long lines (comments)
                 if len(line) > 79:
                     line = f"{line[:76]}..."
@@ -486,15 +507,20 @@ PRINTERS: Dict[
 
 def run(
     gl: gitlab.Gitlab,
-    what: str,
-    action: str,
+    gitlab_resource: str,
+    resource_action: str,
     args: Dict[str, Any],
     verbose: bool,
     output: str,
     fields: List[str],
 ) -> None:
-    g_cli = GitlabCLI(gl=gl, what=what, action=action, args=args)
-    data = g_cli()
+    g_cli = GitlabCLI(
+        gl=gl,
+        gitlab_resource=gitlab_resource,
+        resource_action=resource_action,
+        args=args,
+    )
+    data = g_cli.run()
 
     printer: Union[JSONPrinter, LegacyPrinter, YAMLPrinter] = PRINTERS[output]()
 

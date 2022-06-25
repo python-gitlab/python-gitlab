@@ -18,9 +18,8 @@
 import importlib
 import pprint
 import textwrap
-from dataclasses import dataclass
 from types import ModuleType
-from typing import Any, Dict, Iterable, Optional, Tuple, Type, Union
+from typing import Any, Dict, Iterable, Optional, Type, Union
 
 import gitlab
 from gitlab import types as g_types
@@ -29,7 +28,6 @@ from gitlab.exceptions import GitlabParsingError
 from .client import Gitlab, GitlabList
 
 __all__ = [
-    "RequiredOptional",
     "RESTObject",
     "RESTObjectList",
     "RESTManager",
@@ -49,8 +47,12 @@ class RESTObject:
     another. This allows smart updates, if the object allows it.
 
     You can redefine ``_id_attr`` in child classes to specify which attribute
-    must be used as uniq ID. ``None`` means that the object can be updated
+    must be used as the unique ID. ``None`` means that the object can be updated
     without ID in the url.
+
+    Likewise, you can define a ``_repr_attr`` in subclasses to specify which
+    attribute should be added as a human-readable identifier when called in the
+    object's ``__repr__()`` method.
     """
 
     _id_attr: Optional[str] = "id"
@@ -58,7 +60,7 @@ class RESTObject:
     _created_from_list: bool  # Indicates if object was created from a list() action
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
-    _short_print_attr: Optional[str] = None
+    _repr_attr: Optional[str] = None
     _updated_attrs: Dict[str, Any]
     manager: "RESTManager"
 
@@ -71,9 +73,9 @@ class RESTObject:
     ) -> None:
         if not isinstance(attrs, dict):
             raise GitlabParsingError(
-                "Attempted to initialize RESTObject with a non-dictionary value: "
-                "{!r}\nThis likely indicates an incorrect or malformed server "
-                "response.".format(attrs)
+                f"Attempted to initialize RESTObject with a non-dictionary value: "
+                f"{attrs!r}\nThis likely indicates an incorrect or malformed server "
+                f"response."
             )
         self.__dict__.update(
             {
@@ -158,10 +160,19 @@ class RESTObject:
         print(self.pformat())
 
     def __repr__(self) -> str:
+        name = self.__class__.__name__
+
+        if (self._id_attr and self._repr_value) and (self._id_attr != self._repr_attr):
+            return (
+                f"<{name} {self._id_attr}:{self.get_id()} "
+                f"{self._repr_attr}:{self._repr_value}>"
+            )
         if self._id_attr:
-            return f"<{self.__class__.__name__} {self._id_attr}:{self.get_id()}>"
-        else:
-            return f"<{self.__class__.__name__}>"
+            return f"<{name} {self._id_attr}:{self.get_id()}>"
+        if self._repr_value:
+            return f"<{name} {self._repr_attr}:{self._repr_value}>"
+
+        return f"<{name}>"
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, RESTObject):
@@ -217,6 +228,13 @@ class RESTObject:
         if self._id_attr is None or not hasattr(self, self._id_attr):
             return None
         return getattr(self, self._id_attr)
+
+    @property
+    def _repr_value(self) -> Optional[str]:
+        """Safely returns the human-readable resource name if present."""
+        if self._repr_attr is None or not hasattr(self, self._repr_attr):
+            return None
+        return getattr(self, self._repr_attr)
 
     @property
     def encoded_id(self) -> Optional[Union[int, str]]:
@@ -317,12 +335,6 @@ class RESTObjectList:
         return self._list.total
 
 
-@dataclass(frozen=True)
-class RequiredOptional:
-    required: Tuple[str, ...] = ()
-    optional: Tuple[str, ...] = ()
-
-
 class RESTManager:
     """Base class for CRUD operations on objects.
 
@@ -332,8 +344,8 @@ class RESTManager:
     ``_obj_cls``: The class of objects that will be created
     """
 
-    _create_attrs: RequiredOptional = RequiredOptional()
-    _update_attrs: RequiredOptional = RequiredOptional()
+    _create_attrs: g_types.RequiredOptional = g_types.RequiredOptional()
+    _update_attrs: g_types.RequiredOptional = g_types.RequiredOptional()
     _path: Optional[str] = None
     _obj_cls: Optional[Type[RESTObject]] = None
     _from_parent_attrs: Dict[str, Any] = {}

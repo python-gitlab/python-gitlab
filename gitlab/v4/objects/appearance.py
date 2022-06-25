@@ -1,8 +1,9 @@
 from typing import Any, cast, Dict, Optional, Union
 
 from gitlab import exceptions as exc
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
+from gitlab.types import RequiredOptional
 
 __all__ = [
     "ApplicationAppearance",
@@ -60,5 +61,5 @@ class ApplicationAppearanceManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[ApplicationAppearance]:
-        return cast(Optional[ApplicationAppearance], super().get(id=id, **kwargs))
+    ) -> ApplicationAppearance:
+        return cast(ApplicationAppearance, super().get(id=id, **kwargs))

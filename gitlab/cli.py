@@ -91,14 +91,16 @@ def die(msg: str, e: Optional[Exception] = None) -> None:
     sys.exit(1)
 
 
-def what_to_cls(what: str, namespace: ModuleType) -> Type[RESTObject]:
+def gitlab_resource_to_cls(
+    gitlab_resource: str, namespace: ModuleType
+) -> Type[RESTObject]:
     classes = CaseInsensitiveDict(namespace.__dict__)
-    lowercase_class = what.replace("-", "")
+    lowercase_class = gitlab_resource.replace("-", "")
 
     return classes[lowercase_class]
 
 
-def cls_to_what(cls: RESTObject) -> str:
+def cls_to_gitlab_resource(cls: RESTObject) -> str:
     dasherized_uppercase = camel_upperlower_regex.sub(r"\1-\2", cls.__name__)
     dasherized_lowercase = camel_lowerupper_regex.sub(r"\1-\2", dasherized_uppercase)
     return dasherized_lowercase.lower()
@@ -106,7 +108,9 @@ def cls_to_what(cls: RESTObject) -> str:
 
 def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        add_help=add_help, description="GitLab API Command Line Interface"
+        add_help=add_help,
+        description="GitLab API Command Line Interface",
+        allow_abbrev=False,
     )
     parser.add_argument("--version", help="Display the version.", action="store_true")
     parser.add_argument(
@@ -248,10 +252,10 @@ def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
 def _get_parser() -> argparse.ArgumentParser:
     # NOTE: We must delay import of gitlab.v4.cli until now or
     # otherwise it will cause circular import errors
-    import gitlab.v4.cli
+    from gitlab.v4 import cli as v4_cli
 
     parser = _get_base_parser()
-    return gitlab.v4.cli.extend_parser(parser)
+    return v4_cli.extend_parser(parser)
 
 
 def _parse_value(v: Any) -> Any:
@@ -259,7 +263,7 @@ def _parse_value(v: Any) -> Any:
         # If the user-provided value starts with @, we try to read the file
         # path provided after @ as the real value. Exit on any error.
         try:
-            with open(v[1:]) as f:
+            with open(v[1:], encoding="utf-8") as f:
                 return f.read()
         except Exception as e:
             sys.stderr.write(f"{e}\n")
@@ -299,7 +303,7 @@ def main() -> None:
         sys.exit(e)
     # We only support v4 API at this time
     if config.api_version not in ("4",):  # dead code # pragma: no cover
-        raise ModuleNotFoundError(name=f"gitlab.v{config.api_version}.cli")
+        raise ModuleNotFoundError(f"gitlab.v{config.api_version}.cli")
 
     # Now we build the entire set of subcommands and do the complete parsing
     parser = _get_parser()
@@ -319,8 +323,8 @@ def main() -> None:
     if args.fields:
         fields = [x.strip() for x in args.fields.split(",")]
     debug = args.debug
-    action = args.whaction
-    what = args.what
+    gitlab_resource = args.gitlab_resource
+    resource_action = args.resource_action
 
     args_dict = vars(args)
     # Remove CLI behavior-related args
@@ -329,8 +333,8 @@ def main() -> None:
         "config_file",
         "verbose",
         "debug",
-        "what",
-        "whaction",
+        "gitlab_resource",
+        "resource_action",
         "version",
         "output",
         "fields",
@@ -357,4 +361,6 @@ def main() -> None:
     if debug:
         gl.enable_debug()
 
-    gitlab.v4.cli.run(gl, what, action, args_dict, verbose, output, fields)
+    gitlab.v4.cli.run(
+        gl, gitlab_resource, resource_action, args_dict, verbose, output, fields
+    )

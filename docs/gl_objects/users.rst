@@ -72,6 +72,11 @@ Activate/Deactivate a user::
     user.activate()
     user.deactivate()
 
+Ban/Unban a user::
+
+    user.ban()
+    user.unban()
+
 Follow/Unfollow a user::
 
     user.follow()
@@ -105,6 +110,13 @@ Get the followings of a user
 List a user's starred projects
 
     user.starred_projects.list()
+
+If the GitLab instance has new user account approval enabled some users may
+have ``user.state == 'blocked_pending_approval'``. Administrators can approve
+and reject such users::
+
+    user.approve()
+    user.reject()
 
 User custom attributes
 ======================
@@ -299,8 +311,12 @@ List SSH keys for a user::
 
 Create an SSH key for a user::
 
-    k = user.keys.create({'title': 'my_key',
+    key = user.keys.create({'title': 'my_key',
                           'key': open('/home/me/.ssh/id_rsa.pub').read()})
+
+Get an SSH key for a user by id::
+
+    key = user.keys.get(key_id)
 
 Delete an SSH key for a user::
 
@@ -409,4 +425,4 @@ Get the users activities::
 
     activities = gl.user_activities.list(
         query_parameters={'from': '2018-07-01'},
-        all=True, as_list=False)
+        all=True, iterator=True)

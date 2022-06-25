@@ -5,8 +5,9 @@ import requests
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import utils
-from gitlab.base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
+from gitlab.base import RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin, UserAgentDetailMixin
+from gitlab.types import RequiredOptional
 
 from .award_emojis import ProjectSnippetAwardEmojiManager  # noqa: F401
 from .discussions import ProjectSnippetDiscussionManager  # noqa: F401
@@ -21,7 +22,7 @@ __all__ = [
 
 
 class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "title"
+    _repr_attr = "title"
 
     @cli.register_custom_action("Snippet")
     @exc.on_http_error(exc.GitlabGetError)
@@ -91,7 +92,7 @@ class SnippetManager(CRUDMixin, RESTManager):
 
 class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _url = "/projects/{project_id}/snippets"
-    _short_print_attr = "title"
+    _repr_attr = "title"
 
     awardemojis: ProjectSnippetAwardEmojiManager
     discussions: ProjectSnippetDiscussionManager

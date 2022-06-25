@@ -40,6 +40,9 @@ def test_repository_files(project):
     # object method
     assert readme.decode().decode() == "Initial content"
 
+    headers = project.files.head("README.rst", ref="main")
+    assert headers["X-Gitlab-File-Path"] == "README.rst"
+
     blame = project.files.blame(file_path="README.rst", ref="main")
     assert blame
 

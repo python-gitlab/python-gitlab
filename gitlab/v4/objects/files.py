@@ -6,7 +6,7 @@ import requests
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import utils
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -15,6 +15,7 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
+from gitlab.types import RequiredOptional
 
 __all__ = [
     "ProjectFile",
@@ -24,7 +25,9 @@ __all__ = [
 
 class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "file_path"
-    _short_print_attr = "file_path"
+    _repr_attr = "file_path"
+    branch: str
+    commit_message: str
     file_path: str
     manager: "ProjectFileManager"
 
@@ -144,7 +147,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
 
         if TYPE_CHECKING:
             assert data is not None
-        self._check_missing_create_attrs(data)
+        self._create_attrs.validate_attrs(data=data)
         new_data = data.copy()
         file_path = utils.EncodedId(new_data.pop("file_path"))
         path = f"{self.path}/{file_path}"
@@ -178,7 +181,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         file_path = utils.EncodedId(file_path)
         data["file_path"] = file_path
         path = f"{self.path}/{file_path}"
-        self._check_missing_update_attrs(data)
+        self._update_attrs.validate_attrs(data=data)
         result = self.gitlab.http_put(path, post_data=data, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(result, dict)

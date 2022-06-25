@@ -78,13 +78,15 @@ class TestRESTManager:
 
 class TestRESTObject:
     def test_instantiate(self, fake_gitlab, fake_manager):
-        obj = FakeObject(fake_manager, {"foo": "bar"})
+        attrs = {"foo": "bar"}
+        obj = FakeObject(fake_manager, attrs.copy())
 
-        assert {"foo": "bar"} == obj._attrs
+        assert attrs == obj._attrs
         assert {} == obj._updated_attrs
         assert obj._create_managers() is None
         assert fake_manager == obj.manager
         assert fake_gitlab == obj.manager.gitlab
+        assert str(obj) == f"{type(obj)} => {attrs}"
 
     def test_instantiate_non_dict(self, fake_gitlab, fake_manager):
         with pytest.raises(gitlab.exceptions.GitlabParsingError):
@@ -201,6 +203,7 @@ class TestRESTObject:
         obj1 = FakeObject(fake_manager, {"id": "foo"})
         obj2 = FakeObject(fake_manager, {"id": "foo", "other_attr": "bar"})
         assert obj1 == obj2
+        assert len(set((obj1, obj2))) == 1
 
     def test_equality_custom_id(self, fake_manager):
         class OtherFakeObject(FakeObject):
@@ -209,6 +212,11 @@ class TestRESTObject:
         obj1 = OtherFakeObject(fake_manager, {"foo": "bar"})
         obj2 = OtherFakeObject(fake_manager, {"foo": "bar", "other_attr": "baz"})
         assert obj1 == obj2
+
+    def test_equality_no_id(self, fake_manager):
+        obj1 = FakeObject(fake_manager, {"attr1": "foo"})
+        obj2 = FakeObject(fake_manager, {"attr1": "bar"})
+        assert not obj1 == obj2
 
     def test_inequality(self, fake_manager):
         obj1 = FakeObject(fake_manager, {"id": "foo"})
@@ -219,12 +227,53 @@ class TestRESTObject:
         obj1 = FakeObject(fake_manager, {"attr1": "foo"})
         obj2 = FakeObject(fake_manager, {"attr1": "bar"})
         assert obj1 != obj2
+        assert len(set((obj1, obj2))) == 2
+
+    def test_equality_with_other_objects(self, fake_manager):
+        obj1 = FakeObject(fake_manager, {"id": "foo"})
+        obj2 = None
+        assert not obj1 == obj2
 
     def test_dunder_str(self, fake_manager):
         fake_object = FakeObject(fake_manager, {"attr1": "foo"})
         assert str(fake_object) == (
             "<class 'tests.unit.test_base.FakeObject'> => {'attr1': 'foo'}"
         )
+
+    @pytest.mark.parametrize(
+        "id_attr,repr_attr, attrs, expected_repr",
+        [
+            ("id", None, {"id": 1}, "<ReprObject id:1>"),
+            (
+                "id",
+                "name",
+                {"id": 1, "name": "fake"},
+                "<ReprObject id:1 name:fake>",
+            ),
+            ("name", "name", {"name": "fake"}, "<ReprObject name:fake>"),
+            ("id", "name", {"id": 1}, "<ReprObject id:1>"),
+            (None, None, {}, "<ReprObject>"),
+            (None, "name", {"name": "fake"}, "<ReprObject name:fake>"),
+            (None, "name", {}, "<ReprObject>"),
+        ],
+        ids=[
+            "GetMixin with id",
+            "GetMixin with id and _repr_attr",
+            "GetMixin with _repr_attr matching _id_attr",
+            "GetMixin with _repr_attr without _repr_attr value defined",
+            "GetWithoutIDMixin",
+            "GetWithoutIDMixin with _repr_attr",
+            "GetWithoutIDMixin with _repr_attr without _repr_attr value defined",
+        ],
+    )
+    def test_dunder_repr(self, fake_manager, id_attr, repr_attr, attrs, expected_repr):
+        class ReprObject(FakeObject):
+            _id_attr = id_attr
+            _repr_attr = repr_attr
+
+        fake_object = ReprObject(fake_manager, attrs)
+
+        assert repr(fake_object) == expected_repr
 
     def test_pformat(self, fake_manager):
         fake_object = FakeObject(
@@ -249,3 +298,11 @@ class TestRESTObject:
             " 'ham': 'eggseggseggseggseggseggseggseggseggseggseggseggseggseggseggs'}\n"
         )
         assert stderr == ""
+
+    def test_repr(self, fake_manager):
+        attrs = {"attr1": "foo"}
+        obj = FakeObject(fake_manager, attrs)
+        assert repr(obj) == "<FakeObject id:None>"
+
+        FakeObject._id_attr = None
+        assert repr(obj) == "<FakeObject>"

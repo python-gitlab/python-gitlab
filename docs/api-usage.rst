@@ -93,30 +93,35 @@ Examples:
 .. code-block:: python
 
    # list all the projects
-   projects = gl.projects.list()
+   projects = gl.projects.list(iterator=True)
    for project in projects:
        print(project)
 
    # get the group with id == 2
    group = gl.groups.get(2)
-   for project in group.projects.list():
+   for project in group.projects.list(iterator=True):
        print(project)
+
+.. warning::
+   Calling ``list()`` without any arguments will by default not return the complete list
+   of items. Use either the ``all=True`` or ``iterator=True`` parameters to get all the
+   items when using listing methods. See the :ref:`pagination` section for more
+   information.
+
+.. code-block:: python
 
    # create a new user
    user_data = {'email': 'jen@foo.com', 'username': 'jen', 'name': 'Jen'}
    user = gl.users.create(user_data)
    print(user)
 
-You can list the mandatory and optional attributes for object creation and
-update with the manager's ``get_create_attrs()`` and ``get_update_attrs()``
-methods. They return 2 tuples, the first one is the list of mandatory
-attributes, the second one is the list of optional attribute:
-
-.. code-block:: python
-
-   # v4 only
-   print(gl.projects.get_create_attrs())
-   (('name',), ('path', 'namespace_id', ...))
+.. note:: 
+   python-gitlab attempts to sync the required, optional, and mutually exclusive attributes
+   for resource creation and update with the upstream API.
+   
+   You are encouraged to follow upstream API documentation for each resource to find these -
+   each resource documented here links to the corresponding upstream resource documentation
+   at the top of the page.
 
 The attributes of objects are defined upon object creation, and depend on the
 GitLab API itself. To list the available information associated with an object
@@ -133,7 +138,7 @@ Some objects also provide managers to access related GitLab resources:
 
    # list the issues for a project
    project = gl.projects.get(1)
-   issues = project.issues.list()
+   issues = project.issues.list(all=True)
 
 python-gitlab allows to send any data to the GitLab server when making queries.
 In case of invalid or missing arguments python-gitlab will raise an exception
@@ -150,9 +155,9 @@ conflict with python or python-gitlab when using them as kwargs:
 
 .. code-block:: python
 
-   gl.user_activities.list(from='2019-01-01')  ## invalid
+   gl.user_activities.list(from='2019-01-01', iterator=True)  ## invalid
 
-   gl.user_activities.list(query_parameters={'from': '2019-01-01'})  # OK
+   gl.user_activities.list(query_parameters={'from': '2019-01-01'}, iterator=True)  # OK
 
 Gitlab Objects
 ==============
@@ -192,6 +197,17 @@ You can print a Gitlab Object. For example:
    # Or explicitly via `pformat()`. This is equivalent to the above.
    print(project.pformat())
 
+You can also extend the object if the parameter isn't explicitly listed. For example,
+if you want to update a field that has been newly introduced to the Gitlab API, setting
+the value on the object is accepted:
+
+.. code-block:: python
+
+   issues = project.issues.list(state='opened')
+   for issue in issues:
+      issue.my_super_awesome_feature_flag = "random_value"
+      issue.save()
+
 
 Base types
 ==========
@@ -221,6 +237,30 @@ a project (the previous example used 2 API calls):
    # star a git repository
    project = gl.projects.get(1, lazy=True)  # no API call
    project.star()  # API call
+
+``head()`` methods
+========================
+
+All endpoints that support ``get()`` and ``list()`` also support a ``head()`` method.
+In this case, the server responds only with headers and not the response JSON or body.
+This allows more efficient API calls, such as checking repository file size without
+fetching its content.
+
+.. note::
+
+   In some cases, GitLab may omit specific headers. See more in the :ref:`pagination` section.
+
+.. code-block:: python
+
+   # See total number of personal access tokens for current user
+   gl.personal_access_tokens.head()
+   print(headers["X-Total"])
+
+   # See returned content-type for project GET endpoint
+   headers = gl.projects.head("gitlab-org/gitlab")
+   print(headers["Content-Type"])
+
+.. _pagination:
 
 Pagination
 ==========
@@ -263,13 +303,13 @@ order options. At the time of writing, only ``order_by="id"`` works.
 Reference:
 https://docs.gitlab.com/ce/api/README.html#keyset-based-pagination
 
-``list()`` methods can also return a generator object which will handle the
-next calls to the API when required. This is the recommended way to iterate
-through a large number of items:
+``list()`` methods can also return a generator object, by passing the argument
+``iterator=True``, which will handle the next calls to the API when required. This
+is the recommended way to iterate through a large number of items:
 
 .. code-block:: python
 
-   items = gl.groups.list(as_list=False)
+   items = gl.groups.list(iterator=True)
    for item in items:
        print(item.attributes)
 
@@ -290,6 +330,10 @@ The generator exposes extra listing information as received from the server:
 
    For more information see:
    https://docs.gitlab.com/ee/user/gitlab_com/index.html#pagination-response-headers
+
+.. note::
+   Prior to python-gitlab 3.6.0 the argument ``as_list`` was used instead of
+   ``iterator``.  ``as_list=False`` is the equivalent of ``iterator=True``.
 
 Sudo
 ====
@@ -335,6 +379,7 @@ python-gitlab:
 
 .. code-block:: python
 
+   import os
    import gitlab
    import requests
 
@@ -346,7 +391,7 @@ python-gitlab:
    gl = gitlab.gitlab(url, token, api_version=4, session=session)
 
 Reference:
-https://2.python-requests.org/en/master/user/advanced/#proxies
+https://requests.readthedocs.io/en/latest/user/advanced/#proxies
 
 SSL certificate verification
 ----------------------------
@@ -358,7 +403,7 @@ If you need python-gitlab to use your system CA store instead, you can provide
 the path to the CA bundle in the `REQUESTS_CA_BUNDLE` environment variable.
 
 Reference:
-https://2.python-requests.org/en/master/user/advanced/#ssl-cert-verification
+https://requests.readthedocs.io/en/latest/user/advanced/#ssl-cert-verification
 
 Client side certificate
 -----------------------
@@ -375,7 +420,7 @@ The following sample illustrates how to use a client-side certificate:
    gl = gitlab.gitlab(url, token, api_version=4, session=session)
 
 Reference:
-https://2.python-requests.org/en/master/user/advanced/#client-side-certificates
+https://requests.readthedocs.io/en/latest/user/advanced/#client-side-certificates
 
 Rate limits
 -----------

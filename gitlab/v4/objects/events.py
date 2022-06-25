@@ -29,7 +29,7 @@ __all__ = [
 
 class Event(RESTObject):
     _id_attr = None
-    _short_print_attr = "target_title"
+    _repr_attr = "target_title"
 
 
 class EventManager(ListMixin, RESTManager):

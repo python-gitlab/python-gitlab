@@ -5,16 +5,18 @@ import requests
 from gitlab import cli, client
 from gitlab import exceptions as exc
 from gitlab import types, utils
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
+    GetWithoutIdMixin,
     ListMixin,
     ObjectDeleteMixin,
     RefreshMixin,
     SaveMixin,
     UpdateMixin,
 )
+from gitlab.types import RequiredOptional
 
 from .access_requests import ProjectAccessRequestManager  # noqa: F401
 from .artifacts import ProjectArtifactManager  # noqa: F401
@@ -29,7 +31,10 @@ from .custom_attributes import ProjectCustomAttributeManager  # noqa: F401
 from .deploy_keys import ProjectKeyManager  # noqa: F401
 from .deploy_tokens import ProjectDeployTokenManager  # noqa: F401
 from .deployments import ProjectDeploymentManager  # noqa: F401
-from .environments import ProjectEnvironmentManager  # noqa: F401
+from .environments import (  # noqa: F401
+    ProjectEnvironmentManager,
+    ProjectProtectedEnvironmentManager,
+)
 from .events import ProjectEventManager  # noqa: F401
 from .export_import import ProjectExportManager, ProjectImportManager  # noqa: F401
 from .files import ProjectFileManager  # noqa: F401
@@ -80,6 +85,8 @@ __all__ = [
     "ProjectForkManager",
     "ProjectRemoteMirror",
     "ProjectRemoteMirrorManager",
+    "ProjectStorage",
+    "ProjectStorageManager",
 ]
 
 
@@ -129,7 +136,7 @@ class ProjectGroupManager(ListMixin, RESTManager):
 
 
 class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTObject):
-    _short_print_attr = "path"
+    _repr_attr = "path"
 
     access_tokens: ProjectAccessTokenManager
     accessrequests: ProjectAccessRequestManager
@@ -171,6 +178,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     pagesdomains: ProjectPagesDomainManager
     pipelines: ProjectPipelineManager
     pipelineschedules: ProjectPipelineScheduleManager
+    protected_environments: ProjectProtectedEnvironmentManager
     protectedbranches: ProjectProtectedBranchManager
     protectedtags: ProjectProtectedTagManager
     pushrules: ProjectPushRulesManager
@@ -180,6 +188,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     runners: ProjectRunnerManager
     services: ProjectServiceManager
     snippets: ProjectSnippetManager
+    storage: "ProjectStorageManager"
     tags: ProjectTagManager
     triggers: ProjectTriggerManager
     users: ProjectUserManager
@@ -1013,3 +1022,18 @@ class ProjectRemoteMirrorManager(ListMixin, CreateMixin, UpdateMixin, RESTManage
         required=("url",), optional=("enabled", "only_protected_branches")
     )
     _update_attrs = RequiredOptional(optional=("enabled", "only_protected_branches"))
+
+
+class ProjectStorage(RefreshMixin, RESTObject):
+    pass
+
+
+class ProjectStorageManager(GetWithoutIdMixin, RESTManager):
+    _path = "/projects/{project_id}/storage"
+    _obj_cls = ProjectStorage
+    _from_parent_attrs = {"project_id": "id"}
+
+    def get(
+        self, id: Optional[Union[int, str]] = None, **kwargs: Any
+    ) -> ProjectStorage:
+        return cast(ProjectStorage, super().get(id=id, **kwargs))

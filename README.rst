@@ -53,8 +53,25 @@ From GitLab:
    $ pip install git+https://gitlab.com/python-gitlab/python-gitlab.git
 
 
-Using the docker image
-----------------------
+Using the docker images
+-----------------------
+
+``python-gitlab`` provides Docker images in two flavors, based on the Alpine and Debian slim
+python `base images <https://hub.docker.com/_/python>`__. The default tag is ``alpine``,
+but you can explicitly use the alias (see below).
+
+The alpine image is smaller, but you may want to use the Debian-based slim tag (currently 
+based on ``-slim-bullseye``) if you are running into issues or need a more complete environment
+with a bash shell, such as in CI jobs.
+
+The images are published on the GitLab registry, for example:
+
+* ``registry.gitlab.com/python-gitlab/python-gitlab:latest`` (latest, alpine alias)
+* ``registry.gitlab.com/python-gitlab/python-gitlab:alpine`` (latest alpine)
+* ``registry.gitlab.com/python-gitlab/python-gitlab:slim-bullseye`` (latest slim-bullseye)
+* ``registry.gitlab.com/python-gitlab/python-gitlab:v3.2.0`` (alpine alias)
+* ``registry.gitlab.com/python-gitlab/python-gitlab:v3.2.0-alpine``
+* ``registry.gitlab.com/python-gitlab/python-gitlab:v3.2.0-slim-bullseye``
 
 You can run the Docker image directly from the GitLab registry:
 
@@ -88,6 +105,12 @@ Run your own image:
 .. code-block:: console
 
    $ docker run -it --rm -v python-gitlab:latest <command> ...
+
+Build a Debian slim-based image:
+
+.. code-block:: console
+
+   $ docker build -t python-gitlab:latest --build-arg PYTHON_FLAVOR=slim-bullseye .
 
 Bug reports
 -----------

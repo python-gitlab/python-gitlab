@@ -10,7 +10,7 @@ import requests
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RequiredOptional, RESTManager, RESTObject, RESTObjectList
+from gitlab.base import RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -23,6 +23,7 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
+from gitlab.types import RequiredOptional
 
 from .custom_attributes import UserCustomAttributeManager  # noqa: F401
 from .events import UserEventManager  # noqa: F401
@@ -66,7 +67,7 @@ __all__ = [
 
 
 class CurrentUserEmail(ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "email"
+    _repr_attr = "email"
 
 
 class CurrentUserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
@@ -96,7 +97,7 @@ class CurrentUserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTMana
 
 
 class CurrentUserKey(ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "title"
+    _repr_attr = "title"
 
 
 class CurrentUserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
@@ -112,7 +113,7 @@ class CurrentUserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager
 
 class CurrentUserStatus(SaveMixin, RESTObject):
     _id_attr = None
-    _short_print_attr = "message"
+    _repr_attr = "message"
 
 
 class CurrentUserStatusManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
@@ -122,13 +123,13 @@ class CurrentUserStatusManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[CurrentUserStatus]:
-        return cast(Optional[CurrentUserStatus], super().get(id=id, **kwargs))
+    ) -> CurrentUserStatus:
+        return cast(CurrentUserStatus, super().get(id=id, **kwargs))
 
 
 class CurrentUser(RESTObject):
     _id_attr = None
-    _short_print_attr = "username"
+    _repr_attr = "username"
 
     emails: CurrentUserEmailManager
     gpgkeys: CurrentUserGPGKeyManager
@@ -140,14 +141,12 @@ class CurrentUserManager(GetWithoutIdMixin, RESTManager):
     _path = "/user"
     _obj_cls = CurrentUser
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[CurrentUser]:
-        return cast(Optional[CurrentUser], super().get(id=id, **kwargs))
+    def get(self, id: Optional[Union[int, str]] = None, **kwargs: Any) -> CurrentUser:
+        return cast(CurrentUser, super().get(id=id, **kwargs))
 
 
 class User(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "username"
+    _repr_attr = "username"
 
     customattributes: UserCustomAttributeManager
     emails: "UserEmailManager"
@@ -284,6 +283,84 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             self._attrs["state"] = "active"
         return server_data
 
+    @cli.register_custom_action("User")
+    @exc.on_http_error(exc.GitlabUserApproveError)
+    def approve(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+        """Approve a user creation request.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUserApproveError: If the user could not be activated
+
+        Returns:
+            The new object data (*not* a RESTObject)
+        """
+        path = f"/users/{self.encoded_id}/approve"
+        return self.manager.gitlab.http_post(path, **kwargs)
+
+    @cli.register_custom_action("User")
+    @exc.on_http_error(exc.GitlabUserRejectError)
+    def reject(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+        """Reject a user creation request.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUserRejectError: If the user could not be rejected
+
+        Returns:
+            The new object data (*not* a RESTObject)
+        """
+        path = f"/users/{self.encoded_id}/reject"
+        return self.manager.gitlab.http_post(path, **kwargs)
+
+    @cli.register_custom_action("User")
+    @exc.on_http_error(exc.GitlabBanError)
+    def ban(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+        """Ban the user.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabBanError: If the user could not be banned
+
+        Returns:
+            Whether the user has been banned
+        """
+        path = f"/users/{self.encoded_id}/ban"
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if server_data:
+            self._attrs["state"] = "banned"
+        return server_data
+
+    @cli.register_custom_action("User")
+    @exc.on_http_error(exc.GitlabUnbanError)
+    def unban(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+        """Unban the user.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUnbanError: If the user could not be unbanned
+
+        Returns:
+            Whether the user has been unbanned
+        """
+        path = f"/users/{self.encoded_id}/unban"
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        if server_data:
+            self._attrs["state"] = "active"
+        return server_data
+
 
 class UserManager(CRUDMixin, RESTManager):
     _path = "/users"
@@ -373,7 +450,7 @@ class ProjectUserManager(ListMixin, RESTManager):
 
 
 class UserEmail(ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "email"
+    _repr_attr = "email"
 
 
 class UserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
@@ -392,7 +469,7 @@ class UserActivities(RESTObject):
 
 class UserStatus(RESTObject):
     _id_attr = None
-    _short_print_attr = "message"
+    _repr_attr = "message"
 
 
 class UserStatusManager(GetWithoutIdMixin, RESTManager):
@@ -400,10 +477,8 @@ class UserStatusManager(GetWithoutIdMixin, RESTManager):
     _obj_cls = UserStatus
     _from_parent_attrs = {"user_id": "id"}
 
-    def get(
-        self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[UserStatus]:
-        return cast(Optional[UserStatus], super().get(id=id, **kwargs))
+    def get(self, id: Optional[Union[int, str]] = None, **kwargs: Any) -> UserStatus:
+        return cast(UserStatus, super().get(id=id, **kwargs))
 
 
 class UserActivitiesManager(ListMixin, RESTManager):
@@ -429,11 +504,14 @@ class UserKey(ObjectDeleteMixin, RESTObject):
     pass
 
 
-class UserKeyManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
+class UserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = "/users/{user_id}/keys"
     _obj_cls = UserKey
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(required=("title", "key"))
+
+    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> UserKey:
+        return cast(UserKey, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class UserIdentityProviderManager(DeleteMixin, RESTManager):
@@ -539,12 +617,12 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
             all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
-            as_list: If set to False and no pagination option is
+            iterator: If set to True and no pagination option is
                 defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            The list of objects, or a generator if `as_list` is False
+            The list of objects, or a generator if `iterator` is True
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct

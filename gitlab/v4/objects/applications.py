@@ -1,5 +1,6 @@
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, DeleteMixin, ListMixin, ObjectDeleteMixin
+from gitlab.types import RequiredOptional
 
 __all__ = [
     "Application",
@@ -9,7 +10,7 @@ __all__ = [
 
 class Application(ObjectDeleteMixin, RESTObject):
     _url = "/applications"
-    _short_print_attr = "name"
+    _repr_attr = "name"
 
 
 class ApplicationManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):

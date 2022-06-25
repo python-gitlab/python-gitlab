@@ -51,3 +51,17 @@ def __getattr__(name: str) -> Any:
         )
         return getattr(gitlab.const, name)
     raise AttributeError(f"module {__name__} has no attribute {name}")
+
+
+__all__ = [
+    "__author__",
+    "__copyright__",
+    "__email__",
+    "__license__",
+    "__title__",
+    "__version__",
+    "Gitlab",
+    "GitlabList",
+]
+__all__.extend(gitlab.const._DEPRECATED)
+__all__.extend(gitlab.exceptions.__all__)

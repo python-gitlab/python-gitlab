@@ -1,7 +1,7 @@
 from typing import Any, cast, Dict, List, Optional, TYPE_CHECKING, Union
 
 from gitlab import exceptions as exc
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -11,6 +11,7 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
+from gitlab.types import RequiredOptional
 
 __all__ = [
     "ProjectApproval",
@@ -47,8 +48,8 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[ProjectApproval]:
-        return cast(Optional[ProjectApproval], super().get(id=id, **kwargs))
+    ) -> ProjectApproval:
+        return cast(ProjectApproval, super().get(id=id, **kwargs))
 
     @exc.on_http_error(exc.GitlabUpdateError)
     def set_approvers(
@@ -112,8 +113,8 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[ProjectMergeRequestApproval]:
-        return cast(Optional[ProjectMergeRequestApproval], super().get(id=id, **kwargs))
+    ) -> ProjectMergeRequestApproval:
+        return cast(ProjectMergeRequestApproval, super().get(id=id, **kwargs))
 
     @exc.on_http_error(exc.GitlabUpdateError)
     def set_approvers(
@@ -164,9 +165,10 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
 
 
 class ProjectMergeRequestApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _id_attr = "approval_rule_id"
-    _short_print_attr = "approval_rule"
+    _repr_attr = "name"
     id: int
+    approval_rule_id: int
+    merge_request_iid: int
 
     @exc.on_http_error(exc.GitlabUpdateError)
     def save(self, **kwargs: Any) -> None:
@@ -254,7 +256,5 @@ class ProjectMergeRequestApprovalStateManager(GetWithoutIdMixin, RESTManager):
 
     def get(
         self, id: Optional[Union[int, str]] = None, **kwargs: Any
-    ) -> Optional[ProjectMergeRequestApprovalState]:
-        return cast(
-            Optional[ProjectMergeRequestApprovalState], super().get(id=id, **kwargs)
-        )
+    ) -> ProjectMergeRequestApprovalState:
+        return cast(ProjectMergeRequestApprovalState, super().get(id=id, **kwargs))

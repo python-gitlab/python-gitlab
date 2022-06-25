@@ -1,7 +1,8 @@
 from typing import Any, cast, Union
 
-from gitlab.base import RequiredOptional, RESTManager, RESTObject
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, NoUpdateMixin, ObjectDeleteMixin, SaveMixin
+from gitlab.types import RequiredOptional
 
 __all__ = [
     "Hook",
@@ -15,7 +16,7 @@ __all__ = [
 
 class Hook(ObjectDeleteMixin, RESTObject):
     _url = "/hooks"
-    _short_print_attr = "url"
+    _repr_attr = "url"
 
 
 class HookManager(NoUpdateMixin, RESTManager):
@@ -28,7 +29,7 @@ class HookManager(NoUpdateMixin, RESTManager):
 
 
 class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "url"
+    _repr_attr = "url"
 
 
 class ProjectHookManager(CRUDMixin, RESTManager):
@@ -75,7 +76,7 @@ class ProjectHookManager(CRUDMixin, RESTManager):
 
 
 class GroupHook(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _short_print_attr = "url"
+    _repr_attr = "url"
 
 
 class GroupHookManager(CRUDMixin, RESTManager):

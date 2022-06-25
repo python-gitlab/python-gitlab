@@ -19,9 +19,11 @@ import pathlib
 import traceback
 import urllib.parse
 import warnings
-from typing import Any, Callable, Dict, Optional, Type, Union
+from typing import Any, Callable, Dict, Optional, Tuple, Type, Union
 
 import requests
+
+from gitlab import types
 
 
 class _StdoutStream:
@@ -45,6 +47,39 @@ def response_content(
         if chunk:
             action(chunk)
     return None
+
+
+def _transform_types(
+    data: Dict[str, Any], custom_types: dict, *, transform_files: Optional[bool] = True
+) -> Tuple[dict, dict]:
+    """Copy the data dict with attributes that have custom types and transform them
+    before being sent to the server.
+
+    If ``transform_files`` is ``True`` (default), also populates the ``files`` dict for
+    FileAttribute types with tuples to prepare fields for requests' MultipartEncoder:
+    https://toolbelt.readthedocs.io/en/latest/user.html#multipart-form-data-encoder
+
+    Returns:
+        A tuple of the transformed data dict and files dict"""
+
+    # Duplicate data to avoid messing with what the user sent us
+    data = data.copy()
+    files = {}
+
+    for attr_name, type_cls in custom_types.items():
+        if attr_name not in data:
+            continue
+
+        type_obj = type_cls(data[attr_name])
+
+        # if the type if FileAttribute we need to pass the data as file
+        if transform_files and isinstance(type_obj, types.FileAttribute):
+            key = type_obj.get_file_name(attr_name)
+            files[attr_name] = (key, data.pop(attr_name))
+        else:
+            data[attr_name] = type_obj.get_for_api()
+
+    return data, files
 
 
 def copy_dict(
@@ -78,16 +113,14 @@ class EncodedId(str):
         https://docs.gitlab.com/ee/api/index.html#path-parameters
     """
 
-    # mypy complains if return type other than the class type. So we ignore issue.
-    def __new__(  # type: ignore
-        cls, value: Union[str, int, "EncodedId"]
-    ) -> Union[int, "EncodedId"]:
-        if isinstance(value, (int, EncodedId)):
+    def __new__(cls, value: Union[str, int, "EncodedId"]) -> "EncodedId":
+        if isinstance(value, EncodedId):
             return value
 
-        if not isinstance(value, str):
+        if not isinstance(value, (int, str)):
             raise TypeError(f"Unsupported type received: {type(value)}")
-        value = urllib.parse.quote(value, safe="")
+        if isinstance(value, str):
+            value = urllib.parse.quote(value, safe="")
         return super().__new__(cls, value)
 
 

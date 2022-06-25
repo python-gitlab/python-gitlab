@@ -56,7 +56,9 @@ def _get_config_files(
             try:
                 resolved = _resolve_file(config_file)
             except OSError as e:
-                raise GitlabConfigMissingError(f"Cannot read config from file: {e}")
+                raise GitlabConfigMissingError(
+                    f"Cannot read config from file: {e}"
+                ) from e
             resolved_files.append(resolved)
 
         return resolved_files
@@ -69,7 +71,7 @@ def _get_config_files(
     except OSError as e:
         raise GitlabConfigMissingError(
             f"Cannot read config from PYTHON_GITLAB_CFG: {e}"
-        )
+        ) from e
 
     for config_file in _DEFAULT_FILES:
         try:
@@ -154,7 +156,7 @@ class GitlabConfigParser:
             # CA bundle.
             try:
                 self.ssl_verify = _config.get("global", "ssl_verify")
-            except Exception:
+            except Exception:  # pragma: no cover
                 pass
         except Exception:
             pass
@@ -166,7 +168,7 @@ class GitlabConfigParser:
             # CA bundle.
             try:
                 self.ssl_verify = _config.get(self.gitlab_id, "ssl_verify")
-            except Exception:
+            except Exception:  # pragma: no cover
                 pass
         except Exception:
             pass
@@ -197,7 +199,9 @@ class GitlabConfigParser:
 
         try:
             self.http_username = _config.get(self.gitlab_id, "http_username")
-            self.http_password = _config.get(self.gitlab_id, "http_password")
+            self.http_password = _config.get(
+                self.gitlab_id, "http_password"
+            )  # pragma: no cover
         except Exception:
             pass
 

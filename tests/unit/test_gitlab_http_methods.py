@@ -1,3 +1,6 @@
+import copy
+import warnings
+
 import pytest
 import requests
 import responses
@@ -5,8 +8,6 @@ import responses
 from gitlab import GitlabHttpError, GitlabList, GitlabParsingError, RedirectError
 from gitlab.client import RETRYABLE_TRANSIENT_ERROR_CODES
 from tests.unit import helpers
-
-MATCH_EMPTY_QUERY_PARAMS = [responses.matchers.query_param_matcher({})]
 
 
 def test_build_url(gl):
@@ -26,7 +27,7 @@ def test_http_request(gl):
         url=url,
         json=[{"name": "project1"}],
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     http_r = gl.http_request("get", "/projects")
@@ -43,7 +44,7 @@ def test_http_request_404(gl):
         url=url,
         json={},
         status=400,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -60,7 +61,7 @@ def test_http_request_with_only_failures(gl, status_code):
         url=url,
         json={},
         status=status_code,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -99,7 +100,16 @@ def test_http_request_with_retry_on_method_for_transient_failures(gl):
 
 
 @responses.activate
-def test_http_request_with_retry_on_method_for_transient_network_failures(gl):
+@pytest.mark.parametrize(
+    "exception",
+    [
+        requests.ConnectionError("Connection aborted."),
+        requests.exceptions.ChunkedEncodingError("Connection broken."),
+    ],
+)
+def test_http_request_with_retry_on_method_for_transient_network_failures(
+    gl, exception
+):
     call_count = 0
     calls_before_success = 3
 
@@ -114,7 +124,7 @@ def test_http_request_with_retry_on_method_for_transient_network_failures(gl):
 
         if call_count >= calls_before_success:
             return (status_code, headers, body)
-        raise requests.ConnectionError("Connection aborted.")
+        raise exception
 
     responses.add_callback(
         method=responses.GET,
@@ -310,7 +320,7 @@ def test_http_request_302_get_does_not_raise(gl):
             method=responses.GET,
             url=url,
             status=302,
-            match=MATCH_EMPTY_QUERY_PARAMS,
+            match=helpers.MATCH_EMPTY_QUERY_PARAMS,
         )
         gl.http_request(verb=method, path=api_path)
 
@@ -334,7 +344,7 @@ def test_http_request_302_put_raises_redirect_error(gl):
             method=responses.PUT,
             url=url,
             status=302,
-            match=MATCH_EMPTY_QUERY_PARAMS,
+            match=helpers.MATCH_EMPTY_QUERY_PARAMS,
         )
         with pytest.raises(RedirectError) as exc:
             gl.http_request(verb=method, path=api_path)
@@ -352,7 +362,7 @@ def test_get_request(gl):
         url=url,
         json={"name": "project1"},
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_get("/projects")
@@ -370,7 +380,7 @@ def test_get_request_raw(gl):
         content_type="application/octet-stream",
         body="content",
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_get("/projects")
@@ -386,7 +396,7 @@ def test_get_request_404(gl):
         url=url,
         json=[],
         status=404,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -403,7 +413,7 @@ def test_get_request_invalid_data(gl):
         body='["name": "project1"]',
         content_type="application/json",
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabParsingError):
@@ -411,6 +421,22 @@ def test_get_request_invalid_data(gl):
         print(type(result))
         print(result.content)
     assert responses.assert_call_count(url, 1) is True
+
+
+@responses.activate
+def test_head_request(gl):
+    url = "http://localhost/api/v4/projects"
+    responses.add(
+        method=responses.HEAD,
+        url=url,
+        headers={"X-Total": "1"},
+        status=200,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+    )
+
+    result = gl.http_head("/projects")
+    assert isinstance(result, requests.structures.CaseInsensitiveDict)
+    assert result["X-Total"] == "1"
 
 
 @responses.activate
@@ -422,21 +448,134 @@ def test_list_request(gl):
         json=[{"name": "project1"}],
         headers={"X-Total": "1"},
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
-    result = gl.http_list("/projects", as_list=True)
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        result = gl.http_list("/projects", iterator=False)
+    assert len(caught_warnings) == 0
     assert isinstance(result, list)
     assert len(result) == 1
 
-    result = gl.http_list("/projects", as_list=False)
+    result = gl.http_list("/projects", iterator=True)
     assert isinstance(result, GitlabList)
-    assert len(result) == 1
+    assert len(list(result)) == 1
 
     result = gl.http_list("/projects", all=True)
     assert isinstance(result, list)
     assert len(result) == 1
     assert responses.assert_call_count(url, 3) is True
+
+
+large_list_response = {
+    "method": responses.GET,
+    "url": "http://localhost/api/v4/projects",
+    "json": [
+        {"name": "project01"},
+        {"name": "project02"},
+        {"name": "project03"},
+        {"name": "project04"},
+        {"name": "project05"},
+        {"name": "project06"},
+        {"name": "project07"},
+        {"name": "project08"},
+        {"name": "project09"},
+        {"name": "project10"},
+        {"name": "project11"},
+        {"name": "project12"},
+        {"name": "project13"},
+        {"name": "project14"},
+        {"name": "project15"},
+        {"name": "project16"},
+        {"name": "project17"},
+        {"name": "project18"},
+        {"name": "project19"},
+        {"name": "project20"},
+    ],
+    "headers": {"X-Total": "30", "x-per-page": "20"},
+    "status": 200,
+    "match": helpers.MATCH_EMPTY_QUERY_PARAMS,
+}
+
+
+@responses.activate
+def test_as_list_deprecation_warning(gl):
+    responses.add(**large_list_response)
+
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        result = gl.http_list("/projects", as_list=False)
+    assert len(caught_warnings) == 1
+    warning = caught_warnings[0]
+    assert isinstance(warning.message, DeprecationWarning)
+    message = str(warning.message)
+    assert "`as_list=False` is deprecated" in message
+    assert "Use `iterator=True` instead" in message
+    assert __file__ == warning.filename
+    assert not isinstance(result, list)
+    assert len(list(result)) == 20
+    assert len(responses.calls) == 1
+
+
+@responses.activate
+def test_list_request_pagination_warning(gl):
+    responses.add(**large_list_response)
+
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        result = gl.http_list("/projects", iterator=False)
+    assert len(caught_warnings) == 1
+    warning = caught_warnings[0]
+    assert isinstance(warning.message, UserWarning)
+    message = str(warning.message)
+    assert "Calling a `list()` method" in message
+    assert "python-gitlab.readthedocs.io" in message
+    assert __file__ == warning.filename
+    assert isinstance(result, list)
+    assert len(result) == 20
+    assert len(responses.calls) == 1
+
+
+@responses.activate
+def test_list_request_iterator_true_nowarning(gl):
+    responses.add(**large_list_response)
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        result = gl.http_list("/projects", iterator=True)
+    assert len(caught_warnings) == 0
+    assert isinstance(result, GitlabList)
+    assert len(list(result)) == 20
+    assert len(responses.calls) == 1
+
+
+@responses.activate
+def test_list_request_all_true_nowarning(gl):
+    responses.add(**large_list_response)
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        result = gl.http_list("/projects", all=True)
+    assert len(caught_warnings) == 0
+    assert isinstance(result, list)
+    assert len(result) == 20
+    assert len(responses.calls) == 1
+
+
+@responses.activate
+def test_list_request_all_false_nowarning(gl):
+    responses.add(**large_list_response)
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        result = gl.http_list("/projects", all=False)
+    assert len(caught_warnings) == 0
+    assert isinstance(result, list)
+    assert len(result) == 20
+    assert len(responses.calls) == 1
+
+
+@responses.activate
+def test_list_request_page_nowarning(gl):
+    response_dict = copy.deepcopy(large_list_response)
+    response_dict["match"] = [responses.matchers.query_param_matcher({"page": "1"})]
+    responses.add(**response_dict)
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        gl.http_list("/projects", page=1)
+    assert len(caught_warnings) == 0
+    assert len(responses.calls) == 1
 
 
 @responses.activate
@@ -447,7 +586,7 @@ def test_list_request_404(gl):
         url=url,
         json=[],
         status=404,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -464,7 +603,7 @@ def test_list_request_invalid_data(gl):
         body='["name": "project1"]',
         content_type="application/json",
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabParsingError):
@@ -480,7 +619,7 @@ def test_post_request(gl):
         url=url,
         json={"name": "project1"},
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_post("/projects")
@@ -497,7 +636,7 @@ def test_post_request_404(gl):
         url=url,
         json=[],
         status=404,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -514,7 +653,7 @@ def test_post_request_invalid_data(gl):
         content_type="application/json",
         body='["name": "project1"]',
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabParsingError):
@@ -530,7 +669,7 @@ def test_put_request(gl):
         url=url,
         json={"name": "project1"},
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_put("/projects")
@@ -547,7 +686,7 @@ def test_put_request_404(gl):
         url=url,
         json=[],
         status=404,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
@@ -564,7 +703,7 @@ def test_put_request_invalid_data(gl):
         body='["name": "project1"]',
         content_type="application/json",
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabParsingError):
@@ -580,7 +719,7 @@ def test_delete_request(gl):
         url=url,
         json=True,
         status=200,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     result = gl.http_delete("/projects")
@@ -597,7 +736,7 @@ def test_delete_request_404(gl):
         url=url,
         json=[],
         status=404,
-        match=MATCH_EMPTY_QUERY_PARAMS,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
     with pytest.raises(GitlabHttpError):
