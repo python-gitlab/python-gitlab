@@ -6,6 +6,7 @@
 
    cli-usage
    api-usage
+   api-usage-advanced
    cli-examples
    api-objects
    api/gitlab
