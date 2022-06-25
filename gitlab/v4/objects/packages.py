@@ -5,16 +5,7 @@ https://docs.gitlab.com/ee/user/packages/generic_packages/
 """
 
 from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    cast,
-    Iterator,
-    Literal,
-    Optional,
-    TYPE_CHECKING,
-    Union,
-)
+from typing import Any, Callable, cast, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -112,10 +103,10 @@ class GenericPackageManager(RESTManager):
         package_version: str,
         file_name: str,
         streamed: bool = False,
-        action: Optional[Union[Callable, Literal["iterator"]]] = None,
+        action: Optional[Callable] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> Optional[bytes]:
         """Download a generic package.
 
         Args:

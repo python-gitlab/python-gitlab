@@ -3,17 +3,7 @@ GitLab API: https://docs.gitlab.com/ee/api/repositories.html
 
 Currently this module only contains repository-related methods for projects.
 """
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Iterator,
-    List,
-    Literal,
-    Optional,
-    TYPE_CHECKING,
-    Union,
-)
+from typing import Any, Callable, Dict, List, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -117,10 +107,10 @@ class RepositoryMixin(_RestObjectBase):
         self,
         sha: str,
         streamed: bool = False,
-        action: Optional[Union[Callable[..., Any], Literal["iterator"]]] = None,
+        action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> Optional[bytes]:
         """Return the raw file contents for a blob.
 
         Args:
@@ -202,11 +192,11 @@ class RepositoryMixin(_RestObjectBase):
         self,
         sha: str = None,
         streamed: bool = False,
-        action: Optional[Union[Callable[..., Any], Literal["iterator"]]] = None,
+        action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
         format: Optional[str] = None,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> Optional[bytes]:
         """Return an archive of the repository.
 
         Args:
