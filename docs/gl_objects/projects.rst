@@ -628,7 +628,23 @@ Reference
 Examples
 ---------
 
-Get a service::
+.. danger::
+
+    Since GitLab 13.12, ``get()`` calls to project services return a
+    ``404 Not Found`` response until they have been activated the first time.
+
+    To avoid this, we recommend using `lazy=True` to prevent making
+    the initial call when activating new services unless they have
+    previously already been activated.
+
+Configure and enable a service for the first time::
+
+    service = project.services.get('asana', lazy=True)
+
+    service.api_key = 'randomkey'
+    service.save()
+
+Get an existing service::
 
     service = project.services.get('asana')
     # display its status (enabled/disabled)
@@ -641,11 +657,6 @@ List active project services::
 List the code names of available services (doesn't return objects)::
 
     services = project.services.available()
-
-Configure and enable a service::
-
-    service.api_key = 'randomkey'
-    service.save()
 
 Disable a service::
 
