@@ -238,6 +238,28 @@ a project (the previous example used 2 API calls):
    project = gl.projects.get(1, lazy=True)  # no API call
    project.star()  # API call
 
+``head()`` methods
+========================
+
+All endpoints that support ``get()`` and ``list()`` also support a ``head()`` method.
+In this case, the server responds only with headers and not the response JSON or body.
+This allows more efficient API calls, such as checking repository file size without
+fetching its content.
+
+.. note::
+
+   In some cases, GitLab may omit specific headers. See more in the :ref:`pagination` section.
+
+.. code-block:: python
+
+   # See total number of personal access tokens for current user
+   gl.personal_access_tokens.head()
+   print(headers["X-Total"])
+
+   # See returned content-type for project GET endpoint
+   headers = gl.projects.head("gitlab-org/gitlab")
+   print(headers["Content-Type"])
+
 .. _pagination:
 
 Pagination
