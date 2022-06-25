@@ -276,7 +276,7 @@ You can also directly stream the output into a file, and unzip it afterwards::
 
 Or, you can also use the underlying response iterator directly::
 
-    artifact_bytes_iterator = build_or_job.artifacts(streamed=True, action='iterator')
+    artifact_bytes_iterator = build_or_job.artifacts(iterator=True)
 
 This can be used with frameworks that expect an iterator (such as FastAPI/Starlette's
 ``StreamingResponse``) to forward a download from GitLab without having to download
@@ -284,7 +284,7 @@ the entire content server-side first::
 
     @app.get("/download_artifact")
     def download_artifact():
-        artifact_bytes_iterator = build_or_job.artifacts(streamed=True, action='iterator')
+        artifact_bytes_iterator = build_or_job.artifacts(iterator=True)
         return StreamingResponse(artifact_bytes_iterator, media_type="application/zip")
 
 Delete all artifacts of a project that can be deleted::
