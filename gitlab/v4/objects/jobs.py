@@ -1,4 +1,4 @@
-from typing import Any, Callable, cast, Dict, Optional, TYPE_CHECKING, Union
+from typing import Any, Callable, cast, Dict, Iterator, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -116,16 +116,19 @@ class ProjectJob(RefreshMixin, RESTObject):
     def artifacts(
         self,
         streamed: bool = False,
+        iterator: bool = False,
         action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Get the job artifacts.
 
         Args:
             streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
+            iterator: If True directly return the underlying response
+                iterator
             action: Callable responsible of dealing with chunk of
                 data
             chunk_size: Size of each chunk
@@ -144,7 +147,7 @@ class ProjectJob(RefreshMixin, RESTObject):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, action, chunk_size)
+        return utils.response_content(result, streamed, iterator, action, chunk_size)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
@@ -152,10 +155,11 @@ class ProjectJob(RefreshMixin, RESTObject):
         self,
         path: str,
         streamed: bool = False,
+        iterator: bool = False,
         action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
-    ) -> Optional[bytes]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Get a single artifact file from within the job's artifacts archive.
 
         Args:
@@ -163,6 +167,8 @@ class ProjectJob(RefreshMixin, RESTObject):
             streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
+            iterator: If True directly return the underlying response
+                iterator
             action: Callable responsible of dealing with chunk of
                 data
             chunk_size: Size of each chunk
@@ -181,13 +187,14 @@ class ProjectJob(RefreshMixin, RESTObject):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, action, chunk_size)
+        return utils.response_content(result, streamed, iterator, action, chunk_size)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
     def trace(
         self,
         streamed: bool = False,
+        iterator: bool = False,
         action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
         **kwargs: Any,
@@ -198,6 +205,8 @@ class ProjectJob(RefreshMixin, RESTObject):
             streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
+            iterator: If True directly return the underlying response
+                iterator
             action: Callable responsible of dealing with chunk of
                 data
             chunk_size: Size of each chunk
@@ -216,7 +225,9 @@ class ProjectJob(RefreshMixin, RESTObject):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return_value = utils.response_content(result, streamed, action, chunk_size)
+        return_value = utils.response_content(
+            result, streamed, iterator, action, chunk_size
+        )
         if TYPE_CHECKING:
             assert isinstance(return_value, dict)
         return return_value

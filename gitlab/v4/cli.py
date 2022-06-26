@@ -127,6 +127,7 @@ class GitlabCLI:
             data = export_status.download()
             if TYPE_CHECKING:
                 assert data is not None
+                assert isinstance(data, bytes)
             sys.stdout.buffer.write(data)
 
         except Exception as e:  # pragma: no cover, cli.die is unit-tested
