@@ -381,7 +381,7 @@ def get_dict(
 
 class JSONPrinter:
     @staticmethod
-    def display(d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
+    def display(d: Union[str, Dict[str, Any]], **_kwargs: Any) -> None:
         import json  # noqa
 
         print(json.dumps(d))
@@ -390,7 +390,7 @@ class JSONPrinter:
     def display_list(
         data: List[Union[str, gitlab.base.RESTObject]],
         fields: List[str],
-        **kwargs: Any,
+        **_kwargs: Any,
     ) -> None:
         import json  # noqa
 
@@ -399,7 +399,7 @@ class JSONPrinter:
 
 class YAMLPrinter:
     @staticmethod
-    def display(d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
+    def display(d: Union[str, Dict[str, Any]], **_kwargs: Any) -> None:
         try:
             import yaml  # noqa
 
@@ -415,7 +415,7 @@ class YAMLPrinter:
     def display_list(
         data: List[Union[str, gitlab.base.RESTObject]],
         fields: List[str],
-        **kwargs: Any,
+        **_kwargs: Any,
     ) -> None:
         try:
             import yaml  # noqa
@@ -434,7 +434,7 @@ class YAMLPrinter:
 
 
 class LegacyPrinter:
-    def display(self, d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
+    def display(self, _d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
         verbose = kwargs.get("verbose", False)
         padding = kwargs.get("padding", 0)
         obj: Optional[Union[Dict[str, Any], gitlab.base.RESTObject]] = kwargs.get("obj")

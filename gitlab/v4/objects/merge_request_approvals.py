@@ -157,7 +157,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
                 ar.save()
                 return ar
         # if there was no rule matching the rule name, create a new one
-        return approval_rules.create(data=data)
+        return approval_rules.create(data=data, **kwargs)
 
 
 class ProjectMergeRequestApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):

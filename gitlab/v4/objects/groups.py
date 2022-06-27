@@ -183,7 +183,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         if provider is not None:
             path += f"/{provider}"
         path += f"/{cn}"
-        self.manager.gitlab.http_delete(path)
+        self.manager.gitlab.http_delete(path, **kwargs)
 
     @cli.register_custom_action("Group")
     @exc.on_http_error(exc.GitlabCreateError)

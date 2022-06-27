@@ -267,7 +267,7 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
         return cast(ProjectService, super().get(id=id, lazy=lazy, **kwargs))
 
     @cli.register_custom_action("ProjectServiceManager")
-    def available(self, **kwargs: Any) -> List[str]:
+    def available(self) -> List[str]:
         """List the services known by python-gitlab.
 
         Returns:

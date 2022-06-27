@@ -464,7 +464,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
 
         url = f"/projects/{self.encoded_id}/uploads"
         file_info = {"file": (filename, filedata)}
-        data = self.manager.gitlab.http_post(url, files=file_info)
+        data = self.manager.gitlab.http_post(url, files=file_info, **kwargs)
 
         if TYPE_CHECKING:
             assert isinstance(data, dict)
@@ -504,7 +504,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """
         path = f"/projects/{self.encoded_id}/snapshot"
         result = self.manager.gitlab.http_get(
-            path, streamed=streamed, raw=True, **kwargs
+            path, streamed=streamed, raw=True, wiki=wiki, **kwargs
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
