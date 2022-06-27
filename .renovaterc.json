@@ -4,6 +4,7 @@
     ":enablePreCommit",
     "schedule:weekly"
   ],
+  "ignoreDeps": ["relekang/python-semantic-release"],
   "pip_requirements": {
     "fileMatch": ["^requirements(-[\\w]*)?\\.txt$"]
   },
