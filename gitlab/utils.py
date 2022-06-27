@@ -15,11 +15,24 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import functools
+import inspect
 import pathlib
 import traceback
 import urllib.parse
 import warnings
-from typing import Any, Callable, Dict, Iterator, Optional, Tuple, Type, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterator,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+    TypeVar,
+    cast,
+)
 
 import requests
 
@@ -163,3 +176,55 @@ def warn(
         stacklevel=stacklevel,
         source=source,
     )
+
+
+__F = TypeVar("__F", bound=Callable[..., Any])
+
+def non_kwarg_deprecation(*, allowed_args: int) -> Callable[[__F], __F]:
+    def decorate(function: __F) -> __F:
+        signature = inspect.signature(function)
+
+        @functools.wraps(function)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            if len(args) > allowed_args:
+                message = (
+                    f"Too many non-keyword arguments. Only {allowed_args} non-keyword "
+                    f"argument(s) will be allowed starting in python-gitlab version "
+                    f"4.0.0. Then it will be required to be called using keyword "
+                    f"arguments. For example: "
+                )
+                message += f"{function.__name__}("
+                for index, (arg_name, arg_value) in enumerate(
+                    zip(signature.parameters, args), start=1
+                ):
+                    if index > allowed_args:
+                        message += f"{arg_name}={arg_value!r}, "
+                    else:
+                        message += f"{arg_value!r}, "
+                message = message[:-2]
+                message += ")"
+                # Get `stacklevel` for user code so we indicate where issue is in
+                # their code.
+                pg_dir = pathlib.Path(__file__).parent.resolve()
+                stack = traceback.extract_stack()
+                stacklevel = 1
+                warning_from = ""
+                for stacklevel, frame in enumerate(reversed(stack), start=1):
+                    if stacklevel == 2:
+                        warning_from = (
+                            f" (python-gitlab: {frame.filename}:{frame.lineno})"
+                        )
+                    frame_dir = str(pathlib.Path(frame.filename).parent.resolve())
+                    if not frame_dir.startswith(str(pg_dir)):
+                        break
+                warnings.warn(
+                    message=message + warning_from,
+                    category=DeprecationWarning,
+                    stacklevel=stacklevel,
+                )
+
+            return function(*args, **kwargs)
+
+        return cast(__F, wrapper)
+
+    return decorate
