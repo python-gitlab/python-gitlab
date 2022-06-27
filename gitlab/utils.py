@@ -34,9 +34,10 @@ class _StdoutStream:
 def response_content(
     response: requests.Response,
     streamed: bool,
-    iterator: bool,
     action: Optional[Callable],
     chunk_size: int,
+    *,
+    iterator: bool,
 ) -> Optional[Union[bytes, Iterator[Any]]]:
     if iterator:
         return response.iter_content(chunk_size=chunk_size)

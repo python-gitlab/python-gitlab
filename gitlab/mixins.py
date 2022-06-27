@@ -613,9 +613,10 @@ class DownloadMixin(_RestObjectBase):
     def download(
         self,
         streamed: bool = False,
-        iterator: bool = False,
         action: Optional[Callable] = None,
         chunk_size: int = 1024,
+        *,
+        iterator: bool = False,
         **kwargs: Any,
     ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Download the archive of a resource export.
@@ -644,7 +645,9 @@ class DownloadMixin(_RestObjectBase):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, iterator, action, chunk_size)
+        return utils.response_content(
+            result, streamed, action, chunk_size, iterator=iterator
+        )
 
 
 class SubscribableMixin(_RestObjectBase):

@@ -476,9 +476,10 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         self,
         wiki: bool = False,
         streamed: bool = False,
-        iterator: bool = False,
         action: Optional[Callable] = None,
         chunk_size: int = 1024,
+        *,
+        iterator: bool = False,
         **kwargs: Any,
     ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Return a snapshot of the repository.
@@ -508,7 +509,9 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, iterator, action, chunk_size)
+        return utils.response_content(
+            result, streamed, action, chunk_size, iterator=iterator
+        )
 
     @cli.register_custom_action("Project", ("scope", "search"))
     @exc.on_http_error(exc.GitlabSearchError)

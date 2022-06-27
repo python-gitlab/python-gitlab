@@ -107,9 +107,10 @@ class RepositoryMixin(_RestObjectBase):
         self,
         sha: str,
         streamed: bool = False,
-        iterator: bool = False,
         action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
+        *,
+        iterator: bool = False,
         **kwargs: Any,
     ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Return the raw file contents for a blob.
@@ -139,7 +140,9 @@ class RepositoryMixin(_RestObjectBase):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, iterator, action, chunk_size)
+        return utils.response_content(
+            result, streamed, action, chunk_size, iterator=iterator
+        )
 
     @cli.register_custom_action("Project", ("from_", "to"))
     @exc.on_http_error(exc.GitlabGetError)
@@ -195,10 +198,11 @@ class RepositoryMixin(_RestObjectBase):
         self,
         sha: str = None,
         streamed: bool = False,
-        iterator: bool = False,
         action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
         format: Optional[str] = None,
+        *,
+        iterator: bool = False,
         **kwargs: Any,
     ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Return an archive of the repository.
@@ -234,7 +238,9 @@ class RepositoryMixin(_RestObjectBase):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, iterator, action, chunk_size)
+        return utils.response_content(
+            result, streamed, action, chunk_size, iterator=iterator
+        )
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabDeleteError)

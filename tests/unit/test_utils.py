@@ -37,7 +37,7 @@ def test_response_content(capsys):
 
     resp = requests.get("https://example.com", stream=True)
     utils.response_content(
-        resp, streamed=True, iterator=False, action=None, chunk_size=1024
+        resp, streamed=True, action=None, chunk_size=1024, iterator=False
     )
 
     captured = capsys.readouterr()
