@@ -70,8 +70,6 @@ disable = [
     "too-many-locals",
     "too-many-statements",
     "unsubscriptable-object",
-    "unused-argument",
-
 ]
 
 [tool.pytest.ini_options]

@@ -28,7 +28,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabJobCancelError: If the job could not be canceled
         """
         path = f"{self.manager.path}/{self.encoded_id}/cancel"
-        result = self.manager.gitlab.http_post(path)
+        result = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(result, dict)
         return result
@@ -46,7 +46,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabJobRetryError: If the job could not be retried
         """
         path = f"{self.manager.path}/{self.encoded_id}/retry"
-        result = self.manager.gitlab.http_post(path)
+        result = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(result, dict)
         return result
@@ -64,7 +64,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabJobPlayError: If the job could not be triggered
         """
         path = f"{self.manager.path}/{self.encoded_id}/play"
-        self.manager.gitlab.http_post(path)
+        self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobEraseError)
@@ -79,7 +79,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabJobEraseError: If the job could not be erased
         """
         path = f"{self.manager.path}/{self.encoded_id}/erase"
-        self.manager.gitlab.http_post(path)
+        self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabCreateError)
@@ -94,7 +94,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabCreateError: If the request could not be performed
         """
         path = f"{self.manager.path}/{self.encoded_id}/artifacts/keep"
-        self.manager.gitlab.http_post(path)
+        self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabCreateError)
@@ -109,7 +109,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabDeleteError: If the request could not be performed
         """
         path = f"{self.manager.path}/{self.encoded_id}/artifacts"
-        self.manager.gitlab.http_delete(path)
+        self.manager.gitlab.http_delete(path, **kwargs)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)

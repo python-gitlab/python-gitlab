@@ -967,6 +967,7 @@ class Gitlab:
             query_data=query_data,
             post_data=post_data,
             files=files,
+            raw=raw,
             **kwargs,
         )
         try:
