@@ -29,9 +29,10 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     def content(
         self,
         streamed: bool = False,
-        iterator: bool = False,
         action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
+        *,
+        iterator: bool = False,
         **kwargs: Any,
     ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Return the content of a snippet.
@@ -60,7 +61,9 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, iterator, action, chunk_size)
+        return utils.response_content(
+            result, streamed, action, chunk_size, iterator=iterator
+        )
 
 
 class SnippetManager(CRUDMixin, RESTManager):
@@ -106,9 +109,10 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
     def content(
         self,
         streamed: bool = False,
-        iterator: bool = False,
         action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
+        *,
+        iterator: bool = False,
         **kwargs: Any,
     ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Return the content of a snippet.
@@ -137,7 +141,9 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, iterator, action, chunk_size)
+        return utils.response_content(
+            result, streamed, action, chunk_size, iterator=iterator
+        )
 
 
 class ProjectSnippetManager(CRUDMixin, RESTManager):

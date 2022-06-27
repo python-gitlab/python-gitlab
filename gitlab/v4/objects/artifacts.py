@@ -75,9 +75,10 @@ class ProjectArtifactManager(RESTManager):
         ref_name: str,
         job: str,
         streamed: bool = False,
-        iterator: bool = False,
         action: Optional[Callable] = None,
         chunk_size: int = 1024,
+        *,
+        iterator: bool = False,
         **kwargs: Any,
     ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Get the job artifacts archive from a specific tag or branch.
@@ -110,7 +111,9 @@ class ProjectArtifactManager(RESTManager):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, iterator, action, chunk_size)
+        return utils.response_content(
+            result, streamed, action, chunk_size, iterator=iterator
+        )
 
     @cli.register_custom_action(
         "ProjectArtifactManager", ("ref_name", "artifact_path", "job")
@@ -122,9 +125,10 @@ class ProjectArtifactManager(RESTManager):
         artifact_path: str,
         job: str,
         streamed: bool = False,
-        iterator: bool = False,
         action: Optional[Callable] = None,
         chunk_size: int = 1024,
+        *,
+        iterator: bool = False,
         **kwargs: Any,
     ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Download a single artifact file from a specific tag or branch from
@@ -158,4 +162,6 @@ class ProjectArtifactManager(RESTManager):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, iterator, action, chunk_size)
+        return utils.response_content(
+            result, streamed, action, chunk_size, iterator=iterator
+        )

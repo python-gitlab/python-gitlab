@@ -103,9 +103,10 @@ class GenericPackageManager(RESTManager):
         package_version: str,
         file_name: str,
         streamed: bool = False,
-        iterator: bool = False,
         action: Optional[Callable] = None,
         chunk_size: int = 1024,
+        *,
+        iterator: bool = False,
         **kwargs: Any,
     ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Download a generic package.
@@ -135,7 +136,9 @@ class GenericPackageManager(RESTManager):
         result = self.gitlab.http_get(path, streamed=streamed, raw=True, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(result, streamed, iterator, action, chunk_size)
+        return utils.response_content(
+            result, streamed, action, chunk_size, iterator=iterator
+        )
 
 
 class GroupPackage(RESTObject):
