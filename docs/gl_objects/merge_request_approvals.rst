@@ -65,18 +65,18 @@ Change project-level or MR-level MR approvals settings::
 
 Change project-level MR allowed approvers::
 
-	project.approvals.set_approvers(approver_ids=[105],
-	                                 approver_group_ids=[653, 654])
+    project.approvals.set_approvers(approver_ids=[105],
+                                    approver_group_ids=[653, 654])
 
 Create a new MR-level approval rule or change an existing MR-level approval rule::
 
-	mr.approvals.set_approvers(approvals_required = 1, approver_ids=[105],
-	                            approver_group_ids=[653, 654],
-	                            approval_rule_name="my MR custom approval rule")
+    mr.approvals.set_approvers(approvals_required = 1, approver_ids=[105],
+                               approver_group_ids=[653, 654],
+                               approval_rule_name="my MR custom approval rule")
 
 List MR-level MR approval rules::
 
-	mr.approval_rules.list()
+    mr.approval_rules.list()
 
 Delete MR-level MR approval rule::
 
@@ -88,10 +88,10 @@ Delete MR-level MR approval rule::
 
 Change MR-level MR approval rule::
 
-	mr_approvalrule.user_ids = [105]
-	mr_approvalrule.approvals_required = 2
-	mr_approvalrule.group_ids = [653, 654]
-	mr_approvalrule.save()
+    mr_approvalrule.user_ids = [105]
+    mr_approvalrule.approvals_required = 2
+    mr_approvalrule.group_ids = [653, 654]
+    mr_approvalrule.save()
 
 Create a MR-level MR approval rule::
 
