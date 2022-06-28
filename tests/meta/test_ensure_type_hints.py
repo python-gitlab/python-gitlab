@@ -126,7 +126,7 @@ class TestTypeHints:
             f"class definition for {class_info.name!r} in file {filename!r} "
             f"must have defined a 'get' method with a return annotation of "
             f"{obj_cls} but found {signature.return_annotation}\n"
-            f"Recommend adding the followinng method:\n"
+            f"Recommend adding the following method:\n"
         )
         fail_message += method_template.format(obj_cls=obj_cls)
         check_type = obj_cls
