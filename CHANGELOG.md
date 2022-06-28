@@ -2,6 +2,39 @@
 
 <!--next-version-placeholder-->
 
+## v3.6.0 (2022-06-28)
+### Feature
+* **downloads:** Allow streaming downloads access to response iterator ([#1956](https://github.com/python-gitlab/python-gitlab/issues/1956)) ([`b644721`](https://github.com/python-gitlab/python-gitlab/commit/b6447211754e126f64e12fc735ad74fe557b7fb4))
+* **api:** Support head() method for get and list endpoints ([`ce9216c`](https://github.com/python-gitlab/python-gitlab/commit/ce9216ccc542d834be7f29647c7ee98c2ca5bb01))
+* **api:** Implement HEAD method ([`90635a7`](https://github.com/python-gitlab/python-gitlab/commit/90635a7db3c9748745471d2282260418e31c7797))
+* **users:** Add approve and reject methods to User ([`f57139d`](https://github.com/python-gitlab/python-gitlab/commit/f57139d8f1dafa6eb19d0d954b3634c19de6413c))
+* **api:** Convert gitlab.const to Enums ([`c3c6086`](https://github.com/python-gitlab/python-gitlab/commit/c3c6086c548c03090ccf3f59410ca3e6b7999791))
+* Add support for Protected Environments ([`1dc9d0f`](https://github.com/python-gitlab/python-gitlab/commit/1dc9d0f91757eed9f28f0c7172654b9b2a730216))
+* **users:** Add ban and unban methods ([`0d44b11`](https://github.com/python-gitlab/python-gitlab/commit/0d44b118f85f92e7beb1a05a12bdc6e070dce367))
+* **docker:** Provide a Debian-based slim image ([`384031c`](https://github.com/python-gitlab/python-gitlab/commit/384031c530e813f55da52f2b2c5635ea935f9d91))
+* Support mutually exclusive attributes and consolidate validation to fix board lists ([#2037](https://github.com/python-gitlab/python-gitlab/issues/2037)) ([`3fa330c`](https://github.com/python-gitlab/python-gitlab/commit/3fa330cc341bbedb163ba757c7f6578d735c6efb))
+* **client:** Introduce `iterator=True` and deprecate `as_list=False` in `list()` ([`cdc6605`](https://github.com/python-gitlab/python-gitlab/commit/cdc6605767316ea59e1e1b849683be7b3b99e0ae))
+
+### Fix
+* **base:** Do not fail repr() on lazy objects ([`1efb123`](https://github.com/python-gitlab/python-gitlab/commit/1efb123f63eab57600228b75a1744f8787c16671))
+* **cli:** Project-merge-request-approval-rule ([`15a242c`](https://github.com/python-gitlab/python-gitlab/commit/15a242c3303759b77b380c5b3ff9d1e0bf2d800c))
+* **cli:** Fix project export download for CLI ([`5d14867`](https://github.com/python-gitlab/python-gitlab/commit/5d1486785793b02038ac6f527219801744ee888b))
+
+### Documentation
+* **api:** Add separate section for advanced usage ([`22ae101`](https://github.com/python-gitlab/python-gitlab/commit/22ae1016f39256b8e2ca02daae8b3c7130aeb8e6))
+* **api:** Document usage of head() methods ([`f555bfb`](https://github.com/python-gitlab/python-gitlab/commit/f555bfb363779cc6c8f8036f6d6cfa302e15d4fe))
+* **projects:** Provide more detailed import examples ([`8f8611a`](https://github.com/python-gitlab/python-gitlab/commit/8f8611a1263b8c19fd19ce4a904a310b0173b6bf))
+* **projects:** Document 404 gotcha with unactivated integrations ([`522ecff`](https://github.com/python-gitlab/python-gitlab/commit/522ecffdb6f07e6c017139df4eb5d3fc42a585b7))
+* **variables:** Instruct users to follow GitLab rules for values ([`194b6be`](https://github.com/python-gitlab/python-gitlab/commit/194b6be7ccec019fefc04754f98b9ec920c29568))
+* **api:** Stop linking to python-requests.org ([`49c7e83`](https://github.com/python-gitlab/python-gitlab/commit/49c7e83f768ee7a3fec19085a0fa0a67eadb12df))
+* **api:** Fix incorrect docs for merge_request_approvals ([#2094](https://github.com/python-gitlab/python-gitlab/issues/2094)) ([`5583eaa`](https://github.com/python-gitlab/python-gitlab/commit/5583eaa108949386c66290fecef4d064f44b9e83))
+* **api-usage:** Add import os in example ([`2194a44`](https://github.com/python-gitlab/python-gitlab/commit/2194a44be541e9d2c15d3118ba584a4a173927a2))
+* Drop deprecated setuptools build_sphinx ([`048d66a`](https://github.com/python-gitlab/python-gitlab/commit/048d66af51cef385b22d223ed2a5cd30e2256417))
+* **usage:** Refer to upsteam docs instead of custom attributes ([`ae7d3b0`](https://github.com/python-gitlab/python-gitlab/commit/ae7d3b09352b2a1bd287f95d4587b04136c7a4ed))
+* **ext:** Fix rendering for RequiredOptional dataclass ([`4d431e5`](https://github.com/python-gitlab/python-gitlab/commit/4d431e5a6426d0fd60945c2d1ff00a00a0a95b6c))
+* Documentation updates to reflect addition of mutually exclusive attributes ([`24b720e`](https://github.com/python-gitlab/python-gitlab/commit/24b720e49636044f4be7e4d6e6ce3da341f2aeb8))
+* Use `as_list=False` or `all=True` in Getting started ([`de8c6e8`](https://github.com/python-gitlab/python-gitlab/commit/de8c6e80af218d93ca167f8b5ff30319a2781d91))
+
 ## v3.5.0 (2022-05-28)
 ### Feature
 * **objects:** Support get project storage endpoint ([`8867ee5`](https://github.com/python-gitlab/python-gitlab/commit/8867ee59884ae81d6457ad6e561a0573017cf6b2))
