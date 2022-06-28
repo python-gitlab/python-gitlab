@@ -104,7 +104,7 @@ Run your own image:
 
 .. code-block:: console
 
-   $ docker run -it --rm -v python-gitlab:latest <command> ...
+   $ docker run -it --rm python-gitlab:latest <command> ...
 
 Build a Debian slim-based image:
 
