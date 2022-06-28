@@ -1,9 +1,10 @@
-from typing import Any, cast, Dict, List, Optional, TYPE_CHECKING
+from typing import Any, cast, Dict, List, Optional, TYPE_CHECKING, Union
 
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
+    CRUDMixin,
     DeleteMixin,
     GetWithoutIdMixin,
     ListMixin,
@@ -189,9 +190,7 @@ class ProjectMergeRequestApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
         SaveMixin.save(self, **kwargs)
 
 
-class ProjectMergeRequestApprovalRuleManager(
-    ListMixin, UpdateMixin, CreateMixin, DeleteMixin, RESTManager
-):
+class ProjectMergeRequestApprovalRuleManager(CRUDMixin, RESTManager):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/approval_rules"
     _obj_cls = ProjectMergeRequestApprovalRule
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
@@ -213,6 +212,13 @@ class ProjectMergeRequestApprovalRuleManager(
         required=("id", "merge_request_iid", "name", "approvals_required"),
         optional=("approval_project_rule_id", "user_ids", "group_ids"),
     )
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectMergeRequestApprovalRule:
+        return cast(
+            ProjectMergeRequestApprovalRule, super().get(id=id, lazy=lazy, **kwargs)
+        )
 
     def create(
         self, data: Optional[Dict[str, Any]] = None, **kwargs: Any

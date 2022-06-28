@@ -78,6 +78,11 @@ List MR-level MR approval rules::
 
 	mr.approval_rules.list()
 
+Get a single MR approval rule::
+
+    approval_rule_id = 123
+    mr_approvalrule = mr.approval_rules.get(approval_rule_id)
+
 Delete MR-level MR approval rule::
 
     rules = mr.approval_rules.list()

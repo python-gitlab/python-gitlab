@@ -102,6 +102,13 @@ def resp_mr_approval_rules():
         )
         rsps.add(
             method=responses.GET,
+            url="http://localhost/api/v4/projects/1/merge_requests/1/approval_rules/1",
+            json=mr_ars_content[0],
+            content_type="application/json",
+            status=200,
+        )
+        rsps.add(
+            method=responses.GET,
             url="http://localhost/api/v4/projects/1/merge_requests/1/approval_state",
             json=mr_approval_state_content,
             content_type="application/json",
@@ -241,6 +248,17 @@ def test_update_merge_request_approval_rule(project, resp_mr_approval_rules):
     assert ar_1.approvals_required == updated_approval_rule_approvals_required
     assert len(ar_1.eligible_approvers) == len(updated_approval_rule_user_ids)
     assert ar_1.eligible_approvers[0]["id"] == updated_approval_rule_user_ids[0]
+
+
+def test_get_merge_request_approval_rule(project, resp_mr_approval_rules):
+    merge_request = project.mergerequests.get(1, lazy=True)
+    approval_rule = merge_request.approval_rules.get(approval_rule_id)
+    assert isinstance(
+        approval_rule,
+        gitlab.v4.objects.merge_request_approvals.ProjectMergeRequestApprovalRule,
+    )
+    assert approval_rule.name == approval_rule_name
+    assert approval_rule.id == approval_rule_id
 
 
 def test_get_merge_request_approval_state(project, resp_mr_approval_rules):
