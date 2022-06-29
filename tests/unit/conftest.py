@@ -70,6 +70,11 @@ def project(gl):
 
 
 @pytest.fixture
+def another_project(gl):
+    return gl.projects.get(2, lazy=True)
+
+
+@pytest.fixture
 def project_issue(project):
     return project.issues.get(1, lazy=True)
 
