@@ -52,7 +52,6 @@ project_starrers_content = {
         "name": "name",
     },
 }
-delete_project_content = {"message": "202 Accepted"}
 upload_file_content = {
     "alt": "filename",
     "url": "/uploads/66dbcd21ec5d24ed6ea225176098d52b/filename.png",
@@ -99,7 +98,7 @@ def resp_get_project():
 
 
 @pytest.fixture
-def resp_post_project():
+def resp_create_project():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.POST,
@@ -112,7 +111,7 @@ def resp_post_project():
 
 
 @pytest.fixture
-def resp_post_project_user():
+def resp_create_user_project():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.POST,
@@ -125,7 +124,7 @@ def resp_post_project_user():
 
 
 @pytest.fixture
-def resp_post_fork_project():
+def resp_fork_project():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.POST,
@@ -138,7 +137,7 @@ def resp_post_fork_project():
 
 
 @pytest.fixture
-def resp_put_project():
+def resp_update_project():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.PUT,
@@ -164,7 +163,7 @@ def resp_get_project_storage():
 
 
 @pytest.fixture
-def resp_user_projects():
+def resp_list_user_projects():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.GET,
@@ -203,7 +202,7 @@ def resp_unstar_project():
 
 
 @pytest.fixture
-def resp_project_starrers():
+def resp_list_project_starrers():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.GET,
@@ -216,7 +215,7 @@ def resp_project_starrers():
 
 
 @pytest.fixture
-def resp_starred_projects():
+def resp_list_starred_projects():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.GET,
@@ -323,12 +322,12 @@ def resp_unarchive_project():
 
 
 @pytest.fixture
-def resp_delete_project():
+def resp_delete_project(accepted_content):
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/projects/1",
-            json=delete_project_content,
+            json=accepted_content,
             content_type="application/json",
             status=202,
         )
@@ -362,12 +361,12 @@ def resp_share_project():
 
 
 @pytest.fixture
-def resp_unshare_project():
+def resp_unshare_project(no_content):
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/projects/1/share/1",
-            json=None,
+            json=no_content,
             content_type="application/json",
             status=204,
         )
@@ -388,12 +387,12 @@ def resp_create_fork_relation():
 
 
 @pytest.fixture
-def resp_delete_fork_relation():
+def resp_delete_fork_relation(no_content):
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/projects/2/fork",
-            json=None,
+            json=no_content,
             content_type="application/json",
             status=204,
         )
@@ -440,7 +439,7 @@ def resp_start_housekeeping():
 
 
 @pytest.fixture
-def resp_get_push_rules_project():
+def resp_list_push_rules_project():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.GET,
@@ -453,7 +452,7 @@ def resp_get_push_rules_project():
 
 
 @pytest.fixture
-def resp_post_push_rules_project():
+def resp_create_push_rules_project():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.POST,
@@ -486,7 +485,7 @@ def resp_update_push_rules_project():
 
 
 @pytest.fixture
-def resp_delete_push_rules_project():
+def resp_delete_push_rules_project(no_content):
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.GET,
@@ -498,7 +497,7 @@ def resp_delete_push_rules_project():
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/projects/1/push_rule",
-            json=None,
+            json=no_content,
             content_type="application/json",
             status=204,
         )
@@ -555,14 +554,14 @@ def test_list_projects(gl, resp_list_projects):
     assert projects[0].name == "name"
 
 
-def test_list_user_projects(user, resp_user_projects):
+def test_list_user_projects(user, resp_list_user_projects):
     user_project = user.projects.list()[0]
     assert isinstance(user_project, UserProject)
     assert user_project.name == "name"
     assert user_project.id == 1
 
 
-def test_list_user_starred_projects(user, resp_starred_projects):
+def test_list_user_starred_projects(user, resp_list_starred_projects):
     starred_projects = user.starred_projects.list()[0]
     assert isinstance(starred_projects, StarredProject)
     assert starred_projects.name == "name"
@@ -577,13 +576,13 @@ def test_list_project_users(project, resp_list_users):
     assert user.state == "active"
 
 
-def test_create_project(gl, resp_post_project):
+def test_create_project(gl, resp_create_project):
     project = gl.projects.create({"name": "name"})
     assert project.id == 1
     assert project.name == "name"
 
 
-def test_create_user_project(user, resp_post_project_user):
+def test_create_user_project(user, resp_create_user_project):
     user_project = user.projects.create({"name": "name"})
     assert user_project.id == 1
     assert user_project.name == "name"
@@ -593,12 +592,12 @@ def test_create_user_project(user, resp_post_project_user):
     assert user_project.owner.get("username") == "owner_username"
 
 
-def test_update_project(project, resp_put_project):
+def test_update_project(project, resp_update_project):
     project.snippets_enabled = 1
     project.save()
 
 
-def test_fork_project(project, resp_post_fork_project):
+def test_fork_project(project, resp_fork_project):
     fork = project.forks.create({})
     assert fork.id == 2
     assert fork.name == "name"
@@ -624,7 +623,7 @@ def test_unstar_project(project, resp_unstar_project):
 
 
 @pytest.mark.skip(reason="missing test")
-def test_list_project_starrers(project, resp_project_starrers):
+def test_list_project_starrers(project, resp_list_project_starrers):
     pass
 
 
@@ -712,13 +711,13 @@ def test_project_housekeeping(project, resp_start_housekeeping):
     project.housekeeping()
 
 
-def test_get_project_push_rules(project, resp_get_push_rules_project):
+def test_list_project_push_rules(project, resp_list_push_rules_project):
     pr = project.pushrules.get()
     assert pr
     assert pr.deny_delete_tag
 
 
-def test_create_project_push_rule(project, resp_post_push_rules_project):
+def test_create_project_push_rule(project, resp_create_push_rules_project):
     project.pushrules.create({"deny_delete_tag": True})
 
 
