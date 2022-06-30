@@ -98,7 +98,10 @@ class RunnerManager(CRUDMixin, RESTManager):
         if scope is not None:
             query_data["scope"] = scope
         obj = self.gitlab.http_list(path, query_data, **kwargs)
-        return [self._obj_cls(self, item) for item in obj]
+        if isinstance(obj, list):
+            return [self._obj_cls(self, item, created_from_list=True) for item in obj]
+        else:
+            return base.RESTObjectList(self, self._obj_cls, obj)    
 
     @cli.register_custom_action("RunnerManager", ("token",))
     @exc.on_http_error(exc.GitlabVerifyError)
