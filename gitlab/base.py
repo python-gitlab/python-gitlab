@@ -101,47 +101,43 @@ class RESTObject:
         self.__dict__["_module"] = importlib.import_module(module_name)
 
     def __getattr__(self, name: str) -> Any:
-        try:
+        if name in self.__dict__["_updated_attrs"]:
             return self.__dict__["_updated_attrs"][name]
-        except KeyError:
-            try:
-                value = self.__dict__["_attrs"][name]
 
-                # If the value is a list, we copy it in the _updated_attrs dict
-                # because we are not able to detect changes made on the object
-                # (append, insert, pop, ...). Without forcing the attr
-                # creation __setattr__ is never called, the list never ends up
-                # in the _updated_attrs dict, and the update() and save()
-                # method never push the new data to the server.
-                # See https://github.com/python-gitlab/python-gitlab/issues/306
-                #
-                # note: _parent_attrs will only store simple values (int) so we
-                # don't make this check in the next except block.
-                if isinstance(value, list):
-                    self.__dict__["_updated_attrs"][name] = value[:]
-                    return self.__dict__["_updated_attrs"][name]
+        if name in self.__dict__["_attrs"]:
+            value = self.__dict__["_attrs"][name]
+            # If the value is a list, we copy it in the _updated_attrs dict
+            # because we are not able to detect changes made on the object
+            # (append, insert, pop, ...). Without forcing the attr
+            # creation __setattr__ is never called, the list never ends up
+            # in the _updated_attrs dict, and the update() and save()
+            # method never push the new data to the server.
+            # See https://github.com/python-gitlab/python-gitlab/issues/306
+            #
+            # note: _parent_attrs will only store simple values (int) so we
+            # don't make this check in the next block.
+            if isinstance(value, list):
+                self.__dict__["_updated_attrs"][name] = value[:]
+                return self.__dict__["_updated_attrs"][name]
 
-                return value
+            return value
 
-            except KeyError:
-                try:
-                    return self.__dict__["_parent_attrs"][name]
-                except KeyError as exc:
-                    message = (
-                        f"{type(self).__name__!r} object has no attribute {name!r}"
-                    )
-                    if self._created_from_list:
-                        message = (
-                            f"{message}\n\n"
-                            + textwrap.fill(
-                                f"{self.__class__!r} was created via a list() call and "
-                                f"only a subset of the data may be present. To ensure "
-                                f"all data is present get the object using a "
-                                f"get(object.id) call. For more details, see:"
-                            )
-                            + f"\n\n{_URL_ATTRIBUTE_ERROR}"
-                        )
-                    raise AttributeError(message) from exc
+        if name in self.__dict__["_parent_attrs"]:
+            return self.__dict__["_parent_attrs"][name]
+
+        message = f"{type(self).__name__!r} object has no attribute {name!r}"
+        if self._created_from_list:
+            message = (
+                f"{message}\n\n"
+                + textwrap.fill(
+                    f"{self.__class__!r} was created via a list() call and "
+                    f"only a subset of the data may be present. To ensure "
+                    f"all data is present get the object using a "
+                    f"get(object.id) call. For more details, see:"
+                )
+                + f"\n\n{_URL_ATTRIBUTE_ERROR}"
+            )
+        raise AttributeError(message)
 
     def __setattr__(self, name: str, value: Any) -> None:
         self.__dict__["_updated_attrs"][name] = value
