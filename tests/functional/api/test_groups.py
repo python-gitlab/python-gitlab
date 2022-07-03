@@ -21,15 +21,23 @@ def test_groups(gl):
             "password": "user2_pass",
         }
     )
-    group1 = gl.groups.create({"name": "group1", "path": "group1"})
-    group2 = gl.groups.create({"name": "group2", "path": "group2"})
+    group1 = gl.groups.create(
+        {"name": "gitlab-test-group1", "path": "gitlab-test-group1"}
+    )
+    group2 = gl.groups.create(
+        {"name": "gitlab-test-group2", "path": "gitlab-test-group2"}
+    )
 
-    p_id = gl.groups.list(search="group2")[0].id
-    group3 = gl.groups.create({"name": "group3", "path": "group3", "parent_id": p_id})
-    group4 = gl.groups.create({"name": "group4", "path": "group4"})
+    p_id = gl.groups.list(search="gitlab-test-group2")[0].id
+    group3 = gl.groups.create(
+        {"name": "gitlab-test-group3", "path": "gitlab-test-group3", "parent_id": p_id}
+    )
+    group4 = gl.groups.create(
+        {"name": "gitlab-test-group4", "path": "gitlab-test-group4"}
+    )
 
-    assert len(gl.groups.list()) == 4
-    assert len(gl.groups.list(search="oup1")) == 1
+    assert {group1, group2, group3, group4} <= set(gl.groups.list())
+    assert gl.groups.list(search="gitlab-test-group1")[0].id == group1.id
     assert group3.parent_id == p_id
     assert group2.subgroups.list()[0].id == group3.id
     assert group2.descendant_groups.list()[0].id == group3.id
@@ -92,8 +100,8 @@ def test_groups(gl):
     assert len(group2.members.list()) == 2
 
     group1.members.delete(user.id)
-    assert len(group1.members.list()) == 2
-    assert len(group1.members_all.list())
+    assert user not in group1.members.list()
+    assert group1.members_all.list()
     member = group1.members.get(user2.id)
     member.access_level = gitlab.const.AccessLevel.OWNER
     member.save()
@@ -113,7 +121,7 @@ def test_group_labels(group):
     label.save()
     label = group.labels.get("foo")
     assert label.description == "baz"
-    assert len(group.labels.list()) == 1
+    assert label in group.labels.list()
 
     label.new_name = "Label:that requires:encoding"
     label.save()
@@ -122,7 +130,7 @@ def test_group_labels(group):
     assert label.name == "Label:that requires:encoding"
 
     label.delete()
-    assert len(group.labels.list()) == 0
+    assert label not in group.labels.list()
 
 
 def test_group_notification_settings(group):
@@ -138,7 +146,7 @@ def test_group_badges(group):
     badge_image = "http://example.com"
     badge_link = "http://example/img.svg"
     badge = group.badges.create({"link_url": badge_link, "image_url": badge_image})
-    assert len(group.badges.list()) == 1
+    assert badge in group.badges.list()
 
     badge.image_url = "http://another.example.com"
     badge.save()
@@ -147,12 +155,12 @@ def test_group_badges(group):
     assert badge.image_url == "http://another.example.com"
 
     badge.delete()
-    assert len(group.badges.list()) == 0
+    assert badge not in group.badges.list()
 
 
 def test_group_milestones(group):
     milestone = group.milestones.create({"title": "groupmilestone1"})
-    assert len(group.milestones.list()) == 1
+    assert milestone in group.milestones.list()
 
     milestone.due_date = "2020-01-01T00:00:00Z"
     milestone.save()
@@ -161,27 +169,27 @@ def test_group_milestones(group):
 
     milestone = group.milestones.get(milestone.id)
     assert milestone.state == "closed"
-    assert len(milestone.issues()) == 0
-    assert len(milestone.merge_requests()) == 0
+    assert not milestone.issues()
+    assert not milestone.merge_requests()
 
 
 def test_group_custom_attributes(gl, group):
     attrs = group.customattributes.list()
-    assert len(attrs) == 0
+    assert not attrs
 
     attr = group.customattributes.set("key", "value1")
-    assert len(gl.groups.list(custom_attributes={"key": "value1"})) == 1
+    assert group in gl.groups.list(custom_attributes={"key": "value1"})
     assert attr.key == "key"
     assert attr.value == "value1"
-    assert len(group.customattributes.list()) == 1
+    assert attr in group.customattributes.list()
 
     attr = group.customattributes.set("key", "value2")
     attr = group.customattributes.get("key")
     assert attr.value == "value2"
-    assert len(group.customattributes.list()) == 1
+    assert attr in group.customattributes.list()
 
     attr.delete()
-    assert len(group.customattributes.list()) == 0
+    assert attr not in group.customattributes.list()
 
 
 def test_group_subgroups_projects(gl, user):
@@ -214,28 +222,31 @@ def test_group_subgroups_projects(gl, user):
 def test_group_wiki(group):
     content = "Group Wiki page content"
     wiki = group.wikis.create({"title": "groupwikipage", "content": content})
-    assert len(group.wikis.list()) == 1
+    assert wiki in group.wikis.list()
 
     wiki = group.wikis.get(wiki.slug)
     assert wiki.content == content
 
     wiki.content = "new content"
     wiki.save()
+
     wiki.delete()
-    assert len(group.wikis.list()) == 0
+    assert wiki not in group.wikis.list()
 
 
 @pytest.mark.skip(reason="EE feature")
 def test_group_hooks(group):
     hook = group.hooks.create({"url": "http://hook.url"})
-    assert len(group.hooks.list()) == 1
+    assert hook in group.hooks.list()
 
     hook.note_events = True
     hook.save()
 
     hook = group.hooks.get(hook.id)
     assert hook.note_events is True
+
     hook.delete()
+    assert hook not in group.hooks.list()
 
 
 def test_group_transfer(gl, group):

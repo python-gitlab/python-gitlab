@@ -21,7 +21,7 @@ def test_create_project(gl, user):
     # Moved from group tests chunk in legacy tests, TODO cleanup
     admin_project = gl.projects.create({"name": "admin_project"})
     assert isinstance(admin_project, gitlab.v4.objects.Project)
-    assert len(gl.projects.list(search="admin")) == 1
+    assert admin_project in gl.projects.list(search="admin_project")
 
     sudo_project = gl.projects.create({"name": "sudo_project"}, sudo=user.id)
 
@@ -53,7 +53,7 @@ def test_project_badges(project):
     badge_link = "http://example/img.svg"
 
     badge = project.badges.create({"link_url": badge_link, "image_url": badge_image})
-    assert len(project.badges.list()) == 1
+    assert badge in project.badges.list()
 
     badge.image_url = "http://another.example.com"
     badge.save()
@@ -62,50 +62,50 @@ def test_project_badges(project):
     assert badge.image_url == "http://another.example.com"
 
     badge.delete()
-    assert len(project.badges.list()) == 0
+    assert badge not in project.badges.list()
 
 
 @pytest.mark.skip(reason="Commented out in legacy test")
 def test_project_boards(project):
     boards = project.boards.list()
-    assert len(boards)
+    assert boards
 
     board = boards[0]
     lists = board.lists.list()
-    begin_size = len(lists)
+
     last_list = lists[-1]
     last_list.position = 0
     last_list.save()
+
     last_list.delete()
-    lists = board.lists.list()
-    assert len(lists) == begin_size - 1
+    assert last_list not in board.lists.list()
 
 
 def test_project_custom_attributes(gl, project):
     attrs = project.customattributes.list()
-    assert len(attrs) == 0
+    assert not attrs
 
     attr = project.customattributes.set("key", "value1")
     assert attr.key == "key"
     assert attr.value == "value1"
-    assert len(project.customattributes.list()) == 1
-    assert len(gl.projects.list(custom_attributes={"key": "value1"})) == 1
+    assert attr in project.customattributes.list()
+    assert project in gl.projects.list(custom_attributes={"key": "value1"})
 
     attr = project.customattributes.set("key", "value2")
     attr = project.customattributes.get("key")
     assert attr.value == "value2"
-    assert len(project.customattributes.list()) == 1
+    assert attr in project.customattributes.list()
 
     attr.delete()
-    assert len(project.customattributes.list()) == 0
+    assert attr not in project.customattributes.list()
 
 
 def test_project_environments(project):
-    project.environments.create(
+    environment = project.environments.create(
         {"name": "env1", "external_url": "http://fake.env/whatever"}
     )
     environments = project.environments.list()
-    assert len(environments) == 1
+    assert environment in environments
 
     environment = environments[0]
     environment.external_url = "http://new.env/whatever"
@@ -116,7 +116,7 @@ def test_project_environments(project):
 
     environment.stop()
     environment.delete()
-    assert len(project.environments.list()) == 0
+    assert environment not in project.environments.list()
 
 
 def test_project_events(project):
@@ -147,14 +147,16 @@ def test_project_forks(gl, project, user):
 
 def test_project_hooks(project):
     hook = project.hooks.create({"url": "http://hook.url"})
-    assert len(project.hooks.list()) == 1
+    assert hook in project.hooks.list()
 
     hook.note_events = True
     hook.save()
 
     hook = project.hooks.get(hook.id)
     assert hook.note_events is True
+
     hook.delete()
+    assert hook not in project.hooks.list()
 
 
 def test_project_housekeeping(project):
@@ -164,7 +166,7 @@ def test_project_housekeeping(project):
 def test_project_labels(project):
     label = project.labels.create({"name": "label", "color": "#778899"})
     labels = project.labels.list()
-    assert len(labels) == 1
+    assert label in labels
 
     label = project.labels.get("label")
     assert label == labels[0]
@@ -182,7 +184,7 @@ def test_project_labels(project):
     assert label.subscribed is False
 
     label.delete()
-    assert len(project.labels.list()) == 0
+    assert label not in project.labels.list()
 
 
 def test_project_label_promotion(gl, group):
@@ -209,7 +211,7 @@ def test_project_label_promotion(gl, group):
 
 def test_project_milestones(project):
     milestone = project.milestones.create({"title": "milestone1"})
-    assert len(project.milestones.list()) == 1
+    assert milestone in project.milestones.list()
 
     milestone.due_date = "2020-01-01T00:00:00Z"
     milestone.save()
@@ -219,8 +221,8 @@ def test_project_milestones(project):
 
     milestone = project.milestones.get(milestone.id)
     assert milestone.state == "closed"
-    assert len(milestone.issues()) == 0
-    assert len(milestone.merge_requests()) == 0
+    assert not milestone.issues()
+    assert not milestone.merge_requests()
 
 
 def test_project_milestone_promotion(gl, group):
@@ -246,24 +248,24 @@ def test_project_milestone_promotion(gl, group):
 
 def test_project_pages_domains(gl, project):
     domain = project.pagesdomains.create({"domain": "foo.domain.com"})
-    assert len(project.pagesdomains.list()) == 1
-    assert len(gl.pagesdomains.list()) == 1
+    assert domain in project.pagesdomains.list()
+    assert domain in gl.pagesdomains.list()
 
     domain = project.pagesdomains.get("foo.domain.com")
     assert domain.domain == "foo.domain.com"
 
     domain.delete()
-    assert len(project.pagesdomains.list()) == 0
+    assert domain not in project.pagesdomains.list()
 
 
 def test_project_protected_branches(project):
     p_b = project.protectedbranches.create({"name": "*-stable"})
     assert p_b.name == "*-stable"
-    assert len(project.protectedbranches.list()) == 1
+    assert p_b in project.protectedbranches.list()
 
     p_b = project.protectedbranches.get("*-stable")
     p_b.delete()
-    assert len(project.protectedbranches.list()) == 0
+    assert p_b not in project.protectedbranches.list()
 
 
 def test_project_remote_mirrors(project):
@@ -316,22 +318,24 @@ def test_project_storage(project):
 
 def test_project_tags(project, project_file):
     tag = project.tags.create({"tag_name": "v1.0", "ref": "main"})
-    assert len(project.tags.list()) == 1
+    assert tag in project.tags.list()
 
     tag.delete()
-    assert len(project.tags.list()) == 0
+    assert tag not in project.tags.list()
 
 
 def test_project_triggers(project):
     trigger = project.triggers.create({"description": "trigger1"})
-    assert len(project.triggers.list()) == 1
+    assert trigger in project.triggers.list()
+
     trigger.delete()
+    assert trigger not in project.triggers.list()
 
 
 def test_project_wiki(project):
     content = "Wiki page content"
     wiki = project.wikis.create({"title": "wikipage", "content": content})
-    assert len(project.wikis.list()) == 1
+    assert wiki in project.wikis.list()
 
     wiki = project.wikis.get(wiki.slug)
     assert wiki.content == content
@@ -340,7 +344,7 @@ def test_project_wiki(project):
     wiki.content = "new content"
     wiki.save()
     wiki.delete()
-    assert len(project.wikis.list()) == 0
+    assert wiki not in project.wikis.list()
 
 
 def test_project_groups_list(gl, group):

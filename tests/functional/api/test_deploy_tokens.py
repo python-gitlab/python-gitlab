@@ -7,8 +7,8 @@ def test_project_deploy_tokens(gl, project):
             "scopes": ["read_registry"],
         }
     )
-    assert len(project.deploytokens.list()) == 1
-    assert gl.deploytokens.list() == project.deploytokens.list()
+    assert deploy_token in project.deploytokens.list()
+    assert set(project.deploytokens.list()) <= set(gl.deploytokens.list())
 
     deploy_token = project.deploytokens.get(deploy_token.id)
     assert deploy_token.name == "foo"
@@ -17,8 +17,8 @@ def test_project_deploy_tokens(gl, project):
     assert deploy_token.username == "bar"
 
     deploy_token.delete()
-    assert len(project.deploytokens.list()) == 0
-    assert len(gl.deploytokens.list()) == 0
+    assert deploy_token not in project.deploytokens.list()
+    assert deploy_token not in gl.deploytokens.list()
 
 
 def test_group_deploy_tokens(gl, group):
@@ -29,13 +29,13 @@ def test_group_deploy_tokens(gl, group):
         }
     )
 
-    assert len(group.deploytokens.list()) == 1
-    assert gl.deploytokens.list() == group.deploytokens.list()
+    assert deploy_token in group.deploytokens.list()
+    assert set(group.deploytokens.list()) <= set(gl.deploytokens.list())
 
     deploy_token = group.deploytokens.get(deploy_token.id)
     assert deploy_token.name == "foo"
     assert deploy_token.scopes == ["read_registry"]
 
     deploy_token.delete()
-    assert len(group.deploytokens.list()) == 0
-    assert len(gl.deploytokens.list()) == 0
+    assert deploy_token not in group.deploytokens.list()
+    assert deploy_token not in gl.deploytokens.list()

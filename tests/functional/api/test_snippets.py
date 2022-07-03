@@ -3,7 +3,7 @@ import gitlab
 
 def test_snippets(gl):
     snippets = gl.snippets.list(all=True)
-    assert len(snippets) == 0
+    assert not snippets
 
     snippet = gl.snippets.create(
         {"title": "snippet1", "file_name": "snippet1.py", "content": "import gitlab"}
@@ -20,8 +20,7 @@ def test_snippets(gl):
     assert snippet.user_agent_detail()["user_agent"]
 
     snippet.delete()
-    snippets = gl.snippets.list(all=True)
-    assert len(snippets) == 0
+    assert snippet not in gl.snippets.list(all=True)
 
 
 def test_project_snippets(project):
@@ -42,10 +41,9 @@ def test_project_snippets(project):
 
 def test_project_snippet_discussion(project):
     snippet = project.snippets.list()[0]
-    size = len(snippet.discussions.list())
 
     discussion = snippet.discussions.create({"body": "Discussion body"})
-    assert len(snippet.discussions.list()) == size + 1
+    assert discussion in snippet.discussions.list()
 
     note = discussion.notes.create({"body": "first note"})
     note_from_get = discussion.notes.get(note.id)
@@ -68,7 +66,7 @@ def test_project_snippet_file(project):
     snippet = project.snippets.get(snippet.id)
     assert snippet.content().decode() == "initial content"
     assert snippet.file_name == "bar.py"
+    assert snippet in project.snippets.list()
 
-    size = len(project.snippets.list())
     snippet.delete()
-    assert len(project.snippets.list()) == (size - 1)
+    assert snippet not in project.snippets.list()

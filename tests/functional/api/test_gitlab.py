@@ -1,5 +1,3 @@
-import warnings
-
 import pytest
 
 import gitlab
@@ -27,7 +25,7 @@ def test_broadcast_messages(gl):
     assert msg.color == "#444444"
 
     msg.delete()
-    assert len(gl.broadcastmessages.list()) == 0
+    assert msg not in gl.broadcastmessages.list()
 
 
 def test_markdown(gl):
@@ -109,10 +107,10 @@ def test_template_license(gl):
 
 def test_hooks(gl):
     hook = gl.hooks.create({"url": "http://whatever.com"})
-    assert len(gl.hooks.list()) == 1
+    assert hook in gl.hooks.list()
 
     hook.delete()
-    assert len(gl.hooks.list()) == 0
+    assert hook not in gl.hooks.list()
 
 
 def test_namespaces(gl):
@@ -151,10 +149,10 @@ def test_events(gl):
 def test_features(gl):
     feat = gl.features.set("foo", 30)
     assert feat.name == "foo"
-    assert len(gl.features.list()) == 1
+    assert feat in gl.features.list()
 
     feat.delete()
-    assert len(gl.features.list()) == 0
+    assert feat not in gl.features.list()
 
 
 def test_pagination(gl, project):
@@ -198,54 +196,46 @@ def test_rate_limits(gl):
 def test_list_default_warning(gl):
     """When there are more than 20 items and use default `list()` then warning is
     generated"""
-    with warnings.catch_warnings(record=True) as caught_warnings:
+    with pytest.warns(UserWarning, match="python-gitlab.readthedocs.io") as record:
         gl.gitlabciymls.list()
-    assert len(caught_warnings) == 1
-    warning = caught_warnings[0]
-    assert isinstance(warning.message, UserWarning)
-    message = str(warning.message)
-    assert "python-gitlab.readthedocs.io" in message
+
+    assert len(record) == 1
+    warning = record[0]
     assert __file__ == warning.filename
 
 
-def test_list_page_nowarning(gl):
+def test_list_page_nowarning(gl, recwarn):
     """Using `page=X` will disable the warning"""
-    with warnings.catch_warnings(record=True) as caught_warnings:
-        gl.gitlabciymls.list(page=1)
-    assert len(caught_warnings) == 0
+    gl.gitlabciymls.list(page=1)
+    assert not recwarn
 
 
-def test_list_all_false_nowarning(gl):
+def test_list_all_false_nowarning(gl, recwarn):
     """Using `all=False` will disable the warning"""
-    with warnings.catch_warnings(record=True) as caught_warnings:
-        gl.gitlabciymls.list(all=False)
-    assert len(caught_warnings) == 0
+    gl.gitlabciymls.list(all=False)
+    assert not recwarn
 
 
-def test_list_all_true_nowarning(gl):
+def test_list_all_true_nowarning(gl, recwarn):
     """Using `all=True` will disable the warning"""
-    with warnings.catch_warnings(record=True) as caught_warnings:
-        items = gl.gitlabciymls.list(all=True)
-    assert len(caught_warnings) == 0
+    items = gl.gitlabciymls.list(all=True)
+    assert not recwarn
     assert len(items) > 20
 
 
-def test_list_iterator_true_nowarning(gl):
+def test_list_iterator_true_nowarning(gl, recwarn):
     """Using `iterator=True` will disable the warning"""
-    with warnings.catch_warnings(record=True) as caught_warnings:
-        items = gl.gitlabciymls.list(iterator=True)
-    assert len(caught_warnings) == 0
+    items = gl.gitlabciymls.list(iterator=True)
+    assert not recwarn
     assert len(list(items)) > 20
 
 
 def test_list_as_list_false_warnings(gl):
     """Using `as_list=False` will disable the UserWarning but cause a
     DeprecationWarning"""
-    with warnings.catch_warnings(record=True) as caught_warnings:
+    with pytest.warns(DeprecationWarning) as record:
         items = gl.gitlabciymls.list(as_list=False)
-    assert len(caught_warnings) == 1
-    for warning in caught_warnings:
-        assert isinstance(warning.message, DeprecationWarning)
+    assert len(record) == 1
     assert len(list(items)) > 20
 
 
