@@ -1,5 +1,5 @@
 def test_project_clusters(project):
-    project.clusters.create(
+    cluster = project.clusters.create(
         {
             "name": "cluster1",
             "platform_kubernetes_attributes": {
@@ -9,9 +9,8 @@ def test_project_clusters(project):
         }
     )
     clusters = project.clusters.list()
-    assert len(clusters) == 1
+    assert cluster in clusters
 
-    cluster = clusters[0]
     cluster.platform_kubernetes_attributes = {"api_url": "http://newurl"}
     cluster.save()
 
@@ -19,11 +18,11 @@ def test_project_clusters(project):
     assert cluster.platform_kubernetes["api_url"] == "http://newurl"
 
     cluster.delete()
-    assert len(project.clusters.list()) == 0
+    assert cluster not in project.clusters.list()
 
 
 def test_group_clusters(group):
-    group.clusters.create(
+    cluster = group.clusters.create(
         {
             "name": "cluster1",
             "platform_kubernetes_attributes": {
@@ -33,9 +32,8 @@ def test_group_clusters(group):
         }
     )
     clusters = group.clusters.list()
-    assert len(clusters) == 1
+    assert cluster in clusters
 
-    cluster = clusters[0]
     cluster.platform_kubernetes_attributes = {"api_url": "http://newurl"}
     cluster.save()
 
@@ -43,4 +41,4 @@ def test_group_clusters(group):
     assert cluster.platform_kubernetes["api_url"] == "http://newurl"
 
     cluster.delete()
-    assert len(group.clusters.list()) == 0
+    assert cluster not in group.clusters.list()

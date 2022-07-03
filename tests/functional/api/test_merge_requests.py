@@ -50,10 +50,9 @@ def test_merge_requests_get_lazy(project, merge_request):
 
 def test_merge_request_discussion(project):
     mr = project.mergerequests.list()[0]
-    size = len(mr.discussions.list())
 
     discussion = mr.discussions.create({"body": "Discussion body"})
-    assert len(mr.discussions.list()) == size + 1
+    assert discussion in mr.discussions.list()
 
     note = discussion.notes.create({"body": "first note"})
     note_from_get = discussion.notes.get(note.id)

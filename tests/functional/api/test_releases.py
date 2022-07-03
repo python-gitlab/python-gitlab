@@ -16,7 +16,7 @@ def test_create_project_release(project, project_file):
         }
     )
 
-    assert len(project.releases.list()) == 1
+    assert release in project.releases.list()
     assert project.releases.get(release_tag_name)
     assert release.name == release_name
     assert release.tag_name == release_tag_name
@@ -35,7 +35,7 @@ def test_create_project_release_no_name(project, project_file):
         }
     )
 
-    assert len(project.releases.list()) >= 1
+    assert release in project.releases.list()
     assert project.releases.get(unnamed_release_tag_name)
     assert release.tag_name == unnamed_release_tag_name
     assert release.description == release_description

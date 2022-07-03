@@ -97,72 +97,68 @@ def test_list_multiple_users(gl, user):
     expected = [user, second_user]
     actual = list(gl.users.list(search=user.username))
 
-    assert len(expected) == len(actual)
-    assert len(gl.users.list(search="asdf")) == 0
+    assert set(expected) == set(actual)
+    assert not gl.users.list(search="asdf")
 
 
 def test_user_gpg_keys(gl, user, GPG_KEY):
     gkey = user.gpgkeys.create({"key": GPG_KEY})
-    assert len(user.gpgkeys.list()) == 1
+    assert gkey in user.gpgkeys.list()
 
     # Seems broken on the gitlab side
     # gkey = user.gpgkeys.get(gkey.id)
 
     gkey.delete()
-    assert len(user.gpgkeys.list()) == 0
+    assert gkey not in user.gpgkeys.list()
 
 
 def test_user_ssh_keys(gl, user, SSH_KEY):
     key = user.keys.create({"title": "testkey", "key": SSH_KEY})
-    assert len(user.keys.list()) == 1
+    assert key in user.keys.list()
 
     get_key = user.keys.get(key.id)
     assert get_key.key == key.key
 
     key.delete()
-    assert len(user.keys.list()) == 0
+    assert key not in user.keys.list()
 
 
 def test_user_email(gl, user):
     email = user.emails.create({"email": "foo2@bar.com"})
-    assert len(user.emails.list()) == 1
+    assert email in user.emails.list()
 
     email.delete()
-    assert len(user.emails.list()) == 0
+    assert email not in user.emails.list()
 
 
 def test_user_custom_attributes(gl, user):
     attrs = user.customattributes.list()
-    assert len(attrs) == 0
+    assert not attrs
 
     attr = user.customattributes.set("key", "value1")
-    assert len(gl.users.list(custom_attributes={"key": "value1"})) == 1
+    assert user in gl.users.list(custom_attributes={"key": "value1"})
     assert attr.key == "key"
     assert attr.value == "value1"
-    assert len(user.customattributes.list()) == 1
+    assert attr in user.customattributes.list()
 
     attr = user.customattributes.set("key", "value2")
     attr = user.customattributes.get("key")
     assert attr.value == "value2"
-    assert len(user.customattributes.list()) == 1
+    assert attr in user.customattributes.list()
 
     attr.delete()
-    assert len(user.customattributes.list()) == 0
+    assert attr not in user.customattributes.list()
 
 
 def test_user_impersonation_tokens(gl, user):
     token = user.impersonationtokens.create(
         {"name": "token1", "scopes": ["api", "read_user"]}
     )
-
-    tokens = user.impersonationtokens.list(state="active")
-    assert len(tokens) == 1
+    assert token in user.impersonationtokens.list(state="active")
 
     token.delete()
-    tokens = user.impersonationtokens.list(state="active")
-    assert len(tokens) == 0
-    tokens = user.impersonationtokens.list(state="inactive")
-    assert len(tokens) == 1
+    assert token not in user.impersonationtokens.list(state="active")
+    assert token in user.impersonationtokens.list(state="inactive")
 
 
 def test_user_identities(gl, user):

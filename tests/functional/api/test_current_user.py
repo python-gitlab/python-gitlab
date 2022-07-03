@@ -1,30 +1,30 @@
 def test_current_user_email(gl):
     gl.auth()
     mail = gl.user.emails.create({"email": "current@user.com"})
-    assert len(gl.user.emails.list()) == 2
+    assert mail in gl.user.emails.list()
 
     mail.delete()
-    assert len(gl.user.emails.list()) == 1
+    assert mail not in gl.user.emails.list()
 
 
 def test_current_user_gpg_keys(gl, GPG_KEY):
     gl.auth()
     gkey = gl.user.gpgkeys.create({"key": GPG_KEY})
-    assert len(gl.user.gpgkeys.list()) == 1
+    assert gkey in gl.user.gpgkeys.list()
 
     # Seems broken on the gitlab side
     gkey = gl.user.gpgkeys.get(gkey.id)
     gkey.delete()
-    assert len(gl.user.gpgkeys.list()) == 0
+    assert gkey not in gl.user.gpgkeys.list()
 
 
 def test_current_user_ssh_keys(gl, SSH_KEY):
     gl.auth()
     key = gl.user.keys.create({"title": "testkey", "key": SSH_KEY})
-    assert len(gl.user.keys.list()) == 1
+    assert key in gl.user.keys.list()
 
     key.delete()
-    assert len(gl.user.keys.list()) == 0
+    assert key not in gl.user.keys.list()
 
 
 def test_current_user_status(gl):

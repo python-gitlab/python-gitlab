@@ -107,9 +107,8 @@ def test_create_commit(project):
 
 def test_create_commit_status(project):
     commit = project.commits.list()[0]
-    size = len(commit.statuses.list())
-    commit.statuses.create({"state": "success", "sha": commit.id})
-    assert len(commit.statuses.list()) == size + 1
+    status = commit.statuses.create({"state": "success", "sha": commit.id})
+    assert status in commit.statuses.list()
 
 
 def test_commit_signature(project):
@@ -130,10 +129,9 @@ def test_commit_comment(project):
 
 def test_commit_discussion(project):
     commit = project.commits.list()[0]
-    count = len(commit.discussions.list())
 
     discussion = commit.discussions.create({"body": "Discussion body"})
-    assert len(commit.discussions.list()) == (count + 1)
+    assert discussion in commit.discussions.list()
 
     note = discussion.notes.create({"body": "first note"})
     note_from_get = discussion.notes.get(note.id)

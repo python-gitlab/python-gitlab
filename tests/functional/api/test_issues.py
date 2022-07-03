@@ -4,16 +4,19 @@ import gitlab
 def test_create_issue(project):
     issue = project.issues.create({"title": "my issue 1"})
     issue2 = project.issues.create({"title": "my issue 2"})
-    issue_iids = [issue.iid for issue in project.issues.list()]
-    assert len(issue_iids) == 2
+
+    issues = project.issues.list()
+    issue_iids = [issue.iid for issue in issues]
+    assert {issue, issue2} <= set(issues)
 
     # Test 'iids' as a list
-    assert len(project.issues.list(iids=issue_iids)) == 2
+    filtered_issues = project.issues.list(iids=issue_iids)
+    assert {issue, issue2} == set(filtered_issues)
 
     issue2.state_event = "close"
     issue2.save()
-    assert len(project.issues.list(state="closed")) == 1
-    assert len(project.issues.list(state="opened")) == 1
+    assert issue in project.issues.list(state="opened")
+    assert issue2 in project.issues.list(state="closed")
 
     assert isinstance(issue.user_agent_detail(), dict)
     assert issue.user_agent_detail()["user_agent"]
@@ -23,19 +26,17 @@ def test_create_issue(project):
 
 
 def test_issue_notes(issue):
-    size = len(issue.notes.list())
-
     note = issue.notes.create({"body": "This is an issue note"})
-    assert len(issue.notes.list()) == size + 1
+    assert note in issue.notes.list()
 
     emoji = note.awardemojis.create({"name": "tractor"})
-    assert len(note.awardemojis.list()) == 1
+    assert emoji in note.awardemojis.list()
 
     emoji.delete()
-    assert len(note.awardemojis.list()) == 0
+    assert emoji not in note.awardemojis.list()
 
     note.delete()
-    assert len(issue.notes.list()) == size
+    assert note not in issue.notes.list()
 
 
 def test_issue_labels(project, issue):
@@ -70,15 +71,12 @@ def test_issue_milestones(project, milestone):
         milestone_event, gitlab.v4.objects.ProjectIssueResourceMilestoneEvent
     )
 
-    milestone_issues = project.issues.list(milestone=milestone.title)
-    assert len(milestone_issues) == 1
+    assert issue in project.issues.list(milestone=milestone.title)
 
 
 def test_issue_discussions(issue):
-    size = len(issue.discussions.list())
-
     discussion = issue.discussions.create({"body": "Discussion body"})
-    assert len(issue.discussions.list()) == size + 1
+    assert discussion in issue.discussions.list()
 
     d_note = discussion.notes.create({"body": "first note"})
     d_note_from_get = discussion.notes.get(d_note.id)
