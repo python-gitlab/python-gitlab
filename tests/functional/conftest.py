@@ -391,7 +391,7 @@ def project_file(project):
 @pytest.fixture(scope="function")
 def release(project, project_file):
     _id = uuid.uuid4().hex
-    name = f"test-release-{_id}"
+    name = f"we_have_a_slash/test-release-{_id}"
 
     project.refresh()  # Gets us the current default branch
     release = project.releases.create(
