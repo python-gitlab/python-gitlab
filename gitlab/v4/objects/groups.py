@@ -33,6 +33,7 @@ from .milestones import GroupMilestoneManager  # noqa: F401
 from .notification_settings import GroupNotificationSettingsManager  # noqa: F401
 from .packages import GroupPackageManager  # noqa: F401
 from .projects import GroupProjectManager  # noqa: F401
+from .push_rules import GroupPushRulesManager
 from .runners import GroupRunnerManager  # noqa: F401
 from .statistics import GroupIssuesStatisticsManager  # noqa: F401
 from .variables import GroupVariableManager  # noqa: F401
@@ -75,6 +76,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     notificationsettings: GroupNotificationSettingsManager
     packages: GroupPackageManager
     projects: GroupProjectManager
+    pushrules: GroupPushRulesManager
     runners: GroupRunnerManager
     subgroups: "GroupSubgroupManager"
     variables: GroupVariableManager
