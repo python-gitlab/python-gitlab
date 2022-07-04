@@ -50,6 +50,23 @@ custom_actions: Dict[str, Dict[str, Tuple[Tuple[str, ...], Tuple[str, ...], bool
 __F = TypeVar("__F", bound=Callable[..., Any])
 
 
+class VerticalHelpFormatter(argparse.HelpFormatter):
+    def format_help(self) -> str:
+        result = super().format_help()
+        output = ""
+        indent = self._indent_increment * " "
+        for line in result.splitlines(keepends=True):
+            # All of our resources are on one line and wrapped inside braces.
+            # For example: {application,resource1,resource2}
+            # We then put each resource on its own line to make it easier to read.
+            if line.strip().startswith("{"):
+                choices = line.strip().strip("{}").split(",")
+                choices_str = f"\n{indent}".join(choices)
+                line = f"{indent}{choices_str}\n"
+            output += line
+        return output
+
+
 def register_custom_action(
     cls_names: Union[str, Tuple[str, ...]],
     mandatory: Tuple[str, ...] = (),
@@ -110,6 +127,7 @@ def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         add_help=add_help,
         description="GitLab API Command Line Interface",
+        formatter_class=VerticalHelpFormatter,
         allow_abbrev=False,
     )
     parser.add_argument("--version", help="Display the version.", action="store_true")
