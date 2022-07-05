@@ -13,6 +13,7 @@ API examples
    gl_objects/branches
    gl_objects/clusters
    gl_objects/messages
+   gl_objects/ci_lint
    gl_objects/commits
    gl_objects/deploy_keys
    gl_objects/deploy_tokens

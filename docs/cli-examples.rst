@@ -6,6 +6,48 @@ CLI examples
 
       For a complete list of objects and actions available, see :doc:`/cli-objects`.
 
+CI Lint
+-------
+
+Lint a CI YAML configuration from a string:
+
+.. note:: 
+
+   To see output, you will need to use the ``-v``/``--verbose`` flag.
+
+.. code-block:: console
+
+   $ gitlab --verbose ci-lint create --content \
+     "---
+     test:
+       script:
+         - echo hello
+     "
+
+Lint a CI YAML configuration from a file (see :ref:`cli_from_files`):
+
+.. code-block:: console
+
+   $ gitlab --verbose ci-lint create --content @.gitlab-ci.yml
+
+Lint a project's CI YAML configuration:
+
+.. code-block:: console
+
+   $ gitlab --verbose project-ci-lint create --project-id group/my-project --content @.gitlab-ci.yml
+
+Lint a project's current CI YAML configuration:
+
+.. code-block:: console
+
+   $ gitlab --verbose project-ci-lint get --project-id group/my-project
+
+Lint a project's current CI YAML configuration on a specific branch:
+
+.. code-block:: console
+
+   $ gitlab --verbose project-ci-lint get --project-id group/my-project --ref my-branch
+
 Projects
 --------
 
