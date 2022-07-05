@@ -38,7 +38,7 @@ from .audit_events import ProjectAuditEventManager  # noqa: F401
 from .badges import ProjectBadgeManager  # noqa: F401
 from .boards import ProjectBoardManager  # noqa: F401
 from .branches import ProjectBranchManager, ProjectProtectedBranchManager  # noqa: F401
-from .ci_lint import ProjectCiLint, ProjectCiLintManager  # noqa: F401
+from .ci_lint import ProjectCiLintManager  # noqa: F401
 from .clusters import ProjectClusterManager  # noqa: F401
 from .commits import ProjectCommitManager  # noqa: F401
 from .container_registry import ProjectRegistryRepositoryManager  # noqa: F401
@@ -102,8 +102,6 @@ __all__ = [
     "ProjectRemoteMirrorManager",
     "ProjectStorage",
     "ProjectStorageManager",
-    "ProjectCiLint",
-    "ProjectCiLintManager",
 ]
 
 
@@ -165,7 +163,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     badges: ProjectBadgeManager
     boards: ProjectBoardManager
     branches: ProjectBranchManager
-    ci_lint: "ProjectCiLintManager"
+    ci_lint: ProjectCiLintManager
     clusters: ProjectClusterManager
     commits: ProjectCommitManager
     customattributes: ProjectCustomAttributeManager

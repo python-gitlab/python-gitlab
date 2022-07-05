@@ -126,6 +126,8 @@ class Gitlab:
 
         self.broadcastmessages = objects.BroadcastMessageManager(self)
         """See :class:`~gitlab.v4.objects.BroadcastMessageManager`"""
+        self.ci_lint = objects.CiLintManager(self)
+        """See :class:`~gitlab.v4.objects.CiLintManager`"""
         self.deploykeys = objects.DeployKeyManager(self)
         """See :class:`~gitlab.v4.objects.DeployKeyManager`"""
         self.deploytokens = objects.DeployTokenManager(self)
@@ -397,6 +399,11 @@ class Gitlab:
         Returns:
             (True, []) if the file is valid, (False, errors(list)) otherwise
         """
+        utils.warn(
+            "`lint()` is deprecated and will be removed in a future version.\n"
+            "Please use `ci_lint.create()` instead.",
+            category=DeprecationWarning,
+        )
         post_data = {"content": content}
         data = self.http_post("/ci/lint", post_data=post_data, **kwargs)
         if TYPE_CHECKING:

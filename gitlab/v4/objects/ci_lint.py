@@ -9,6 +9,25 @@ from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, GetWithoutIdMixin
 from gitlab.types import RequiredOptional
 
+__all__ = [
+    "CiLint",
+    "CiLintManager",
+    "ProjectCiLint",
+    "ProjectCiLintManager",
+]
+
+
+class CiLint(RESTObject):
+    _id_attr = None
+
+
+class CiLintManager(CreateMixin, RESTManager):
+    _path = "/ci/lint"
+    _obj_cls = CiLint
+    _create_attrs = RequiredOptional(
+        required=("content",), optional=("include_merged_yaml", "include_jobs")
+    )
+
 
 class ProjectCiLint(RESTObject):
     pass
