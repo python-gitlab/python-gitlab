@@ -1,3 +1,8 @@
+"""
+GitLab API:
+https://docs.gitlab.com/ee/api/projects.html
+https://docs.gitlab.com/ee/api/lint.html
+"""
 from typing import (
     Any,
     Callable,
@@ -97,6 +102,8 @@ __all__ = [
     "ProjectRemoteMirrorManager",
     "ProjectStorage",
     "ProjectStorageManager",
+    "ProjectCiLint",
+    "ProjectCiLintManager",
 ]
 
 
@@ -158,6 +165,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     badges: ProjectBadgeManager
     boards: ProjectBoardManager
     branches: ProjectBranchManager
+    ci_lint: "ProjectCiLintManager"
     clusters: ProjectClusterManager
     commits: ProjectCommitManager
     customattributes: ProjectCustomAttributeManager
@@ -1055,3 +1063,18 @@ class ProjectStorageManager(GetWithoutIdMixin, RESTManager):
 
     def get(self, **kwargs: Any) -> ProjectStorage:
         return cast(ProjectStorage, super().get(**kwargs))
+
+
+class ProjectCiLint(RESTObject):
+    pass
+
+
+class ProjectCiLintManager(GetWithoutIdMixin, CreateMixin, RESTManager):
+    """GitLab API: https://docs.gitlab.com/ee/api/lint.html"""
+
+    _path = "/projects/{project_id}/ci/lint"
+    _obj_cls = ProjectCiLint
+    _from_parent_attrs = {"project_id": "id"}
+
+    def get(self, **kwargs: Any) -> ProjectCiLint:
+        return cast(ProjectCiLint, super().get(**kwargs))
