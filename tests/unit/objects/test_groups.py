@@ -38,6 +38,19 @@ subgroup_descgroup_content = [
         "created_at": "2020-01-15T12:36:29.590Z",
     },
 ]
+push_rules_content = {
+    "id": 2,
+    "created_at": "2020-08-17T19:09:19.580Z",
+    "commit_message_regex": "[a-zA-Z]",
+    "commit_message_negative_regex": "[x+]",
+    "branch_name_regex": "[a-z]",
+    "deny_delete_tag": True,
+    "member_check": True,
+    "prevent_secrets": True,
+    "author_email_regex": "^[A-Za-z0-9.]+@gitlab.com$",
+    "file_name_regex": "(exe)$",
+    "max_file_size": 100,
+}
 
 
 @pytest.fixture
@@ -111,6 +124,72 @@ def resp_transfer_group():
         yield rsps
 
 
+@pytest.fixture
+def resp_list_push_rules_group():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/groups/1/push_rule",
+            json=push_rules_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_create_push_rules_group():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/groups/1/push_rule",
+            json=push_rules_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_update_push_rules_group():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/groups/1/push_rule",
+            json=push_rules_content,
+            content_type="application/json",
+            status=200,
+        )
+        rsps.add(
+            method=responses.PUT,
+            url="http://localhost/api/v4/groups/1/push_rule",
+            json=push_rules_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_delete_push_rules_group(no_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/groups/1/push_rule",
+            json=push_rules_content,
+            content_type="application/json",
+            status=200,
+        )
+        rsps.add(
+            method=responses.DELETE,
+            url="http://localhost/api/v4/groups/1/push_rule",
+            json=no_content,
+            content_type="application/json",
+            status=204,
+        )
+        yield rsps
+
+
 def test_get_group(gl, resp_groups):
     data = gl.groups.get(1)
     assert isinstance(data, gitlab.v4.objects.Group)
@@ -173,3 +252,27 @@ def test_refresh_group_import_status(group, resp_groups):
 def test_transfer_group(gl, resp_transfer_group):
     group = gl.groups.get(1, lazy=True)
     group.transfer("test-namespace")
+
+
+def test_list_group_push_rules(group, resp_list_push_rules_group):
+    pr = group.pushrules.get()
+    assert pr
+    assert pr.deny_delete_tag
+
+
+def test_create_group_push_rule(group, resp_create_push_rules_group):
+    group.pushrules.create({"deny_delete_tag": True})
+
+
+def test_update_group_push_rule(
+    group,
+    resp_update_push_rules_group,
+):
+    pr = group.pushrules.get()
+    pr.deny_delete_tag = False
+    pr.save()
+
+
+def test_delete_group_push_rule(group, resp_delete_push_rules_group):
+    pr = group.pushrules.get()
+    pr.delete()
