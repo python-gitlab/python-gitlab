@@ -398,7 +398,7 @@ Create group push rules (at least one rule is necessary)::
 
     group.pushrules.create({'deny_delete_tag': True})
 
-Get group push rules (returns None is there are no push rules)::
+Get group push rules (returns ``None`` if there are no push rules)::
 
     pr = group.pushrules.get()
 

@@ -748,7 +748,7 @@ Create project push rules (at least one rule is necessary)::
 
     project.pushrules.create({'deny_delete_tag': True})
 
-Get project push rules (returns None is there are no push rules)::
+Get project push rules (returns ``None`` if there are no push rules)::
 
     pr = project.pushrules.get()
 
