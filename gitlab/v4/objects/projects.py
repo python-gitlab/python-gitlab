@@ -1,7 +1,6 @@
 """
 GitLab API:
 https://docs.gitlab.com/ee/api/projects.html
-https://docs.gitlab.com/ee/api/lint.html
 """
 from typing import (
     Any,
@@ -39,6 +38,7 @@ from .audit_events import ProjectAuditEventManager  # noqa: F401
 from .badges import ProjectBadgeManager  # noqa: F401
 from .boards import ProjectBoardManager  # noqa: F401
 from .branches import ProjectBranchManager, ProjectProtectedBranchManager  # noqa: F401
+from .ci_lint import ProjectCiLint, ProjectCiLintManager  # noqa: F401
 from .clusters import ProjectClusterManager  # noqa: F401
 from .commits import ProjectCommitManager  # noqa: F401
 from .container_registry import ProjectRegistryRepositoryManager  # noqa: F401
@@ -1063,18 +1063,3 @@ class ProjectStorageManager(GetWithoutIdMixin, RESTManager):
 
     def get(self, **kwargs: Any) -> ProjectStorage:
         return cast(ProjectStorage, super().get(**kwargs))
-
-
-class ProjectCiLint(RESTObject):
-    pass
-
-
-class ProjectCiLintManager(GetWithoutIdMixin, CreateMixin, RESTManager):
-    """GitLab API: https://docs.gitlab.com/ee/api/lint.html"""
-
-    _path = "/projects/{project_id}/ci/lint"
-    _obj_cls = ProjectCiLint
-    _from_parent_attrs = {"project_id": "id"}
-
-    def get(self, **kwargs: Any) -> ProjectCiLint:
-        return cast(ProjectCiLint, super().get(**kwargs))
