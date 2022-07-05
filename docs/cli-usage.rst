@@ -288,6 +288,8 @@ Example:
 
    $ gitlab -o yaml -f id,permissions -g elsewhere -c /tmp/gl.cfg project list
 
+.. _cli_from_files:
+
 Reading values from files
 -------------------------
 
