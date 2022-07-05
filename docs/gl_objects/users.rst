@@ -192,6 +192,31 @@ Revoke (delete) an impersonation token for a user::
     i_t.delete()
 
 
+User projects
+=========================
+
+References
+----------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.UserProject`
+  + :class:`gitlab.v4.objects.UserProjectManager`
+  + :attr:`gitlab.v4.objects.User.projects`
+
+* GitLab API: https://docs.gitlab.com/ee/api/projects.html#list-user-projects
+
+List visible projects in the user's namespace::
+
+    projects = user.projects.list()
+
+.. note::
+
+    Only the projects in the user’s namespace are returned. Projects owned by
+    the user in any group or subgroups are not returned. An empty list is
+    returned if a profile is set to private.
+
+
 User memberships
 =========================
 
@@ -204,7 +229,7 @@ References
   + :class:`gitlab.v4.objects.UserMembershipManager`
   + :attr:`gitlab.v4.objects.User.memberships`
 
-* GitLab API: https://docs.gitlab.com/ee/api/users.html#user-memberships-admin-only
+* GitLab API: https://docs.gitlab.com/ee/api/users.html#user-memberships
 
 List direct memberships for a user::
 
@@ -217,6 +242,10 @@ List only direct project memberships::
 List only direct group memberships::
 
     memberships = user.memberships.list(type='Namespace')
+
+.. note::
+
+    This endpoint requires admin access.
 
 Current User
 ============
