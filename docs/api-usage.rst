@@ -9,6 +9,15 @@ python-gitlab only supports GitLab API v4.
 
 To connect to GitLab.com or another GitLab instance, create a ``gitlab.Gitlab`` object:
 
+.. hint::
+
+   You can use different types of tokens for authenticated requests against the GitLab API.
+   You will most likely want to use a resource (project/group) access token or a personal
+   access token.
+
+   For the full list of available options and how to obtain these tokens, please see
+   https://docs.gitlab.com/ee/api/index.html#authentication.
+
 .. code-block:: python
 
    import gitlab
@@ -37,9 +46,8 @@ To connect to GitLab.com or another GitLab instance, create a ``gitlab.Gitlab`` 
    # Define your own custom user agent for requests
    gl = gitlab.Gitlab('https://gitlab.example.com', user_agent='my-package/1.0.0')
 
-   # make an API request to create the gl.user object. This is mandatory if you
-   # use the username/password authentication - not required for token authentication,
-   # and will not work with job tokens.
+   # make an API request to create the gl.user object. This is not required but may be useful
+   # to validate your token authentication. Note that this will not work with job tokens.
    gl.auth()
 
 You can also use configuration files to create ``gitlab.Gitlab`` objects:
@@ -68,18 +76,16 @@ configuration files.
 Note on password authentication
 -------------------------------
 
-The ``/session`` API endpoint used for username/password authentication has
-been removed from GitLab in version 10.2, and is not available on gitlab.com
-anymore. Personal token authentication is the preferred authentication method.
+GitLab has long removed password-based basic authentication. You can currently still use the
+`resource owner password credentials <https://docs.gitlab.com/ee/api/oauth2.html#resource-owner-password-credentials-flow>`_
+flow to obtain an OAuth token.
 
-If you need username/password authentication, you can use cookie-based
-authentication. You can use the web UI form to authenticate, retrieve cookies,
-and then use a custom ``requests.Session`` object to connect to the GitLab API.
-The following code snippet demonstrates how to automate this:
-https://gist.github.com/gpocentek/bd4c3fbf8a6ce226ebddc4aad6b46c0a.
+However, we do not recommend this as it will not work with 2FA enabled, and GitLab is removing
+ROPC-based flows without client IDs in a future release. We recommend you obtain tokens for
+automated workflows as linked above or obtain a session cookie from your browser.
 
-See `issue 380 <https://github.com/python-gitlab/python-gitlab/issues/380>`_
-for a detailed discussion.
+For a python example of password authentication using the ROPC-based OAuth2
+flow, see `this Ansible snippet <https://github.com/ansible-collections/community.general/blob/1c06e237c8100ac30d3941d5a3869a4428ba2974/plugins/module_utils/gitlab.py#L86-L92>`_.
 
 Managers
 ========

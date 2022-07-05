@@ -176,16 +176,11 @@ We recommend that you use `Credential helpers`_ to securely store your tokens.
        to learn how to obtain a token.
    * - ``api_version``
      - GitLab API version to use. Only ``4`` is available since 1.5.0.
-   * - ``http_username``
-     - Username for optional HTTP authentication
-   * - ``http_password``
-     - Password for optional HTTP authentication
-
 
 Credential helpers
 ------------------
 
-For all configuration options that contain secrets (``http_password``,
+For all configuration options that contain secrets (for example,
 ``personal_token``, ``oauth_token``, ``job_token``), you can specify
 a helper program to retrieve the secret indicated by a ``helper:``
 prefix. This allows you to fetch values from a local keyring store
@@ -229,7 +224,7 @@ In `/path/to/helper.sh`:
 .. code-block:: bash
 
     #!/bin/bash
-    pass show path/to/password | head -n 1
+    pass show path/to/credentials | head -n 1
 
 CLI
 ===
