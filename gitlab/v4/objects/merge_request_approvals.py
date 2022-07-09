@@ -194,7 +194,6 @@ class ProjectMergeRequestApprovalRuleManager(CRUDMixin, RESTManager):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/approval_rules"
     _obj_cls = ProjectMergeRequestApprovalRule
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
-    _list_filters = ("name", "rule_type")
     _update_attrs = RequiredOptional(
         required=(
             "id",
