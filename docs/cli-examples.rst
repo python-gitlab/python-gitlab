@@ -15,6 +15,9 @@ Lint a CI YAML configuration from a string:
 
    To see output, you will need to use the ``-v``/``--verbose`` flag.
 
+   To exit with non-zero on YAML lint failures instead, use the ``validate``
+   subcommand shown below.
+
 .. code-block:: console
 
    $ gitlab --verbose ci-lint create --content \
@@ -30,11 +33,23 @@ Lint a CI YAML configuration from a file (see :ref:`cli_from_files`):
 
    $ gitlab --verbose ci-lint create --content @.gitlab-ci.yml
 
+Validate a CI YAML configuration from a file (lints and exits with non-zero on failure):
+
+.. code-block:: console
+
+   $ gitlab ci-lint validate --content @.gitlab-ci.yml
+
 Lint a project's CI YAML configuration:
 
 .. code-block:: console
 
    $ gitlab --verbose project-ci-lint create --project-id group/my-project --content @.gitlab-ci.yml
+
+Validate a project's CI YAML configuration (lints and exits with non-zero on failure):
+
+.. code-block:: console
+
+   $ gitlab project-ci-lint validate --project-id group/my-project --content @.gitlab-ci.yml
 
 Lint a project's current CI YAML configuration:
 
