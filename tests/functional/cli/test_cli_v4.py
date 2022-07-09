@@ -22,6 +22,59 @@ def test_update_project(gitlab_cli, project):
     assert description in ret.stdout
 
 
+def test_create_ci_lint(gitlab_cli, valid_gitlab_ci_yml):
+    cmd = ["ci-lint", "create", "--content", valid_gitlab_ci_yml]
+    ret = gitlab_cli(cmd)
+
+    assert ret.success
+
+
+def test_validate_ci_lint(gitlab_cli, valid_gitlab_ci_yml):
+    cmd = ["ci-lint", "validate", "--content", valid_gitlab_ci_yml]
+    ret = gitlab_cli(cmd)
+
+    assert ret.success
+
+
+def test_validate_ci_lint_invalid_exits_non_zero(gitlab_cli, invalid_gitlab_ci_yml):
+    cmd = ["ci-lint", "validate", "--content", invalid_gitlab_ci_yml]
+    ret = gitlab_cli(cmd)
+
+    assert not ret.success
+    assert "CI YAML Lint failed (Invalid configuration format)" in ret.stderr
+
+
+def test_validate_project_ci_lint(gitlab_cli, project, valid_gitlab_ci_yml):
+    cmd = [
+        "project-ci-lint",
+        "validate",
+        "--project-id",
+        project.id,
+        "--content",
+        valid_gitlab_ci_yml,
+    ]
+    ret = gitlab_cli(cmd)
+
+    assert ret.success
+
+
+def test_validate_project_ci_lint_invalid_exits_non_zero(
+    gitlab_cli, project, invalid_gitlab_ci_yml
+):
+    cmd = [
+        "project-ci-lint",
+        "validate",
+        "--project-id",
+        project.id,
+        "--content",
+        invalid_gitlab_ci_yml,
+    ]
+    ret = gitlab_cli(cmd)
+
+    assert not ret.success
+    assert "CI YAML Lint failed (Invalid configuration format)" in ret.stderr
+
+
 def test_create_group(gitlab_cli):
     name = "test-group1"
     path = "group1"

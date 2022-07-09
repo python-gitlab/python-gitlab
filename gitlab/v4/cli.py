@@ -25,6 +25,7 @@ import gitlab
 import gitlab.base
 import gitlab.v4.objects
 from gitlab import cli
+from gitlab.exceptions import GitlabCiLintError
 
 
 class GitlabCLI:
@@ -132,6 +133,16 @@ class GitlabCLI:
 
         except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to download the export", e)
+
+    def do_validate(self) -> None:
+        if TYPE_CHECKING:
+            assert isinstance(self.mgr, gitlab.v4.objects.CiLintManager)
+        try:
+            self.mgr.validate(self.args)
+        except GitlabCiLintError as e:  # pragma: no cover, cli.die is unit-tested
+            cli.die("CI YAML Lint failed", e)
+        except Exception as e:  # pragma: no cover, cli.die is unit-tested
+            cli.die("Cannot validate CI YAML", e)
 
     def do_create(self) -> gitlab.base.RESTObject:
         if TYPE_CHECKING:

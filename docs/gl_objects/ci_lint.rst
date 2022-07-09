@@ -19,7 +19,7 @@ Reference
 Examples
 ---------
 
-Validate a CI YAML configuration::
+Lint a CI YAML configuration::
 
     gitlab_ci_yml = """.api_test:
       rules:
@@ -40,14 +40,30 @@ Validate a CI YAML configuration::
     print(lint_result.status)  # Print the status of the CI YAML
     print(lint_result.merged_yaml)  # Print the merged YAML file
 
-Validate a project's CI configuration::
+Lint a project's CI configuration::
 
     lint_result = project.ci_lint.get()
     assert lint_result.valid is True  # Test that the .gitlab-ci.yml is valid
     print(lint_result.merged_yaml)    # Print the merged YAML file
 
-Validate a CI YAML configuration with a namespace::
+Lint a CI YAML configuration with a namespace::
 
     lint_result = project.ci_lint.create({"content": gitlab_ci_yml})
     assert lint_result.valid is True  # Test that the .gitlab-ci.yml is valid
     print(lint_result.merged_yaml)    # Print the merged YAML file
+
+Validate a CI YAML configuration (raises ``GitlabCiLintError`` on failures)::
+
+    # returns None
+    gl.ci_lint.validate({"content": gitlab_ci_yml})
+
+    # raises GitlabCiLintError
+    gl.ci_lint.validate({"content": "invalid"})
+
+Validate a CI YAML configuration with a namespace::
+
+    # returns None
+    project.ci_lint.validate({"content": gitlab_ci_yml})
+
+    # raises GitlabCiLintError
+    project.ci_lint.validate({"content": "invalid"})

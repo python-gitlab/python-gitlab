@@ -62,6 +62,10 @@ class GitlabParsingError(GitlabError):
     pass
 
 
+class GitlabCiLintError(GitlabError):
+    pass
+
+
 class GitlabConnectionError(GitlabError):
     pass
 
