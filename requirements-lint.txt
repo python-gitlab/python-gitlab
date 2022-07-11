@@ -1,6 +1,6 @@
 argcomplete<=2.0.0
 black==22.6.0
-commitizen==2.27.1
+commitizen==2.28.0
 flake8==4.0.1
 isort==5.10.1
 mypy==0.961
