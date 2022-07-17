@@ -353,3 +353,37 @@ def test_gitlab_plain_const_does_not_warn(recwarn):
 
     assert not recwarn
     assert no_access == 0
+
+
+@responses.activate
+def test_gitlab_keep_base_url(gl):
+    responses.add(
+        **{
+            "method": responses.GET,
+            "url": "http://localhost/api/v4/tests",
+            "json": [{"a": "b"}],
+            "headers": {
+                "X-Page": "1",
+                "X-Next-Page": "2",
+                "X-Per-Page": "1",
+                "X-Total-Pages": "2",
+                "X-Total": "2",
+                "Link": (
+                    "<http://orig_host/api/v4/tests?per_page=1&page=2>;" ' rel="next"'
+                ),
+            },
+            "content_type": "application/json",
+            "status": 200,
+            "match": helpers.MATCH_EMPTY_QUERY_PARAMS,
+        }
+    )
+
+    obj = gl.http_list("/tests", iterator=True)
+    assert len(obj) == 2
+    assert obj._next_url == "http://localhost/api/v4/tests?per_page=1&page=2"
+    assert obj.current_page == 1
+    assert obj.prev_page is None
+    assert obj.next_page == 2
+    assert obj.per_page == 1
+    assert obj.total_pages == 2
+    assert obj.total == 2
