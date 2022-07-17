@@ -17,6 +17,7 @@
 """Wrapper for the GitLab API."""
 
 import os
+import re
 import time
 from typing import Any, cast, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
 
@@ -1132,6 +1133,8 @@ class GitlabList:
                 next_url = requests.utils.parse_header_links(result.headers["links"])[
                     0
                 ]["url"]
+            if not next_url.startswith(self._gl._base_url):
+                next_url = re.sub(r"^.*?/api", f"{self._gl._base_url}/api", next_url)
             self._next_url = next_url
         except KeyError:
             self._next_url = None
