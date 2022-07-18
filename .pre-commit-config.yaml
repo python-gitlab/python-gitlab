@@ -35,6 +35,6 @@ repos:
       - id: mypy
         args: []
         additional_dependencies:
-          - types-PyYAML==6.0.9
-          - types-requests==2.28.0
+          - types-PyYAML==6.0.10
+          - types-requests==2.28.1
           - types-setuptools==57.4.18
