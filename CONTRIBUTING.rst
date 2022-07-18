@@ -89,7 +89,7 @@ To run these tests:
    tox -e cli_func_v4
 
    # run the python API tests:
-   tox -e py_func_v4
+   tox -e api_func_v4
 
 When developing tests it can be a little frustrating to wait for GitLab to spin
 up every run. To prevent the containers from being cleaned up afterwards, pass
@@ -97,7 +97,7 @@ up every run. To prevent the containers from being cleaned up afterwards, pass
 
 .. code-block:: bash
 
-   tox -e py_func_v4 -- --keep-containers
+   tox -e api_func_v4 -- --keep-containers
 
 If you then wish to test against a clean slate, you may perform a manual clean
 up of the containers by running:
@@ -117,11 +117,11 @@ The tag must match an exact tag on Docker Hub:
 .. code-block:: bash
 
    # run tests against `nightly` or specific tag
-   GITLAB_TAG=nightly tox -e py_func_v4
-   GITLAB_TAG=12.8.0-ce.0 tox -e py_func_v4
+   GITLAB_TAG=nightly tox -e api_func_v4
+   GITLAB_TAG=12.8.0-ce.0 tox -e api_func_v4
 
    # run tests against the latest gitlab EE image
-   GITLAB_IMAGE=gitlab/gitlab-ee tox -e py_func_v4
+   GITLAB_IMAGE=gitlab/gitlab-ee tox -e api_func_v4
 
 A freshly configured gitlab container will be available at
 http://localhost:8080 (login ``root`` / password ``5iveL!fe``). A configuration
