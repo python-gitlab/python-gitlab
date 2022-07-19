@@ -28,13 +28,25 @@ def test_create_user(gl, fixture_dir):
 
 
 def test_block_user(gl, user):
-    user.block()
+    result = user.block()
+    assert result is True
     users = gl.users.list(blocked=True)
     assert user in users
 
-    user.unblock()
+    # block again
+    result = user.block()
+    # Trying to block an already blocked user returns None
+    assert result is None
+
+    result = user.unblock()
+    assert result is True
     users = gl.users.list(blocked=False)
     assert user in users
+
+    # unblock again
+    result = user.unblock()
+    # Trying to unblock an already blocked user returns False
+    assert result is False
 
 
 def test_ban_user(gl, user):
