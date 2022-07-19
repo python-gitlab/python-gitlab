@@ -15,6 +15,7 @@ from gitlab.mixins import (
 from gitlab.types import RequiredOptional
 
 from .events import GroupEpicResourceLabelEventManager  # noqa: F401
+from .notes import GroupEpicNoteManager  # noqa: F401
 
 __all__ = [
     "GroupEpic",
@@ -29,6 +30,7 @@ class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
 
     issues: "GroupEpicIssueManager"
     resourcelabelevents: GroupEpicResourceLabelEventManager
+    notes: GroupEpicNoteManager
 
 
 class GroupEpicManager(CRUDMixin, RESTManager):
