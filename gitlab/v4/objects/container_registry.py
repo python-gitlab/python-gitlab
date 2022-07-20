@@ -6,6 +6,7 @@ from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import DeleteMixin, ListMixin, ObjectDeleteMixin, RetrieveMixin
 
 __all__ = [
+    "GroupRegistryRepositoryManager",
     "ProjectRegistryRepository",
     "ProjectRegistryRepositoryManager",
     "ProjectRegistryTag",
@@ -65,3 +66,9 @@ class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any
     ) -> ProjectRegistryTag:
         return cast(ProjectRegistryTag, super().get(id=id, lazy=lazy, **kwargs))
+
+
+class GroupRegistryRepositoryManager(ListMixin, RESTManager):
+    _path = "/groups/{group_id}/registry/repositories"
+    _obj_cls = ProjectRegistryRepository
+    _from_parent_attrs = {"group_id": "id"}
