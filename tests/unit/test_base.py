@@ -46,6 +46,11 @@ def fake_manager(fake_gitlab):
     return FakeManager(fake_gitlab)
 
 
+@pytest.fixture
+def fake_object(fake_manager):
+    return FakeObject(fake_manager, {"attr1": [1, 2, 3]})
+
+
 class TestRESTManager:
     def test_computed_path_simple(self):
         class MGR(base.RESTManager):
@@ -306,3 +311,24 @@ class TestRESTObject:
 
         FakeObject._id_attr = None
         assert repr(obj) == "<FakeObject>"
+
+    def test_attributes_get(self, fake_object):
+        assert fake_object.attr1 == [1, 2, 3]
+        result = fake_object.attributes
+        assert result == {"attr1": [1, 2, 3]}
+
+    def test_attributes_shows_updates(self, fake_object):
+        # Updated attribute value is reflected in `attributes`
+        fake_object.attr1 = "hello"
+        assert fake_object.attributes == {"attr1": "hello"}
+        assert fake_object.attr1 == "hello"
+        # New attribute is in `attributes`
+        fake_object.new_attrib = "spam"
+        assert fake_object.attributes == {"attr1": "hello", "new_attrib": "spam"}
+
+    def test_attributes_is_copy(self, fake_object):
+        # Modifying the dictionary does not cause modifications to the object
+        result = fake_object.attributes
+        result["attr1"].append(10)
+        assert result == {"attr1": [1, 2, 3, 10]}
+        assert fake_object.attributes == {"attr1": [1, 2, 3]}

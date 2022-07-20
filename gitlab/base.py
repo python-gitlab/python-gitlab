@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import copy
 import importlib
 import pprint
 import textwrap
@@ -243,10 +244,11 @@ class RESTObject:
 
     @property
     def attributes(self) -> Dict[str, Any]:
-        d = self.__dict__["_updated_attrs"].copy()
-        d.update(self.__dict__["_attrs"])
-        d.update(self.__dict__["_parent_attrs"])
-        return d
+        data = {}
+        data.update(copy.deepcopy(self._parent_attrs))
+        data.update(copy.deepcopy(self._attrs))
+        data.update(copy.deepcopy(self._updated_attrs))
+        return data
 
 
 class RESTObjectList:
