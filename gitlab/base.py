@@ -17,6 +17,7 @@
 
 import copy
 import importlib
+import json
 import pprint
 import textwrap
 from types import ModuleType
@@ -143,15 +144,26 @@ class RESTObject:
     def __setattr__(self, name: str, value: Any) -> None:
         self.__dict__["_updated_attrs"][name] = value
 
+    def asdict(self, *, with_parent_attrs: bool = False) -> Dict[str, Any]:
+        data = {}
+        if with_parent_attrs:
+            data.update(copy.deepcopy(self._parent_attrs))
+        data.update(copy.deepcopy(self._attrs))
+        data.update(copy.deepcopy(self._updated_attrs))
+        return data
+
+    @property
+    def attributes(self) -> Dict[str, Any]:
+        return self.asdict(with_parent_attrs=True)
+
+    def to_json(self, *, with_parent_attrs: bool = False, **kwargs: Any) -> str:
+        return json.dumps(self.asdict(with_parent_attrs=with_parent_attrs), **kwargs)
+
     def __str__(self) -> str:
-        data = self._attrs.copy()
-        data.update(self._updated_attrs)
-        return f"{type(self)} => {data}"
+        return f"{type(self)} => {self.asdict()}"
 
     def pformat(self) -> str:
-        data = self._attrs.copy()
-        data.update(self._updated_attrs)
-        return f"{type(self)} => \n{pprint.pformat(data)}"
+        return f"{type(self)} => \n{pprint.pformat(self.asdict())}"
 
     def pprint(self) -> None:
         print(self.pformat())
@@ -241,14 +253,6 @@ class RESTObject:
         if isinstance(obj_id, str):
             obj_id = gitlab.utils.EncodedId(obj_id)
         return obj_id
-
-    @property
-    def attributes(self) -> Dict[str, Any]:
-        data = {}
-        data.update(copy.deepcopy(self._parent_attrs))
-        data.update(copy.deepcopy(self._attrs))
-        data.update(copy.deepcopy(self._updated_attrs))
-        return data
 
 
 class RESTObjectList:
