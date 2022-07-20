@@ -135,11 +135,11 @@ class GetMixin(HeadMixin, _RestManagerBase):
         if lazy is True:
             if TYPE_CHECKING:
                 assert self._obj_cls._id_attr is not None
-            return self._obj_cls(self, {self._obj_cls._id_attr: id})
+            return self._obj_cls(self, {self._obj_cls._id_attr: id}, lazy=lazy)
         server_data = self.gitlab.http_get(path, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(server_data, requests.Response)
-        return self._obj_cls(self, server_data)
+        return self._obj_cls(self, server_data, lazy=lazy)
 
 
 class GetWithoutIdMixin(HeadMixin, _RestManagerBase):
