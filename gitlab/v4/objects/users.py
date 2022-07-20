@@ -3,7 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ee/api/users.html
 https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
 """
-from typing import Any, cast, Dict, List, Union
+from typing import Any, cast, Dict, List, Optional, Union
 
 import requests
 
@@ -163,7 +163,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabBlockError)
-    def block(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def block(self, **kwargs: Any) -> Optional[bool]:
         """Block the user.
 
         Args:
@@ -177,7 +177,11 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             Whether the user status has been changed
         """
         path = f"/users/{self.encoded_id}/block"
-        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        # NOTE: Undocumented behavior of the GitLab API is that it returns a
+        # boolean or None
+        server_data = cast(
+            Optional[bool], self.manager.gitlab.http_post(path, **kwargs)
+        )
         if server_data is True:
             self._attrs["state"] = "blocked"
         return server_data
@@ -220,7 +224,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUnblockError)
-    def unblock(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def unblock(self, **kwargs: Any) -> Optional[bool]:
         """Unblock the user.
 
         Args:
@@ -234,7 +238,11 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             Whether the user status has been changed
         """
         path = f"/users/{self.encoded_id}/unblock"
-        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        # NOTE: Undocumented behavior of the GitLab API is that it returns a
+        # boolean or None
+        server_data = cast(
+            Optional[bool], self.manager.gitlab.http_post(path, **kwargs)
+        )
         if server_data is True:
             self._attrs["state"] = "active"
         return server_data
