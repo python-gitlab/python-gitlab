@@ -62,6 +62,7 @@ class RESTObject:
     _parent_attrs: Dict[str, Any]
     _repr_attr: Optional[str] = None
     _updated_attrs: Dict[str, Any]
+    _lazy: bool
     manager: "RESTManager"
 
     def __init__(
@@ -70,6 +71,7 @@ class RESTObject:
         attrs: Dict[str, Any],
         *,
         created_from_list: bool = False,
+        lazy: bool = False,
     ) -> None:
         if not isinstance(attrs, dict):
             raise GitlabParsingError(
@@ -84,6 +86,7 @@ class RESTObject:
                 "_updated_attrs": {},
                 "_module": importlib.import_module(self.__module__),
                 "_created_from_list": created_from_list,
+                "_lazy": lazy,
             }
         )
         self.__dict__["_parent_attrs"] = self.manager.parent_attrs
@@ -136,6 +139,12 @@ class RESTObject:
                     f"get(object.id) call. For more details, see:"
                 )
                 + f"\n\n{_URL_ATTRIBUTE_ERROR}"
+            )
+        elif self._lazy:
+            message = f"{message}\n\n" + textwrap.fill(
+                f"If you tried to access object attributes returned from the server, "
+                f"note that {self.__class__!r} was created as a `lazy` object and was "
+                f"not initialized with any data."
             )
         raise AttributeError(message)
 
