@@ -160,6 +160,8 @@ class Gitlab:
         """See :class:`~gitlab.v4.objects.NotificationSettingsManager`"""
         self.projects = objects.ProjectManager(self)
         """See :class:`~gitlab.v4.objects.ProjectManager`"""
+        self.registry_repositories = objects.RegistryRepositoryManager(self)
+        """See :class:`~gitlab.v4.objects.RegistryRepositoryManager`"""
         self.runners = objects.RunnerManager(self)
         """See :class:`~gitlab.v4.objects.RunnerManager`"""
         self.settings = objects.ApplicationSettingsManager(self)
