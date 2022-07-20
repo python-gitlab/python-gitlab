@@ -20,6 +20,10 @@ Get the list of container registry repositories associated with the project::
 
       repositories = project.repositories.list()
 
+Get the list of all project container registry repositories in a group::
+
+      repositories = group.registry_repositories.list()
+
 Delete repository::
 
       project.repositories.delete(id=x)

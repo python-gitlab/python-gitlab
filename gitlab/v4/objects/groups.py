@@ -15,6 +15,7 @@ from .audit_events import GroupAuditEventManager  # noqa: F401
 from .badges import GroupBadgeManager  # noqa: F401
 from .boards import GroupBoardManager  # noqa: F401
 from .clusters import GroupClusterManager  # noqa: F401
+from .container_registry import GroupRegistryRepositoryManager  # noqa: F401
 from .custom_attributes import GroupCustomAttributeManager  # noqa: F401
 from .deploy_tokens import GroupDeployTokenManager  # noqa: F401
 from .epics import GroupEpicManager  # noqa: F401
@@ -77,6 +78,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     packages: GroupPackageManager
     projects: GroupProjectManager
     pushrules: GroupPushRulesManager
+    registry_repositories: GroupRegistryRepositoryManager
     runners: GroupRunnerManager
     subgroups: "GroupSubgroupManager"
     variables: GroupVariableManager
