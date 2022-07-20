@@ -214,6 +214,38 @@ the value on the object is accepted:
       issue.my_super_awesome_feature_flag = "random_value"
       issue.save()
 
+You can get a dictionary representation copy of the Gitlab Object. Modifications made to
+the dictionary will have no impact on the GitLab Object.
+
+ * `asdict()` method. Returns a dictionary representation of the Gitlab object.
+ * `attributes` property. Returns a dictionary representation of the Gitlab
+   object. Also returns any relevant parent object attributes.
+
+.. note::
+
+   `attributes` returns the parent object attributes that are defined in
+   `object._from_parent_attrs`. What this can mean is that for example a `ProjectIssue`
+   object will have a `project_id` key in the dictionary returned from `attributes` but
+   `asdict()` will not.
+
+
+.. code-block:: python
+
+   project = gl.projects.get(1)
+   project_dict = project.asdict()
+
+   # Or a dictionary representation also containing some of the parent attributes
+   issue = project.issues.get(1)
+   attribute_dict = issue.attributes
+
+You can get a JSON string represenation of the Gitlab Object. For example:
+
+.. code-block:: python
+
+   project = gl.projects.get(1)
+   print(project.to_json())
+   # Use arguments supported by `json.dump()`
+   print(project.to_json(sort_keys=True, indent=4))
 
 Base types
 ==========

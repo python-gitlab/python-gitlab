@@ -36,6 +36,16 @@ class FakeManager(base.RESTManager):
     _path = "/tests"
 
 
+class FakeParent:
+    id = 42
+
+
+class FakeManagerWithParent(base.RESTManager):
+    _path = "/tests/{test_id}/cases"
+    _obj_cls = FakeObject
+    _from_parent_attrs = {"test_id": "id"}
+
+
 @pytest.fixture
 def fake_gitlab():
     return FakeGitlab()
@@ -44,6 +54,21 @@ def fake_gitlab():
 @pytest.fixture
 def fake_manager(fake_gitlab):
     return FakeManager(fake_gitlab)
+
+
+@pytest.fixture
+def fake_manager_with_parent(fake_gitlab):
+    return FakeManagerWithParent(fake_gitlab, parent=FakeParent)
+
+
+@pytest.fixture
+def fake_object(fake_manager):
+    return FakeObject(fake_manager, {"attr1": "foo", "alist": [1, 2, 3]})
+
+
+@pytest.fixture
+def fake_object_with_parent(fake_manager_with_parent):
+    return FakeObject(fake_manager_with_parent, {"attr1": "foo", "alist": [1, 2, 3]})
 
 
 class TestRESTManager:
@@ -306,3 +331,75 @@ class TestRESTObject:
 
         FakeObject._id_attr = None
         assert repr(obj) == "<FakeObject>"
+
+    def test_attributes_get(self, fake_object):
+        assert fake_object.attr1 == "foo"
+        result = fake_object.attributes
+        assert result == {"attr1": "foo", "alist": [1, 2, 3]}
+
+    def test_attributes_shows_updates(self, fake_object):
+        # Updated attribute value is reflected in `attributes`
+        fake_object.attr1 = "hello"
+        assert fake_object.attributes == {"attr1": "hello", "alist": [1, 2, 3]}
+        assert fake_object.attr1 == "hello"
+        # New attribute is in `attributes`
+        fake_object.new_attrib = "spam"
+        assert fake_object.attributes == {
+            "attr1": "hello",
+            "new_attrib": "spam",
+            "alist": [1, 2, 3],
+        }
+
+    def test_attributes_is_copy(self, fake_object):
+        # Modifying the dictionary does not cause modifications to the object
+        result = fake_object.attributes
+        result["alist"].append(10)
+        assert result == {"attr1": "foo", "alist": [1, 2, 3, 10]}
+        assert fake_object.attributes == {"attr1": "foo", "alist": [1, 2, 3]}
+
+    def test_attributes_has_parent_attrs(self, fake_object_with_parent):
+        assert fake_object_with_parent.attr1 == "foo"
+        result = fake_object_with_parent.attributes
+        assert result == {"attr1": "foo", "alist": [1, 2, 3], "test_id": "42"}
+
+    def test_asdict(self, fake_object):
+        assert fake_object.attr1 == "foo"
+        result = fake_object.asdict()
+        assert result == {"attr1": "foo", "alist": [1, 2, 3]}
+
+    def test_asdict_no_parent_attrs(self, fake_object_with_parent):
+        assert fake_object_with_parent.attr1 == "foo"
+        result = fake_object_with_parent.asdict()
+        assert result == {"attr1": "foo", "alist": [1, 2, 3]}
+        assert "test_id" not in fake_object_with_parent.asdict()
+        assert "test_id" not in fake_object_with_parent.asdict(with_parent_attrs=False)
+        assert "test_id" in fake_object_with_parent.asdict(with_parent_attrs=True)
+
+    def test_asdict_modify_dict_does_not_change_object(self, fake_object):
+        result = fake_object.asdict()
+        # Demonstrate modifying the dictionary does not modify the object
+        result["attr1"] = "testing"
+        result["alist"].append(4)
+        assert result == {"attr1": "testing", "alist": [1, 2, 3, 4]}
+        assert fake_object.attr1 == "foo"
+        assert fake_object.alist == [1, 2, 3]
+
+    def test_asdict_modify_dict_does_not_change_object2(self, fake_object):
+        # Modify attribute and then ensure modifying a list in the returned dict won't
+        # modify the list in the object.
+        fake_object.attr1 = [9, 7, 8]
+        assert fake_object.asdict() == {
+            "attr1": [9, 7, 8],
+            "alist": [1, 2, 3],
+        }
+        result = fake_object.asdict()
+        result["attr1"].append(1)
+        assert fake_object.asdict() == {
+            "attr1": [9, 7, 8],
+            "alist": [1, 2, 3],
+        }
+
+    def test_asdict_modify_object(self, fake_object):
+        # asdict() returns the updated value
+        fake_object.attr1 = "spam"
+        assert fake_object.asdict() == {"attr1": "spam", "alist": [1, 2, 3]}
