@@ -3,6 +3,17 @@ import pytest
 import gitlab
 
 
+@pytest.fixture(
+    scope="session",
+    params=[{"get_all": True}, {"all": True}],
+    ids=["get_all=True", "all=True"],
+)
+def get_all_kwargs(request):
+    """A tiny parametrized fixture to inject both `get_all=True` and
+    `all=True` to ensure they behave the same way for pagination."""
+    return request.param
+
+
 def test_auth_from_config(gl, temp_dir):
     """Test token authentication from config file"""
     test_gitlab = gitlab.Gitlab.from_config(
@@ -12,13 +23,13 @@ def test_auth_from_config(gl, temp_dir):
     assert isinstance(test_gitlab.user, gitlab.v4.objects.CurrentUser)
 
 
-def test_broadcast_messages(gl):
+def test_broadcast_messages(gl, get_all_kwargs):
     msg = gl.broadcastmessages.create({"message": "this is the message"})
     msg.color = "#444444"
     msg.save()
     msg_id = msg.id
 
-    msg = gl.broadcastmessages.list(get_all=True)[0]
+    msg = gl.broadcastmessages.list(**get_all_kwargs)[0]
     assert msg.color == "#444444"
 
     msg = gl.broadcastmessages.get(msg_id)
@@ -85,14 +96,14 @@ def test_template_dockerfile(gl):
     assert dockerfile.content is not None
 
 
-def test_template_gitignore(gl):
-    assert gl.gitignores.list(get_all=True)
+def test_template_gitignore(gl, get_all_kwargs):
+    assert gl.gitignores.list(**get_all_kwargs)
     gitignore = gl.gitignores.get("Node")
     assert gitignore.content is not None
 
 
-def test_template_gitlabciyml(gl):
-    assert gl.gitlabciymls.list(get_all=True)
+def test_template_gitlabciyml(gl, get_all_kwargs):
+    assert gl.gitlabciymls.list(**get_all_kwargs)
     gitlabciyml = gl.gitlabciymls.get("Nodejs")
     assert gitlabciyml.content is not None
 
@@ -113,11 +124,11 @@ def test_hooks(gl):
     assert hook not in gl.hooks.list()
 
 
-def test_namespaces(gl):
-    namespace = gl.namespaces.list(get_all=True)
+def test_namespaces(gl, get_all_kwargs):
+    namespace = gl.namespaces.list(**get_all_kwargs)
     assert namespace
 
-    namespace = gl.namespaces.list(search="root", get_all=True)[0]
+    namespace = gl.namespaces.list(search="root", **get_all_kwargs)[0]
     assert namespace.kind == "user"
 
 
@@ -216,9 +227,9 @@ def test_list_all_false_nowarning(gl, recwarn):
     assert not recwarn
 
 
-def test_list_all_true_nowarning(gl, recwarn):
+def test_list_all_true_nowarning(gl, get_all_kwargs, recwarn):
     """Using `get_all=True` will disable the warning"""
-    items = gl.gitlabciymls.list(get_all=True)
+    items = gl.gitlabciymls.list(**get_all_kwargs)
     assert not recwarn
     assert len(items) > 20
 
