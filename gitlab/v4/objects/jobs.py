@@ -244,6 +244,7 @@ class ProjectJobManager(RetrieveMixin, RESTManager):
     _path = "/projects/{project_id}/jobs"
     _obj_cls = ProjectJob
     _from_parent_attrs = {"project_id": "id"}
+    _list_filters = ("scope",)
 
     def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> ProjectJob:
         return cast(ProjectJob, super().get(id=id, lazy=lazy, **kwargs))
