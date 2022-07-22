@@ -25,6 +25,7 @@ import pytest
 import responses
 
 import gitlab
+from gitlab.config import GitlabConfigMissingError
 from tests.unit import helpers
 
 localhost = "http://localhost"
@@ -297,6 +298,11 @@ def test_gitlab_args_kwargs(
 def test_gitlab_from_config(default_config):
     config_path = default_config
     gitlab.Gitlab.from_config("one", [config_path])
+
+
+def test_gitlab_from_config_without_files_raises():
+    with pytest.raises(GitlabConfigMissingError, match="non-existing"):
+        gitlab.Gitlab.from_config("non-existing")
 
 
 def test_gitlab_subclass_from_config(default_config):
