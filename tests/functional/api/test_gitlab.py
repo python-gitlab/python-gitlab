@@ -50,7 +50,8 @@ def test_markdown_in_project(gl, project):
 
 
 def test_lint(gl):
-    success, errors = gl.lint("Invalid")
+    with pytest.deprecated_call():
+        success, errors = gl.lint("Invalid")
     assert success is False
     assert errors
 
