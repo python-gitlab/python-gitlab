@@ -128,6 +128,11 @@ class GitlabConfigParser:
         if self._files:
             self._parse_config()
 
+        if self.gitlab_id and not self._files:
+            raise GitlabConfigMissingError(
+                f"A gitlab id was provided ({self.gitlab_id}) but no config file found"
+            )
+
     def _parse_config(self) -> None:
         _config = configparser.ConfigParser()
         _config.read(self._files)
