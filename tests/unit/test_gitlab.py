@@ -25,7 +25,7 @@ import pytest
 import responses
 
 import gitlab
-from gitlab.config import GitlabConfigMissingError
+from gitlab.config import GitlabConfigMissingError, GitlabDataError
 from tests.unit import helpers
 
 localhost = "http://localhost"
@@ -303,6 +303,11 @@ def test_gitlab_from_config(default_config):
 def test_gitlab_from_config_without_files_raises():
     with pytest.raises(GitlabConfigMissingError, match="non-existing"):
         gitlab.Gitlab.from_config("non-existing")
+
+
+def test_gitlab_from_config_with_wrong_gitlab_id_raises(default_config):
+    with pytest.raises(GitlabDataError, match="non-existing"):
+        gitlab.Gitlab.from_config("non-existing", [default_config])
 
 
 def test_gitlab_subclass_from_config(default_config):

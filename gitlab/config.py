@@ -137,6 +137,12 @@ class GitlabConfigParser:
         _config = configparser.ConfigParser()
         _config.read(self._files)
 
+        if self.gitlab_id and not _config.has_section(self.gitlab_id):
+            raise GitlabDataError(
+                f"A gitlab id was provided ({self.gitlab_id}) "
+                "but no config section found"
+            )
+
         if self.gitlab_id is None:
             try:
                 self.gitlab_id = _config.get("global", "default")
