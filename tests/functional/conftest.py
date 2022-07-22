@@ -17,68 +17,37 @@ def fixture_dir(test_dir):
     return test_dir / "functional" / "fixtures"
 
 
-def reset_gitlab(gl):
-    # previously tools/reset_gitlab.py
+def reset_gitlab(gl: gitlab.Gitlab) -> None:
+    """Delete resources (such as projects, groups, users) that shouldn't
+    exist."""
     for project in gl.projects.list():
-        logging.info(f"Marking for deletion project: {project.path_with_namespace!r}")
         for deploy_token in project.deploytokens.list():
             logging.info(
-                f"Marking for deletion token: {deploy_token.username!r} in "
+                f"Deleting deploy token: {deploy_token.username!r} in "
                 f"project: {project.path_with_namespace!r}"
             )
-            deploy_token.delete()
-        project.delete()
+            helpers.safe_delete(deploy_token)
+        logging.info(f"Deleting project: {project.path_with_namespace!r}")
+        helpers.safe_delete(project)
     for group in gl.groups.list():
-        logging.info(f"Marking for deletion group: {group.full_path!r}")
         for deploy_token in group.deploytokens.list():
             logging.info(
-                f"Marking for deletion token: {deploy_token.username!r} in "
+                f"Deleting deploy token: {deploy_token.username!r} in "
                 f"group: {group.path_with_namespace!r}"
             )
-            deploy_token.delete()
-        group.delete()
+            helpers.safe_delete(deploy_token)
+        logging.info(f"Deleting group: {group.full_path!r}")
+        helpers.safe_delete(group)
     for topic in gl.topics.list():
-        topic.delete()
+        logging.info(f"Deleting topic: {topic.name!r}")
+        helpers.safe_delete(topic)
     for variable in gl.variables.list():
-        logging.info(f"Marking for deletion variable: {variable.key!r}")
-        variable.delete()
+        logging.info(f"Deleting variable: {variable.key!r}")
+        helpers.safe_delete(variable)
     for user in gl.users.list():
         if user.username != "root":
-            logging.info(f"Marking for deletion user: {user.username!r}")
-            user.delete(hard_delete=True)
-
-    # Ensure everything has been reset
-    start_time = time.perf_counter()
-
-    def wait_for_list_size(
-        rest_manager: gitlab.base.RESTManager, description: str, max_length: int = 0
-    ) -> None:
-        """Wait for the list() length to be no greater than expected maximum or fail
-        test if timeout is exceeded"""
-        logging.info(f"Checking {description!r} has no more than {max_length} items")
-        for count in range(helpers.MAX_ITERATIONS):
-            items = rest_manager.list()
-            if len(items) <= max_length:
-                break
-            logging.info(
-                f"Iteration: {count} Waiting for {description!r} items to be deleted: "
-                f"{[x.name for x in items]}"
-            )
-            time.sleep(helpers.SLEEP_INTERVAL)
-
-        elapsed_time = time.perf_counter() - start_time
-        error_message = (
-            f"More than {max_length} {description!r} items still remaining and timeout "
-            f"({elapsed_time}) exceeded: {[x.name for x in items]}"
-        )
-        if len(items) > max_length:
-            logging.error(error_message)
-        assert len(items) <= max_length, error_message
-
-    wait_for_list_size(rest_manager=gl.projects, description="projects")
-    wait_for_list_size(rest_manager=gl.groups, description="groups")
-    wait_for_list_size(rest_manager=gl.variables, description="variables")
-    wait_for_list_size(rest_manager=gl.users, description="users", max_length=1)
+            logging.info(f"Deleting user: {user.username!r}")
+            helpers.safe_delete(user, hard_delete=True)
 
 
 def set_token(container, fixture_dir):
