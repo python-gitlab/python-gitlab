@@ -9,9 +9,7 @@ import pytest
 
 import gitlab
 import gitlab.base
-
-SLEEP_INTERVAL = 0.5
-TIMEOUT = 60  # seconds before timeout will occur
+from tests.functional import helpers
 
 
 @pytest.fixture(scope="session")
@@ -49,8 +47,6 @@ def reset_gitlab(gl):
             logging.info(f"Marking for deletion user: {user.username!r}")
             user.delete(hard_delete=True)
 
-    max_iterations = int(TIMEOUT / SLEEP_INTERVAL)
-
     # Ensure everything has been reset
     start_time = time.perf_counter()
 
@@ -60,7 +56,7 @@ def reset_gitlab(gl):
         """Wait for the list() length to be no greater than expected maximum or fail
         test if timeout is exceeded"""
         logging.info(f"Checking {description!r} has no more than {max_length} items")
-        for count in range(max_iterations):
+        for count in range(helpers.MAX_ITERATIONS):
             items = rest_manager.list()
             if len(items) <= max_length:
                 break
@@ -68,7 +64,7 @@ def reset_gitlab(gl):
                 f"Iteration: {count} Waiting for {description!r} items to be deleted: "
                 f"{[x.name for x in items]}"
             )
-            time.sleep(SLEEP_INTERVAL)
+            time.sleep(helpers.SLEEP_INTERVAL)
 
         elapsed_time = time.perf_counter() - start_time
         error_message = (
@@ -280,10 +276,7 @@ def group(gl):
 
     yield group
 
-    try:
-        group.delete()
-    except gitlab.exceptions.GitlabDeleteError as e:
-        print(f"Group already deleted: {e}")
+    helpers.safe_delete(group)
 
 
 @pytest.fixture(scope="module")
@@ -296,10 +289,7 @@ def project(gl):
 
     yield project
 
-    try:
-        project.delete()
-    except gitlab.exceptions.GitlabDeleteError as e:
-        print(f"Project already deleted: {e}")
+    helpers.safe_delete(project)
 
 
 @pytest.fixture(scope="function")
@@ -327,7 +317,7 @@ def merge_request(project, wait_for_sidekiq):
         assert result is True, "sidekiq process should have terminated but did not"
 
         project.refresh()  # Gets us the current default branch
-        project.branches.create(
+        mr_branch = project.branches.create(
             {"branch": source_branch, "ref": project.default_branch}
         )
         # NOTE(jlvillal): Must create a commit in the new branch before we can
@@ -359,18 +349,13 @@ def merge_request(project, wait_for_sidekiq):
             time.sleep(0.5)
         assert mr.merge_status != "checking"
 
-        to_delete.append((mr.iid, source_branch))
+        to_delete.extend([mr, mr_branch])
         return mr
 
     yield _merge_request
 
-    for mr_iid, source_branch in to_delete:
-        project.mergerequests.delete(mr_iid)
-        try:
-            project.branches.delete(source_branch)
-        except gitlab.exceptions.GitlabDeleteError:
-            # Ignore if branch was already deleted
-            pass
+    for object in to_delete:
+        helpers.safe_delete(object)
 
 
 @pytest.fixture(scope="module")
@@ -434,11 +419,8 @@ def user(gl):
 
     yield user
 
-    try:
-        # Use `hard_delete=True` or a 'Ghost User' may be created.
-        user.delete(hard_delete=True)
-    except gitlab.exceptions.GitlabDeleteError as e:
-        print(f"User already deleted: {e}")
+    # Use `hard_delete=True` or a 'Ghost User' may be created.
+    helpers.safe_delete(user, hard_delete=True)
 
 
 @pytest.fixture(scope="module")
