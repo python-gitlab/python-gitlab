@@ -505,6 +505,19 @@ def resp_delete_push_rules_project(no_content):
 
 
 @pytest.fixture
+def resp_restore_project(created_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/restore",
+            json=created_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
+@pytest.fixture
 def resp_start_pull_mirroring_project():
     with responses.RequestsMock() as rsps:
         rsps.add(
@@ -751,6 +764,10 @@ def test_transfer_project_deprecated_warns(project, resp_transfer_project):
 
 def test_project_pull_mirror(project, resp_start_pull_mirroring_project):
     project.mirror_pull()
+
+
+def test_project_restore(project, resp_restore_project):
+    project.restore()
 
 
 def test_project_snapshot(project, resp_snapshot_project):

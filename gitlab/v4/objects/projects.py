@@ -477,6 +477,21 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             assert isinstance(data, dict)
         return {"alt": data["alt"], "url": data["url"], "markdown": data["markdown"]}
 
+    @cli.register_custom_action("Project")
+    @exc.on_http_error(exc.GitlabRestoreError)
+    def restore(self, **kwargs: Any) -> None:
+        """Restore a project marked for deletion.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabRestoreError: If the server failed to perform the request
+        """
+        path = f"/projects/{self.encoded_id}/restore"
+        self.manager.gitlab.http_post(path, **kwargs)
+
     @cli.register_custom_action("Project", optional=("wiki",))
     @exc.on_http_error(exc.GitlabGetError)
     def snapshot(
