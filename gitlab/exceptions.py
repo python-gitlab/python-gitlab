@@ -250,6 +250,10 @@ class GitlabImportError(GitlabOperationError):
     pass
 
 
+class GitlabInvitationError(GitlabOperationError):
+    pass
+
+
 class GitlabCherryPickError(GitlabOperationError):
     pass
 

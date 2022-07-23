@@ -45,6 +45,7 @@ from .group_access_tokens import *
 from .groups import *
 from .hooks import *
 from .integrations import *
+from .invitations import *
 from .issues import *
 from .jobs import *
 from .keys import *
