@@ -126,11 +126,19 @@ def test_hooks(gl):
 
 
 def test_namespaces(gl, get_all_kwargs):
-    namespace = gl.namespaces.list(**get_all_kwargs)
-    assert namespace
+    current_user = gl.user.username
 
-    namespace = gl.namespaces.list(search="root", **get_all_kwargs)[0]
+    namespaces = gl.namespaces.list(**get_all_kwargs)
+    assert namespaces
+
+    namespaces = gl.namespaces.list(search=current_user, **get_all_kwargs)
+    assert namespaces[0].kind == "user"
+
+    namespace = gl.namespaces.get(current_user)
     assert namespace.kind == "user"
+
+    namespace = gl.namespaces.exists(current_user)
+    assert namespace.exists
 
 
 def test_notification_settings(gl):
