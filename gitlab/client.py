@@ -439,6 +439,7 @@ class Gitlab:
         data = self.http_post("/markdown", post_data=post_data, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(data, requests.Response)
+            assert isinstance(data["html"], str)
         return data["html"]
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabLicenseError)
@@ -808,7 +809,10 @@ class Gitlab:
             and not raw
         ):
             try:
-                return result.json()
+                json_result = result.json()
+                if TYPE_CHECKING:
+                    assert isinstance(json_result, dict)
+                return json_result
             except Exception as e:
                 raise gitlab.exceptions.GitlabParsingError(
                     error_message="Failed to parse the server message"
@@ -989,7 +993,10 @@ class Gitlab:
         )
         try:
             if result.headers.get("Content-Type", None) == "application/json":
-                return result.json()
+                json_result = result.json()
+                if TYPE_CHECKING:
+                    assert isinstance(json_result, dict)
+                return json_result
         except Exception as e:
             raise gitlab.exceptions.GitlabParsingError(
                 error_message="Failed to parse the server message"
@@ -1037,7 +1044,10 @@ class Gitlab:
             **kwargs,
         )
         try:
-            return result.json()
+            json_result = result.json()
+            if TYPE_CHECKING:
+                assert isinstance(json_result, dict)
+            return json_result
         except Exception as e:
             raise gitlab.exceptions.GitlabParsingError(
                 error_message="Failed to parse the server message"

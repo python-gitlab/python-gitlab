@@ -746,7 +746,10 @@ class TimeTrackingMixin(_RestObjectBase):
         # Use the existing time_stats attribute if it exist, otherwise make an
         # API call
         if "time_stats" in self.attributes:
-            return self.attributes["time_stats"]
+            time_stats = self.attributes["time_stats"]
+            if TYPE_CHECKING:
+                assert isinstance(time_stats, dict)
+            return time_stats
 
         path = f"{self.manager.path}/{self.encoded_id}/time_stats"
         result = self.manager.gitlab.http_get(path, **kwargs)
