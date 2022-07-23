@@ -1,7 +1,6 @@
 from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
 
-import requests
-
+import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
@@ -60,7 +59,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineCancelError)
-    def cancel(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def cancel(self, **kwargs: Any) -> gitlab.client.HttpResponseType:
         """Cancel the job.
 
         Args:
@@ -75,7 +74,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineRetryError)
-    def retry(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def retry(self, **kwargs: Any) -> gitlab.client.HttpResponseType:
         """Retry the job.
 
         Args:

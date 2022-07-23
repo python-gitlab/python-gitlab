@@ -1,7 +1,6 @@
-from typing import Any, cast, Dict, Union
+from typing import Any, cast, Union
 
-import requests
-
+import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
@@ -38,9 +37,7 @@ class ProjectKeyManager(CRUDMixin, RESTManager):
 
     @cli.register_custom_action("ProjectKeyManager", ("key_id",))
     @exc.on_http_error(exc.GitlabProjectDeployKeyError)
-    def enable(
-        self, key_id: int, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    def enable(self, key_id: int, **kwargs: Any) -> gitlab.client.HttpResponseType:
         """Enable a deploy key for a project.
 
         Args:
