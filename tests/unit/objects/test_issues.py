@@ -42,6 +42,21 @@ def resp_get_issue():
 
 
 @pytest.fixture
+def resp_reorder_issue():
+    match_params = {"move_after_id": 2, "move_before_id": 3}
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.PUT,
+            url="http://localhost/api/v4/projects/1/issues/1/reorder",
+            json={"name": "name", "id": 1},
+            content_type="application/json",
+            status=200,
+            match=[responses.matchers.json_params_matcher(match_params)],
+        )
+        yield rsps
+
+
+@pytest.fixture
 def resp_issue_statistics():
     content = {"statistics": {"counts": {"all": 20, "closed": 5, "opened": 15}}}
 
@@ -68,6 +83,11 @@ def test_get_issue(gl, resp_get_issue):
     issue = gl.issues.get(1)
     assert issue.id == 1
     assert issue.name == "name"
+
+
+def test_reorder_issue(project, resp_reorder_issue):
+    issue = project.issues.get(1, lazy=True)
+    issue.reorder(move_after_id=2, move_before_id=3)
 
 
 def test_get_issues_statistics(gl, resp_issue_statistics):

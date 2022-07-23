@@ -153,6 +153,10 @@ Move an issue to another project::
 
     issue.move(other_project_id)
 
+Reorder an issue on a board::
+
+    issue.reorder(move_after_id=2, move_before_id=3)
+
 Make an issue as todo::
 
     issue.todo()
