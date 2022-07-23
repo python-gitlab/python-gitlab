@@ -19,6 +19,9 @@ Reference
   + :class:`gitlab.v4.objects.Runner`
   + :class:`gitlab.v4.objects.RunnerManager`
   + :attr:`gitlab.Gitlab.runners`
+  + :class:`gitlab.v4.objects.RunnerAll`
+  + :class:`gitlab.v4.objects.RunnerAllManager`
+  + :attr:`gitlab.Gitlab.runners_all`
 
 * GitLab API: https://docs.gitlab.com/ce/api/runners.html
 
@@ -41,14 +44,20 @@ for this parameter are:
    The returned objects hold minimal information about the runners. Use the
    ``get()`` method to retrieve detail about a runner.
 
+   Runners returned via ``runners_all.list()`` also cannot be manipulated
+   directly. You will need to use the ``get()`` method to create an editable
+   object.
+
 ::
 
     # List owned runners
     runners = gl.runners.list()
-    # With a filter
+
+    # List owned runners with a filter
     runners = gl.runners.list(scope='active')
-    # List all runners, using a filter
-    runners = gl.runners.all(scope='paused')
+
+    # List all runners in the GitLab instance (specific and shared), using a filter
+    runners = gl.runners_all.list(scope='paused')
 
 Get a runner's detail::
 

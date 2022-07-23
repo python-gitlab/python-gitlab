@@ -164,6 +164,8 @@ class Gitlab:
         """See :class:`~gitlab.v4.objects.RegistryRepositoryManager`"""
         self.runners = objects.RunnerManager(self)
         """See :class:`~gitlab.v4.objects.RunnerManager`"""
+        self.runners_all = objects.RunnerAllManager(self)
+        """See :class:`~gitlab.v4.objects.RunnerManager`"""
         self.settings = objects.ApplicationSettingsManager(self)
         """See :class:`~gitlab.v4.objects.ApplicationSettingsManager`"""
         self.appearance = objects.ApplicationAppearanceManager(self)

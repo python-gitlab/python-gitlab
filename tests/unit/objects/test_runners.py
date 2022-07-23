@@ -4,6 +4,7 @@ import pytest
 import responses
 
 import gitlab
+from gitlab.v4.objects.runners import Runner, RunnerAll
 
 runner_detail = {
     "active": True,
@@ -233,8 +234,18 @@ def test_group_runners_list(gl: gitlab.Gitlab, resp_get_runners_list):
     assert len(runners) == 1
 
 
-def test_all_runners_list(gl: gitlab.Gitlab, resp_get_runners_list):
+def test_runners_all(gl: gitlab.Gitlab, resp_get_runners_list):
     runners = gl.runners.all()
+    assert isinstance(runners[0], Runner)
+    assert runners[0].active is True
+    assert runners[0].id == 6
+    assert runners[0].name == "test-name"
+    assert len(runners) == 1
+
+
+def test_runners_all_list(gl: gitlab.Gitlab, resp_get_runners_list):
+    runners = gl.runners_all.list()
+    assert isinstance(runners[0], RunnerAll)
     assert runners[0].active is True
     assert runners[0].id == 6
     assert runners[0].name == "test-name"
