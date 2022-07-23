@@ -19,6 +19,8 @@ __all__ = [
     "RunnerJobManager",
     "Runner",
     "RunnerManager",
+    "RunnerAll",
+    "RunnerAllManager",
     "GroupRunner",
     "GroupRunnerManager",
     "ProjectRunner",
@@ -39,6 +41,7 @@ class RunnerJobManager(ListMixin, RESTManager):
 
 class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):
     jobs: RunnerJobManager
+    _repr_attr = "description"
 
 
 class RunnerManager(CRUDMixin, RESTManager):
@@ -68,7 +71,7 @@ class RunnerManager(CRUDMixin, RESTManager):
             "maximum_timeout",
         ),
     )
-    _list_filters = ("scope", "tag_list")
+    _list_filters = ("scope", "type", "status", "paused", "tag_list")
     _types = {"tag_list": types.CommaSeparatedListAttribute}
 
     @cli.register_custom_action("RunnerManager", (), ("scope",))
@@ -119,6 +122,17 @@ class RunnerManager(CRUDMixin, RESTManager):
 
     def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Runner:
         return cast(Runner, super().get(id=id, lazy=lazy, **kwargs))
+
+
+class RunnerAll(RESTObject):
+    _repr_attr = "description"
+
+
+class RunnerAllManager(ListMixin, RESTManager):
+    _path = "/runners/all"
+    _obj_cls = RunnerAll
+    _list_filters = ("scope", "type", "status", "paused", "tag_list")
+    _types = {"tag_list": types.CommaSeparatedListAttribute}
 
 
 class GroupRunner(RESTObject):

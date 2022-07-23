@@ -236,6 +236,33 @@ Download the artifacts zip archive of a job:
 
    $ gitlab project-job artifacts --id 10 --project-id 1 > artifacts.zip
 
+Runners
+-------
+
+List owned runners:
+
+.. code-block:: console
+
+   $ gitlab runner list
+
+List owned runners with a filter:
+
+.. code-block:: console
+
+   $ gitlab runner list --scope active
+
+List all runners in the GitLab instance (specific and shared):
+
+.. code-block:: console
+
+   $ gitlab runner-all list
+
+Get a runner's details:
+
+.. code-block:: console
+
+   $ gitlab -v runner get --id 123
+
 Other
 -----
 
