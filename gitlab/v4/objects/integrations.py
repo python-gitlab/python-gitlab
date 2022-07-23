@@ -17,19 +17,23 @@ from gitlab.mixins import (
 )
 
 __all__ = [
+    "ProjectIntegration",
+    "ProjectIntegrationManager",
     "ProjectService",
     "ProjectServiceManager",
 ]
 
 
-class ProjectService(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectIntegration(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "slug"
 
 
-class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTManager):
-    _path = "/projects/{project_id}/services"
+class ProjectIntegrationManager(
+    GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTManager
+):
+    _path = "/projects/{project_id}/integrations"
     _from_parent_attrs = {"project_id": "id"}
-    _obj_cls = ProjectService
+    _obj_cls = ProjectIntegration
 
     _service_attrs = {
         "asana": (("api_key",), ("restrict_to_branch", "push_events")),
@@ -263,10 +267,10 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectService:
-        return cast(ProjectService, super().get(id=id, lazy=lazy, **kwargs))
+    ) -> ProjectIntegration:
+        return cast(ProjectIntegration, super().get(id=id, lazy=lazy, **kwargs))
 
-    @cli.register_custom_action("ProjectServiceManager")
+    @cli.register_custom_action(("ProjectIntegrationManager", "ProjectServiceManager"))
     def available(self) -> List[str]:
         """List the services known by python-gitlab.
 
@@ -274,3 +278,16 @@ class ProjectServiceManager(GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTM
             The list of service code names.
         """
         return list(self._service_attrs.keys())
+
+
+class ProjectService(ProjectIntegration):
+    pass
+
+
+class ProjectServiceManager(ProjectIntegrationManager):
+    _obj_cls = ProjectService
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectService:
+        return cast(ProjectService, super().get(id=id, lazy=lazy, **kwargs))

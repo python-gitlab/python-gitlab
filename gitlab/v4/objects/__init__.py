@@ -44,6 +44,7 @@ from .geo_nodes import *
 from .group_access_tokens import *
 from .groups import *
 from .hooks import *
+from .integrations import *
 from .issues import *
 from .jobs import *
 from .keys import *
@@ -67,7 +68,6 @@ from .push_rules import *
 from .releases import *
 from .repositories import *
 from .runners import *
-from .services import *
 from .settings import *
 from .sidekiq import *
 from .snippets import *

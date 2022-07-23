@@ -54,6 +54,7 @@ from .events import ProjectEventManager  # noqa: F401
 from .export_import import ProjectExportManager, ProjectImportManager  # noqa: F401
 from .files import ProjectFileManager  # noqa: F401
 from .hooks import ProjectHookManager  # noqa: F401
+from .integrations import ProjectIntegrationManager, ProjectServiceManager  # noqa: F401
 from .issues import ProjectIssueManager  # noqa: F401
 from .jobs import ProjectJobManager  # noqa: F401
 from .labels import ProjectLabelManager  # noqa: F401
@@ -79,7 +80,6 @@ from .push_rules import ProjectPushRulesManager  # noqa: F401
 from .releases import ProjectReleaseManager  # noqa: F401
 from .repositories import RepositoryMixin
 from .runners import ProjectRunnerManager  # noqa: F401
-from .services import ProjectServiceManager  # noqa: F401
 from .snippets import ProjectSnippetManager  # noqa: F401
 from .statistics import (  # noqa: F401
     ProjectAdditionalStatisticsManager,
@@ -178,6 +178,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     groups: ProjectGroupManager
     hooks: ProjectHookManager
     imports: ProjectImportManager
+    integrations: ProjectIntegrationManager
     issues: ProjectIssueManager
     issues_statistics: ProjectIssuesStatisticsManager
     jobs: ProjectJobManager
