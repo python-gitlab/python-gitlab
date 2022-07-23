@@ -286,6 +286,10 @@ class GitlabRepairError(GitlabOperationError):
     pass
 
 
+class GitlabRestoreError(GitlabOperationError):
+    pass
+
+
 class GitlabRevertError(GitlabOperationError):
     pass
 

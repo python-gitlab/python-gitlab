@@ -115,6 +115,10 @@ Delete a project::
     # or
     project.delete()
 
+Restore a project marked for deletion (Premium only)::
+
+    project.restore()
+
 Fork a project::
 
     fork = project.forks.create({})
