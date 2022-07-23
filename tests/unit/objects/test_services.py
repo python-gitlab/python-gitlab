@@ -1,15 +1,15 @@
 """
-GitLab API: https://docs.gitlab.com/ce/api/services.html
+GitLab API: https://docs.gitlab.com/ce/api/integrations.html
 """
 
 import pytest
 import responses
 
-from gitlab.v4.objects import ProjectService
+from gitlab.v4.objects import ProjectIntegration, ProjectService
 
 
 @pytest.fixture
-def resp_service():
+def resp_integration():
     content = {
         "id": 100152,
         "title": "Pipelines emails",
@@ -35,21 +35,21 @@ def resp_service():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
             method=responses.GET,
-            url="http://localhost/api/v4/projects/1/services",
+            url="http://localhost/api/v4/projects/1/integrations",
             json=[content],
             content_type="application/json",
             status=200,
         )
         rsps.add(
             method=responses.GET,
-            url="http://localhost/api/v4/projects/1/services",
+            url="http://localhost/api/v4/projects/1/integrations",
             json=content,
             content_type="application/json",
             status=200,
         )
         rsps.add(
             method=responses.GET,
-            url="http://localhost/api/v4/projects/1/services/pipelines-email",
+            url="http://localhost/api/v4/projects/1/integrations/pipelines-email",
             json=content,
             content_type="application/json",
             status=200,
@@ -58,7 +58,7 @@ def resp_service():
         updated_content["issues_events"] = False
         rsps.add(
             method=responses.PUT,
-            url="http://localhost/api/v4/projects/1/services/pipelines-email",
+            url="http://localhost/api/v4/projects/1/integrations/pipelines-email",
             json=updated_content,
             content_type="application/json",
             status=200,
@@ -66,28 +66,34 @@ def resp_service():
         yield rsps
 
 
-def test_list_active_services(project, resp_service):
-    services = project.services.list()
-    assert isinstance(services, list)
-    assert isinstance(services[0], ProjectService)
-    assert services[0].active
-    assert services[0].push_events
+def test_list_active_integrations(project, resp_integration):
+    integrations = project.integrations.list()
+    assert isinstance(integrations, list)
+    assert isinstance(integrations[0], ProjectIntegration)
+    assert integrations[0].active
+    assert integrations[0].push_events
 
 
-def test_list_available_services(project, resp_service):
-    services = project.services.available()
-    assert isinstance(services, list)
-    assert isinstance(services[0], str)
+def test_list_available_integrations(project, resp_integration):
+    integrations = project.integrations.available()
+    assert isinstance(integrations, list)
+    assert isinstance(integrations[0], str)
 
 
-def test_get_service(project, resp_service):
+def test_get_integration(project, resp_integration):
+    integration = project.integrations.get("pipelines-email")
+    assert isinstance(integration, ProjectIntegration)
+    assert integration.push_events is True
+
+
+def test_update_integration(project, resp_integration):
+    integration = project.integrations.get("pipelines-email")
+    integration.issues_events = False
+    integration.save()
+    assert integration.issues_events is False
+
+
+def test_get_service_returns_service(project, resp_integration):
+    # todo: remove when services are removed
     service = project.services.get("pipelines-email")
     assert isinstance(service, ProjectService)
-    assert service.push_events is True
-
-
-def test_update_service(project, resp_service):
-    service = project.services.get("pipelines-email")
-    service.issues_events = False
-    service.save()
-    assert service.issues_events is False

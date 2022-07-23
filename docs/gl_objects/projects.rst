@@ -643,56 +643,56 @@ Delete a project hook::
     # or
     hook.delete()
 
-Project Services
-================
+Project Integrations
+====================
 
 Reference
 ---------
 
 * v4 API:
 
-  + :class:`gitlab.v4.objects.ProjectService`
-  + :class:`gitlab.v4.objects.ProjectServiceManager`
-  + :attr:`gitlab.v4.objects.Project.services`
+  + :class:`gitlab.v4.objects.ProjectIntegration`
+  + :class:`gitlab.v4.objects.ProjectIntegrationManager`
+  + :attr:`gitlab.v4.objects.Project.integrations`
 
-* GitLab API: https://docs.gitlab.com/ce/api/services.html
+* GitLab API: https://docs.gitlab.com/ce/api/integrations.html
 
 Examples
 ---------
 
 .. danger::
 
-    Since GitLab 13.12, ``get()`` calls to project services return a
+    Since GitLab 13.12, ``get()`` calls to project integrations return a
     ``404 Not Found`` response until they have been activated the first time.
 
     To avoid this, we recommend using `lazy=True` to prevent making
-    the initial call when activating new services unless they have
+    the initial call when activating new integrations unless they have
     previously already been activated.
 
-Configure and enable a service for the first time::
+Configure and enable an integration for the first time::
 
-    service = project.services.get('asana', lazy=True)
+    integration = project.integrations.get('asana', lazy=True)
 
-    service.api_key = 'randomkey'
-    service.save()
+    integration.api_key = 'randomkey'
+    integration.save()
 
-Get an existing service::
+Get an existing integration::
 
-    service = project.services.get('asana')
+    integration = project.integrations.get('asana')
     # display its status (enabled/disabled)
-    print(service.active)
+    print(integration.active)
 
-List active project services::
+List active project integrations::
 
-    service = project.services.list()
+    integration = project.integrations.list()
 
-List the code names of available services (doesn't return objects)::
+List the code names of available integrations (doesn't return objects)::
 
-    services = project.services.available()
+    integrations = project.integrations.available()
 
-Disable a service::
+Disable an integration::
 
-    service.delete()
+    integration.delete()
 
 File uploads
 ============
