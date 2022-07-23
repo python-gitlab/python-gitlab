@@ -22,6 +22,7 @@ from .epics import GroupEpicManager  # noqa: F401
 from .export_import import GroupExportManager, GroupImportManager  # noqa: F401
 from .group_access_tokens import GroupAccessTokenManager  # noqa: F401
 from .hooks import GroupHookManager  # noqa: F401
+from .invitations import GroupInvitationManager  # noqa: F401
 from .issues import GroupIssueManager  # noqa: F401
 from .labels import GroupLabelManager  # noqa: F401
 from .members import (  # noqa: F401
@@ -67,6 +68,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     exports: GroupExportManager
     hooks: GroupHookManager
     imports: GroupImportManager
+    invitations: GroupInvitationManager
     issues: GroupIssueManager
     issues_statistics: GroupIssuesStatisticsManager
     labels: GroupLabelManager
