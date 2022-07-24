@@ -28,6 +28,7 @@ API examples
    gl_objects/group_access_tokens
    gl_objects/invitations
    gl_objects/issues
+   gl_objects/iterations
    gl_objects/keys
    gl_objects/boards
    gl_objects/labels
