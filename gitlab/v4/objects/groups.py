@@ -24,6 +24,7 @@ from .group_access_tokens import GroupAccessTokenManager  # noqa: F401
 from .hooks import GroupHookManager  # noqa: F401
 from .invitations import GroupInvitationManager  # noqa: F401
 from .issues import GroupIssueManager  # noqa: F401
+from .iterations import GroupIterationManager  # noqa: F401
 from .labels import GroupLabelManager  # noqa: F401
 from .members import (  # noqa: F401
     GroupBillableMemberManager,
@@ -71,6 +72,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     invitations: GroupInvitationManager
     issues: GroupIssueManager
     issues_statistics: GroupIssuesStatisticsManager
+    iterations: GroupIterationManager
     labels: GroupLabelManager
     members: GroupMemberManager
     members_all: GroupMemberAllManager

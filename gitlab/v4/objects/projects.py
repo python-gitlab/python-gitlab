@@ -57,6 +57,7 @@ from .hooks import ProjectHookManager  # noqa: F401
 from .integrations import ProjectIntegrationManager, ProjectServiceManager  # noqa: F401
 from .invitations import ProjectInvitationManager  # noqa: F401
 from .issues import ProjectIssueManager  # noqa: F401
+from .iterations import GroupIterationManager  # noqa: F401
 from .jobs import ProjectJobManager  # noqa: F401
 from .labels import ProjectLabelManager  # noqa: F401
 from .members import ProjectMemberAllManager, ProjectMemberManager  # noqa: F401
@@ -185,6 +186,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     invitations: ProjectInvitationManager
     issues: ProjectIssueManager
     issues_statistics: ProjectIssuesStatisticsManager
+    iterations: GroupIterationManager
     jobs: ProjectJobManager
     keys: ProjectKeyManager
     labels: ProjectLabelManager

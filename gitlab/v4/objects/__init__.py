@@ -47,6 +47,7 @@ from .hooks import *
 from .integrations import *
 from .invitations import *
 from .issues import *
+from .iterations import *
 from .jobs import *
 from .keys import *
 from .labels import *
