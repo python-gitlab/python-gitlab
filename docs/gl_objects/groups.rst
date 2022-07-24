@@ -31,11 +31,15 @@ List a group's projects::
 
     projects = group.projects.list()
 
+List a group's shared projects::
+
+    projects = group.shared_projects.list()
+
 .. note::
 
-   ``GroupProject`` objects returned by this API call are very limited, and do
-   not provide all the features of ``Project`` objects. If you need to
-   manipulate projects, create a new ``Project`` object::
+   ``GroupProject`` and ``SharedProject`` objects returned by these two API calls
+   are very limited, and do not provide all the features of ``Project`` objects.
+   If you need to manipulate projects, create a new ``Project`` object::
 
        first_group_project = group.projects.list()[0]
        manageable_project = gl.projects.get(first_group_project.id, lazy=True)

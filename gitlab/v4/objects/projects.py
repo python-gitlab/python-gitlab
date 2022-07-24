@@ -103,6 +103,8 @@ __all__ = [
     "ProjectRemoteMirrorManager",
     "ProjectStorage",
     "ProjectStorageManager",
+    "SharedProject",
+    "SharedProjectManager",
 ]
 
 
@@ -1081,3 +1083,26 @@ class ProjectStorageManager(GetWithoutIdMixin, RESTManager):
 
     def get(self, **kwargs: Any) -> ProjectStorage:
         return cast(ProjectStorage, super().get(**kwargs))
+
+
+class SharedProject(RESTObject):
+    pass
+
+
+class SharedProjectManager(ListMixin, RESTManager):
+    _path = "/groups/{group_id}/projects/shared"
+    _obj_cls = SharedProject
+    _from_parent_attrs = {"group_id": "id"}
+    _list_filters = (
+        "archived",
+        "visibility",
+        "order_by",
+        "sort",
+        "search",
+        "simple",
+        "starred",
+        "with_issues_enabled",
+        "with_merge_requests_enabled",
+        "min_access_level",
+        "with_custom_attributes",
+    )

@@ -9,8 +9,21 @@ import responses
 
 import gitlab
 from gitlab.v4.objects import GroupDescendantGroup, GroupSubgroup
+from gitlab.v4.objects.projects import GroupProject, SharedProject
 
 content = {"name": "name", "id": 1, "path": "path"}
+projects_content = [
+    {
+        "id": 9,
+        "description": "foo",
+        "default_branch": "master",
+        "name": "Html5 Boilerplate",
+        "name_with_namespace": "Experimental / Html5 Boilerplate",
+        "path": "html5-boilerplate",
+        "path_with_namespace": "h5bp/html5-boilerplate",
+        "namespace": {"id": 5, "name": "Experimental", "path": "h5bp", "kind": "group"},
+    }
+]
 subgroup_descgroup_content = [
     {
         "id": 2,
@@ -74,6 +87,19 @@ def resp_groups():
             method=responses.POST,
             url="http://localhost/api/v4/groups",
             json=content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_list_group_projects():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url=re.compile(r"http://localhost/api/v4/groups/1/projects(/shared)?"),
+            json=projects_content,
             content_type="application/json",
             status=200,
         )
@@ -209,6 +235,18 @@ def test_create_group(gl, resp_groups):
 def test_create_group_export(group, resp_export):
     export = group.exports.create()
     assert export.message == "202 Accepted"
+
+
+def test_list_group_projects(group, resp_list_group_projects):
+    projects = group.projects.list()
+    assert isinstance(projects[0], GroupProject)
+    assert projects[0].path == projects_content[0]["path"]
+
+
+def test_list_group_shared_projects(group, resp_list_group_projects):
+    projects = group.shared_projects.list()
+    assert isinstance(projects[0], SharedProject)
+    assert projects[0].path == projects_content[0]["path"]
 
 
 def test_list_group_subgroups(group, resp_list_subgroups_descendant_groups):
