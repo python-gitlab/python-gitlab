@@ -100,6 +100,12 @@ api_version = 1
 """
 
 
+@pytest.fixture(autouse=True)
+def default_files(monkeypatch):
+    """Overrides mocked default files from conftest.py as we have our own mocks here."""
+    monkeypatch.setattr(gitlab.config, "_DEFAULT_FILES", config._DEFAULT_FILES)
+
+
 def global_retry_transient_errors(value: bool) -> str:
     return f"""[global]
 default = one
@@ -129,24 +135,19 @@ def _mock_existent_file(path, *args, **kwargs):
     return path
 
 
-@pytest.fixture
-def mock_clean_env(monkeypatch):
-    monkeypatch.delenv("PYTHON_GITLAB_CFG", raising=False)
-
-
 def test_env_config_missing_file_raises(monkeypatch):
     monkeypatch.setenv("PYTHON_GITLAB_CFG", "/some/path")
     with pytest.raises(config.GitlabConfigMissingError):
         config._get_config_files()
 
 
-def test_env_config_not_defined_does_not_raise(mock_clean_env, monkeypatch):
+def test_env_config_not_defined_does_not_raise(monkeypatch):
     with monkeypatch.context() as m:
         m.setattr(config, "_DEFAULT_FILES", [])
         assert config._get_config_files() == []
 
 
-def test_default_config(mock_clean_env, monkeypatch):
+def test_default_config(monkeypatch):
     with monkeypatch.context() as m:
         m.setattr(Path, "resolve", _mock_nonexistent_file)
         cp = config.GitlabConfigParser()
@@ -169,7 +170,7 @@ def test_default_config(mock_clean_env, monkeypatch):
 
 
 @mock.patch("builtins.open")
-def test_invalid_id(m_open, mock_clean_env, monkeypatch):
+def test_invalid_id(m_open, monkeypatch):
     fd = io.StringIO(no_default_config)
     fd.close = mock.Mock(return_value=None)
     m_open.return_value = fd

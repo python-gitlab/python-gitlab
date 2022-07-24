@@ -3,7 +3,6 @@ import copy
 import pytest
 import responses
 
-from gitlab import config
 from gitlab.const import DEFAULT_URL
 
 
@@ -37,10 +36,7 @@ def test_list_project_variables_with_path(gitlab_cli, project):
 
 @pytest.mark.script_launch_mode("inprocess")
 @responses.activate
-def test_list_project_variables_with_path_url_check(
-    monkeypatch, script_runner, resp_get_project
-):
-    monkeypatch.setattr(config, "_DEFAULT_FILES", [])
+def test_list_project_variables_with_path_url_check(script_runner, resp_get_project):
     resp_get_project_variables = copy.deepcopy(resp_get_project)
     resp_get_project_variables.update(
         url=f"{DEFAULT_URL}/api/v4/projects/project%2Fwith%2Fa%2Fnamespace/variables"

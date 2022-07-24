@@ -20,7 +20,6 @@ import copy
 import logging
 import pickle
 from http.client import HTTPConnection
-from typing import List, Optional, Union
 
 import pytest
 import responses
@@ -301,11 +300,7 @@ def test_gitlab_from_config(default_config):
     gitlab.Gitlab.from_config("one", [config_path])
 
 
-def test_gitlab_from_config_without_files_raises(monkeypatch):
-    def no_files(config_files: Optional[List[str]] = None) -> Union[str, List[str]]:
-        return []
-
-    monkeypatch.setattr(gitlab.config, "_get_config_files", no_files)
+def test_gitlab_from_config_without_files_raises():
     with pytest.raises(GitlabConfigMissingError, match="non-existing"):
         gitlab.Gitlab.from_config("non-existing")
 
