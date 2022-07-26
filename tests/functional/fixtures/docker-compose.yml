@@ -31,12 +31,14 @@ services:
         gitlab_exporter['enable'] = false
         grafana['enable'] = false
         letsencrypt['enable'] = false
+        gitlab_rails['initial_license_file'] = '/python-gitlab-ci.gitlab-license'
     entrypoint:
       - /bin/sh
       - -c
-      - chmod 644 /opt/gitlab/embedded/service/gitlab-rails/db/fixtures/production/* && /assets/wrapper
+      - ruby /create_license.rb && chmod 644 /opt/gitlab/embedded/service/gitlab-rails/db/fixtures/production/* && /assets/wrapper
     volumes:
       - ${PWD}/tests/functional/fixtures/set_token.rb:/opt/gitlab/embedded/service/gitlab-rails/db/fixtures/production/003_set_token.rb
+      - ${PWD}/tests/functional/fixtures/create_license.rb:/create_license.rb
     ports:
       - '8080:80'
       - '2222:22'

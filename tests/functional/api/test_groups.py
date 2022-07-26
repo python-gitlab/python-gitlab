@@ -218,8 +218,9 @@ def test_group_subgroups_projects(gl, user):
     group4.delete()
 
 
-@pytest.mark.skip
-def test_group_wiki(group):
+def test_group_wiki(gitlab_ee, group):
+    if not gitlab_ee:
+        pytest.skip("Requires GitLab EE to run")
     content = "Group Wiki page content"
     wiki = group.wikis.create({"title": "groupwikipage", "content": content})
     assert wiki in group.wikis.list()
@@ -234,8 +235,9 @@ def test_group_wiki(group):
     assert wiki not in group.wikis.list()
 
 
-@pytest.mark.skip(reason="EE feature")
-def test_group_hooks(group):
+def test_group_hooks(gitlab_ee, group):
+    if not gitlab_ee:
+        pytest.skip("Requires GitLab EE to run")
     hook = group.hooks.create({"url": "http://hook.url"})
     assert hook in group.hooks.list()
 

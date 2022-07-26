@@ -20,6 +20,16 @@ def fixture_dir(test_dir):
 def reset_gitlab(gl: gitlab.Gitlab) -> None:
     """Delete resources (such as projects, groups, users) that shouldn't
     exist."""
+    if is_gitlab_ee(gl):
+        logging.info("GitLab EE detected")
+        # NOTE(jlvillal): By default in GitLab EE it will wait 7 days before
+        # deleting a group. Change it to 0 days.
+        settings = gl.settings.get()
+        if settings.deletion_adjourned_period != 0:
+            logging.info("Setting deletion_adjourned_period to 0")
+            settings.deletion_adjourned_period = 0
+            settings.save()
+
     for project in gl.projects.list():
         for deploy_token in project.deploytokens.list():
             logging.info(
@@ -178,6 +188,23 @@ def gl(gitlab_config):
     reset_gitlab(instance)
 
     return instance
+
+
+def is_gitlab_ee(gl: gitlab.Gitlab) -> bool:
+    """Determine if we are running with GitLab EE as opposed to GitLab CE"""
+    try:
+        license = gl.get_license()
+    except gitlab.exceptions.GitlabLicenseError:
+        license = None
+    # If we have a license then we assume we are running on GitLab EE
+    if license:
+        return True
+    return False
+
+
+@pytest.fixture(scope="session")
+def gitlab_ee(gl) -> bool:
+    return is_gitlab_ee(gl=gl)
 
 
 @pytest.fixture(scope="session")
