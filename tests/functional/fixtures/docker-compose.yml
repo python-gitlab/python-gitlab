@@ -35,9 +35,8 @@ services:
     entrypoint:
       - /bin/sh
       - -c
-      - ruby /create_license.rb && chmod 644 /opt/gitlab/embedded/service/gitlab-rails/db/fixtures/production/* && /assets/wrapper
+      - ruby /create_license.rb && /assets/wrapper
     volumes:
-      - ${PWD}/tests/functional/fixtures/set_token.rb:/opt/gitlab/embedded/service/gitlab-rails/db/fixtures/production/003_set_token.rb
       - ${PWD}/tests/functional/fixtures/create_license.rb:/create_license.rb
     ports:
       - '8080:80'
