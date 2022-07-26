@@ -25,7 +25,6 @@ def reset_gitlab(gl: gitlab.Gitlab) -> None:
         # NOTE(jlvillal): By default in GitLab EE it will wait 7 days before
         # deleting a group. Change it to 0 days.
         settings = gl.settings.get()
-        logging.info(f"deletion_adjourned_period: {settings.deletion_adjourned_period}")
         if settings.deletion_adjourned_period != 0:
             logging.info("Setting deletion_adjourned_period to 0")
             settings.deletion_adjourned_period = 0
@@ -201,6 +200,11 @@ def is_gitlab_ee(gl: gitlab.Gitlab) -> bool:
     if license:
         return True
     return False
+
+
+@pytest.fixture(scope="session")
+def gitlab_ee(gl) -> bool:
+    return is_gitlab_ee(gl=gl)
 
 
 @pytest.fixture(scope="session")
