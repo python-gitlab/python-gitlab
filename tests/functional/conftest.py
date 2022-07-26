@@ -60,6 +60,27 @@ def reset_gitlab(gl: gitlab.Gitlab) -> None:
             helpers.safe_delete(user, hard_delete=True)
 
 
+def set_token(container, fixture_dir):
+    logging.info("Creating API token.")
+    set_token_rb = fixture_dir / "set_token.rb"
+
+    with open(set_token_rb, "r", encoding="utf-8") as f:
+        set_token_command = f.read().strip()
+
+    rails_command = [
+        "docker",
+        "exec",
+        container,
+        "gitlab-rails",
+        "runner",
+        set_token_command,
+    ]
+    output = check_output(rails_command).decode().strip()
+    logging.info("Finished creating API token.")
+
+    return output
+
+
 def pytest_report_collectionfinish(config, startdir, items):
     return [
         "",
@@ -146,7 +167,7 @@ def wait_for_sidekiq(gl):
 
 
 @pytest.fixture(scope="session")
-def gitlab_config(check_is_alive, docker_ip, docker_services, temp_dir):
+def gitlab_config(check_is_alive, docker_ip, docker_services, temp_dir, fixture_dir):
     config_file = temp_dir / "python-gitlab.cfg"
     port = docker_services.port_for("gitlab", 80)
 
@@ -163,13 +184,15 @@ def gitlab_config(check_is_alive, docker_ip, docker_services, temp_dir):
         f"GitLab container is now ready after {minutes} minute(s), {seconds} seconds"
     )
 
+    token = set_token("gitlab-test", fixture_dir=fixture_dir)
+
     config = f"""[global]
 default = local
 timeout = 60
 
 [local]
 url = http://{docker_ip}:{port}
-private_token = python-gitlab-token
+private_token = {token}
 api_version = 4"""
 
     with open(config_file, "w", encoding="utf-8") as f:
