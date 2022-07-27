@@ -99,6 +99,11 @@ def test_groups(gl):
     assert len(group1.members.list()) == 3
     assert len(group2.members.list()) == 2
 
+    # Test `user_ids` array
+    result = group1.members.list(user_ids=[user.id, 99999])
+    assert len(result) == 1
+    assert result[0].id == user.id
+
     group1.members.delete(user.id)
     assert user not in group1.members.list()
     assert group1.members_all.list()

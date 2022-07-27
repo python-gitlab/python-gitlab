@@ -155,7 +155,7 @@ def test_remove_none_from_dict(dictionary, expected):
 
 def test_transform_types_copies_data_with_empty_files():
     data = {"attr": "spam"}
-    new_data, files = utils._transform_types(data, {})
+    new_data, files = utils._transform_types(data, {}, transform_data=True)
 
     assert new_data is not data
     assert new_data == data
@@ -165,7 +165,7 @@ def test_transform_types_copies_data_with_empty_files():
 def test_transform_types_with_transform_files_populates_files():
     custom_types = {"attr": types.FileAttribute}
     data = {"attr": "spam"}
-    new_data, files = utils._transform_types(data, custom_types)
+    new_data, files = utils._transform_types(data, custom_types, transform_data=True)
 
     assert new_data == {}
     assert files["attr"] == ("attr", "spam")
@@ -174,7 +174,29 @@ def test_transform_types_with_transform_files_populates_files():
 def test_transform_types_without_transform_files_populates_data_with_empty_files():
     custom_types = {"attr": types.FileAttribute}
     data = {"attr": "spam"}
-    new_data, files = utils._transform_types(data, custom_types, transform_files=False)
+    new_data, files = utils._transform_types(
+        data, custom_types, transform_files=False, transform_data=True
+    )
 
     assert new_data == {"attr": "spam"}
+    assert files == {}
+
+
+def test_transform_types_params_array():
+    data = {"attr": [1, 2, 3]}
+    custom_types = {"attr": types.ArrayAttribute}
+    new_data, files = utils._transform_types(data, custom_types, transform_data=True)
+
+    assert new_data is not data
+    assert new_data == {"attr[]": [1, 2, 3]}
+    assert files == {}
+
+
+def test_transform_types_not_params_array():
+    data = {"attr": [1, 2, 3]}
+    custom_types = {"attr": types.ArrayAttribute}
+    new_data, files = utils._transform_types(data, custom_types, transform_data=False)
+
+    assert new_data is not data
+    assert new_data == data
     assert files == {}

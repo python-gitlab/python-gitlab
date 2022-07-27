@@ -238,7 +238,12 @@ class ListMixin(HeadMixin, _RestManagerBase):
             GitlabListError: If the server cannot perform the request
         """
 
-        data, _ = utils._transform_types(kwargs, self._types, transform_files=False)
+        data, _ = utils._transform_types(
+            data=kwargs,
+            custom_types=self._types,
+            transform_data=True,
+            transform_files=False,
+        )
 
         if self.gitlab.per_page:
             data.setdefault("per_page", self.gitlab.per_page)
@@ -303,7 +308,9 @@ class CreateMixin(_RestManagerBase):
             data = {}
 
         self._create_attrs.validate_attrs(data=data)
-        data, files = utils._transform_types(data, self._types)
+        data, files = utils._transform_types(
+            data=data, custom_types=self._types, transform_data=False
+        )
 
         # Handle specific URL for creation
         path = kwargs.pop("path", self.path)
@@ -370,7 +377,9 @@ class UpdateMixin(_RestManagerBase):
         if self._obj_cls is not None and self._obj_cls._id_attr is not None:
             excludes = [self._obj_cls._id_attr]
         self._update_attrs.validate_attrs(data=new_data, excludes=excludes)
-        new_data, files = utils._transform_types(new_data, self._types)
+        new_data, files = utils._transform_types(
+            data=new_data, custom_types=self._types, transform_data=False
+        )
 
         http_method = self._get_update_method()
         result = http_method(path, post_data=new_data, files=files, **kwargs)

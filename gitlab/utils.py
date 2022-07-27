@@ -55,34 +55,53 @@ def response_content(
 
 
 def _transform_types(
-    data: Dict[str, Any], custom_types: dict, *, transform_files: Optional[bool] = True
+    data: Dict[str, Any],
+    custom_types: dict,
+    *,
+    transform_data: bool,
+    transform_files: Optional[bool] = True,
 ) -> Tuple[dict, dict]:
     """Copy the data dict with attributes that have custom types and transform them
     before being sent to the server.
 
-    If ``transform_files`` is ``True`` (default), also populates the ``files`` dict for
+    ``transform_files``: If ``True`` (default), also populates the ``files`` dict for
     FileAttribute types with tuples to prepare fields for requests' MultipartEncoder:
     https://toolbelt.readthedocs.io/en/latest/user.html#multipart-form-data-encoder
+
+    ``transform_data``: If ``True`` transforms the ``data`` dict with fields
+    suitable for encoding as query parameters for GitLab's API:
+    https://docs.gitlab.com/ee/api/#encoding-api-parameters-of-array-and-hash-types
 
     Returns:
         A tuple of the transformed data dict and files dict"""
 
     # Duplicate data to avoid messing with what the user sent us
     data = data.copy()
+    if not transform_files and not transform_data:
+        return data, {}
+
     files = {}
 
-    for attr_name, type_cls in custom_types.items():
+    for attr_name, attr_class in custom_types.items():
         if attr_name not in data:
             continue
 
-        type_obj = type_cls(data[attr_name])
+        gitlab_attribute = attr_class(data[attr_name])
 
-        # if the type if FileAttribute we need to pass the data as file
-        if transform_files and isinstance(type_obj, types.FileAttribute):
-            key = type_obj.get_file_name(attr_name)
+        # if the type is FileAttribute we need to pass the data as file
+        if isinstance(gitlab_attribute, types.FileAttribute) and transform_files:
+            key = gitlab_attribute.get_file_name(attr_name)
             files[attr_name] = (key, data.pop(attr_name))
-        else:
-            data[attr_name] = type_obj.get_for_api()
+            continue
+
+        if not transform_data:
+            continue
+
+        if isinstance(gitlab_attribute, types.GitlabAttribute):
+            key, value = gitlab_attribute.get_for_api(key=attr_name)
+            if key != attr_name:
+                del data[attr_name]
+            data[key] = value
 
     return data, files
 
@@ -94,6 +113,8 @@ def copy_dict(
 ) -> None:
     for k, v in src.items():
         if isinstance(v, dict):
+            # NOTE(jlvillal): This provides some support for the `hash` type
+            # https://docs.gitlab.com/ee/api/#hash
             # Transform dict values to new attributes. For example:
             # custom_attributes: {'foo', 'bar'} =>
             #   "custom_attributes['foo']": "bar"

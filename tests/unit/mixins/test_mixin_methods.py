@@ -206,6 +206,25 @@ def test_list_mixin(gl):
 
 
 @responses.activate
+def test_list_mixin_with_attributes(gl):
+    class M(ListMixin, FakeManager):
+        _types = {"my_array": gl_types.ArrayAttribute}
+
+    url = "http://localhost/api/v4/tests"
+    responses.add(
+        method=responses.GET,
+        headers={},
+        url=url,
+        json=[],
+        status=200,
+        match=[responses.matchers.query_param_matcher({"my_array[]": ["1", "2", "3"]})],
+    )
+
+    mgr = M(gl)
+    mgr.list(iterator=True, my_array=[1, 2, 3])
+
+
+@responses.activate
 def test_list_other_url(gl):
     class M(ListMixin, FakeManager):
         pass
@@ -293,6 +312,25 @@ def test_create_mixin_custom_path(gl):
     assert obj.id == 42
     assert obj.foo == "bar"
     assert responses.assert_call_count(url, 1) is True
+
+
+@responses.activate
+def test_create_mixin_with_attributes(gl):
+    class M(CreateMixin, FakeManager):
+        _types = {"my_array": gl_types.ArrayAttribute}
+
+    url = "http://localhost/api/v4/tests"
+    responses.add(
+        method=responses.POST,
+        headers={},
+        url=url,
+        json={},
+        status=200,
+        match=[responses.matchers.json_params_matcher({"my_array": [1, 2, 3]})],
+    )
+
+    mgr = M(gl)
+    mgr.create({"my_array": [1, 2, 3]})
 
 
 def test_update_mixin_missing_attrs(gl):

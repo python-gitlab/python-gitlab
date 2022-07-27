@@ -63,8 +63,8 @@ class GitlabAttribute:
     def set_from_cli(self, cli_value: Any) -> None:
         self._value = cli_value
 
-    def get_for_api(self) -> Any:
-        return self._value
+    def get_for_api(self, *, key: str) -> Tuple[str, Any]:
+        return (key, self._value)
 
 
 class _ListArrayAttribute(GitlabAttribute):
@@ -76,19 +76,27 @@ class _ListArrayAttribute(GitlabAttribute):
         else:
             self._value = [item.strip() for item in cli_value.split(",")]
 
-    def get_for_api(self) -> str:
+    def get_for_api(self, *, key: str) -> Tuple[str, str]:
         # Do not comma-split single value passed as string
         if isinstance(self._value, str):
-            return self._value
+            return (key, self._value)
 
         if TYPE_CHECKING:
             assert isinstance(self._value, list)
-        return ",".join([str(x) for x in self._value])
+        return (key, ",".join([str(x) for x in self._value]))
 
 
 class ArrayAttribute(_ListArrayAttribute):
     """To support `array` types as documented in
     https://docs.gitlab.com/ee/api/#array"""
+
+    def get_for_api(self, *, key: str) -> Tuple[str, Any]:
+        if isinstance(self._value, str):
+            return (f"{key}[]", self._value)
+
+        if TYPE_CHECKING:
+            assert isinstance(self._value, list)
+        return (f"{key}[]", self._value)
 
 
 class CommaSeparatedListAttribute(_ListArrayAttribute):
@@ -98,8 +106,8 @@ class CommaSeparatedListAttribute(_ListArrayAttribute):
 
 
 class LowercaseStringAttribute(GitlabAttribute):
-    def get_for_api(self) -> str:
-        return str(self._value).lower()
+    def get_for_api(self, *, key: str) -> Tuple[str, str]:
+        return (key, str(self._value).lower())
 
 
 class FileAttribute(GitlabAttribute):
