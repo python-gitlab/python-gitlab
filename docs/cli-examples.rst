@@ -111,6 +111,12 @@ Get a specific user by id:
 
    $ gitlab user get --id 3
 
+Create a user impersonation token (admin-only):
+
+.. code-block:: console
+
+   gitlab user-impersonation-token create --user-id 2 --name test-token --scopes api,read_user
+
 Deploy tokens
 -------------
 
@@ -119,13 +125,54 @@ Create a deploy token for a project:
 .. code-block:: console
 
    $ gitlab -v project-deploy-token create --project-id 2 \
-        --name bar --username root --expires-at "2021-09-09" --scopes "read_repository"
+        --name bar --username root --expires-at "2021-09-09" --scopes "api,read_repository"
 
 List deploy tokens for a group:
 
 .. code-block:: console
 
    $ gitlab -v group-deploy-token list --group-id 3
+
+Resource access tokens
+----------------------
+
+Create a project access token:
+
+.. code-block:: console
+
+   $ gitlab -v project-access-token create --project-id 2 \
+        --name project-token --expires-at "2023-01-01" --scopes "api,read_repository"
+
+List project access tokens:
+
+.. code-block:: console
+
+   $ gitlab -v project-access-token list --project-id 3
+
+Revoke a project access token:
+
+.. code-block:: console
+
+   $ gitlab project-access-token delete --project-id 3 --id 1
+
+Create a group access token:
+
+.. code-block:: console
+
+   $ gitlab -v group-access-token create --group-id 2 \
+        --name group-token --expires-at "2022-01-01" --scopes "api,read_repository"
+
+List group access tokens:
+
+.. code-block:: console
+
+   $ gitlab -v group-access-token list --group-id 3
+
+Revoke a group access token:
+
+.. code-block:: console
+
+   $ gitlab group-access-token delete --group-id 3 --id 1
 
 Packages
 --------
