@@ -2,6 +2,50 @@
 
 <!--next-version-placeholder-->
 
+## v3.7.0 (2022-07-28)
+### Feature
+* Allow sort/ordering for project releases ([`b1dd284`](https://github.com/python-gitlab/python-gitlab/commit/b1dd284066b4b94482b9d41310ac48b75bcddfee))
+* **cli:** Add a custom help formatter ([`005ba93`](https://github.com/python-gitlab/python-gitlab/commit/005ba93074d391f818c39e46390723a0d0d16098))
+* Add support for iterations API ([`194ee01`](https://github.com/python-gitlab/python-gitlab/commit/194ee0100c2868c1a9afb161c15f3145efb01c7c))
+* **groups:** Add support for shared projects API ([`66461ba`](https://github.com/python-gitlab/python-gitlab/commit/66461ba519a85bfbd3cba284a0c8de11a3ac7cde))
+* **issues:** Add support for issue reorder API ([`8703324`](https://github.com/python-gitlab/python-gitlab/commit/8703324dc21a30757e15e504b7d20472f25d2ab9))
+* **namespaces:** Add support for namespace existence API ([`4882cb2`](https://github.com/python-gitlab/python-gitlab/commit/4882cb22f55c41d8495840110be2d338b5545a04))
+* Add support for group and project invitations API ([`7afd340`](https://github.com/python-gitlab/python-gitlab/commit/7afd34027a26b5238a979e3303d8e5d8a0320a07))
+* **projects:** Add support for project restore API ([`4794ecc`](https://github.com/python-gitlab/python-gitlab/commit/4794ecc45d7aa08785c622918d08bb046e7359ae))
+* Add support for filtering jobs by scope ([`0e1c0dd`](https://github.com/python-gitlab/python-gitlab/commit/0e1c0dd795886ae4741136e64c33850b164084a1))
+* Add `asdict()` and `to_json()` methods to Gitlab Objects ([`08ac071`](https://github.com/python-gitlab/python-gitlab/commit/08ac071abcbc28af04c0fa655576e25edbdaa4e2))
+* **api:** Add support for instance-level registry repositories ([`284d739`](https://github.com/python-gitlab/python-gitlab/commit/284d73950ad5cf5dfbdec2f91152ed13931bd0ee))
+* **groups:** Add support for group-level registry repositories ([`70148c6`](https://github.com/python-gitlab/python-gitlab/commit/70148c62a3aba16dd8a9c29f15ed16e77c01a247))
+* Add 'merge_pipelines_enabled' project attribute ([`fc33c93`](https://github.com/python-gitlab/python-gitlab/commit/fc33c934d54fb94451bd9b9ad65645c9c3d6fe2e))
+* Support validating CI lint results ([`3b1ede4`](https://github.com/python-gitlab/python-gitlab/commit/3b1ede4a27cd730982d4c579437c5c689a8799e5))
+* **cli:** Add support for global CI lint ([`3f67c4b`](https://github.com/python-gitlab/python-gitlab/commit/3f67c4b0fb0b9a39c8b93529a05b1541fcebcabe))
+* **objects:** Add Project CI Lint support ([`b213dd3`](https://github.com/python-gitlab/python-gitlab/commit/b213dd379a4108ab32181b9d3700d2526d950916))
+* Add support for group push rules ([`b5cdc09`](https://github.com/python-gitlab/python-gitlab/commit/b5cdc097005c8a48a16e793a69c343198b14e035))
+* **api:** Add support for `get` for a MR approval rule ([`89c18c6`](https://github.com/python-gitlab/python-gitlab/commit/89c18c6255ec912db319f73f141b47ace87a713b))
+
+### Fix
+* Support array types for most resources ([`d9126cd`](https://github.com/python-gitlab/python-gitlab/commit/d9126cd802dd3cfe529fa940300113c4ead3054b))
+* Use the [] after key names for array variables in `params` ([`1af44ce`](https://github.com/python-gitlab/python-gitlab/commit/1af44ce8761e6ee8a9467a3e192f6c4d19e5cefe))
+* **runners:** Fix listing for /runners/all ([`c6dd57c`](https://github.com/python-gitlab/python-gitlab/commit/c6dd57c56e92abb6184badf4708f5f5e65c6d582))
+* **config:** Raise error when gitlab id provided but no config section found ([`1ef7018`](https://github.com/python-gitlab/python-gitlab/commit/1ef70188da1e29cd8ba95bf58c994ba7dd3010c5))
+* **config:** Raise error when gitlab id provided but no config file found ([`ac46c1c`](https://github.com/python-gitlab/python-gitlab/commit/ac46c1cb291c03ad14bc76f5f16c9f98f2a5a82d))
+* Add `get_all` param (and `--get-all`) to allow passing `all` to API ([`7c71d5d`](https://github.com/python-gitlab/python-gitlab/commit/7c71d5db1199164b3fa9958e3c3bc6ec96efc78d))
+* Results returned by `attributes` property to show updates ([`e5affc8`](https://github.com/python-gitlab/python-gitlab/commit/e5affc8749797293c1373c6af96334f194875038))
+* Enable epic notes ([`5fc3216`](https://github.com/python-gitlab/python-gitlab/commit/5fc3216788342a2325662644b42e8c249b655ded))
+* **cli:** Remove irrelevant MR approval rule list filters ([`0daec5f`](https://github.com/python-gitlab/python-gitlab/commit/0daec5fa1428a56a6a927b133613e8b296248167))
+* Ensure path elements are escaped ([`5d9c198`](https://github.com/python-gitlab/python-gitlab/commit/5d9c198769b00c8e7661e62aaf5f930ed32ef829))
+
+### Documentation
+* **cli:** Showcase use of token scopes ([`4a6f8d6`](https://github.com/python-gitlab/python-gitlab/commit/4a6f8d67a94a3d104a24081ad1dbad5b2e3d9c3e))
+* **projects:** Document export with upload to URL ([`03f5484`](https://github.com/python-gitlab/python-gitlab/commit/03f548453d84d99354aae7b638f5267e5d751c59))
+* Describe fetching existing export status ([`9c5b8d5`](https://github.com/python-gitlab/python-gitlab/commit/9c5b8d54745a58b9fe72ba535b7868d1510379c0))
+* **authors:** Add John ([`e2afb84`](https://github.com/python-gitlab/python-gitlab/commit/e2afb84dc4a259e8f40b7cc83e56289983c7db47))
+* Document CI Lint usage ([`d5de4b1`](https://github.com/python-gitlab/python-gitlab/commit/d5de4b1fe38bedc07862bd9446dfd48b92cb078d))
+* **users:** Add docs about listing a user's projects ([`065a1a5`](https://github.com/python-gitlab/python-gitlab/commit/065a1a5a32d34286df44800084285b30b934f911))
+* Update return type of pushrules ([`53cbecc`](https://github.com/python-gitlab/python-gitlab/commit/53cbeccd581318ce4ff6bec0acf3caf935bda0cf))
+* Describe ROPC flow in place of password authentication ([`91c17b7`](https://github.com/python-gitlab/python-gitlab/commit/91c17b704f51e9a06b241d549f9a07a19c286118))
+* **readme:** Remove redundant `-v` that breaks the command ([`c523e18`](https://github.com/python-gitlab/python-gitlab/commit/c523e186cc48f6bcac5245e3109b50a3852d16ef))
+
 ## v3.6.0 (2022-06-28)
 ### Feature
 * **downloads:** Allow streaming downloads access to response iterator ([#1956](https://github.com/python-gitlab/python-gitlab/issues/1956)) ([`b644721`](https://github.com/python-gitlab/python-gitlab/commit/b6447211754e126f64e12fc735ad74fe557b7fb4))
