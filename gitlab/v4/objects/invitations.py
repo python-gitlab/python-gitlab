@@ -3,7 +3,7 @@ from typing import Any, cast, Union
 from gitlab.base import RESTManager, RESTObject
 from gitlab.exceptions import GitlabInvitationError
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
-from gitlab.types import CommaSeparatedListAttribute, RequiredOptional
+from gitlab.types import ArrayAttribute, CommaSeparatedListAttribute, RequiredOptional
 
 __all__ = [
     "ProjectInvitation",
@@ -48,6 +48,7 @@ class ProjectInvitationManager(InvitationMixin, RESTManager):
     _types = {
         "email": CommaSeparatedListAttribute,
         "user_id": CommaSeparatedListAttribute,
+        "tasks_to_be_done": ArrayAttribute,
     }
 
     def get(
@@ -81,6 +82,7 @@ class GroupInvitationManager(InvitationMixin, RESTManager):
     _types = {
         "email": CommaSeparatedListAttribute,
         "user_id": CommaSeparatedListAttribute,
+        "tasks_to_be_done": ArrayAttribute,
     }
 
     def get(

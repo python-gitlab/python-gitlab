@@ -48,7 +48,8 @@ class GroupDeployTokenManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManag
             "username",
         ),
     )
-    _types = {"scopes": types.CommaSeparatedListAttribute}
+    _list_filters = ("scopes",)
+    _types = {"scopes": types.ArrayAttribute}
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any
@@ -74,7 +75,8 @@ class ProjectDeployTokenManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTMan
             "username",
         ),
     )
-    _types = {"scopes": types.CommaSeparatedListAttribute}
+    _list_filters = ("scopes",)
+    _types = {"scopes": types.ArrayAttribute}
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any

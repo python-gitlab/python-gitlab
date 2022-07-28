@@ -13,7 +13,7 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
-from gitlab.types import RequiredOptional
+from gitlab.types import ArrayAttribute, RequiredOptional
 
 __all__ = [
     "ProjectEnvironment",
@@ -77,6 +77,7 @@ class ProjectProtectedEnvironmentManager(
         ),
         optional=("required_approval_count", "approval_rules"),
     )
+    _types = {"deploy_access_levels": ArrayAttribute, "approval_rules": ArrayAttribute}
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any

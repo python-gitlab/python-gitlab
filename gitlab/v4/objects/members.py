@@ -37,12 +37,16 @@ class GroupMemberManager(CRUDMixin, RESTManager):
     _obj_cls = GroupMember
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(
-        required=("access_level", "user_id"), optional=("expires_at",)
+        required=("access_level", "user_id"),
+        optional=("expires_at", "tasks_to_be_done"),
     )
     _update_attrs = RequiredOptional(
         required=("access_level",), optional=("expires_at",)
     )
-    _types = {"user_ids": types.ArrayAttribute}
+    _types = {
+        "user_ids": types.ArrayAttribute,
+        "tasks_to_be_done": types.ArrayAttribute,
+    }
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any
@@ -97,12 +101,16 @@ class ProjectMemberManager(CRUDMixin, RESTManager):
     _obj_cls = ProjectMember
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
-        required=("access_level", "user_id"), optional=("expires_at",)
+        required=("access_level", "user_id"),
+        optional=("expires_at", "tasks_to_be_done"),
     )
     _update_attrs = RequiredOptional(
         required=("access_level",), optional=("expires_at",)
     )
-    _types = {"user_ids": types.ArrayAttribute}
+    _types = {
+        "user_ids": types.ArrayAttribute,
+        "tasks_to_be_dones": types.ArrayAttribute,
+    }
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any

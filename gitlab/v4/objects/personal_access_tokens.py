@@ -1,6 +1,6 @@
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, DeleteMixin, ListMixin, ObjectDeleteMixin
-from gitlab.types import RequiredOptional
+from gitlab.types import ArrayAttribute, RequiredOptional
 
 __all__ = [
     "PersonalAccessToken",
@@ -31,3 +31,4 @@ class UserPersonalAccessTokenManager(CreateMixin, RESTManager):
     _create_attrs = RequiredOptional(
         required=("name", "scopes"), optional=("expires_at",)
     )
+    _types = {"scopes": ArrayAttribute}

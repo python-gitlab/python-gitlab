@@ -7,6 +7,7 @@ from gitlab import exceptions as exc
 from gitlab import utils
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import RefreshMixin, RetrieveMixin
+from gitlab.types import ArrayAttribute
 
 __all__ = [
     "ProjectJob",
@@ -245,6 +246,7 @@ class ProjectJobManager(RetrieveMixin, RESTManager):
     _obj_cls = ProjectJob
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = ("scope",)
+    _types = {"scope": ArrayAttribute}
 
     def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> ProjectJob:
         return cast(ProjectJob, super().get(id=id, lazy=lazy, **kwargs))

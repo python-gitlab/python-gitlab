@@ -2,7 +2,7 @@ from typing import Any, cast, Union
 
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
-from gitlab.types import RequiredOptional
+from gitlab.types import ArrayAttribute, RequiredOptional
 
 __all__ = [
     "ProjectRelease",
@@ -28,6 +28,7 @@ class ProjectReleaseManager(CRUDMixin, RESTManager):
     _update_attrs = RequiredOptional(
         optional=("name", "description", "milestones", "released_at")
     )
+    _types = {"milestones": ArrayAttribute}
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any
