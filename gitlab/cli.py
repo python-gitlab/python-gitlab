@@ -106,11 +106,33 @@ def cls_to_gitlab_resource(cls: RESTObject) -> str:
     return dasherized_lowercase.lower()
 
 
+class VerticalHelpFormatter(argparse.HelpFormatter):
+    def format_help(self) -> str:
+        result = super().format_help()
+        output = ""
+        for line in result.splitlines(keepends=True):
+            # All of our resources are on one line and wrapped inside braces.
+            # For example: {application,resource1,resource2}
+            # We then put each resource on its own line to make it easier to read.
+            if line.strip().startswith("{"):
+                leading_whitespace = line.split("{")[0]
+                line = (
+                    leading_whitespace
+                    + f",\n{leading_whitespace}".join(
+                        line.strip().strip("{}").split(",")
+                    )
+                    + "\n"
+                )
+            output += line
+        return output
+
+
 def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         add_help=add_help,
         description="GitLab API Command Line Interface",
         allow_abbrev=False,
+        formatter_class=VerticalHelpFormatter,
     )
     parser.add_argument("--version", help="Display the version.", action="store_true")
     parser.add_argument(
