@@ -25,6 +25,11 @@ class ProjectReleaseManager(CRUDMixin, RESTManager):
     _create_attrs = RequiredOptional(
         required=("tag_name", "description"), optional=("name", "ref", "assets")
     )
+    _list_filters = (
+        "order_by",
+        "sort",
+        "include_html_description",
+    )
     _update_attrs = RequiredOptional(
         optional=("name", "description", "milestones", "released_at")
     )
