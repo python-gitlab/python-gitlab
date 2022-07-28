@@ -23,7 +23,7 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
-from gitlab.types import RequiredOptional
+from gitlab.types import ArrayAttribute, RequiredOptional
 
 from .custom_attributes import UserCustomAttributeManager  # noqa: F401
 from .events import UserEventManager  # noqa: F401
@@ -543,6 +543,7 @@ class UserImpersonationTokenManager(NoUpdateMixin, RESTManager):
         required=("name", "scopes"), optional=("expires_at",)
     )
     _list_filters = ("state",)
+    _types = {"scopes": ArrayAttribute}
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any

@@ -692,6 +692,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             "snippets_enabled",
             "squash_option",
             "tag_list",
+            "topics",
             "template_name",
             "template_project_id",
             "use_custom_template",
@@ -763,6 +764,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             "squash_option",
             "suggestion_commit_message",
             "tag_list",
+            "topics",
             "visibility",
             "wiki_access_level",
             "wiki_enabled",
@@ -799,6 +801,7 @@ class ProjectManager(CRUDMixin, RESTManager):
     _types = {
         "avatar": types.ImageAttribute,
         "topic": types.CommaSeparatedListAttribute,
+        "topics": types.ArrayAttribute,
     }
 
     def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Project:
