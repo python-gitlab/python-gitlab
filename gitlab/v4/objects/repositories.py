@@ -201,6 +201,7 @@ class RepositoryMixin(_RestObjectBase):
         action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
         format: Optional[str] = None,
+        path: Optional[str] = None,
         *,
         iterator: bool = False,
         **kwargs: Any,
@@ -218,6 +219,7 @@ class RepositoryMixin(_RestObjectBase):
                 data
             chunk_size: Size of each chunk
             format: file format (tar.gz by default)
+            path: The subpath of the repository to download (all files by default)
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -227,14 +229,16 @@ class RepositoryMixin(_RestObjectBase):
         Returns:
             The binary data of the archive
         """
-        path = f"/projects/{self.encoded_id}/repository/archive"
+        url_path = f"/projects/{self.encoded_id}/repository/archive"
         if format:
-            path += "." + format
+            url_path += "." + format
         query_data = {}
         if sha:
             query_data["sha"] = sha
+        if path is not None:
+            query_data["path"] = path
         result = self.manager.gitlab.http_get(
-            path, query_data=query_data, raw=True, streamed=streamed, **kwargs
+            url_path, query_data=query_data, raw=True, streamed=streamed, **kwargs
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
