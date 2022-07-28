@@ -41,6 +41,19 @@ def test_merge_requests_get(project, merge_request):
     assert mr.iid == mr_iid
 
 
+def test_merge_requests_list_approver_ids(project, gitlab_ee):
+    # show https://github.com/python-gitlab/python-gitlab/issues/1698 is now
+    # fixed
+    if not gitlab_ee:
+        pytest.skip("Requires GitLab EE to run")
+    project.mergerequests.list(
+        all=True,
+        state="opened",
+        author_id=423,
+        approver_ids=[423],
+    )
+
+
 def test_merge_requests_get_lazy(project, merge_request):
     new_mr = merge_request(source_branch="test_get")
     mr_iid = new_mr.iid
