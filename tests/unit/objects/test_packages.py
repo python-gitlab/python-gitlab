@@ -276,7 +276,7 @@ def test_delete_project_package_file_from_package_file_object(
 
 def test_upload_generic_package(tmp_path, project, resp_upload_generic_package):
     path = tmp_path / file_name
-    path.write_text(file_content)
+    path.write_text(file_content, encoding="utf-8")
     package = project.generic_packages.upload(
         package_name=package_name,
         package_version=package_version,

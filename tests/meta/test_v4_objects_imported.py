@@ -13,7 +13,7 @@ def test_verify_v4_objects_imported() -> None:
     assert len(gitlab.v4.objects.__path__) == 1
 
     init_files: Set[str] = set()
-    with open(gitlab.v4.objects.__file__, "r") as in_file:
+    with open(gitlab.v4.objects.__file__, "r", encoding="utf-8") as in_file:
         for line in in_file.readlines():
             if line.startswith("from ."):
                 init_files.add(line.rstrip())
