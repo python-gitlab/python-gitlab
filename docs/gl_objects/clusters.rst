@@ -1,6 +1,11 @@
-############
-Clusters
-############
+#####################
+Clusters (DEPRECATED) 
+#####################
+
+.. warning::
+   Cluster support was deprecated in GitLab 14.5 and disabled by default as of
+   GitLab 15.0
+
 
 Reference
 ---------
