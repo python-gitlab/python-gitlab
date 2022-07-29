@@ -30,7 +30,7 @@ Get a specific topic by its ID::
 
 Create a new topic::
 
-    topic = gl.topics.create({"name": "my-topic"})
+    topic = gl.topics.create({"name": "my-topic", "title": "my title"})
 
 Update a topic::
 

@@ -1,3 +1,4 @@
+import dataclasses
 import logging
 import tempfile
 import time
@@ -10,6 +11,24 @@ import pytest
 import gitlab
 import gitlab.base
 from tests.functional import helpers
+
+
+@dataclasses.dataclass
+class GitlabVersion:
+    major: int
+    minor: int
+    patch: str
+    revision: str
+
+    def __post_init__(self):
+        self.major, self.minor = int(self.major), int(self.minor)
+
+
+@pytest.fixture(scope="session")
+def gitlab_version(gl) -> GitlabVersion:
+    version, revision = gl.version()
+    major, minor, patch = version.split(".")
+    return GitlabVersion(major=major, minor=minor, patch=patch, revision=revision)
 
 
 @pytest.fixture(scope="session")
