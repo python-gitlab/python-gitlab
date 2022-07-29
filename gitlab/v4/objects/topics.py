@@ -19,7 +19,10 @@ class TopicManager(CRUDMixin, RESTManager):
     _path = "/topics"
     _obj_cls = Topic
     _create_attrs = RequiredOptional(
-        required=("name",), optional=("avatar", "description")
+        # NOTE: The `title` field was added and is required in GitLab 15.0 or
+        # newer. But not present before that.
+        required=("name",),
+        optional=("avatar", "description", "title"),
     )
     _update_attrs = RequiredOptional(optional=("avatar", "description", "name"))
     _types = {"avatar": types.ImageAttribute}

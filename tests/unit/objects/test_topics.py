@@ -8,10 +8,12 @@ import responses
 from gitlab.v4.objects import Topic
 
 name = "GitLab"
+topic_title = "topic title"
 new_name = "gitlab-test"
 topic_content = {
     "id": 1,
     "name": name,
+    "title": topic_title,
     "description": "GitLab is an open source end-to-end software development platform.",
     "total_projects_count": 1000,
     "avatar_url": "http://www.gravatar.com/avatar/a0d477b3ea21970ce6ffcbb817b0b435?s=80&d=identicon",
@@ -102,9 +104,10 @@ def test_get_topic(gl, resp_get_topic):
 
 
 def test_create_topic(gl, resp_create_topic):
-    topic = gl.topics.create({"name": name})
+    topic = gl.topics.create({"name": name, "title": topic_title})
     assert isinstance(topic, Topic)
     assert topic.name == name
+    assert topic.title == topic_title
 
 
 def test_update_topic(gl, resp_update_topic):
