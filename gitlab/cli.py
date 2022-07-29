@@ -23,7 +23,18 @@ import os
 import re
 import sys
 from types import ModuleType
-from typing import Any, Callable, cast, Dict, Optional, Tuple, Type, TypeVar, Union
+from typing import (
+    Any,
+    Callable,
+    cast,
+    Dict,
+    Optional,
+    Tuple,
+    Type,
+    TYPE_CHECKING,
+    TypeVar,
+    Union,
+)
 
 from requests.structures import CaseInsensitiveDict
 
@@ -113,8 +124,11 @@ def gitlab_resource_to_cls(
 ) -> Type[RESTObject]:
     classes = CaseInsensitiveDict(namespace.__dict__)
     lowercase_class = gitlab_resource.replace("-", "")
-
-    return classes[lowercase_class]
+    class_type = classes[lowercase_class]
+    if TYPE_CHECKING:
+        assert isinstance(class_type, type)
+        assert issubclass(class_type, RESTObject)
+    return class_type
 
 
 def cls_to_gitlab_resource(cls: RESTObject) -> str:
