@@ -290,7 +290,8 @@ def test_data_from_helper(m_open, monkeypatch, tmp_path):
             #!/bin/sh
             echo "secret"
             """
-        )
+        ),
+        encoding="utf-8",
     )
     helper.chmod(0o755)
 

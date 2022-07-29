@@ -135,7 +135,7 @@ class GitlabConfigParser:
 
     def _parse_config(self) -> None:
         _config = configparser.ConfigParser()
-        _config.read(self._files)
+        _config.read(self._files, encoding="utf-8")
 
         if self.gitlab_id and not _config.has_section(self.gitlab_id):
             raise GitlabDataError(
