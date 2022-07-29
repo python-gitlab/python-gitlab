@@ -32,6 +32,7 @@ services:
         grafana['enable'] = false
         letsencrypt['enable'] = false
         gitlab_rails['initial_license_file'] = '/python-gitlab-ci.gitlab-license'
+        gitlab_rails['monitoring_whitelist'] = ['0.0.0.0/0']
     entrypoint:
       - /bin/sh
       - -c

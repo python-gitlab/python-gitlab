@@ -1,20 +1,46 @@
 import logging
+import pathlib
 import tempfile
 import time
 import uuid
-from pathlib import Path
 from subprocess import check_output
 
 import pytest
+import requests
 
 import gitlab
 import gitlab.base
 from tests.functional import helpers
 
+SLEEP_TIME = 10
+
 
 @pytest.fixture(scope="session")
-def fixture_dir(test_dir):
+def fixture_dir(test_dir) -> pathlib.Path:
     return test_dir / "functional" / "fixtures"
+
+
+@pytest.fixture(scope="session")
+def gitlab_service_name() -> str:
+    """The "service" name is the one defined in the `docker-compose.yml` file"""
+    return "gitlab"
+
+
+@pytest.fixture(scope="session")
+def gitlab_container_name() -> str:
+    """The "container" name is the one defined in the `docker-compose.yml` file
+    for the "gitlab" service"""
+    return "gitlab-test"
+
+
+@pytest.fixture(scope="session")
+def gitlab_docker_port(docker_services, gitlab_service_name: str) -> int:
+    return docker_services.port_for(service=gitlab_service_name, container_port=80)
+
+
+@pytest.fixture(scope="session")
+def gitlab_url(docker_ip: str, gitlab_docker_port: int) -> str:
+    return f"http://{docker_ip}:{gitlab_docker_port}"
 
 
 def reset_gitlab(gl: gitlab.Gitlab) -> None:
@@ -99,8 +125,8 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope="session")
-def temp_dir():
-    return Path(tempfile.gettempdir())
+def temp_dir() -> pathlib.Path:
+    return pathlib.Path(tempfile.gettempdir())
 
 
 @pytest.fixture(scope="session")
@@ -129,7 +155,12 @@ def check_is_alive():
     Return a healthcheck function fixture for the GitLab container spinup.
     """
 
-    def _check(container: str, start_time: float) -> bool:
+    def _check(
+        *,
+        container: str,
+        start_time: float,
+        gitlab_url: str,
+    ) -> bool:
         setup_time = time.perf_counter() - start_time
         minutes, seconds = int(setup_time / 60), int(setup_time % 60)
         logging.info(
@@ -137,7 +168,24 @@ def check_is_alive():
             f"Have been checking for {minutes} minute(s), {seconds} seconds ..."
         )
         logs = ["docker", "logs", container]
-        return "gitlab Reconfigured!" in check_output(logs).decode()
+        if "gitlab Reconfigured!" not in check_output(logs).decode():
+            return False
+        logging.debug("GitLab has finished reconfiguring.")
+        for check in ("health", "readiness", "liveness"):
+            url = f"{gitlab_url}/-/{check}"
+            logging.debug(f"Checking {check!r} endpoint at: {url}")
+            try:
+                result = requests.get(url, timeout=1.0)
+            except requests.exceptions.Timeout:
+                logging.info(f"{check!r} check timed out")
+                return False
+            if result.status_code != 200:
+                logging.info(f"{check!r} check did not return 200: {result!r}")
+                return False
+            logging.debug(f"{check!r} check passed: {result!r}")
+        logging.debug(f"Sleeping for {SLEEP_TIME}")
+        time.sleep(SLEEP_TIME)
+        return True
 
     return _check
 
@@ -167,16 +215,26 @@ def wait_for_sidekiq(gl):
 
 
 @pytest.fixture(scope="session")
-def gitlab_config(check_is_alive, docker_ip, docker_services, temp_dir, fixture_dir):
+def gitlab_config(
+    check_is_alive,
+    gitlab_container_name: str,
+    gitlab_url: str,
+    docker_services,
+    temp_dir: pathlib.Path,
+    fixture_dir: pathlib.Path,
+):
     config_file = temp_dir / "python-gitlab.cfg"
-    port = docker_services.port_for("gitlab", 80)
 
     start_time = time.perf_counter()
     logging.info("Waiting for GitLab container to become ready.")
     docker_services.wait_until_responsive(
         timeout=300,
         pause=10,
-        check=lambda: check_is_alive("gitlab-test", start_time=start_time),
+        check=lambda: check_is_alive(
+            container=gitlab_container_name,
+            start_time=start_time,
+            gitlab_url=gitlab_url,
+        ),
     )
     setup_time = time.perf_counter() - start_time
     minutes, seconds = int(setup_time / 60), int(setup_time % 60)
@@ -184,14 +242,14 @@ def gitlab_config(check_is_alive, docker_ip, docker_services, temp_dir, fixture_
         f"GitLab container is now ready after {minutes} minute(s), {seconds} seconds"
     )
 
-    token = set_token("gitlab-test", fixture_dir=fixture_dir)
+    token = set_token(gitlab_container_name, fixture_dir=fixture_dir)
 
     config = f"""[global]
 default = local
 timeout = 60
 
 [local]
-url = http://{docker_ip}:{port}
+url = {gitlab_url}
 private_token = {token}
 api_version = 4"""
 
@@ -208,6 +266,7 @@ def gl(gitlab_config):
     logging.info("Instantiating python-gitlab gitlab.Gitlab instance")
     instance = gitlab.Gitlab.from_config("local", [gitlab_config])
 
+    logging.info("Reset GitLab")
     reset_gitlab(instance)
 
     return instance
