@@ -40,6 +40,10 @@ Revoke a personal access token by id::
 
     gl.personal_access_tokens.delete(123)
 
+Revoke the personal access token currently used::
+
+    gl.personal_access_tokens.delete("self")
+
 Create a personal access token for a user (admin only)::
 
     user = gl.users.get(25, lazy=True)

@@ -133,6 +133,34 @@ List deploy tokens for a group:
 
    $ gitlab -v group-deploy-token list --group-id 3
 
+Personal access tokens
+----------------------
+
+List the current user's personal access tokens (or all users' tokens, if admin):
+
+.. code-block:: console
+
+   $ gitlab -v personal-access-token list
+
+Revoke a personal access token by id:
+
+.. code-block:: console
+
+   $ gitlab personal-access-token delete --id 1
+
+Revoke the personal access token currently used:
+
+.. code-block:: console
+
+   $ gitlab personal-access-token delete --id self
+
+Create a personal access token for a user (admin only):
+
+.. code-block:: console
+
+   $ gitlab -v user-personal-access-token create --user-id 2 \
+        --name personal-access-token --expires-at "2023-01-01" --scopes "api,read_repository"
+
 Resource access tokens
 ----------------------
 
