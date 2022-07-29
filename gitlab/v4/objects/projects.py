@@ -155,7 +155,7 @@ class ProjectGroupManager(ListMixin, RESTManager):
 
 
 class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTObject):
-    _repr_attr = "path"
+    _repr_attr = "path_with_namespace"
 
     access_tokens: ProjectAccessTokenManager
     accessrequests: ProjectAccessRequestManager
