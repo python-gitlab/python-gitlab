@@ -1,7 +1,5 @@
 from typing import Any, BinaryIO, cast, Dict, List, Optional, Type, TYPE_CHECKING, Union
 
-import requests
-
 import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -337,7 +335,7 @@ class GroupManager(CRUDMixin, RESTManager):
         name: str,
         parent_id: Optional[str] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> gitlab.client.HttpResponseType:
         """Import a group from an archive file.
 
         Args:

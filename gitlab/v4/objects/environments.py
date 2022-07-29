@@ -1,7 +1,6 @@
-from typing import Any, cast, Dict, Union
+from typing import Any, cast, Union
 
-import requests
-
+import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
@@ -26,7 +25,7 @@ __all__ = [
 class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("ProjectEnvironment")
     @exc.on_http_error(exc.GitlabStopError)
-    def stop(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def stop(self, **kwargs: Any) -> gitlab.client.HttpResponseType:
         """Stop the environment.
 
         Args:

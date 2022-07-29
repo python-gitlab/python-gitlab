@@ -24,6 +24,7 @@ from contextlib import redirect_stderr  # noqa: H302
 
 import pytest
 
+import gitlab.base
 from gitlab import cli
 from gitlab.exceptions import GitlabError
 
@@ -43,7 +44,7 @@ def test_gitlab_resource_to_cls(gitlab_resource, expected_class):
     def _namespace():
         pass
 
-    ExpectedClass = type(expected_class, (), {})
+    ExpectedClass = type(expected_class, (gitlab.base.RESTObject,), {})
     _namespace.__dict__[expected_class] = ExpectedClass
 
     assert cli.gitlab_resource_to_cls(gitlab_resource, _namespace) == ExpectedClass

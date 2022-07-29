@@ -21,7 +21,7 @@ import json
 import pprint
 import textwrap
 from types import ModuleType
-from typing import Any, Dict, Iterable, Optional, Type, Union
+from typing import Any, Dict, Iterable, Optional, Type, TYPE_CHECKING, Union
 
 import gitlab
 from gitlab import types as g_types
@@ -245,14 +245,22 @@ class RESTObject:
         """Returns the id of the resource."""
         if self._id_attr is None or not hasattr(self, self._id_attr):
             return None
-        return getattr(self, self._id_attr)
+        id_val = getattr(self, self._id_attr)
+        if id_val is None:
+            return None
+        if TYPE_CHECKING:
+            assert isinstance(id_val, (int, str))
+        return id_val
 
     @property
     def _repr_value(self) -> Optional[str]:
         """Safely returns the human-readable resource name if present."""
         if self._repr_attr is None or not hasattr(self, self._repr_attr):
             return None
-        return getattr(self, self._repr_attr)
+        repr_val = getattr(self, self._repr_attr)
+        if TYPE_CHECKING:
+            assert isinstance(repr_val, str)
+        return repr_val
 
     @property
     def encoded_id(self) -> Optional[Union[int, str]]:

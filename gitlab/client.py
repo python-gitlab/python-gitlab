@@ -44,6 +44,8 @@ _PAGINATION_URL = (
     f"api-usage.html#pagination"
 )
 
+HttpResponseType = Union[Dict[str, Any], List[Any], requests.Response]
+
 
 class Gitlab:
     """Represents a GitLab server connection.
@@ -411,7 +413,7 @@ class Gitlab:
         post_data = {"content": content}
         data = self.http_post("/ci/lint", post_data=post_data, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(data, requests.Response)
+            assert isinstance(data, dict)
         return (data["status"] == "valid", data["errors"])
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabMarkdownError)
@@ -438,7 +440,8 @@ class Gitlab:
             post_data["project"] = project
         data = self.http_post("/markdown", post_data=post_data, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(data, requests.Response)
+            assert isinstance(data, dict)
+            assert isinstance(data["html"], str)
         return data["html"]
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabLicenseError)
@@ -478,7 +481,7 @@ class Gitlab:
         data = {"license": license}
         result = self.http_post("/license", post_data=data, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(result, requests.Response)
+            assert isinstance(result, dict)
         return result
 
     def _set_auth_info(self) -> None:
@@ -777,7 +780,7 @@ class Gitlab:
         streamed: bool = False,
         raw: bool = False,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> HttpResponseType:
         """Make a GET request to the Gitlab server.
 
         Args:
@@ -808,7 +811,10 @@ class Gitlab:
             and not raw
         ):
             try:
-                return result.json()
+                json_result = result.json()
+                if TYPE_CHECKING:
+                    assert isinstance(json_result, dict)
+                return json_result
             except Exception as e:
                 raise gitlab.exceptions.GitlabParsingError(
                     error_message="Failed to parse the server message"
@@ -954,7 +960,7 @@ class Gitlab:
         raw: bool = False,
         files: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> HttpResponseType:
         """Make a POST request to the Gitlab server.
 
         Args:
@@ -989,7 +995,10 @@ class Gitlab:
         )
         try:
             if result.headers.get("Content-Type", None) == "application/json":
-                return result.json()
+                json_result = result.json()
+                if TYPE_CHECKING:
+                    assert isinstance(json_result, dict)
+                return json_result
         except Exception as e:
             raise gitlab.exceptions.GitlabParsingError(
                 error_message="Failed to parse the server message"
@@ -1037,7 +1046,10 @@ class Gitlab:
             **kwargs,
         )
         try:
-            return result.json()
+            json_result = result.json()
+            if TYPE_CHECKING:
+                assert isinstance(json_result, dict)
+            return json_result
         except Exception as e:
             raise gitlab.exceptions.GitlabParsingError(
                 error_message="Failed to parse the server message"

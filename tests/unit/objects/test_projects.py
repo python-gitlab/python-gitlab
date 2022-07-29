@@ -431,7 +431,7 @@ def resp_start_housekeeping():
         rsps.add(
             method=responses.POST,
             url="http://localhost/api/v4/projects/1/housekeeping",
-            json="0ee4c430667fb7be8461f310",
+            json={},
             content_type="application/json",
             status=201,
         )

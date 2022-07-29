@@ -3,7 +3,10 @@ GitLab API:
 https://docs.gitlab.com/ee/api/users.html
 https://docs.gitlab.com/ee/api/users.html#delete-authentication-identity-from-user
 """
+import pytest
 import requests
+
+import gitlab.exceptions
 
 
 def test_create_user(gl, fixture_dir):
@@ -45,18 +48,28 @@ def test_block_user(gl, user):
 
     # unblock again
     result = user.unblock()
-    # Trying to unblock an already blocked user returns False
+    # Trying to unblock an already un-blocked user returns False
     assert result is False
 
 
 def test_ban_user(gl, user):
-    user.ban()
+    result = user.ban()
+    assert result is True
     retrieved_user = gl.users.get(user.id)
     assert retrieved_user.state == "banned"
 
-    user.unban()
+    # ban an already banned user raises an exception
+    with pytest.raises(gitlab.exceptions.GitlabBanError):
+        user.ban()
+
+    result = user.unban()
+    assert result is True
     retrieved_user = gl.users.get(user.id)
     assert retrieved_user.state == "active"
+
+    # unban an already un-banned user raises an exception
+    with pytest.raises(gitlab.exceptions.GitlabUnbanError):
+        user.unban()
 
 
 def test_delete_user(gl, wait_for_sidekiq):

@@ -5,8 +5,6 @@ https://docs.gitlab.com/ee/api/merge_request_approvals.html
 """
 from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
 
-import requests
-
 import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -244,7 +242,7 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
-    def changes(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def changes(self, **kwargs: Any) -> gitlab.client.HttpResponseType:
         """List the merge request changes.
 
         Args:
@@ -313,7 +311,7 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMRRebaseError)
-    def rebase(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def rebase(self, **kwargs: Any) -> gitlab.client.HttpResponseType:
         """Attempt to rebase the source branch onto the target branch
 
         Args:
@@ -329,7 +327,7 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabGetError)
-    def merge_ref(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def merge_ref(self, **kwargs: Any) -> gitlab.client.HttpResponseType:
         """Attempt to merge changes between source and target branches into
             `refs/merge-requests/:iid/merge`.
 

@@ -251,7 +251,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabGetError)
-    def languages(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def languages(self, **kwargs: Any) -> client.HttpResponseType:
         """Get languages used in the project with percentage value.
 
         Args:
@@ -816,7 +816,7 @@ class ProjectManager(CRUDMixin, RESTManager):
         overwrite: bool = False,
         override_params: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> client.HttpResponseType:
         """Import a project from an archive file.
 
         Args:
@@ -859,7 +859,7 @@ class ProjectManager(CRUDMixin, RESTManager):
         new_name: Optional[str] = None,
         target_namespace: Optional[str] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> client.HttpResponseType:
         """Import a project from BitBucket Server to Gitlab (schedule the import)
 
         This method will return when an import operation has been safely queued,
@@ -948,7 +948,7 @@ class ProjectManager(CRUDMixin, RESTManager):
         target_namespace: str,
         new_name: Optional[str] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> client.HttpResponseType:
         """Import a project from Github to Gitlab (schedule the import)
 
         This method will return when an import operation has been safely queued,

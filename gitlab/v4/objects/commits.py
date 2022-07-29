@@ -1,7 +1,5 @@
 from typing import Any, cast, Dict, List, Optional, TYPE_CHECKING, Union
 
-import requests
-
 import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -107,9 +105,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action("ProjectCommit", ("branch",))
     @exc.on_http_error(exc.GitlabRevertError)
-    def revert(
-        self, branch: str, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    def revert(self, branch: str, **kwargs: Any) -> gitlab.client.HttpResponseType:
         """Revert a commit on a given branch.
 
         Args:
@@ -129,7 +125,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action("ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    def signature(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def signature(self, **kwargs: Any) -> gitlab.client.HttpResponseType:
         """Get the signature of the commit.
 
         Args:
