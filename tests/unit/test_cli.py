@@ -24,8 +24,7 @@ from contextlib import redirect_stderr  # noqa: H302
 
 import pytest
 
-from gitlab import cli
-from gitlab.exceptions import GitlabError
+from gitlab import cli, exceptions
 
 
 @pytest.mark.parametrize(
@@ -71,7 +70,7 @@ def test_cls_to_gitlab_resource(class_name, expected_gitlab_resource):
     "message,error,expected",
     [
         ("foobar", None, "foobar\n"),
-        ("foo", GitlabError("bar"), "foo (bar)\n"),
+        ("foo", exceptions.GitlabError("bar"), f"foo (bar{exceptions._PG_VERSION})\n"),
     ],
 )
 def test_die(message, error, expected):
