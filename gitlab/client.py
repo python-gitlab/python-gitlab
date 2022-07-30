@@ -524,17 +524,38 @@ class Gitlab:
                 self.http_username, self.http_password
             )
 
-    @staticmethod
-    def enable_debug() -> None:
+    def enable_debug(self, mask_credentials: bool = True) -> None:
         import logging
-        from http.client import HTTPConnection  # noqa
+        from http import client
 
-        HTTPConnection.debuglevel = 1
+        client.HTTPConnection.debuglevel = 1
         logging.basicConfig()
-        logging.getLogger().setLevel(logging.DEBUG)
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG)
+
+        httpclient_log = logging.getLogger("http.client")
+        httpclient_log.propagate = True
+        httpclient_log.setLevel(logging.DEBUG)
+
         requests_log = logging.getLogger("requests.packages.urllib3")
         requests_log.setLevel(logging.DEBUG)
         requests_log.propagate = True
+
+        # shadow http.client prints to log()
+        # https://stackoverflow.com/a/16337639
+        def print_as_log(*args: Any) -> None:
+            httpclient_log.log(logging.DEBUG, " ".join(args))
+
+        setattr(client, "print", print_as_log)
+
+        if not mask_credentials:
+            return
+
+        token = self.private_token or self.oauth_token or self.job_token
+        handler = logging.StreamHandler()
+        handler.setFormatter(utils.MaskingFormatter(masked=token))
+        logger.handlers.clear()
+        logger.addHandler(handler)
 
     def _get_session_opts(self) -> Dict[str, Any]:
         return {

@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import pathlib
 import traceback
 import urllib.parse
@@ -29,6 +30,29 @@ from gitlab import types
 class _StdoutStream:
     def __call__(self, chunk: Any) -> None:
         print(chunk)
+
+
+class MaskingFormatter(logging.Formatter):
+    """A logging formatter that can mask credentials"""
+
+    def __init__(
+        self,
+        *args: Any,
+        masked: Optional[str] = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.masked = masked
+
+    def _filter(self, entry: str) -> str:
+        if not self.masked:
+            return entry
+
+        return entry.replace(self.masked, "[MASKED]")
+
+    def format(self, record: logging.LogRecord) -> str:
+        original = logging.Formatter.format(self, record)
+        return self._filter(original)
 
 
 def response_content(
