@@ -66,6 +66,7 @@ class Gitlab:
         user_agent: A custom user agent to use for making HTTP requests.
         retry_transient_errors: Whether to retry after 500, 502, 503, 504
             or 52x responses. Defaults to False.
+        persist_base_url: reconstruct next url if found not same as user provided url
     """
 
     def __init__(
@@ -85,6 +86,7 @@ class Gitlab:
         order_by: Optional[str] = None,
         user_agent: str = gitlab.const.USER_AGENT,
         retry_transient_errors: bool = False,
+        persist_base_url: bool = False,
     ) -> None:
 
         self._api_version = str(api_version)
@@ -95,6 +97,7 @@ class Gitlab:
         #: Timeout to use for requests to gitlab server
         self.timeout = timeout
         self.retry_transient_errors = retry_transient_errors
+        self.persist_base_url = persist_base_url
         #: Headers that will be used in request to GitLab
         self.headers = {"User-Agent": user_agent}
 
@@ -1133,8 +1136,29 @@ class GitlabList:
                 next_url = requests.utils.parse_header_links(result.headers["links"])[
                     0
                 ]["url"]
-            if not next_url.startswith(self._gl._base_url):
-                next_url = re.sub(r"^.*?/api", f"{self._gl._base_url}/api", next_url)
+            # if the next url is different with user provided server URL
+            # then give a warning it may because of misconfiguration
+            # but if the option to fix provided then just reconstruct it
+            if not next_url.startswith(self._gl.url):
+                search_api_url = re.search(r"(^.*?/api)", next_url)
+                if search_api_url:
+                    next_api_url = search_api_url.group(1)
+                    if self._gl.persist_base_url:
+                        next_url = next_url.replace(
+                            next_api_url, f"{self._gl._base_url}/api"
+                        )
+                    else:
+                        utils.warn(
+                            message=(
+                                f"The base url of the returned next page got "
+                                f"different with the user provided "
+                                f"{self._gl.url}/api* ~> {next_api_url}*, "
+                                f"since this may can lead to unexpected behaviour. "
+                                f"set argument persist_base_url to True for "
+                                f"resonctruct it with the origin one."
+                            ),
+                            category=UserWarning,
+                        )
             self._next_url = next_url
         except KeyError:
             self._next_url = None

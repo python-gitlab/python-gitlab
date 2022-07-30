@@ -356,7 +356,33 @@ def test_gitlab_plain_const_does_not_warn(recwarn):
 
 
 @responses.activate
-def test_gitlab_keep_base_url(gl):
+@pytest.mark.parametrize(
+    "kwargs,link_header,expected_next_url,show_warning",
+    [
+        # normal execution
+        (
+            {},
+            "<http://localhost/api/v4/tests?per_page=1&page=2>;" ' rel="next"',
+            "http://localhost/api/v4/tests?per_page=1&page=2",
+            False,
+        ),
+        # got different url and will show the warning
+        (
+            {},
+            "<http://orig_host/api/v4/tests?per_page=1&page=2>;" ' rel="next"',
+            "http://orig_host/api/v4/tests?per_page=1&page=2",
+            True,
+        ),
+        # persist the base url
+        (
+            {"persist_base_url": True},
+            "<http://orig_host/api/v4/tests?per_page=1&page=2>;" ' rel="next"',
+            "http://localhost/api/v4/tests?per_page=1&page=2",
+            False,
+        ),
+    ],
+)
+def test_gitlab_persist_base_url(kwargs, link_header, expected_next_url, show_warning):
     responses.add(
         **{
             "method": responses.GET,
@@ -368,9 +394,7 @@ def test_gitlab_keep_base_url(gl):
                 "X-Per-Page": "1",
                 "X-Total-Pages": "2",
                 "X-Total": "2",
-                "Link": (
-                    "<http://orig_host/api/v4/tests?per_page=1&page=2>;" ' rel="next"'
-                ),
+                "Link": (link_header),
             },
             "content_type": "application/json",
             "status": 200,
@@ -378,12 +402,11 @@ def test_gitlab_keep_base_url(gl):
         }
     )
 
-    obj = gl.http_list("/tests", iterator=True)
-    assert len(obj) == 2
-    assert obj._next_url == "http://localhost/api/v4/tests?per_page=1&page=2"
-    assert obj.current_page == 1
-    assert obj.prev_page is None
-    assert obj.next_page == 2
-    assert obj.per_page == 1
-    assert obj.total_pages == 2
-    assert obj.total == 2
+    gl = gitlab.Gitlab(url="http://localhost", **kwargs)
+    if show_warning:
+        with pytest.warns(UserWarning) as warn_record:
+            obj = gl.http_list("/tests", iterator=True)
+        assert len(warn_record) == 1
+    else:
+        obj = gl.http_list("/tests", iterator=True)
+    assert obj._next_url == expected_next_url
