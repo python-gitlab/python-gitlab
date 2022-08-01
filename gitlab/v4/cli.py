@@ -210,8 +210,16 @@ class GitlabCLI:
         return result
 
 
+# https://github.com/python/typeshed/issues/7539#issuecomment-1076581049
+if TYPE_CHECKING:
+    _SubparserType = argparse._SubParsersAction[argparse.ArgumentParser]
+else:
+    _SubparserType = Any
+
+
 def _populate_sub_parser_by_class(
-    cls: Type[gitlab.base.RESTObject], sub_parser: argparse._SubParsersAction
+    cls: Type[gitlab.base.RESTObject],
+    sub_parser: _SubparserType,
 ) -> None:
     mgr_cls_name = f"{cls.__name__}Manager"
     mgr_cls = getattr(gitlab.v4.objects, mgr_cls_name)
@@ -301,9 +309,11 @@ def _populate_sub_parser_by_class(
         for action_name in cli.custom_actions[name]:
             # NOTE(jlvillal): If we put a function for the `default` value of
             # the `get` it will always get called, which will break things.
-            sub_parser_action = action_parsers.get(action_name)
-            if sub_parser_action is None:
+            action_parser = action_parsers.get(action_name)
+            if action_parser is None:
                 sub_parser_action = sub_parser.add_parser(action_name)
+            else:
+                sub_parser_action = action_parser
             # Get the attributes for URL/path construction
             if mgr_cls._from_parent_attrs:
                 for x in mgr_cls._from_parent_attrs:
@@ -335,9 +345,11 @@ def _populate_sub_parser_by_class(
         for action_name in cli.custom_actions[name]:
             # NOTE(jlvillal): If we put a function for the `default` value of
             # the `get` it will always get called, which will break things.
-            sub_parser_action = action_parsers.get(action_name)
-            if sub_parser_action is None:
+            action_parser = action_parsers.get(action_name)
+            if action_parser is None:
                 sub_parser_action = sub_parser.add_parser(action_name)
+            else:
+                sub_parser_action = action_parser
             if mgr_cls._from_parent_attrs:
                 for x in mgr_cls._from_parent_attrs:
                     sub_parser_action.add_argument(

@@ -34,7 +34,7 @@ class _StdoutStream:
 def response_content(
     response: requests.Response,
     streamed: bool,
-    action: Optional[Callable],
+    action: Optional[Callable[[bytes], None]],
     chunk_size: int,
     *,
     iterator: bool,
@@ -56,11 +56,11 @@ def response_content(
 
 def _transform_types(
     data: Dict[str, Any],
-    custom_types: dict,
+    custom_types: Dict[str, Any],
     *,
     transform_data: bool,
     transform_files: Optional[bool] = True,
-) -> Tuple[dict, dict]:
+) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     """Copy the data dict with attributes that have custom types and transform them
     before being sent to the server.
 
@@ -157,7 +157,7 @@ def remove_none_from_dict(data: Dict[str, Any]) -> Dict[str, Any]:
 def warn(
     message: str,
     *,
-    category: Optional[Type] = None,
+    category: Optional[Type[Warning]] = None,
     source: Optional[Any] = None,
 ) -> None:
     """This `warnings.warn` wrapper function attempts to show the location causing the

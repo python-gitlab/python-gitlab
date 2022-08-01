@@ -9,6 +9,7 @@ exclude = "build/.*"
 
 # 'strict = true' is equivalent to the following:
 check_untyped_defs = true
+disallow_any_generics = true
 disallow_incomplete_defs = true
 disallow_subclassing_any = true
 disallow_untyped_decorators = true
@@ -21,7 +22,6 @@ warn_unused_configs = true
 warn_unused_ignores = true
 
 # The following need to have changes made to be able to enable them:
-# disallow_any_generics = true
 # disallow_untyped_calls = true
 # no_implicit_optional = true
 
