@@ -13,6 +13,7 @@ disallow_incomplete_defs = true
 disallow_subclassing_any = true
 disallow_untyped_decorators = true
 disallow_untyped_defs = true
+no_implicit_optional = true
 no_implicit_reexport = true
 strict_equality = true
 warn_redundant_casts = true
@@ -23,7 +24,6 @@ warn_unused_ignores = true
 # The following need to have changes made to be able to enable them:
 # disallow_any_generics = true
 # disallow_untyped_calls = true
-# no_implicit_optional = true
 
 [[tool.mypy.overrides]] # Overrides for currently untyped modules
 module = [
