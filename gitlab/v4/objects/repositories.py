@@ -196,7 +196,7 @@ class RepositoryMixin(_RestObjectBase):
     @exc.on_http_error(exc.GitlabListError)
     def repository_archive(
         self,
-        sha: str = None,
+        sha: Optional[str] = None,
         streamed: bool = False,
         action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,

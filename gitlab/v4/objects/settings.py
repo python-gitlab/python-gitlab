@@ -93,7 +93,7 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     def update(
         self,
         id: Optional[Union[str, int]] = None,
-        new_data: Dict[str, Any] = None,
+        new_data: Optional[Dict[str, Any]] = None,
         **kwargs: Any
     ) -> Dict[str, Any]:
         """Update an object on the server.
