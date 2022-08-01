@@ -73,7 +73,7 @@ class HeadMixin(_RestManagerBase):
     @exc.on_http_error(exc.GitlabHeadError)
     def head(
         self, id: Optional[Union[str, int]] = None, **kwargs: Any
-    ) -> requests.structures.CaseInsensitiveDict:
+    ) -> "requests.structures.CaseInsensitiveDict[Any]":
         """Retrieve headers from an endpoint.
 
         Args:
@@ -622,7 +622,7 @@ class DownloadMixin(_RestObjectBase):
     def download(
         self,
         streamed: bool = False,
-        action: Optional[Callable] = None,
+        action: Optional[Callable[[bytes], None]] = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,

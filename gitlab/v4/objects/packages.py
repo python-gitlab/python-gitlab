@@ -103,7 +103,7 @@ class GenericPackageManager(RESTManager):
         package_version: str,
         file_name: str,
         streamed: bool = False,
-        action: Optional[Callable] = None,
+        action: Optional[Callable[[bytes], None]] = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,

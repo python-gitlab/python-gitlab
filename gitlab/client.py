@@ -277,7 +277,7 @@ class Gitlab:
     @classmethod
     def merge_config(
         cls,
-        options: dict,
+        options: Dict[str, Any],
         gitlab_id: Optional[str] = None,
         config_files: Optional[List[str]] = None,
     ) -> "Gitlab":
@@ -330,7 +330,9 @@ class Gitlab:
         )
 
     @staticmethod
-    def _merge_auth(options: dict, config: gitlab.config.GitlabConfigParser) -> Tuple:
+    def _merge_auth(
+        options: Dict[str, Any], config: gitlab.config.GitlabConfigParser
+    ) -> Tuple[Optional[str], Optional[str], Optional[str]]:
         """
         Return a tuple where at most one of 3 token types ever has a value.
         Since multiple types of tokens may be present in the environment,
@@ -822,7 +824,7 @@ class Gitlab:
 
     def http_head(
         self, path: str, query_data: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> requests.structures.CaseInsensitiveDict:
+    ) -> "requests.structures.CaseInsensitiveDict[Any]":
         """Make a HEAD request to the Gitlab server.
 
         Args:
