@@ -359,30 +359,28 @@ def test_gitlab_plain_const_does_not_warn(recwarn):
 @pytest.mark.parametrize(
     "kwargs,link_header,expected_next_url,show_warning",
     [
-        # normal execution
         (
             {},
             "<http://localhost/api/v4/tests?per_page=1&page=2>;" ' rel="next"',
             "http://localhost/api/v4/tests?per_page=1&page=2",
             False,
         ),
-        # got different url and will show the warning
         (
             {},
             "<http://orig_host/api/v4/tests?per_page=1&page=2>;" ' rel="next"',
             "http://orig_host/api/v4/tests?per_page=1&page=2",
             True,
         ),
-        # persist the base url
         (
-            {"persist_base_url": True},
+            {"keep_base_url": True},
             "<http://orig_host/api/v4/tests?per_page=1&page=2>;" ' rel="next"',
             "http://localhost/api/v4/tests?per_page=1&page=2",
             False,
         ),
     ],
+    ids=["url-match-does-not-warn", "url-mismatch-warns", "url-mismatch-keeps-url"],
 )
-def test_gitlab_persist_base_url(kwargs, link_header, expected_next_url, show_warning):
+def test_gitlab_keep_base_url(kwargs, link_header, expected_next_url, show_warning):
     responses.add(
         **{
             "method": responses.GET,
