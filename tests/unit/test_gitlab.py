@@ -353,3 +353,58 @@ def test_gitlab_plain_const_does_not_warn(recwarn):
 
     assert not recwarn
     assert no_access == 0
+
+
+@responses.activate
+@pytest.mark.parametrize(
+    "kwargs,link_header,expected_next_url,show_warning",
+    [
+        (
+            {},
+            "<http://localhost/api/v4/tests?per_page=1&page=2>;" ' rel="next"',
+            "http://localhost/api/v4/tests?per_page=1&page=2",
+            False,
+        ),
+        (
+            {},
+            "<http://orig_host/api/v4/tests?per_page=1&page=2>;" ' rel="next"',
+            "http://orig_host/api/v4/tests?per_page=1&page=2",
+            True,
+        ),
+        (
+            {"keep_base_url": True},
+            "<http://orig_host/api/v4/tests?per_page=1&page=2>;" ' rel="next"',
+            "http://localhost/api/v4/tests?per_page=1&page=2",
+            False,
+        ),
+    ],
+    ids=["url-match-does-not-warn", "url-mismatch-warns", "url-mismatch-keeps-url"],
+)
+def test_gitlab_keep_base_url(kwargs, link_header, expected_next_url, show_warning):
+    responses.add(
+        **{
+            "method": responses.GET,
+            "url": "http://localhost/api/v4/tests",
+            "json": [{"a": "b"}],
+            "headers": {
+                "X-Page": "1",
+                "X-Next-Page": "2",
+                "X-Per-Page": "1",
+                "X-Total-Pages": "2",
+                "X-Total": "2",
+                "Link": (link_header),
+            },
+            "content_type": "application/json",
+            "status": 200,
+            "match": helpers.MATCH_EMPTY_QUERY_PARAMS,
+        }
+    )
+
+    gl = gitlab.Gitlab(url="http://localhost", **kwargs)
+    if show_warning:
+        with pytest.warns(UserWarning) as warn_record:
+            obj = gl.http_list("/tests", iterator=True)
+        assert len(warn_record) == 1
+    else:
+        obj = gl.http_list("/tests", iterator=True)
+    assert obj._next_url == expected_next_url
