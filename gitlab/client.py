@@ -1130,13 +1130,8 @@ class GitlabList:
         query_data = query_data or {}
         result = self._gl.http_request("get", url, query_data=query_data, **kwargs)
         try:
-            links = result.links
-            if links:
-                next_url = links["next"]["url"]
-            else:
-                next_url = requests.utils.parse_header_links(result.headers["links"])[
-                    0
-                ]["url"]
+            next_url = result.links["next"]["url"]
+
             # if the next url is different with user provided server URL
             # then give a warning it may because of misconfiguration
             # but if the option to fix provided then just reconstruct it
