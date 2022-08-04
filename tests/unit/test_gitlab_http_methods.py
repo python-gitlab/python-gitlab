@@ -37,6 +37,24 @@ def test_http_request(gl):
 
 
 @responses.activate
+def test_http_request_with_url_encoded_kwargs_does_not_duplicate_params(gl):
+    url = "http://localhost/api/v4/projects?topics%5B%5D=python"
+    responses.add(
+        method=responses.GET,
+        url=url,
+        json=[{"name": "project1"}],
+        status=200,
+        match=[responses.matchers.query_param_matcher({"topics[]": "python"})],
+    )
+
+    kwargs = {"topics[]": "python"}
+    http_r = gl.http_request("get", "/projects?topics%5B%5D=python", **kwargs)
+    http_r.json()
+    assert http_r.status_code == 200
+    assert responses.assert_call_count(url, 1)
+
+
+@responses.activate
 def test_http_request_404(gl):
     url = "http://localhost/api/v4/not_there"
     responses.add(

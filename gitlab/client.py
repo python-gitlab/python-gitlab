@@ -20,6 +20,7 @@ import os
 import re
 import time
 from typing import Any, cast, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
+from urllib import parse
 
 import requests
 import requests.utils
@@ -677,10 +678,14 @@ class Gitlab:
             GitlabHttpError: When the return code is not 2xx
         """
         query_data = query_data or {}
-        url = self._build_url(path)
+        raw_url = self._build_url(path)
 
-        params: Dict[str, Any] = {}
+        # parse user-provided URL params to ensure we don't add our own duplicates
+        parsed = parse.urlparse(raw_url)
+        params = parse.parse_qs(parsed.query)
         utils.copy_dict(src=query_data, dest=params)
+
+        url = raw_url.replace(parsed.query, "").strip("?")
 
         # Deal with kwargs: by default a user uses kwargs to send data to the
         # gitlab server, but this generates problems (python keyword conflicts
