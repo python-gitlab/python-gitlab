@@ -22,6 +22,9 @@ python-gitlab
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/python/black
 
+.. image:: https://img.shields.io/github/license/python-gitlab/python-gitlab
+   :target: https://github.com/python-gitlab/python-gitlab/blob/main/COPYING
+
 ``python-gitlab`` is a Python package providing access to the GitLab server API.
 
 It supports the v4 API of GitLab, and provides a CLI tool (``gitlab``).
