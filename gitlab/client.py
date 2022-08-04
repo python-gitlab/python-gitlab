@@ -685,7 +685,7 @@ class Gitlab:
         params = parse.parse_qs(parsed.query)
         utils.copy_dict(src=query_data, dest=params)
 
-        url = raw_url.replace(parsed.query, "").strip("?")
+        url = parse.urlunparse(parsed._replace(query=""))
 
         # Deal with kwargs: by default a user uses kwargs to send data to the
         # gitlab server, but this generates problems (python keyword conflicts
