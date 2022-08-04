@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v3.8.0 (2022-08-04)
+### Feature
+* **client:** Warn user on misconfigured URL in `auth()` ([`0040b43`](https://github.com/python-gitlab/python-gitlab/commit/0040b4337bae815cfe1a06f8371a7a720146f271))
+* Support downloading archive subpaths ([`cadb0e5`](https://github.com/python-gitlab/python-gitlab/commit/cadb0e55347cdac149e49f611c99b9d53a105520))
+
+### Fix
+* **client:** Ensure encoded query params are never duplicated ([`1398426`](https://github.com/python-gitlab/python-gitlab/commit/1398426cd748fdf492fe6184b03ac2fcb7e4fd6e))
+* Optionally keep user-provided base URL for pagination ([#2149](https://github.com/python-gitlab/python-gitlab/issues/2149)) ([`e2ea8b8`](https://github.com/python-gitlab/python-gitlab/commit/e2ea8b89a7b0aebdb1eb3b99196d7c0034076df8))
+
+### Documentation
+* Describe self-revoking personal access tokens ([`5ea48fc`](https://github.com/python-gitlab/python-gitlab/commit/5ea48fc3c28f872dd1184957a6f2385da075281c))
+
 ## v3.7.0 (2022-07-28)
 ### Feature
 * Allow sort/ordering for project releases ([`b1dd284`](https://github.com/python-gitlab/python-gitlab/commit/b1dd284066b4b94482b9d41310ac48b75bcddfee))
