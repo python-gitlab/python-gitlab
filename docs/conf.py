@@ -83,9 +83,7 @@ root_doc = "index"
 
 # General information about the project.
 project = "python-gitlab"
-copyright = (
-    f"2013-2018, Gauvain Pocentek, Mika Mäenpää.\n2018-{year}, python-gitlab team"
-)
+copyright = gitlab.__copyright__
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2013-2017 Gauvain Pocentek <gauvain@pocentek.net>
+# Copyright (C) 2013-2019 Gauvain Pocentek, 2019-2022 python-gitlab team
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
