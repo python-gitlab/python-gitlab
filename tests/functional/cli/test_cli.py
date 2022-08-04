@@ -100,6 +100,7 @@ def test_private_token_overrides_job_token(
     # CLI first calls .auth() when private token is present
     resp_auth_with_token = copy.deepcopy(resp_get_project_with_token)
     resp_auth_with_token.update(url=f"{DEFAULT_URL}/api/v4/user")
+    resp_auth_with_token["json"].update(username="user", web_url=f"{DEFAULT_URL}/user")
 
     responses.add(**resp_get_project_with_token)
     responses.add(**resp_auth_with_token)

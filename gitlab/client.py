@@ -364,12 +364,14 @@ class Gitlab:
         return (None, None, None)
 
     def auth(self) -> None:
-        """Performs an authentication using private token.
+        """Performs an authentication using private token. Warns the user if a
+        potentially misconfigured URL is detected on the client or server side.
 
         The `user` attribute will hold a `gitlab.objects.CurrentUser` object on
         success.
         """
         self.user = self._objects.CurrentUserManager(self).get()
+        self._check_url(self.user.web_url, path=self.user.username)
 
     def version(self) -> Tuple[str, str]:
         """Returns the version and revision of the gitlab server.

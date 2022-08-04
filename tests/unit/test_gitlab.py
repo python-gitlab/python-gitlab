@@ -37,7 +37,11 @@ def resp_get_user():
     return {
         "method": responses.GET,
         "url": "http://localhost/api/v4/user",
-        "json": {"id": 1, "username": "username"},
+        "json": {
+            "id": 1,
+            "username": "username",
+            "web_url": "http://localhost/username",
+        },
         "content_type": "application/json",
         "status": 200,
     }
@@ -252,6 +256,24 @@ def test_gitlab_token_auth(gl, resp_get_user):
     assert gl.user.username == "username"
     assert gl.user.id == 1
     assert isinstance(gl.user, gitlab.v4.objects.CurrentUser)
+
+
+@responses.activate
+def test_gitlab_auth_with_mismatching_url_warns():
+    responses.add(
+        method=responses.GET,
+        url="http://first.example.com/api/v4/user",
+        json={
+            "username": "test-user",
+            "web_url": "http://second.example.com/test-user",
+        },
+        content_type="application/json",
+        status=200,
+    )
+    gl = gitlab.Gitlab("http://first.example.com")
+
+    with pytest.warns(UserWarning):
+        gl.auth()
 
 
 def test_gitlab_default_url():
