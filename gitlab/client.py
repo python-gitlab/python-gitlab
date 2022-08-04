@@ -577,6 +577,36 @@ class Gitlab:
             return path
         return f"{self._url}{path}"
 
+    def _check_url(self, url: Optional[str], *, path: str = "api") -> Optional[str]:
+        """
+        Checks if ``url`` starts with a different base URL from the user-provided base
+        URL and warns the user before returning it. If ``keep_base_url`` is set to
+        ``True``, instead returns the URL massaged to match the user-provided base URL.
+        """
+        if not url or url.startswith(self.url):
+            return url
+
+        match = re.match(rf"(^.*?)/{path}", url)
+        if not match:
+            return url
+
+        base_url = match.group(1)
+        if self.keep_base_url:
+            return url.replace(base_url, f"{self._base_url}")
+
+        utils.warn(
+            message=(
+                f"The base URL in the server response differs from the user-provided "
+                f"base URL ({self.url} -> {base_url}).\nThis is usually caused by a "
+                f"misconfigured base URL on your side or a misconfigured external_url "
+                f"on the server side, and can lead to broken pagination and unexpected "
+                f"behavior. If this is intentional, use `keep_base_url=True` when "
+                f"initializing the Gitlab instance to keep the user-provided base URL."
+            ),
+            category=UserWarning,
+        )
+        return url
+
     @staticmethod
     def _check_redirects(result: requests.Response) -> None:
         # Check the requests history to detect 301/302 redirections.
@@ -1136,34 +1166,10 @@ class GitlabList:
         result = self._gl.http_request("get", url, query_data=query_data, **kwargs)
         try:
             next_url = result.links["next"]["url"]
-
-            # if the next url is different with user provided server URL
-            # then give a warning it may because of misconfiguration
-            # but if the option to fix provided then just reconstruct it
-            if not next_url.startswith(self._gl.url):
-                search_api_url = re.search(r"(^.*?/api)", next_url)
-                if search_api_url:
-                    next_api_url = search_api_url.group(1)
-                    if self._gl.keep_base_url:
-                        next_url = next_url.replace(
-                            next_api_url, f"{self._gl._base_url}/api"
-                        )
-                    else:
-                        utils.warn(
-                            message=(
-                                f"The base URL in the server response"
-                                f"differs from the user-provided base URL "
-                                f"({self._gl.url}/api/ -> {next_api_url}/). "
-                                f"This may lead to unexpected behavior and  "
-                                f"broken pagination. Use `keep_base_url=True` "
-                                f"when initializing the Gitlab instance "
-                                f"to follow the user-provided base URL."
-                            ),
-                            category=UserWarning,
-                        )
-            self._next_url = next_url
         except KeyError:
-            self._next_url = None
+            next_url = None
+
+        self._next_url = self._gl._check_url(next_url)
         self._current_page: Optional[str] = result.headers.get("X-Page")
         self._prev_page: Optional[str] = result.headers.get("X-Prev-Page")
         self._next_page: Optional[str] = result.headers.get("X-Next-Page")
