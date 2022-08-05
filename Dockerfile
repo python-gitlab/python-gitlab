@@ -3,7 +3,7 @@ FROM python:3.10-${PYTHON_FLAVOR} AS build
 
 WORKDIR /opt/python-gitlab
 COPY . .
-RUN python setup.py bdist_wheel
+RUN pip install build && python -m build
 
 FROM python:3.10-${PYTHON_FLAVOR}
 

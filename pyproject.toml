@@ -32,13 +32,13 @@ module = [
     "tests.*",
     "tests.functional.*",
     "tests.functional.api.*",
-    "tests.unit.*",
-    "tests.smoke.*"
+    "tests.unit.*"
 ]
 ignore_errors = true
 
 [tool.semantic_release]
 branch = "main"
+build_command = "pip install build && python -m build"
 version_variable = "gitlab/_version.py:__version__"
 commit_subject = "chore: release v{version}"
 commit_message = ""

@@ -32,18 +32,18 @@ jobs:
           - version: "3.9"
             toxenv: py39
           - version: "3.10"
-            toxenv: py310,smoke
+            toxenv: py310,meta
           - version: '3.11.0-alpha - 3.11' # SemVer's version range syntax
-            toxenv: py311,smoke
+            toxenv: py311,meta
         include:
           - os: macos-latest
             python:
               version: "3.10"
-              toxenv: py310,smoke
+              toxenv: py310,meta
           - os: windows-latest
             python:
               version: "3.10"
-              toxenv: py310,smoke
+              toxenv: py310,meta
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python.version }}
