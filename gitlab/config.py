@@ -17,6 +17,8 @@ HELPER_PREFIX = "helper:"
 
 HELPER_ATTRIBUTES = ["job_token", "http_password", "private_token", "oauth_token"]
 
+_CONFIG_PARSER_ERRORS = (configparser.NoOptionError, configparser.NoSectionError)
+
 
 def _resolve_file(filepath: Union[Path, str]) -> str:
     resolved = Path(filepath).resolve(strict=True)
@@ -148,11 +150,8 @@ class GitlabConfigParser:
             # Value Error means the option exists but isn't a boolean.
             # Get as a string instead as it should then be a local path to a
             # CA bundle.
-            try:
-                self.ssl_verify = _config.get("global", "ssl_verify")
-            except Exception:  # pragma: no cover
-                pass
-        except Exception:
+            self.ssl_verify = _config.get("global", "ssl_verify")
+        except _CONFIG_PARSER_ERRORS:
             pass
         try:
             self.ssl_verify = _config.getboolean(self.gitlab_id, "ssl_verify")
@@ -160,35 +159,32 @@ class GitlabConfigParser:
             # Value Error means the option exists but isn't a boolean.
             # Get as a string instead as it should then be a local path to a
             # CA bundle.
-            try:
-                self.ssl_verify = _config.get(self.gitlab_id, "ssl_verify")
-            except Exception:  # pragma: no cover
-                pass
-        except Exception:
+            self.ssl_verify = _config.get(self.gitlab_id, "ssl_verify")
+        except _CONFIG_PARSER_ERRORS:
             pass
 
         try:
             self.timeout = _config.getint("global", "timeout")
-        except Exception:
+        except _CONFIG_PARSER_ERRORS:
             pass
         try:
             self.timeout = _config.getint(self.gitlab_id, "timeout")
-        except Exception:
+        except _CONFIG_PARSER_ERRORS:
             pass
 
         try:
             self.private_token = _config.get(self.gitlab_id, "private_token")
-        except Exception:
+        except _CONFIG_PARSER_ERRORS:
             pass
 
         try:
             self.oauth_token = _config.get(self.gitlab_id, "oauth_token")
-        except Exception:
+        except _CONFIG_PARSER_ERRORS:
             pass
 
         try:
             self.job_token = _config.get(self.gitlab_id, "job_token")
-        except Exception:
+        except _CONFIG_PARSER_ERRORS:
             pass
 
         try:
@@ -196,18 +192,18 @@ class GitlabConfigParser:
             self.http_password = _config.get(
                 self.gitlab_id, "http_password"
             )  # pragma: no cover
-        except Exception:
+        except _CONFIG_PARSER_ERRORS:
             pass
 
         self._get_values_from_helper()
 
         try:
             self.api_version = _config.get("global", "api_version")
-        except Exception:
+        except _CONFIG_PARSER_ERRORS:
             pass
         try:
             self.api_version = _config.get(self.gitlab_id, "api_version")
-        except Exception:
+        except _CONFIG_PARSER_ERRORS:
             pass
         if self.api_version not in ("4",):
             raise GitlabDataError(f"Unsupported API version: {self.api_version}")
@@ -215,41 +211,41 @@ class GitlabConfigParser:
         for section in ["global", self.gitlab_id]:
             try:
                 self.per_page = _config.getint(section, "per_page")
-            except Exception:
+            except _CONFIG_PARSER_ERRORS:
                 pass
         if self.per_page is not None and not 0 <= self.per_page <= 100:
             raise GitlabDataError(f"Unsupported per_page number: {self.per_page}")
 
         try:
             self.pagination = _config.get(self.gitlab_id, "pagination")
-        except Exception:
+        except _CONFIG_PARSER_ERRORS:
             pass
 
         try:
             self.order_by = _config.get(self.gitlab_id, "order_by")
-        except Exception:
+        except _CONFIG_PARSER_ERRORS:
             pass
 
         try:
             self.user_agent = _config.get("global", "user_agent")
-        except Exception:
+        except _CONFIG_PARSER_ERRORS:
             pass
         try:
             self.user_agent = _config.get(self.gitlab_id, "user_agent")
-        except Exception:
+        except _CONFIG_PARSER_ERRORS:
             pass
 
         try:
             self.retry_transient_errors = _config.getboolean(
                 "global", "retry_transient_errors"
             )
-        except Exception:
+        except _CONFIG_PARSER_ERRORS:
             pass
         try:
             self.retry_transient_errors = _config.getboolean(
                 self.gitlab_id, "retry_transient_errors"
             )
-        except Exception:
+        except _CONFIG_PARSER_ERRORS:
             pass
 
     def _get_values_from_helper(self) -> None:
