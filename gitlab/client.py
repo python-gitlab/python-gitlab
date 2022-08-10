@@ -355,7 +355,9 @@ class Gitlab:
         success.
         """
         self.user = self._objects.CurrentUserManager(self).get()
-        self._check_url(self.user.web_url, path=self.user.username)
+
+        if hasattr(self.user, "web_url") and hasattr(self.user, "username"):
+            self._check_url(self.user.web_url, path=self.user.username)
 
     def version(self) -> Tuple[str, str]:
         """Returns the version and revision of the gitlab server.
