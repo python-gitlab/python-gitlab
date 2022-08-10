@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.8.1 (2022-08-10)
+### Fix
+* **client:** Do not assume user attrs returned for auth() ([`a07547c`](https://github.com/python-gitlab/python-gitlab/commit/a07547cba981380935966dff2c87c2c27d6b18d9))
+
 ## v3.8.0 (2022-08-04)
 ### Feature
 * **client:** Warn user on misconfigured URL in `auth()` ([`0040b43`](https://github.com/python-gitlab/python-gitlab/commit/0040b4337bae815cfe1a06f8371a7a720146f271))
