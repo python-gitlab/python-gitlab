@@ -231,6 +231,10 @@ Compare two branches, tags or commits::
     for file_diff in result['diffs']:
         print(file_diff)
 
+Get the merge base for two or more branches, tags or commits::
+
+    commit = project.repository_merge_base(['main', 'v1.2.3', 'bd1324e2f'])
+
 Get a list of contributors for the repository::
 
     contributors = project.repository_contributors()

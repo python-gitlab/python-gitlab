@@ -302,6 +302,12 @@ Define the status of a commit (as would be done from a CI tool for example):
        --target-url http://server/build/123 \
        --description "Jenkins build succeeded"
 
+Get the merge base for two or more branches, tags or commits:
+
+.. code-block:: console
+
+    gitlab project repository-merge-base --id 1 --refs bd1324e2f,main,v1.0.0
+
 Artifacts
 ---------
 

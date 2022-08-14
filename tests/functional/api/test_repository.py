@@ -174,3 +174,13 @@ def test_revert_commit(project):
     with pytest.raises(gitlab.GitlabRevertError):
         # Two revert attempts should raise GitlabRevertError
         commit.revert(branch="main")
+
+
+def test_repository_merge_base(project):
+    refs = [commit.id for commit in project.commits.list(all=True)]
+
+    commit = project.repository_merge_base(refs)
+    assert commit["id"] in refs
+
+    with pytest.raises(gitlab.GitlabGetError, match="Provide at least 2 refs"):
+        commit = project.repository_merge_base(refs[0])
