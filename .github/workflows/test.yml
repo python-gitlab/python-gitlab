@@ -51,7 +51,7 @@ jobs:
         with:
           python-version: ${{ matrix.python.version }}
       - name: Install dependencies
-        run: pip3 install tox pytest-github-actions-annotate-failures
+        run: pip install tox
       - name: Run tests
         env:
           TOXENV: ${{ matrix.python.toxenv }}
@@ -69,7 +69,7 @@ jobs:
         with:
           python-version: "3.10"
       - name: Install dependencies
-        run: pip install tox pytest-github-actions-annotate-failures
+        run: pip install tox
       - name: Run tests
         env:
           TOXENV: ${{ matrix.toxenv }}
@@ -90,7 +90,7 @@ jobs:
         with:
           python-version: "3.10"
       - name: Install dependencies
-        run: pip install tox pytest-github-actions-annotate-failures
+        run: pip install tox
       - name: Run tests
         env:
           PY_COLORS: 1
