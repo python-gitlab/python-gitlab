@@ -110,6 +110,7 @@ class TestRESTObject:
         assert "missing_attribute" in exc_str
         assert "was created via a list()" not in exc_str
         assert base._URL_ATTRIBUTE_ERROR not in exc_str
+        assert "This is failure" == "no"
 
     def test_missing_attribute_from_list_raises_custom(self, fake_gitlab, fake_manager):
         """Ensure a missing attribute raises our custom error message if the
