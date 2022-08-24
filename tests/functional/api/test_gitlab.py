@@ -126,6 +126,7 @@ def test_hooks(gl):
 
 
 def test_namespaces(gl, get_all_kwargs):
+    gl.auth()
     current_user = gl.user.username
 
     namespaces = gl.namespaces.list(**get_all_kwargs)
