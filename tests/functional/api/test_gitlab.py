@@ -240,7 +240,11 @@ def test_list_all_false_nowarning(gl, recwarn):
 def test_list_all_true_nowarning(gl, get_all_kwargs, recwarn):
     """Using `get_all=True` will disable the warning"""
     items = gl.gitlabciymls.list(**get_all_kwargs)
-    assert not recwarn
+    for warn in recwarn:
+        if issubclass(warn.category, UserWarning):
+            # Our warning has a link to the docs in it, make sure we don't have
+            # that.
+            assert "python-gitlab.readthedocs.io" not in str(warn.message)
     assert len(items) > 20
 
 
