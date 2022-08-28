@@ -40,6 +40,18 @@ Update a deployment::
     deployment.status = "failed"
     deployment.save()
 
+Approve a deployment::
+
+    deployment = project.deployments.get(42)
+    # `status` must be either "approved" or "rejected".
+    deployment.approval(status="approved")
+
+Reject a deployment::
+
+    deployment = project.deployments.get(42)
+    # Using the optional `comment` and `represented_as` arguments
+    deployment.approval(status="rejected", comment="Fails CI", represented_as="security")
+
 Merge requests associated with a deployment
 ===========================================
 
