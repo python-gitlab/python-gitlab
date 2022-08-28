@@ -3,4 +3,4 @@ __copyright__ = "Copyright 2013-2019 Gauvain Pocentek, 2019-2022 python-gitlab t
 __email__ = "gauvainpocentek@gmail.com"
 __license__ = "LGPL3"
 __title__ = "python-gitlab"
-__version__ = "3.8.1"
+__version__ = "3.9.0"
