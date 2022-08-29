@@ -7,7 +7,7 @@ repos:
     hooks:
       - id: black
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v2.32.1
+    rev: v2.32.2
     hooks:
       - id: commitizen
         stages: [commit-msg]
