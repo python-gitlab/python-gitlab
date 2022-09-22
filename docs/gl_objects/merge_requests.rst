@@ -189,6 +189,10 @@ Attempt to rebase an MR::
 
     mr.rebase()
 
+Clear all approvals of a merge request (possible with project or group access tokens only)::
+
+    mr.reset_approvals()
+
 Get status of a rebase for an MR::
 
     mr = project.mergerequests.get(mr_id, include_rebase_in_progress=True)

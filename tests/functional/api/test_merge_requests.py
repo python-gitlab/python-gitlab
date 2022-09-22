@@ -117,6 +117,15 @@ def test_merge_request_rebase(project):
     assert mr.rebase()
 
 
+def test_merge_request_reset_approvals(gitlab_url, project):
+    bot = project.access_tokens.create({"name": "bot", "scopes": ["api"]})
+    bot_gitlab = gitlab.Gitlab(gitlab_url, private_token=bot.token)
+    bot_project = bot_gitlab.projects.get(project.id, lazy=True)
+
+    mr = bot_project.mergerequests.list()[0]
+    assert mr.reset_approvals()
+
+
 @pytest.mark.skip(reason="flaky test")
 def test_merge_request_merge(project):
     mr = project.mergerequests.list()[0]

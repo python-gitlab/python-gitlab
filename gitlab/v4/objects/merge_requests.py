@@ -328,6 +328,24 @@ class ProjectMergeRequest(
         return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
 
     @cli.register_custom_action("ProjectMergeRequest")
+    @exc.on_http_error(exc.GitlabMRResetApprovalError)
+    def reset_approvals(
+        self, **kwargs: Any
+    ) -> Union[Dict[str, Any], requests.Response]:
+        """Clear all approvals of the merge request.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabMRResetApprovalError: If reset approval failed
+        """
+        path = f"{self.manager.path}/{self.encoded_id}/reset_approvals"
+        data: Dict[str, Any] = {}
+        return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+
+    @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabGetError)
     def merge_ref(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Attempt to merge changes between source and target branches into
