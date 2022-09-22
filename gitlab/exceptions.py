@@ -205,6 +205,10 @@ class GitlabMRRebaseError(GitlabOperationError):
     pass
 
 
+class GitlabMRResetApprovalError(GitlabOperationError):
+    pass
+
+
 class GitlabMRClosedError(GitlabOperationError):
     pass
 
