@@ -401,15 +401,18 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
     _create_attrs = RequiredOptional(
         required=("source_branch", "target_branch", "title"),
         optional=(
+            "allow_collaboration",
+            "allow_maintainer_to_push",
+            "approvals_before_merge",
             "assignee_id",
+            "assignee_ids",
             "description",
-            "target_project_id",
             "labels",
             "milestone_id",
             "remove_source_branch",
-            "allow_maintainer_to_push",
-            "squash",
             "reviewer_ids",
+            "squash",
+            "target_project_id",
         ),
     )
     _update_attrs = RequiredOptional(
