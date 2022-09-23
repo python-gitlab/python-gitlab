@@ -59,7 +59,7 @@ def test_lint(gl):
 def test_sidekiq_queue_metrics(gl):
     out = gl.sidekiq.queue_metrics()
     assert isinstance(out, dict)
-    assert "pages" in out["queues"]
+    assert "default" in out["queues"]
 
 
 def test_sidekiq_process_metrics(gl):
