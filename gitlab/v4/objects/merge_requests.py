@@ -242,7 +242,7 @@ class ProjectMergeRequest(
         manager = ProjectCommitManager(self.manager.gitlab, parent=self.manager._parent)
         return RESTObjectList(manager, ProjectCommit, data_list)
 
-    @cli.register_custom_action("ProjectMergeRequest")
+    @cli.register_custom_action("ProjectMergeRequest", optional=("access_raw_diffs",))
     @exc.on_http_error(exc.GitlabListError)
     def changes(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """List the merge request changes.
