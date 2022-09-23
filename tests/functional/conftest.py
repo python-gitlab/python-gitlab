@@ -68,11 +68,18 @@ def reset_gitlab(gl: gitlab.Gitlab) -> None:
     if is_gitlab_ee(gl):
         logging.info("GitLab EE detected")
         # NOTE(jlvillal): By default in GitLab EE it will wait 7 days before
-        # deleting a group. Change it to 0 days.
+        # deleting a group. Disable delayed group/project deletion.
         settings = gl.settings.get()
-        if settings.deletion_adjourned_period != 0:
-            logging.info("Setting deletion_adjourned_period to 0")
-            settings.deletion_adjourned_period = 0
+        modified_settings = False
+        if settings.delayed_group_deletion:
+            logging.info("Setting `delayed_group_deletion` to False")
+            settings.delayed_group_deletion = False
+            modified_settings = True
+        if settings.delayed_project_deletion:
+            logging.info("Setting `delayed_project_deletion` to False")
+            settings.delayed_project_deletion = False
+            modified_settings = True
+        if modified_settings:
             settings.save()
 
     for project in gl.projects.list():
