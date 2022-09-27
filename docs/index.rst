@@ -11,6 +11,7 @@
    api-objects
    api/gitlab
    cli-objects
+   contributor/index
    changelog
    release-notes
    faq
