@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v3.10.0 (2022-09-28)
+### Feature
+* Add reset_approvals api ([`88693ff`](https://github.com/python-gitlab/python-gitlab/commit/88693ff2d6f4eecf3c79d017df52738886e2d636))
+* Add support for deployment approval endpoint ([`9c9eeb9`](https://github.com/python-gitlab/python-gitlab/commit/9c9eeb901b1f3acd3fb0c4f24014ae2ed7c975ec))
+
+### Fix
+* **cli:** Add missing attributes for creating MRs ([`1714d0a`](https://github.com/python-gitlab/python-gitlab/commit/1714d0a980afdb648d203751dedf95ee95ac326e))
+* **cli:** Add missing attribute for MR changes ([`20c46a0`](https://github.com/python-gitlab/python-gitlab/commit/20c46a0572d962f405041983e38274aeb79a12e4))
+
 ## v3.9.0 (2022-08-28)
 ### Feature
 * Add support for merge_base API ([`dd4fbd5`](https://github.com/python-gitlab/python-gitlab/commit/dd4fbd5e43adbbc502624a8de0d30925d798dec0))
