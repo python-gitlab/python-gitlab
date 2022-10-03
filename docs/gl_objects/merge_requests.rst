@@ -92,7 +92,7 @@ For example::
 
 Get a single MR::
 
-    mr = project.mergerequests.get(mr_id)
+    mr = project.mergerequests.get(mr_iid)
 
 Create a MR::
 
@@ -114,7 +114,7 @@ Change the state of a MR (close or reopen)::
 
 Delete a MR::
 
-    project.mergerequests.delete(mr_id)
+    project.mergerequests.delete(mr_iid)
     # or
     mr.delete()
 
