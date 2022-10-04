@@ -1,5 +1,6 @@
 """Wrapper for the GitLab API."""
 
+import logging
 import os
 import re
 import time
@@ -13,6 +14,8 @@ import gitlab.config
 import gitlab.const
 import gitlab.exceptions
 from gitlab import _backends, utils
+
+LOG = logging.getLogger(__name__)
 
 REDIRECT_MSG = (
     "python-gitlab detected a {status_code} ({reason!r}) redirection. You must update "
@@ -540,7 +543,6 @@ class Gitlab:
 
     @staticmethod
     def enable_debug() -> None:
-        import logging
         from http.client import HTTPConnection  # noqa
 
         HTTPConnection.debuglevel = 1
@@ -549,6 +551,7 @@ class Gitlab:
         requests_log = logging.getLogger("requests.packages.urllib3")
         requests_log.setLevel(logging.DEBUG)
         requests_log.propagate = True
+        LOG.debug("Enabled debug mode for python-gitlab")
 
     def _get_session_opts(self) -> Dict[str, Any]:
         return {

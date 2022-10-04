@@ -19,6 +19,7 @@
 import warnings
 from typing import Any
 
+import gitlab._logging
 import gitlab.config  # noqa: F401
 from gitlab import utils as _utils
 from gitlab._version import (  # noqa: F401
