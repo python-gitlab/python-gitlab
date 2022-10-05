@@ -70,8 +70,7 @@ def test_delete_user(gl, wait_for_sidekiq):
     )
 
     new_user.delete()
-    result = wait_for_sidekiq(timeout=60)
-    assert result is True, "sidekiq process should have terminated but did not"
+    wait_for_sidekiq(timeout=60)
 
     assert new_user.id not in [user.id for user in gl.users.list()]
 

@@ -224,7 +224,7 @@ def wait_for_sidekiq(gl):
     Use this with asserts for slow tasks (group/project/user creation/deletion).
     """
 
-    def _wait(timeout=30, step=0.5):
+    def _wait(timeout: int = 30, step: float = 0.5, allow_fail: bool = False) -> bool:
         for count in range(timeout):
             time.sleep(step)
             busy = False
@@ -235,6 +235,7 @@ def wait_for_sidekiq(gl):
             if not busy:
                 return True
             logging.info(f"sidekiq busy {count} of {timeout}")
+        assert allow_fail, "sidekiq process should have terminated but did not."
         return False
 
     return _wait

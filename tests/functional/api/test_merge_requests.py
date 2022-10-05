@@ -150,8 +150,7 @@ def test_merge_request_should_remove_source_branch(
 
     mr.merge(should_remove_source_branch=True)
 
-    result = wait_for_sidekiq(timeout=60)
-    assert result is True, "sidekiq process should have terminated but did not"
+    wait_for_sidekiq(timeout=60)
 
     # Wait until it is merged
     mr_iid = mr.iid
@@ -162,8 +161,7 @@ def test_merge_request_should_remove_source_branch(
         time.sleep(0.5)
     assert mr.merged_at is not None
     time.sleep(0.5)
-    result = wait_for_sidekiq(timeout=60)
-    assert result is True, "sidekiq process should have terminated but did not"
+    wait_for_sidekiq(timeout=60)
 
     # Ensure we can NOT get the MR branch
     with pytest.raises(gitlab.exceptions.GitlabGetError):
@@ -195,8 +193,7 @@ def test_merge_request_large_commit_message(
         merge_commit_message=merge_commit_message, should_remove_source_branch=False
     )
 
-    result = wait_for_sidekiq(timeout=60)
-    assert result is True, "sidekiq process should have terminated but did not"
+    wait_for_sidekiq(timeout=60)
 
     # Wait until it is merged
     mr_iid = mr.iid
@@ -235,8 +232,7 @@ def test_merge_request_merge_ref_should_fail(
             "commit_message": "Another commit in main branch",
         }
     )
-    result = wait_for_sidekiq(timeout=60)
-    assert result is True, "sidekiq process should have terminated but did not"
+    wait_for_sidekiq(timeout=60)
 
     # Check for non-existing merge_ref for MR with conflicts
     with pytest.raises(gitlab.exceptions.GitlabGetError):
