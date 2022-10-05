@@ -387,9 +387,9 @@ def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
 
 
 def get_dict(
-    obj: Union[str, gitlab.base.RESTObject], fields: List[str]
+    obj: Union[str, Dict[str, Any], gitlab.base.RESTObject], fields: List[str]
 ) -> Union[str, Dict[str, Any]]:
-    if isinstance(obj, str):
+    if not isinstance(obj, gitlab.base.RESTObject):
         return obj
 
     if fields:
@@ -406,7 +406,7 @@ class JSONPrinter:
 
     @staticmethod
     def display_list(
-        data: List[Union[str, gitlab.base.RESTObject]],
+        data: List[Union[str, Dict[str, Any], gitlab.base.RESTObject]],
         fields: List[str],
         **_kwargs: Any,
     ) -> None:
@@ -431,7 +431,7 @@ class YAMLPrinter:
 
     @staticmethod
     def display_list(
-        data: List[Union[str, gitlab.base.RESTObject]],
+        data: List[Union[str, Dict[str, Any], gitlab.base.RESTObject]],
         fields: List[str],
         **_kwargs: Any,
     ) -> None:
