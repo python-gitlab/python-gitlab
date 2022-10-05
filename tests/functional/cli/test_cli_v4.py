@@ -252,7 +252,7 @@ def test_create_merge_request(gitlab_cli, project):
     assert ret.success
 
 
-def test_accept_request_merge(gitlab_cli, project):
+def test_accept_request_merge(gitlab_cli, project, wait_for_sidekiq):
     # MR needs at least 1 commit before we can merge
     mr = project.mergerequests.list()[0]
     file_data = {
@@ -263,6 +263,7 @@ def test_accept_request_merge(gitlab_cli, project):
     }
     project.files.create(file_data)
     time.sleep(2)
+    wait_for_sidekiq(timeout=60)
 
     cmd = [
         "project-merge-request",
