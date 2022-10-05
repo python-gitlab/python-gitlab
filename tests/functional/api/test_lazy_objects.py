@@ -29,8 +29,7 @@ def test_save_after_lazy_get_with_path(project, lazy_project):
 
 def test_delete_after_lazy_get_with_path(gl, group, wait_for_sidekiq):
     project = gl.projects.create({"name": "lazy_project", "namespace_id": group.id})
-    result = wait_for_sidekiq(timeout=60)
-    assert result is True, "sidekiq process should have terminated but did not"
+    wait_for_sidekiq(timeout=60)
     lazy_project = gl.projects.get(project.path_with_namespace, lazy=True)
     lazy_project.delete()
 
