@@ -1,4 +1,4 @@
-argcomplete<=2.0.0
+argcomplete==2.0.0
 black==22.10.0
 commitizen==2.35.0
 flake8==5.0.4
