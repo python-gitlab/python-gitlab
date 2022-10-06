@@ -35,6 +35,11 @@ def gitlab_version(gl) -> GitlabVersion:
 
 
 @pytest.fixture(scope="session")
+def docker_compose_command():
+    return "docker compose"
+
+
+@pytest.fixture(scope="session")
 def fixture_dir(test_dir) -> pathlib.Path:
     return test_dir / "functional" / "fixtures"
 
