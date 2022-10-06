@@ -1,3 +1,12 @@
+---
+name: Issue report
+about: Create a report to help us improve
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 ## Description of the problem, including code/CLI snippet
 
 
