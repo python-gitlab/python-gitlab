@@ -45,9 +45,9 @@ jobs:
               version: "3.10"
               toxenv: py310,smoke
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.0
       - name: Set up Python ${{ matrix.python.version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v4.2.0
         with:
           python-version: ${{ matrix.python.version }}
       - name: Install dependencies
@@ -63,9 +63,9 @@ jobs:
       matrix:
         toxenv: [api_func_v4, cli_func_v4]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.0
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v4.2.0
         with:
           python-version: "3.10"
       - name: Install dependencies
@@ -84,9 +84,9 @@ jobs:
   coverage:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.0
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v4.2.0
         with:
           python-version: "3.10"
       - name: Install dependencies

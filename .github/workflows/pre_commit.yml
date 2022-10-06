@@ -29,8 +29,8 @@ jobs:
   pre_commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v3.1.0
+      - uses: actions/setup-python@v4.2.0
         with:
           python-version: "3.10"
       - name: Install pre-commit
