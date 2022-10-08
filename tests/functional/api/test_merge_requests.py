@@ -127,11 +127,10 @@ def test_merge_request_reset_approvals(gitlab_url, project, wait_for_sidekiq):
     assert mr.reset_approvals()
 
 
-@pytest.mark.skip(reason="flaky test")
-def test_merge_request_merge(project):
-    mr = project.mergerequests.list()[0]
+def test_merge_request_merge(project, merge_request, wait_for_sidekiq):
+    mr = merge_request(source_branch="test_merge_request_merge")
     mr.merge()
-    project.branches.delete(mr.source_branch)
+    wait_for_sidekiq(timeout=60)
 
     with pytest.raises(gitlab.GitlabMRClosedError):
         # Two merge attempts should raise GitlabMRClosedError
