@@ -219,7 +219,7 @@ Example for a `pass <https://www.passwordstore.org>`_ helper with a wrapper scri
    private_token = helper: /path/to/helper.sh
    timeout = 1
 
-In `/path/to/helper.sh`:
+In ``/path/to/helper.sh``:
 
 .. code-block:: bash
 
@@ -332,7 +332,7 @@ tcsh
 
 .. code-block:: console
 
-   eval `register-python-argcomplete --shell tcsh gitlab`
+   eval ``register-python-argcomplete --shell tcsh gitlab``
 
 fish
 ----

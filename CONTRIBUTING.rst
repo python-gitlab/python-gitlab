@@ -93,7 +93,7 @@ To run these tests:
 
 When developing tests it can be a little frustrating to wait for GitLab to spin
 up every run. To prevent the containers from being cleaned up afterwards, pass
-`--keep-containers` to pytest, i.e.:
+``--keep-containers`` to pytest, i.e.:
 
 .. code-block:: bash
 
@@ -116,7 +116,7 @@ The tag must match an exact tag on Docker Hub:
 
 .. code-block:: bash
 
-   # run tests against `nightly` or specific tag
+   # run tests against ``nightly`` or specific tag
    GITLAB_TAG=nightly tox -e api_func_v4
    GITLAB_TAG=12.8.0-ce.0 tox -e api_func_v4
 

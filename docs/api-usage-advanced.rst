@@ -53,11 +53,11 @@ https://requests.readthedocs.io/en/latest/user/advanced/#proxies
 SSL certificate verification
 ----------------------------
 
-python-gitlab relies on the CA certificate bundle in the `certifi` package
+python-gitlab relies on the CA certificate bundle in the ``certifi`` package
 that comes with the requests library.
 
 If you need python-gitlab to use your system CA store instead, you can provide
-the path to the CA bundle in the `REQUESTS_CA_BUNDLE` environment variable.
+the path to the CA bundle in the ``REQUESTS_CA_BUNDLE`` environment variable.
 
 Reference:
 https://requests.readthedocs.io/en/latest/user/advanced/#ssl-cert-verification
@@ -124,7 +124,7 @@ python-gitlab can automatically retry in such case, when
 ``retry_transient_errors`` argument is set to ``True``.  When enabled,
 HTTP error codes 500 (Internal Server Error), 502 (502 Bad Gateway),
 503 (Service Unavailable), and 504 (Gateway Timeout) are retried. It will retry until reaching
-the `max_retries` value. By default, `retry_transient_errors` is set to `False` and an exception
+the ``max_retries`` value. By default, ``retry_transient_errors`` is set to ``False`` and an exception
 is raised for these errors.
 
 .. code-block:: python
