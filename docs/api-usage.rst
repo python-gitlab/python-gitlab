@@ -200,7 +200,7 @@ You can print a Gitlab Object. For example:
    # Or in a prettier format.
    project.pprint()
 
-   # Or explicitly via `pformat()`. This is equivalent to the above.
+   # Or explicitly via ``pformat()``. This is equivalent to the above.
    print(project.pformat())
 
 You can also extend the object if the parameter isn't explicitly listed. For example,
@@ -217,16 +217,16 @@ the value on the object is accepted:
 You can get a dictionary representation copy of the Gitlab Object. Modifications made to
 the dictionary will have no impact on the GitLab Object.
 
- * `asdict()` method. Returns a dictionary representation of the Gitlab object.
- * `attributes` property. Returns a dictionary representation of the Gitlab
+ * ``asdict()`` method. Returns a dictionary representation of the Gitlab object.
+ * ``attributes`` property. Returns a dictionary representation of the Gitlab
    object. Also returns any relevant parent object attributes.
 
 .. note::
 
-   `attributes` returns the parent object attributes that are defined in
-   `object._from_parent_attrs`. What this can mean is that for example a `ProjectIssue`
-   object will have a `project_id` key in the dictionary returned from `attributes` but
-   `asdict()` will not.
+   ``attributes`` returns the parent object attributes that are defined in
+   ``object._from_parent_attrs``. What this can mean is that for example a ``ProjectIssue``
+   object will have a ``project_id`` key in the dictionary returned from ``attributes`` but
+   ``asdict()`` will not.
 
 
 .. code-block:: python
@@ -244,7 +244,7 @@ You can get a JSON string represenation of the Gitlab Object. For example:
 
    project = gl.projects.get(1)
    print(project.to_json())
-   # Use arguments supported by `json.dump()`
+   # Use arguments supported by ``json.dump()``
    print(project.to_json(sort_keys=True, indent=4))
 
 Base types

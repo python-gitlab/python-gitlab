@@ -28,7 +28,11 @@ Reference
 Examples
 --------
 
-Use the ``list()`` and ``all()`` methods to list runners.
+Use the ``runners.list()`` and ``runners_all.list()`` methods to list runners.
+``runners.list()`` - Get a list of specific runners available to the user
+``runners_all.list()``  - Get a list of all runners in the GitLab instance 
+(specific and shared). Access is restricted to users with administrator access.
+
 
 Both methods accept a ``scope`` parameter to filter the list. Allowed values
 for this parameter are:
@@ -36,8 +40,8 @@ for this parameter are:
 * ``active``
 * ``paused``
 * ``online``
-* ``specific`` (``all()`` only)
-* ``shared`` (``all()`` only)
+* ``specific`` (``runners_all.list()`` only)
+* ``shared`` (``runners_all.list()`` only)
 
 .. note::
 
