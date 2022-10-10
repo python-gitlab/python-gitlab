@@ -36,7 +36,7 @@ repos:
         args: []
         additional_dependencies:
           - types-PyYAML==6.0.12
-          - types-requests==2.28.11
+          - types-requests==2.28.11.2
           - types-setuptools==64.0.1
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.9.0
