@@ -4,39 +4,31 @@
     ":enablePreCommit",
     "schedule:weekly"
   ],
-  "ignoreDeps": ["relekang/python-semantic-release"],
-  "pip_requirements": {
-    "fileMatch": ["^requirements(-[\\w]*)?\\.txt$"]
-  },
   "regexManagers": [
     {
-      "fileMatch": ["^tests\\/functional\\/fixtures\\/.env$"],
-      "matchStrings": ["GITLAB_TAG=(?<currentValue>.*?)\n"],
+      "fileMatch": [
+        "^tests\\/functional\\/fixtures\\/.env$"
+      ],
+      "matchStrings": [
+        "GITLAB_TAG=(?<currentValue>.*?)\n"
+      ],
       "depNameTemplate": "gitlab/gitlab-ce",
       "datasourceTemplate": "docker",
       "versioningTemplate": "loose"
-    },
-    {
-      "fileMatch": ["^.pre-commit-config.yaml$"],
-      "matchStrings": ["- (?<depName>.*?)==(?<currentValue>.*?)\n"],
-      "datasourceTemplate": "pypi",
-      "versioningTemplate": "pep440"
     }
   ],
   "packageRules": [
     {
-      "packagePatterns": ["^gitlab\/gitlab-.+$"],
+      "packagePatterns": [
+        "^gitlab\/gitlab-.+$"
+      ],
       "automerge": true
     },
     {
-      "matchPackagePrefixes": ["types-"],
+      "matchPackagePrefixes": [
+        "types-"
+      ],
       "groupName": "typing dependencies"
-    },
-    {
-        "matchPackagePatterns": ["(^|/)black$"],
-        "versioning": "pep440",
-        "ignoreUnstable": false,
-        "groupName": "black"
-     }
+    }
   ]
 }
