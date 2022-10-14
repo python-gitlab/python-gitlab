@@ -46,3 +46,7 @@ Delete a topic::
 
     # or
     gl.topics.delete(topic_id)
+
+Merge a source topic into a target topic::
+
+    gl.topics.merge(topic_id, target_topic_id)
