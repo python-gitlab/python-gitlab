@@ -29,13 +29,24 @@ python-gitlab
 
 It supports the v4 API of GitLab, and provides a CLI tool (``gitlab``).
 
-The client aims to let you write clean Python code when managing GitLab resources.
-You can pass arbitrary parameters to the GitLab API - so you only need to
-follow GitLab's current documentation on what parameters are available.
+.. _features:
 
-It also provides lower-level API methods giving you a degree of control and
-usability for any endpoint the moment it is available on GitLab.com or your
-GitLab instance.
+Features
+--------
+
+``python-gitlab`` enables you to:
+
+* write Pythonic code to manage your GitLab resources.
+* pass arbitrary parameters to the GitLab API. Simply follow GitLab's docs
+  on what parameters are available.
+* access arbitrary endpoints as soon as they are available on GitLab, by using
+  lower-level API methods.
+* use persistent requests sessions for authentication, proxy and certificate handling.
+* handle smart retries on network and server errors, with rate-limit handling.
+* flexible handling of paginated responses, including lazy iterators.
+* automatically URL-encode paths and parameters where needed.
+* automatically convert some complex data structures to API attribute types
+* merge configuration from config files, environment variables and arguments.
 
 Installation
 ------------
@@ -62,7 +73,6 @@ From GitLab:
 .. code-block:: console
 
    $ pip install git+https://gitlab.com/python-gitlab/python-gitlab.git
-
 
 Using the docker images
 -----------------------

@@ -22,6 +22,9 @@ Lower-level API - HTTP methods
    At this point, python-gitlab will no longer take care of URL-encoding and other transformations
    needed to correctly pass API parameter types. You have to construct these correctly yourself.
 
+   However, you still benefit from many of the client's :ref:`features` such as authentication,
+   requests and retry handling.
+
 .. important::
 
    If you've found yourself at this section because of an endpoint not yet implemented in
