@@ -90,6 +90,19 @@ def resp_delete_topic(no_content):
         yield rsps
 
 
+@pytest.fixture
+def resp_merge_topics():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url=f"{topics_url}/merge",
+            json=topic_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
 def test_list_topics(gl, resp_list_topics):
     topics = gl.topics.list()
     assert isinstance(topics, list)
@@ -120,3 +133,8 @@ def test_update_topic(gl, resp_update_topic):
 def test_delete_topic(gl, resp_delete_topic):
     topic = gl.topics.get(1, lazy=True)
     topic.delete()
+
+
+def test_merge_topic(gl, resp_merge_topics):
+    topic = gl.topics.merge(123, 1)
+    assert topic["id"] == 1

@@ -221,6 +221,10 @@ class GitlabTodoError(GitlabOperationError):
     pass
 
 
+class GitlabTopicMergeError(GitlabOperationError):
+    pass
+
+
 class GitlabTimeTrackingError(GitlabOperationError):
     pass
 
