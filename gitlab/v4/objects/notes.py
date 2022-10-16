@@ -49,9 +49,9 @@ class GroupEpicNote(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class GroupEpicNoteManager(CRUDMixin, RESTManager):
-    _path = "/groups/{group_id}/epics/{epic_iid}/notes"
+    _path = "/groups/{group_id}/epics/{epic_id}/notes"
     _obj_cls = GroupEpicNote
-    _from_parent_attrs = {"group_id": "group_id", "epic_iid": "iid"}
+    _from_parent_attrs = {"group_id": "group_id", "epic_id": "id"}
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
     _update_attrs = RequiredOptional(required=("body",))
 
@@ -68,11 +68,11 @@ class GroupEpicDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
 class GroupEpicDiscussionNoteManager(
     GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
 ):
-    _path = "/groups/{group_id}/epics/{epic_iid}/discussions/{discussion_id}/notes"
+    _path = "/groups/{group_id}/epics/{epic_id}/discussions/{discussion_id}/notes"
     _obj_cls = GroupEpicDiscussionNote
     _from_parent_attrs = {
         "group_id": "group_id",
-        "epic_iid": "epic_iid",
+        "epic_id": "epic_id",
         "discussion_id": "id",
     }
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
