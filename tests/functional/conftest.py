@@ -530,6 +530,13 @@ def group_label(group):
 
 
 @pytest.fixture(scope="module")
+def epic(group):
+    """Fixture for group epic API resource tests."""
+    _id = uuid.uuid4().hex
+    return group.epics.create({"title": f"epic-{_id}", "description": f"Epic {_id}"})
+
+
+@pytest.fixture(scope="module")
 def variable(project):
     """Variable fixture for project variable API resource tests."""
     _id = uuid.uuid4().hex

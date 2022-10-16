@@ -50,6 +50,22 @@ def test_issue_labels(project, issue):
     assert issue not in project.issues.list(labels="None")
 
 
+def test_issue_links(project, issue):
+    linked_issue = project.issues.create({"title": "Linked issue"})
+    source_issue, target_issue = issue.links.create(
+        {"target_project_id": project.id, "target_issue_iid": linked_issue.iid}
+    )
+    assert source_issue == issue
+    assert target_issue == linked_issue
+
+    links = issue.links.list()
+    assert links
+
+    link_id = links[0].issue_link_id
+    issue.links.delete(link_id)
+    assert not issue.links.list()
+
+
 def test_issue_events(issue):
     events = issue.resourcelabelevents.list()
     assert isinstance(events, list)

@@ -138,6 +138,17 @@ def test_group_labels(group):
     assert label not in group.labels.list()
 
 
+@pytest.mark.xfail(reason="/ldap/groups endpoint is gone")
+def test_group_ldap_links(gl, group):
+    ldap_cn = "common-name"
+    ldap_provider = "ldap-provider"
+    assert gl.ldapgroups.list()
+
+    group.add_ldap_group_link(ldap_cn, 30, ldap_provider)
+    group.ldap_sync()
+    group.delete_ldap_group_link(ldap_cn)
+
+
 def test_group_notification_settings(group):
     settings = group.notificationsettings.get()
     settings.level = "disabled"

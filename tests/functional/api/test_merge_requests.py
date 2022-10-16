@@ -117,6 +117,59 @@ def test_merge_request_rebase(project):
     assert mr.rebase()
 
 
+@pytest.mark.xfail(reason="project /approvers endpoint is gone")
+def test_project_approvals(project):
+    mr = project.mergerequests.list()[0]
+    approval = project.approvals.get()
+
+    reset_value = approval.reset_approvals_on_push
+    approval.reset_approvals_on_push = not reset_value
+    approval.save()
+
+    approval = project.approvals.get()
+    assert reset_value != approval.reset_approvals_on_push
+
+    project.approvals.set_approvers([1], [])
+    approval = project.approvals.get()
+    assert approval.approvers[0]["user"]["id"] == 1
+
+    approval = mr.approvals.get()
+    approval.approvals_required = 2
+    approval.save()
+    approval = mr.approvals.get()
+    assert approval.approvals_required == 2
+
+    approval.approvals_required = 3
+    approval.save()
+    approval = mr.approvals.get()
+    assert approval.approvals_required == 3
+
+    mr.approvals.set_approvers(1, [1], [])
+    approval = mr.approvals.get()
+    assert approval.approvers[0]["user"]["id"] == 1
+
+
+def test_project_merge_request_approval_rules(group, project):
+    approval_rules = project.approvalrules.list(get_all=True)
+    assert not approval_rules
+
+    project.approvalrules.create(
+        {"name": "approval-rule", "approvals_required": 2, "group_ids": [group.id]}
+    )
+    approval_rules = project.approvalrules.list(get_all=True)
+    assert len(approval_rules) == 1
+    assert approval_rules[0].approvals_required == 2
+
+    approval_rules[0].save()
+    approval_rules = project.approvalrules.list(get_all=True)
+    assert len(approval_rules) == 1
+    assert approval_rules[0].approvals_required == 2
+
+    approval_rules[0].delete()
+    ars = project.approvalrules.list(get_all=True)
+    assert len(ars) == 0
+
+
 def test_merge_request_reset_approvals(gitlab_url, project, wait_for_sidekiq):
     bot = project.access_tokens.create({"name": "bot", "scopes": ["api"]})
     bot_gitlab = gitlab.Gitlab(gitlab_url, private_token=bot.token)
