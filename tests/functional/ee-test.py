@@ -8,6 +8,7 @@ MR_P1 = 1
 I_P1 = 1
 I_P2 = 1
 EPIC_ISSUES = [4, 5]
+EPIC_NOTES = ["rubeus", "hagrid"]
 G1 = "group1"
 LDAP_CN = "app1"
 LDAP_PROVIDER = "ldapmain"
@@ -153,6 +154,12 @@ for i in EPIC_ISSUES:
 assert len(EPIC_ISSUES) == len(epic.issues.list())
 for ei in epic.issues.list():
     ei.delete()
+
+# epic notes
+assert not epic.notes.list()
+for i in EPIC_NOTES:
+    epic.notes.create({"body": i})
+assert len(EPIC_NOTES == len(epic.notes.list()))
 
 epic.delete()
 end_log()
