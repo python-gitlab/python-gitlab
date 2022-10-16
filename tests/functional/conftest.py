@@ -12,6 +12,7 @@ import requests
 import gitlab
 import gitlab.base
 from tests.functional import helpers
+from tests.functional.fixtures.docker import *  # noqa
 
 SLEEP_TIME = 10
 
@@ -32,11 +33,6 @@ def gitlab_version(gl) -> GitlabVersion:
     version, revision = gl.version()
     major, minor, patch = version.split(".")
     return GitlabVersion(major=major, minor=minor, patch=patch, revision=revision)
-
-
-@pytest.fixture(scope="session")
-def docker_compose_command():
-    return "docker compose"
 
 
 @pytest.fixture(scope="session")
@@ -158,26 +154,6 @@ def pytest_addoption(parser):
 @pytest.fixture(scope="session")
 def temp_dir() -> pathlib.Path:
     return pathlib.Path(tempfile.gettempdir())
-
-
-@pytest.fixture(scope="session")
-def docker_compose_file(fixture_dir):
-    return fixture_dir / "docker-compose.yml"
-
-
-@pytest.fixture(scope="session")
-def docker_compose_project_name():
-    """Set a consistent project name to enable optional reuse of containers."""
-    return "pytest-python-gitlab"
-
-
-@pytest.fixture(scope="session")
-def docker_cleanup(request):
-    """Conditionally keep containers around by overriding the cleanup command."""
-    if request.config.getoption("--keep-containers"):
-        # Print version and exit.
-        return "-v"
-    return "down -v"
 
 
 @pytest.fixture(scope="session")
