@@ -48,7 +48,7 @@ Create a commit::
                 # Binary files need to be base64 encoded
                 'action': 'create',
                 'file_path': 'logo.png',
-                'content': base64.b64encode(open('logo.png').read()),
+                'content': base64.b64encode(open('logo.png', mode='r+b').read()).decode(),
                 'encoding': 'base64',
             }
         ]
