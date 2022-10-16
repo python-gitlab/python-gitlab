@@ -86,7 +86,7 @@ For example, if for whatever reason you want to fetch allowed methods for an end
 
     >>> gl = gitlab.Gitlab(private_token=private_token)
     >>>
-    >>> response = gl.http_request("OPTIONS", "/projects")
+    >>> response = gl.http_request(verb="OPTIONS", path="/projects")
     >>> response.headers["Allow"]
     'OPTIONS, GET, POST, HEAD'
 
@@ -94,6 +94,11 @@ Or get the total number of a user's events with a customized HEAD request:
 
 .. code-block:: python
 
-    >>> response = gl.http_request("HEAD", "/events", query_params={"sudo": "some-user"}, timeout=10)
+    >>> response = gl.http_request(
+            verb="HEAD",
+            path="/events",
+            query_params={"sudo": "some-user"},
+            timeout=10
+        )
     >>> response.headers["X-Total"]
     '123'
