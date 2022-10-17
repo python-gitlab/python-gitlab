@@ -305,7 +305,7 @@ def test_data_from_helper(m_open, monkeypatch, tmp_path):
 @mock.patch("builtins.open")
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Not supported on Windows")
 def test_from_helper_subprocess_error_raises_error(m_open, monkeypatch):
-    # using /usr/bin/false here to force a non-zero return code
+    # using false here to force a non-zero return code
     fd = io.StringIO(
         dedent(
             """\
@@ -314,7 +314,7 @@ def test_from_helper_subprocess_error_raises_error(m_open, monkeypatch):
 
             [helper]
             url = https://helper.url
-            oauth_token = helper: /usr/bin/false
+            oauth_token = helper: false
             """
         )
     )
