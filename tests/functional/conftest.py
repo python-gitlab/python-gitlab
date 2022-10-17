@@ -5,6 +5,7 @@ import tempfile
 import time
 import uuid
 from subprocess import check_output
+from typing import Optional
 
 import pytest
 import requests
@@ -66,7 +67,7 @@ def gitlab_url(docker_ip: str, gitlab_docker_port: int) -> str:
 def reset_gitlab(gl: gitlab.Gitlab) -> None:
     """Delete resources (such as projects, groups, users) that shouldn't
     exist."""
-    if is_gitlab_ee(gl):
+    if helpers.get_gitlab_plan(gl):
         logging.info("GitLab EE detected")
         # NOTE(jlvillal): By default in GitLab EE it will wait 7 days before
         # deleting a group. Disable delayed group/project deletion.
@@ -280,21 +281,27 @@ def gl(gitlab_config):
     return instance
 
 
-def is_gitlab_ee(gl: gitlab.Gitlab) -> bool:
-    """Determine if we are running with GitLab EE as opposed to GitLab CE"""
-    try:
-        license = gl.get_license()
-    except gitlab.exceptions.GitlabLicenseError:
-        license = None
-    # If we have a license then we assume we are running on GitLab EE
-    if license:
-        return True
-    return False
-
-
 @pytest.fixture(scope="session")
-def gitlab_ee(gl) -> bool:
-    return is_gitlab_ee(gl=gl)
+def gitlab_plan(gl: gitlab.Gitlab) -> Optional[str]:
+    return helpers.get_gitlab_plan(gl)
+
+
+@pytest.fixture(autouse=True)
+def gitlab_premium(gitlab_plan, request) -> None:
+    if gitlab_plan in ("premium", "ultimate"):
+        return
+
+    if request.node.get_closest_marker("gitlab_ultimate"):
+        pytest.skip("Test requires GitLab Premium plan")
+
+
+@pytest.fixture(autouse=True)
+def gitlab_ultimate(gitlab_plan, request) -> None:
+    if gitlab_plan == "ultimate":
+        return
+
+    if request.node.get_closest_marker("gitlab_ultimate"):
+        pytest.skip("Test requires GitLab Ultimate plan")
 
 
 @pytest.fixture(scope="session")

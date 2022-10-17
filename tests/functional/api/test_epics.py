@@ -1,5 +1,7 @@
 import pytest
 
+pytestmark = pytest.mark.gitlab_premium
+
 
 def test_epics(group):
     epic = group.epics.create({"title": "Test epic"})

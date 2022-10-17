@@ -41,11 +41,10 @@ def test_merge_requests_get(project, merge_request):
     assert mr.iid == mr_iid
 
 
-def test_merge_requests_list_approver_ids(project, gitlab_ee):
+@pytest.mark.gitlab_premium
+def test_merge_requests_list_approver_ids(project):
     # show https://github.com/python-gitlab/python-gitlab/issues/1698 is now
     # fixed
-    if not gitlab_ee:
-        pytest.skip("Requires GitLab EE to run")
     project.mergerequests.list(
         all=True,
         state="opened",
@@ -117,6 +116,7 @@ def test_merge_request_rebase(project):
     assert mr.rebase()
 
 
+@pytest.mark.gitlab_premium
 @pytest.mark.xfail(reason="project /approvers endpoint is gone")
 def test_project_approvals(project):
     mr = project.mergerequests.list()[0]
@@ -149,6 +149,7 @@ def test_project_approvals(project):
     assert approval.approvers[0]["user"]["id"] == 1
 
 
+@pytest.mark.gitlab_premium
 def test_project_merge_request_approval_rules(group, project):
     approval_rules = project.approvalrules.list(get_all=True)
     assert not approval_rules

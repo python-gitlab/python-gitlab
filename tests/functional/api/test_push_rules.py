@@ -1,6 +1,7 @@
 import pytest
 
 
+@pytest.mark.gitlab_premium
 @pytest.mark.xfail(reason="need to relax RESTObject init for non-dict responses")
 def test_project_push_rules(project):
     push_rules = project.pushrules.get()
