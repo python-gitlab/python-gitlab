@@ -15,7 +15,7 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@v6.0.0
+      - uses: actions/stale@v6.0.1
         with:
           any-of-labels: 'need info,Waiting for response'
           stale-issue-message: >
