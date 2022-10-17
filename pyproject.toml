@@ -74,6 +74,10 @@ disable = [
 
 [tool.pytest.ini_options]
 xfail_strict = true
+markers = [
+    "gitlab_premium: marks tests that require GitLab Premium",
+    "gitlab_ultimate: marks tests that require GitLab Ultimate",
+]
 
 # If 'log_cli=True' the following apply
 # NOTE: If set 'log_cli_level' to 'DEBUG' will show a log of all of the HTTP requests

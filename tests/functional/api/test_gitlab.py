@@ -82,6 +82,7 @@ def test_sidekiq_compound_metrics(gl):
     assert "queues" in out
 
 
+@pytest.mark.gitlab_premium
 def test_geo_nodes(gl):
     # Very basic geo nodes tests because we only have 1 node.
     nodes = gl.geonodes.list()
@@ -91,6 +92,7 @@ def test_geo_nodes(gl):
     assert isinstance(status, list)
 
 
+@pytest.mark.gitlab_premium
 def test_gitlab_license(gl):
     license = gl.get_license()
     assert "user_limit" in license

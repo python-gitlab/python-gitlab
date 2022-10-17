@@ -1,13 +1,27 @@
 import logging
 import time
+from typing import Optional
 
 import pytest
 
+import gitlab
 import gitlab.base
+import gitlab.exceptions
 
 SLEEP_INTERVAL = 0.5
 TIMEOUT = 60  # seconds before timeout will occur
 MAX_ITERATIONS = int(TIMEOUT / SLEEP_INTERVAL)
+
+
+def get_gitlab_plan(gl: gitlab.Gitlab) -> Optional[str]:
+    """Determine the license available on the GitLab instance"""
+    try:
+        license = gl.get_license()
+    except gitlab.exceptions.GitlabLicenseError:
+        # Without a license we assume only Free features are available
+        return
+
+    return license["plan"]
 
 
 def safe_delete(

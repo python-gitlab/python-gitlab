@@ -138,6 +138,7 @@ def test_group_labels(group):
     assert label not in group.labels.list()
 
 
+@pytest.mark.gitlab_premium
 @pytest.mark.xfail(reason="/ldap/groups endpoint is gone")
 def test_group_ldap_links(gl, group):
     ldap_cn = "common-name"
@@ -234,9 +235,8 @@ def test_group_subgroups_projects(gl, user):
     group4.delete()
 
 
-def test_group_wiki(gitlab_ee, group):
-    if not gitlab_ee:
-        pytest.skip("Requires GitLab EE to run")
+@pytest.mark.gitlab_premium
+def test_group_wiki(group):
     content = "Group Wiki page content"
     wiki = group.wikis.create({"title": "groupwikipage", "content": content})
     assert wiki in group.wikis.list()
@@ -251,9 +251,8 @@ def test_group_wiki(gitlab_ee, group):
     assert wiki not in group.wikis.list()
 
 
-def test_group_hooks(gitlab_ee, group):
-    if not gitlab_ee:
-        pytest.skip("Requires GitLab EE to run")
+@pytest.mark.gitlab_premium
+def test_group_hooks(group):
     hook = group.hooks.create({"url": "http://hook.url"})
     assert hook in group.hooks.list()
 
