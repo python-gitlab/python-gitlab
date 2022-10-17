@@ -187,6 +187,12 @@ def test_update_group_variable(group, resp_update_variable):
     assert variable.value == new_value
 
 
-def test_delete_group_variable(group, resp_delete_variable):
+@pytest.mark.parametrize(
+    "http,mock_func", [("requests", "resp_delete_variable"), ("httpx", "httpx_mock")]
+)
+def test_delete_group_variable(group, http, mock_func):
+    if http == "httpx":
+        mock_func.add_response()
+
     variable = group.variables.get(key, lazy=True)
     variable.delete()

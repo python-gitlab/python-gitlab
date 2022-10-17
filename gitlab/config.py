@@ -4,7 +4,7 @@ import shlex
 import subprocess
 from os.path import expanduser, expandvars
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Literal, Optional, Union
 
 from gitlab.const import USER_AGENT
 
@@ -108,6 +108,7 @@ class GitlabConfigParser:
         self.timeout: int = 60
         self.url: Optional[str] = None
         self.user_agent: str = USER_AGENT
+        self.http: Optional[Literal["requests", "httpx"]] = "requests"
 
         self._files = _get_config_files(config_files)
         if self._files:

@@ -15,6 +15,7 @@ def gl():
         private_token="private_token",
         ssl_verify=True,
         api_version="4",
+        http="httpx",
     )
 
 

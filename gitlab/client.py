@@ -3,9 +3,10 @@
 import os
 import re
 import time
-from typing import Any, cast, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
+from typing import Any, cast, Dict, List, Literal, Optional, Tuple, TYPE_CHECKING, Union
 from urllib import parse
 
+import httpx
 import requests
 import requests.utils
 from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
@@ -66,7 +67,9 @@ class Gitlab:
         http_password: Optional[str] = None,
         timeout: Optional[float] = None,
         api_version: str = "4",
+        http: Optional[Literal["requests", "httpx"]] = "requests",
         session: Optional[requests.Session] = None,
+        client: Optional[httpx.Client] = None,
         per_page: Optional[int] = None,
         pagination: Optional[str] = None,
         order_by: Optional[str] = None,
@@ -97,8 +100,12 @@ class Gitlab:
         self.job_token = job_token
         self._set_auth_info()
 
-        #: Create a session object for requests
-        self.session = session or requests.Session()
+        #: Create a session object for requests/httpx
+        self._http = http
+        if self._http == "requests":
+            self.session = session or requests.Session()
+        else:
+            self.client = client or httpx.Client(verify=self.ssl_verify)
 
         self.per_page = per_page
         self.pagination = pagination
@@ -262,6 +269,7 @@ class Gitlab:
             order_by=config.order_by,
             user_agent=config.user_agent,
             retry_transient_errors=config.retry_transient_errors,
+            http=config.http,
         )
 
     @classmethod
@@ -735,27 +743,58 @@ class Gitlab:
 
         cur_retries = 0
         while True:
-            try:
-                result = self.session.request(
-                    method=verb,
-                    url=url,
-                    json=json,
-                    data=data,
-                    params=params,
-                    timeout=timeout,
-                    verify=verify,
-                    stream=streamed,
-                    **opts,
-                )
-            except (requests.ConnectionError, requests.exceptions.ChunkedEncodingError):
-                if retry_transient_errors and (
-                    max_retries == -1 or cur_retries < max_retries
+            if self._http == "requests":
+                try:
+                    result = self.session.request(
+                        method=verb,
+                        url=url,
+                        json=json,
+                        data=data,
+                        params=params,
+                        timeout=timeout,
+                        verify=verify,
+                        stream=streamed,
+                        **opts,
+                    )
+                except (
+                    requests.ConnectionError,
+                    requests.exceptions.ChunkedEncodingError,
                 ):
-                    wait_time = 2**cur_retries * 0.1
-                    cur_retries += 1
-                    time.sleep(wait_time)
-                    continue
+                    if retry_transient_errors and (
+                        max_retries == -1 or cur_retries < max_retries
+                    ):
+                        wait_time = 2**cur_retries * 0.1
+                        cur_retries += 1
+                        time.sleep(wait_time)
+                        continue
 
+                    raise
+            elif self._http == "httpx":
+                try:
+                    request = self.client.build_request(
+                        method=verb,
+                        url=url,
+                        json=json,
+                        data=data,
+                        params=params,
+                        timeout=timeout,
+                    )
+                    # result = self.client.send(
+                    #     request=request,
+                    #     stream=streamed,
+                    # )
+                except (httpx.ConnectError,):
+                    if retry_transient_errors and (
+                        max_retries == -1 or cur_retries < max_retries
+                    ):
+                        wait_time = 2**cur_retries * 0.1
+                        cur_retries += 1
+                        time.sleep(wait_time)
+                        continue
+
+                    raise
+
+            else:
                 raise
 
             self._check_redirects(result)
