@@ -780,7 +780,10 @@ class Gitlab:
                 return result
 
             if (429 == result.status_code and obey_rate_limit) or (
-                result.status_code in gitlab.const.RETRYABLE_TRANSIENT_ERROR_CODES
+                (
+                    result.status_code in gitlab.const.RETRYABLE_TRANSIENT_ERROR_CODES
+                    or (result.status_code == 409 and "Resource lock" in result.reason)
+                )
                 and retry_transient_errors
             ):
                 # Response headers documentation:
