@@ -78,10 +78,8 @@ Running integration tests
 -------------------------
 
 Integration tests run against a running gitlab instance, using a docker
-container. You need to have docker and `docker compose
-<https://docs.docker.com/compose/install/>`_
-installed on the test machine, and your user must have the correct permissions
-to talk to the docker daemon.
+container. You need to have docker installed on the test machine, and your user
+must have the correct permissions to talk to the docker daemon.
 
 To run these tests:
 
@@ -106,7 +104,7 @@ up of the containers by running:
 
 .. code-block:: bash
 
-   docker compose -f tests/functional/fixtures/docker-compose.yml -p pytest-python-gitlab down -v
+   docker-compose -f tests/functional/fixtures/docker-compose.yml -p pytest-python-gitlab down -v
 
 By default, the tests run against the latest version of the ``gitlab/gitlab-ce``
 image. You can override both the image and tag by providing either the

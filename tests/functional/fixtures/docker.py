@@ -6,11 +6,6 @@ import pytest
 
 
 @pytest.fixture(scope="session")
-def docker_compose_command():
-    return "docker compose"
-
-
-@pytest.fixture(scope="session")
 def docker_compose_project_name():
     """Set a consistent project name to enable optional reuse of containers."""
     return "pytest-python-gitlab"

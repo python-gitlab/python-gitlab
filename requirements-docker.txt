@@ -1,3 +1,4 @@
 -r requirements.txt
 -r requirements-test.txt
+docker-compose==1.29.2
 pytest-docker==1.0.1
