@@ -63,11 +63,6 @@ Change project-level or MR-level MR approvals settings::
     mr_mras.approvals_required = 1
     mr_mras.save()
 
-Change project-level MR allowed approvers::
-
-    project.approvals.set_approvers(approver_ids=[105],
-                                    approver_group_ids=[653, 654])
-
 Create a new MR-level approval rule or change an existing MR-level approval rule::
 
     mr.approvals.set_approvers(approvals_required = 1, approver_ids=[105],

@@ -50,38 +50,6 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     def get(self, **kwargs: Any) -> ProjectApproval:
         return cast(ProjectApproval, super().get(**kwargs))
 
-    @exc.on_http_error(exc.GitlabUpdateError)
-    def set_approvers(
-        self,
-        approver_ids: Optional[List[int]] = None,
-        approver_group_ids: Optional[List[int]] = None,
-        **kwargs: Any,
-    ) -> Dict[str, Any]:
-        """Change project-level allowed approvers and approver groups.
-
-        Args:
-            approver_ids: User IDs that can approve MRs
-            approver_group_ids: Group IDs whose members can approve MRs
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabUpdateError: If the server failed to perform the request
-
-        Returns:
-            A dict value of the result
-        """
-        approver_ids = approver_ids or []
-        approver_group_ids = approver_group_ids or []
-
-        if TYPE_CHECKING:
-            assert self._parent is not None
-        path = f"/projects/{self._parent.encoded_id}/approvers"
-        data = {"approver_ids": approver_ids, "approver_group_ids": approver_group_ids}
-        result = self.gitlab.http_put(path, post_data=data, **kwargs)
-        if TYPE_CHECKING:
-            assert isinstance(result, dict)
-        return result
-
 
 class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "id"
