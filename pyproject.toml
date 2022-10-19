@@ -58,6 +58,7 @@ disable = [
     "missing-class-docstring",
     "missing-function-docstring",
     "missing-module-docstring",
+    "not-callable",
     "protected-access",
     "redefined-builtin",
     "signature-differs",
