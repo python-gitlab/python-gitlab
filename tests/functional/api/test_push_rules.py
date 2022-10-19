@@ -1,11 +1,14 @@
 import pytest
 
+import gitlab
+
 
 @pytest.mark.gitlab_premium
-@pytest.mark.xfail(reason="need to relax RESTObject init for non-dict responses")
 def test_project_push_rules(project):
-    push_rules = project.pushrules.get()
-    assert not push_rules
+    with pytest.raises(gitlab.GitlabParsingError):
+        # when no rules are defined the API call returns back `None` which
+        # causes a gitlab.GitlabParsingError in RESTObject.__init__()
+        project.pushrules.get()
 
     push_rules = project.pushrules.create({"deny_delete_tag": True})
     assert push_rules.deny_delete_tag
@@ -18,4 +21,6 @@ def test_project_push_rules(project):
     assert not push_rules.deny_delete_tag
 
     push_rules.delete()
-    assert not push_rules
+
+    with pytest.raises(gitlab.GitlabParsingError):
+        project.pushrules.get()
