@@ -60,7 +60,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineCancelError)
-    def cancel(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def cancel(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response, Any]:
         """Cancel the job.
 
         Args:
@@ -75,7 +75,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineRetryError)
-    def retry(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def retry(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response, Any]:
         """Retry the job.
 
         Args:

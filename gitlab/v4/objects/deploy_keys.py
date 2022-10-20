@@ -40,7 +40,7 @@ class ProjectKeyManager(CRUDMixin, RESTManager):
     @exc.on_http_error(exc.GitlabProjectDeployKeyError)
     def enable(
         self, key_id: int, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Union[Dict[str, Any], requests.Response, Any]:
         """Enable a deploy key for a project.
 
         Args:

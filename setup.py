@@ -53,5 +53,6 @@ setup(
     extras_require={
         "autocompletion": ["argcomplete>=1.10.0,<3"],
         "yaml": ["PyYaml>=5.2"],
+        "httpx": ["httpx>=0.23.0,<1"],
     },
 )

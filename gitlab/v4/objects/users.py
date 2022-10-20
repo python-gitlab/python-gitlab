@@ -188,7 +188,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabFollowError)
-    def follow(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def follow(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response, Any]:
         """Follow the user.
 
         Args:
@@ -206,7 +206,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUnfollowError)
-    def unfollow(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def unfollow(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response, Any]:
         """Unfollow the user.
 
         Args:
@@ -249,7 +249,9 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabDeactivateError)
-    def deactivate(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def deactivate(
+        self, **kwargs: Any
+    ) -> Union[Dict[str, Any], requests.Response, Any]:
         """Deactivate the user.
 
         Args:
@@ -270,7 +272,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabActivateError)
-    def activate(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def activate(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response, Any]:
         """Activate the user.
 
         Args:
@@ -291,7 +293,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUserApproveError)
-    def approve(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def approve(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response, Any]:
         """Approve a user creation request.
 
         Args:
@@ -309,7 +311,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUserRejectError)
-    def reject(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def reject(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response, Any]:
         """Reject a user creation request.
 
         Args:
@@ -327,7 +329,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabBanError)
-    def ban(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def ban(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response, Any]:
         """Ban the user.
 
         Args:
@@ -348,7 +350,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUnbanError)
-    def unban(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def unban(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response, Any]:
         """Unban the user.
 
         Args:

@@ -131,6 +131,12 @@ SEARCH_SCOPE_PROJECT_NOTES = SearchScope.PROJECT_NOTES.value
 
 USER_AGENT: str = f"{__title__}/{__version__}"
 
+REDIRECT_MSG = (
+    "python-gitlab detected a {status_code} ({reason!r}) redirection. You must update "
+    "your GitLab URL to the correct URL to avoid issues. The redirection was from: "
+    "{source!r} to {target!r}"
+)
+
 __all__ = [
     "AccessLevel",
     "Visibility",

@@ -109,7 +109,7 @@ class ProjectCommit(RESTObject):
     @exc.on_http_error(exc.GitlabRevertError)
     def revert(
         self, branch: str, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Union[Dict[str, Any], requests.Response, Any]:
         """Revert a commit on a given branch.
 
         Args:
@@ -129,7 +129,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action("ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    def signature(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def signature(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response, Any]:
         """Get the signature of the commit.
 
         Args:

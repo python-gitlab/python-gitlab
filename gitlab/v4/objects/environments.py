@@ -26,7 +26,7 @@ __all__ = [
 class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("ProjectEnvironment")
     @exc.on_http_error(exc.GitlabStopError)
-    def stop(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def stop(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response, Any]:
         """Stop the environment.
 
         Args:

@@ -56,7 +56,7 @@ class HeadMixin(_RestManagerBase):
     @exc.on_http_error(exc.GitlabHeadError)
     def head(
         self, id: Optional[Union[str, int]] = None, **kwargs: Any
-    ) -> "requests.structures.CaseInsensitiveDict[Any]":
+    ) -> Union["requests.structures.CaseInsensitiveDict[Any]", Any]:
         """Retrieve headers from an endpoint.
 
         Args:
@@ -899,7 +899,7 @@ class PromoteMixin(_RestObjectBase):
 
     def _get_update_method(
         self,
-    ) -> Callable[..., Union[Dict[str, Any], requests.Response]]:
+    ) -> Callable[..., Union[Dict[str, Any], requests.Response, Any]]:
         """Return the HTTP method to use.
 
         Returns:

@@ -6,7 +6,7 @@ import requests
 import responses
 
 from gitlab import GitlabHttpError, GitlabList, GitlabParsingError, RedirectError
-from gitlab.client import RETRYABLE_TRANSIENT_ERROR_CODES
+from gitlab.http_clients._request_sclient import RETRYABLE_TRANSIENT_ERROR_CODES
 from tests.unit import helpers
 
 
@@ -30,7 +30,7 @@ def test_http_request(gl):
         match=helpers.MATCH_EMPTY_QUERY_PARAMS,
     )
 
-    http_r = gl.http_request("get", "/projects")
+    http_r = gl.http_client.http_request("get", "/projects")
     http_r.json()
     assert http_r.status_code == 200
     assert responses.assert_call_count(url, 1) is True
@@ -48,7 +48,9 @@ def test_http_request_with_url_encoded_kwargs_does_not_duplicate_params(gl):
     )
 
     kwargs = {"topics[]": "python"}
-    http_r = gl.http_request("get", "/projects?topics%5B%5D=python", **kwargs)
+    http_r = gl.http_client.http_request(
+        "get", "/projects?topics%5B%5D=python", **kwargs
+    )
     http_r.json()
     assert http_r.status_code == 200
     assert responses.assert_call_count(url, 1)
@@ -66,7 +68,7 @@ def test_http_request_404(gl):
     )
 
     with pytest.raises(GitlabHttpError):
-        gl.http_request("get", "/not_there")
+        gl.http_client.http_request("get", "/not_there")
     assert responses.assert_call_count(url, 1) is True
 
 
@@ -83,7 +85,7 @@ def test_http_request_with_only_failures(gl, status_code):
     )
 
     with pytest.raises(GitlabHttpError):
-        gl.http_request("get", "/projects")
+        gl.http_client.http_request("get", "/projects")
 
     assert responses.assert_call_count(url, 1) is True
 
@@ -111,7 +113,9 @@ def test_http_request_with_retry_on_method_for_transient_failures(gl):
         content_type="application/json",
     )
 
-    http_r = gl.http_request("get", "/projects", retry_transient_errors=True)
+    http_r = gl.http_client.http_request(
+        "get", "/projects", retry_transient_errors=True
+    )
 
     assert http_r.status_code == 200
     assert len(responses.calls) == calls_before_success
@@ -151,7 +155,9 @@ def test_http_request_with_retry_on_method_for_transient_network_failures(
         content_type="application/json",
     )
 
-    http_r = gl.http_request("get", "/projects", retry_transient_errors=True)
+    http_r = gl.http_client.http_request(
+        "get", "/projects", retry_transient_errors=True
+    )
 
     assert http_r.status_code == 200
     assert len(responses.calls) == calls_before_success
@@ -180,7 +186,9 @@ def test_http_request_with_retry_on_class_for_transient_failures(gl_retry):
         content_type="application/json",
     )
 
-    http_r = gl_retry.http_request("get", "/projects", retry_transient_errors=True)
+    http_r = gl_retry.http_client.http_request(
+        "get", "/projects", retry_transient_errors=True
+    )
 
     assert http_r.status_code == 200
     assert len(responses.calls) == calls_before_success
@@ -211,7 +219,9 @@ def test_http_request_with_retry_on_class_for_transient_network_failures(gl_retr
         content_type="application/json",
     )
 
-    http_r = gl_retry.http_request("get", "/projects", retry_transient_errors=True)
+    http_r = gl_retry.http_client.http_request(
+        "get", "/projects", retry_transient_errors=True
+    )
 
     assert http_r.status_code == 200
     assert len(responses.calls) == calls_before_success
@@ -241,7 +251,9 @@ def test_http_request_with_retry_on_class_and_method_for_transient_failures(gl_r
     )
 
     with pytest.raises(GitlabHttpError):
-        gl_retry.http_request("get", "/projects", retry_transient_errors=False)
+        gl_retry.http_client.http_request(
+            "get", "/projects", retry_transient_errors=False
+        )
 
     assert len(responses.calls) == 1
 
@@ -274,7 +286,9 @@ def test_http_request_with_retry_on_class_and_method_for_transient_network_failu
     )
 
     with pytest.raises(requests.ConnectionError):
-        gl_retry.http_request("get", "/projects", retry_transient_errors=False)
+        gl_retry.http_client.http_request(
+            "get", "/projects", retry_transient_errors=False
+        )
 
     assert len(responses.calls) == 1
 
@@ -340,7 +354,7 @@ def test_http_request_302_get_does_not_raise(gl):
             status=302,
             match=helpers.MATCH_EMPTY_QUERY_PARAMS,
         )
-        gl.http_request(verb=method, path=api_path)
+        gl.http_client.http_request(verb=method, path=api_path)
 
 
 def test_http_request_302_put_raises_redirect_error(gl):
@@ -365,7 +379,7 @@ def test_http_request_302_put_raises_redirect_error(gl):
             match=helpers.MATCH_EMPTY_QUERY_PARAMS,
         )
         with pytest.raises(RedirectError) as exc:
-            gl.http_request(verb=method, path=api_path)
+            gl.http_client.http_request(verb=method, path=api_path)
     error_message = exc.value.error_message
     assert "Moved Temporarily" in error_message
     assert "http://localhost/api/v4/user/status" in error_message

@@ -24,7 +24,7 @@ class RepositoryMixin(_RestObjectBase):
     @exc.on_http_error(exc.GitlabUpdateError)
     def update_submodule(
         self, submodule: str, branch: str, commit_sha: str, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Union[Dict[str, Any], requests.Response, Any]:
         """Update a project submodule
 
         Args:
@@ -83,7 +83,7 @@ class RepositoryMixin(_RestObjectBase):
     @exc.on_http_error(exc.GitlabGetError)
     def repository_blob(
         self, sha: str, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Union[Dict[str, Any], requests.Response, Any]:
         """Return a file by blob SHA.
 
         Args:
@@ -148,7 +148,7 @@ class RepositoryMixin(_RestObjectBase):
     @exc.on_http_error(exc.GitlabGetError)
     def repository_compare(
         self, from_: str, to: str, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Union[Dict[str, Any], requests.Response, Any]:
         """Return a diff between two branches/commits.
 
         Args:
@@ -250,7 +250,7 @@ class RepositoryMixin(_RestObjectBase):
     @exc.on_http_error(exc.GitlabGetError)
     def repository_merge_base(
         self, refs: List[str], **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Union[Dict[str, Any], requests.Response, Any]:
         """Return a diff between two branches/commits.
 
         Args:

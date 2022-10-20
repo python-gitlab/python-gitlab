@@ -365,7 +365,7 @@ class GroupManager(CRUDMixin, RESTManager):
         name: str,
         parent_id: Optional[str] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Union[Dict[str, Any], requests.Response, Any]:
         """Import a group from an archive file.
 
         Args:
