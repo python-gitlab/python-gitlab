@@ -29,9 +29,9 @@ warn_unused_ignores = true
 module = [
     "docs.*",
     "docs.ext.*",
-    "tests.*",
     "tests.functional.*",
     "tests.functional.api.*",
+    "tests.meta.*",
     "tests.unit.*",
     "tests.smoke.*"
 ]
