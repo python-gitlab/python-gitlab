@@ -9,7 +9,7 @@ import functools
 import inspect
 from typing import Optional, Type
 
-import _pytest
+import pytest
 
 import gitlab.mixins
 import gitlab.v4.objects
@@ -19,7 +19,7 @@ import gitlab.v4.objects
 @dataclasses.dataclass(frozen=True)
 class ClassInfo:
     name: str
-    type: Type
+    type: Type  # type: ignore[type-arg]
 
     def __lt__(self, other: object) -> bool:
         if not isinstance(other, ClassInfo):
@@ -32,7 +32,7 @@ class ClassInfo:
         return (self.type.__module__, self.name) == (other.type.__module__, other.name)
 
 
-def pytest_generate_tests(metafunc: _pytest.python.Metafunc) -> None:
+def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     """Find all of the classes in gitlab.v4.objects and pass them to our test
     function"""
 
@@ -106,7 +106,7 @@ class TestTypeHints:
     def get_check_helper(
         self,
         *,
-        base_type: Type,
+        base_type: Type,  # type: ignore[type-arg]
         class_info: ClassInfo,
         method_template: str,
         optional_return: bool,
