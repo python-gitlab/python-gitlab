@@ -439,7 +439,7 @@ class Gitlab:
         return data["html"]
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabLicenseError)
-    def get_license(self, **kwargs: Any) -> Dict[str, Any]:
+    def get_license(self, **kwargs: Any) -> Dict[str, Union[str, Dict[str, str]]]:
         """Retrieve information about the current license.
 
         Args:
