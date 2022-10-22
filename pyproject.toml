@@ -14,13 +14,15 @@ module = [
     "docs.ext.*",
     "tests.functional.*",
     "tests.functional.api.*",
-    "tests.meta.*",
     "tests.unit.*",
 ]
 ignore_errors = true
 
 [[tool.mypy.overrides]]
-module = "tests.smoke.*"
+module = [
+    "tests.meta.*",
+    "tests.smoke.*",
+]
 disable_error_code = ["no-untyped-def"]
 
 [tool.semantic_release]
