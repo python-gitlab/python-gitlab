@@ -18,9 +18,9 @@ WHEEL_FILE = (
 
 
 @pytest.fixture(scope="function")
-def build():
-    sandbox.run_setup("setup.py", ["--quiet", "clean", "--all"])
-    return sandbox.run_setup("setup.py", ["--quiet", "sdist", "bdist_wheel"])
+def build() -> None:
+    sandbox.run_setup("setup.py", ["--quiet", "clean", "--all"])  # type: ignore[no-untyped-call]
+    sandbox.run_setup("setup.py", ["--quiet", "sdist", "bdist_wheel"])  # type: ignore[no-untyped-call]
 
 
 def test_sdist_includes_tests(build):
