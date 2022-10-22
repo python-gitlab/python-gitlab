@@ -177,7 +177,7 @@ def test_merge_request_reset_approvals(gitlab_url, project, wait_for_sidekiq):
     bot_project = bot_gitlab.projects.get(project.id, lazy=True)
 
     wait_for_sidekiq(timeout=60)
-    mr = bot_project.mergerequests.list()[0]
+    mr = bot_project.mergerequests.list()[0]  # type: ignore[index]
     assert mr.reset_approvals()
 
 

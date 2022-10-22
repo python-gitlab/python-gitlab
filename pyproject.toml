@@ -8,11 +8,11 @@ files = "."
 exclude = "build/.*"
 strict = true
 
-[[tool.mypy.overrides]] # Overrides for currently untyped modules
+# Overrides for currently untyped modules
+[[tool.mypy.overrides]]
 module = [
     "docs.*",
     "docs.ext.*",
-    "tests.functional.api.*",
     "tests.unit.*",
 ]
 ignore_errors = true
@@ -20,6 +20,7 @@ ignore_errors = true
 [[tool.mypy.overrides]]
 module = [
     "tests.functional.*",
+    "tests.functional.api.*",
     "tests.meta.*",
     "tests.smoke.*",
 ]

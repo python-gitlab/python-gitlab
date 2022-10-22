@@ -45,7 +45,7 @@ def test_project_import_export(gl, project, temp_dir):
             raise Exception("Project export taking too much time")
 
     with open(temp_dir / "gitlab-export.tgz", "wb") as f:
-        export.download(streamed=True, action=f.write)
+        export.download(streamed=True, action=f.write)  # type: ignore[arg-type]
 
     output = gl.projects.import_project(
         open(temp_dir / "gitlab-export.tgz", "rb"),
