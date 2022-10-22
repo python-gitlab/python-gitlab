@@ -142,7 +142,7 @@ def test_project_forks(gl, project, user):
     assert fork_project.forked_from_project["id"] == project.id
 
     forks = project.forks.list()
-    assert fork.id in map(lambda fork_project: fork_project.id, forks)
+    assert fork.id in [fork_project.id for fork_project in forks]
 
 
 def test_project_hooks(project):

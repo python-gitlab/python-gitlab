@@ -6,7 +6,7 @@ import base64
 import hashlib
 
 
-def key_fingerprint(key):
+def key_fingerprint(key: str) -> str:
     key_part = key.split()[1]
     decoded = base64.b64decode(key_part.encode("ascii"))
     digest = hashlib.sha256(decoded).digest()
