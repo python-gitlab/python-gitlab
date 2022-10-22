@@ -12,7 +12,6 @@ strict = true
 module = [
     "docs.*",
     "docs.ext.*",
-    "tests.functional.*",
     "tests.functional.api.*",
     "tests.unit.*",
 ]
@@ -20,6 +19,7 @@ ignore_errors = true
 
 [[tool.mypy.overrides]]
 module = [
+    "tests.functional.*",
     "tests.meta.*",
     "tests.smoke.*",
 ]

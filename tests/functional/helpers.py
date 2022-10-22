@@ -1,6 +1,6 @@
 import logging
 import time
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 import pytest
 
@@ -19,8 +19,10 @@ def get_gitlab_plan(gl: gitlab.Gitlab) -> Optional[str]:
         license = gl.get_license()
     except gitlab.exceptions.GitlabLicenseError:
         # Without a license we assume only Free features are available
-        return
+        return None
 
+    if TYPE_CHECKING:
+        assert isinstance(license["plan"], str)
     return license["plan"]
 
 
@@ -34,7 +36,7 @@ def safe_delete(
     manager = object.manager
     for index in range(MAX_ITERATIONS):
         try:
-            object = manager.get(object.get_id())
+            object = manager.get(object.get_id())  # type: ignore[attr-defined]
         except gitlab.exceptions.GitlabGetError:
             return
 
