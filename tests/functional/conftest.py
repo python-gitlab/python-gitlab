@@ -37,7 +37,7 @@ def gitlab_version(gl) -> GitlabVersion:
 
 
 @pytest.fixture(scope="session")
-def fixture_dir(test_dir) -> pathlib.Path:
+def fixture_dir(test_dir: pathlib.Path) -> pathlib.Path:
     return test_dir / "functional" / "fixtures"
 
 
@@ -56,7 +56,8 @@ def gitlab_container_name() -> str:
 
 @pytest.fixture(scope="session")
 def gitlab_docker_port(docker_services, gitlab_service_name: str) -> int:
-    return docker_services.port_for(service=gitlab_service_name, container_port=80)
+    port: int = docker_services.port_for(gitlab_service_name, container_port=80)
+    return port
 
 
 @pytest.fixture(scope="session")
@@ -114,7 +115,7 @@ def reset_gitlab(gl: gitlab.Gitlab) -> None:
             helpers.safe_delete(user, hard_delete=True)
 
 
-def set_token(container, fixture_dir):
+def set_token(container: str, fixture_dir: pathlib.Path) -> str:
     logging.info("Creating API token.")
     set_token_rb = fixture_dir / "set_token.rb"
 
