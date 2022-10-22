@@ -161,3 +161,23 @@ parameter to that API invocation:
 
    gl = gitlab.gitlab(url, token, api_version=4)
    gl.projects.import_github(ACCESS_TOKEN, 123456, "root", timeout=120.0)
+
+Typing
+------
+
+Generally, ``python-gitlab`` is a fully typed package. However, currently you may still
+need to do some
+`type narrowing <https://mypy.readthedocs.io/en/stable/type_narrowing.html#type-narrowing>`_
+on your own, such as for nested API responses and ``Union`` return types. For example:
+
+.. code-block:: python
+
+   from typing import TYPE_CHECKING
+
+   import gitlab
+
+   gl = gitlab.gitlab(url, token, api_version=4)
+   license = gl.get_license()
+
+   if TYPE_CHECKING:
+      assert isinstance(license["plan"], str)
