@@ -32,6 +32,8 @@ __all__ = [
     "ProjectPipelineVariableManager",
     "ProjectPipelineScheduleVariable",
     "ProjectPipelineScheduleVariableManager",
+    "ProjectPipelineSchedulePipeline",
+    "ProjectPipelineSchedulePipelineManager",
     "ProjectPipelineSchedule",
     "ProjectPipelineScheduleManager",
     "ProjectPipelineTestReport",
@@ -184,8 +186,19 @@ class ProjectPipelineScheduleVariableManager(
     _update_attrs = RequiredOptional(required=("key", "value"))
 
 
+class ProjectPipelineSchedulePipeline(RESTObject):
+    pass
+
+
+class ProjectPipelineSchedulePipelineManager(ListMixin, RESTManager):
+    _path = "/projects/{project_id}/pipeline_schedules/{pipeline_schedule_id}/pipelines"
+    _obj_cls = ProjectPipelineSchedulePipeline
+    _from_parent_attrs = {"project_id": "project_id", "pipeline_schedule_id": "id"}
+
+
 class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
     variables: ProjectPipelineScheduleVariableManager
+    pipelines: ProjectPipelineSchedulePipelineManager
 
     @cli.register_custom_action("ProjectPipelineSchedule")
     @exc.on_http_error(exc.GitlabOwnershipError)
