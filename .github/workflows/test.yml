@@ -26,23 +26,23 @@ jobs:
         os: [ubuntu-latest]
         python:
           - version: "3.7"
-            toxenv: py37
+            toxenv: py37,smoke
           - version: "3.8"
-            toxenv: py38
+            toxenv: py38,smoke
           - version: "3.9"
-            toxenv: py39
+            toxenv: py39,smoke
           - version: "3.10"
             toxenv: py310,smoke
-          - version: '3.11.0-alpha - 3.11' # SemVer's version range syntax
+          - version: "3.11"
             toxenv: py311,smoke
         include:
           - os: macos-latest
             python:
-              version: "3.10"
+              version: "3.11"
               toxenv: py310,smoke
           - os: windows-latest
             python:
-              version: "3.10"
+              version: "3.11"
               toxenv: py310,smoke
     steps:
       - uses: actions/checkout@v3.1.0
@@ -67,7 +67,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4.3.0
         with:
-          python-version: "3.10"
+          python-version: "3.11"
       - name: Install dependencies
         run: pip install tox
       - name: Run tests
@@ -88,7 +88,7 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4.3.0
         with:
-          python-version: "3.10"
+          python-version: "3.11"
       - name: Install dependencies
         run: pip install tox
       - name: Run tests
