@@ -50,6 +50,12 @@ To connect to GitLab.com or another GitLab instance, create a ``gitlab.Gitlab`` 
    # to validate your token authentication. Note that this will not work with job tokens.
    gl.auth()
 
+   # Enable "debug" mode. This can be useful when trying to determine what
+   # information is being sent back and forth to the GitLab server.
+   # Note: this will cause credentials and other potentially sensitive
+   # information to be printed to the terminal.
+   gl.enable_debug()
+
 You can also use configuration files to create ``gitlab.Gitlab`` objects:
 
 .. code-block:: python
