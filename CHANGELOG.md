@@ -2,6 +2,26 @@
 
 <!--next-version-placeholder-->
 
+## v3.11.0 (2022-10-28)
+### Feature
+* **build:** Officially support Python 3.11 ([`74f66c7`](https://github.com/python-gitlab/python-gitlab/commit/74f66c71f3974cf68f5038f4fc3995e53d44aebe))
+* **api:** Add support for topics merge API ([`9a6d197`](https://github.com/python-gitlab/python-gitlab/commit/9a6d197f9d2a88bdba8dab1f9abaa4e081a14792))
+
+### Fix
+* Remove `project.approvals.set_approvals()` method ([`91f08f0`](https://github.com/python-gitlab/python-gitlab/commit/91f08f01356ca5e38d967700a5da053f05b6fab0))
+* Use epic id instead of iid for epic notes ([`97cae38`](https://github.com/python-gitlab/python-gitlab/commit/97cae38a315910972279f2d334e91fa54d9ede0c))
+* **cli:** Handle list response for json/yaml output ([`9b88132`](https://github.com/python-gitlab/python-gitlab/commit/9b88132078ed37417c2a45369b4976c9c67f7882))
+* Intermittent failure in test_merge_request_reset_approvals ([`3dde36e`](https://github.com/python-gitlab/python-gitlab/commit/3dde36eab40406948adca633f7197beb32b29552))
+
+### Documentation
+* **advanced:** Add hint on type narrowing ([`a404152`](https://github.com/python-gitlab/python-gitlab/commit/a40415290923d69d087dd292af902efbdfb5c258))
+* Add minimal docs about the `enable_debug()` method ([`b4e9ab7`](https://github.com/python-gitlab/python-gitlab/commit/b4e9ab7ee395e575f17450c2dc0d519f7192e58e))
+* **commits:** Fix commit create example for binary content ([`bcc1eb4`](https://github.com/python-gitlab/python-gitlab/commit/bcc1eb4571f76b3ca0954adb5525b26f05958e3f))
+* **readme:** Add a basic feature list ([`b4d53f1`](https://github.com/python-gitlab/python-gitlab/commit/b4d53f1abb264cd9df8e4ac6560ab0895080d867))
+* **api:** Describe use of lower-level methods ([`b7a6874`](https://github.com/python-gitlab/python-gitlab/commit/b7a687490d2690e6bd4706391199135e658e1dc6))
+* **api:** Describe the list() and all() runners' functions ([`b6cc3f2`](https://github.com/python-gitlab/python-gitlab/commit/b6cc3f255532521eb259b42780354e03ce51458e))
+* **api:** Update `merge_requests.rst`: `mr_id` to `mr_iid` ([`b32234d`](https://github.com/python-gitlab/python-gitlab/commit/b32234d1f8c4492b6b2474f91be9479ad23115bb))
+
 ## v3.10.0 (2022-09-28)
 ### Feature
 * Add reset_approvals api ([`88693ff`](https://github.com/python-gitlab/python-gitlab/commit/88693ff2d6f4eecf3c79d017df52738886e2d636))
