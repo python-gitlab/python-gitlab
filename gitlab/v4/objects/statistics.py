@@ -13,6 +13,8 @@ __all__ = [
     "IssuesStatisticsManager",
     "ProjectIssuesStatistics",
     "ProjectIssuesStatisticsManager",
+    "ApplicationStatistics",
+    "ApplicationStatisticsManager",
 ]
 
 
@@ -71,3 +73,15 @@ class ProjectIssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
 
     def get(self, **kwargs: Any) -> ProjectIssuesStatistics:
         return cast(ProjectIssuesStatistics, super().get(**kwargs))
+
+
+class ApplicationStatistics(RESTObject):
+    _id_attr = None
+
+
+class ApplicationStatisticsManager(GetWithoutIdMixin, RESTManager):
+    _path = "/application/statistics"
+    _obj_cls = ApplicationStatistics
+
+    def get(self, **kwargs: Any) -> ApplicationStatistics:
+        return cast(ApplicationStatistics, super().get(**kwargs))
