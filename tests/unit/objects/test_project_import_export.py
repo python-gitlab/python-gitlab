@@ -124,7 +124,7 @@ def test_import_project(gl, resp_import_project):
 
 
 def test_import_project_from_remote(gl, resp_import_project_from_remote):
-    project_import = gl.projects.import_project_remote(
+    project_import = gl.projects.import_project_from_remote(
         "https://whatever.com/url", "remote-project", "remote-project", "root"
     )
     assert project_import["import_status"] == "scheduled"
