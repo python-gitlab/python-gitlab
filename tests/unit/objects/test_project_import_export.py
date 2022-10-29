@@ -30,6 +30,30 @@ def resp_import_project():
 
 
 @pytest.fixture
+def resp_import_project_from_remote():
+    content = {
+        "id": 1,
+        "description": None,
+        "name": "remote-project",
+        "name_with_namespace": "Administrator / remote-project",
+        "path": "remote-project",
+        "path_with_namespace": "root/remote-project",
+        "created_at": "2018-02-13T09:05:58.023Z",
+        "import_status": "scheduled",
+    }
+
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/remote-import",
+            json=content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
 def resp_import_status():
     content = {
         "id": 1,
@@ -95,6 +119,13 @@ def resp_import_bitbucket_server():
 def test_import_project(gl, resp_import_project):
     project_import = gl.projects.import_project(
         "file", "api-project", "api-project", "root"
+    )
+    assert project_import["import_status"] == "scheduled"
+
+
+def test_import_project_from_remote(gl, resp_import_project_from_remote):
+    project_import = gl.projects.import_project_remote(
+        "https://whatever.com/url", "remote-project", "remote-project", "root"
     )
     assert project_import["import_status"] == "scheduled"
 

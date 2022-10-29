@@ -822,6 +822,8 @@ class ProjectManager(CRUDMixin, RESTManager):
         Args:
             file: Data or file object containing the project
             path: Name and path for the new project
+            name: The name of the project to import. If not provided,
+                defaults to the path of the project.
             namespace: The ID or path of the namespace that the project
                 will be imported to
             overwrite: If True overwrite an existing project with the
@@ -847,6 +849,49 @@ class ProjectManager(CRUDMixin, RESTManager):
             data["namespace"] = namespace
         return self.gitlab.http_post(
             "/projects/import", post_data=data, files=files, **kwargs
+        )
+
+    def import_project_from_remote(
+        self,
+        url: str,
+        path: str,
+        name: Optional[str] = None,
+        namespace: Optional[str] = None,
+        overwrite: bool = False,
+        override_params: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
+    ) -> Union[Dict[str, Any], requests.Response]:
+        """Import a project from an archive file stored on a remote URL.
+
+        Args:
+            url: URL for the file containing the project data to import
+            path: Name and path for the new project
+            name: The name of the project to import. If not provided,
+                defaults to the path of the project.
+            namespace: The ID or path of the namespace that the project
+                will be imported to
+            overwrite: If True overwrite an existing project with the
+                same path
+            override_params: Set the specific settings for the project
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabListError: If the server failed to perform the request
+
+        Returns:
+            A representation of the import status.
+        """
+        data = {"path": path, "overwrite": str(overwrite), "url": url}
+        if override_params:
+            for k, v in override_params.items():
+                data[f"override_params[{k}]"] = v
+        if name is not None:
+            data["name"] = name
+        if namespace:
+            data["namespace"] = namespace
+        return self.gitlab.http_post(
+            "/projects/remote-import", post_data=data, **kwargs
         )
 
     def import_bitbucket_server(
