@@ -165,9 +165,7 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMROnBuildSuccessError)
-    def cancel_merge_when_pipeline_succeeds(
-        self, **kwargs: Any
-    ) -> "ProjectMergeRequest":
+    def cancel_merge_when_pipeline_succeeds(self, **kwargs: Any) -> Dict[str, str]:
         """Cancel merge when the pipeline succeeds.
 
         Args:
@@ -179,17 +177,20 @@ class ProjectMergeRequest(
                 request
 
         Returns:
-            ProjectMergeRequest
+            dict of the parsed json returned by the server
         """
 
         path = (
             f"{self.manager.path}/{self.encoded_id}/cancel_merge_when_pipeline_succeeds"
         )
-        server_data = self.manager.gitlab.http_put(path, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        # 2022-10-30: The docs at
+        # https://docs.gitlab.com/ee/api/merge_requests.html#cancel-merge-when-pipeline-succeeds
+        # are incorrect in that the return value is actually just:
+        #   {'status': 'success'}  for a successful cancel.
         if TYPE_CHECKING:
             assert isinstance(server_data, dict)
-        self._update_attrs(server_data)
-        return ProjectMergeRequest(self.manager, server_data)
+        return server_data
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)

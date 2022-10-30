@@ -379,7 +379,7 @@ def merge_request(project, wait_for_sidekiq):
 
     to_delete = []
 
-    def _merge_request(*, source_branch: str):
+    def _merge_request(*, source_branch: str, create_pipeline: bool = False):
         # Wait for processes to be done before we start...
         # NOTE(jlvillal): Sometimes the CI would give a "500 Internal Server
         # Error". Hoping that waiting until all other processes are done will
@@ -401,6 +401,21 @@ def merge_request(project, wait_for_sidekiq):
                 "commit_message": "New commit in new branch",
             }
         )
+        if create_pipeline:
+            project.files.create(
+                {
+                    "file_path": ".gitlab-ci.yml",
+                    "branch": source_branch,
+                    "content": """
+test:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  script:
+    - sleep 24h  # We don't expect this to finish
+""",
+                    "commit_message": "Add a simple pipeline",
+                }
+            )
         mr = project.mergerequests.create(
             {
                 "source_branch": source_branch,
