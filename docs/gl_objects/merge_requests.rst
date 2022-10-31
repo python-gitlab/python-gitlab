@@ -122,8 +122,14 @@ Accept a MR::
 
     mr.merge()
 
-Cancel a MR when the build succeeds::
+Schedule a MR to merge after the pipeline(s) succeed::
 
+    mr.merge(merge_when_pipeline_succeeds=True)
+
+Cancel a MR from merging when the pipeline succeeds::
+
+    # Cancel a MR from being merged that had been previously set to
+    # 'merge_when_pipeline_succeeds=True'
     mr.cancel_merge_when_pipeline_succeeds()
 
 List commits of a MR::

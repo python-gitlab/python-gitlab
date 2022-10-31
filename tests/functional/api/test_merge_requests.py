@@ -181,11 +181,27 @@ def test_merge_request_reset_approvals(gitlab_url, project, wait_for_sidekiq):
     assert mr.reset_approvals()
 
 
+def test_cancel_merge_when_pipeline_succeeds(project, merge_request, wait_for_sidekiq):
+    mr = merge_request(source_branch="test_merge_request_merge", create_pipeline=True)
+    # Set to merge when the pipeline succeeds, which should never happen
+    mr.merge(merge_when_pipeline_succeeds=True)
+    wait_for_sidekiq(timeout=60)
+
+    mr = project.mergerequests.get(mr.iid)
+    assert mr.merged_at is None
+    assert mr.merge_when_pipeline_succeeds is True
+    cancel = mr.cancel_merge_when_pipeline_succeeds()
+    assert cancel == {"status": "success"}
+
+
 def test_merge_request_merge(project, merge_request, wait_for_sidekiq):
     mr = merge_request(source_branch="test_merge_request_merge")
     mr.merge()
     wait_for_sidekiq(timeout=60)
 
+    mr = project.mergerequests.get(mr.iid)
+    assert mr.merged_at is not None
+    assert mr.merge_when_pipeline_succeeds is False
     with pytest.raises(gitlab.GitlabMRClosedError):
         # Two merge attempts should raise GitlabMRClosedError
         mr.merge()
