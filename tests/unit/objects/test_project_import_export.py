@@ -30,7 +30,7 @@ def resp_import_project():
 
 
 @pytest.fixture
-def resp_import_project_from_remote():
+def resp_remote_import():
     content = {
         "id": 1,
         "description": None,
@@ -123,8 +123,8 @@ def test_import_project(gl, resp_import_project):
     assert project_import["import_status"] == "scheduled"
 
 
-def test_import_project_from_remote(gl, resp_import_project_from_remote):
-    project_import = gl.projects.import_project_from_remote(
+def test_remote_import(gl, resp_remote_import):
+    project_import = gl.projects.remote_import(
         "https://whatever.com/url", "remote-project", "remote-project", "root"
     )
     assert project_import["import_status"] == "scheduled"

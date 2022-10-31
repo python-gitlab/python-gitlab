@@ -851,7 +851,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             "/projects/import", post_data=data, files=files, **kwargs
         )
 
-    def import_project_from_remote(
+    def remote_import(
         self,
         url: str,
         path: str,
