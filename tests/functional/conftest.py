@@ -94,7 +94,18 @@ def reset_gitlab(gl: gitlab.Gitlab) -> None:
             helpers.safe_delete(deploy_token)
         logging.info(f"Deleting project: {project.path_with_namespace!r}")
         helpers.safe_delete(project)
+
     for group in gl.groups.list():
+
+        # skip deletion of a descendant group to prevent scenarios where parent group
+        # gets deleted leaving a dangling descendant whose deletion will throw 404s.
+        if group.parent_id:
+            logging.info(
+                f"Skipping deletion of {group.full_path} as it is a descendant "
+                f"group and will be removed when the parent group is deleted"
+            )
+            continue
+
         for deploy_token in group.deploytokens.list():
             logging.info(
                 f"Deleting deploy token: {deploy_token.username!r} in "
@@ -110,7 +121,7 @@ def reset_gitlab(gl: gitlab.Gitlab) -> None:
         logging.info(f"Deleting variable: {variable.key!r}")
         helpers.safe_delete(variable)
     for user in gl.users.list():
-        if user.username != "root":
+        if user.username not in ["root", "ghost"]:
             logging.info(f"Deleting user: {user.username!r}")
             helpers.safe_delete(user, hard_delete=True)
 
