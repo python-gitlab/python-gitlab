@@ -342,6 +342,15 @@ Import the project into a namespace and override parameters::
             override_params={'visibility': 'private'},
         )
 
+Import the project using file stored on a remote URL::
+
+    output = gl.projects.remote_import(
+        url="https://whatever.com/url/file.tar.gz",
+        path="my_new_remote_project",
+        name="My New Remote Project", 
+        namespace="my-group",
+        override_params={'visibility': 'private'},
+    )
 
 Project custom attributes
 =========================

@@ -1,5 +1,7 @@
 import time
 
+import pytest
+
 import gitlab
 
 
@@ -64,3 +66,15 @@ def test_project_import_export(gl, project, temp_dir):
         count += 1
         if count == 15:
             raise Exception("Project import taking too much time")
+
+
+def test_project_remote_import(gl):
+    with pytest.raises(gitlab.exceptions.GitlabHttpError) as err_info:
+        gl.projects.remote_import(
+            "ftp://whatever.com/url", "remote-project", "remote-project", "root"
+        )
+    assert err_info.value.response_code == 400
+    assert (
+        "File url is blocked: Only allowed schemes are https"
+        in err_info.value.error_message
+    )
