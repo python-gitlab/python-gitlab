@@ -352,6 +352,20 @@ Import the project using file stored on a remote URL::
         override_params={'visibility': 'private'},
     )
 
+Import the project using file stored on AWS S3::
+
+    output = gl.projects.remote_import_s3(
+        region="aws-region",
+        bucket_name="aws-bucket-name",
+        file_key="aws-file-key",
+        access_key_id="aws-access-key-id",
+        secret_access_key="secret-access-key",
+        path="my_new_remote_project",
+        name="My New Remote Project", 
+        namespace="my-group",
+        override_params={'visibility': 'private'},
+    )
+
 Project custom attributes
 =========================
 
