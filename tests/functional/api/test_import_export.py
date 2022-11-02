@@ -69,12 +69,32 @@ def test_project_import_export(gl, project, temp_dir):
 
 
 def test_project_remote_import(gl):
-    with pytest.raises(gitlab.exceptions.GitlabHttpError) as err_info:
+    with pytest.raises(gitlab.exceptions.GitlabImportError) as err_info:
         gl.projects.remote_import(
             "ftp://whatever.com/url", "remote-project", "remote-project", "root"
         )
     assert err_info.value.response_code == 400
     assert (
         "File url is blocked: Only allowed schemes are https"
+        in err_info.value.error_message
+    )
+
+
+def test_project_remote_import_s3(gl):
+    gl.features.set("import_project_from_remote_file_s3", True)
+    with pytest.raises(gitlab.exceptions.GitlabImportError) as err_info:
+        gl.projects.remote_import_s3(
+            "remote-project",
+            "aws-region",
+            "aws-bucket-name",
+            "aws-file-key",
+            "aws-access-key-id",
+            "secret-access-key",
+            "remote-project",
+            "root",
+        )
+    assert err_info.value.response_code == 400
+    assert (
+        "Failed to open 'aws-file-key' in 'aws-bucket-name'"
         in err_info.value.error_message
     )

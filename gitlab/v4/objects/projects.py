@@ -807,6 +807,7 @@ class ProjectManager(CRUDMixin, RESTManager):
     def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Project:
         return cast(Project, super().get(id=id, lazy=lazy, **kwargs))
 
+    @exc.on_http_error(exc.GitlabImportError)
     def import_project(
         self,
         file: str,
@@ -833,7 +834,7 @@ class ProjectManager(CRUDMixin, RESTManager):
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
-            GitlabListError: If the server failed to perform the request
+            GitlabImportError: If the server failed to perform the request
 
         Returns:
             A representation of the import status.
@@ -851,6 +852,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             "/projects/import", post_data=data, files=files, **kwargs
         )
 
+    @exc.on_http_error(exc.GitlabImportError)
     def remote_import(
         self,
         url: str,
@@ -877,7 +879,7 @@ class ProjectManager(CRUDMixin, RESTManager):
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
-            GitlabListError: If the server failed to perform the request
+            GitlabImportError: If the server failed to perform the request
 
         Returns:
             A representation of the import status.
@@ -892,6 +894,66 @@ class ProjectManager(CRUDMixin, RESTManager):
             data["namespace"] = namespace
         return self.gitlab.http_post(
             "/projects/remote-import", post_data=data, **kwargs
+        )
+
+    @exc.on_http_error(exc.GitlabImportError)
+    def remote_import_s3(
+        self,
+        path: str,
+        region: str,
+        bucket_name: str,
+        file_key: str,
+        access_key_id: str,
+        secret_access_key: str,
+        name: Optional[str] = None,
+        namespace: Optional[str] = None,
+        overwrite: bool = False,
+        override_params: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
+    ) -> Union[Dict[str, Any], requests.Response]:
+        """Import a project from an archive file stored on AWS S3.
+
+        Args:
+            region: AWS S3 region name where the file is stored
+            bucket_name: AWS S3 bucket name where the file is stored
+            file_key: AWS S3 file key to identify the file.
+            access_key_id: AWS S3 access key ID.
+            secret_access_key: AWS S3 secret access key.
+            path: Name and path for the new project
+            name: The name of the project to import. If not provided,
+                defaults to the path of the project.
+            namespace: The ID or path of the namespace that the project
+                will be imported to
+            overwrite: If True overwrite an existing project with the
+                same path
+            override_params: Set the specific settings for the project
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabImportError: If the server failed to perform the request
+
+        Returns:
+            A representation of the import status.
+        """
+        data = {
+            "region": region,
+            "bucket_name": bucket_name,
+            "file_key": file_key,
+            "access_key_id": access_key_id,
+            "secret_access_key": secret_access_key,
+            "path": path,
+            "overwrite": str(overwrite),
+        }
+        if override_params:
+            for k, v in override_params.items():
+                data[f"override_params[{k}]"] = v
+        if name is not None:
+            data["name"] = name
+        if namespace:
+            data["namespace"] = namespace
+        return self.gitlab.http_post(
+            "/projects/remote-import-s3", post_data=data, **kwargs
         )
 
     def import_bitbucket_server(

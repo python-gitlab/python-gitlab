@@ -54,6 +54,30 @@ def resp_remote_import():
 
 
 @pytest.fixture
+def resp_remote_import_s3():
+    content = {
+        "id": 1,
+        "description": None,
+        "name": "remote-project-s3",
+        "name_with_namespace": "Administrator / remote-project-s3",
+        "path": "remote-project-s3",
+        "path_with_namespace": "root/remote-project-s3",
+        "created_at": "2018-02-13T09:05:58.023Z",
+        "import_status": "scheduled",
+    }
+
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/remote-import-s3",
+            json=content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
 def resp_import_status():
     content = {
         "id": 1,
@@ -125,7 +149,24 @@ def test_import_project(gl, resp_import_project):
 
 def test_remote_import(gl, resp_remote_import):
     project_import = gl.projects.remote_import(
-        "https://whatever.com/url", "remote-project", "remote-project", "root"
+        "https://whatever.com/url/file.tar.gz",
+        "remote-project",
+        "remote-project",
+        "root",
+    )
+    assert project_import["import_status"] == "scheduled"
+
+
+def test_remote_import_s3(gl, resp_remote_import_s3):
+    project_import = gl.projects.remote_import_s3(
+        "remote-project",
+        "aws-region",
+        "aws-bucket-name",
+        "aws-file-key",
+        "aws-access-key-id",
+        "secret-access-key",
+        "remote-project",
+        "root",
     )
     assert project_import["import_status"] == "scheduled"
 
