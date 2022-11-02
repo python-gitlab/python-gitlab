@@ -807,6 +807,7 @@ class ProjectManager(CRUDMixin, RESTManager):
     def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Project:
         return cast(Project, super().get(id=id, lazy=lazy, **kwargs))
 
+    @exc.on_http_error(exc.GitlabImportError)
     def import_project(
         self,
         file: str,
@@ -833,7 +834,7 @@ class ProjectManager(CRUDMixin, RESTManager):
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
-            GitlabListError: If the server failed to perform the request
+            GitlabImportError: If the server failed to perform the request
 
         Returns:
             A representation of the import status.
@@ -851,6 +852,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             "/projects/import", post_data=data, files=files, **kwargs
         )
 
+    @exc.on_http_error(exc.GitlabImportError)
     def remote_import(
         self,
         url: str,
@@ -877,7 +879,7 @@ class ProjectManager(CRUDMixin, RESTManager):
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
-            GitlabListError: If the server failed to perform the request
+            GitlabImportError: If the server failed to perform the request
 
         Returns:
             A representation of the import status.
@@ -894,14 +896,15 @@ class ProjectManager(CRUDMixin, RESTManager):
             "/projects/remote-import", post_data=data, **kwargs
         )
 
+    @exc.on_http_error(exc.GitlabImportError)
     def remote_import_s3(
         self,
+        path: str,
         region: str,
         bucket_name: str,
         file_key: str,
         access_key_id: str,
         secret_access_key: str,
-        path: str,
         name: Optional[str] = None,
         namespace: Optional[str] = None,
         overwrite: bool = False,
@@ -928,7 +931,7 @@ class ProjectManager(CRUDMixin, RESTManager):
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
-            GitlabListError: If the server failed to perform the request
+            GitlabImportError: If the server failed to perform the request
 
         Returns:
             A representation of the import status.

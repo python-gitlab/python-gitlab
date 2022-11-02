@@ -159,12 +159,12 @@ def test_remote_import(gl, resp_remote_import):
 
 def test_remote_import_s3(gl, resp_remote_import_s3):
     project_import = gl.projects.remote_import_s3(
+        "remote-project",
         "aws-region",
         "aws-bucket-name",
         "aws-file-key",
         "aws-access-key-id",
         "secret-access-key",
-        "remote-project",
         "remote-project",
         "root",
     )
