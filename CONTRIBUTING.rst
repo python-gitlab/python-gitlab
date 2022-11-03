@@ -24,6 +24,17 @@ message guidelines described below:
 
 Please provide your patches as GitHub pull requests. Thanks!
 
+Rerunning failed CI workflows
+-----------------------------
+
+* Ask the maintainers to add the ``ok-to-test`` label on the PR
+* Post a comment in the PR
+   ``/rerun-all`` - rerun all failed workflows
+
+   ``/rerun-workflow <workflow name>`` - rerun a specific failed workflow
+
+The functionality is provided by ``rerun-action <https://github.com/marketplace/actions/rerun-actions>``
+
 Commit message guidelines
 -------------------------
 
