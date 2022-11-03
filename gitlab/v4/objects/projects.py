@@ -740,6 +740,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             "mirror_trigger_builds",
             "mirror_user_id",
             "mirror",
+            "mr_default_target_self",
             "name",
             "operations_access_level",
             "only_allow_merge_if_all_discussions_are_resolved",
