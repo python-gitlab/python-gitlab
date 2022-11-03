@@ -25,7 +25,7 @@ setup(
     long_description_content_type="text/x-rst",
     author="Gauvain Pocentek",
     author_email="gauvain@pocentek.net",
-    license="LGPLv3",
+    license="LGPL-3.0-or-later",
     url="https://github.com/python-gitlab/python-gitlab",
     packages=find_packages(exclude=["docs*", "tests*"]),
     install_requires=["requests>=2.25.0", "requests-toolbelt>=0.9.1"],
