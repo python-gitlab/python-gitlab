@@ -250,6 +250,10 @@ Start the pull mirroring process (EE edition)::
 
     project.mirror_pull()
 
+Get a project’s pull mirror details (EE edition)::
+
+    mirror_pull_details = project.mirror_pull_details()
+
 Import / Export
 ===============
 
