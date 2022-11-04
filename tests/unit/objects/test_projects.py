@@ -531,6 +531,27 @@ def resp_start_pull_mirroring_project():
 
 
 @pytest.fixture
+def resp_pull_mirror_details_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/mirror/pull",
+            json={
+                "id": 101486,
+                "last_error": None,
+                "last_successful_update_at": "2020-01-06T17:32:02.823Z",
+                "last_update_at": "2020-01-06T17:32:02.823Z",
+                "last_update_started_at": "2020-01-06T17:31:55.864Z",
+                "update_status": "finished",
+                "url": "https://*****:*****@gitlab.com/gitlab-org/security/gitlab.git",
+            },
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
 def resp_snapshot_project():
     with responses.RequestsMock() as rsps:
         rsps.add(
@@ -764,6 +785,12 @@ def test_transfer_project_deprecated_warns(project, resp_transfer_project):
 
 def test_project_pull_mirror(project, resp_start_pull_mirroring_project):
     project.mirror_pull()
+
+
+def test_project_pull_mirror_details(project, resp_pull_mirror_details_project):
+    details = project.mirror_pull_details()
+    assert details["last_error"] is None
+    assert details["update_status"] == "finished"
 
 
 def test_project_restore(project, resp_restore_project):

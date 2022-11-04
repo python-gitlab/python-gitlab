@@ -579,6 +579,29 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         path = f"/projects/{self.encoded_id}/mirror/pull"
         self.manager.gitlab.http_post(path, **kwargs)
 
+    @cli.register_custom_action("Project")
+    @exc.on_http_error(exc.GitlabGetError)
+    def mirror_pull_details(self, **kwargs: Any) -> Dict[str, Any]:
+        """Get a project's pull mirror details.
+
+        Introduced in GitLab 15.5.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the server failed to perform the request
+
+        Returns:
+            dict of the parsed json returned by the server
+        """
+        path = f"/projects/{self.encoded_id}/mirror/pull"
+        result = self.manager.gitlab.http_get(path, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(result, dict)
+        return result
+
     @cli.register_custom_action("Project", ("to_namespace",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
     def transfer(self, to_namespace: Union[int, str], **kwargs: Any) -> None:
