@@ -304,3 +304,11 @@ def test_group_transfer(gl, group):
 
     transferred_group = gl.groups.get(transfer_group.id)
     assert transferred_group.path == transferred_group.full_path
+
+
+@pytest.mark.gitlab_premium
+def test_group_saml_group_links(gl):
+    group = gl.groups.create({"name": "gitlab-test-group", "path": "gitlab-test-group"})
+    group.saml_group_links.create(
+        {"saml_group_name": "saml-group-1", "access_level": 10}
+    )
