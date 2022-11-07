@@ -480,3 +480,8 @@ class GroupSAMLGroupLinkManager(NoUpdateMixin, RESTManager):
     _obj_cls: Type[GroupSAMLGroupLink] = GroupSAMLGroupLink
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(required=("saml_group_name", "access_level"))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> GroupSAMLGroupLink:
+        return cast(GroupSAMLGroupLink, super().get(id=id, lazy=lazy, **kwargs))
