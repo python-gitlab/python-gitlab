@@ -53,6 +53,7 @@ from .push_rules import *
 from .releases import *
 from .repositories import *
 from .runners import *
+from .secure_files import *
 from .settings import *
 from .sidekiq import *
 from .snippets import *
