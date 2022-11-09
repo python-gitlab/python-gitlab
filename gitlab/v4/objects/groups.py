@@ -195,6 +195,21 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.manager.gitlab.http_delete(path, **kwargs)
 
     @cli.register_custom_action("Group")
+    @exc.on_http_error(exc.GitlabGetError)
+    def list_ldap_group_links(self, **kwargs):
+        """Add an LDAP group link.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the server cannot perform the request
+        """
+        path = "/groups/%s/ldap_group_links" % self.get_id()
+        return self.manager.gitlab.http_get(path, **kwargs)
+
+    @cli.register_custom_action("Group")
     @exc.on_http_error(exc.GitlabCreateError)
     def ldap_sync(self, **kwargs: Any) -> None:
         """Sync LDAP groups.
