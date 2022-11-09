@@ -197,7 +197,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action("Group")
     @exc.on_http_error(exc.GitlabGetError)
     def list_ldap_group_links(self, **kwargs):
-        """Add an LDAP group link.
+        """List LDAP group links.
 
         Args:
             **kwargs: Extra options to send to the server (e.g. sudo)
