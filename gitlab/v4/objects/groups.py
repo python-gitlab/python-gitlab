@@ -206,7 +206,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        path = "/groups/%s/ldap_group_links" % self.get_id()
+        path = f"/groups/{self.encoded_id}/ldap_group_links"
         return self.manager.gitlab.http_get(path, **kwargs)
 
     @cli.register_custom_action("Group")
