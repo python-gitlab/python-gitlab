@@ -39,5 +39,5 @@ jobs:
         run: tox -e mypy
       - name: Run isort import order checker (https://pycqa.github.io/isort/)
         run: tox -e isort -- --check
-      - name: Run pylint Python code static checker (https://www.pylint.org/)
+      - name: Run pylint Python code static checker (https://github.com/PyCQA/pylint)
         run: tox -e pylint
