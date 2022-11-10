@@ -60,6 +60,12 @@ Create a group::
 
     group = gl.groups.create({'name': 'group1', 'path': 'group1'})
 
+.. warning::
+
+   On GitLab.com, creating top-level groups is currently
+   `not permitted using the API <https://docs.gitlab.com/ee/api/groups.html#new-group>`_.
+   You can only use the API to create subgroups.
+
 Create a subgroup under an existing group::
 
     subgroup = gl.groups.create({'name': 'subgroup1', 'path': 'subgroup1', 'parent_id': parent_group_id})
