@@ -209,7 +209,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabGetError: If the server cannot perform the request
         """
         path = f"/groups/{self.encoded_id}/ldap_group_links"
-        return self.manager.gitlab.http_get(path, **kwargs)
+        return self.manager.gitlab.http_list(path, **kwargs)
 
     @cli.register_custom_action("Group")
     @exc.on_http_error(exc.GitlabCreateError)
