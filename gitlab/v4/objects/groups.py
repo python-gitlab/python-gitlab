@@ -196,7 +196,9 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action("Group")
     @exc.on_http_error(exc.GitlabGetError)
-    def list_ldap_group_links(self, **kwargs):
+    def list_ldap_group_links(
+        self, **kwargs: Any
+    ) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
         """List LDAP group links.
 
         Args:
