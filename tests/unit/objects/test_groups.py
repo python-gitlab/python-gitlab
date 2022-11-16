@@ -12,6 +12,14 @@ from gitlab.v4.objects import GroupDescendantGroup, GroupSubgroup
 from gitlab.v4.objects.projects import GroupProject, SharedProject
 
 content = {"name": "name", "id": 1, "path": "path"}
+ldap_group_links_content = [
+    {
+        "cn": None,
+        "group_access": 40,
+        "provider": "ldapmain",
+        "filter": "(memberOf=cn=some_group,ou=groups,ou=fake_ou,dc=sub_dc,dc=example,dc=tld)",
+    }
+]
 projects_content = [
     {
         "id": 9,
@@ -216,6 +224,19 @@ def resp_delete_push_rules_group(no_content):
         yield rsps
 
 
+@pytest.fixture
+def resp_list_ldap_group_links(no_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/groups/1/ldap_group_links",
+            json=ldap_group_links_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
 def test_get_group(gl, resp_groups):
     data = gl.groups.get(1)
     assert isinstance(data, gitlab.v4.objects.Group)
@@ -259,6 +280,12 @@ def test_list_group_descendant_groups(group, resp_list_subgroups_descendant_grou
     descendant_groups = group.descendant_groups.list()
     assert isinstance(descendant_groups[0], GroupDescendantGroup)
     assert descendant_groups[0].path == subgroup_descgroup_content[0]["path"]
+
+
+def test_list_ldap_group_links(group, resp_list_ldap_group_links):
+    ldap_group_links = group.list_ldap_group_links()
+    assert isinstance(ldap_group_links, list)
+    assert ldap_group_links[0]["provider"] == ldap_group_links_content[0]["provider"]
 
 
 @pytest.mark.skip("GitLab API endpoint not implemented")
