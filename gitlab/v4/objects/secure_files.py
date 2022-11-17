@@ -13,11 +13,11 @@ from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import NoUpdateMixin, ObjectDeleteMixin
 from gitlab.types import FileAttribute, RequiredOptional
 
-__all__ = ["SecureFile", "SecureFileManager"]
+__all__ = ["ProjectSecureFile", "ProjectSecureFileManager"]
 
 
-class SecureFile(ObjectDeleteMixin, RESTObject):
-    @cli.register_custom_action("SecureFile")
+class ProjectSecureFile(ObjectDeleteMixin, RESTObject):
+    @cli.register_custom_action("ProjectSecureFile")
     @exc.on_http_error(exc.GitlabGetError)
     def download(
         self,
@@ -58,12 +58,14 @@ class SecureFile(ObjectDeleteMixin, RESTObject):
         )
 
 
-class SecureFileManager(NoUpdateMixin, RESTManager):
+class ProjectSecureFileManager(NoUpdateMixin, RESTManager):
     _path = "/projects/{project_id}/secure_files"
-    _obj_cls = SecureFile
+    _obj_cls = ProjectSecureFile
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(required=("name", "file"))
     _types = {"file": FileAttribute}
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> SecureFile:
-        return cast(SecureFile, super().get(id=id, lazy=lazy, **kwargs))
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectSecureFile:
+        return cast(ProjectSecureFile, super().get(id=id, lazy=lazy, **kwargs))
