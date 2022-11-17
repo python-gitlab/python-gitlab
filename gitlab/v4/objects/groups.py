@@ -5,9 +5,16 @@ import requests
 import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab import types
+from gitlab import types, utils
 from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
+from gitlab.mixins import (
+    CreateMixin,
+    CRUDMixin,
+    DeleteMixin,
+    ListMixin,
+    ObjectDeleteMixin,
+    SaveMixin,
+)
 from gitlab.types import RequiredOptional
 
 from .access_requests import GroupAccessRequestManager  # noqa: F401
@@ -47,6 +54,8 @@ __all__ = [
     "GroupManager",
     "GroupDescendantGroup",
     "GroupDescendantGroupManager",
+    "GroupLDAPGroupLink",
+    "GroupLDAPGroupLinkManager",
     "GroupSubgroup",
     "GroupSubgroupManager",
 ]
@@ -74,6 +83,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     issues_statistics: GroupIssuesStatisticsManager
     iterations: GroupIterationManager
     labels: GroupLabelManager
+    ldap_group_links: "GroupLDAPGroupLinkManager"
     members: GroupMemberManager
     members_all: GroupMemberAllManager
     mergerequests: GroupMergeRequestManager
@@ -168,6 +178,13 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server cannot perform the request
         """
+        utils.warn(
+            message=(
+                "The add_ldap_group_link() method is deprecated and will be removed "
+                "in a future version. Use ldap_group_links.create() instead."
+            ),
+            category=DeprecationWarning,
+        )
         path = f"/groups/{self.encoded_id}/ldap_group_links"
         data = {"cn": cn, "group_access": group_access, "provider": provider}
         self.manager.gitlab.http_post(path, post_data=data, **kwargs)
@@ -188,28 +205,18 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
+        utils.warn(
+            message=(
+                "The delete_ldap_group_link() method is deprecated and will be "
+                "removed in a future version. Use ldap_group_links.delete() instead."
+            ),
+            category=DeprecationWarning,
+        )
         path = f"/groups/{self.encoded_id}/ldap_group_links"
         if provider is not None:
             path += f"/{provider}"
         path += f"/{cn}"
         self.manager.gitlab.http_delete(path, **kwargs)
-
-    @cli.register_custom_action("Group")
-    @exc.on_http_error(exc.GitlabGetError)
-    def list_ldap_group_links(
-        self, **kwargs: Any
-    ) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
-        """List LDAP group links.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabGetError: If the server cannot perform the request
-        """
-        path = f"/groups/{self.encoded_id}/ldap_group_links"
-        return self.manager.gitlab.http_list(path, **kwargs)
 
     @cli.register_custom_action("Group")
     @exc.on_http_error(exc.GitlabCreateError)
@@ -416,3 +423,44 @@ class GroupDescendantGroupManager(GroupSubgroupManager):
 
     _path = "/groups/{group_id}/descendant_groups"
     _obj_cls: Type[GroupDescendantGroup] = GroupDescendantGroup
+
+
+class GroupLDAPGroupLink(RESTObject):
+    _repr_attr = "provider"
+
+    def _get_link_attrs(self) -> Dict[str, str]:
+        # https://docs.gitlab.com/ee/api/groups.html#add-ldap-group-link-with-cn-or-filter
+        # https://docs.gitlab.com/ee/api/groups.html#delete-ldap-group-link-with-cn-or-filter
+        # We can tell what attribute to use based on the data returned
+        data = {"provider": self.provider}
+        if self.cn:
+            data["cn"] = self.cn
+        else:
+            data["filter"] = self.filter
+
+        return data
+
+    def delete(self, **kwargs: Any) -> None:
+        """Delete the LDAP group link from the server.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the server cannot perform the request
+        """
+        if TYPE_CHECKING:
+            assert isinstance(self.manager, DeleteMixin)
+        self.manager.delete(
+            self.encoded_id, query_data=self._get_link_attrs(), **kwargs
+        )
+
+
+class GroupLDAPGroupLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
+    _path = "/groups/{group_id}/ldap_group_links"
+    _obj_cls: Type[GroupLDAPGroupLink] = GroupLDAPGroupLink
+    _from_parent_attrs = {"group_id": "id"}
+    _create_attrs = RequiredOptional(
+        required=("provider", "group_access"), exclusive=("cn", "filter")
+    )

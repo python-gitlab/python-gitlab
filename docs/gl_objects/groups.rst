@@ -326,11 +326,22 @@ LDAP group links
 
 Add an LDAP group link to an existing GitLab group::
 
-    group.add_ldap_group_link(ldap_group_cn, gitlab.const.AccessLevel.DEVELOPER, 'ldapmain')
+    ldap_link = group.ldap_group_links.create({
+        'provider': 'ldapmain',
+        'group_access': gitlab.const.AccessLevel.DEVELOPER,
+        'cn: 'ldap_group_cn'
+    })
+
+List a group's LDAP group links:
+
+    group.ldap_group_links.list()
 
 Remove a link::
 
-    group.delete_ldap_group_link(ldap_group_cn, 'ldapmain')
+    ldap_link.delete()
+    # or by explicitly providing the CN or filter
+    group.ldap_group_links.delete(provider='ldapmain', cn='ldap_group_cn')
+    group.ldap_group_links.delete(provider='ldapmain', filter='(cn=Common Name)')
 
 Sync the LDAP groups::
 

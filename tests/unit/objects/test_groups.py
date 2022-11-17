@@ -8,7 +8,7 @@ import pytest
 import responses
 
 import gitlab
-from gitlab.v4.objects import GroupDescendantGroup, GroupSubgroup
+from gitlab.v4.objects import GroupDescendantGroup, GroupLDAPGroupLink, GroupSubgroup
 from gitlab.v4.objects.projects import GroupProject, SharedProject
 
 content = {"name": "name", "id": 1, "path": "path"}
@@ -283,9 +283,9 @@ def test_list_group_descendant_groups(group, resp_list_subgroups_descendant_grou
 
 
 def test_list_ldap_group_links(group, resp_list_ldap_group_links):
-    ldap_group_links = group.list_ldap_group_links()
-    assert isinstance(ldap_group_links, list)
-    assert ldap_group_links[0]["provider"] == ldap_group_links_content[0]["provider"]
+    ldap_group_links = group.ldap_group_links.list()
+    assert isinstance(ldap_group_links[0], GroupLDAPGroupLink)
+    assert ldap_group_links[0].provider == ldap_group_links_content[0]["provider"]
 
 
 @pytest.mark.skip("GitLab API endpoint not implemented")
