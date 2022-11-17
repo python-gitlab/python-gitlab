@@ -139,15 +139,37 @@ def test_group_labels(group):
 
 
 @pytest.mark.gitlab_premium
-@pytest.mark.xfail(reason="/ldap/groups endpoint is gone")
-def test_group_ldap_links(gl, group):
+@pytest.mark.xfail(reason="/ldap/groups endpoint not documented")
+def test_ldap_groups(gl):
+    assert isinstance(gl.ldapgroups.list(), list)
+
+
+@pytest.mark.gitlab_premium
+def test_group_ldap_links(group):
     ldap_cn = "common-name"
     ldap_provider = "ldap-provider"
-    assert gl.ldapgroups.list()
 
-    group.add_ldap_group_link(ldap_cn, 30, ldap_provider)
-    group.ldap_sync()
-    group.delete_ldap_group_link(ldap_cn)
+    ldap_cn_link = group.ldap_group_links.create(
+        {"provider": ldap_provider, "group_access": 30, "cn": ldap_cn}
+    )
+    ldap_filter_link = group.ldap_group_links.create(
+        {"provider": ldap_provider, "group_access": 30, "filter": "(cn=Common Name)"}
+    )
+
+    ldap_links = group.ldap_group_links.list()
+
+    assert ldap_cn_link.cn == ldap_links[0].cn
+    assert ldap_filter_link.filter == ldap_links[1].filter
+
+    with pytest.raises(gitlab.GitlabCreateError):
+        # todo - can we configure dummy LDAP in the container?
+        group.ldap_sync()
+
+    ldap_filter_link.delete()
+    group.ldap_group_links.delete(provider=ldap_provider, cn=ldap_cn)
+
+    with pytest.raises(gitlab.GitlabListError, match="No linked LDAP groups found"):
+        group.ldap_group_links.list()
 
 
 def test_group_notification_settings(group):
