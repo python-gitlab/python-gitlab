@@ -312,7 +312,7 @@ Delete the artifacts of a job::
 
     build_or_job.delete_artifacts()
 
-Get a job trace::
+Get a job log file / trace::
 
     build_or_job.trace()
 
