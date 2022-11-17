@@ -10,8 +10,8 @@ References
 
 * v4 API:
 
-  + :class:`gitlab.v4.objects.SecureFile`
-  + :class:`gitlab.v4.objects.SecureFileManager`
+  + :class:`gitlab.v4.objects.ProjectSecureFile`
+  + :class:`gitlab.v4.objects.ProjectSecureFileManager`
   + :attr:`gitlab.v4.objects.Project.secure_files`
 
 * GitLab API: https://docs.gitlab.com/ee/api/secure_files.html

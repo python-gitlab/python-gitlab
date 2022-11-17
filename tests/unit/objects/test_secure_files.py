@@ -5,7 +5,7 @@ GitLab API: https://docs.gitlab.com/ee/api/secure_files.html
 import pytest
 import responses
 
-from gitlab.v4.objects import SecureFile
+from gitlab.v4.objects import ProjectSecureFile
 
 secure_file_content = {
     "id": 1,
@@ -93,7 +93,7 @@ def test_create_secure_file(project, resp_create_secure_file):
 def test_download_secure_file(project, binary_content, resp_download_secure_file):
     secure_file = project.secure_files.get(1)
     secure_content = secure_file.download()
-    assert isinstance(secure_file, SecureFile)
+    assert isinstance(secure_file, ProjectSecureFile)
     assert secure_content == binary_content
 
 

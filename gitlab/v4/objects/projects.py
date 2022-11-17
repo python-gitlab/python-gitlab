@@ -82,7 +82,7 @@ from .push_rules import ProjectPushRulesManager  # noqa: F401
 from .releases import ProjectReleaseManager  # noqa: F401
 from .repositories import RepositoryMixin
 from .runners import ProjectRunnerManager  # noqa: F401
-from .secure_files import SecureFileManager  # noqa: F401
+from .secure_files import ProjectSecureFileManager  # noqa: F401
 from .snippets import ProjectSnippetManager  # noqa: F401
 from .statistics import (  # noqa: F401
     ProjectAdditionalStatisticsManager,
@@ -210,7 +210,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     remote_mirrors: "ProjectRemoteMirrorManager"
     repositories: ProjectRegistryRepositoryManager
     runners: ProjectRunnerManager
-    secure_files: SecureFileManager
+    secure_files: ProjectSecureFileManager
     services: ProjectServiceManager
     snippets: ProjectSnippetManager
     storage: "ProjectStorageManager"
