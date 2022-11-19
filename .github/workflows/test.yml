@@ -102,3 +102,39 @@ jobs:
           files: ./coverage.xml
           flags: unit
           fail_ci_if_error: false
+
+  dist:
+    runs-on: ubuntu-latest
+    name: Python wheel
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v2
+      with:
+        python-version: "3.11"
+    - name: Install dependencies
+      run: |
+        pip install -r requirements-test.txt
+    - name: Build package
+      run: python -m build -o dist/
+    - uses: actions/upload-artifact@v2
+      with:
+        name: dist
+        path: dist
+
+  test:
+    runs-on: ubuntu-latest
+    needs: [dist]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - uses: actions/download-artifact@v2
+      with:
+        name: dist
+        path: dist
+    - name: install dist/*.whl and requirements
+      run: pip install dist/*.whl -r requirements-test.txt tox
+    - name: Run tests
+      run: tox -e install
