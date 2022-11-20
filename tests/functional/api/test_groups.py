@@ -307,6 +307,7 @@ def test_group_transfer(gl, group):
 
 
 @pytest.mark.gitlab_premium
+@pytest.mark.xfail(reason="need to setup an identity provider or it's mock")
 def test_group_saml_group_links(gl):
     group = gl.groups.create({"name": "gitlab-test-group", "path": "gitlab-test-group"})
     group.saml_group_links.create(
