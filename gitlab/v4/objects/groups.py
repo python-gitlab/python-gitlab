@@ -12,6 +12,7 @@ from gitlab.mixins import (
     CRUDMixin,
     DeleteMixin,
     ListMixin,
+    NoUpdateMixin,
     ObjectDeleteMixin,
     SaveMixin,
 )
@@ -58,6 +59,8 @@ __all__ = [
     "GroupLDAPGroupLinkManager",
     "GroupSubgroup",
     "GroupSubgroupManager",
+    "GroupSAMLGroupLink",
+    "GroupSAMLGroupLinkManager",
 ]
 
 
@@ -98,6 +101,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     subgroups: "GroupSubgroupManager"
     variables: GroupVariableManager
     wikis: GroupWikiManager
+    saml_group_links: "GroupSAMLGroupLinkManager"
 
     @cli.register_custom_action("Group", ("project_id",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
@@ -464,3 +468,20 @@ class GroupLDAPGroupLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager
     _create_attrs = RequiredOptional(
         required=("provider", "group_access"), exclusive=("cn", "filter")
     )
+
+
+class GroupSAMLGroupLink(ObjectDeleteMixin, RESTObject):
+    _id_attr = "name"
+    _repr_attr = "name"
+
+
+class GroupSAMLGroupLinkManager(NoUpdateMixin, RESTManager):
+    _path = "/groups/{group_id}/saml_group_links"
+    _obj_cls: Type[GroupSAMLGroupLink] = GroupSAMLGroupLink
+    _from_parent_attrs = {"group_id": "id"}
+    _create_attrs = RequiredOptional(required=("saml_group_name", "access_level"))
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> GroupSAMLGroupLink:
+        return cast(GroupSAMLGroupLink, super().get(id=id, lazy=lazy, **kwargs))

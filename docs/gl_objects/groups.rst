@@ -358,6 +358,28 @@ You can use the ``ldapgroups`` manager to list available LDAP groups::
     # list the groups for a specific LDAP provider
     ldap_groups = gl.ldapgroups.list(search='foo', provider='ldapmain')
 
+SAML group links
+================
+
+Add a SAML group link to an existing GitLab group::
+
+    saml_link = group.saml_group_links.create({ 
+        "saml_group_name": "<your_saml_group_name>", 
+        "access_level": <chosen_access_level> 
+    })
+
+List a group's SAML group links::
+
+    group.saml_group_links.list()
+
+Get a SAML group link::
+
+    group.saml_group_links.get("<your_saml_group_name>")
+
+Remove a link::
+
+    saml_link.delete()
+
 Groups hooks
 ============
 

@@ -8,7 +8,12 @@ import pytest
 import responses
 
 import gitlab
-from gitlab.v4.objects import GroupDescendantGroup, GroupLDAPGroupLink, GroupSubgroup
+from gitlab.v4.objects import (
+    GroupDescendantGroup,
+    GroupLDAPGroupLink,
+    GroupSAMLGroupLink,
+    GroupSubgroup,
+)
 from gitlab.v4.objects.projects import GroupProject, SharedProject
 
 content = {"name": "name", "id": 1, "path": "path"}
@@ -20,6 +25,11 @@ ldap_group_links_content = [
         "filter": "(memberOf=cn=some_group,ou=groups,ou=fake_ou,dc=sub_dc,dc=example,dc=tld)",
     }
 ]
+saml_group_links_content = [{"name": "saml-group-1", "access_level": 10}]
+create_saml_group_link_request_body = {
+    "saml_group_name": "saml-group-1",
+    "access_level": 10,
+}
 projects_content = [
     {
         "id": 9,
@@ -237,6 +247,75 @@ def resp_list_ldap_group_links(no_content):
         yield rsps
 
 
+@pytest.fixture
+def resp_list_saml_group_links():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/groups/1/saml_group_links",
+            json=saml_group_links_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_get_saml_group_link():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/groups/1/saml_group_links/saml-group-1",
+            json=saml_group_links_content[0],
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_create_saml_group_link():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/groups/1/saml_group_links",
+            match=[
+                responses.matchers.json_params_matcher(
+                    create_saml_group_link_request_body
+                )
+            ],
+            json=saml_group_links_content[0],
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_delete_saml_group_link(no_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/groups/1/saml_group_links",
+            match=[
+                responses.matchers.json_params_matcher(
+                    create_saml_group_link_request_body
+                )
+            ],
+            json=saml_group_links_content[0],
+            content_type="application/json",
+            status=200,
+        )
+        rsps.add(
+            method=responses.DELETE,
+            url="http://localhost/api/v4/groups/1/saml_group_links/saml-group-1",
+            json=no_content,
+            content_type="application/json",
+            status=204,
+        )
+        yield rsps
+
+
 def test_get_group(gl, resp_groups):
     data = gl.groups.get(1)
     assert isinstance(data, gitlab.v4.objects.Group)
@@ -341,3 +420,36 @@ def test_update_group_push_rule(
 def test_delete_group_push_rule(group, resp_delete_push_rules_group):
     pr = group.pushrules.get()
     pr.delete()
+
+
+def test_list_saml_group_links(group, resp_list_saml_group_links):
+    saml_group_links = group.saml_group_links.list()
+    assert isinstance(saml_group_links[0], GroupSAMLGroupLink)
+    assert saml_group_links[0].name == saml_group_links_content[0]["name"]
+    assert (
+        saml_group_links[0].access_level == saml_group_links_content[0]["access_level"]
+    )
+
+
+def test_get_saml_group_link(group, resp_get_saml_group_link):
+    saml_group_link = group.saml_group_links.get("saml-group-1")
+    assert isinstance(saml_group_link, GroupSAMLGroupLink)
+    assert saml_group_link.name == saml_group_links_content[0]["name"]
+    assert saml_group_link.access_level == saml_group_links_content[0]["access_level"]
+
+
+def test_create_saml_group_link(group, resp_create_saml_group_link):
+    saml_group_link = group.saml_group_links.create(create_saml_group_link_request_body)
+    assert isinstance(saml_group_link, GroupSAMLGroupLink)
+    assert (
+        saml_group_link.name == create_saml_group_link_request_body["saml_group_name"]
+    )
+    assert (
+        saml_group_link.access_level
+        == create_saml_group_link_request_body["access_level"]
+    )
+
+
+def test_delete_saml_group_link(group, resp_delete_saml_group_link):
+    saml_group_link = group.saml_group_links.create(create_saml_group_link_request_body)
+    saml_group_link.delete()

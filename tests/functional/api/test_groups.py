@@ -304,3 +304,11 @@ def test_group_transfer(gl, group):
 
     transferred_group = gl.groups.get(transfer_group.id)
     assert transferred_group.path == transferred_group.full_path
+
+
+@pytest.mark.gitlab_premium
+@pytest.mark.xfail(reason="need to setup an identity provider or it's mock")
+def test_group_saml_group_links(group):
+    group.saml_group_links.create(
+        {"saml_group_name": "saml-group-1", "access_level": 10}
+    )
