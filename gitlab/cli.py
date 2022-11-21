@@ -366,13 +366,12 @@ def main() -> None:
 
     try:
         gl = gitlab.Gitlab.merge_config(vars(options), gitlab_id, config_files)
+        if debug:
+            gl.enable_debug()
         if gl.private_token or gl.oauth_token:
             gl.auth()
     except Exception as e:
         die(str(e))
-
-    if debug:
-        gl.enable_debug()
 
     gitlab.v4.cli.run(
         gl, gitlab_resource, resource_action, args_dict, verbose, output, fields
