@@ -108,6 +108,7 @@ class GitlabConfigParser:
         self.timeout: int = 60
         self.url: Optional[str] = None
         self.user_agent: str = USER_AGENT
+        self.keep_base_url: bool = False
 
         self._files = _get_config_files(config_files)
         if self._files:
@@ -232,6 +233,15 @@ class GitlabConfigParser:
             pass
         try:
             self.user_agent = _config.get(self.gitlab_id, "user_agent")
+        except _CONFIG_PARSER_ERRORS:
+            pass
+
+        try:
+            self.keep_base_url = _config.getboolean("global", "keep_base_url")
+        except _CONFIG_PARSER_ERRORS:
+            pass
+        try:
+            self.keep_base_url = _config.getboolean(self.gitlab_id, "keep_base_url")
         except _CONFIG_PARSER_ERRORS:
             pass
 
