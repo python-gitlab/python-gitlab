@@ -4,6 +4,7 @@ import pickle
 from http.client import HTTPConnection
 
 import pytest
+import requests
 import responses
 
 import gitlab
@@ -412,3 +413,25 @@ def test_gitlab_keep_base_url(kwargs, link_header, expected_next_url, show_warni
     else:
         obj = gl.http_list("/tests", iterator=True)
     assert obj._next_url == expected_next_url
+
+
+def test_no_custom_session(default_config):
+    """Test no custom session"""
+
+    config_path = default_config
+    custom_session = requests.Session()
+    test_gitlab = gitlab.Gitlab.from_config("one", [config_path])
+
+    assert test_gitlab.session != custom_session
+
+
+def test_custom_session(default_config):
+    """Test custom session"""
+
+    config_path = default_config
+    custom_session = requests.Session()
+    test_gitlab = gitlab.Gitlab.from_config(
+        "one", [config_path], session=custom_session
+    )
+
+    assert test_gitlab.session == custom_session

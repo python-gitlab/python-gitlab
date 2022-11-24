@@ -181,3 +181,15 @@ on your own, such as for nested API responses and ``Union`` return types. For ex
 
    if TYPE_CHECKING:
       assert isinstance(license["plan"], str)
+
+Custom session (Bring your own Session) 
+---------------------------------------
+
+You can use configuration files and a custom session to create 
+``gitlab.Gitlab`` objects:
+
+.. code-block:: python
+
+   gl = gitlab.Gitlab.from_config('somewhere', ['/tmp/gl.cfg'], session=custom_session)
+
+
