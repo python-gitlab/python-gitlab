@@ -203,6 +203,10 @@ Get the list of participants::
 
     users = issue.participants()
 
+Get the list of iteration events::
+
+    iteration_events = issue.resource_iteration_events.list()
+
 Issue links
 ===========
 

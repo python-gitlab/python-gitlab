@@ -23,6 +23,7 @@ from gitlab.types import RequiredOptional
 from .award_emojis import ProjectIssueAwardEmojiManager  # noqa: F401
 from .discussions import ProjectIssueDiscussionManager  # noqa: F401
 from .events import (  # noqa: F401
+    ProjectIssueResourceIterationEventManager,
     ProjectIssueResourceLabelEventManager,
     ProjectIssueResourceMilestoneEventManager,
     ProjectIssueResourceStateEventManager,
@@ -119,6 +120,7 @@ class ProjectIssue(
     resourcelabelevents: ProjectIssueResourceLabelEventManager
     resourcemilestoneevents: ProjectIssueResourceMilestoneEventManager
     resourcestateevents: ProjectIssueResourceStateEventManager
+    resource_iteration_events: ProjectIssueResourceIterationEventManager
 
     @cli.register_custom_action("ProjectIssue", ("to_project_id",))
     @exc.on_http_error(exc.GitlabUpdateError)
