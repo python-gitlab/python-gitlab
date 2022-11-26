@@ -81,6 +81,7 @@ from .project_access_tokens import ProjectAccessTokenManager  # noqa: F401
 from .push_rules import ProjectPushRulesManager  # noqa: F401
 from .releases import ProjectReleaseManager  # noqa: F401
 from .repositories import RepositoryMixin
+from .resource_groups import ProjectResourceGroupManager
 from .runners import ProjectRunnerManager  # noqa: F401
 from .secure_files import ProjectSecureFileManager  # noqa: F401
 from .snippets import ProjectSnippetManager  # noqa: F401
@@ -207,6 +208,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     protectedtags: ProjectProtectedTagManager
     pushrules: ProjectPushRulesManager
     releases: ProjectReleaseManager
+    resource_groups: ProjectResourceGroupManager
     remote_mirrors: "ProjectRemoteMirrorManager"
     repositories: ProjectRegistryRepositoryManager
     runners: ProjectRunnerManager
