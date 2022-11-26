@@ -14,11 +14,9 @@ def get_all_kwargs(request):
     return request.param
 
 
-def test_auth_from_config(gl, temp_dir):
+def test_auth_from_config(gl, gitlab_config, temp_dir):
     """Test token authentication from config file"""
-    test_gitlab = gitlab.Gitlab.from_config(
-        config_files=[temp_dir / "python-gitlab.cfg"]
-    )
+    test_gitlab = gitlab.Gitlab.from_config(config_files=[gitlab_config])
     test_gitlab.auth()
     assert isinstance(test_gitlab.user, gitlab.v4.objects.CurrentUser)
 
