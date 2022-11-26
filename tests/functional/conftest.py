@@ -236,15 +236,13 @@ def wait_for_sidekiq(gl):
 
 
 @pytest.fixture(scope="session")
-def gitlab_config(
+def gitlab_token(
     check_is_alive,
     gitlab_container_name: str,
     gitlab_url: str,
     docker_services,
-    temp_dir: pathlib.Path,
     fixture_dir: pathlib.Path,
-):
-    config_file = temp_dir / "python-gitlab.cfg"
+) -> str:
 
     start_time = time.perf_counter()
     logging.info("Waiting for GitLab container to become ready.")
@@ -263,7 +261,12 @@ def gitlab_config(
         f"GitLab container is now ready after {minutes} minute(s), {seconds} seconds"
     )
 
-    token = set_token(gitlab_container_name, fixture_dir=fixture_dir)
+    return set_token(gitlab_container_name, fixture_dir=fixture_dir)
+
+
+@pytest.fixture(scope="session")
+def gitlab_config(gitlab_url: str, gitlab_token: str, temp_dir: pathlib.Path):
+    config_file = temp_dir / "python-gitlab.cfg"
 
     config = f"""[global]
 default = local
@@ -271,7 +274,7 @@ timeout = 60
 
 [local]
 url = {gitlab_url}
-private_token = {token}
+private_token = {gitlab_token}
 api_version = 4"""
 
     with open(config_file, "w", encoding="utf-8") as f:
@@ -281,11 +284,11 @@ api_version = 4"""
 
 
 @pytest.fixture(scope="session")
-def gl(gitlab_config):
+def gl(gitlab_url: str, gitlab_token: str) -> gitlab.Gitlab:
     """Helper instance to make fixtures and asserts directly via the API."""
 
     logging.info("Instantiating python-gitlab gitlab.Gitlab instance")
-    instance = gitlab.Gitlab.from_config("local", [gitlab_config])
+    instance = gitlab.Gitlab(gitlab_url, private_token=gitlab_token)
 
     logging.info("Reset GitLab")
     reset_gitlab(instance)
