@@ -7,6 +7,7 @@ from typing import (
     Iterator,
     List,
     Optional,
+    overload,
     TYPE_CHECKING,
     Union,
 )
@@ -41,13 +42,30 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
     file_path: str
     manager: "ProjectFileManager"
 
+    @overload
     def decode(self) -> bytes:
+        ...
+
+    @overload
+    def decode(self, encoding: None) -> bytes:
+        ...
+
+    @overload
+    def decode(self, encoding: str) -> str:
+        ...
+
+    def decode(self, encoding: Optional[str] = None) -> Union[bytes, str]:
         """Returns the decoded content of the file.
 
         Returns:
-            The decoded content.
+            The decoded content as bytes.
+            The decoded content as string if a valid encoding is provided.
         """
-        return base64.b64decode(self.content)
+        decoded_bytes = base64.b64decode(self.content)
+
+        if encoding is not None:
+            return decoded_bytes.decode(encoding)
+        return decoded_bytes
 
     # NOTE(jlvillal): Signature doesn't match SaveMixin.save() so ignore
     # type error
