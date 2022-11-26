@@ -51,6 +51,7 @@ API examples
    gl_objects/remote_mirrors
    gl_objects/repositories
    gl_objects/repository_tags
+   gl_objects/resource_groups
    gl_objects/search
    gl_objects/secure_files
    gl_objects/settings
