@@ -2,6 +2,28 @@
 
 <!--next-version-placeholder-->
 
+## v3.12.0 (2022-11-28)
+### Feature
+* Add support for SAML group links ([#2367](https://github.com/python-gitlab/python-gitlab/issues/2367)) ([`1020ce9`](https://github.com/python-gitlab/python-gitlab/commit/1020ce965ff0cd3bfc283d4f0ad40e41e4d1bcee))
+* **groups:** Add LDAP link manager and deprecate old API endpoints ([`3a61f60`](https://github.com/python-gitlab/python-gitlab/commit/3a61f601adaec7751cdcfbbcb88aa544326b1730))
+* **groups:** Add support for listing ldap_group_links ([#2371](https://github.com/python-gitlab/python-gitlab/issues/2371)) ([`ad7c8fa`](https://github.com/python-gitlab/python-gitlab/commit/ad7c8fafd56866002aa6723ceeba4c4bc071ca0d))
+* Implement secure files API ([`d0a0348`](https://github.com/python-gitlab/python-gitlab/commit/d0a034878fabfd8409134aa8b7ffeeb40219683c))
+* **ci:** Re-Run Tests on PR Comment workflow ([`034cde3`](https://github.com/python-gitlab/python-gitlab/commit/034cde31c7017923923be29c3f34783937febc0f))
+* **api:** Add support for getting a project's pull mirror details ([`060cfe1`](https://github.com/python-gitlab/python-gitlab/commit/060cfe1465a99657c5f832796ab3aa03aad934c7))
+* **api:** Add support for remote project import from AWS S3 ([#2357](https://github.com/python-gitlab/python-gitlab/issues/2357)) ([`892281e`](https://github.com/python-gitlab/python-gitlab/commit/892281e35e3d81c9e43ff6a974f920daa83ea8b2))
+* **api:** Add support for remote project import ([#2348](https://github.com/python-gitlab/python-gitlab/issues/2348)) ([`e5dc72d`](https://github.com/python-gitlab/python-gitlab/commit/e5dc72de9b3cdf0a7944ee0961fbdc6784c7f315))
+* **api:** Add application statistics ([`6fcf3b6`](https://github.com/python-gitlab/python-gitlab/commit/6fcf3b68be095e614b969f5922ad8a67978cd4db))
+
+### Fix
+* **cli:** Enable debug before doing auth ([`65abb85`](https://github.com/python-gitlab/python-gitlab/commit/65abb85be7fc8ef57b295296111dac0a97ed1c49))
+* **cli:** Expose missing mr_default_target_self project attribute ([`12aea32`](https://github.com/python-gitlab/python-gitlab/commit/12aea32d1c0f7e6eac0d19da580bf6efde79d3e2))
+* Use POST method and return dict in `cancel_merge_when_pipeline_succeeds()` ([#2350](https://github.com/python-gitlab/python-gitlab/issues/2350)) ([`bd82d74`](https://github.com/python-gitlab/python-gitlab/commit/bd82d745c8ea9ff6ff078a4c961a2d6e64a2f63c))
+
+### Documentation
+* Use the term "log file" for getting a job log file ([`9d2b1ad`](https://github.com/python-gitlab/python-gitlab/commit/9d2b1ad10aaa78a5c28ece334293641c606291b5))
+* **groups:** Describe GitLab.com group creation limitation ([`9bd433a`](https://github.com/python-gitlab/python-gitlab/commit/9bd433a3eb508b53fbca59f3f445da193522646a))
+* **api:** Pushrules remove saying `None` is returned when not found ([`c3600b4`](https://github.com/python-gitlab/python-gitlab/commit/c3600b49e4d41b1c4f2748dd6f2a331c331d8706))
+
 ## v3.11.0 (2022-10-28)
 ### Feature
 * **build:** Officially support Python 3.11 ([`74f66c7`](https://github.com/python-gitlab/python-gitlab/commit/74f66c71f3974cf68f5038f4fc3995e53d44aebe))
