@@ -1,4 +1,5 @@
 import pytest
+import requests
 
 import gitlab
 
@@ -21,6 +22,24 @@ def test_auth_from_config(gl, temp_dir):
     )
     test_gitlab.auth()
     assert isinstance(test_gitlab.user, gitlab.v4.objects.CurrentUser)
+
+
+def test_no_custom_session(gl, temp_dir):
+    """Test no custom session"""
+    custom_session = requests.Session()
+    test_gitlab = gitlab.Gitlab.from_config(
+        config_files=[temp_dir / "python-gitlab.cfg"]
+    )
+    assert test_gitlab.session != custom_session
+
+
+def test_custom_session(gl, temp_dir):
+    """Test custom session"""
+    custom_session = requests.Session()
+    test_gitlab = gitlab.Gitlab.from_config(
+        config_files=[temp_dir / "python-gitlab.cfg"], session=custom_session
+    )
+    assert test_gitlab.session == custom_session
 
 
 def test_broadcast_messages(gl, get_all_kwargs):

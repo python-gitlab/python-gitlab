@@ -232,13 +232,19 @@ class Gitlab:
 
     @classmethod
     def from_config(
-        cls, gitlab_id: Optional[str] = None, config_files: Optional[List[str]] = None
+        cls,
+        gitlab_id: Optional[str] = None,
+        config_files: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> "Gitlab":
         """Create a Gitlab connection from configuration files.
 
         Args:
             gitlab_id: ID of the configuration section.
             config_files list[str]: List of paths to configuration files.
+
+        kwargs:
+            session requests.Session: Custom requests Session
 
         Returns:
             A Gitlab connection.
@@ -264,6 +270,7 @@ class Gitlab:
             order_by=config.order_by,
             user_agent=config.user_agent,
             retry_transient_errors=config.retry_transient_errors,
+            **kwargs,
         )
 
     @classmethod
