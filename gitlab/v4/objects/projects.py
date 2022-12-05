@@ -1061,8 +1061,8 @@ class ProjectManager(CRUDMixin, RESTManager):
             data["target_namespace"] = target_namespace
         if (
             "timeout" not in kwargs
-            or self.gitlab.timeout is None
-            or self.gitlab.timeout < 60.0
+            or self.gitlab.http_backend.timeout is None
+            or self.gitlab.http_backend.timeout < 60.0
         ):
             # Ensure that this HTTP request has a longer-than-usual default timeout
             # The base gitlab object tends to have a default that is <10 seconds,
@@ -1135,8 +1135,8 @@ class ProjectManager(CRUDMixin, RESTManager):
             data["new_name"] = new_name
         if (
             "timeout" not in kwargs
-            or self.gitlab.timeout is None
-            or self.gitlab.timeout < 60.0
+            or self.gitlab.http_backend.timeout is None
+            or self.gitlab.http_backend.timeout < 60.0
         ):
             # Ensure that this HTTP request has a longer-than-usual default timeout
             # The base gitlab object tends to have a default that is <10 seconds,

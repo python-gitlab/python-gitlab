@@ -43,7 +43,6 @@ class Gitlab:
         ssl_verify: Whether SSL certificates should be validated. If
             the value is a string, it is the path to a CA file used for
             certificate validation.
-        timeout: Timeout to use for requests to the GitLab server.
         http_username: Username for HTTP authentication
         http_password: Password for HTTP authentication
         api_version: Gitlab API version to use (support for 4 only)
@@ -57,6 +56,7 @@ class Gitlab:
 
     Keyward Args:
         requests.Session session: Http Requests Session
+        float timeout: Timeout to use for requests to the GitLab server.
         RequestsBackend http_backend: Backend that will be used to make http requests
     """
 
@@ -69,7 +69,6 @@ class Gitlab:
         ssl_verify: Union[bool, str] = True,
         http_username: Optional[str] = None,
         http_password: Optional[str] = None,
-        timeout: Optional[float] = None,
         api_version: str = "4",
         per_page: Optional[int] = None,
         pagination: Optional[str] = None,
@@ -84,8 +83,6 @@ class Gitlab:
         self._server_revision: Optional[str] = None
         self._base_url = self._get_base_url(url)
         self._url = f"{self._base_url}/api/v{api_version}"
-        #: Timeout to use for requests to gitlab server
-        self.timeout = timeout
         self.retry_transient_errors = retry_transient_errors
         self.keep_base_url = keep_base_url
         #: Headers that will be used in request to GitLab
@@ -251,8 +248,9 @@ class Gitlab:
             gitlab_id: ID of the configuration section.
             config_files list[str]: List of paths to configuration files.
 
-        kwargs:
-            session requests.Session: Custom requests Session
+        Keyward Args:
+            requests.Session session: Http Requests Session
+            float timeout: Timeout to use for requests to the GitLab server.
 
         Returns:
             A Gitlab connection.
@@ -269,7 +267,6 @@ class Gitlab:
             oauth_token=config.oauth_token,
             job_token=config.job_token,
             ssl_verify=config.ssl_verify,
-            timeout=config.timeout,
             http_username=config.http_username,
             http_password=config.http_password,
             api_version=config.api_version,
@@ -328,7 +325,6 @@ class Gitlab:
             oauth_token=oauth_token,
             job_token=job_token,
             ssl_verify=options.get("ssl_verify") or config.ssl_verify,
-            timeout=options.get("timeout") or config.timeout,
             api_version=options.get("api_version") or config.api_version,
             per_page=options.get("per_page") or config.per_page,
             pagination=options.get("pagination") or config.pagination,
@@ -553,7 +549,7 @@ class Gitlab:
         return {
             "headers": self.headers.copy(),
             "auth": self._http_auth,
-            "timeout": self.timeout,
+            "timeout": self.http_backend.timeout,
             "verify": self.ssl_verify,
         }
 
@@ -679,7 +675,6 @@ class Gitlab:
         raw: bool = False,
         streamed: bool = False,
         files: Optional[Dict[str, Any]] = None,
-        timeout: Optional[float] = None,
         obey_rate_limit: bool = True,
         retry_transient_errors: Optional[bool] = None,
         max_retries: int = 10,
@@ -697,14 +692,15 @@ class Gitlab:
             raw: If True, do not convert post_data to json
             streamed: Whether the data should be streamed
             files: The files to send to the server
-            timeout: The timeout, in seconds, for the request
             obey_rate_limit: Whether to obey 429 Too Many Request
                                     responses. Defaults to True.
             retry_transient_errors: Whether to retry after 500, 502, 503, 504
                 or 52x responses. Defaults to False.
             max_retries: Max retries after 429 or transient errors,
                                set to -1 to retry forever. Defaults to 10.
-            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Keyward Args:
+            float timeout:  The timeout, in seconds, for the request
 
         Returns:
             A requests result object.
@@ -739,10 +735,9 @@ class Gitlab:
         opts = self._get_session_opts()
 
         verify = opts.pop("verify")
-        opts_timeout = opts.pop("timeout")
         # If timeout was passed into kwargs, allow it to override the default
-        if timeout is None:
-            timeout = opts_timeout
+        timeout = kwargs.pop("timeout", opts.pop("timeout"))
+
         if retry_transient_errors is None:
             retry_transient_errors = self.retry_transient_errors
 

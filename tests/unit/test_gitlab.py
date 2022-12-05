@@ -435,3 +435,22 @@ def test_custom_session(default_config):
     )
 
     assert test_gitlab.session == custom_session
+
+
+def test_no_custom_timeout(default_config):
+    """Test no custom session"""
+
+    config_path = default_config
+    test_gitlab = gitlab.Gitlab.from_config("one", [config_path])
+
+    assert test_gitlab.http_backend.timeout is None
+
+
+@pytest.mark.parametrize("timeout", [(10.0), (60.0), (100.0)])
+def test_custom_timeout(default_config, timeout):
+    """Test custom session"""
+
+    config_path = default_config
+    test_gitlab = gitlab.Gitlab.from_config("one", [config_path], timeout=timeout)
+
+    assert test_gitlab.http_backend.timeout == timeout
