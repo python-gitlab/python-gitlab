@@ -751,13 +751,20 @@ class Gitlab:
             if 200 <= result.status_code < 300:
                 return result.response
 
-            if (429 == result.status_code and obey_rate_limit) or (
-                (
-                    result.status_code in gitlab.const.RETRYABLE_TRANSIENT_ERROR_CODES
-                    or (result.status_code == 409 and "Resource lock" in result.reason)
-                )
-                and retry_transient_errors
-            ):
+            def should_retry() -> bool:
+                if result.status_code == 429 and obey_rate_limit:
+                    return True
+
+                if not retry_transient_errors:
+                    return False
+                if result.status_code in gitlab.const.RETRYABLE_TRANSIENT_ERROR_CODES:
+                    return True
+                if result.status_code == 409 and "Resource lock" in result.reason:
+                    return True
+
+                return False
+
+            if should_retry():
                 # Response headers documentation:
                 # https://docs.gitlab.com/ee/user/admin_area/settings/user_and_ip_rate_limits.html#response-headers
                 if max_retries == -1 or cur_retries < max_retries:

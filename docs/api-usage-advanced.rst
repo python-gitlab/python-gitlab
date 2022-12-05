@@ -123,9 +123,14 @@ GitLab server can sometimes return a transient HTTP error.
 python-gitlab can automatically retry in such case, when
 ``retry_transient_errors`` argument is set to ``True``.  When enabled,
 HTTP error codes 500 (Internal Server Error), 502 (502 Bad Gateway),
-503 (Service Unavailable), and 504 (Gateway Timeout) are retried.
-Additionally the HTTP error code 409 (Conflict) is retried if the text message
-mentions "Resource lock". It will retry until reaching the ``max_retries``
+503 (Service Unavailable), 504 (Gateway Timeout), and Cloudflare
+errors (520-530) are retried.
+
+Additionally, HTTP error code 409 (Conflict) is retried if the reason
+is a
+`Resource lock <https://gitlab.com/gitlab-org/gitlab/-/blob/443c12cf3b238385db728f03b2cdbb4f17c70292/lib/api/api.rb#L111>`__.
+
+It will retry until reaching the ``max_retries``
 value. By default, ``retry_transient_errors`` is set to ``False`` and an
 exception is raised for these errors.
 
