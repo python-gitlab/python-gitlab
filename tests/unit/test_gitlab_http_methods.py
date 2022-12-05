@@ -372,6 +372,63 @@ def test_http_request_302_put_raises_redirect_error(gl):
     assert "http://example.com/api/v4/user/status" in error_message
 
 
+def test_http_request_on_409_resource_lock_retries(gl_retry):
+    url = "http://localhost/api/v4/user"
+    retried = False
+
+    def response_callback(
+        response: requests.models.Response,
+    ) -> requests.models.Response:
+        """We need a callback that adds a resource lock reason only on first call"""
+        nonlocal retried
+
+        if not retried:
+            response.reason = "Resource lock"
+
+        retried = True
+        return response
+
+    with responses.RequestsMock(response_callback=response_callback) as rsps:
+        rsps.add(
+            method=responses.GET,
+            url=url,
+            status=409,
+            match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+        )
+        rsps.add(
+            method=responses.GET,
+            url=url,
+            status=200,
+            match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+        )
+        response = gl_retry.http_request("get", "/user")
+
+    assert response.status_code == 200
+
+
+def test_http_request_on_409_resource_lock_without_retry_raises(gl):
+    url = "http://localhost/api/v4/user"
+
+    def response_callback(
+        response: requests.models.Response,
+    ) -> requests.models.Response:
+        """Without retry, this will fail on the first call"""
+        response.reason = "Resource lock"
+        return response
+
+    with responses.RequestsMock(response_callback=response_callback) as req_mock:
+        req_mock.add(
+            method=responses.GET,
+            url=url,
+            status=409,
+            match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+        )
+        with pytest.raises(GitlabHttpError) as excinfo:
+            gl.http_request("get", "/user")
+
+    assert excinfo.value.response_code == 409
+
+
 @responses.activate
 def test_get_request(gl):
     url = "http://localhost/api/v4/projects"
