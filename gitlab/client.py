@@ -3,7 +3,7 @@
 import os
 import re
 import time
-from typing import Any, cast, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
+from typing import Any, cast, Dict, List, Optional, Tuple, Type, TYPE_CHECKING, Union
 from urllib import parse
 
 import requests
@@ -14,7 +14,7 @@ import gitlab
 import gitlab.config
 import gitlab.const
 import gitlab.exceptions
-from gitlab import utils
+from gitlab import http_backends, utils
 
 REDIRECT_MSG = (
     "python-gitlab detected a {status_code} ({reason!r}) redirection. You must update "
@@ -32,6 +32,7 @@ _PAGINATION_URL = (
 
 
 class Gitlab:
+
     """Represents a GitLab server connection.
 
     Args:
@@ -53,6 +54,10 @@ class Gitlab:
             or 52x responses. Defaults to False.
         keep_base_url: keep user-provided base URL for pagination if it
             differs from response headers
+
+    Keyward Args:
+        requests.Session session: Http Requests Session
+        RequestsBackend http_backend: Backend that will be used to make http requests
     """
 
     def __init__(
@@ -66,15 +71,14 @@ class Gitlab:
         http_password: Optional[str] = None,
         timeout: Optional[float] = None,
         api_version: str = "4",
-        session: Optional[requests.Session] = None,
         per_page: Optional[int] = None,
         pagination: Optional[str] = None,
         order_by: Optional[str] = None,
         user_agent: str = gitlab.const.USER_AGENT,
         retry_transient_errors: bool = False,
         keep_base_url: bool = False,
+        **kwargs: Any,
     ) -> None:
-
         self._api_version = str(api_version)
         self._server_version: Optional[str] = None
         self._server_revision: Optional[str] = None
@@ -98,7 +102,11 @@ class Gitlab:
         self._set_auth_info()
 
         #: Create a session object for requests
-        self.session = session or requests.Session()
+        http_backend: Type[http_backends.DefaultBackend] = kwargs.pop(
+            "http_backend", http_backends.DefaultBackend
+        )
+        self.http_backend = http_backend(**kwargs)
+        self.session = self.http_backend.client
 
         self.per_page = per_page
         self.pagination = pagination
