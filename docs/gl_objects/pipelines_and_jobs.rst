@@ -112,8 +112,8 @@ objects to get the associated project::
 
 Reference: https://docs.gitlab.com/ee/ci/triggers/#trigger-token
 
-Pipeline schedule
-=================
+Pipeline schedules
+==================
 
 You can schedule pipeline runs using a cron-like syntax. Variables can be
 associated with the scheduled pipelines.
@@ -128,7 +128,10 @@ Reference
   + :attr:`gitlab.v4.objects.Project.pipelineschedules`
   + :class:`gitlab.v4.objects.ProjectPipelineScheduleVariable`
   + :class:`gitlab.v4.objects.ProjectPipelineScheduleVariableManager`
-  + :attr:`gitlab.v4.objects.Project.pipelineschedules`
+  + :attr:`gitlab.v4.objects.ProjectPipelineSchedule.variables`
+  + :class:`gitlab.v4.objects.ProjectPipelineSchedulePipeline`
+  + :class:`gitlab.v4.objects.ProjectPipelineSchedulePipelineManager`
+  + :attr:`gitlab.v4.objects.ProjectPipelineSchedule.pipelines`
 
 * GitLab API: https://docs.gitlab.com/ce/api/pipeline_schedules.html
 
@@ -188,6 +191,9 @@ Delete a schedule variable::
 
     var.delete()
 
+List all pipelines triggered by a pipeline schedule::
+
+    pipelines = sched.pipelines.list()
 
 Jobs
 ====
