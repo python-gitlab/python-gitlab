@@ -752,7 +752,7 @@ class Gitlab:
         cur_retries = 0
         while True:
             try:
-                result = self.session.request(
+                result = self.http_backend.http_request(
                     method=verb,
                     url=url,
                     json=json,
