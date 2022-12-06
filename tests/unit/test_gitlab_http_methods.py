@@ -6,7 +6,7 @@ import requests
 import responses
 
 from gitlab import GitlabHttpError, GitlabList, GitlabParsingError, RedirectError
-from gitlab.client import RETRYABLE_TRANSIENT_ERROR_CODES
+from gitlab.const import RETRYABLE_TRANSIENT_ERROR_CODES
 from tests.unit import helpers
 
 
