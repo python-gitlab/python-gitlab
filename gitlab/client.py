@@ -22,7 +22,6 @@ REDIRECT_MSG = (
     "{source!r} to {target!r}"
 )
 
-RETRYABLE_TRANSIENT_ERROR_CODES = [500, 502, 503, 504] + list(range(520, 531))
 
 # https://docs.gitlab.com/ee/api/#offset-based-pagination
 _PAGINATION_URL = (
@@ -781,7 +780,7 @@ class Gitlab:
                 return result
 
             if (429 == result.status_code and obey_rate_limit) or (
-                result.status_code in RETRYABLE_TRANSIENT_ERROR_CODES
+                result.status_code in gitlab.const.RETRYABLE_TRANSIENT_ERROR_CODES
                 and retry_transient_errors
             ):
                 # Response headers documentation:
