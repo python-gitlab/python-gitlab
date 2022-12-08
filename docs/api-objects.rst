@@ -11,6 +11,7 @@ API examples
    gl_objects/emojis
    gl_objects/badges
    gl_objects/branches
+   gl_objects/bulk_imports
    gl_objects/messages
    gl_objects/ci_lint
    gl_objects/commits

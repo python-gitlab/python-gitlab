@@ -8,6 +8,7 @@ from .badges import *
 from .boards import *
 from .branches import *
 from .broadcast_messages import *
+from .bulk_imports import *
 from .ci_lint import *
 from .clusters import *
 from .commits import *
