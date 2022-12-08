@@ -1,3 +1,4 @@
+-r requirements.txt
 argcomplete==2.0.0
 black==22.10.0
 commitizen==2.35.0
