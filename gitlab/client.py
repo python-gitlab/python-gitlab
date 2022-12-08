@@ -121,6 +121,10 @@ class Gitlab:
 
         self.broadcastmessages = objects.BroadcastMessageManager(self)
         """See :class:`~gitlab.v4.objects.BroadcastMessageManager`"""
+        self.bulk_imports = objects.BulkImportManager(self)
+        """See :class:`~gitlab.v4.objects.BulkImportManager`"""
+        self.bulk_import_entities = objects.BulkImportAllEntityManager(self)
+        """See :class:`~gitlab.v4.objects.BulkImportAllEntityManager`"""
         self.ci_lint = objects.CiLintManager(self)
         """See :class:`~gitlab.v4.objects.CiLintManager`"""
         self.deploykeys = objects.DeployKeyManager(self)
