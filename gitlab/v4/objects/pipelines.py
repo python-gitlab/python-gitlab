@@ -96,6 +96,7 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManage
     _list_filters = (
         "scope",
         "status",
+        "source",
         "ref",
         "sha",
         "yaml_errors",
