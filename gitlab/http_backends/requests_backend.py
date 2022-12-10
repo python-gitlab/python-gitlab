@@ -4,6 +4,30 @@ import requests
 from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
 
 
+class RequestsResponse:
+    def __init__(self, response: requests.Response) -> None:
+        self._response: requests.Response = response
+
+    @property
+    def response(self) -> requests.Response:
+        return self._response
+
+    @property
+    def status_code(self) -> int:
+        return self._response.status_code
+
+    @property
+    def headers(self) -> Any:
+        return self._response.headers
+
+    @property
+    def content(self) -> bytes:
+        return self._response.content
+
+    def json(self) -> Any:
+        return self._response.json()
+
+
 class RequestsBackend:
     def __init__(self, session: Optional[requests.Session] = None) -> None:
         self._client: requests.Session = session or requests.Session()
@@ -23,7 +47,7 @@ class RequestsBackend:
         verify: Optional[Union[bool, str]] = True,
         stream: Optional[bool] = False,
         **kwargs: Any
-    ) -> requests.Response:
+    ) -> RequestsResponse:
         """Make HTTP request
 
         Args:
@@ -40,7 +64,7 @@ class RequestsBackend:
         Returns:
             A requests Response object.
         """
-        return self._client.request(
+        response: requests.Response = self._client.request(
             method=method,
             url=url,
             params=params,
@@ -51,3 +75,4 @@ class RequestsBackend:
             json=json,
             **kwargs
         )
+        return RequestsResponse(response=response)

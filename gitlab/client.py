@@ -774,10 +774,10 @@ class Gitlab:
 
                 raise
 
-            self._check_redirects(result)
+            self._check_redirects(result.response)
 
             if 200 <= result.status_code < 300:
-                return result
+                return result.response
 
             if (429 == result.status_code and obey_rate_limit) or (
                 result.status_code in gitlab.const.RETRYABLE_TRANSIENT_ERROR_CODES
