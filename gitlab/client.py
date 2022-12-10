@@ -779,42 +779,46 @@ class Gitlab:
             if 200 <= result.status_code < 300:
                 return result.response
 
-            if (429 == result.status_code and obey_rate_limit) or (
-                result.status_code in gitlab.const.RETRYABLE_TRANSIENT_ERROR_CODES
+            if (429 == result.response.status_code and obey_rate_limit) or (
+                result.response.status_code
+                in gitlab.const.RETRYABLE_TRANSIENT_ERROR_CODES
                 and retry_transient_errors
             ):
                 # Response headers documentation:
                 # https://docs.gitlab.com/ee/user/admin_area/settings/user_and_ip_rate_limits.html#response-headers
                 if max_retries == -1 or cur_retries < max_retries:
                     wait_time = 2**cur_retries * 0.1
-                    if "Retry-After" in result.headers:
-                        wait_time = int(result.headers["Retry-After"])
-                    elif "RateLimit-Reset" in result.headers:
-                        wait_time = int(result.headers["RateLimit-Reset"]) - time.time()
+                    if "Retry-After" in result.response.headers:
+                        wait_time = int(result.response.headers["Retry-After"])
+                    elif "RateLimit-Reset" in result.response.headers:
+                        wait_time = (
+                            int(result.response.headers["RateLimit-Reset"])
+                            - time.time()
+                        )
                     cur_retries += 1
                     time.sleep(wait_time)
                     continue
 
-            error_message = result.content
+            error_message = result.response.content
             try:
-                error_json = result.json()
+                error_json = result.response.json()
                 for k in ("message", "error"):
                     if k in error_json:
                         error_message = error_json[k]
             except (KeyError, ValueError, TypeError):
                 pass
 
-            if result.status_code == 401:
+            if result.response.status_code == 401:
                 raise gitlab.exceptions.GitlabAuthenticationError(
-                    response_code=result.status_code,
+                    response_code=result.response.status_code,
                     error_message=error_message,
-                    response_body=result.content,
+                    response_body=result.response.content,
                 )
 
             raise gitlab.exceptions.GitlabHttpError(
-                response_code=result.status_code,
+                response_code=result.response.status_code,
                 error_message=error_message,
-                response_body=result.content,
+                response_body=result.response.content,
             )
 
     def http_get(
