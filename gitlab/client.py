@@ -8,7 +8,6 @@ from urllib import parse
 
 import requests
 import requests.utils
-from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
 
 import gitlab
 import gitlab.config
@@ -637,38 +636,6 @@ class Gitlab:
                 )
             )
 
-    @staticmethod
-    def _prepare_send_data(
-        files: Optional[Dict[str, Any]] = None,
-        post_data: Optional[Union[Dict[str, Any], bytes]] = None,
-        raw: bool = False,
-    ) -> Tuple[
-        Optional[Union[Dict[str, Any], bytes]],
-        Optional[Union[Dict[str, Any], MultipartEncoder]],
-        str,
-    ]:
-        if files:
-            if post_data is None:
-                post_data = {}
-            else:
-                # booleans does not exists for data (neither for MultipartEncoder):
-                # cast to string int to avoid: 'bool' object has no attribute 'encode'
-                if TYPE_CHECKING:
-                    assert isinstance(post_data, dict)
-                for k, v in post_data.items():
-                    if isinstance(v, bool):
-                        post_data[k] = str(int(v))
-            post_data["file"] = files.get("file")
-            post_data["avatar"] = files.get("avatar")
-
-            data = MultipartEncoder(post_data)
-            return (None, data, data.content_type)
-
-        if raw and post_data:
-            return (None, post_data, "application/octet-stream")
-
-        return (post_data, None, "application/json")
-
     def http_request(
         self,
         verb: str,
@@ -746,7 +713,9 @@ class Gitlab:
             retry_transient_errors = self.retry_transient_errors
 
         # We need to deal with json vs. data when uploading files
-        json, data, content_type = self._prepare_send_data(files, post_data, raw)
+        json, data, content_type = self.http_backend.prepare_send_data(
+            files, post_data, raw
+        )
         opts["headers"]["Content-type"] = content_type
 
         cur_retries = 0
@@ -779,46 +748,42 @@ class Gitlab:
             if 200 <= result.status_code < 300:
                 return result.response
 
-            if (429 == result.response.status_code and obey_rate_limit) or (
-                result.response.status_code
-                in gitlab.const.RETRYABLE_TRANSIENT_ERROR_CODES
+            if (429 == result.status_code and obey_rate_limit) or (
+                result.status_code in gitlab.const.RETRYABLE_TRANSIENT_ERROR_CODES
                 and retry_transient_errors
             ):
                 # Response headers documentation:
                 # https://docs.gitlab.com/ee/user/admin_area/settings/user_and_ip_rate_limits.html#response-headers
                 if max_retries == -1 or cur_retries < max_retries:
                     wait_time = 2**cur_retries * 0.1
-                    if "Retry-After" in result.response.headers:
-                        wait_time = int(result.response.headers["Retry-After"])
-                    elif "RateLimit-Reset" in result.response.headers:
-                        wait_time = (
-                            int(result.response.headers["RateLimit-Reset"])
-                            - time.time()
-                        )
+                    if "Retry-After" in result.headers:
+                        wait_time = int(result.headers["Retry-After"])
+                    elif "RateLimit-Reset" in result.headers:
+                        wait_time = int(result.headers["RateLimit-Reset"]) - time.time()
                     cur_retries += 1
                     time.sleep(wait_time)
                     continue
 
-            error_message = result.response.content
+            error_message = result.content
             try:
-                error_json = result.response.json()
+                error_json = result.json()
                 for k in ("message", "error"):
                     if k in error_json:
                         error_message = error_json[k]
             except (KeyError, ValueError, TypeError):
                 pass
 
-            if result.response.status_code == 401:
+            if result.status_code == 401:
                 raise gitlab.exceptions.GitlabAuthenticationError(
-                    response_code=result.response.status_code,
+                    response_code=result.status_code,
                     error_message=error_message,
-                    response_body=result.response.content,
+                    response_body=result.content,
                 )
 
             raise gitlab.exceptions.GitlabHttpError(
-                response_code=result.response.status_code,
+                response_code=result.status_code,
                 error_message=error_message,
-                response_body=result.response.content,
+                response_body=result.content,
             )
 
     def http_get(
