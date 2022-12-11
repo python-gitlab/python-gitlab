@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Tuple, TYPE_CHECKING, Union
 
 import requests
 from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
@@ -35,6 +35,38 @@ class RequestsBackend:
     @property
     def client(self) -> requests.Session:
         return self._client
+
+    @staticmethod
+    def prepare_send_data(
+        files: Optional[Dict[str, Any]] = None,
+        post_data: Optional[Union[Dict[str, Any], bytes]] = None,
+        raw: bool = False,
+    ) -> Tuple[
+        Optional[Union[Dict[str, Any], bytes]],
+        Optional[Union[Dict[str, Any], MultipartEncoder]],
+        str,
+    ]:
+        if files:
+            if post_data is None:
+                post_data = {}
+            else:
+                # booleans does not exists for data (neither for MultipartEncoder):
+                # cast to string int to avoid: 'bool' object has no attribute 'encode'
+                if TYPE_CHECKING:
+                    assert isinstance(post_data, dict)
+                for k, v in post_data.items():
+                    if isinstance(v, bool):
+                        post_data[k] = str(int(v))
+            post_data["file"] = files.get("file")
+            post_data["avatar"] = files.get("avatar")
+
+            data = MultipartEncoder(post_data)
+            return (None, data, data.content_type)
+
+        if raw and post_data:
+            return (None, post_data, "application/octet-stream")
+
+        return (post_data, None, "application/json")
 
     def http_request(
         self,
