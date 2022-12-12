@@ -4,6 +4,7 @@ import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
+from gitlab import http_backends
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
@@ -55,7 +56,12 @@ class ProjectKeyManager(CRUDMixin, RESTManager):
             A dict of the result.
         """
         path = f"{self.path}/{key_id}/enable"
-        return self.gitlab.http_post(path, **kwargs)
+        result = self.gitlab.http_post(path, **kwargs)
+        return (
+            result
+            if not isinstance(result, http_backends.DefaultResponse)
+            else result.response
+        )
 
     def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> ProjectKey:
         return cast(ProjectKey, super().get(id=id, lazy=lazy, **kwargs))

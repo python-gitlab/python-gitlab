@@ -1,11 +1,9 @@
 from typing import Any, BinaryIO, cast, Dict, List, Optional, Type, TYPE_CHECKING, Union
 
-import requests
-
 import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab import types, utils
+from gitlab import http_backends, types, utils
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
@@ -365,7 +363,7 @@ class GroupManager(CRUDMixin, RESTManager):
         name: str,
         parent_id: Optional[str] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Union[Dict[str, Any], http_backends.DefaultResponse]:
         """Import a group from an archive file.
 
         Args:

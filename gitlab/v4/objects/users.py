@@ -9,7 +9,7 @@ import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab import types
+from gitlab import http_backends, types
 from gitlab.base import RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import (
     CreateMixin,
@@ -202,7 +202,12 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             The new object data (*not* a RESTObject)
         """
         path = f"/users/{self.encoded_id}/follow"
-        return self.manager.gitlab.http_post(path, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return (
+            server_data
+            if not isinstance(server_data, http_backends.DefaultResponse)
+            else server_data.response
+        )
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUnfollowError)
@@ -220,7 +225,12 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             The new object data (*not* a RESTObject)
         """
         path = f"/users/{self.encoded_id}/unfollow"
-        return self.manager.gitlab.http_post(path, **kwargs)
+        server_data = self.manager.gitlab.http_post(path, **kwargs)
+        return (
+            server_data
+            if not isinstance(server_data, http_backends.DefaultResponse)
+            else server_data.response
+        )
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUnblockError)
@@ -266,7 +276,11 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if server_data:
             self._attrs["state"] = "deactivated"
-        return server_data
+        return (
+            server_data
+            if not isinstance(server_data, http_backends.DefaultResponse)
+            else server_data.response
+        )
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabActivateError)
@@ -287,7 +301,11 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if server_data:
             self._attrs["state"] = "active"
-        return server_data
+        return (
+            server_data
+            if not isinstance(server_data, http_backends.DefaultResponse)
+            else server_data.response
+        )
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUserApproveError)
@@ -305,7 +323,12 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             The new object data (*not* a RESTObject)
         """
         path = f"/users/{self.encoded_id}/approve"
-        return self.manager.gitlab.http_post(path, **kwargs)
+        result = self.manager.gitlab.http_post(path, **kwargs)
+        return (
+            result
+            if not isinstance(result, http_backends.DefaultResponse)
+            else result.response
+        )
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUserRejectError)
@@ -323,7 +346,12 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             The new object data (*not* a RESTObject)
         """
         path = f"/users/{self.encoded_id}/reject"
-        return self.manager.gitlab.http_post(path, **kwargs)
+        result = self.manager.gitlab.http_post(path, **kwargs)
+        return (
+            result
+            if not isinstance(result, http_backends.DefaultResponse)
+            else result.response
+        )
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabBanError)
@@ -344,7 +372,11 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if server_data:
             self._attrs["state"] = "banned"
-        return server_data
+        return (
+            server_data
+            if not isinstance(server_data, http_backends.DefaultResponse)
+            else server_data.response
+        )
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUnbanError)
@@ -365,7 +397,11 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if server_data:
             self._attrs["state"] = "active"
-        return server_data
+        return (
+            server_data
+            if not isinstance(server_data, http_backends.DefaultResponse)
+            else server_data.response
+        )
 
 
 class UserManager(CRUDMixin, RESTManager):

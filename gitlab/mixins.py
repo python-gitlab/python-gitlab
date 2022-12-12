@@ -17,7 +17,7 @@ import requests
 import gitlab
 from gitlab import base, cli
 from gitlab import exceptions as exc
-from gitlab import utils
+from gitlab import http_backends, utils
 
 __all__ = [
     "GetMixin",
@@ -299,7 +299,7 @@ class CreateMixin(_RestManagerBase):
         path = kwargs.pop("path", self.path)
         server_data = self.gitlab.http_post(path, post_data=data, files=files, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(server_data, requests.Response)
+            assert not isinstance(server_data, http_backends.DefaultResponse)
             assert self._obj_cls is not None
         return self._obj_cls(self, server_data)
 
@@ -316,7 +316,7 @@ class UpdateMixin(_RestManagerBase):
 
     def _get_update_method(
         self,
-    ) -> Callable[..., Union[Dict[str, Any], requests.Response]]:
+    ) -> Callable[..., Union[Dict[str, Any], http_backends.DefaultResponse]]:
         """Return the HTTP method to use.
 
         Returns:
@@ -367,7 +367,7 @@ class UpdateMixin(_RestManagerBase):
         http_method = self._get_update_method()
         result = http_method(path, post_data=new_data, files=files, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(result, requests.Response)
+            assert not isinstance(result, http_backends.DefaultResponse)
         return result
 
 
@@ -400,7 +400,7 @@ class SetMixin(_RestManagerBase):
         data = {"value": value}
         server_data = self.gitlab.http_put(path, post_data=data, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(server_data, requests.Response)
+            assert not isinstance(server_data, http_backends.DefaultResponse)
             assert self._obj_cls is not None
         return self._obj_cls(self, server_data)
 
@@ -588,7 +588,7 @@ class AccessRequestMixin(_RestObjectBase):
         data = {"access_level": access_level}
         server_data = self.manager.gitlab.http_put(path, post_data=data, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(server_data, requests.Response)
+            assert not isinstance(server_data, http_backends.DefaultResponse)
         self._update_attrs(server_data)
 
 
@@ -667,7 +667,7 @@ class SubscribableMixin(_RestObjectBase):
         path = f"{self.manager.path}/{self.encoded_id}/subscribe"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(server_data, requests.Response)
+            assert not isinstance(server_data, http_backends.DefaultResponse)
         self._update_attrs(server_data)
 
     @cli.register_custom_action(
@@ -687,7 +687,7 @@ class SubscribableMixin(_RestObjectBase):
         path = f"{self.manager.path}/{self.encoded_id}/unsubscribe"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(server_data, requests.Response)
+            assert not isinstance(server_data, http_backends.DefaultResponse)
         self._update_attrs(server_data)
 
 
@@ -766,7 +766,7 @@ class TimeTrackingMixin(_RestObjectBase):
         data = {"duration": duration}
         result = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(result, requests.Response)
+            assert not isinstance(result, http_backends.DefaultResponse)
         return result
 
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
@@ -784,7 +784,7 @@ class TimeTrackingMixin(_RestObjectBase):
         path = f"{self.manager.path}/{self.encoded_id}/reset_time_estimate"
         result = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(result, requests.Response)
+            assert not isinstance(result, http_backends.DefaultResponse)
         return result
 
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"), ("duration",))
@@ -804,7 +804,7 @@ class TimeTrackingMixin(_RestObjectBase):
         data = {"duration": duration}
         result = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(result, requests.Response)
+            assert not isinstance(result, http_backends.DefaultResponse)
         return result
 
     @cli.register_custom_action(("ProjectIssue", "ProjectMergeRequest"))
@@ -822,7 +822,7 @@ class TimeTrackingMixin(_RestObjectBase):
         path = f"{self.manager.path}/{self.encoded_id}/reset_spent_time"
         result = self.manager.gitlab.http_post(path, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(result, requests.Response)
+            assert not isinstance(result, http_backends.DefaultResponse)
         return result
 
 
@@ -899,7 +899,7 @@ class PromoteMixin(_RestObjectBase):
 
     def _get_update_method(
         self,
-    ) -> Callable[..., Union[Dict[str, Any], requests.Response]]:
+    ) -> Callable[..., Union[Dict[str, Any], http_backends.DefaultResponse]]:
         """Return the HTTP method to use.
 
         Returns:
@@ -932,4 +932,5 @@ class PromoteMixin(_RestObjectBase):
         result = http_method(path, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(result, requests.Response)
+            assert not isinstance(result, http_backends.DefaultResponse)
         return result

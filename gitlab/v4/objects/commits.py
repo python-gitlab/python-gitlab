@@ -5,6 +5,7 @@ import requests
 import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
+from gitlab import http_backends
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, ListMixin, RefreshMixin, RetrieveMixin
 from gitlab.types import RequiredOptional
@@ -125,7 +126,12 @@ class ProjectCommit(RESTObject):
         """
         path = f"{self.manager.path}/{self.encoded_id}/revert"
         post_data = {"branch": branch}
-        return self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        result = self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        return (
+            result
+            if not isinstance(result, http_backends.DefaultResponse)
+            else result.response
+        )
 
     @cli.register_custom_action("ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)

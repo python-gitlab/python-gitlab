@@ -421,7 +421,7 @@ class Gitlab:
         post_data = {"content": content}
         data = self.http_post("/ci/lint", post_data=post_data, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(data, requests.Response)
+            assert not isinstance(data, http_backends.DefaultResponse)
         return (data["status"] == "valid", data["errors"])
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabMarkdownError)
@@ -448,7 +448,7 @@ class Gitlab:
             post_data["project"] = project
         data = self.http_post("/markdown", post_data=post_data, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(data, requests.Response)
+            assert not isinstance(data, http_backends.DefaultResponse)
             assert isinstance(data["html"], str)
         return data["html"]
 
@@ -489,7 +489,7 @@ class Gitlab:
         data = {"license": license}
         result = self.http_post("/license", post_data=data, **kwargs)
         if TYPE_CHECKING:
-            assert not isinstance(result, requests.Response)
+            assert not isinstance(result, http_backends.DefaultResponse)
         return result
 
     def _set_auth_info(self) -> None:
@@ -976,7 +976,7 @@ class Gitlab:
         raw: bool = False,
         files: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Union[Dict[str, Any], http_backends.DefaultResponse]:
         """Make a POST request to the Gitlab server.
 
         Args:
@@ -1000,7 +1000,7 @@ class Gitlab:
         query_data = query_data or {}
         post_data = post_data or {}
 
-        result = self.http_request(
+        result = self.http_backend.http_request(
             "post",
             path,
             query_data=query_data,
@@ -1029,7 +1029,7 @@ class Gitlab:
         raw: bool = False,
         files: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> Union[Dict[str, Any], http_backends.DefaultResponse]:
         """Make a PUT request to the Gitlab server.
 
         Args:

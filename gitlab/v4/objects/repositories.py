@@ -10,7 +10,7 @@ import requests
 import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab import types, utils
+from gitlab import http_backends, types, utils
 
 if TYPE_CHECKING:
     # When running mypy we use these as the base classes
@@ -44,7 +44,12 @@ class RepositoryMixin(_RestObjectBase):
         data = {"branch": branch, "commit_sha": commit_sha}
         if "commit_message" in kwargs:
             data["commit_message"] = kwargs["commit_message"]
-        return self.manager.gitlab.http_put(path, post_data=data)
+        result = self.manager.gitlab.http_put(path, post_data=data)
+        return (
+            result
+            if not isinstance(result, http_backends.DefaultResponse)
+            else result.response
+        )
 
     @cli.register_custom_action("Project", (), ("path", "ref", "recursive"))
     @exc.on_http_error(exc.GitlabGetError)

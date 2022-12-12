@@ -4,6 +4,7 @@ import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
+from gitlab import http_backends
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
@@ -73,7 +74,12 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
             GitlabPipelineCancelError: If the request failed
         """
         path = f"{self.manager.path}/{self.encoded_id}/cancel"
-        return self.manager.gitlab.http_post(path, **kwargs)
+        result = self.manager.gitlab.http_post(path, **kwargs)
+        return (
+            result
+            if not isinstance(result, http_backends.DefaultResponse)
+            else result.response
+        )
 
     @cli.register_custom_action("ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineRetryError)
@@ -88,7 +94,12 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
             GitlabPipelineRetryError: If the request failed
         """
         path = f"{self.manager.path}/{self.encoded_id}/retry"
-        return self.manager.gitlab.http_post(path, **kwargs)
+        result = self.manager.gitlab.http_post(path, **kwargs)
+        return (
+            result
+            if not isinstance(result, http_backends.DefaultResponse)
+            else result.response
+        )
 
 
 class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
