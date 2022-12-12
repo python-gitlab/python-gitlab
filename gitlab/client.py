@@ -7,7 +7,6 @@ from typing import Any, cast, Dict, List, Optional, Tuple, Type, TYPE_CHECKING, 
 from urllib import parse
 
 import requests
-import requests.utils
 
 import gitlab
 import gitlab.config
