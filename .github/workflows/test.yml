@@ -47,7 +47,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3.1.0
       - name: Set up Python ${{ matrix.python.version }}
-        uses: actions/setup-python@v4.3.0
+        uses: actions/setup-python@v4.3.1
         with:
           python-version: ${{ matrix.python.version }}
       - name: Install dependencies
@@ -65,7 +65,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3.1.0
       - name: Set up Python
-        uses: actions/setup-python@v4.3.0
+        uses: actions/setup-python@v4.3.1
         with:
           python-version: "3.11"
       - name: Install dependencies
@@ -86,7 +86,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3.1.0
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4.3.0
+        uses: actions/setup-python@v4.3.1
         with:
           python-version: "3.11"
       - name: Install dependencies
@@ -127,7 +127,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3.1.0
     - name: Set up Python
-      uses: actions/setup-python@v4.3.0
+      uses: actions/setup-python@v4.3.1
       with:
         python-version: '3.11'
     - uses: actions/download-artifact@v3.0.1
