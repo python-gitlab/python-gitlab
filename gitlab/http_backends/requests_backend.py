@@ -1,7 +1,34 @@
+from __future__ import annotations
+
 from typing import Any, Dict, Optional, Union
 
 import requests
+from requests.structures import CaseInsensitiveDict
 from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
+
+
+class RequestsResponse:
+    def __init__(self, response: requests.Response) -> None:
+        self._response: requests.Response = response
+
+    @property
+    def response(self) -> requests.Response:
+        return self._response
+
+    @property
+    def status_code(self) -> int:
+        return self._response.status_code
+
+    @property
+    def headers(self) -> CaseInsensitiveDict[str]:
+        return self._response.headers
+
+    @property
+    def content(self) -> bytes:
+        return self._response.content
+
+    def json(self) -> Any:
+        return self._response.json()
 
 
 class RequestsBackend:
@@ -22,8 +49,8 @@ class RequestsBackend:
         timeout: Optional[float] = None,
         verify: Optional[Union[bool, str]] = True,
         stream: Optional[bool] = False,
-        **kwargs: Any
-    ) -> requests.Response:
+        **kwargs: Any,
+    ) -> RequestsResponse:
         """Make HTTP request
 
         Args:
@@ -40,7 +67,7 @@ class RequestsBackend:
         Returns:
             A requests Response object.
         """
-        return self._client.request(
+        response: requests.Response = self._client.request(
             method=method,
             url=url,
             params=params,
@@ -49,5 +76,6 @@ class RequestsBackend:
             stream=stream,
             verify=verify,
             json=json,
-            **kwargs
+            **kwargs,
         )
+        return RequestsResponse(response=response)
