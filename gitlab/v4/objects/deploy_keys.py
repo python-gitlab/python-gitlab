@@ -55,7 +55,10 @@ class ProjectKeyManager(CRUDMixin, RESTManager):
             A dict of the result.
         """
         path = f"{self.path}/{key_id}/enable"
-        return self.gitlab.http_post(path, **kwargs)
+        response = self.gitlab.http_post(path, **kwargs)
+        if isinstance(response, Dict):
+            return response
+        return response.response
 
     def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> ProjectKey:
         return cast(ProjectKey, super().get(id=id, lazy=lazy, **kwargs))

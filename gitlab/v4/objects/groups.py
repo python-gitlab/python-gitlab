@@ -388,9 +388,12 @@ class GroupManager(CRUDMixin, RESTManager):
         if parent_id is not None:
             data["parent_id"] = parent_id
 
-        return self.gitlab.http_post(
+        response = self.gitlab.http_post(
             "/groups/import", post_data=data, files=files, **kwargs
         )
+        if isinstance(response, Dict):
+            return response
+        return response.response
 
 
 class GroupSubgroup(RESTObject):

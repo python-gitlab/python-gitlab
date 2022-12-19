@@ -9,7 +9,7 @@ import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab import types
+from gitlab import http_backends, types
 from gitlab.base import RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import (
     CreateMixin,
@@ -202,7 +202,10 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             The new object data (*not* a RESTObject)
         """
         path = f"/users/{self.encoded_id}/follow"
-        return self.manager.gitlab.http_post(path, **kwargs)
+        response = self.manager.gitlab.http_post(path, **kwargs)
+        if isinstance(response, Dict):
+            return response
+        return response.response
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUnfollowError)
@@ -220,7 +223,10 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             The new object data (*not* a RESTObject)
         """
         path = f"/users/{self.encoded_id}/unfollow"
-        return self.manager.gitlab.http_post(path, **kwargs)
+        response = self.manager.gitlab.http_post(path, **kwargs)
+        if isinstance(response, Dict):
+            return response
+        return response.response
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUnblockError)
@@ -264,9 +270,10 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = f"/users/{self.encoded_id}/deactivate"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if server_data:
+        if isinstance(server_data, Dict):
             self._attrs["state"] = "deactivated"
-        return server_data
+            return server_data
+        return server_data.response
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabActivateError)
@@ -285,9 +292,10 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = f"/users/{self.encoded_id}/activate"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if server_data:
+        if isinstance(server_data, Dict):
             self._attrs["state"] = "active"
-        return server_data
+            return server_data
+        return server_data.response
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUserApproveError)
@@ -305,7 +313,10 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             The new object data (*not* a RESTObject)
         """
         path = f"/users/{self.encoded_id}/approve"
-        return self.manager.gitlab.http_post(path, **kwargs)
+        response = self.manager.gitlab.http_post(path, **kwargs)
+        if isinstance(response, Dict):
+            return response
+        return response.response
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabUserRejectError)
@@ -323,7 +334,10 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             The new object data (*not* a RESTObject)
         """
         path = f"/users/{self.encoded_id}/reject"
-        return self.manager.gitlab.http_post(path, **kwargs)
+        response = self.manager.gitlab.http_post(path, **kwargs)
+        if isinstance(response, Dict):
+            return response
+        return response.response
 
     @cli.register_custom_action("User")
     @exc.on_http_error(exc.GitlabBanError)
@@ -342,7 +356,9 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = f"/users/{self.encoded_id}/ban"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if server_data:
+        if isinstance(server_data, http_backends.DefaultResponse):
+            return server_data.response
+        if isinstance(server_data, Dict):
             self._attrs["state"] = "banned"
         return server_data
 
@@ -363,7 +379,9 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         path = f"/users/{self.encoded_id}/unban"
         server_data = self.manager.gitlab.http_post(path, **kwargs)
-        if server_data:
+        if isinstance(server_data, http_backends.DefaultResponse):
+            return server_data.response
+        if isinstance(server_data, Dict):
             self._attrs["state"] = "active"
         return server_data
 

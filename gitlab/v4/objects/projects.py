@@ -876,9 +876,12 @@ class ProjectManager(CRUDMixin, RESTManager):
             data["name"] = name
         if namespace:
             data["namespace"] = namespace
-        return self.gitlab.http_post(
+        response = self.gitlab.http_post(
             "/projects/import", post_data=data, files=files, **kwargs
         )
+        if isinstance(response, Dict):
+            return response
+        return response.response
 
     @exc.on_http_error(exc.GitlabImportError)
     def remote_import(
@@ -920,9 +923,12 @@ class ProjectManager(CRUDMixin, RESTManager):
             data["name"] = name
         if namespace:
             data["namespace"] = namespace
-        return self.gitlab.http_post(
+        response = self.gitlab.http_post(
             "/projects/remote-import", post_data=data, **kwargs
         )
+        if isinstance(response, Dict):
+            return response
+        return response.response
 
     @exc.on_http_error(exc.GitlabImportError)
     def remote_import_s3(
@@ -980,9 +986,12 @@ class ProjectManager(CRUDMixin, RESTManager):
             data["name"] = name
         if namespace:
             data["namespace"] = namespace
-        return self.gitlab.http_post(
+        response = self.gitlab.http_post(
             "/projects/remote-import-s3", post_data=data, **kwargs
         )
+        if isinstance(response, Dict):
+            return response
+        return response.response
 
     def import_bitbucket_server(
         self,
@@ -1071,10 +1080,12 @@ class ProjectManager(CRUDMixin, RESTManager):
             # and this is too short for this API command, typically.
             # On the order of 24 seconds has been measured on a typical gitlab instance.
             kwargs["timeout"] = 60.0
-        result = self.gitlab.http_post(
+        response = self.gitlab.http_post(
             "/import/bitbucket_server", post_data=data, **kwargs
         )
-        return result
+        if isinstance(response, Dict):
+            return response
+        return response.response
 
     def import_github(
         self,
@@ -1145,8 +1156,10 @@ class ProjectManager(CRUDMixin, RESTManager):
             # and this is too short for this API command, typically.
             # On the order of 24 seconds has been measured on a typical gitlab instance.
             kwargs["timeout"] = 60.0
-        result = self.gitlab.http_post("/import/github", post_data=data, **kwargs)
-        return result
+        response = self.gitlab.http_post("/import/github", post_data=data, **kwargs)
+        if isinstance(response, Dict):
+            return response
+        return response.response
 
 
 class ProjectFork(RESTObject):

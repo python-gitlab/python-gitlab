@@ -44,7 +44,10 @@ class RepositoryMixin(_RestObjectBase):
         data = {"branch": branch, "commit_sha": commit_sha}
         if "commit_message" in kwargs:
             data["commit_message"] = kwargs["commit_message"]
-        return self.manager.gitlab.http_put(path, post_data=data)
+        response = self.manager.gitlab.http_put(path, post_data=data)
+        if isinstance(response, Dict):
+            return response
+        return response.response
 
     @cli.register_custom_action("Project", (), ("path", "ref", "recursive"))
     @exc.on_http_error(exc.GitlabGetError)

@@ -10,7 +10,7 @@ import requests
 import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab import types
+from gitlab import http_backends, types
 from gitlab.base import RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import (
     CRUDMixin,
@@ -326,7 +326,10 @@ class ProjectMergeRequest(
         """
         path = f"{self.manager.path}/{self.encoded_id}/rebase"
         data: Dict[str, Any] = {}
-        return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+        response = self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+        if isinstance(response, Dict):
+            return response
+        return response.response
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMRResetApprovalError)
@@ -344,7 +347,10 @@ class ProjectMergeRequest(
         """
         path = f"{self.manager.path}/{self.encoded_id}/reset_approvals"
         data: Dict[str, Any] = {}
-        return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+        response = self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+        if isinstance(response, http_backends.DefaultResponse):
+            return response.response
+        return response
 
     @cli.register_custom_action("ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabGetError)

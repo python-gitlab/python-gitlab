@@ -125,7 +125,10 @@ class ProjectCommit(RESTObject):
         """
         path = f"{self.manager.path}/{self.encoded_id}/revert"
         post_data = {"branch": branch}
-        return self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        response = self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        if isinstance(response, Dict):
+            return response
+        return response.response
 
     @cli.register_custom_action("ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
