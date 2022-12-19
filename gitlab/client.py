@@ -639,7 +639,7 @@ class Gitlab:
                 )
             )
 
-    def http_request(
+    def backend_request(
         self,
         verb: str,
         path: str,
@@ -653,7 +653,7 @@ class Gitlab:
         retry_transient_errors: Optional[bool] = None,
         max_retries: int = 10,
         **kwargs: Any,
-    ) -> requests.Response:
+    ) -> _backends.DefaultResponse:
         """Make an HTTP request to the Gitlab server.
 
         Args:
@@ -722,7 +722,7 @@ class Gitlab:
         cur_retries = 0
         while True:
             try:
-                result = self._backend.http_request(
+                backend_response = self._backend.http_request(
                     method=verb,
                     url=url,
                     json=send_data.json,
@@ -744,20 +744,26 @@ class Gitlab:
 
                 raise
 
-            self._check_redirects(result.response)
+            self._check_redirects(backend_response.response)
 
-            if 200 <= result.status_code < 300:
-                return result.response
+            if 200 <= backend_response.status_code < 300:
+                return backend_response
 
             def should_retry() -> bool:
-                if result.status_code == 429 and obey_rate_limit:
+                if backend_response.status_code == 429 and obey_rate_limit:
                     return True
 
                 if not retry_transient_errors:
                     return False
-                if result.status_code in gitlab.const.RETRYABLE_TRANSIENT_ERROR_CODES:
+                if (
+                    backend_response.status_code
+                    in gitlab.const.RETRYABLE_TRANSIENT_ERROR_CODES
+                ):
                     return True
-                if result.status_code == 409 and "Resource lock" in result.reason:
+                if (
+                    backend_response.status_code == 409
+                    and "Resource lock" in backend_response.reason
+                ):
                     return True
 
                 return False
@@ -767,35 +773,73 @@ class Gitlab:
                 # https://docs.gitlab.com/ee/user/admin_area/settings/user_and_ip_rate_limits.html#response-headers
                 if max_retries == -1 or cur_retries < max_retries:
                     wait_time = 2**cur_retries * 0.1
-                    if "Retry-After" in result.headers:
-                        wait_time = int(result.headers["Retry-After"])
-                    elif "RateLimit-Reset" in result.headers:
-                        wait_time = int(result.headers["RateLimit-Reset"]) - time.time()
+                    if "Retry-After" in backend_response.headers:
+                        wait_time = int(backend_response.headers["Retry-After"])
+                    elif "RateLimit-Reset" in backend_response.headers:
+                        wait_time = (
+                            int(backend_response.headers["RateLimit-Reset"])
+                            - time.time()
+                        )
                     cur_retries += 1
                     time.sleep(wait_time)
                     continue
 
-            error_message = result.content
+            error_message = backend_response.content
             try:
-                error_json = result.json()
+                error_json = backend_response.json()
                 for k in ("message", "error"):
                     if k in error_json:
                         error_message = error_json[k]
             except (KeyError, ValueError, TypeError):
                 pass
 
-            if result.status_code == 401:
+            if backend_response.status_code == 401:
                 raise gitlab.exceptions.GitlabAuthenticationError(
-                    response_code=result.status_code,
+                    response_code=backend_response.status_code,
                     error_message=error_message,
-                    response_body=result.content,
+                    response_body=backend_response.content,
                 )
 
             raise gitlab.exceptions.GitlabHttpError(
-                response_code=result.status_code,
+                response_code=backend_response.status_code,
                 error_message=error_message,
-                response_body=result.content,
+                response_body=backend_response.content,
             )
+
+    def http_request(
+        self,
+        verb: str,
+        path: str,
+        query_data: Optional[Dict[str, Any]] = None,
+        post_data: Optional[Union[Dict[str, Any], bytes]] = None,
+        raw: bool = False,
+        streamed: bool = False,
+        files: Optional[Dict[str, Any]] = None,
+        timeout: Optional[float] = None,
+        obey_rate_limit: bool = True,
+        retry_transient_errors: Optional[bool] = None,
+        max_retries: int = 10,
+        **kwargs: Any,
+    ) -> requests.Response:
+        utils.warn(
+            "`http_request()` is deprecated and will be removed in a future version.\n"
+            "Please use `backend_request()` instead.",
+            category=DeprecationWarning,
+        )
+        return self.backend_request(
+            verb,
+            path,
+            query_data,
+            post_data,
+            raw,
+            streamed,
+            files,
+            timeout,
+            obey_rate_limit,
+            retry_transient_errors,
+            max_retries,
+            **kwargs,
+        ).response
 
     def http_get(
         self,
@@ -825,10 +869,13 @@ class Gitlab:
             GitlabParsingError: If the json data could not be parsed
         """
         query_data = query_data or {}
-        result = self.http_request(
+        backend_response = self.backend_request(
             "get", path, query_data=query_data, streamed=streamed, **kwargs
         )
-        content_type = utils.get_content_type(result.headers.get("Content-Type"))
+        content_type = utils.get_content_type(
+            backend_response.headers.get("Content-Type")
+        )
+        result = backend_response.response
 
         if content_type == "application/json" and not streamed and not raw:
             try:
@@ -861,8 +908,10 @@ class Gitlab:
         """
 
         query_data = query_data or {}
-        result = self.http_request("head", path, query_data=query_data, **kwargs)
-        return result.headers
+        backend_response = self.http_request(
+            "head", path, query_data=query_data, **kwargs
+        )
+        return backend_response.headers
 
     def http_list(
         self,
@@ -1018,7 +1067,7 @@ class Gitlab:
         query_data = query_data or {}
         post_data = post_data or {}
 
-        result = self.http_request(
+        backend_response = self.backend_request(
             "post",
             path,
             query_data=query_data,
@@ -1027,7 +1076,10 @@ class Gitlab:
             raw=raw,
             **kwargs,
         )
-        content_type = utils.get_content_type(result.headers.get("Content-Type"))
+        content_type = utils.get_content_type(
+            backend_response.headers.get("Content-Type")
+        )
+        result = backend_response.response
 
         try:
             if content_type == "application/json":
@@ -1072,7 +1124,7 @@ class Gitlab:
         query_data = query_data or {}
         post_data = post_data or {}
 
-        result = self.http_request(
+        backend_response = self.http_request(
             "put",
             path,
             query_data=query_data,
@@ -1082,7 +1134,7 @@ class Gitlab:
             **kwargs,
         )
         try:
-            json_result = result.json()
+            json_result = backend_response.json()
             if TYPE_CHECKING:
                 assert isinstance(json_result, dict)
             return json_result
@@ -1121,7 +1173,7 @@ class Gitlab:
         query_data = query_data or {}
         post_data = post_data or {}
 
-        result = self.http_request(
+        backend_response = self.http_request(
             "patch",
             path,
             query_data=query_data,
@@ -1130,7 +1182,7 @@ class Gitlab:
             **kwargs,
         )
         try:
-            json_result = result.json()
+            json_result = backend_response.json()
             if TYPE_CHECKING:
                 assert isinstance(json_result, dict)
             return json_result
@@ -1153,7 +1205,8 @@ class Gitlab:
         Raises:
             GitlabHttpError: When the return code is not 2xx
         """
-        return self.http_request("delete", path, **kwargs)
+        backend_response = self.backend_request("delete", path, **kwargs)
+        return backend_response.response
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabSearchError)
     def search(
@@ -1207,7 +1260,11 @@ class GitlabList:
         self, url: str, query_data: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> None:
         query_data = query_data or {}
-        result = self._gl.http_request("get", url, query_data=query_data, **kwargs)
+        backend_response = self._gl.backend_request(
+            "get", url, query_data=query_data, **kwargs
+        )
+        result = backend_response.response
+
         try:
             next_url = result.links["next"]["url"]
         except KeyError:

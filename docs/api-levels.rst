@@ -74,7 +74,7 @@ Lower-lower-level API - HTTP requests
     higher-level APIs. To lessen the chances of a change to the interface impacting your code, we
     recommend using keyword arguments when calling the interfaces.
 
-At the lowest level, HTTP methods call ``http_request()``, which performs the actual request and takes
+At the lowest level, HTTP methods call ``backend_request()``, which performs the actual request and takes
 care of details such as timeouts, retries, and handling rate-limits.
 
 This method can be invoked directly to or customize this behavior for a single request, or to call custom
@@ -87,19 +87,19 @@ For example, if for whatever reason you want to fetch allowed methods for an end
 
     >>> gl = gitlab.Gitlab(private_token=private_token)
     >>>
-    >>> response = gl.http_request(verb="OPTIONS", path="/projects")
-    >>> response.headers["Allow"]
+    >>> backend_response = gl.backend_request(verb="OPTIONS", path="/projects")
+    >>> backend_response.headers["Allow"]
     'OPTIONS, GET, POST, HEAD'
 
 Or get the total number of a user's events with a customized HEAD request:
 
 .. code-block:: python
 
-    >>> response = gl.http_request(
+    >>> backend_response = gl.backend_request(
             verb="HEAD",
             path="/events",
             query_params={"sudo": "some-user"},
             timeout=10
         )
-    >>> response.headers["X-Total"]
+    >>> backend_response.headers["X-Total"]
     '123'
