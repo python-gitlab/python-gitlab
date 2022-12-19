@@ -653,7 +653,7 @@ class Gitlab:
         retry_transient_errors: Optional[bool] = None,
         max_retries: int = 10,
         **kwargs: Any,
-    ) -> requests.Response:
+    ) -> http_backends.DefaultResponse:
         """Make an HTTP request to the Gitlab server.
 
         Args:
@@ -749,7 +749,7 @@ class Gitlab:
             self._check_redirects(result.response)
 
             if 200 <= result.status_code < 300:
-                return result.response
+                return result
 
             def should_retry() -> bool:
                 if result.status_code == 429 and obey_rate_limit:
@@ -827,9 +827,10 @@ class Gitlab:
             GitlabParsingError: If the json data could not be parsed
         """
         query_data = query_data or {}
-        result = self.http_request(
+        response = self.http_request(
             "get", path, query_data=query_data, streamed=streamed, **kwargs
         )
+        result = response.response
 
         if (
             result.headers["Content-Type"] == "application/json"
@@ -1010,7 +1011,7 @@ class Gitlab:
         query_data = query_data or {}
         post_data = post_data or {}
 
-        result = self.http_request(
+        response = self.http_request(
             "post",
             path,
             query_data=query_data,
@@ -1019,6 +1020,8 @@ class Gitlab:
             raw=raw,
             **kwargs,
         )
+        result = response.response
+
         try:
             if result.headers.get("Content-Type", None) == "application/json":
                 json_result = result.json()
@@ -1095,7 +1098,8 @@ class Gitlab:
         Raises:
             GitlabHttpError: When the return code is not 2xx
         """
-        return self.http_request("delete", path, **kwargs)
+        response = self.http_request("delete", path, **kwargs)
+        return response.response
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabSearchError)
     def search(
@@ -1149,7 +1153,9 @@ class GitlabList:
         self, url: str, query_data: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> None:
         query_data = query_data or {}
-        result = self._gl.http_request("get", url, query_data=query_data, **kwargs)
+        response = self._gl.http_request("get", url, query_data=query_data, **kwargs)
+        result = response.response
+
         try:
             next_url = result.links["next"]["url"]
         except KeyError:

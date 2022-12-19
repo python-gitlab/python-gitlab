@@ -27,6 +27,10 @@ class RequestsResponse:
     def content(self) -> bytes:
         return self._response.content
 
+    @property
+    def reason(self) -> str:
+        return self._response.reason
+
     def json(self) -> Any:
         return self._response.json()
 
