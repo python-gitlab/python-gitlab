@@ -490,7 +490,7 @@ class LegacyPrinter:
                 id = getattr(obj, obj._id_attr)
                 print(f"{obj._id_attr.replace('_', '-')}: {id}")
             if obj._repr_attr:
-                value = getattr(obj, obj._repr_attr, "None")
+                value = getattr(obj, obj._repr_attr, "None") or "None"
                 value = value.replace("\r", "").replace("\n", " ")
                 # If the attribute is a note (ProjectCommitComment) then we do
                 # some modifications to fit everything on one line
