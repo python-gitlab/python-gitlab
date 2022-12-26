@@ -6,8 +6,10 @@ import requests
 from requests.structures import CaseInsensitiveDict
 from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
 
+from . import protocol
 
-class RequestsResponse:
+
+class RequestsResponse(protocol.BackendResponse):
     def __init__(self, response: requests.Response) -> None:
         self._response: requests.Response = response
 
@@ -35,7 +37,7 @@ class RequestsResponse:
         return self._response.json()
 
 
-class RequestsBackend:
+class RequestsBackend(protocol.Backend):
     def __init__(self, session: Optional[requests.Session] = None) -> None:
         self._client: requests.Session = session or requests.Session()
 
