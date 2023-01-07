@@ -168,4 +168,4 @@ We use ``tox`` to manage our environment and build the documentation::
 Contributing
 ------------
 
-For guidelines for contributing to ``python-gitlab``, refer to `CONTRIBUTING.rst <https://github.com/python-gitlab/python-gitlab/blob/main/CONTRIBUTING.rst>`_.
+For guidelines for contributing to ``python-gitlab``, refer to `CONTRIBUTING.rst <.github/CONTRIBUTING.rst>`_.
