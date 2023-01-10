@@ -22,7 +22,7 @@ jobs:
   sphinx:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3.2.0
+      - uses: actions/checkout@v3.3.0
       - name: Set up Python
         uses: actions/setup-python@v4.4.0
         with:
@@ -34,7 +34,7 @@ jobs:
           TOXENV: docs
         run: tox
       - name: Archive generated docs
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: html-docs
           path: build/sphinx/html/
@@ -42,7 +42,7 @@ jobs:
   twine-check:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3.2.0
+      - uses: actions/checkout@v3.3.0
       - name: Set up Python
         uses: actions/setup-python@v4.4.0
         with:
