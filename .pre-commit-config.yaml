@@ -41,12 +41,12 @@ repos:
           - types-requests==2.28.11.2
           - types-setuptools==64.0.1
   - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.9.0
+    rev: v1.10.0
     hooks:
       - id: rst-backticks
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
   - repo: https://github.com/maxbrunet/pre-commit-renovate
-    rev: 34.97.0
+    rev: 34.105.2
     hooks:
       - id: renovate-config-validator
