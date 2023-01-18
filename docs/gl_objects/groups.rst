@@ -88,6 +88,11 @@ Remove a group::
     # or
     group.delete()
 
+Restore a Group marked for deletion (Premium only):::
+    
+    group.restore()
+
+
 Share/unshare the group with a group::
 
     group.share(group2.id, gitlab.const.AccessLevel.DEVELOPER)
