@@ -393,6 +393,9 @@ The generator exposes extra listing information as received from the server:
    Prior to python-gitlab 3.6.0 the argument ``as_list`` was used instead of
    ``iterator``.  ``as_list=False`` is the equivalent of ``iterator=True``.
 
+.. note::
+   If ``page`` and ``iterator=True`` are used together, the latter is ignored.
+
 Sudo
 ====
 
