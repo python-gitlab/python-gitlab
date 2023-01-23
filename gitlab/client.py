@@ -929,7 +929,7 @@ class Gitlab:
 
         page = kwargs.get("page")
 
-        if iterator:
+        if iterator and page is None:
             # Generator requested
             return GitlabList(self, url, query_data, **kwargs)
 

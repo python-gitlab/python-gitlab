@@ -542,6 +542,18 @@ def test_list_request(gl):
     assert responses.assert_call_count(url, 3) is True
 
 
+@responses.activate
+def test_list_request_page_and_iterator(gl):
+    response_dict = copy.deepcopy(large_list_response)
+    response_dict["match"] = [responses.matchers.query_param_matcher({"page": "1"})]
+    responses.add(**response_dict)
+
+    result = gl.http_list("/projects", iterator=True, page=1)
+    assert isinstance(result, list)
+    assert len(result) == 20
+    assert len(responses.calls) == 1
+
+
 large_list_response = {
     "method": responses.GET,
     "url": "http://localhost/api/v4/projects",
