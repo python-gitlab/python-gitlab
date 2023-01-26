@@ -548,10 +548,21 @@ def test_list_request_page_and_iterator(gl):
     response_dict["match"] = [responses.matchers.query_param_matcher({"page": "1"})]
     responses.add(**response_dict)
 
-    result = gl.http_list("/projects", iterator=True, page=1)
+    with pytest.warns(
+        UserWarning, match="`iterator=True` and `page=1` were both specified"
+    ):
+        result = gl.http_list("/projects", iterator=True, page=1)
     assert isinstance(result, list)
     assert len(result) == 20
     assert len(responses.calls) == 1
+
+    with pytest.warns(
+        UserWarning, match="`as_list=False` and `page=1` were both specified"
+    ):
+        result = gl.http_list("/projects", as_list=False, page=1)
+    assert isinstance(result, list)
+    assert len(result) == 20
+    assert len(responses.calls) == 2
 
 
 large_list_response = {
