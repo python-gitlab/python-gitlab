@@ -2,6 +2,29 @@
 
 <!--next-version-placeholder-->
 
+## v3.13.0 (2023-01-30)
+### Feature
+* **group:** Add support for group restore API ([`9322db6`](https://github.com/python-gitlab/python-gitlab/commit/9322db663ecdaecf399e3192810d973c6a9a4020))
+* **client:** Automatically retry on HTTP 409 Resource lock ([`dced76a`](https://github.com/python-gitlab/python-gitlab/commit/dced76a9900c626c9f0b90b85a5e371101a24fb4))
+* **api:** Add support for bulk imports API ([`043de2d`](https://github.com/python-gitlab/python-gitlab/commit/043de2d265e0e5114d1cd901f82869c003413d9b))
+* **api:** Add support for resource groups ([`5f8b8f5`](https://github.com/python-gitlab/python-gitlab/commit/5f8b8f5be901e944dfab2257f9e0cc4b2b1d2cd5))
+* **api:** Support listing pipelines triggered by pipeline schedules ([`865fa41`](https://github.com/python-gitlab/python-gitlab/commit/865fa417a20163b526596549b9afbce679fc2817))
+* Allow filtering pipelines by source ([`b6c0872`](https://github.com/python-gitlab/python-gitlab/commit/b6c08725042380d20ef5f09979bc29f2f6c1ab6f))
+* **client:** Bootstrap the http backends concept ([#2391](https://github.com/python-gitlab/python-gitlab/issues/2391)) ([`91a665f`](https://github.com/python-gitlab/python-gitlab/commit/91a665f331c3ffc260db3470ad71fde0d3b56aa2))
+* Add resource iteration events (see https://docs.gitlab.com/ee/api/resource_iteration_events.html) ([`ef5feb4`](https://github.com/python-gitlab/python-gitlab/commit/ef5feb4d07951230452a2974da729a958bdb9d6a))
+* Allow passing kwargs to Gitlab class when instantiating with `from_config` ([#2392](https://github.com/python-gitlab/python-gitlab/issues/2392)) ([`e88d34e`](https://github.com/python-gitlab/python-gitlab/commit/e88d34e38dd930b00d7bb48f0e1c39420e09fa0f))
+* Add keep_base_url when getting configuration from file ([`50a0301`](https://github.com/python-gitlab/python-gitlab/commit/50a03017f2ba8ec3252911dd1cf0ed7df42cfe50))
+
+### Fix
+* **client:** Regression - do not automatically get_next if page=# and ([`585e3a8`](https://github.com/python-gitlab/python-gitlab/commit/585e3a86c4cafa9ee73ed38676a78f3c34dbe6b2))
+* Change return value to "None" in case getattr returns None to prevent error ([`3f86d36`](https://github.com/python-gitlab/python-gitlab/commit/3f86d36218d80b293b346b37f8be5efa6455d10c))
+* **deps:** Bump requests-toolbelt to fix deprecation warning ([`faf842e`](https://github.com/python-gitlab/python-gitlab/commit/faf842e97d4858ff5ebd8ae6996e0cb3ca29881c))
+* Use the ProjectIterationManager within the Project object ([`44f05dc`](https://github.com/python-gitlab/python-gitlab/commit/44f05dc017c5496e14db82d9650c6a0110b95cf9))
+* **api:** Make description optional for releases ([`5579750`](https://github.com/python-gitlab/python-gitlab/commit/5579750335245011a3acb9456cb488f0fa1cda61))
+
+### Documentation
+* **faq:** Describe and group common errors ([`4c9a072`](https://github.com/python-gitlab/python-gitlab/commit/4c9a072b053f12f8098e4ea6fc47e3f6ab4f8b07))
+
 ## v3.12.0 (2022-11-28)
 ### Feature
 * Add support for SAML group links ([#2367](https://github.com/python-gitlab/python-gitlab/issues/2367)) ([`1020ce9`](https://github.com/python-gitlab/python-gitlab/commit/1020ce965ff0cd3bfc283d4f0ad40e41e4d1bcee))
