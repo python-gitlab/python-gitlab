@@ -547,6 +547,8 @@ def run(
         printer.display(data, verbose=True, obj=data)
     elif isinstance(data, list):
         printer.display_list(data, fields, verbose=verbose)
+    elif isinstance(data, gitlab.base.RESTObjectList):
+        printer.display_list(list(data), fields, verbose=verbose)
     elif isinstance(data, gitlab.base.RESTObject):
         printer.display(get_dict(data, fields), verbose=verbose, obj=data)
     elif isinstance(data, str):

@@ -49,6 +49,21 @@ def test_list_all_commits(gitlab_cli, project):
     assert len(ret_all.stdout) > len(ret.stdout)
 
 
+def test_list_merge_request_commits(gitlab_cli, merge_request, project):
+    cmd = [
+        "project-merge-request",
+        "commits",
+        "--project-id",
+        project.id,
+        "--iid",
+        merge_request.iid,
+    ]
+
+    ret = gitlab_cli(cmd)
+    assert ret.success
+    assert ret.stdout
+
+
 def test_commit_merge_requests(gitlab_cli, project, merge_request, wait_for_sidekiq):
     """This tests the `project-commit merge-requests` command and also tests
     that we can print the result using the `json` formatter"""
