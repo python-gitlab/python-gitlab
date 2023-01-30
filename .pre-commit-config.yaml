@@ -7,7 +7,7 @@ repos:
     hooks:
       - id: black
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v2.39.1
+    rev: v2.40.0
     hooks:
       - id: commitizen
         stages: [commit-msg]
@@ -16,7 +16,7 @@ repos:
     hooks:
       - id: flake8
   - repo: https://github.com/pycqa/isort
-    rev: 5.11.4
+    rev: 5.12.0
     hooks:
       - id: isort
   - repo: https://github.com/pycqa/pylint
@@ -47,6 +47,6 @@ repos:
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
   - repo: https://github.com/maxbrunet/pre-commit-renovate
-    rev: 34.105.2
+    rev: 34.117.1
     hooks:
       - id: renovate-config-validator
