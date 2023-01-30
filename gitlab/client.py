@@ -12,7 +12,7 @@ import gitlab
 import gitlab.config
 import gitlab.const
 import gitlab.exceptions
-from gitlab import http_backends, utils
+from gitlab import _backends, utils
 
 REDIRECT_MSG = (
     "python-gitlab detected a {status_code} ({reason!r}) redirection. You must update "
@@ -52,9 +52,9 @@ class Gitlab:
         keep_base_url: keep user-provided base URL for pagination if it
             differs from response headers
 
-    Keyward Args:
-        requests.Session session: Http Requests Session
-        RequestsBackend http_backend: Backend that will be used to make http requests
+    Keyword Args:
+        requests.Session session: HTTP Requests Session
+        RequestsBackend backend: Backend that will be used to make http requests
     """
 
     def __init__(
@@ -99,11 +99,11 @@ class Gitlab:
         self._set_auth_info()
 
         #: Create a session object for requests
-        http_backend: Type[http_backends.DefaultBackend] = kwargs.pop(
-            "http_backend", http_backends.DefaultBackend
+        _backend: Type[_backends.DefaultBackend] = kwargs.pop(
+            "backend", _backends.DefaultBackend
         )
-        self.http_backend = http_backend(**kwargs)
-        self.session = self.http_backend.client
+        self._backend = _backend(**kwargs)
+        self.session = self._backend.client
 
         self.per_page = per_page
         self.pagination = pagination
@@ -716,7 +716,7 @@ class Gitlab:
             retry_transient_errors = self.retry_transient_errors
 
         # We need to deal with json vs. data when uploading files
-        json, data, content_type = self.http_backend.prepare_send_data(
+        json, data, content_type = self._backend.prepare_send_data(
             files, post_data, raw
         )
         opts["headers"]["Content-type"] = content_type
@@ -724,7 +724,7 @@ class Gitlab:
         cur_retries = 0
         while True:
             try:
-                result = self.http_backend.http_request(
+                result = self._backend.http_request(
                     method=verb,
                     url=url,
                     json=json,
