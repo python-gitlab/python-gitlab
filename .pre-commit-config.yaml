@@ -3,24 +3,24 @@ default_language_version:
 
 repos:
   - repo: https://github.com/psf/black
-    rev: 22.10.0
+    rev: 22.12.0
     hooks:
       - id: black
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v2.37.1
+    rev: v2.40.0
     hooks:
       - id: commitizen
         stages: [commit-msg]
   - repo: https://github.com/pycqa/flake8
-    rev: 5.0.4
+    rev: 6.0.0
     hooks:
       - id: flake8
   - repo: https://github.com/pycqa/isort
-    rev: 5.10.1
+    rev: 5.12.0
     hooks:
       - id: isort
   - repo: https://github.com/pycqa/pylint
-    rev: v2.15.7
+    rev: v2.15.10
     hooks:
       - id: pylint
         additional_dependencies:
@@ -41,12 +41,12 @@ repos:
           - types-requests==2.28.11.2
           - types-setuptools==64.0.1
   - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.9.0
+    rev: v1.10.0
     hooks:
       - id: rst-backticks
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
   - repo: https://github.com/maxbrunet/pre-commit-renovate
-    rev: 34.48.0
+    rev: 34.117.1
     hooks:
       - id: renovate-config-validator

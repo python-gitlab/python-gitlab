@@ -3,18 +3,16 @@
 import os
 import re
 import time
-from typing import Any, cast, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
+from typing import Any, cast, Dict, List, Optional, Tuple, Type, TYPE_CHECKING, Union
 from urllib import parse
 
 import requests
-import requests.utils
-from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
 
 import gitlab
 import gitlab.config
 import gitlab.const
 import gitlab.exceptions
-from gitlab import utils
+from gitlab import _backends, utils
 
 REDIRECT_MSG = (
     "python-gitlab detected a {status_code} ({reason!r}) redirection. You must update "
@@ -22,7 +20,6 @@ REDIRECT_MSG = (
     "{source!r} to {target!r}"
 )
 
-RETRYABLE_TRANSIENT_ERROR_CODES = [500, 502, 503, 504] + list(range(520, 531))
 
 # https://docs.gitlab.com/ee/api/#offset-based-pagination
 _PAGINATION_URL = (
@@ -32,6 +29,7 @@ _PAGINATION_URL = (
 
 
 class Gitlab:
+
     """Represents a GitLab server connection.
 
     Args:
@@ -53,6 +51,10 @@ class Gitlab:
             or 52x responses. Defaults to False.
         keep_base_url: keep user-provided base URL for pagination if it
             differs from response headers
+
+    Keyword Args:
+        requests.Session session: HTTP Requests Session
+        RequestsBackend backend: Backend that will be used to make http requests
     """
 
     def __init__(
@@ -66,15 +68,14 @@ class Gitlab:
         http_password: Optional[str] = None,
         timeout: Optional[float] = None,
         api_version: str = "4",
-        session: Optional[requests.Session] = None,
         per_page: Optional[int] = None,
         pagination: Optional[str] = None,
         order_by: Optional[str] = None,
         user_agent: str = gitlab.const.USER_AGENT,
         retry_transient_errors: bool = False,
         keep_base_url: bool = False,
+        **kwargs: Any,
     ) -> None:
-
         self._api_version = str(api_version)
         self._server_version: Optional[str] = None
         self._server_revision: Optional[str] = None
@@ -98,7 +99,11 @@ class Gitlab:
         self._set_auth_info()
 
         #: Create a session object for requests
-        self.session = session or requests.Session()
+        _backend: Type[_backends.DefaultBackend] = kwargs.pop(
+            "backend", _backends.DefaultBackend
+        )
+        self._backend = _backend(**kwargs)
+        self.session = self._backend.client
 
         self.per_page = per_page
         self.pagination = pagination
@@ -116,6 +121,10 @@ class Gitlab:
 
         self.broadcastmessages = objects.BroadcastMessageManager(self)
         """See :class:`~gitlab.v4.objects.BroadcastMessageManager`"""
+        self.bulk_imports = objects.BulkImportManager(self)
+        """See :class:`~gitlab.v4.objects.BulkImportManager`"""
+        self.bulk_import_entities = objects.BulkImportAllEntityManager(self)
+        """See :class:`~gitlab.v4.objects.BulkImportAllEntityManager`"""
         self.ci_lint = objects.CiLintManager(self)
         """See :class:`~gitlab.v4.objects.CiLintManager`"""
         self.deploykeys = objects.DeployKeyManager(self)
@@ -630,38 +639,6 @@ class Gitlab:
                 )
             )
 
-    @staticmethod
-    def _prepare_send_data(
-        files: Optional[Dict[str, Any]] = None,
-        post_data: Optional[Union[Dict[str, Any], bytes]] = None,
-        raw: bool = False,
-    ) -> Tuple[
-        Optional[Union[Dict[str, Any], bytes]],
-        Optional[Union[Dict[str, Any], MultipartEncoder]],
-        str,
-    ]:
-        if files:
-            if post_data is None:
-                post_data = {}
-            else:
-                # booleans does not exists for data (neither for MultipartEncoder):
-                # cast to string int to avoid: 'bool' object has no attribute 'encode'
-                if TYPE_CHECKING:
-                    assert isinstance(post_data, dict)
-                for k, v in post_data.items():
-                    if isinstance(v, bool):
-                        post_data[k] = str(int(v))
-            post_data["file"] = files.get("file")
-            post_data["avatar"] = files.get("avatar")
-
-            data = MultipartEncoder(post_data)
-            return (None, data, data.content_type)
-
-        if raw and post_data:
-            return (None, post_data, "application/octet-stream")
-
-        return (post_data, None, "application/json")
-
     def http_request(
         self,
         verb: str,
@@ -739,13 +716,15 @@ class Gitlab:
             retry_transient_errors = self.retry_transient_errors
 
         # We need to deal with json vs. data when uploading files
-        json, data, content_type = self._prepare_send_data(files, post_data, raw)
+        json, data, content_type = self._backend.prepare_send_data(
+            files, post_data, raw
+        )
         opts["headers"]["Content-type"] = content_type
 
         cur_retries = 0
         while True:
             try:
-                result = self.session.request(
+                result = self._backend.http_request(
                     method=verb,
                     url=url,
                     json=json,
@@ -767,15 +746,25 @@ class Gitlab:
 
                 raise
 
-            self._check_redirects(result)
+            self._check_redirects(result.response)
 
             if 200 <= result.status_code < 300:
-                return result
+                return result.response
 
-            if (429 == result.status_code and obey_rate_limit) or (
-                result.status_code in RETRYABLE_TRANSIENT_ERROR_CODES
-                and retry_transient_errors
-            ):
+            def should_retry() -> bool:
+                if result.status_code == 429 and obey_rate_limit:
+                    return True
+
+                if not retry_transient_errors:
+                    return False
+                if result.status_code in gitlab.const.RETRYABLE_TRANSIENT_ERROR_CODES:
+                    return True
+                if result.status_code == 409 and "Resource lock" in result.reason:
+                    return True
+
+                return False
+
+            if should_retry():
                 # Response headers documentation:
                 # https://docs.gitlab.com/ee/user/admin_area/settings/user_and_ip_rate_limits.html#response-headers
                 if max_retries == -1 or cur_retries < max_retries:
@@ -940,7 +929,20 @@ class Gitlab:
 
         page = kwargs.get("page")
 
-        if iterator:
+        if iterator and page is not None:
+            arg_used_message = f"iterator={iterator}"
+            if as_list is not None:
+                arg_used_message = f"as_list={as_list}"
+            utils.warn(
+                message=(
+                    f"`{arg_used_message}` and `page={page}` were both specified. "
+                    f"`{arg_used_message}` will be ignored and a `list` will be "
+                    f"returned."
+                ),
+                category=UserWarning,
+            )
+
+        if iterator and page is None:
             # Generator requested
             return GitlabList(self, url, query_data, **kwargs)
 

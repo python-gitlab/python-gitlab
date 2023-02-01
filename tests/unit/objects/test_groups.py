@@ -316,6 +316,19 @@ def resp_delete_saml_group_link(no_content):
         yield rsps
 
 
+@pytest.fixture
+def resp_restore_group(created_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/groups/1/restore",
+            json=created_content,
+            content_type="application/json",
+            status=201,
+        )
+        yield rsps
+
+
 def test_get_group(gl, resp_groups):
     data = gl.groups.get(1)
     assert isinstance(data, gitlab.v4.objects.Group)
@@ -453,3 +466,7 @@ def test_create_saml_group_link(group, resp_create_saml_group_link):
 def test_delete_saml_group_link(group, resp_delete_saml_group_link):
     saml_group_link = group.saml_group_links.create(create_saml_group_link_request_body)
     saml_group_link.delete()
+
+
+def test_group_restore(group, resp_restore_group):
+    group.restore()

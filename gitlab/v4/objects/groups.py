@@ -287,6 +287,21 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"/groups/{self.encoded_id}/share/{group_id}"
         self.manager.gitlab.http_delete(path, **kwargs)
 
+    @cli.register_custom_action("Group")
+    @exc.on_http_error(exc.GitlabRestoreError)
+    def restore(self, **kwargs: Any) -> None:
+        """Restore a  group marked for deletion..
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabRestoreError: If the server failed to perform the request
+        """
+        path = f"/groups/{self.encoded_id}/restore"
+        self.manager.gitlab.http_post(path, **kwargs)
+
 
 class GroupManager(CRUDMixin, RESTManager):
     _path = "/groups"

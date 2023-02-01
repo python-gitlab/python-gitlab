@@ -8,6 +8,7 @@ from .badges import *
 from .boards import *
 from .branches import *
 from .broadcast_messages import *
+from .bulk_imports import *
 from .ci_lint import *
 from .clusters import *
 from .commits import *
@@ -52,6 +53,7 @@ from .projects import *
 from .push_rules import *
 from .releases import *
 from .repositories import *
+from .resource_groups import *
 from .runners import *
 from .secure_files import *
 from .settings import *

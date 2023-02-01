@@ -90,5 +90,15 @@ def release(project, tag_name):
 
 
 @pytest.fixture
+def schedule(project):
+    return project.pipelineschedules.get(1, lazy=True)
+
+
+@pytest.fixture
 def user(gl):
     return gl.users.get(1, lazy=True)
+
+
+@pytest.fixture
+def migration(gl):
+    return gl.bulk_imports.get(1, lazy=True)

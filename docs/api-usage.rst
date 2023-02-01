@@ -171,6 +171,8 @@ conflict with python or python-gitlab when using them as kwargs:
 
    gl.user_activities.list(query_parameters={'from': '2019-01-01'}, iterator=True)  # OK
 
+.. _objects:
+
 Gitlab Objects
 ==============
 
@@ -220,20 +222,15 @@ the value on the object is accepted:
       issue.my_super_awesome_feature_flag = "random_value"
       issue.save()
 
+As a dictionary
+---------------
+
 You can get a dictionary representation copy of the Gitlab Object. Modifications made to
 the dictionary will have no impact on the GitLab Object.
 
- * ``asdict()`` method. Returns a dictionary representation of the Gitlab object.
- * ``attributes`` property. Returns a dictionary representation of the Gitlab
+* ``asdict()`` method. Returns a dictionary representation of the Gitlab object.
+* ``attributes`` property. Returns a dictionary representation of the Gitlab
    object. Also returns any relevant parent object attributes.
-
-.. note::
-
-   ``attributes`` returns the parent object attributes that are defined in
-   ``object._from_parent_attrs``. What this can mean is that for example a ``ProjectIssue``
-   object will have a ``project_id`` key in the dictionary returned from ``attributes`` but
-   ``asdict()`` will not.
-
 
 .. code-block:: python
 
@@ -243,6 +240,22 @@ the dictionary will have no impact on the GitLab Object.
    # Or a dictionary representation also containing some of the parent attributes
    issue = project.issues.get(1)
    attribute_dict = issue.attributes
+
+   # The following will return the same value
+   title = issue.title
+   title = issue.attributes["title"]
+
+.. hint::
+
+   This can be used to access attributes that clash with python-gitlab's own methods or managers.
+   Note that:
+
+   ``attributes`` returns the parent object attributes that are defined in
+   ``object._from_parent_attrs``. For example, a ``ProjectIssue`` object will have a
+   ``project_id`` key in the dictionary returned from ``attributes`` but ``asdict()`` will not.
+
+As JSON
+-------
 
 You can get a JSON string represenation of the Gitlab Object. For example:
 
@@ -379,6 +392,9 @@ The generator exposes extra listing information as received from the server:
 .. note::
    Prior to python-gitlab 3.6.0 the argument ``as_list`` was used instead of
    ``iterator``.  ``as_list=False`` is the equivalent of ``iterator=True``.
+
+.. note::
+   If ``page`` and ``iterator=True`` are used together, the latter is ignored.
 
 Sudo
 ====

@@ -11,6 +11,7 @@ API examples
    gl_objects/emojis
    gl_objects/badges
    gl_objects/branches
+   gl_objects/bulk_imports
    gl_objects/messages
    gl_objects/ci_lint
    gl_objects/commits
@@ -51,6 +52,7 @@ API examples
    gl_objects/remote_mirrors
    gl_objects/repositories
    gl_objects/repository_tags
+   gl_objects/resource_groups
    gl_objects/search
    gl_objects/secure_files
    gl_objects/settings

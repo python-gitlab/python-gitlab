@@ -81,6 +81,7 @@ from .project_access_tokens import ProjectAccessTokenManager  # noqa: F401
 from .push_rules import ProjectPushRulesManager  # noqa: F401
 from .releases import ProjectReleaseManager  # noqa: F401
 from .repositories import RepositoryMixin
+from .resource_groups import ProjectResourceGroupManager
 from .runners import ProjectRunnerManager  # noqa: F401
 from .secure_files import ProjectSecureFileManager  # noqa: F401
 from .snippets import ProjectSnippetManager  # noqa: F401
@@ -207,6 +208,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     protectedtags: ProjectProtectedTagManager
     pushrules: ProjectPushRulesManager
     releases: ProjectReleaseManager
+    resource_groups: ProjectResourceGroupManager
     remote_mirrors: "ProjectRemoteMirrorManager"
     repositories: ProjectRegistryRepositoryManager
     runners: ProjectRunnerManager
@@ -665,6 +667,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             "name",
             "path",
             "allow_merge_on_skipped_pipeline",
+            "only_allow_merge_if_all_status_checks_passed",
             "analytics_access_level",
             "approvals_before_merge",
             "auto_cancel_pending_pipelines",
@@ -678,6 +681,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             "builds_access_level",
             "ci_config_path",
             "container_expiration_policy_attributes",
+            "container_registry_access_level",
             "container_registry_enabled",
             "default_branch",
             "description",
@@ -706,11 +710,17 @@ class ProjectManager(CRUDMixin, RESTManager):
             "requirements_access_level",
             "printing_merge_request_link_enabled",
             "public_builds",
+            "releases_access_level",
+            "environments_access_level",
+            "feature_flags_access_level",
+            "infrastructure_access_level",
+            "monitor_access_level",
             "remove_source_branch_after_merge",
             "repository_access_level",
             "repository_storage",
             "request_access_enabled",
             "resolve_outdated_diff_discussions",
+            "security_and_compliance_access_level",
             "shared_runners_enabled",
             "show_default_award_emojis",
             "snippets_access_level",
@@ -731,6 +741,7 @@ class ProjectManager(CRUDMixin, RESTManager):
     _update_attrs = RequiredOptional(
         optional=(
             "allow_merge_on_skipped_pipeline",
+            "only_allow_merge_if_all_status_checks_passed",
             "analytics_access_level",
             "approvals_before_merge",
             "auto_cancel_pending_pipelines",
@@ -745,22 +756,31 @@ class ProjectManager(CRUDMixin, RESTManager):
             "ci_config_path",
             "ci_default_git_depth",
             "ci_forward_deployment_enabled",
+            "ci_allow_fork_pipelines_to_run_in_parent_project",
+            "ci_separated_caches",
             "container_expiration_policy_attributes",
+            "container_registry_access_level",
             "container_registry_enabled",
             "default_branch",
             "description",
             "emails_disabled",
+            "enforce_auth_checks_on_uploads",
             "external_authorization_classification_label",
             "forking_access_level",
             "import_url",
             "issues_access_level",
             "issues_enabled",
+            "issues_template",
             "jobs_enabled",
+            "keep_latest_artifact",
             "lfs_enabled",
+            "merge_commit_template",
             "merge_method",
             "merge_pipelines_enabled",
             "merge_requests_access_level",
             "merge_requests_enabled",
+            "merge_requests_template",
+            "merge_trains_enabled",
             "mirror_overwrites_diverged_branches",
             "mirror_trigger_builds",
             "mirror_user_id",
@@ -777,16 +797,24 @@ class ProjectManager(CRUDMixin, RESTManager):
             "restrict_user_defined_variables",
             "path",
             "public_builds",
+            "releases_access_level",
+            "environments_access_level",
+            "feature_flags_access_level",
+            "infrastructure_access_level",
+            "monitor_access_level",
             "remove_source_branch_after_merge",
             "repository_access_level",
             "repository_storage",
             "request_access_enabled",
             "resolve_outdated_diff_discussions",
+            "security_and_compliance_access_level",
             "service_desk_enabled",
             "shared_runners_enabled",
             "show_default_award_emojis",
             "snippets_access_level",
             "snippets_enabled",
+            "issue_branch_template",
+            "squash_commit_template",
             "squash_option",
             "suggestion_commit_message",
             "tag_list",
@@ -794,8 +822,6 @@ class ProjectManager(CRUDMixin, RESTManager):
             "visibility",
             "wiki_access_level",
             "wiki_enabled",
-            "issues_template",
-            "merge_requests_template",
         ),
     )
     _list_filters = (
