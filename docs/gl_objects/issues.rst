@@ -130,7 +130,7 @@ Close / reopen an issue::
 Delete an issue (admin or project owner only)::
 
     project.issues.delete(issue_id)
-    # pr
+    # or
     issue.delete()
 
 
