@@ -42,6 +42,7 @@ class ProjectProtectedBranchManager(NoUpdateMixin, RESTManager):
             "push_access_level",
             "merge_access_level",
             "unprotect_access_level",
+            "allow_force_push",
             "allowed_to_push",
             "allowed_to_merge",
             "allowed_to_unprotect",
