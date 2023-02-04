@@ -58,6 +58,7 @@ disable = [
     "too-many-instance-attributes",
     "too-many-lines",
     "too-many-locals",
+    "too-many-public-methods",
     "too-many-statements",
     "unsubscriptable-object",
 ]

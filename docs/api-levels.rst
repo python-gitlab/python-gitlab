@@ -60,6 +60,7 @@ The available methods are:
 * ``http_get()``
 * ``http_post()``
 * ``http_put()``
+* ``http_patch()``
 * ``http_delete()``
 * ``http_list()`` (a wrapper around ``http_get`` handling pagination, including with lazy generators)
 * ``http_head()`` (only returns the header dictionary)
