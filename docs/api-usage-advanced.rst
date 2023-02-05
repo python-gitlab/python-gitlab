@@ -45,7 +45,7 @@ python-gitlab:
        'https': os.environ.get('https_proxy'),
        'http': os.environ.get('http_proxy'),
    }
-   gl = gitlab.gitlab(url, token, api_version=4, session=session)
+   gl = gitlab.Gitlab(url, token, api_version=4, session=session)
 
 Reference:
 https://requests.readthedocs.io/en/latest/user/advanced/#proxies
@@ -74,7 +74,7 @@ The following sample illustrates how to use a client-side certificate:
 
    session = requests.Session()
    session.cert = ('/path/to/client.cert', '/path/to/client.key')
-   gl = gitlab.gitlab(url, token, api_version=4, session=session)
+   gl = gitlab.Gitlab(url, token, api_version=4, session=session)
 
 Reference:
 https://requests.readthedocs.io/en/latest/user/advanced/#client-side-certificates
@@ -96,7 +96,7 @@ supplying the ``obey_rate_limit`` argument.
    import gitlab
    import requests
 
-   gl = gitlab.gitlab(url, token, api_version=4)
+   gl = gitlab.Gitlab(url, token, api_version=4)
    gl.projects.list(get_all=True, obey_rate_limit=False)
 
 If you do not disable the rate-limiting feature, you can supply a custom value
@@ -109,7 +109,7 @@ throttled, you can set this parameter to -1. This parameter is ignored if
    import gitlab
    import requests
 
-   gl = gitlab.gitlab(url, token, api_version=4)
+   gl = gitlab.Gitlab(url, token, api_version=4)
    gl.projects.list(get_all=True, max_retries=12)
 
 .. warning::
@@ -139,7 +139,7 @@ exception is raised for these errors.
    import gitlab
    import requests
 
-   gl = gitlab.gitlab(url, token, api_version=4)
+   gl = gitlab.Gitlab(url, token, api_version=4)
    gl.projects.list(get_all=True, retry_transient_errors=True)
 
 The default ``retry_transient_errors`` can also be set on the ``Gitlab`` object
@@ -149,7 +149,7 @@ and overridden by individual API calls.
 
    import gitlab
    import requests
-   gl = gitlab.gitlab(url, token, api_version=4, retry_transient_errors=True)
+   gl = gitlab.Gitlab(url, token, api_version=4, retry_transient_errors=True)
    gl.projects.list(get_all=True)                               # retries due to default value
    gl.projects.list(get_all=True, retry_transient_errors=False) # does not retry
 
@@ -166,7 +166,7 @@ parameter to that API invocation:
 
    import gitlab
 
-   gl = gitlab.gitlab(url, token, api_version=4)
+   gl = gitlab.Gitlab(url, token, api_version=4)
    gl.projects.import_github(ACCESS_TOKEN, 123456, "root", timeout=120.0)
 
 Typing
@@ -183,7 +183,7 @@ on your own, such as for nested API responses and ``Union`` return types. For ex
 
    import gitlab
 
-   gl = gitlab.gitlab(url, token, api_version=4)
+   gl = gitlab.Gitlab(url, token, api_version=4)
    license = gl.get_license()
 
    if TYPE_CHECKING:
