@@ -810,6 +810,56 @@ def test_put_request_invalid_data(gl):
 
 
 @responses.activate
+def test_patch_request(gl):
+    url = "http://localhost/api/v4/projects"
+    responses.add(
+        method=responses.PATCH,
+        url=url,
+        json={"name": "project1"},
+        status=200,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+    )
+
+    result = gl.http_patch("/projects")
+    assert isinstance(result, dict)
+    assert result["name"] == "project1"
+    assert responses.assert_call_count(url, 1) is True
+
+
+@responses.activate
+def test_patch_request_404(gl):
+    url = "http://localhost/api/v4/not_there"
+    responses.add(
+        method=responses.PATCH,
+        url=url,
+        json=[],
+        status=404,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+    )
+
+    with pytest.raises(GitlabHttpError):
+        gl.http_patch("/not_there")
+    assert responses.assert_call_count(url, 1) is True
+
+
+@responses.activate
+def test_patch_request_invalid_data(gl):
+    url = "http://localhost/api/v4/projects"
+    responses.add(
+        method=responses.PATCH,
+        url=url,
+        body='["name": "project1"]',
+        content_type="application/json",
+        status=200,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+    )
+
+    with pytest.raises(GitlabParsingError):
+        gl.http_patch("/projects")
+    assert responses.assert_call_count(url, 1) is True
+
+
+@responses.activate
 def test_delete_request(gl):
     url = "http://localhost/api/v4/projects"
     responses.add(
