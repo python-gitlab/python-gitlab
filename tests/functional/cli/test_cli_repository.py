@@ -67,17 +67,20 @@ def test_list_merge_request_commits(gitlab_cli, merge_request, project):
 def test_commit_merge_requests(gitlab_cli, project, merge_request, wait_for_sidekiq):
     """This tests the `project-commit merge-requests` command and also tests
     that we can print the result using the `json` formatter"""
-    # create and then merge a merge-request
-    mr = merge_request(source_branch="test_commit_merge_requests")
-    merge_result = mr.merge(should_remove_source_branch=True)
+    # Merge the MR first
+    merge_result = merge_request.merge(should_remove_source_branch=True)
     wait_for_sidekiq(timeout=60)
+
     # Wait until it is merged
-    mr_iid = mr.iid
+    mr = None
+    mr_iid = merge_request.iid
     for _ in range(60):
         mr = project.mergerequests.get(mr_iid)
         if mr.merged_at is not None:
             break
         time.sleep(0.5)
+
+    assert mr is not None
     assert mr.merged_at is not None
     time.sleep(0.5)
     wait_for_sidekiq(timeout=60)

@@ -33,12 +33,11 @@ def test_merge_requests(project):
 
 
 def test_merge_requests_get(project, merge_request):
-    new_mr = merge_request(source_branch="test_get")
-    mr_iid = new_mr.iid
-    mr = project.mergerequests.get(mr_iid)
-    assert mr.iid == mr_iid
-    mr = project.mergerequests.get(str(mr_iid))
-    assert mr.iid == mr_iid
+    mr = project.mergerequests.get(merge_request.iid)
+    assert mr.iid == merge_request.iid
+
+    mr = project.mergerequests.get(str(merge_request.iid))
+    assert mr.iid == merge_request.iid
 
 
 @pytest.mark.gitlab_premium
@@ -54,10 +53,8 @@ def test_merge_requests_list_approver_ids(project):
 
 
 def test_merge_requests_get_lazy(project, merge_request):
-    new_mr = merge_request(source_branch="test_get")
-    mr_iid = new_mr.iid
-    mr = project.mergerequests.get(mr_iid, lazy=True)
-    assert mr.iid == mr_iid
+    mr = project.mergerequests.get(merge_request.iid, lazy=True)
+    assert mr.iid == merge_request.iid
 
 
 def test_merge_request_discussion(project):
@@ -181,14 +178,15 @@ def test_merge_request_reset_approvals(gitlab_url, project, wait_for_sidekiq):
     assert mr.reset_approvals()
 
 
-def test_cancel_merge_when_pipeline_succeeds(project, merge_request, wait_for_sidekiq):
-    mr = merge_request(source_branch="test_merge_request_merge", create_pipeline=True)
+def test_cancel_merge_when_pipeline_succeeds(
+    project, merge_request_with_pipeline, wait_for_sidekiq
+):
     wait_for_sidekiq(timeout=60)
     # Set to merge when the pipeline succeeds, which should never happen
-    mr.merge(merge_when_pipeline_succeeds=True)
+    merge_request_with_pipeline.merge(merge_when_pipeline_succeeds=True)
     wait_for_sidekiq(timeout=60)
 
-    mr = project.mergerequests.get(mr.iid)
+    mr = project.mergerequests.get(merge_request_with_pipeline.iid)
     assert mr.merged_at is None
     assert mr.merge_when_pipeline_succeeds is True
     cancel = mr.cancel_merge_when_pipeline_succeeds()
@@ -196,11 +194,10 @@ def test_cancel_merge_when_pipeline_succeeds(project, merge_request, wait_for_si
 
 
 def test_merge_request_merge(project, merge_request, wait_for_sidekiq):
-    mr = merge_request(source_branch="test_merge_request_merge")
-    mr.merge()
+    merge_request.merge()
     wait_for_sidekiq(timeout=60)
 
-    mr = project.mergerequests.get(mr.iid)
+    mr = project.mergerequests.get(merge_request.iid)
     assert mr.merged_at is not None
     assert mr.merge_when_pipeline_succeeds is False
     with pytest.raises(gitlab.GitlabMRClosedError):
@@ -215,28 +212,26 @@ def test_merge_request_should_remove_source_branch(
     https://github.com/python-gitlab/python-gitlab/issues/1120 is fixed.
     Bug reported that they could not use 'should_remove_source_branch' in
     mr.merge() call"""
-
-    source_branch = "remove_source_branch"
-    mr = merge_request(source_branch=source_branch)
-
-    mr.merge(should_remove_source_branch=True)
-
+    merge_request.merge(should_remove_source_branch=True)
     wait_for_sidekiq(timeout=60)
 
     # Wait until it is merged
-    mr_iid = mr.iid
+    mr = None
+    mr_iid = merge_request.iid
     for _ in range(60):
         mr = project.mergerequests.get(mr_iid)
         if mr.merged_at is not None:
             break
         time.sleep(0.5)
+
+    assert mr is not None
     assert mr.merged_at is not None
     time.sleep(0.5)
     wait_for_sidekiq(timeout=60)
 
     # Ensure we can NOT get the MR branch
     with pytest.raises(gitlab.exceptions.GitlabGetError):
-        result = project.branches.get(source_branch)
+        result = project.branches.get(merge_request.source_branch)
         # Help to debug in case the expected exception doesn't happen.
         import pprint
 
@@ -253,51 +248,44 @@ def test_merge_request_large_commit_message(
     Bug reported that very long 'merge_commit_message' in mr.merge() would
     cause an error: 414 Request too large
     """
-
-    source_branch = "large_commit_message"
-    mr = merge_request(source_branch=source_branch)
-
     merge_commit_message = "large_message\r\n" * 1_000
     assert len(merge_commit_message) > 10_000
 
-    mr.merge(
+    merge_request.merge(
         merge_commit_message=merge_commit_message, should_remove_source_branch=False
     )
 
     wait_for_sidekiq(timeout=60)
 
     # Wait until it is merged
-    mr_iid = mr.iid
+    mr = None
+    mr_iid = merge_request.iid
     for _ in range(60):
         mr = project.mergerequests.get(mr_iid)
         if mr.merged_at is not None:
             break
         time.sleep(0.5)
+
+    assert mr is not None
     assert mr.merged_at is not None
     time.sleep(0.5)
 
     # Ensure we can get the MR branch
-    project.branches.get(source_branch)
+    project.branches.get(merge_request.source_branch)
 
 
 def test_merge_request_merge_ref(merge_request) -> None:
-    source_branch = "merge_ref_test"
-    mr = merge_request(source_branch=source_branch)
-
-    response = mr.merge_ref()
+    response = merge_request.merge_ref()
     assert response and "commit_id" in response
 
 
 def test_merge_request_merge_ref_should_fail(
     project, merge_request, wait_for_sidekiq
 ) -> None:
-    source_branch = "merge_ref_test2"
-    mr = merge_request(source_branch=source_branch)
-
     # Create conflict
     project.files.create(
         {
-            "file_path": f"README.{source_branch}",
+            "file_path": f"README.{merge_request.source_branch}",
             "branch": project.default_branch,
             "content": "Different initial content",
             "commit_message": "Another commit in main branch",
@@ -307,5 +295,5 @@ def test_merge_request_merge_ref_should_fail(
 
     # Check for non-existing merge_ref for MR with conflicts
     with pytest.raises(gitlab.exceptions.GitlabGetError):
-        response = mr.merge_ref()
+        response = merge_request.merge_ref()
         assert "commit_id" not in response
