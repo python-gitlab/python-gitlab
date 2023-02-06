@@ -5,10 +5,14 @@
     "group:allNonMajor",
     "schedule:weekly"
   ],
+  "ignorePaths": [
+    "**/.venv/**",
+    "**/node_modules/**"
+  ],
   "regexManagers": [
     {
       "fileMatch": [
-        "^tests\\/functional\\/fixtures\\/.env$"
+        "(^|/)tests\\/functional\\/fixtures\\/\\.env$"
       ],
       "matchStrings": [
         "GITLAB_TAG=(?<currentValue>.*?)\n"
