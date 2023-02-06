@@ -9,7 +9,6 @@ class GitlabError(Exception):
         response_code: Optional[int] = None,
         response_body: Optional[bytes] = None,
     ) -> None:
-
         Exception.__init__(self, error_message)
         # Http status code
         self.response_code = response_code

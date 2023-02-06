@@ -96,7 +96,6 @@ def reset_gitlab(gl: gitlab.Gitlab) -> None:
         helpers.safe_delete(project)
 
     for group in gl.groups.list():
-
         # skip deletion of a descendant group to prevent scenarios where parent group
         # gets deleted leaving a dangling descendant whose deletion will throw 404s.
         if group.parent_id:
@@ -243,7 +242,6 @@ def gitlab_token(
     docker_services,
     fixture_dir: pathlib.Path,
 ) -> str:
-
     start_time = time.perf_counter()
     logging.info("Waiting for GitLab container to become ready.")
     docker_services.wait_until_responsive(
