@@ -376,8 +376,8 @@ def project(gl):
 
 
 @pytest.fixture(scope="function")
-def merge_request(project, wait_for_sidekiq):
-    """Fixture used to create a merge_request.
+def make_merge_request(project, wait_for_sidekiq):
+    """Fixture factory used to create a merge_request.
 
     It will create a branch, add a commit to the branch, and then create a
     merge request against project.default_branch. The MR will be returned.
@@ -391,7 +391,7 @@ def merge_request(project, wait_for_sidekiq):
 
     to_delete = []
 
-    def _merge_request(*, source_branch: str, create_pipeline: bool = False):
+    def _make_merge_request(*, source_branch: str, create_pipeline: bool = False):
         # Wait for processes to be done before we start...
         # NOTE(jlvillal): Sometimes the CI would give a "500 Internal Server
         # Error". Hoping that waiting until all other processes are done will
@@ -450,10 +450,22 @@ test:
         to_delete.extend([mr, mr_branch])
         return mr
 
-    yield _merge_request
+    yield _make_merge_request
 
     for object in to_delete:
         helpers.safe_delete(object)
+
+
+@pytest.fixture(scope="function")
+def merge_request(make_merge_request, project):
+    _id = uuid.uuid4().hex
+    return make_merge_request(source_branch=f"branch-{_id}")
+
+
+@pytest.fixture(scope="function")
+def merge_request_with_pipeline(make_merge_request, project):
+    _id = uuid.uuid4().hex
+    return make_merge_request(source_branch=f"branch-{_id}", create_pipeline=True)
 
 
 @pytest.fixture(scope="module")
