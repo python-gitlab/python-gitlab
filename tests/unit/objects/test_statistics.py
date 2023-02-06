@@ -22,7 +22,6 @@ content = {
 
 @pytest.fixture
 def resp_application_statistics():
-
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.GET,
