@@ -313,7 +313,7 @@ def main() -> None:
         if "--help" in sys.argv or "-h" in sys.argv:
             parser.print_help()
             sys.exit(0)
-        sys.exit(e)
+        sys.exit(str(e))
     # We only support v4 API at this time
     if config.api_version not in ("4",):  # dead code # pragma: no cover
         raise ModuleNotFoundError(f"gitlab.v{config.api_version}.cli")
