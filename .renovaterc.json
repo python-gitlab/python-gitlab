@@ -9,6 +9,9 @@
     "**/.venv/**",
     "**/node_modules/**"
   ],
+  "pip_requirements": {
+    "fileMatch": ["^requirements(-[\\w]*)?\\.txt$"]
+  },
   "regexManagers": [
     {
       "fileMatch": [
