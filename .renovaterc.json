@@ -20,7 +20,7 @@
       "matchStrings": [
         "GITLAB_TAG=(?<currentValue>.*?)\n"
       ],
-      "depNameTemplate": "gitlab/gitlab-ce",
+      "depNameTemplate": "gitlab/gitlab-ee",
       "datasourceTemplate": "docker",
       "versioningTemplate": "loose"
     }
