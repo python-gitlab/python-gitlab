@@ -38,7 +38,8 @@ Create a badge::
 
 Update a badge::
 
-    badge.image_link = new_link
+    badge.image_url = new_image_url
+    badge.link_url = new_link_url
     badge.save()
 
 Delete a badge::
