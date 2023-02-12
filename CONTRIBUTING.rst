@@ -12,50 +12,47 @@ You can contribute to the project in multiple ways:
 Development workflow
 --------------------
 
-Before contributing, please make sure you have `pre-commit <https://pre-commit.com>`_
-installed and configured. This will help automate adhering to code style and commit
-message guidelines described below:
+Before contributing, install `tox <https://tox.wiki/>`_ and `pre-commit <https://pre-commit.com>`_:
 
 .. code-block:: bash
 
+  pip3 install --user tox pre-commit
   cd python-gitlab/
-  pip3 install --user pre-commit
   pre-commit install -t pre-commit -t commit-msg --install-hooks
 
-Please provide your patches as GitHub pull requests. Thanks!
+This will help automate adhering to code style and commit message guidelines described below.
 
-Rerunning failed CI workflows
------------------------------
+If you don't like using ``pre-commit``, feel free to skip installing it, but please **ensure all your
+commit messages and code pass all default tox checks** outlined below before pushing your code.
 
-* Ask the maintainers to add the ``ok-to-test`` label on the PR
-* Post a comment in the PR
-   ``/rerun-all`` - rerun all failed workflows
-
-   ``/rerun-workflow <workflow name>`` - rerun a specific failed workflow
-
-The functionality is provided by ``rerun-action <https://github.com/marketplace/actions/rerun-actions>``
+When you're ready or if you'd like to get feedback, please provide your patches as Pull Requests on GitHub.
 
 Commit message guidelines
 -------------------------
 
-We enforce commit messages to be formatted using the `conventional-changelog <https://github.com/angular/angular/blob/main/CONTRIBUTING.md#commit>`_.
-This leads to more readable messages that are easy to follow when looking through the project history.
+We enforce commit messages to be formatted using the `Conventional Commits <https://www.conventionalcommits.org/>`_.
+This creates a clearer project history, and automates our `Releases`_ and changelog generation. Examples:
 
-Code-Style
-----------
+* Bad:   ``Added support for release links``
+* Good:  ``feat(api): add support for release links``
 
-We use black as code formatter, so you'll need to format your changes using the
-`black code formatter
-<https://github.com/python/black>`_. Pre-commit hooks will validate/format your code
-when committing. You can then stage any changes ``black`` added if the commit failed.
+* Bad:   ``Update documentation for projects``
+* Good:  ``docs(projects): update example for saving project attributes``
+
+Coding Style
+------------
+
+We use `black<https://github.com/python/black>`_ and `isort <https://pycqa.github.io/isort/>`_
+to format our code, so you'll need to make sure you use it when committing.
+
+Pre-commit hooks will validate and format your code, so you can then stage any changes done if the commit failed.
 
 To format your code according to our guidelines before committing, run:
 
 .. code-block:: bash
 
   cd python-gitlab/
-  pip3 install --user black
-  black .
+  tox -e black,isort
 
 Running unit tests
 ------------------
@@ -72,18 +69,17 @@ You need to install ``tox`` (``pip3 install tox``) to run tests and lint checks 
 
 .. code-block:: bash
 
-   # run unit tests using your installed python3, and all lint checks:
-   tox -s
-
-   # run unit tests for all supported python3 versions, and all lint checks:
+   # run unit tests using all python3 versions available on your system, and all lint checks:
    tox
 
-   # run tests in one environment only:
-   tox -epy38
+   # run unit tests in one python environment only (useful for quick testing during development):
+   tox -e py311
 
-   # build the documentation, the result will be generated in
-   # build/sphinx/html/
-   tox -edocs
+   # build the documentation - the result will be generated in build/sphinx/html/:
+   tox -e docs
+
+   # List all available tox environments
+   tox list
 
 Running integration tests
 -------------------------
@@ -144,6 +140,17 @@ To cleanup the environment delete the container:
 
    docker rm -f gitlab-test
    docker rm -f gitlab-runner-test
+
+Rerunning failed CI workflows
+-----------------------------
+
+* Ask the maintainers to add the ``ok-to-test`` label on the PR
+* Post a comment in the PR
+   ``/rerun-all`` - rerun all failed workflows
+
+   ``/rerun-workflow <workflow name>`` - rerun a specific failed workflow
+
+The functionality is provided by ``rerun-action <https://github.com/marketplace/actions/rerun-actions>``
 
 Releases
 --------
