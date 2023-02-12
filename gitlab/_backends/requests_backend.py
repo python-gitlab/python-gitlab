@@ -1,7 +1,16 @@
 from __future__ import annotations
 
 import dataclasses
-from typing import Any, BinaryIO, Dict, Optional, TYPE_CHECKING, Union
+from typing import (
+    Any,
+    BinaryIO,
+    Callable,
+    Dict,
+    Iterator,
+    Optional,
+    TYPE_CHECKING,
+    Union,
+)
 
 import requests
 from requests import PreparedRequest
@@ -53,6 +62,11 @@ class SendData:
                 f"`json` and `data` are mutually exclusive. Only one can be set. "
                 f"json={self.json!r}  data={self.data!r}"
             )
+
+
+class _StdoutStream:
+    def __call__(self, chunk: Any) -> None:
+        print(chunk)
 
 
 class RequestsResponse(protocol.BackendResponse):
@@ -125,6 +139,29 @@ class RequestsBackend(protocol.Backend):
             assert not isinstance(post_data, BinaryIO)
 
         return SendData(json=post_data, content_type="application/json")
+
+    @staticmethod
+    def response_content(
+        response: requests.Response,
+        streamed: bool,
+        action: Optional[Callable[[bytes], None]],
+        chunk_size: int,
+        *,
+        iterator: bool,
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
+        if iterator:
+            return response.iter_content(chunk_size=chunk_size)
+
+        if streamed is False:
+            return response.content
+
+        if action is None:
+            action = _StdoutStream()
+
+        for chunk in response.iter_content(chunk_size=chunk_size):
+            if chunk:
+                action(chunk)
+        return None
 
     def http_request(
         self,

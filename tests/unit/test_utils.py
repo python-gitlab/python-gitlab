@@ -3,8 +3,6 @@ import logging
 import warnings
 
 import pytest
-import requests
-import responses
 
 from gitlab import types, utils
 
@@ -21,25 +19,6 @@ from gitlab import types, utils
 def test_get_content_type(content_type, expected_type):
     parsed_type = utils.get_content_type(content_type)
     assert parsed_type == expected_type
-
-
-@responses.activate
-def test_response_content(capsys):
-    responses.add(
-        method="GET",
-        url="https://example.com",
-        status=200,
-        body="test",
-        content_type="application/octet-stream",
-    )
-
-    resp = requests.get("https://example.com", stream=True)
-    utils.response_content(
-        resp, streamed=True, action=None, chunk_size=1024, iterator=False
-    )
-
-    captured = capsys.readouterr()
-    assert "test" in captured.out
 
 
 class TestEncodedId:

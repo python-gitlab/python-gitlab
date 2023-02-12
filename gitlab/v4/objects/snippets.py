@@ -4,7 +4,6 @@ import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab import utils
 from gitlab.base import RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin, UserAgentDetailMixin
 from gitlab.types import RequiredOptional
@@ -61,7 +60,7 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(
+        return self.manager.gitlab._backend.response_content(
             result, streamed, action, chunk_size, iterator=iterator
         )
 
@@ -154,7 +153,7 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(
+        return self.manager.gitlab._backend.response_content(
             result, streamed, action, chunk_size, iterator=iterator
         )
 

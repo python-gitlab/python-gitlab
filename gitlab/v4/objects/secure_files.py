@@ -9,7 +9,6 @@ import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab import utils
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import NoUpdateMixin, ObjectDeleteMixin
 from gitlab.types import FileAttribute, RequiredOptional
@@ -54,7 +53,7 @@ class ProjectSecureFile(ObjectDeleteMixin, RESTObject):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(
+        return self.manager.gitlab._backend.response_content(
             result, streamed, action, chunk_size, iterator=iterator
         )
 

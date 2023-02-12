@@ -1,6 +1,6 @@
 import abc
 import sys
-from typing import Any, Dict, Optional, Union
+from typing import Any, Callable, Dict, Iterator, Optional, Union
 
 import requests
 from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
@@ -17,6 +17,17 @@ class BackendResponse(Protocol):
 
 
 class Backend(Protocol):
+    @staticmethod
+    @abc.abstractmethod
+    def response_content(
+        response: requests.Response,
+        streamed: bool,
+        action: Optional[Callable[[bytes], None]],
+        chunk_size: int,
+        *,
+        iterator: bool,
+    ) -> Optional[Union[bytes, Iterator[Any]]]: ...
+
     @abc.abstractmethod
     def http_request(
         self,
