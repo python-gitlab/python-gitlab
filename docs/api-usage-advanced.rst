@@ -6,10 +6,23 @@ Using a custom session
 ----------------------
 
 python-gitlab relies on ``requests.Session`` objects to perform all the
-HTTP requests to the Gitlab servers.
+HTTP requests to the GitLab servers.
 
-You can provide your own ``Session`` object with custom configuration when
-you create a ``Gitlab`` object.
+You can provide a custom session to create ``gitlab.Gitlab`` objects:
+
+.. code-block:: python
+
+   import gitlab
+   import requests
+
+   session = requests.Session()
+   gl = gitlab.Gitlab(session=session)
+
+   # or when instantiating from configuration files
+   gl = gitlab.Gitlab.from_config('somewhere', ['/tmp/gl.cfg'], session=session)
+
+Reference:
+https://requests.readthedocs.io/en/latest/user/advanced/#session-objects
 
 Context manager
 ---------------
@@ -28,24 +41,34 @@ properly closed when you exit a ``with`` block:
    The context manager will also close the custom ``Session`` object you might
    have used to build the ``Gitlab`` instance.
 
-Proxy configuration
--------------------
+netrc authentication
+--------------------
 
-The following sample illustrates how to define a proxy configuration when using
-python-gitlab:
+python-gitlab reads credentials from ``.netrc`` files via the ``requests`` backend by default,
+which may override authentication headers you set on your client.
+
+For more granular control, you can disable this `Using a custom session`_
+and explicitly setting ``trust_env=False`` as described in the ``requests`` documentation.
 
 .. code-block:: python
 
-   import os
    import gitlab
    import requests
 
-   session = requests.Session()
-   session.proxies = {
-       'https': os.environ.get('https_proxy'),
-       'http': os.environ.get('http_proxy'),
-   }
-   gl = gitlab.Gitlab(url, token, api_version=4, session=session)
+   session = requests.Session(trust_env=False)
+   gl = gitlab.Gitlab(session=session)
+
+Reference:
+https://requests.readthedocs.io/en/latest/user/authentication/#netrc-authentication
+
+Proxy configuration
+-------------------
+
+python-gitlab accepts the standard ``http_proxy``, ``https_proxy`` and ``no_proxy``
+environment variables via the ``requests`` backend. Uppercase variables are also supported.
+
+For more granular control, you can also explicitly set proxies by `Using a custom session`_
+as described in the ``requests`` documentation.
 
 Reference:
 https://requests.readthedocs.io/en/latest/user/advanced/#proxies
@@ -188,15 +211,3 @@ on your own, such as for nested API responses and ``Union`` return types. For ex
 
    if TYPE_CHECKING:
       assert isinstance(license["plan"], str)
-
-Custom session (Bring your own Session) 
----------------------------------------
-
-You can use configuration files and a custom session to create 
-``gitlab.Gitlab`` objects:
-
-.. code-block:: python
-
-   gl = gitlab.Gitlab.from_config('somewhere', ['/tmp/gl.cfg'], session=custom_session)
-
-
