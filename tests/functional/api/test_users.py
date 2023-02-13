@@ -12,7 +12,7 @@ def test_create_user(gl, fixture_dir):
             "email": "foo@bar.com",
             "username": "foo",
             "name": "foo",
-            "password": "foo_password",
+            "password": "E4596f8be406Bc3a14a4ccdb1df80587#!",
             "avatar": open(fixture_dir / "avatar.png", "rb"),
         }
     )
@@ -65,7 +65,7 @@ def test_delete_user(gl, wait_for_sidekiq):
             "email": "delete-user@test.com",
             "username": "delete-user",
             "name": "delete-user",
-            "password": "delete-user-pass",
+            "password": "E4596f8be406Bc3a14a4ccdb1df80587#!",
         }
     )
 
@@ -100,7 +100,7 @@ def test_list_multiple_users(gl, user):
             "email": second_email,
             "username": second_username,
             "name": "Foo Bar",
-            "password": "foobar_password",
+            "password": "E4596f8be406Bc3a14a4ccdb1df80587#!",
         }
     )
     assert gl.users.list(search=second_user.username)[0].id == second_user.id
