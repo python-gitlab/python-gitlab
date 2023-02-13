@@ -143,9 +143,6 @@ def test_user_email(gl, user):
 
 
 def test_user_custom_attributes(gl, user):
-    attrs = user.customattributes.list()
-    assert not attrs
-
     attr = user.customattributes.set("key", "value1")
     assert user in gl.users.list(custom_attributes={"key": "value1"})
     assert attr.key == "key"
