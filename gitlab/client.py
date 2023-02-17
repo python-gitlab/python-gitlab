@@ -749,6 +749,14 @@ class Gitlab:
             self._check_redirects(result.response)
 
             if 200 <= result.status_code < 300:
+                if gitlab.__version__ < "4.0.0":
+                    utils.warn(
+                        message=(
+                            "\nReturn type of gl.http_request() is changeing "
+                            "from version 4.0.0 to BackendResponse."
+                        ),
+                        category=DeprecationWarning,
+                    )
                 return result.response
 
             def should_retry() -> bool:
