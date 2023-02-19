@@ -209,7 +209,32 @@ def check_is_alive():
     return _check
 
 
-@pytest.fixture
+def wait_for_sidekiq_function(
+    *,
+    gl_instance: gitlab.Gitlab,
+    timeout: int = 30,
+    step: float = 0.5,
+    allow_fail: bool = False,
+) -> bool:
+    """A function that is called to wait for the sidekiq process to finish. As
+    opposed to the fixture."""
+    for count in range(timeout):
+        time.sleep(step)
+        busy = False
+        process_metrics = gl_instance.sidekiq.process_metrics()
+        assert isinstance(process_metrics, dict)
+        processes = process_metrics["processes"]
+        for process in processes:
+            if process["busy"]:
+                busy = True
+        if not busy:
+            return True
+        logging.info(f"sidekiq busy {count} of {timeout}")
+    assert allow_fail, "sidekiq process should have terminated but did not."
+    return False
+
+
+@pytest.fixture(scope="function")
 def wait_for_sidekiq(gl):
     """
     Return a helper function to wait until there are no busy sidekiq processes.
@@ -218,18 +243,9 @@ def wait_for_sidekiq(gl):
     """
 
     def _wait(timeout: int = 30, step: float = 0.5, allow_fail: bool = False) -> bool:
-        for count in range(timeout):
-            time.sleep(step)
-            busy = False
-            processes = gl.sidekiq.process_metrics()["processes"]
-            for process in processes:
-                if process["busy"]:
-                    busy = True
-            if not busy:
-                return True
-            logging.info(f"sidekiq busy {count} of {timeout}")
-        assert allow_fail, "sidekiq process should have terminated but did not."
-        return False
+        return wait_for_sidekiq_function(
+            gl_instance=gl, timeout=timeout, step=step, allow_fail=allow_fail
+        )
 
     return _wait
 
@@ -529,6 +545,8 @@ def user(gl):
 
     yield user
 
+    result = wait_for_sidekiq_function(gl_instance=gl, timeout=60)
+    assert result is True, "sidekiq process should have terminated but did not"
     # Use `hard_delete=True` or a 'Ghost User' may be created.
     helpers.safe_delete(user, hard_delete=True)
 
