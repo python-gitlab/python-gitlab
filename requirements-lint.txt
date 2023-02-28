@@ -2,7 +2,7 @@
 argcomplete==2.0.0
 black==23.1.0
 commitizen==2.40.0
-flake8==5.0.4
+flake8==6.0.0
 isort==5.10.1
 mypy==1.0.0
 pylint==2.15.3
