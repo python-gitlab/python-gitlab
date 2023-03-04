@@ -716,10 +716,8 @@ class Gitlab:
             retry_transient_errors = self.retry_transient_errors
 
         # We need to deal with json vs. data when uploading files
-        json, data, content_type = self._backend.prepare_send_data(
-            files, post_data, raw
-        )
-        opts["headers"]["Content-type"] = content_type
+        send_data = self._backend.prepare_send_data(files, post_data, raw)
+        opts["headers"]["Content-type"] = send_data.content_type
 
         cur_retries = 0
         while True:
@@ -727,8 +725,8 @@ class Gitlab:
                 result = self._backend.http_request(
                     method=verb,
                     url=url,
-                    json=json,
-                    data=data,
+                    json=send_data.json,
+                    data=send_data.data,
                     params=params,
                     timeout=timeout,
                     verify=verify,
