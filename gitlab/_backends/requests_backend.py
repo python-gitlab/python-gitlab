@@ -1,12 +1,27 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Optional, Tuple, TYPE_CHECKING, Union
+import dataclasses
+from typing import Any, Dict, Optional, TYPE_CHECKING, Union
 
 import requests
 from requests.structures import CaseInsensitiveDict
 from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
 
 from . import protocol
+
+
+@dataclasses.dataclass
+class SendData:
+    content_type: str
+    data: Optional[Union[Dict[str, Any], MultipartEncoder]] = None
+    json: Optional[Union[Dict[str, Any], bytes]] = None
+
+    def __post_init__(self) -> None:
+        if self.json is not None and self.data is not None:
+            raise ValueError(
+                f"`json` and `data` are mutually exclusive. Only one can be set. "
+                f"json={self.json!r}  data={self.data!r}"
+            )
 
 
 class RequestsResponse(protocol.BackendResponse):
@@ -50,11 +65,7 @@ class RequestsBackend(protocol.Backend):
         files: Optional[Dict[str, Any]] = None,
         post_data: Optional[Union[Dict[str, Any], bytes]] = None,
         raw: bool = False,
-    ) -> Tuple[
-        Optional[Union[Dict[str, Any], bytes]],
-        Optional[Union[Dict[str, Any], MultipartEncoder]],
-        str,
-    ]:
+    ) -> SendData:
         if files:
             if post_data is None:
                 post_data = {}
@@ -70,12 +81,12 @@ class RequestsBackend(protocol.Backend):
             post_data["avatar"] = files.get("avatar")
 
             data = MultipartEncoder(post_data)
-            return (None, data, data.content_type)
+            return SendData(data=data, content_type=data.content_type)
 
         if raw and post_data:
-            return (None, post_data, "application/octet-stream")
+            return SendData(data=post_data, content_type="application/octet-stream")
 
-        return (post_data, None, "application/json")
+        return SendData(json=post_data, content_type="application/json")
 
     def http_request(
         self,
