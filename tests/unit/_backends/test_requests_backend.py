@@ -25,10 +25,21 @@ class TestSendData:
 
 
 class TestRequestsBackend:
-    def test_prepare_send_data_str_parentid(self) -> None:
-        file = "12345"
-        files = {"file": ("file.tar.gz", file, "application/octet-stream")}
-        post_data = {"parent_id": "12"}
+    @pytest.mark.parametrize(
+        "test_data,expected",
+        [
+            (False, "0"),
+            (True, "1"),
+            ("12", "12"),
+            (12, "12"),
+            (12.0, "12.0"),
+            (complex(-2, 7), "(-2+7j)"),
+        ],
+    )
+    def test_prepare_send_data_non_strings(self, test_data, expected) -> None:
+        assert isinstance(expected, str)
+        files = {"file": ("file.tar.gz", "12345", "application/octet-stream")}
+        post_data = {"test_data": test_data}
 
         result = requests_backend.RequestsBackend.prepare_send_data(
             files=files, post_data=post_data, raw=False
@@ -36,3 +47,5 @@ class TestRequestsBackend:
         assert result.json is None
         assert result.content_type.startswith("multipart/form-data")
         assert isinstance(result.data, MultipartEncoder)
+        assert isinstance(result.data.fields["test_data"], str)
+        assert result.data.fields["test_data"] == expected

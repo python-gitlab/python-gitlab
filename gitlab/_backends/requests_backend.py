@@ -70,17 +70,21 @@ class RequestsBackend(protocol.Backend):
             if post_data is None:
                 post_data = {}
             else:
-                # booleans does not exists for data (neither for MultipartEncoder):
-                # cast to string int to avoid: 'bool' object has no attribute 'encode'
+                # When creating a `MultipartEncoder` instance with data-types
+                # which don't have an `encode` method it will cause an error:
+                #       object has no attribute 'encode'
+                # So convert common non-string types into strings.
                 if TYPE_CHECKING:
                     assert isinstance(post_data, dict)
                 for k, v in post_data.items():
                     if isinstance(v, bool):
-                        post_data[k] = str(int(v))
+                        v = int(v)
+                    if isinstance(v, (complex, float, int)):
+                        post_data[k] = str(v)
             post_data["file"] = files.get("file")
             post_data["avatar"] = files.get("avatar")
 
-            data = MultipartEncoder(post_data)
+            data = MultipartEncoder(fields=post_data)
             return SendData(data=data, content_type=data.content_type)
 
         if raw and post_data:
