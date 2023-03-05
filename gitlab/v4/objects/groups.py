@@ -378,7 +378,7 @@ class GroupManager(CRUDMixin, RESTManager):
         file: BinaryIO,
         path: str,
         name: str,
-        parent_id: Optional[str] = None,
+        parent_id: Optional[Union[int, str]] = None,
         **kwargs: Any,
     ) -> Union[Dict[str, Any], requests.Response]:
         """Import a group from an archive file.
@@ -399,7 +399,7 @@ class GroupManager(CRUDMixin, RESTManager):
             A representation of the import status.
         """
         files = {"file": ("file.tar.gz", file, "application/octet-stream")}
-        data = {"path": path, "name": name}
+        data: Dict[str, Any] = {"path": path, "name": name}
         if parent_id is not None:
             data["parent_id"] = parent_id
 
