@@ -272,6 +272,8 @@ def _get_parser() -> argparse.ArgumentParser:
 
 
 def _parse_value(v: Any) -> Any:
+    if isinstance(v, str) and v.startswith("@@"):
+        return v[1:]
     if isinstance(v, str) and v.startswith("@"):
         # If the user-provided value starts with @, we try to read the file
         # path provided after @ as the real value. Exit on any error.

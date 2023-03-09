@@ -305,6 +305,17 @@ command line. This is handy for values containing new lines for instance:
    EOF
    $ gitlab project create --name SuperProject --description @/tmp/description
 
+It you want to explicitly pass argument starting with "@" - double it:
+
+.. code-block:: console
+  
+   $ gitlab project-tag list --project-id somenamespace/myproject
+   ...
+   name: @at-started-tag
+   ...
+   $ gitlab project-tag delete --project-id somenamespace/myproject --name '@@at-started-tag'
+
+
 Enabling shell autocompletion
 =============================
 
