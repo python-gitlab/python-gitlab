@@ -34,16 +34,15 @@
       "versioning": "regex:^v(?<major>\\d+)(\\.(?<minor>\\d+)\\.(?<patch>\\d+))?$"
     },
     {
+      "packageName": "argcomplete",
+      "enabled": false
+    },
+    {
       "packagePatterns": [
         "^gitlab\/gitlab-.+$"
       ],
-      "automerge": true
-    },
-    {
-      "matchPackagePrefixes": [
-        "types-"
-      ],
-      "groupName": "typing dependencies"
+      "automerge": true,
+      "groupName": "GitLab"
     }
   ]
 }
