@@ -305,7 +305,7 @@ command line. This is handy for values containing new lines for instance:
    EOF
    $ gitlab project create --name SuperProject --description @/tmp/description
 
-It you want to explicitly pass argument starting with "@" - double it:
+It you want to explicitly pass an argument starting with ``@``,  you can escape it using ``@@``:
 
 .. code-block:: console
   
