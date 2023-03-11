@@ -34,6 +34,10 @@
       "versioning": "regex:^v(?<major>\\d+)(\\.(?<minor>\\d+)\\.(?<patch>\\d+))?$"
     },
     {
+      "packageName": "argcomplete",
+      "enabled": false
+    },
+    {
       "packagePatterns": [
         "^gitlab\/gitlab-.+$"
       ],
