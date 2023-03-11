@@ -37,13 +37,8 @@
       "packagePatterns": [
         "^gitlab\/gitlab-.+$"
       ],
-      "automerge": true
-    },
-    {
-      "matchPackagePrefixes": [
-        "types-"
-      ],
-      "groupName": "typing dependencies"
+      "automerge": true,
+      "groupName": "GitLab"
     }
   ]
 }
