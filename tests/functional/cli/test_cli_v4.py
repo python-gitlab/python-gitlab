@@ -562,6 +562,26 @@ def test_create_project_with_values_from_file(gitlab_cli, tmpdir):
     assert description in ret.stdout
 
 
+def test_create_project_with_values_at_prefixed(gitlab_cli, tmpdir):
+    name = "gitlab-project-at-prefixed"
+    description = "@at-prefixed"
+    at_prefixed = f"@{description}"
+
+    cmd = [
+        "-v",
+        "project",
+        "create",
+        "--name",
+        name,
+        "--description",
+        at_prefixed,
+    ]
+    ret = gitlab_cli(cmd)
+
+    assert ret.success
+    assert description in ret.stdout
+
+
 def test_create_project_deploy_token(gitlab_cli, project):
     name = "project-token"
     username = "root"
