@@ -8,6 +8,20 @@ import responses
 from gitlab import types, utils
 
 
+@pytest.mark.parametrize(
+    "content_type,expected_type",
+    [
+        ("application/json", "application/json"),
+        ("application/json; charset=utf-8", "application/json"),
+        ("", "text/plain"),
+        (None, "text/plain"),
+    ],
+)
+def test_get_content_type(content_type, expected_type):
+    parsed_type = utils.get_content_type(content_type)
+    assert parsed_type == expected_type
+
+
 @responses.activate
 def test_response_content(capsys):
     responses.add(

@@ -1,3 +1,4 @@
+import email.message
 import pathlib
 import traceback
 import urllib.parse
@@ -12,6 +13,13 @@ from gitlab import types
 class _StdoutStream:
     def __call__(self, chunk: Any) -> None:
         print(chunk)
+
+
+def get_content_type(content_type: Optional[str]) -> str:
+    message = email.message.Message()
+    message["content-type"] = content_type
+
+    return message.get_content_type()
 
 
 def response_content(
