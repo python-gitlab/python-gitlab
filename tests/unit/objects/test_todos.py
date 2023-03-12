@@ -1,20 +1,43 @@
 """
 GitLab API: https://docs.gitlab.com/ce/api/todos.html
 """
-
-import json
-
 import pytest
 import responses
 
 from gitlab.v4.objects import Todo
 
 
-@pytest.fixture()
-def json_content(fixture_dir):
-    with open(fixture_dir / "todo.json", "r", encoding="utf-8") as f:
-        todo_content = f.read()
-        return json.loads(todo_content)
+@pytest.fixture
+def json_content():
+    return [
+        {
+            "id": 102,
+            "project": {
+                "id": 2,
+                "name": "Gitlab Ce",
+                "name_with_namespace": "Gitlab Org / Gitlab Ce",
+                "path": "gitlab-ce",
+                "path_with_namespace": "gitlab-org/gitlab-ce",
+            },
+            "author": {
+                "name": "Administrator",
+                "username": "root",
+                "id": 1,
+            },
+            "action_name": "marked",
+            "target_type": "MergeRequest",
+            "target": {
+                "id": 34,
+                "iid": 7,
+                "project_id": 2,
+                "assignee": {
+                    "name": "Administrator",
+                    "username": "root",
+                    "id": 1,
+                },
+            },
+        }
+    ]
 
 
 @pytest.fixture
