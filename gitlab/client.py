@@ -12,7 +12,7 @@ import gitlab
 import gitlab.config
 import gitlab.const
 import gitlab.exceptions
-from gitlab import _backends, utils
+from gitlab import _backends, oauth, utils
 
 REDIRECT_MSG = (
     "python-gitlab detected a {status_code} ({reason!r}) redirection. You must update "
@@ -41,8 +41,8 @@ class Gitlab:
             the value is a string, it is the path to a CA file used for
             certificate validation.
         timeout: Timeout to use for requests to the GitLab server.
-        http_username: Username for HTTP authentication
-        http_password: Password for HTTP authentication
+        http_username: Username for OAuth ROPC flow (deprecated, use oauth_credentials)
+        http_password: Password for OAuth ROPC flow (deprecated, use oauth_credentials)
         api_version: Gitlab API version to use (support for 4 only)
         pagination: Can be set to 'keyset' to use keyset pagination
         order_by: Set order_by globally
@@ -51,6 +51,7 @@ class Gitlab:
             or 52x responses. Defaults to False.
         keep_base_url: keep user-provided base URL for pagination if it
             differs from response headers
+        oauth_credentials: Password credentials for authenticating via OAuth ROPC flow
 
     Keyword Args:
         requests.Session session: HTTP Requests Session
@@ -74,6 +75,8 @@ class Gitlab:
         user_agent: str = gitlab.const.USER_AGENT,
         retry_transient_errors: bool = False,
         keep_base_url: bool = False,
+        *,
+        oauth_credentials: Optional[oauth.PasswordCredentials] = None,
         **kwargs: Any,
     ) -> None:
         self._api_version = str(api_version)
@@ -96,7 +99,7 @@ class Gitlab:
         self.http_password = http_password
         self.oauth_token = oauth_token
         self.job_token = job_token
-        self._set_auth_info()
+        self.oauth_credentials = oauth_credentials
 
         #: Create a session object for requests
         _backend: Type[_backends.DefaultBackend] = kwargs.pop(
@@ -105,6 +108,7 @@ class Gitlab:
         self._backend = _backend(**kwargs)
         self.session = self._backend.client
 
+        self._set_auth_info()
         self.per_page = per_page
         self.pagination = pagination
         self.order_by = order_by
@@ -522,21 +526,47 @@ class Gitlab:
             self.headers.pop("Authorization", None)
             self.headers["PRIVATE-TOKEN"] = self.private_token
             self.headers.pop("JOB-TOKEN", None)
+            return
+
+        if not self.oauth_credentials and (self.http_username and self.http_password):
+            utils.warn(
+                "Passing http_username and http_password is deprecated and will be "
+                "removed in a future version.\nPlease use the OAuth ROPC flow with"
+                "(gitlab.oauth.PasswordCredentials) if you need password-based"
+                "authentication. See https://docs.gitlab.com/ee/api/oauth2.html"
+                "#resource-owner-password-credentials-flow for more details.",
+                category=DeprecationWarning,
+            )
+            self.oauth_credentials = oauth.PasswordCredentials(
+                self.http_username, self.http_password
+            )
+
+        if self.oauth_credentials:
+            post_data = {
+                "grant_type": self.oauth_credentials.grant_type,
+                "scope": self.oauth_credentials.scope,
+                "username": self.oauth_credentials.username,
+                "password": self.oauth_credentials.password,
+            }
+            response = self.http_post(
+                f"{self._base_url}/oauth/token", post_data=post_data
+            )
+            if isinstance(response, dict):
+                self.oauth_token = response["access_token"]
+            else:
+                self.oauth_token = response.json()["access_token"]
+            self._http_auth = self.oauth_credentials.basic_auth
 
         if self.oauth_token:
             self.headers["Authorization"] = f"Bearer {self.oauth_token}"
             self.headers.pop("PRIVATE-TOKEN", None)
             self.headers.pop("JOB-TOKEN", None)
+            return
 
         if self.job_token:
             self.headers.pop("Authorization", None)
             self.headers.pop("PRIVATE-TOKEN", None)
             self.headers["JOB-TOKEN"] = self.job_token
-
-        if self.http_username:
-            self._http_auth = requests.auth.HTTPBasicAuth(
-                self.http_username, self.http_password
-            )
 
     @staticmethod
     def enable_debug() -> None:

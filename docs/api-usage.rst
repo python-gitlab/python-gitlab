@@ -84,14 +84,32 @@ Note on password authentication
 
 GitLab has long removed password-based basic authentication. You can currently still use the
 `resource owner password credentials <https://docs.gitlab.com/ee/api/oauth2.html#resource-owner-password-credentials-flow>`_
-flow to obtain an OAuth token.
+flow and python-gitlab will obtain an OAuth token for you when instantiated.
 
 However, we do not recommend this as it will not work with 2FA enabled, and GitLab is removing
-ROPC-based flows without client IDs in a future release. We recommend you obtain tokens for
-automated workflows as linked above or obtain a session cookie from your browser.
+ROPC-based flows without client credentials in a future release. We recommend you obtain tokens for
+automated workflows.
 
-For a python example of password authentication using the ROPC-based OAuth2
-flow, see `this Ansible snippet <https://github.com/ansible-collections/community.general/blob/1c06e237c8100ac30d3941d5a3869a4428ba2974/plugins/module_utils/gitlab.py#L86-L92>`_.
+.. code-block:: python
+
+   import gitlab
+   from gitlab.oauth import PasswordCredentials
+
+   oauth_credentials = PasswordCredentials("username", "password")
+   gl = gitlab.Gitlab(oauth_credentials=oauth_credentials)
+
+   # Define a specific OAuth scope
+   oauth_credentials = PasswordCredentials("username", "password", scope="read_api")
+   gl = gitlab.Gitlab(oauth_credentials=oauth_credentials)
+
+   # Use with client credentials
+   oauth_credentials = PasswordCredentials(
+      "username",
+      "password",
+      client_id="your-client-id",
+      client_secret="your-client-secret",
+   )
+   gl = gitlab.Gitlab(oauth_credentials=oauth_credentials)
 
 Managers
 ========

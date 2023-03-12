@@ -1,8 +1,35 @@
 import pytest
-import requests
+import responses
 
 from gitlab import Gitlab
 from gitlab.config import GitlabConfigParser
+from gitlab.oauth import PasswordCredentials
+
+
+# /oauth/token endpoint might be missing correct content-type header
+@pytest.fixture(params=["application/json", None])
+def resp_oauth_token(gl: Gitlab, request: pytest.FixtureRequest):
+    ropc_payload = {
+        "username": "foo",
+        "password": "bar",
+        "grant_type": "password",
+        "scope": "api",
+    }
+    ropc_response = {
+        "access_token": "test-token",
+        "token_type": "bearer",
+        "expires_in": 7200,
+    }
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url=f"{gl._base_url}/oauth/token",
+            status=201,
+            match=[responses.matchers.json_params_matcher(ropc_payload)],
+            json=ropc_response,
+            content_type=request.param,
+        )
+        yield rsps
 
 
 def test_invalid_auth_args():
@@ -42,7 +69,6 @@ def test_private_token_auth():
     assert gl.private_token == "private_token"
     assert gl.oauth_token is None
     assert gl.job_token is None
-    assert gl._http_auth is None
     assert "Authorization" not in gl.headers
     assert gl.headers["PRIVATE-TOKEN"] == "private_token"
     assert "JOB-TOKEN" not in gl.headers
@@ -53,7 +79,6 @@ def test_oauth_token_auth():
     assert gl.private_token is None
     assert gl.oauth_token == "oauth_token"
     assert gl.job_token is None
-    assert gl._http_auth is None
     assert gl.headers["Authorization"] == "Bearer oauth_token"
     assert "PRIVATE-TOKEN" not in gl.headers
     assert "JOB-TOKEN" not in gl.headers
@@ -64,26 +89,38 @@ def test_job_token_auth():
     assert gl.private_token is None
     assert gl.oauth_token is None
     assert gl.job_token == "CI_JOB_TOKEN"
-    assert gl._http_auth is None
     assert "Authorization" not in gl.headers
     assert "PRIVATE-TOKEN" not in gl.headers
     assert gl.headers["JOB-TOKEN"] == "CI_JOB_TOKEN"
 
 
-def test_http_auth():
+def test_oauth_resource_password_auth(resp_oauth_token):
+    oauth_credentials = PasswordCredentials("foo", "bar")
     gl = Gitlab(
         "http://localhost",
-        private_token="private_token",
-        http_username="foo",
-        http_password="bar",
         api_version="4",
+        oauth_credentials=oauth_credentials,
     )
-    assert gl.private_token == "private_token"
-    assert gl.oauth_token is None
+    assert gl.oauth_token == "test-token"
+    assert gl.private_token is None
     assert gl.job_token is None
-    assert isinstance(gl._http_auth, requests.auth.HTTPBasicAuth)
-    assert gl.headers["PRIVATE-TOKEN"] == "private_token"
-    assert "Authorization" not in gl.headers
+    assert "Authorization" in gl.headers
+    assert "PRIVATE-TOKEN" not in gl.headers
+
+
+def test_oauth_resource_password_auth_with_legacy_params_warns(resp_oauth_token):
+    with pytest.warns(DeprecationWarning, match="use the OAuth ROPC flow"):
+        gl = Gitlab(
+            "http://localhost",
+            http_username="foo",
+            http_password="bar",
+            api_version="4",
+        )
+    assert gl.oauth_token == "test-token"
+    assert gl.private_token is None
+    assert gl.job_token is None
+    assert "Authorization" in gl.headers
+    assert "PRIVATE-TOKEN" not in gl.headers
 
 
 @pytest.mark.parametrize(
