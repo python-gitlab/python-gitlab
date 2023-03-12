@@ -1,6 +1,31 @@
 import pytest
 
 import gitlab
+from tests.unit import helpers
+
+
+@pytest.fixture
+def fake_manager(gl):
+    return helpers.FakeManager(gl)
+
+
+@pytest.fixture
+def fake_manager_with_parent(gl, fake_manager):
+    return helpers.FakeManagerWithParent(
+        gl, parent=helpers.FakeParent(manager=fake_manager, attrs={})
+    )
+
+
+@pytest.fixture
+def fake_object(fake_manager):
+    return helpers.FakeObject(fake_manager, {"attr1": "foo", "alist": [1, 2, 3]})
+
+
+@pytest.fixture
+def fake_object_with_parent(fake_manager_with_parent):
+    return helpers.FakeObject(
+        fake_manager_with_parent, {"attr1": "foo", "alist": [1, 2, 3]}
+    )
 
 
 @pytest.fixture
