@@ -140,7 +140,7 @@ class RepositoryMixin(_RestObjectBase):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(
+        return self.manager.gitlab._backend.response_content(
             result, streamed, action, chunk_size, iterator=iterator
         )
 
@@ -242,7 +242,7 @@ class RepositoryMixin(_RestObjectBase):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(
+        return self.manager.gitlab._backend.response_content(
             result, streamed, action, chunk_size, iterator=iterator
         )
 

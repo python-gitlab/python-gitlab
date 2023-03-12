@@ -111,7 +111,7 @@ class ProjectArtifactManager(RESTManager):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(
+        return self.gitlab._backend.response_content(
             result, streamed, action, chunk_size, iterator=iterator
         )
 
@@ -162,6 +162,6 @@ class ProjectArtifactManager(RESTManager):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(
+        return self.gitlab._backend.response_content(
             result, streamed, action, chunk_size, iterator=iterator
         )

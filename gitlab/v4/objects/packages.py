@@ -11,7 +11,6 @@ import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab import utils
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import DeleteMixin, GetMixin, ListMixin, ObjectDeleteMixin
 
@@ -136,7 +135,7 @@ class GenericPackageManager(RESTManager):
         result = self.gitlab.http_get(path, streamed=streamed, raw=True, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(
+        return self.gitlab._backend.response_content(
             result, streamed, action, chunk_size, iterator=iterator
         )
 

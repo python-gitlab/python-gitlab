@@ -2,39 +2,20 @@ import pathlib
 import traceback
 import urllib.parse
 import warnings
-from typing import Any, Callable, Dict, Iterator, Optional, Tuple, Type, Union
+from typing import Any, Dict, Iterator, Optional, Tuple, Type, Union
 
-import requests
-
-from gitlab import types
-
-
-class _StdoutStream:
-    def __call__(self, chunk: Any) -> None:
-        print(chunk)
+from gitlab import _backends, types
 
 
 def response_content(
-    response: requests.Response,
-    streamed: bool,
-    action: Optional[Callable[[bytes], None]],
-    chunk_size: int,
-    *,
-    iterator: bool,
+    *args: Any, **kwargs: Any
 ) -> Optional[Union[bytes, Iterator[Any]]]:
-    if iterator:
-        return response.iter_content(chunk_size=chunk_size)
-
-    if streamed is False:
-        return response.content
-
-    if action is None:
-        action = _StdoutStream()
-
-    for chunk in response.iter_content(chunk_size=chunk_size):
-        if chunk:
-            action(chunk)
-    return None
+    warn(
+        "`utils.response_content()` is deprecated and will be removed in a future"
+        "version.\nUse the current backend's `response_content()` method instead.",
+        category=DeprecationWarning,
+    )
+    return _backends.DefaultBackend.response_content(*args, **kwargs)
 
 
 def _transform_types(

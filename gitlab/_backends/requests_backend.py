@@ -1,12 +1,17 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Optional, Tuple, TYPE_CHECKING, Union
+from typing import Any, Callable, Dict, Iterator, Optional, Tuple, TYPE_CHECKING, Union
 
 import requests
 from requests.structures import CaseInsensitiveDict
 from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
 
 from . import protocol
+
+
+class _StdoutStream:
+    def __call__(self, chunk: Any) -> None:
+        print(chunk)
 
 
 class RequestsResponse(protocol.BackendResponse):
@@ -76,6 +81,29 @@ class RequestsBackend(protocol.Backend):
             return (None, post_data, "application/octet-stream")
 
         return (post_data, None, "application/json")
+
+    @staticmethod
+    def response_content(
+        response: requests.Response,
+        streamed: bool,
+        action: Optional[Callable[[bytes], None]],
+        chunk_size: int,
+        *,
+        iterator: bool,
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
+        if iterator:
+            return response.iter_content(chunk_size=chunk_size)
+
+        if streamed is False:
+            return response.content
+
+        if action is None:
+            action = _StdoutStream()
+
+        for chunk in response.iter_content(chunk_size=chunk_size):
+            if chunk:
+                action(chunk)
+        return None
 
     def http_request(
         self,
