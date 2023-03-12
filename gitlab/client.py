@@ -828,12 +828,9 @@ class Gitlab:
         result = self.http_request(
             "get", path, query_data=query_data, streamed=streamed, **kwargs
         )
+        content_type = utils.get_content_type(result.headers.get("Content-Type"))
 
-        if (
-            result.headers["Content-Type"] == "application/json"
-            and not streamed
-            and not raw
-        ):
+        if content_type == "application/json" and not streamed and not raw:
             try:
                 json_result = result.json()
                 if TYPE_CHECKING:
@@ -1030,8 +1027,10 @@ class Gitlab:
             raw=raw,
             **kwargs,
         )
+        content_type = utils.get_content_type(result.headers.get("Content-Type"))
+
         try:
-            if result.headers.get("Content-Type", None) == "application/json":
+            if content_type == "application/json":
                 json_result = result.json()
                 if TYPE_CHECKING:
                     assert isinstance(json_result, dict)
