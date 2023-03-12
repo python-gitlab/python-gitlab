@@ -6,7 +6,32 @@ from typing import Optional
 import requests
 import responses
 
+from gitlab import base
+
 MATCH_EMPTY_QUERY_PARAMS = [responses.matchers.query_param_matcher({})]
+
+
+class FakeObject(base.RESTObject):
+    pass
+
+
+class OtherFakeObject(FakeObject):
+    _id_attr = "foo"
+
+
+class FakeManager(base.RESTManager):
+    _path = "/tests"
+    _obj_cls = FakeObject
+
+
+class FakeParent(FakeObject):
+    id = 42
+
+
+class FakeManagerWithParent(base.RESTManager):
+    _path = "/tests/{test_id}/cases"
+    _obj_cls = FakeObject
+    _from_parent_attrs = {"test_id": "id"}
 
 
 # NOTE: The function `httmock_response` and the class `Headers` is taken from
