@@ -21,7 +21,6 @@ ignore_errors = true
 module = [
     "tests.functional.*",
     "tests.functional.api.*",
-    "tests.meta.*",
     "tests.smoke.*",
 ]
 disable_error_code = ["no-untyped-def"]
