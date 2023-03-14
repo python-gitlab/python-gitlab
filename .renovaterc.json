@@ -43,6 +43,15 @@
       ],
       "automerge": true,
       "groupName": "GitLab"
+    },
+    {
+      "matchPackageNames": [
+        "pre-commit/mirrors-mypy"
+      ],
+      "matchManagers": [
+        "pre-commit"
+      ],
+      "versioning": "pep440"
     }
   ]
 }
