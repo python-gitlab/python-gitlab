@@ -207,6 +207,10 @@ Get the list of iteration events::
 
     iteration_events = issue.resource_iteration_events.list()
 
+Get the list of weight events::
+
+    weight_events = issue.resource_weight_events.list()
+
 Issue links
 ===========
 
