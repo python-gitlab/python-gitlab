@@ -336,6 +336,7 @@ class GroupManager(CRUDMixin, RESTManager):
             "lfs_enabled",
             "request_access_enabled",
             "parent_id",
+            "shared_with_groups",
             "default_branch_protection",
             "shared_runners_minutes_limit",
             "extra_shared_runners_minutes_limit",
