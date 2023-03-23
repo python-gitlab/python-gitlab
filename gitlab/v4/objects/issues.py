@@ -27,6 +27,7 @@ from .events import (  # noqa: F401
     ProjectIssueResourceLabelEventManager,
     ProjectIssueResourceMilestoneEventManager,
     ProjectIssueResourceStateEventManager,
+    ProjectIssueResourceWeightEventManager,
 )
 from .notes import ProjectIssueNoteManager  # noqa: F401
 
@@ -121,6 +122,7 @@ class ProjectIssue(
     resourcemilestoneevents: ProjectIssueResourceMilestoneEventManager
     resourcestateevents: ProjectIssueResourceStateEventManager
     resource_iteration_events: ProjectIssueResourceIterationEventManager
+    resource_weight_events: ProjectIssueResourceWeightEventManager
 
     @cli.register_custom_action("ProjectIssue", ("to_project_id",))
     @exc.on_http_error(exc.GitlabUpdateError)

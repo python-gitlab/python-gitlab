@@ -66,12 +66,23 @@ def test_issue_links(project, issue):
     assert not issue.links.list()
 
 
-def test_issue_events(issue):
+def test_issue_label_events(issue):
     events = issue.resourcelabelevents.list()
     assert isinstance(events, list)
 
     event = issue.resourcelabelevents.get(events[0].id)
     assert isinstance(event, gitlab.v4.objects.ProjectIssueResourceLabelEvent)
+
+
+def test_issue_weight_events(issue):
+    issue.weight = 13
+    issue.save()
+
+    events = issue.resource_weight_events.list()
+    assert isinstance(events, list)
+
+    event = issue.resource_weight_events.get(events[0].id)
+    assert isinstance(event, gitlab.v4.objects.ProjectIssueResourceWeightEvent)
 
 
 def test_issue_milestones(project, milestone):
