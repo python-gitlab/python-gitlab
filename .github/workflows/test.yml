@@ -48,7 +48,7 @@ jobs:
               version: "3.11"
               toxenv: py310,smoke
     steps:
-      - uses: actions/checkout@v3.3.0
+      - uses: actions/checkout@v3.5.0
       - name: Set up Python ${{ matrix.python.version }}
         uses: actions/setup-python@v4.5.0
         with:
@@ -66,7 +66,7 @@ jobs:
       matrix:
         toxenv: [api_func_v4, cli_func_v4]
     steps:
-      - uses: actions/checkout@v3.3.0
+      - uses: actions/checkout@v3.5.0
       - name: Set up Python
         uses: actions/setup-python@v4.5.0
         with:
@@ -87,7 +87,7 @@ jobs:
   coverage:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3.3.0
+      - uses: actions/checkout@v3.5.0
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4.5.0
         with:
@@ -128,7 +128,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [dist]
     steps:
-    - uses: actions/checkout@v3.3.0
+    - uses: actions/checkout@v3.5.0
     - name: Set up Python
       uses: actions/setup-python@v4.5.0
       with:
