@@ -533,7 +533,7 @@ class Gitlab:
             self.headers.pop("PRIVATE-TOKEN", None)
             self.headers["JOB-TOKEN"] = self.job_token
 
-        if self.http_username:
+        if self.http_username and self.http_password:
             self._http_auth = requests.auth.HTTPBasicAuth(
                 self.http_username, self.http_password
             )
