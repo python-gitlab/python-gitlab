@@ -31,6 +31,14 @@ List personal access tokens from other user_id (admin only)::
 
     access_tokens = gl.personal_access_tokens.list(user_id=25)
 
+Get a personal access token by id::
+
+    gl.personal_access_tokens.get(123)
+
+Get the personal access token currently used::
+
+    gl.personal_access_tokens.get("self")
+
 Revoke a personal access token fetched via list::
 
     access_token = access_tokens[0]
