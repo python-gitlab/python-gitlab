@@ -144,7 +144,7 @@ List pipeline schedules::
 
 Get a single schedule::
 
-    sched = projects.pipelineschedules.get(schedule_id)
+    sched = project.pipelineschedules.get(schedule_id)
 
 Create a new schedule::
 
