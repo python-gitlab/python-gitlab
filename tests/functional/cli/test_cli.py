@@ -182,3 +182,13 @@ def test_cli_fields_in_list(gitlab_cli, project_file, format, loader):
 
     content = loader(ret.stdout.strip())
     assert ["default_branch" in item for item in content]
+
+
+def test_cli_display_without_fields_warns(gitlab_cli, project):
+    cmd = ["project-ci-lint", "get", "--project-id", project.id]
+
+    ret = gitlab_cli(cmd)
+    assert ret.success
+
+    assert "No default fields to show" in ret.stdout
+    assert "merged_yaml" not in ret.stdout
