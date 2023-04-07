@@ -482,23 +482,35 @@ class LegacyPrinter:
             if obj._id_attr:
                 attrs.pop(obj._id_attr)
             display_dict(attrs, padding)
+            return
 
-        else:
-            if TYPE_CHECKING:
-                assert isinstance(obj, gitlab.base.RESTObject)
-            if obj._id_attr:
-                id = getattr(obj, obj._id_attr)
-                print(f"{obj._id_attr.replace('_', '-')}: {id}")
-            if obj._repr_attr:
-                value = getattr(obj, obj._repr_attr, "None") or "None"
-                value = value.replace("\r", "").replace("\n", " ")
-                # If the attribute is a note (ProjectCommitComment) then we do
-                # some modifications to fit everything on one line
-                line = f"{obj._repr_attr}: {value}"
-                # ellipsize long lines (comments)
-                if len(line) > 79:
-                    line = f"{line[:76]}..."
-                print(line)
+        lines = []
+
+        if TYPE_CHECKING:
+            assert isinstance(obj, gitlab.base.RESTObject)
+
+        if obj._id_attr:
+            id = getattr(obj, obj._id_attr)
+            lines.append(f"{obj._id_attr.replace('_', '-')}: {id}")
+        if obj._repr_attr:
+            value = getattr(obj, obj._repr_attr, "None") or "None"
+            value = value.replace("\r", "").replace("\n", " ")
+            # If the attribute is a note (ProjectCommitComment) then we do
+            # some modifications to fit everything on one line
+            line = f"{obj._repr_attr}: {value}"
+            # ellipsize long lines (comments)
+            if len(line) > 79:
+                line = f"{line[:76]}..."
+            lines.append(line)
+
+        if lines:
+            print("\n".join(lines))
+            return
+
+        print(
+            f"No default fields to show for {obj!r}. "
+            f"Please use  '--verbose' or the JSON/YAML formatters."
+        )
 
     def display_list(
         self,
