@@ -1106,6 +1106,8 @@ class ProjectManager(CRUDMixin, RESTManager):
         repo_id: int,
         target_namespace: str,
         new_name: Optional[str] = None,
+        github_hostname: Optional[str] = None,
+        optional_stages: Optional[Dict[str, bool]] = None,
         **kwargs: Any,
     ) -> Union[Dict[str, Any], requests.Response]:
         """Import a project from Github to Gitlab (schedule the import)
@@ -1126,6 +1128,9 @@ class ProjectManager(CRUDMixin, RESTManager):
             repo_id: Github repository ID
             target_namespace: Namespace to import repo into
             new_name: New repo name (Optional)
+            github_hostname: Custom GitHub Enterprise hostname.
+                Do not set for GitHub.com. (Optional)
+            optional_stages: Additional items to import. (Optional)
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -1156,9 +1161,12 @@ class ProjectManager(CRUDMixin, RESTManager):
             "personal_access_token": personal_access_token,
             "repo_id": repo_id,
             "target_namespace": target_namespace,
+            "new_name": new_name,
+            "github_hostname": github_hostname,
+            "optional_stages": optional_stages,
         }
-        if new_name:
-            data["new_name"] = new_name
+        data = utils.remove_none_from_dict(data)
+
         if (
             "timeout" not in kwargs
             or self.gitlab.timeout is None
