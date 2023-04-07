@@ -13,6 +13,7 @@ token_name = "Test Token"
 
 token_url = "http://localhost/api/v4/personal_access_tokens"
 single_token_url = f"{token_url}/{token_id}"
+self_token_url = f"{token_url}/self"
 user_token_url = f"http://localhost/api/v4/users/{user_id}/personal_access_tokens"
 
 content = {
@@ -41,8 +42,8 @@ def resp_create_user_personal_access_token():
 
 
 @pytest.fixture
-def resp_personal_access_token(no_content):
-    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+def resp_list_personal_access_tokens():
+    with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.GET,
             url=token_url,
@@ -50,6 +51,38 @@ def resp_personal_access_token(no_content):
             content_type="application/json",
             status=200,
         )
+        yield rsps
+
+
+@pytest.fixture
+def resp_get_personal_access_token():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url=single_token_url,
+            json=content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_get_personal_access_token_self():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url=self_token_url,
+            json=content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_delete_personal_access_token(no_content):
+    with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url=single_token_url,
@@ -69,26 +102,38 @@ def test_create_personal_access_token(gl, resp_create_user_personal_access_token
     assert access_token.name == token_name
 
 
-def test_list_personal_access_tokens(gl, resp_personal_access_token):
+def test_list_personal_access_tokens(gl, resp_list_personal_access_tokens):
     access_tokens = gl.personal_access_tokens.list()
     assert len(access_tokens) == 1
     assert access_tokens[0].revoked is False
     assert access_tokens[0].name == token_name
 
 
-def test_list_personal_access_tokens_filter(gl, resp_personal_access_token):
+def test_list_personal_access_tokens_filter(gl, resp_list_personal_access_tokens):
     access_tokens = gl.personal_access_tokens.list(user_id=user_id)
     assert len(access_tokens) == 1
     assert access_tokens[0].revoked is False
     assert access_tokens[0].user_id == user_id
 
 
-def test_revoke_personal_access_token(gl, resp_personal_access_token):
-    access_token = gl.personal_access_tokens.list(user_id=user_id)[0]
+def test_get_personal_access_token(gl, resp_get_personal_access_token):
+    access_token = gl.personal_access_tokens.get(token_id)
+
+    assert access_token.revoked is False
+    assert access_token.user_id == user_id
+
+
+def test_get_personal_access_token_self(gl, resp_get_personal_access_token_self):
+    access_token = gl.personal_access_tokens.get("self")
+
+    assert access_token.revoked is False
+    assert access_token.user_id == user_id
+
+
+def test_delete_personal_access_token(gl, resp_delete_personal_access_token):
+    access_token = gl.personal_access_tokens.get(token_id, lazy=True)
     access_token.delete()
-    assert resp_personal_access_token.assert_call_count(single_token_url, 1)
 
 
-def test_revoke_personal_access_token_by_id(gl, resp_personal_access_token):
+def test_revoke_personal_access_token_by_id(gl, resp_delete_personal_access_token):
     gl.personal_access_tokens.delete(token_id)
-    assert resp_personal_access_token.assert_call_count(single_token_url, 1)
