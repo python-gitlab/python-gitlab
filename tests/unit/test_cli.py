@@ -1,14 +1,17 @@
 import argparse
 import io
 import os
+import sys
 import tempfile
 from contextlib import redirect_stderr  # noqa: H302
+from unittest import mock
 
 import pytest
 
 import gitlab.base
 from gitlab import cli
 from gitlab.exceptions import GitlabError
+from gitlab.v4 import cli as v4_cli
 
 
 @pytest.mark.parametrize(
@@ -146,3 +149,23 @@ def test_v4_parser():
     )
     actions = user_subparsers.choices["create"]._option_string_actions
     assert actions["--name"].required
+
+
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="added in 3.8")
+def test_legacy_display_without_fields_warns(fake_object_no_id):
+    printer = v4_cli.LegacyPrinter()
+
+    with mock.patch("builtins.print") as mocked:
+        printer.display(fake_object_no_id, obj=fake_object_no_id)
+
+    assert "No default fields to show" in mocked.call_args.args[0]
+
+
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="added in 3.8")
+def test_legacy_display_with_long_repr_truncates(fake_object_long_repr):
+    printer = v4_cli.LegacyPrinter()
+
+    with mock.patch("builtins.print") as mocked:
+        printer.display(fake_object_long_repr, obj=fake_object_long_repr)
+
+    assert len(mocked.call_args.args[0]) < 80

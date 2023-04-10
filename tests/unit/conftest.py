@@ -22,6 +22,16 @@ def fake_object(fake_manager):
 
 
 @pytest.fixture
+def fake_object_no_id(fake_manager):
+    return helpers.FakeObjectWithoutId(fake_manager, {})
+
+
+@pytest.fixture
+def fake_object_long_repr(fake_manager):
+    return helpers.FakeObjectWithLongRepr(fake_manager, {"test": "a" * 100})
+
+
+@pytest.fixture
 def fake_object_with_parent(fake_manager_with_parent):
     return helpers.FakeObject(
         fake_manager_with_parent, {"attr1": "foo", "alist": [1, 2, 3]}

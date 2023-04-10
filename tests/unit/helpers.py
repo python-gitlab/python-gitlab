@@ -15,6 +15,15 @@ class FakeObject(base.RESTObject):
     pass
 
 
+class FakeObjectWithoutId(base.RESTObject):
+    _id_attr = None
+
+
+class FakeObjectWithLongRepr(base.RESTObject):
+    _id_attr = None
+    _repr_attr = "test"
+
+
 class OtherFakeObject(FakeObject):
     _id_attr = "foo"
 
