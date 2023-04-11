@@ -2,6 +2,29 @@
 
 <!--next-version-placeholder-->
 
+## v3.14.0 (2023-04-11)
+### Feature
+* **projects:** Allow importing additional items from GitHub ([`ce84f2e`](https://github.com/python-gitlab/python-gitlab/commit/ce84f2e64a640e0d025a7ba3a436f347ad25e88e))
+* **objects:** Support fetching PATs via id or `self` endpoint ([`19b38bd`](https://github.com/python-gitlab/python-gitlab/commit/19b38bd481c334985848be204eafc3f1ea9fe8a6))
+* Add resource_weight_event for ProjectIssue ([`6e5ef55`](https://github.com/python-gitlab/python-gitlab/commit/6e5ef55747ddeabe6d212aec50d66442054c2352))
+* **backends:** Use PEP544 protocols for structural subtyping ([#2442](https://github.com/python-gitlab/python-gitlab/issues/2442)) ([`4afeaff`](https://github.com/python-gitlab/python-gitlab/commit/4afeaff0361a966254a7fbf0120e93583d460361))
+* **client:** Add http_patch method ([#2471](https://github.com/python-gitlab/python-gitlab/issues/2471)) ([`f711d9e`](https://github.com/python-gitlab/python-gitlab/commit/f711d9e2bf78f58cee6a7c5893d4acfd2f980397))
+* **cli:** Add setting of `allow_force_push` for protected branch ([`929e07d`](https://github.com/python-gitlab/python-gitlab/commit/929e07d94d9a000e6470f530bfde20bb9c0f2637))
+
+### Fix
+* **cli:** Warn user when no fields are displayed ([`8bf53c8`](https://github.com/python-gitlab/python-gitlab/commit/8bf53c8b31704bdb31ffc5cf107cc5fba5dad457))
+* **client:** Properly parse content-type when charset is present ([`76063c3`](https://github.com/python-gitlab/python-gitlab/commit/76063c386ef9caf84ba866515cb053f6129714d9))
+* Support int for `parent_id` in `import_group` ([`90f96ac`](https://github.com/python-gitlab/python-gitlab/commit/90f96acf9e649de9874cec612fc1b49c4a843447))
+* **cli:** Add ability to escape at-prefixed parameter ([#2513](https://github.com/python-gitlab/python-gitlab/issues/2513)) ([`4f7c784`](https://github.com/python-gitlab/python-gitlab/commit/4f7c78436e62bfd21745c5289117e03ed896bc66))
+* **cli:** Display items when iterator is returned ([`33a04e7`](https://github.com/python-gitlab/python-gitlab/commit/33a04e74fc42d720c7be32172133a614f7268ec1))
+* Typo fixed in docs ([`ee5f444`](https://github.com/python-gitlab/python-gitlab/commit/ee5f444b16e4d2f645499ac06f5d81f22867f050))
+
+### Documentation
+* **objects:** Fix typo in pipeline schedules ([`3057f45`](https://github.com/python-gitlab/python-gitlab/commit/3057f459765d1482986f2086beb9227acc7fd15f))
+* **advanced:** Clarify netrc, proxy behavior with requests ([`1da7c53`](https://github.com/python-gitlab/python-gitlab/commit/1da7c53fd3476a1ce94025bb15265f674af40e1a))
+* Fix update badge behaviour ([`3d7ca1c`](https://github.com/python-gitlab/python-gitlab/commit/3d7ca1caac5803c2e6d60a3e5eba677957b3cfc6))
+* **advanced:** Fix typo in Gitlab examples ([`1992790`](https://github.com/python-gitlab/python-gitlab/commit/19927906809c329788822f91d0abd8761a85c5c3))
+
 ## v3.13.0 (2023-01-30)
 ### Feature
 * **group:** Add support for group restore API ([`9322db6`](https://github.com/python-gitlab/python-gitlab/commit/9322db663ecdaecf399e3192810d973c6a9a4020))
