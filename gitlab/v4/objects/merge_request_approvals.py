@@ -63,7 +63,7 @@ class ProjectApprovalRuleManager(
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
         required=("name", "approvals_required"),
-        optional=("user_ids", "group_ids", "protected_branch_ids"),
+        optional=("user_ids", "group_ids", "protected_branch_ids", "usernames"),
     )
 
 
