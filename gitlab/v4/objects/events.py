@@ -39,7 +39,7 @@ class Event(RESTObject):
 class EventManager(ListMixin, RESTManager):
     _path = "/events"
     _obj_cls = Event
-    _list_filters = ("action", "target_type", "before", "after", "sort")
+    _list_filters = ("action", "target_type", "before", "after", "sort", "scope")
 
 
 class GroupEpicResourceLabelEvent(RESTObject):
