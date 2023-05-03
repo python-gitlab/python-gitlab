@@ -7,3 +7,5 @@ pytest-github-actions-annotate-failures==0.1.8
 pytest==7.2.2
 PyYaml==5.4.1
 responses==0.23.1
+setuptools==67.7.2
+wheel==0.40.0
