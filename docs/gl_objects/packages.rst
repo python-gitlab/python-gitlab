@@ -95,6 +95,31 @@ Delete a package file in a project::
     file = package.package_files.list()[0]
     file.delete()
 
+Project Package Pipelines
+=========================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectPackagePipeline`
+  + :class:`gitlab.v4.objects.ProjectPackagePipelineManager`
+  + :attr:`gitlab.v4.objects.ProjectPackage.pipelines`
+
+..
+  TODO: Not yet published (see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/117539).
+  Add anchor/fragment once available.
+
+* GitLab API: https://docs.gitlab.com/ee/api/packages.html
+
+Examples
+--------
+
+List package pipelines for package in project::
+
+    package = project.packages.get(1)
+    package_pipelines = package.pipelines.list()
 
 Generic Packages
 ================
