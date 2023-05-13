@@ -33,6 +33,8 @@ __all__ = [
     "ProjectPackageManager",
     "ProjectPackageFile",
     "ProjectPackageFileManager",
+    "ProjectPackagePipeline",
+    "ProjectPackagePipelineManager",
 ]
 
 
@@ -188,6 +190,7 @@ class GroupPackageManager(ListMixin, RESTManager):
 
 class ProjectPackage(ObjectDeleteMixin, RESTObject):
     package_files: "ProjectPackageFileManager"
+    pipelines: "ProjectPackagePipelineManager"
 
 
 class ProjectPackageManager(ListMixin, GetMixin, DeleteMixin, RESTManager):
@@ -214,4 +217,14 @@ class ProjectPackageFile(ObjectDeleteMixin, RESTObject):
 class ProjectPackageFileManager(DeleteMixin, ListMixin, RESTManager):
     _path = "/projects/{project_id}/packages/{package_id}/package_files"
     _obj_cls = ProjectPackageFile
+    _from_parent_attrs = {"project_id": "project_id", "package_id": "id"}
+
+
+class ProjectPackagePipeline(RESTObject):
+    pass
+
+
+class ProjectPackagePipelineManager(ListMixin, RESTManager):
+    _path = "/projects/{project_id}/packages/{package_id}/pipelines"
+    _obj_cls = ProjectPackagePipeline
     _from_parent_attrs = {"project_id": "project_id", "package_id": "id"}

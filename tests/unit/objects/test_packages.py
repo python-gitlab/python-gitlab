@@ -12,6 +12,7 @@ from gitlab.v4.objects import (
     GroupPackage,
     ProjectPackage,
     ProjectPackageFile,
+    ProjectPackagePipeline,
 )
 
 package_content = {
@@ -103,6 +104,50 @@ package_file_content = [
         "file_sha1": "d25932de56052d320a8ac156f745ece73f6a8cd2",
     },
 ]
+
+package_pipeline_content = [
+    {
+        "id": 123,
+        "iid": 1,
+        "project_id": 1,
+        "sha": "a91957a858320c0e17f3a0eca7cfacbff50ea29a",
+        "ref": "new-pipeline",
+        "status": "failed",
+        "source": "push",
+        "created_at": "2016-08-11T11:28:34.085Z",
+        "updated_at": "2016-08-11T11:32:35.169Z",
+        "web_url": "https://example.com/foo/bar/pipelines/47",
+        "user": {
+            "id": 1,
+            "username": "root",
+            "name": "Administrator",
+            "state": "active",
+            "avatar_url": "https://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=80\u0026d=identicon",
+            "web_url": "http://gdk.test:3001/root",
+        },
+    },
+    {
+        "id": 234,
+        "iid": 2,
+        "project_id": 1,
+        "sha": "a91957a858320c0e17f3a0eca7cfacbff50ea29a",
+        "ref": "new-pipeline",
+        "status": "failed",
+        "source": "push",
+        "created_at": "2016-08-11T11:28:34.085Z",
+        "updated_at": "2016-08-11T11:32:35.169Z",
+        "web_url": "https://example.com/foo/bar/pipelines/58",
+        "user": {
+            "id": 1,
+            "username": "root",
+            "name": "Administrator",
+            "state": "active",
+            "avatar_url": "https://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=80\u0026d=identicon",
+            "web_url": "http://gdk.test:3001/root",
+        },
+    },
+]
+
 
 package_name = "hello-world"
 package_version = "v1.0.0"
@@ -196,6 +241,19 @@ def resp_list_package_files():
 
 
 @pytest.fixture
+def resp_list_package_pipelines():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url=re.compile(r"http://localhost/api/v4/projects/1/packages/1/pipelines"),
+            json=package_pipeline_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
 def resp_upload_generic_package(created_content):
     with responses.RequestsMock() as rsps:
         rsps.add(
@@ -267,6 +325,14 @@ def test_delete_project_package_file_from_package_file_object(
     package = project.packages.get(1, lazy=True)
     for package_file in package.package_files.list():
         package_file.delete()
+
+
+def test_list_project_package_pipelines(project, resp_list_package_pipelines):
+    package = project.packages.get(1, lazy=True)
+    pipelines = package.pipelines.list()
+    assert isinstance(pipelines, list)
+    assert isinstance(pipelines[0], ProjectPackagePipeline)
+    assert pipelines[0].id == 123
 
 
 def test_upload_generic_package(tmp_path, project, resp_upload_generic_package):
