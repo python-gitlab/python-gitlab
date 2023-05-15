@@ -223,7 +223,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectIssueLinkManager`
   + :attr:`gitlab.v4.objects.ProjectIssue.links`
 
-* GitLab API: https://docs.gitlab.com/ee/api/issue_links.html (EE feature)
+* GitLab API: https://docs.gitlab.com/ee/api/issue_links.html
 
 Examples
 --------
