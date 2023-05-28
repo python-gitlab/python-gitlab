@@ -47,6 +47,7 @@ class GenericPackageManager(RESTManager):
         package_version: str,
         file_name: str,
         path: Union[str, Path],
+        select: Optional[str] = None,
         **kwargs: Any,
     ) -> GenericPackage:
         """Upload a file as a generic package.
@@ -58,6 +59,7 @@ class GenericPackageManager(RESTManager):
                                 version regex rules
             file_name: The name of the file as uploaded in the registry
             path: The path to a local file to upload
+            select: GitLab API accepts a value of 'package_file'
 
         Raises:
             GitlabConnectionError: If the server cannot be reached
@@ -77,20 +79,21 @@ class GenericPackageManager(RESTManager):
             raise exc.GitlabUploadError(f"Failed to read package file {path}") from e
 
         url = f"{self._computed_path}/{package_name}/{package_version}/{file_name}"
-        server_data = self.gitlab.http_put(url, post_data=file_data, raw=True, **kwargs)
+        query_data = {} if select is None else {"select": select}
+        server_data = self.gitlab.http_put(
+            url, query_data=query_data, post_data=file_data, raw=True, **kwargs
+        )
         if TYPE_CHECKING:
             assert isinstance(server_data, dict)
 
-        return self._obj_cls(
-            self,
-            attrs={
-                "package_name": package_name,
-                "package_version": package_version,
-                "file_name": file_name,
-                "path": path,
-                "message": server_data["message"],
-            },
-        )
+        attrs = {
+            "package_name": package_name,
+            "package_version": package_version,
+            "file_name": file_name,
+            "path": path,
+        }
+        attrs.update(server_data)
+        return self._obj_cls(self, attrs=attrs)
 
     @cli.register_custom_action(
         "GenericPackageManager",

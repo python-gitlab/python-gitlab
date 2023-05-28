@@ -10,6 +10,7 @@ from gitlab.v4.objects import GenericPackage
 package_name = "hello-world"
 package_version = "v1.0.0"
 file_name = "hello.tar.gz"
+file_name2 = "hello2.tar.gz"
 file_content = "package content"
 
 
@@ -35,6 +36,22 @@ def test_upload_generic_package(tmp_path, project):
 
     assert isinstance(package, GenericPackage)
     assert package.message == "201 Created"
+
+
+def test_upload_generic_package_select(tmp_path, project):
+    path = tmp_path / file_name2
+    path.write_text(file_content)
+    package = project.generic_packages.upload(
+        package_name=package_name,
+        package_version=package_version,
+        file_name=file_name2,
+        path=path,
+        select="package_file",
+    )
+
+    assert isinstance(package, GenericPackage)
+    assert package.file_name == file_name2
+    assert package.size == path.stat().st_size
 
 
 def test_download_generic_package(project):
