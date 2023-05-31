@@ -666,7 +666,7 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
         if self._parent:
             path = f"/users/{self._parent.id}/projects"
         else:
-            path = f"/users/{kwargs['user_id']}/projects"
+            path = f"/users/{self._from_parent_attrs['user_id']}/projects"
         return ListMixin.list(self, path=path, **kwargs)
 
 
