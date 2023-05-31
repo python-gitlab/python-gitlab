@@ -46,7 +46,7 @@ class GitlabCLI:
 
         self.mgr_cls._path = self.mgr_cls._path.format(**self.parent_args)
         self.mgr = self.mgr_cls(gl)
-
+        self.mgr._from_parent_attrs = self.parent_args
         if self.mgr_cls._types:
             for attr_name, type_cls in self.mgr_cls._types.items():
                 if attr_name in self.args.keys():
