@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v3.15.0 (2023-06-09)
+### Feature
+* Add support for `select="package_file"` in package upload ([`3a49f09`](https://github.com/python-gitlab/python-gitlab/commit/3a49f099d54000089e217b61ffcf60b6a28b4420))
+* **api:** Add support for events scope parameter ([`348f56e`](https://github.com/python-gitlab/python-gitlab/commit/348f56e8b95c43a7f140f015d303131665b21772))
+* Usernames support for MR approvals ([`a2b8c8c`](https://github.com/python-gitlab/python-gitlab/commit/a2b8c8ccfb5d4fa4d134300861a3bfb0b10246ca))
+
+### Documentation
+* Remove exclusive EE about issue links ([`e0f6f18`](https://github.com/python-gitlab/python-gitlab/commit/e0f6f18f14c8c17ea038a7741063853c105e7fa3))
+
 ## v3.14.0 (2023-04-11)
 ### Feature
 * **projects:** Allow importing additional items from GitHub ([`ce84f2e`](https://github.com/python-gitlab/python-gitlab/commit/ce84f2e64a640e0d025a7ba3a436f347ad25e88e))
