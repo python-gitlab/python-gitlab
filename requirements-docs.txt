@@ -1,5 +1,5 @@
 -r requirements.txt
-furo==2023.5.20
+furo==2023.05.20
 jinja2==3.1.2
 myst-parser==1.0.0
 sphinx==7.0.1
