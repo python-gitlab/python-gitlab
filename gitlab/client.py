@@ -485,30 +485,24 @@ class Gitlab:
             not self.http_username and self.http_password
         ):
             raise ValueError("Both http_username and http_password should be defined")
-        if self.oauth_token and self.http_username:
+        if tokens and self.http_username:
             raise ValueError(
-                "Only one of oauth authentication or http "
+                "Only one of token authentications or http "
                 "authentication should be defined"
             )
 
-        self._http_auth = None
+        self._auth: Optional[requests.auth.AuthBase] = None
         if self.private_token:
-            self.headers.pop("Authorization", None)
-            self.headers["PRIVATE-TOKEN"] = self.private_token
-            self.headers.pop("JOB-TOKEN", None)
+            self._auth = _backends.PrivateTokenAuth(self.private_token)
 
         if self.oauth_token:
-            self.headers["Authorization"] = f"Bearer {self.oauth_token}"
-            self.headers.pop("PRIVATE-TOKEN", None)
-            self.headers.pop("JOB-TOKEN", None)
+            self._auth = _backends.OAuthTokenAuth(self.oauth_token)
 
         if self.job_token:
-            self.headers.pop("Authorization", None)
-            self.headers.pop("PRIVATE-TOKEN", None)
-            self.headers["JOB-TOKEN"] = self.job_token
+            self._auth = _backends.JobTokenAuth(self.job_token)
 
         if self.http_username and self.http_password:
-            self._http_auth = requests.auth.HTTPBasicAuth(
+            self._auth = requests.auth.HTTPBasicAuth(
                 self.http_username, self.http_password
             )
 
@@ -527,7 +521,7 @@ class Gitlab:
     def _get_session_opts(self) -> Dict[str, Any]:
         return {
             "headers": self.headers.copy(),
-            "auth": self._http_auth,
+            "auth": self._auth,
             "timeout": self.timeout,
             "verify": self.ssl_verify,
         }
