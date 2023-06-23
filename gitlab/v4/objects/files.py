@@ -240,7 +240,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
 
         Args:
             ref: ID of the commit
-            filepath: Path of the file to return
+            file_path: Path of the file to return
             streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
