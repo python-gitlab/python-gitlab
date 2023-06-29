@@ -25,7 +25,7 @@ List project access tokens::
 
 Create project access token::
 
-    access_token = gl.projects.get(1).access_tokens.create({"name": "test", "scopes": ["api"]})
+    access_token = gl.projects.get(1).access_tokens.create({"name": "test", "scopes": ["api"], "expires_at": "2023-06-06"})
 
 Revoke a project access tokens::
 
