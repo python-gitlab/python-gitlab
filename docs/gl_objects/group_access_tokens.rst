@@ -25,7 +25,7 @@ List group access tokens::
 
 Create group access token::
 
-    access_token = gl.groups.get(1).access_tokens.create({"name": "test", "scopes": ["api"]})
+    access_token = gl.groups.get(1).access_tokens.create({"name": "test", "scopes": ["api"], "expires_at": "2023-06-06"})
 
 Revoke a group access tokens::
 
