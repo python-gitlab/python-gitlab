@@ -50,7 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3.5.3
       - name: Set up Python ${{ matrix.python.version }}
-        uses: actions/setup-python@v4.6.1
+        uses: actions/setup-python@v4.7.0
         with:
           python-version: ${{ matrix.python.version }}
       - name: Install dependencies
@@ -68,7 +68,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3.5.3
       - name: Set up Python
-        uses: actions/setup-python@v4.6.1
+        uses: actions/setup-python@v4.7.0
         with:
           python-version: "3.11"
       - name: Install dependencies
@@ -89,7 +89,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3.5.3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4.6.1
+        uses: actions/setup-python@v4.7.0
         with:
           python-version: "3.11"
       - name: Install dependencies
@@ -111,7 +111,7 @@ jobs:
     name: Python wheel
     steps:
     - uses: actions/checkout@v3.5.3
-    - uses: actions/setup-python@v4.6.1
+    - uses: actions/setup-python@v4.7.0
       with:
         python-version: "3.11"
     - name: Install dependencies
@@ -130,7 +130,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3.5.3
     - name: Set up Python
-      uses: actions/setup-python@v4.6.1
+      uses: actions/setup-python@v4.7.0
       with:
         python-version: '3.11'
     - uses: actions/download-artifact@v3.0.2
