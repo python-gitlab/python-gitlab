@@ -56,6 +56,6 @@ setup(
     ],
     extras_require={
         "autocompletion": ["argcomplete>=1.10.0,<3"],
-        "yaml": ["PyYaml>=5.2"],
+        "yaml": ["PyYaml>=6.0.1"],
     },
 )
