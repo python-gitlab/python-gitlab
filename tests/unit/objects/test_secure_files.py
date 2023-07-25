@@ -65,13 +65,11 @@ def resp_download_secure_file(binary_content):
 
 
 @pytest.fixture
-def resp_remove_secure_file(no_content):
+def resp_remove_secure_file():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/projects/1/secure_files/1",
-            json=no_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps

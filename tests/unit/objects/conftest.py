@@ -22,11 +22,6 @@ def created_content():
 
 
 @pytest.fixture
-def no_content():
-    return {"message": "204 No Content"}
-
-
-@pytest.fixture
 def resp_export(accepted_content, binary_content):
     """Common fixture for group and project exports."""
     export_status_content = {

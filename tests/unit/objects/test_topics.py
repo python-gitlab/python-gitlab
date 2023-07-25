@@ -78,13 +78,11 @@ def resp_update_topic():
 
 
 @pytest.fixture
-def resp_delete_topic(no_content):
+def resp_delete_topic():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url=topic_url,
-            json=no_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps

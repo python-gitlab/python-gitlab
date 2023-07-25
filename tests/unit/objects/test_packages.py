@@ -137,33 +137,29 @@ def resp_get_package():
 
 
 @pytest.fixture
-def resp_delete_package(no_content):
+def resp_delete_package():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/projects/1/packages/1",
-            json=no_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps
 
 
 @pytest.fixture
-def resp_delete_package_file(no_content):
+def resp_delete_package_file():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/projects/1/packages/1/package_files/1",
-            json=no_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps
 
 
 @pytest.fixture
-def resp_delete_package_file_list(no_content):
+def resp_delete_package_file_list():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.GET,
@@ -178,8 +174,6 @@ def resp_delete_package_file_list(no_content):
             rsps.add(
                 method=responses.DELETE,
                 url=f"http://localhost/api/v4/projects/1/packages/1/package_files/{pkg_file_id}",
-                json=no_content,
-                content_type="application/json",
                 status=204,
             )
         yield rsps

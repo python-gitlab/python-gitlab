@@ -81,13 +81,11 @@ def resp_get_personal_access_token_self():
 
 
 @pytest.fixture
-def resp_delete_personal_access_token(no_content):
+def resp_delete_personal_access_token():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url=single_token_url,
-            json=no_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps

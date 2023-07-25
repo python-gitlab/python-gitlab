@@ -87,13 +87,11 @@ def resp_update_variable():
 
 
 @pytest.fixture
-def resp_delete_variable(no_content):
+def resp_delete_variable():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url=variables_key_url,
-            json=no_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps

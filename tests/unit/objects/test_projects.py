@@ -361,13 +361,11 @@ def resp_share_project():
 
 
 @pytest.fixture
-def resp_unshare_project(no_content):
+def resp_unshare_project():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/projects/1/share/1",
-            json=no_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps
@@ -387,13 +385,11 @@ def resp_create_fork_relation():
 
 
 @pytest.fixture
-def resp_delete_fork_relation(no_content):
+def resp_delete_fork_relation():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/projects/2/fork",
-            json=no_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps
@@ -485,7 +481,7 @@ def resp_update_push_rules_project():
 
 
 @pytest.fixture
-def resp_delete_push_rules_project(no_content):
+def resp_delete_push_rules_project():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.GET,
@@ -497,8 +493,6 @@ def resp_delete_push_rules_project(no_content):
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/projects/1/push_rule",
-            json=no_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps

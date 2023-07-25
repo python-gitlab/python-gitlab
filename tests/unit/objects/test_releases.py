@@ -101,13 +101,11 @@ def resp_update_link():
 
 
 @pytest.fixture
-def resp_delete_link(no_content):
+def resp_delete_link():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url=link_id_url,
-            json=link_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps
