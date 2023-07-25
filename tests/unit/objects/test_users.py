@@ -152,13 +152,11 @@ def resp_get_user_status():
 
 
 @pytest.fixture
-def resp_delete_user_identity(no_content):
+def resp_delete_user_identity():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/users/1/identities/test_provider",
-            json=no_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps

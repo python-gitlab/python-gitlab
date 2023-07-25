@@ -75,8 +75,6 @@ def resp_revoke_group_access_token():
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/groups/1/access_tokens/42",
-            json=content,
-            content_type="application/json",
             status=204,
         )
         rsps.add(

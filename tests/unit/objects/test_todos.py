@@ -66,8 +66,6 @@ def resp_mark_all_as_done():
         rsps.add(
             method=responses.POST,
             url="http://localhost/api/v4/todos/mark_as_done",
-            json={},
-            content_type="application/json",
             status=204,
         )
         yield rsps

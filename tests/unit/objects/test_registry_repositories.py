@@ -59,13 +59,11 @@ def resp_get_registry_repository():
 
 
 @pytest.fixture
-def resp_delete_registry_repository(no_content):
+def resp_delete_registry_repository():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/projects/1/registry/repositories/1",
-            json=no_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps

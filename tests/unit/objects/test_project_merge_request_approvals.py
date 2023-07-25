@@ -147,13 +147,11 @@ def resp_mr_approval_rules():
 
 
 @pytest.fixture
-def resp_delete_mr_approval_rule(no_content):
+def resp_delete_mr_approval_rule():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/projects/1/merge_requests/1/approval_rules/1",
-            json=no_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps

@@ -215,7 +215,7 @@ def resp_update_push_rules_group():
 
 
 @pytest.fixture
-def resp_delete_push_rules_group(no_content):
+def resp_delete_push_rules_group():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.GET,
@@ -227,15 +227,13 @@ def resp_delete_push_rules_group(no_content):
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/groups/1/push_rule",
-            json=no_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps
 
 
 @pytest.fixture
-def resp_list_ldap_group_links(no_content):
+def resp_list_ldap_group_links():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.GET,
@@ -292,7 +290,7 @@ def resp_create_saml_group_link():
 
 
 @pytest.fixture
-def resp_delete_saml_group_link(no_content):
+def resp_delete_saml_group_link():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.POST,
@@ -309,8 +307,6 @@ def resp_delete_saml_group_link(no_content):
         rsps.add(
             method=responses.DELETE,
             url="http://localhost/api/v4/groups/1/saml_group_links/saml-group-1",
-            json=no_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps

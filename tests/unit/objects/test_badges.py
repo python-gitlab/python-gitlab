@@ -97,13 +97,11 @@ def resp_update_badge():
 
 
 @pytest.fixture()
-def resp_delete_badge(no_content):
+def resp_delete_badge():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
             url=re.compile(r"http://localhost/api/v4/(projects|groups)/1/badges/1"),
-            json=no_content,
-            content_type="application/json",
             status=204,
         )
         yield rsps
