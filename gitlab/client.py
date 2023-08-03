@@ -3,7 +3,18 @@
 import os
 import re
 import time
-from typing import Any, cast, Dict, List, Optional, Tuple, Type, TYPE_CHECKING, Union
+from typing import (
+    Any,
+    BinaryIO,
+    cast,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Type,
+    TYPE_CHECKING,
+    Union,
+)
 from urllib import parse
 
 import requests
@@ -612,7 +623,7 @@ class Gitlab:
         verb: str,
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
-        post_data: Optional[Union[Dict[str, Any], bytes]] = None,
+        post_data: Optional[Union[Dict[str, Any], bytes, BinaryIO]] = None,
         raw: bool = False,
         streamed: bool = False,
         files: Optional[Dict[str, Any]] = None,
@@ -993,7 +1004,7 @@ class Gitlab:
         self,
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
-        post_data: Optional[Union[Dict[str, Any], bytes]] = None,
+        post_data: Optional[Union[Dict[str, Any], bytes, BinaryIO]] = None,
         raw: bool = False,
         files: Optional[Dict[str, Any]] = None,
         **kwargs: Any,

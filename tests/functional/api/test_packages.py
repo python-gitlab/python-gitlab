@@ -38,6 +38,38 @@ def test_upload_generic_package(tmp_path, project):
     assert package.message == "201 Created"
 
 
+def test_download_generic_package_bytes(tmp_path, project):
+    path = tmp_path / file_name
+
+    path.write_text(file_content)
+
+    package = project.generic_packages.upload(
+        package_name=package_name,
+        package_version=package_version,
+        file_name=file_name,
+        data=path.read_bytes(),
+    )
+
+    assert isinstance(package, GenericPackage)
+    assert package.message == "201 Created"
+
+
+def test_download_generic_package_file(tmp_path, project):
+    path = tmp_path / file_name
+
+    path.write_text(file_content)
+
+    package = project.generic_packages.upload(
+        package_name=package_name,
+        package_version=package_version,
+        file_name=file_name,
+        data=path.open(mode="rb"),
+    )
+
+    assert isinstance(package, GenericPackage)
+    assert package.message == "201 Created"
+
+
 def test_upload_generic_package_select(tmp_path, project):
     path = tmp_path / file_name2
     path.write_text(file_content)

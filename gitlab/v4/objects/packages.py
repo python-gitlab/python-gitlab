@@ -5,7 +5,16 @@ https://docs.gitlab.com/ee/user/packages/generic_packages/
 """
 
 from pathlib import Path
-from typing import Any, Callable, cast, Iterator, Optional, TYPE_CHECKING, Union
+from typing import (
+    Any,
+    BinaryIO,
+    Callable,
+    cast,
+    Iterator,
+    Optional,
+    TYPE_CHECKING,
+    Union,
+)
 
 import requests
 
@@ -46,8 +55,9 @@ class GenericPackageManager(RESTManager):
         package_name: str,
         package_version: str,
         file_name: str,
-        path: Union[str, Path],
+        path: Optional[Union[str, Path]] = None,
         select: Optional[str] = None,
+        data: Optional[Union[bytes, BinaryIO]] = None,
         **kwargs: Any,
     ) -> GenericPackage:
         """Upload a file as a generic package.
@@ -64,7 +74,8 @@ class GenericPackageManager(RESTManager):
         Raises:
             GitlabConnectionError: If the server cannot be reached
             GitlabUploadError: If the file upload fails
-            GitlabUploadError: If ``filepath`` cannot be read
+            GitlabUploadError: If ``path`` cannot be read
+            GitlabUploadError: If both ``path`` and ``data`` are passed
 
         Returns:
             An object storing the metadata of the uploaded package.
@@ -72,11 +83,25 @@ class GenericPackageManager(RESTManager):
         https://docs.gitlab.com/ee/user/packages/generic_packages/
         """
 
-        try:
-            with open(path, "rb") as f:
-                file_data = f.read()
-        except OSError as e:
-            raise exc.GitlabUploadError(f"Failed to read package file {path}") from e
+        if path is None and data is None:
+            raise exc.GitlabUploadError("No file contents or path specified")
+
+        if path is not None and data is not None:
+            raise exc.GitlabUploadError("File contents and file path specified")
+
+        file_data: Optional[Union[bytes, BinaryIO]] = data
+
+        if not file_data:
+            if TYPE_CHECKING:
+                assert path is not None
+
+            try:
+                with open(path, "rb") as f:
+                    file_data = f.read()
+            except OSError as e:
+                raise exc.GitlabUploadError(
+                    f"Failed to read package file {path}"
+                ) from e
 
         url = f"{self._computed_path}/{package_name}/{package_version}/{file_name}"
         query_data = {} if select is None else {"select": select}

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
-from typing import Any, Dict, Optional, TYPE_CHECKING, Union
+from typing import Any, BinaryIO, Dict, Optional, TYPE_CHECKING, Union
 
 import requests
 from requests import PreparedRequest
@@ -94,7 +94,7 @@ class RequestsBackend(protocol.Backend):
     @staticmethod
     def prepare_send_data(
         files: Optional[Dict[str, Any]] = None,
-        post_data: Optional[Union[Dict[str, Any], bytes]] = None,
+        post_data: Optional[Union[Dict[str, Any], bytes, BinaryIO]] = None,
         raw: bool = False,
     ) -> SendData:
         if files:
@@ -120,6 +120,9 @@ class RequestsBackend(protocol.Backend):
 
         if raw and post_data:
             return SendData(data=post_data, content_type="application/octet-stream")
+
+        if TYPE_CHECKING:
+            assert not isinstance(post_data, BinaryIO)
 
         return SendData(json=post_data, content_type="application/json")
 
