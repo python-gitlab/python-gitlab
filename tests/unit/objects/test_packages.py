@@ -6,6 +6,7 @@ import re
 import pytest
 import responses
 
+from gitlab import exceptions as exc
 from gitlab.v4.objects import (
     GenericPackage,
     GroupPackage,
@@ -276,6 +277,74 @@ def test_upload_generic_package(tmp_path, project, resp_upload_generic_package):
         package_version=package_version,
         file_name=file_name,
         path=path,
+    )
+
+    assert isinstance(package, GenericPackage)
+
+
+def test_upload_generic_package_nonexistent_path(tmp_path, project):
+    with pytest.raises(exc.GitlabUploadError):
+        project.generic_packages.upload(
+            package_name=package_name,
+            package_version=package_version,
+            file_name=file_name,
+            path="bad",
+        )
+
+
+def test_upload_generic_package_no_file_and_no_data(tmp_path, project):
+    path = tmp_path / file_name
+
+    path.write_text(file_content, encoding="utf-8")
+
+    with pytest.raises(exc.GitlabUploadError):
+        project.generic_packages.upload(
+            package_name=package_name,
+            package_version=package_version,
+            file_name=file_name,
+        )
+
+
+def test_upload_generic_package_file_and_data(tmp_path, project):
+    path = tmp_path / file_name
+
+    path.write_text(file_content, encoding="utf-8")
+
+    with pytest.raises(exc.GitlabUploadError):
+        project.generic_packages.upload(
+            package_name=package_name,
+            package_version=package_version,
+            file_name=file_name,
+            path=path,
+            data=path.read_bytes(),
+        )
+
+
+def test_upload_generic_package_bytes(tmp_path, project, resp_upload_generic_package):
+    path = tmp_path / file_name
+
+    path.write_text(file_content, encoding="utf-8")
+
+    package = project.generic_packages.upload(
+        package_name=package_name,
+        package_version=package_version,
+        file_name=file_name,
+        data=path.read_bytes(),
+    )
+
+    assert isinstance(package, GenericPackage)
+
+
+def test_upload_generic_package_file(tmp_path, project, resp_upload_generic_package):
+    path = tmp_path / file_name
+
+    path.write_text(file_content, encoding="utf-8")
+
+    package = project.generic_packages.upload(
+        package_name=package_name,
+        package_version=package_version,
+        file_name=file_name,
+        data=path.open(mode="rb"),
     )
 
     assert isinstance(package, GenericPackage)
