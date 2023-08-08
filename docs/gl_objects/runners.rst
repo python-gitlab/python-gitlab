@@ -71,6 +71,14 @@ Register a new runner::
 
     runner = gl.runners.create({'token': secret_token})
 
+.. note::
+
+   A new runner registration workflow has been introduced since GitLab 16.0. This new
+   workflow comes with a new API endpoint to create runner, which does not use
+   registration tokens.
+
+   The new endpoint can be called using ``user.runners.create()``.
+
 Update a runner::
 
     runner = gl.runners.get(runner_id)
