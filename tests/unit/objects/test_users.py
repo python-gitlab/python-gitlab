@@ -241,6 +241,19 @@ def resp_starred_projects():
         yield rsps
 
 
+@pytest.fixture
+def resp_runner_create():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/user/runners",
+            json={"id": "6", "token": "6337ff461c94fd3fa32ba3b1ff4125"},
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
 def test_get_user(gl, resp_get_user):
     user = gl.users.get(1)
     assert isinstance(user, User)
@@ -304,3 +317,9 @@ def test_list_starred_projects(user, resp_starred_projects):
     projects = user.starred_projects.list()
     assert isinstance(projects[0], StarredProject)
     assert projects[0].id == project_content["id"]
+
+
+def test_create_user_runner(current_user, resp_runner_create):
+    runner = current_user.runners.create({"runner_type": "instance_type"})
+    assert runner.id == "6"
+    assert runner.token == "6337ff461c94fd3fa32ba3b1ff4125"
