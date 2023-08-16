@@ -132,6 +132,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
 
 class ProjectMergeRequestApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "name"
+    _id_attr = "approval_rule_id"
     id: int
     approval_rule_id: int
     merge_request_iid: int
