@@ -38,11 +38,6 @@
       "enabled": false
     },
     {
-      "description": "Pin pytest-console-scripts until we drop 3.7 support",
-      "packageName": "pytest-console-scripts",
-      "allowedVersions": "<1.4.1"
-    },
-    {
       "packagePatterns": [
         "^gitlab\/gitlab-.+$"
       ],
