@@ -45,6 +45,12 @@ def test_list_project_variables_with_path_url_check(script_runner, resp_get_proj
 
     responses.add(**resp_get_project_variables)
     ret = script_runner.run(
-        "gitlab", "project-variable", "list", "--project-id", "project/with/a/namespace"
+        [
+            "gitlab",
+            "project-variable",
+            "list",
+            "--project-id",
+            "project/with/a/namespace",
+        ]
     )
     assert ret.success

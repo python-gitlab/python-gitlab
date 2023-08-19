@@ -19,29 +19,29 @@ CI_SERVER_URL = "https://gitlab.example.com"
 
 
 def test_main_entrypoint(script_runner, gitlab_config):
-    ret = script_runner.run("python", "-m", "gitlab", "--config-file", gitlab_config)
+    ret = script_runner.run(["python", "-m", "gitlab", "--config-file", gitlab_config])
     assert ret.returncode == 2
 
 
 def test_version(script_runner):
-    ret = script_runner.run("gitlab", "--version")
+    ret = script_runner.run(["gitlab", "--version"])
     assert ret.stdout.strip() == __version__
 
 
 def test_config_error_with_help_prints_help(script_runner):
-    ret = script_runner.run("gitlab", "-c", "invalid-file", "--help")
+    ret = script_runner.run(["gitlab", "-c", "invalid-file", "--help"])
     assert ret.stdout.startswith("usage:")
     assert ret.returncode == 0
 
 
 def test_global_help_prints_resources_vertically(script_runner):
-    ret = script_runner.run("gitlab", "--help")
+    ret = script_runner.run(["gitlab", "--help"])
     assert """resource:\n  application\n  application-appearance\n""" in ret.stdout
     assert ret.returncode == 0
 
 
 def test_resource_help_prints_actions_vertically(script_runner):
-    ret = script_runner.run("gitlab", "project", "--help")
+    ret = script_runner.run(["gitlab", "project", "--help"])
     assert """action:\n  list\n  get""" in ret.stdout
     assert ret.returncode == 0
 
@@ -51,7 +51,7 @@ def test_resource_help_prints_actions_vertically(script_runner):
 def test_defaults_to_gitlab_com(script_runner, resp_get_project, monkeypatch):
     responses.add(**resp_get_project)
     monkeypatch.setattr(config, "_DEFAULT_FILES", [])
-    ret = script_runner.run("gitlab", "project", "get", "--id", "1")
+    ret = script_runner.run(["gitlab", "project", "get", "--id", "1"])
     assert ret.success
     assert "id: 1" in ret.stdout
 
@@ -65,7 +65,7 @@ def test_uses_ci_server_url(monkeypatch, script_runner, resp_get_project):
     resp_get_project_in_ci.update(url=f"{CI_SERVER_URL}/api/v4/projects/1")
 
     responses.add(**resp_get_project_in_ci)
-    ret = script_runner.run("gitlab", "project", "get", "--id", "1")
+    ret = script_runner.run(["gitlab", "project", "get", "--id", "1"])
     assert ret.success
 
 
@@ -80,7 +80,7 @@ def test_uses_ci_job_token(monkeypatch, script_runner, resp_get_project):
     )
 
     responses.add(**resp_get_project_in_ci)
-    ret = script_runner.run("gitlab", "project", "get", "--id", "1")
+    ret = script_runner.run(["gitlab", "project", "get", "--id", "1"])
     assert ret.success
 
 
@@ -104,47 +104,47 @@ def test_private_token_overrides_job_token(
 
     responses.add(**resp_get_project_with_token)
     responses.add(**resp_auth_with_token)
-    ret = script_runner.run("gitlab", "project", "get", "--id", "1")
+    ret = script_runner.run(["gitlab", "project", "get", "--id", "1"])
     assert ret.success
 
 
 def test_env_config_missing_file_raises(script_runner, monkeypatch):
     monkeypatch.setenv("PYTHON_GITLAB_CFG", "non-existent")
-    ret = script_runner.run("gitlab", "project", "list")
+    ret = script_runner.run(["gitlab", "project", "list"])
     assert not ret.success
     assert ret.stderr.startswith("Cannot read config from PYTHON_GITLAB_CFG")
 
 
 def test_arg_config_missing_file_raises(script_runner):
     ret = script_runner.run(
-        "gitlab", "--config-file", "non-existent", "project", "list"
+        ["gitlab", "--config-file", "non-existent", "project", "list"]
     )
     assert not ret.success
     assert ret.stderr.startswith("Cannot read config from file")
 
 
 def test_invalid_config(script_runner):
-    ret = script_runner.run("gitlab", "--gitlab", "invalid")
+    ret = script_runner.run(["gitlab", "--gitlab", "invalid"])
     assert not ret.success
     assert not ret.stdout
 
 
 def test_invalid_config_prints_help(script_runner):
-    ret = script_runner.run("gitlab", "--gitlab", "invalid", "--help")
+    ret = script_runner.run(["gitlab", "--gitlab", "invalid", "--help"])
     assert ret.success
     assert ret.stdout
 
 
 def test_invalid_api_version(script_runner, monkeypatch, fixture_dir):
     monkeypatch.setenv("PYTHON_GITLAB_CFG", str(fixture_dir / "invalid_version.cfg"))
-    ret = script_runner.run("gitlab", "--gitlab", "test", "project", "list")
+    ret = script_runner.run(["gitlab", "--gitlab", "test", "project", "list"])
     assert not ret.success
     assert ret.stderr.startswith("Unsupported API version:")
 
 
 def test_invalid_auth_config(script_runner, monkeypatch, fixture_dir):
     monkeypatch.setenv("PYTHON_GITLAB_CFG", str(fixture_dir / "invalid_auth.cfg"))
-    ret = script_runner.run("gitlab", "--gitlab", "test", "project", "list")
+    ret = script_runner.run(["gitlab", "--gitlab", "test", "project", "list"])
     assert not ret.success
     assert "401" in ret.stderr
 
