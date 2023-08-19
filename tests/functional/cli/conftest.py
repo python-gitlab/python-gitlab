@@ -19,7 +19,7 @@ def gitlab_cli(script_runner, gitlab_config):
             # ensure we get strings (e.g from IDs)
             command.append(str(subcommand))
 
-        return script_runner.run(*command)
+        return script_runner.run(command)
 
     return _gitlab_cli
 

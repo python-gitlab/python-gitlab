@@ -26,7 +26,7 @@ def test_project_registry_delete_in_bulk(
         "--name",
         ".*",
     ]
-    ret = ret = script_runner.run(*cmd)
+    ret = ret = script_runner.run(cmd)
     assert ret.success
 
 
