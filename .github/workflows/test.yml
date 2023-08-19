@@ -61,7 +61,7 @@ jobs:
         run: tox --skip-missing-interpreters false
 
   functional:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         toxenv: [api_func_v4, cli_func_v4]
@@ -85,7 +85,7 @@ jobs:
           fail_ci_if_error: false
 
   coverage:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3.5.3
       - name: Set up Python ${{ matrix.python-version }}
