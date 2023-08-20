@@ -5,7 +5,7 @@ import requests
 import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab import types, utils
+from gitlab import types
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
@@ -163,64 +163,6 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         data = {"scope": scope, "search": search}
         path = f"/groups/{self.encoded_id}/search"
         return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
-
-    @cli.register_custom_action("Group", ("cn", "group_access", "provider"))
-    @exc.on_http_error(exc.GitlabCreateError)
-    def add_ldap_group_link(
-        self, cn: str, group_access: int, provider: str, **kwargs: Any
-    ) -> None:
-        """Add an LDAP group link.
-
-        Args:
-            cn: CN of the LDAP group
-            group_access: Minimum access level for members of the LDAP
-                group
-            provider: LDAP provider for the LDAP group
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabCreateError: If the server cannot perform the request
-        """
-        utils.warn(
-            message=(
-                "The add_ldap_group_link() method is deprecated and will be removed "
-                "in a future version. Use ldap_group_links.create() instead."
-            ),
-            category=DeprecationWarning,
-        )
-        path = f"/groups/{self.encoded_id}/ldap_group_links"
-        data = {"cn": cn, "group_access": group_access, "provider": provider}
-        self.manager.gitlab.http_post(path, post_data=data, **kwargs)
-
-    @cli.register_custom_action("Group", ("cn",), ("provider",))
-    @exc.on_http_error(exc.GitlabDeleteError)
-    def delete_ldap_group_link(
-        self, cn: str, provider: Optional[str] = None, **kwargs: Any
-    ) -> None:
-        """Delete an LDAP group link.
-
-        Args:
-            cn: CN of the LDAP group
-            provider: LDAP provider for the LDAP group
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabDeleteError: If the server cannot perform the request
-        """
-        utils.warn(
-            message=(
-                "The delete_ldap_group_link() method is deprecated and will be "
-                "removed in a future version. Use ldap_group_links.delete() instead."
-            ),
-            category=DeprecationWarning,
-        )
-        path = f"/groups/{self.encoded_id}/ldap_group_links"
-        if provider is not None:
-            path += f"/{provider}"
-        path += f"/{cn}"
-        self.manager.gitlab.http_delete(path, **kwargs)
 
     @cli.register_custom_action("Group")
     @exc.on_http_error(exc.GitlabCreateError)
