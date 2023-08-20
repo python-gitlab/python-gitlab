@@ -843,7 +843,6 @@ class Gitlab:
         path: str,
         query_data: Optional[Dict[str, Any]] = None,
         *,
-        as_list: Optional[bool] = None,  # Deprecated in favor of `iterator`
         iterator: Optional[bool] = None,
         **kwargs: Any,
     ) -> Union["GitlabList", List[Dict[str, Any]]]:
@@ -870,23 +869,6 @@ class Gitlab:
         """
         query_data = query_data or {}
 
-        # Don't allow both `as_list` and `iterator` to be set.
-        if as_list is not None and iterator is not None:
-            raise ValueError(
-                "Only one of `as_list` or `iterator` can be used. "
-                "Use `iterator` instead of `as_list`. `as_list` is deprecated."
-            )
-
-        if as_list is not None:
-            iterator = not as_list
-            utils.warn(
-                message=(
-                    f"`as_list={as_list}` is deprecated and will be removed in a "
-                    f"future version. Use `iterator={iterator}` instead."
-                ),
-                category=DeprecationWarning,
-            )
-
         # Provide a `get_all`` param to avoid clashes with `all` API attributes.
         get_all = kwargs.pop("get_all", None)
 
@@ -900,8 +882,6 @@ class Gitlab:
 
         if iterator and page is not None:
             arg_used_message = f"iterator={iterator}"
-            if as_list is not None:
-                arg_used_message = f"as_list={as_list}"
             utils.warn(
                 message=(
                     f"`{arg_used_message}` and `page={page}` were both specified. "
