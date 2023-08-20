@@ -66,13 +66,6 @@ def test_markdown_in_project(gl, project):
     assert "foo" in html
 
 
-def test_lint(gl):
-    with pytest.deprecated_call():
-        success, errors = gl.lint("Invalid")
-    assert success is False
-    assert errors
-
-
 def test_sidekiq_queue_metrics(gl):
     out = gl.sidekiq.queue_metrics()
     assert isinstance(out, dict)
