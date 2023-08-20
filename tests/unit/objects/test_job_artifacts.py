@@ -46,12 +46,3 @@ def test_project_artifacts_download_by_ref_name(
     project = gl.projects.get(1, lazy=True)
     artifacts = project.artifacts.download(ref_name=ref_name, job=job)
     assert artifacts == binary_content
-
-
-def test_project_artifacts_by_ref_name_warns(
-    gl, binary_content, resp_artifacts_by_ref_name
-):
-    project = gl.projects.get(1, lazy=True)
-    with pytest.warns(DeprecationWarning):
-        artifacts = project.artifacts(ref_name=ref_name, job=job)
-    assert artifacts == binary_content

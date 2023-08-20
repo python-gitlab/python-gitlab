@@ -25,30 +25,6 @@ class ProjectArtifactManager(RESTManager):
     _path = "/projects/{project_id}/jobs/artifacts"
     _from_parent_attrs = {"project_id": "id"}
 
-    @cli.register_custom_action(
-        "Project", ("ref_name", "job"), ("job_token",), custom_action="artifacts"
-    )
-    def __call__(
-        self,
-        *args: Any,
-        **kwargs: Any,
-    ) -> Optional[bytes]:
-        utils.warn(
-            message=(
-                "The project.artifacts() method is deprecated and will be removed in a "
-                "future version. Use project.artifacts.download() instead.\n"
-            ),
-            category=DeprecationWarning,
-        )
-        data = self.download(
-            *args,
-            **kwargs,
-        )
-        if TYPE_CHECKING:
-            assert data is not None
-            assert isinstance(data, bytes)
-        return data
-
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete(self, **kwargs: Any) -> None:
         """Delete the project's artifacts on the server.

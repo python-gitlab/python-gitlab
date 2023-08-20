@@ -255,11 +255,6 @@ a branch or tag::
 
   project.artifacts.download(ref_name='main', job='build')
 
-.. attention::
-
-    An older method ``project.artifacts()`` is deprecated and will be
-    removed in a future version.
-
 .. warning::
 
    Artifacts are entirely stored in memory in this example.

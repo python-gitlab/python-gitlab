@@ -77,29 +77,6 @@ def test_cli_project_artifact_download(gitlab_config, job_with_artifacts):
     assert is_zipfile(artifacts_zip)
 
 
-def test_cli_project_artifacts_warns_deprecated(gitlab_config, job_with_artifacts):
-    cmd = [
-        "gitlab",
-        "--config-file",
-        gitlab_config,
-        "project",
-        "artifacts",
-        "--id",
-        str(job_with_artifacts.pipeline["project_id"]),
-        "--ref-name",
-        job_with_artifacts.ref,
-        "--job",
-        job_with_artifacts.name,
-    ]
-
-    artifacts = subprocess.run(cmd, capture_output=True, check=True)
-    assert isinstance(artifacts.stdout, bytes)
-    assert b"DeprecationWarning" in artifacts.stderr
-
-    artifacts_zip = BytesIO(artifacts.stdout)
-    assert is_zipfile(artifacts_zip)
-
-
 def test_cli_project_artifact_raw(gitlab_config, job_with_artifacts):
     cmd = [
         "gitlab",
