@@ -2,42 +2,6 @@ from enum import Enum, IntEnum
 
 from gitlab._version import __title__, __version__
 
-# NOTE(jlvillal): '_DEPRECATED' only affects users accessing constants via the
-# top-level gitlab.* namespace. See 'gitlab/__init__.py:__getattr__()' for the
-# consumer of '_DEPRECATED' For example 'x = gitlab.NO_ACCESS'.  We want users
-# to instead use constants by doing code like: gitlab.const.NO_ACCESS.
-_DEPRECATED = [
-    "ADMIN_ACCESS",
-    "DEFAULT_URL",
-    "DEVELOPER_ACCESS",
-    "GUEST_ACCESS",
-    "MAINTAINER_ACCESS",
-    "MINIMAL_ACCESS",
-    "NO_ACCESS",
-    "NOTIFICATION_LEVEL_CUSTOM",
-    "NOTIFICATION_LEVEL_DISABLED",
-    "NOTIFICATION_LEVEL_GLOBAL",
-    "NOTIFICATION_LEVEL_MENTION",
-    "NOTIFICATION_LEVEL_PARTICIPATING",
-    "NOTIFICATION_LEVEL_WATCH",
-    "OWNER_ACCESS",
-    "REPORTER_ACCESS",
-    "SEARCH_SCOPE_BLOBS",
-    "SEARCH_SCOPE_COMMITS",
-    "SEARCH_SCOPE_GLOBAL_SNIPPET_TITLES",
-    "SEARCH_SCOPE_ISSUES",
-    "SEARCH_SCOPE_MERGE_REQUESTS",
-    "SEARCH_SCOPE_MILESTONES",
-    "SEARCH_SCOPE_PROJECT_NOTES",
-    "SEARCH_SCOPE_PROJECTS",
-    "SEARCH_SCOPE_USERS",
-    "SEARCH_SCOPE_WIKI_BLOBS",
-    "USER_AGENT",
-    "VISIBILITY_INTERNAL",
-    "VISIBILITY_PRIVATE",
-    "VISIBILITY_PUBLIC",
-]
-
 
 class GitlabEnum(str, Enum):
     """An enum mixed in with str to make it JSON-serializable."""
@@ -138,5 +102,33 @@ __all__ = [
     "Visibility",
     "NotificationLevel",
     "SearchScope",
+    "ADMIN_ACCESS",
+    "DEFAULT_URL",
+    "DEVELOPER_ACCESS",
+    "GUEST_ACCESS",
+    "MAINTAINER_ACCESS",
+    "MINIMAL_ACCESS",
+    "NO_ACCESS",
+    "NOTIFICATION_LEVEL_CUSTOM",
+    "NOTIFICATION_LEVEL_DISABLED",
+    "NOTIFICATION_LEVEL_GLOBAL",
+    "NOTIFICATION_LEVEL_MENTION",
+    "NOTIFICATION_LEVEL_PARTICIPATING",
+    "NOTIFICATION_LEVEL_WATCH",
+    "OWNER_ACCESS",
+    "REPORTER_ACCESS",
+    "SEARCH_SCOPE_BLOBS",
+    "SEARCH_SCOPE_COMMITS",
+    "SEARCH_SCOPE_GLOBAL_SNIPPET_TITLES",
+    "SEARCH_SCOPE_ISSUES",
+    "SEARCH_SCOPE_MERGE_REQUESTS",
+    "SEARCH_SCOPE_MILESTONES",
+    "SEARCH_SCOPE_PROJECT_NOTES",
+    "SEARCH_SCOPE_PROJECTS",
+    "SEARCH_SCOPE_USERS",
+    "SEARCH_SCOPE_WIKI_BLOBS",
+    "USER_AGENT",
+    "VISIBILITY_INTERNAL",
+    "VISIBILITY_PRIVATE",
+    "VISIBILITY_PUBLIC",
 ]
-__all__.extend(_DEPRECATED)

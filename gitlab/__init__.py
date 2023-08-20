@@ -17,10 +17,8 @@
 """Wrapper for the GitLab API."""
 
 import warnings
-from typing import Any
 
 import gitlab.config  # noqa: F401
-from gitlab import utils as _utils
 from gitlab._version import (  # noqa: F401
     __author__,
     __copyright__,
@@ -35,24 +33,6 @@ from gitlab.exceptions import *  # noqa: F401,F403
 warnings.filterwarnings("default", category=DeprecationWarning, module="^gitlab")
 
 
-# NOTE(jlvillal): We are deprecating access to the gitlab.const values which
-# were previously imported into this namespace by the
-# 'from gitlab.const import *' statement.
-def __getattr__(name: str) -> Any:
-    # Deprecate direct access to constants without namespace
-    if name in gitlab.const._DEPRECATED:
-        _utils.warn(
-            message=(
-                f"\nDirect access to constants as 'gitlab.{name}' is deprecated and "
-                f"will be removed in a future major python-gitlab release. Please "
-                f"see the usage of constants in the 'gitlab.const' module instead."
-            ),
-            category=DeprecationWarning,
-        )
-        return getattr(gitlab.const, name)
-    raise AttributeError(f"module {__name__} has no attribute {name}")
-
-
 __all__ = [
     "__author__",
     "__copyright__",
@@ -63,5 +43,4 @@ __all__ = [
     "Gitlab",
     "GitlabList",
 ]
-__all__.extend(gitlab.const._DEPRECATED)
 __all__.extend(gitlab.exceptions.__all__)
