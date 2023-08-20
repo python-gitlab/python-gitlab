@@ -42,7 +42,7 @@ Example::
 Not all items are returned from the API
 """""""""""""""""""""""""""""""""""""""
 
-If you've passed ``all=True`` (or ``--all`` via the CLI) to the API and still cannot see all items returned,
+If you've passed ``all=True`` to the API and still cannot see all items returned,
 use ``get_all=True`` (or ``--get-all`` via the CLI) instead. See :ref:`pagination` for more details.
 
 Common errors
