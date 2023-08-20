@@ -402,32 +402,6 @@ class Gitlab:
 
         return cast(str, self._server_version), cast(str, self._server_revision)
 
-    @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabVerifyError)
-    def lint(self, content: str, **kwargs: Any) -> Tuple[bool, List[str]]:
-        """Validate a gitlab CI configuration.
-
-        Args:
-            content: The .gitlab-ci.yml content
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabVerifyError: If the validation could not be done
-
-        Returns:
-            (True, []) if the file is valid, (False, errors(list)) otherwise
-        """
-        utils.warn(
-            "`lint()` is deprecated and will be removed in a future version.\n"
-            "Please use `ci_lint.create()` instead.",
-            category=DeprecationWarning,
-        )
-        post_data = {"content": content}
-        data = self.http_post("/ci/lint", post_data=post_data, **kwargs)
-        if TYPE_CHECKING:
-            assert not isinstance(data, requests.Response)
-        return (data["status"] == "valid", data["errors"])
-
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabMarkdownError)
     def markdown(
         self, text: str, gfm: bool = False, project: Optional[str] = None, **kwargs: Any
