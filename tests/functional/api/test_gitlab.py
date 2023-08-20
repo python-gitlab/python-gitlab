@@ -282,17 +282,3 @@ def test_list_iterator_true_nowarning(gl, recwarn):
     items = gl.gitlabciymls.list(iterator=True)
     assert not recwarn
     assert len(list(items)) > 20
-
-
-def test_list_as_list_false_warnings(gl):
-    """Using `as_list=False` will disable the UserWarning but cause a
-    DeprecationWarning"""
-    with pytest.warns(DeprecationWarning) as record:
-        items = gl.gitlabciymls.list(as_list=False)
-    assert len(record) == 1
-    assert len(list(items)) > 20
-
-
-def test_list_with_as_list_and_iterator_raises(gl):
-    with pytest.raises(ValueError, match="`as_list` or `iterator`"):
-        gl.gitlabciymls.list(as_list=False, iterator=True)

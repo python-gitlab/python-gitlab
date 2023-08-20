@@ -556,14 +556,6 @@ def test_list_request_page_and_iterator(gl):
     assert len(result) == 20
     assert len(responses.calls) == 1
 
-    with pytest.warns(
-        UserWarning, match="`as_list=False` and `page=1` were both specified"
-    ):
-        result = gl.http_list("/projects", as_list=False, page=1)
-    assert isinstance(result, list)
-    assert len(result) == 20
-    assert len(responses.calls) == 2
-
 
 large_list_response = {
     "method": responses.GET,
@@ -594,24 +586,6 @@ large_list_response = {
     "status": 200,
     "match": helpers.MATCH_EMPTY_QUERY_PARAMS,
 }
-
-
-@responses.activate
-def test_as_list_deprecation_warning(gl):
-    responses.add(**large_list_response)
-
-    with warnings.catch_warnings(record=True) as caught_warnings:
-        result = gl.http_list("/projects", as_list=False)
-    assert len(caught_warnings) == 1
-    warning = caught_warnings[0]
-    assert isinstance(warning.message, DeprecationWarning)
-    message = str(warning.message)
-    assert "`as_list=False` is deprecated" in message
-    assert "Use `iterator=True` instead" in message
-    assert __file__ == warning.filename
-    assert not isinstance(result, list)
-    assert len(list(result)) == 20
-    assert len(responses.calls) == 1
 
 
 @responses.activate
