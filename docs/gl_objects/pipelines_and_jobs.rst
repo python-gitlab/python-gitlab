@@ -300,11 +300,6 @@ Get a single artifact file by branch and job::
 
     project.artifacts.raw('branch', 'path/to/file', 'job')
 
-.. attention::
-
-    An older method ``project.artifact()`` is deprecated and will be
-    removed in a future version.
-
 Mark a job artifact as kept when expiration is set::
 
     build_or_job.keep_artifacts()

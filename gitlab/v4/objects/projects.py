@@ -625,26 +625,6 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             path, post_data={"namespace": to_namespace}, **kwargs
         )
 
-    @cli.register_custom_action("Project", ("ref_name", "artifact_path", "job"))
-    @exc.on_http_error(exc.GitlabGetError)
-    def artifact(
-        self,
-        *args: Any,
-        **kwargs: Any,
-    ) -> Optional[bytes]:
-        utils.warn(
-            message=(
-                "The project.artifact() method is deprecated and will be "
-                "removed in a future version. Use project.artifacts.raw() instead."
-            ),
-            category=DeprecationWarning,
-        )
-        data = self.artifacts.raw(*args, **kwargs)
-        if TYPE_CHECKING:
-            assert data is not None
-            assert isinstance(data, bytes)
-        return data
-
 
 class ProjectManager(CRUDMixin, RESTManager):
     _path = "/projects"
