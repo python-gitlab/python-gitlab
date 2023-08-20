@@ -336,16 +336,6 @@ def test_gitlab_user_agent(kwargs, expected_agent):
     assert gl.headers["User-Agent"] == expected_agent
 
 
-def test_gitlab_deprecated_global_const_warns():
-    with pytest.deprecated_call(
-        match="'gitlab.NO_ACCESS' is deprecated.*constants in the 'gitlab.const'"
-    ) as record:
-        no_access = gitlab.NO_ACCESS
-
-    assert len(record) == 1
-    assert no_access == 0
-
-
 def test_gitlab_enum_const_does_not_warn(recwarn):
     no_access = gitlab.const.AccessLevel.NO_ACCESS
 

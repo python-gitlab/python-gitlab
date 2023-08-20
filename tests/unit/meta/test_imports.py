@@ -6,10 +6,21 @@ Ensure objects defined in gitlab.v4.objects are imported in
 import pkgutil
 from typing import Set
 
+import gitlab.exceptions
 import gitlab.v4.objects
 
 
-def test_verify_v4_objects_imported() -> None:
+def test_all_exceptions_imports_are_exported() -> None:
+    assert gitlab.exceptions.__all__ == sorted(
+        [
+            name
+            for name in dir(gitlab.exceptions)
+            if name.endswith("Error") and not name.startswith("_")
+        ]
+    )
+
+
+def test_all_v4_objects_are_imported() -> None:
     assert len(gitlab.v4.objects.__path__) == 1
 
     init_files: Set[str] = set()
