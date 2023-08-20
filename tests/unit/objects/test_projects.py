@@ -772,11 +772,6 @@ def test_artifact_project(project, resp_artifact):
         project.artifact("ref_name", "artifact_path", "job")
 
 
-def test_transfer_project_deprecated_warns(project, resp_transfer_project):
-    with pytest.warns(DeprecationWarning):
-        project.transfer_project("test-namespace")
-
-
 def test_project_pull_mirror(project, resp_start_pull_mirroring_project):
     project.mirror_pull()
 
