@@ -625,17 +625,6 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
             path, post_data={"namespace": to_namespace}, **kwargs
         )
 
-    @cli.register_custom_action("Project", ("to_namespace",))
-    def transfer_project(self, *args: Any, **kwargs: Any) -> None:
-        utils.warn(
-            message=(
-                "The project.transfer_project() method is deprecated and will be "
-                "removed in a future version. Use project.transfer() instead."
-            ),
-            category=DeprecationWarning,
-        )
-        return self.transfer(*args, **kwargs)
-
     @cli.register_custom_action("Project", ("ref_name", "artifact_path", "job"))
     @exc.on_http_error(exc.GitlabGetError)
     def artifact(
