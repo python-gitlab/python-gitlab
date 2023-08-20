@@ -43,7 +43,15 @@ def test_list_all_commits(gitlab_cli, project):
     assert commit.id not in ret.stdout
 
     # Listing commits on other branches requires `all` parameter passed to the API
-    cmd = ["project-commit", "list", "--project-id", project.id, "--get-all", "--all"]
+    cmd = [
+        "project-commit",
+        "list",
+        "--project-id",
+        project.id,
+        "--get-all",
+        "--all",
+        "true",
+    ]
     ret_all = gitlab_cli(cmd)
     assert commit.id in ret_all.stdout
     assert len(ret_all.stdout) > len(ret.stdout)

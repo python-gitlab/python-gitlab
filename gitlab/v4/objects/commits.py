@@ -155,6 +155,7 @@ class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
         optional=("author_email", "author_name"),
     )
     _list_filters = (
+        "all",
         "ref_name",
         "since",
         "until",

@@ -236,12 +236,6 @@ def _populate_sub_parser_by_class(
                 action="store_true",
                 help="Return all items from the server, without pagination.",
             )
-            sub_parser_action.add_argument(
-                "--all",
-                required=False,
-                action="store_true",
-                help="Deprecated. Use --get-all instead.",
-            )
 
         if action_name == "delete":
             if cls._id_attr is not None:
