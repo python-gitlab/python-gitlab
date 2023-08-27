@@ -249,7 +249,7 @@ def resp_runner_create():
             url="http://localhost/api/v4/user/runners",
             json={"id": "6", "token": "6337ff461c94fd3fa32ba3b1ff4125"},
             content_type="application/json",
-            status=200,
+            status=201,
         )
         yield rsps
 

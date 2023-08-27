@@ -74,10 +74,10 @@ Register a new runner::
 .. note::
 
    A new runner registration workflow has been introduced since GitLab 16.0. This new
-   workflow comes with a new API endpoint to create runner, which does not use
+   workflow comes with a new API endpoint to create runners, which does not use
    registration tokens.
 
-   The new endpoint can be called using ``user.runners.create()``.
+   The new endpoint can be called using ``gl.user.runners.create() after authenticating with `gl.auth()```.
 
 Update a runner::
 
