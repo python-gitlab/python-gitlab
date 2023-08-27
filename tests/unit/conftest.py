@@ -1,4 +1,5 @@
 import pytest
+import responses
 
 import gitlab
 from tests.unit import helpers
@@ -57,6 +58,23 @@ def gl_retry():
         api_version="4",
         retry_transient_errors=True,
     )
+
+
+@pytest.fixture
+def resp_get_current_user():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/user",
+            json={
+                "id": 1,
+                "username": "username",
+                "web_url": "http://localhost/username",
+            },
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
 
 
 # Todo: parametrize, but check what tests it's really useful for
@@ -127,6 +145,12 @@ def schedule(project):
 @pytest.fixture
 def user(gl):
     return gl.users.get(1, lazy=True)
+
+
+@pytest.fixture
+def current_user(gl, resp_get_current_user):
+    gl.auth()
+    return gl.user
 
 
 @pytest.fixture

@@ -456,3 +456,60 @@ Get the users activities::
         query_parameters={'from': '2018-07-01'},
         get_all=True,
     )
+
+Create new runner
+=================
+
+References
+----------
+
+* New runner registration API endpoint (see `Migrating to the new runner registration workflow <https://docs.gitlab.com/ee/ci/runners/new_creation_workflow.html#creating-runners-programmatically>`_)
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.CurrentUserRunner`
+  + :class:`gitlab.v4.objects.CurrentUserRunnerManager`
+  + :attr:`gitlab.Gitlab.user.runners`
+
+* GitLab API : https://docs.gitlab.com/ee/api/users.html#create-a-runner
+
+Examples
+--------
+
+Create an instance-wide runner::
+
+    runner = gl.user.runners.create({
+        "runner_type": "instance_type",
+        "description": "My brand new runner",
+        "paused": True,
+        "locked": False,
+        "run_untagged": True
+        "tag_list": ["linux", "docker", "testing"],
+        "access_level": "not_protected"
+    })
+
+Create a group runner::
+
+    runner = gl.user.runners.create({
+        "runner_type": "group_type",
+        "group_id": 12345678,
+        "description": "My brand new runner",
+        "paused": True,
+        "locked": False,
+        "run_untagged": True
+        "tag_list": ["linux", "docker", "testing"],
+        "access_level": "not_protected"
+    })
+
+Create a project runner::
+
+    runner = gl.user.runners.create({
+        "runner_type": "project_type",
+        "project_id": 987564321,
+        "description": "My brand new runner",
+        "paused": True,
+        "locked": False,
+        "run_untagged": True
+        "tag_list": ["linux", "docker", "testing"],
+        "access_level": "not_protected"
+    })

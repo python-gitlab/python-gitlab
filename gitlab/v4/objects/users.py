@@ -36,6 +36,8 @@ __all__ = [
     "CurrentUserGPGKeyManager",
     "CurrentUserKey",
     "CurrentUserKeyManager",
+    "CurrentUserRunner",
+    "CurrentUserRunnerManager",
     "CurrentUserStatus",
     "CurrentUserStatusManager",
     "CurrentUser",
@@ -111,6 +113,31 @@ class CurrentUserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager
         return cast(CurrentUserKey, super().get(id=id, lazy=lazy, **kwargs))
 
 
+class CurrentUserRunner(RESTObject):
+    pass
+
+
+class CurrentUserRunnerManager(CreateMixin, RESTManager):
+    _path = "/user/runners"
+    _obj_cls = CurrentUserRunner
+    _types = {"tag_list": types.CommaSeparatedListAttribute}
+    _create_attrs = RequiredOptional(
+        required=("runner_type",),
+        optional=(
+            "group_id",
+            "project_id",
+            "description",
+            "paused",
+            "locked",
+            "run_untagged",
+            "tag_list",
+            "access_level",
+            "maximum_timeout",
+            "maintenance_note",
+        ),
+    )
+
+
 class CurrentUserStatus(SaveMixin, RESTObject):
     _id_attr = None
     _repr_attr = "message"
@@ -132,6 +159,7 @@ class CurrentUser(RESTObject):
     emails: CurrentUserEmailManager
     gpgkeys: CurrentUserGPGKeyManager
     keys: CurrentUserKeyManager
+    runners: CurrentUserRunnerManager
     status: CurrentUserStatusManager
 
 
