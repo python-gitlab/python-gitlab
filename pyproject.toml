@@ -27,7 +27,9 @@ disable_error_code = ["no-untyped-def"]
 
 [tool.semantic_release]
 branch = "main"
-version_variable = "gitlab/_version.py:__version__"
+version_variables = [
+    "gitlab/_version.py:__version__",
+]
 commit_subject = "chore: release v{version}"
 commit_message = ""
 
