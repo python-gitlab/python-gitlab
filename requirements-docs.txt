@@ -2,5 +2,5 @@
 furo==2023.8.19
 jinja2==3.1.2
 myst-parser==2.0.0
-sphinx==7.2.2
+sphinx==7.2.4
 sphinxcontrib-autoprogram==0.1.8
