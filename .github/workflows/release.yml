@@ -13,7 +13,7 @@ jobs:
       id-token: write
     environment: pypi.org
     steps:
-    - uses: actions/checkout@v3.5.3
+    - uses: actions/checkout@v3.6.0
       with:
         fetch-depth: 0
         token: ${{ secrets.RELEASE_GITHUB_TOKEN }}
