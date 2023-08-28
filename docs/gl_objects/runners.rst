@@ -77,7 +77,8 @@ Register a new runner::
    workflow comes with a new API endpoint to create runners, which does not use
    registration tokens.
 
-   The new endpoint can be called using ``gl.user.runners.create() after authenticating with `gl.auth()```.
+   The new endpoint can be called using ``gl.user.runners.create()`` after
+   authenticating with ``gl.auth()``.
 
 Update a runner::
 
