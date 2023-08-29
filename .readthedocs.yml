@@ -8,6 +8,6 @@ formats:
   - epub
 
 python:
-  version: 3.8
+  version: 3.11
   install:
     - requirements: requirements-docs.txt
