@@ -54,6 +54,7 @@ class ProjectCiLintManager(GetWithoutIdMixin, CreateMixin, RESTManager):
     _path = "/projects/{project_id}/ci/lint"
     _obj_cls = ProjectCiLint
     _from_parent_attrs = {"project_id": "id"}
+    _optional_get_attrs = ("dry_run", "include_jobs", "ref")
     _create_attrs = RequiredOptional(
         required=("content",), optional=("dry_run", "include_jobs", "ref")
     )
