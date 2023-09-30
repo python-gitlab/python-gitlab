@@ -18,6 +18,7 @@
 
 import warnings
 
+import gitlab._logging
 import gitlab.config  # noqa: F401
 from gitlab._version import (  # noqa: F401
     __author__,
