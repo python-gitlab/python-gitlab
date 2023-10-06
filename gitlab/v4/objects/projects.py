@@ -23,6 +23,7 @@ from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
+    DeleteMixin,
     GetWithoutIdMixin,
     ListMixin,
     ObjectDeleteMixin,
@@ -1199,11 +1200,13 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
         return cast(ProjectFork, CreateMixin.create(self, data, path=path, **kwargs))
 
 
-class ProjectRemoteMirror(SaveMixin, RESTObject):
+class ProjectRemoteMirror(ObjectDeleteMixin, SaveMixin, RESTObject):
     pass
 
 
-class ProjectRemoteMirrorManager(ListMixin, CreateMixin, UpdateMixin, RESTManager):
+class ProjectRemoteMirrorManager(
+    ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+):
     _path = "/projects/{project_id}/remote_mirrors"
     _obj_cls = ProjectRemoteMirror
     _from_parent_attrs = {"project_id": "id"}
