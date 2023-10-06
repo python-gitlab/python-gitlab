@@ -48,6 +48,12 @@ def resp_remote_mirrors():
             content_type="application/json",
             status=200,
         )
+
+        rsps.add(
+            method=responses.DELETE,
+            url="http://localhost/api/v4/projects/1/remote_mirrors/1",
+            status=204,
+        )
         yield rsps
 
 
@@ -70,3 +76,8 @@ def test_update_project_remote_mirror(project, resp_remote_mirrors):
     mirror.save()
     assert mirror.update_status == "finished"
     assert mirror.only_protected_branches
+
+
+def test_delete_project_remote_mirror(project, resp_remote_mirrors):
+    mirror = project.remote_mirrors.create({"url": "https://example.com"})
+    mirror.delete()

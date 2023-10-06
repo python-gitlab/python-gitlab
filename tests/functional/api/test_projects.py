@@ -282,6 +282,8 @@ def test_project_remote_mirrors(project):
     assert mirror.url == mirror_url
     assert mirror.enabled is True
 
+    mirror.delete()
+
 
 def test_project_services(project):
     # Use 'update' to create a service as we don't have a 'create' method and

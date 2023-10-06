@@ -32,3 +32,7 @@ Update an existing remote mirror's attributes::
     mirror.enabled = False
     mirror.only_protected_branches = True
     mirror.save()
+
+Delete an existing remote mirror::
+
+  mirror.delete()
