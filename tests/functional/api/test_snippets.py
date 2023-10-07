@@ -6,7 +6,10 @@ def test_snippets(gl):
     assert not snippets
 
     snippet = gl.snippets.create(
-        {"title": "snippet1", "file_name": "snippet1.py", "content": "import gitlab"}
+        {
+            "title": "snippet1",
+            "files": [{"file_path": "snippet1.py", "content": "import gitlab"}],
+        }
     )
     snippet = gl.snippets.get(snippet.id)
     snippet.title = "updated_title"
@@ -30,8 +33,7 @@ def test_project_snippets(project):
     snippet = project.snippets.create(
         {
             "title": "snip1",
-            "file_name": "foo.py",
-            "content": "initial content",
+            "files": [{"file_path": "foo.py", "content": "initial content"}],
             "visibility": gitlab.const.VISIBILITY_PRIVATE,
         }
     )

@@ -39,8 +39,11 @@ Get a snippet::
 Create a snippet::
 
     snippet = gl.snippets.create({'title': 'snippet1',
-                                  'file_name': 'snippet1.py',
-                                  'content': open('snippet1.py').read()})
+                                  'files': [{
+                                      'file_path': 'foo.py',
+                                      'content': 'import gitlab'
+                                   }],
+                                })
 
 Update the snippet attributes::
 

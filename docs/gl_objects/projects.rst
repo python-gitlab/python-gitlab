@@ -566,8 +566,10 @@ Get the content of a snippet::
 Create a snippet::
 
     snippet = project.snippets.create({'title': 'sample 1',
-                                       'file_name': 'foo.py',
-                                       'code': 'import gitlab',
+                                       'files': [{
+                                            'file_path': 'foo.py',
+                                            'content': 'import gitlab'
+                                        }],
                                        'visibility_level':
                                        gitlab.const.Visibility.PRIVATE})
 
