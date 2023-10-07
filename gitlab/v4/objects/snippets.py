@@ -70,10 +70,23 @@ class SnippetManager(CRUDMixin, RESTManager):
     _path = "/snippets"
     _obj_cls = Snippet
     _create_attrs = RequiredOptional(
-        required=("title", "file_name", "content"), optional=("lifetime", "visibility")
+        required=("title",),
+        exclusive=("files", "file_name"),
+        optional=(
+            "description",
+            "content",
+            "visibility",
+        ),
     )
     _update_attrs = RequiredOptional(
-        optional=("title", "file_name", "content", "visibility")
+        optional=(
+            "title",
+            "files",
+            "file_name",
+            "content",
+            "visibility",
+            "description",
+        ),
     )
 
     @cli.register_custom_action("SnippetManager")
@@ -151,11 +164,22 @@ class ProjectSnippetManager(CRUDMixin, RESTManager):
     _obj_cls = ProjectSnippet
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
-        required=("title", "file_name", "content", "visibility"),
-        optional=("description",),
+        required=("title", "visibility"),
+        exclusive=("files", "file_name"),
+        optional=(
+            "description",
+            "content",
+        ),
     )
     _update_attrs = RequiredOptional(
-        optional=("title", "file_name", "content", "visibility", "description"),
+        optional=(
+            "title",
+            "files",
+            "file_name",
+            "content",
+            "visibility",
+            "description",
+        ),
     )
 
     def get(
