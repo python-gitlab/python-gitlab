@@ -3,6 +3,7 @@ import functools
 import os
 import re
 import sys
+import textwrap
 from types import ModuleType
 from typing import (
     Any,
@@ -50,11 +51,21 @@ class VerticalHelpFormatter(argparse.HelpFormatter):
         for line in result.splitlines(keepends=True):
             # All of our resources are on one line and wrapped inside braces.
             # For example: {application,resource1,resource2}
+            # except if there are fewer resources - then the line and help text
+            # are collapsed on the same line.
+            # For example:  {list}      Action to execute on the GitLab resource.
             # We then put each resource on its own line to make it easier to read.
             if line.strip().startswith("{"):
-                choices = line.strip().strip("{}").split(",")
-                choices_str = f"\n{indent}".join(choices)
-                line = f"{indent}{choices_str}\n"
+                choice_string, help_string = line.split("}", 1)
+                choice_list = choice_string.strip(" {").split(",")
+                help_string = help_string.strip()
+
+                if help_string:
+                    help_indent = len(max(choice_list, key=len)) * " "
+                    choice_list.append(f"{help_indent} {help_string}")
+
+                choices = "\n".join(choice_list)
+                line = f"{textwrap.indent(choices, indent)}\n"
             output += line
         return output
 
