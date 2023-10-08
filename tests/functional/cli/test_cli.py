@@ -46,6 +46,12 @@ def test_resource_help_prints_actions_vertically(script_runner):
     assert ret.returncode == 0
 
 
+def test_resource_help_prints_actions_vertically_only_one_action(script_runner):
+    ret = script_runner.run(["gitlab", "event", "--help"])
+    assert """action:\n  list\n""" in ret.stdout
+    assert ret.returncode == 0
+
+
 @pytest.mark.script_launch_mode("inprocess")
 @responses.activate
 def test_defaults_to_gitlab_com(script_runner, resp_get_project, monkeypatch):
