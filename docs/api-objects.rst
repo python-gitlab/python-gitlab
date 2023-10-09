@@ -29,6 +29,7 @@ API examples
    gl_objects/invitations
    gl_objects/issues
    gl_objects/iterations
+   gl_objects/job_token_scope
    gl_objects/keys
    gl_objects/boards
    gl_objects/labels

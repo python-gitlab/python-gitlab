@@ -309,6 +309,7 @@ class CreateMixin(_RestManagerBase):
 class UpdateMethod(enum.IntEnum):
     PUT = 1
     POST = 2
+    PATCH = 3
 
 
 class UpdateMixin(_RestManagerBase):
@@ -331,6 +332,9 @@ class UpdateMixin(_RestManagerBase):
         """
         if self._update_method is UpdateMethod.POST:
             http_method = self.gitlab.http_post
+        elif self._update_method is UpdateMethod.PATCH:
+            # only patch uses required kwargs, so our types are a bit misaligned
+            http_method = self.gitlab.http_patch  # type: ignore[assignment]
         else:
             http_method = self.gitlab.http_put
         return http_method
