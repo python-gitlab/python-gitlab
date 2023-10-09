@@ -95,6 +95,7 @@ SEARCH_SCOPE_PROJECT_NOTES = SearchScope.PROJECT_NOTES.value
 
 USER_AGENT: str = f"{__title__}/{__version__}"
 
+NO_JSON_RESPONSE_CODES = [204]
 RETRYABLE_TRANSIENT_ERROR_CODES = [500, 502, 503, 504] + list(range(520, 531))
 
 __all__ = [
