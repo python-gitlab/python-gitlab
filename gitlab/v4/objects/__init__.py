@@ -32,6 +32,7 @@ from .integrations import *
 from .invitations import *
 from .issues import *
 from .iterations import *
+from .job_token_scope import *
 from .jobs import *
 from .keys import *
 from .labels import *

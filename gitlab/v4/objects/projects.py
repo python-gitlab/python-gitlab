@@ -59,6 +59,7 @@ from .integrations import ProjectIntegrationManager, ProjectServiceManager  # no
 from .invitations import ProjectInvitationManager  # noqa: F401
 from .issues import ProjectIssueManager  # noqa: F401
 from .iterations import ProjectIterationManager  # noqa: F401
+from .job_token_scope import ProjectJobTokenScopeManager  # noqa: F401
 from .jobs import ProjectJobManager  # noqa: F401
 from .labels import ProjectLabelManager  # noqa: F401
 from .members import ProjectMemberAllManager, ProjectMemberManager  # noqa: F401
@@ -191,6 +192,7 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
     issues_statistics: ProjectIssuesStatisticsManager
     iterations: ProjectIterationManager
     jobs: ProjectJobManager
+    job_token_scope: ProjectJobTokenScopeManager
     keys: ProjectKeyManager
     labels: ProjectLabelManager
     members: ProjectMemberManager
