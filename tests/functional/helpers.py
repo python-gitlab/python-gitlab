@@ -41,7 +41,7 @@ def safe_delete(
             return
 
         if index:
-            logging.info(f"Attempt {index+1} to delete {object!r}.")
+            logging.info(f"Attempt {index + 1} to delete {object!r}.")
         try:
             if hard_delete:
                 object.delete(hard_delete=True)
