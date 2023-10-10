@@ -1,11 +1,11 @@
 ARG PYTHON_FLAVOR=alpine
-FROM python:3.11-${PYTHON_FLAVOR} AS build
+FROM python:3.12-${PYTHON_FLAVOR} AS build
 
 WORKDIR /opt/python-gitlab
 COPY . .
 RUN pip install build && python -m build
 
-FROM python:3.11-${PYTHON_FLAVOR}
+FROM python:3.12-${PYTHON_FLAVOR}
 
 WORKDIR /opt/python-gitlab
 COPY --from=build /opt/python-gitlab/dist dist/

@@ -26,7 +26,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4.7.1
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - name: Install dependencies
         run: pip install tox
       - name: Build docs
@@ -46,7 +46,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4.7.1
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - name: Install dependencies
         run: pip install tox twine wheel
       - name: Check twine readme rendering
