@@ -34,17 +34,19 @@ jobs:
             toxenv: py310,smoke
           - version: "3.11"
             toxenv: py311,smoke
-          - version: '3.12.0-alpha - 3.12' # SemVer's version range syntax
+          - version: "3.12"
             toxenv: py312,smoke
+          - version: '3.13.0-alpha - 3.13' # SemVer's version range syntax
+            toxenv: py313,smoke
         include:
           - os: macos-latest
             python:
-              version: "3.11"
-              toxenv: py310,smoke
+              version: "3.12"
+              toxenv: py312,smoke
           - os: windows-latest
             python:
-              version: "3.11"
-              toxenv: py310,smoke
+              version: "3.12"
+              toxenv: py312,smoke
     steps:
       - uses: actions/checkout@v4.1.0
       - name: Set up Python ${{ matrix.python.version }}
@@ -68,7 +70,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4.7.1
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - name: Install dependencies
         run: pip install tox
       - name: Run tests
@@ -89,7 +91,7 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4.7.1
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - name: Install dependencies
         run: pip install tox
       - name: Run tests
@@ -111,7 +113,7 @@ jobs:
     - uses: actions/checkout@v4.1.0
     - uses: actions/setup-python@v4.7.1
       with:
-        python-version: "3.11"
+        python-version: "3.12"
     - name: Install dependencies
       run: |
         pip install -r requirements-test.txt
@@ -130,7 +132,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4.7.1
       with:
-        python-version: '3.11'
+        python-version: '3.12'
     - uses: actions/download-artifact@v3.0.2
       with:
         name: dist
