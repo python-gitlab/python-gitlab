@@ -1,3 +1,63 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python-gitlab"
+description="A python wrapper for the GitLab API"
+readme = "README.rst"
+authors = [
+    {name = "Gauvain Pocentek", email= "gauvain@pocentek.net"}
+]
+maintainers = [
+    {name = "John Villalovos", email="john@sodarock.com"},
+    {name = "Max Wittig", email="max.wittig@siemens.com"},
+    {name = "Nejc Habjan", email="nejc.habjan@siemens.com"},
+    {name = "Roger Meier", email="r.meier@siemens.com"}
+]
+requires-python = ">=3.8.0"
+dependencies = [
+    "requests>=2.25.0",
+    "requests-toolbelt>=0.10.1",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Natural Language :: English",
+    "Operating System :: POSIX",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11"
+]
+keywords = ["api", "client", "gitlab", "python", "python-gitlab", "wrapper"]
+license = {text = "LGPL-3.0-or-later"}
+dynamic = ["version"]
+
+[project.optional-dependencies]
+autocompletion = ["argcomplete>=1.10.0,<3"]
+yaml = ["PyYaml>=6.0.1"]
+
+[project.scripts]
+gitlab = "gitlab.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/python-gitlab/python-gitlab"
+Changelog = "https://github.com/python-gitlab/python-gitlab/blob/main/CHANGELOG.md"
+Documentation = "https://python-gitlab.readthedocs.io"
+Source = "https://github.com/python-gitlab/python-gitlab"
+
+[tool.setuptools.packages.find]
+exclude = ["docs*", "tests*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "gitlab._version.__version__" }
+
 [tool.isort]
 profile = "black"
 multi_line_output = 3
