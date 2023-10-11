@@ -39,7 +39,7 @@ class ApplicationAppearanceManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         self,
         id: Optional[Union[str, int]] = None,
         new_data: Optional[Dict[str, Any]] = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Dict[str, Any]:
         """Update an object on the server.
 

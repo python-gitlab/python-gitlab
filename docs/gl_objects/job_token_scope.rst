@@ -36,8 +36,8 @@ Update the job token scope settings::
 .. warning::
 
    As you can see above, the attributes you receive from and send to the GitLab API
-   are not consistent. GitLab returns `inbound_enabled` and `outbound_enabled`,
-   but expects `enabled`, which only refers to the inbound scope. This is important
+   are not consistent. GitLab returns ``inbound_enabled`` and ``outbound_enabled``,
+   but expects ``enabled``, which only refers to the inbound scope. This is important
    when accessing and updating these attributes.
 
 Or update the job token scope settings directly::

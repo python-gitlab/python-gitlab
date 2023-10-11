@@ -1,9 +1,8 @@
-import tarfile
-import zipfile
 import subprocess
 import sys
+import tarfile
+import zipfile
 from pathlib import Path
-
 
 import pytest
 
@@ -16,13 +15,13 @@ WHEEL_FILE = f"{__title__.replace('-', '_')}-{__version__}-py{sys.version_info.m
 
 
 @pytest.fixture(scope="session")
-def build(tmp_path_factory: Path):
+def build(tmp_path_factory: pytest.TempPathFactory):
     temp_dir = tmp_path_factory.mktemp("build")
     subprocess.run([sys.executable, "-m", "build", "--outdir", temp_dir], check=True)
     return temp_dir
 
 
-def test_sdist_includes_docs_and_tests(build: subprocess.CompletedProcess) -> None:
+def test_sdist_includes_docs_and_tests(build: Path) -> None:
     sdist = tarfile.open(build / SDIST_FILE, "r:gz")
     sdist_dir = f"{__title__}-{__version__}"
 
@@ -35,6 +34,6 @@ def test_sdist_includes_docs_and_tests(build: subprocess.CompletedProcess) -> No
     assert readme.isfile()
 
 
-def test_wheel_excludes_docs_and_tests(build: subprocess.CompletedProcess) -> None:
+def test_wheel_excludes_docs_and_tests(build: Path) -> None:
     wheel = zipfile.ZipFile(build / WHEEL_FILE)
     assert not any(file.startswith((DOCS_DIR, TEST_DIR)) for file in wheel.namelist())
