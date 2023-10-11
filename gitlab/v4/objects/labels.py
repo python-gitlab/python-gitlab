@@ -70,7 +70,7 @@ class GroupLabelManager(
         self,
         name: Optional[str],
         new_data: Optional[Dict[str, Any]] = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Dict[str, Any]:
         """Update a Label on the server.
 
@@ -136,7 +136,7 @@ class ProjectLabelManager(
         self,
         name: Optional[str],
         new_data: Optional[Dict[str, Any]] = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Dict[str, Any]:
         """Update a Label on the server.
 
