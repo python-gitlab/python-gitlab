@@ -1,3 +1,4 @@
+import enum
 from types import ModuleType
 from typing import (
     Any,
@@ -304,6 +305,12 @@ class CreateMixin(_RestManagerBase):
         return self._obj_cls(self, server_data)
 
 
+@enum.unique
+class UpdateMethod(enum.IntEnum):
+    PUT = 1
+    POST = 2
+
+
 class UpdateMixin(_RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
@@ -311,7 +318,7 @@ class UpdateMixin(_RestManagerBase):
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
-    _update_uses_post: bool = False
+    _update_method: UpdateMethod = UpdateMethod.PUT
     gitlab: gitlab.Gitlab
 
     def _get_update_method(
@@ -322,7 +329,7 @@ class UpdateMixin(_RestManagerBase):
         Returns:
             http_put (default) or http_post
         """
-        if self._update_uses_post:
+        if self._update_method is UpdateMethod.POST:
             http_method = self.gitlab.http_post
         else:
             http_method = self.gitlab.http_put
@@ -894,7 +901,7 @@ class PromoteMixin(_RestObjectBase):
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
-    _update_uses_post: bool = False
+    _update_method: UpdateMethod = UpdateMethod.PUT
     manager: base.RESTManager
 
     def _get_update_method(
@@ -905,7 +912,7 @@ class PromoteMixin(_RestObjectBase):
         Returns:
             http_put (default) or http_post
         """
-        if self._update_uses_post:
+        if self._update_method is UpdateMethod.POST:
             http_method = self.manager.gitlab.http_post
         else:
             http_method = self.manager.gitlab.http_put

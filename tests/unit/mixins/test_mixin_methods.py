@@ -13,6 +13,7 @@ from gitlab.mixins import (
     RefreshMixin,
     SaveMixin,
     SetMixin,
+    UpdateMethod,
     UpdateMixin,
 )
 
@@ -377,7 +378,7 @@ def test_update_mixin(gl):
 @responses.activate
 def test_update_mixin_uses_post(gl):
     class M(UpdateMixin, FakeManager):
-        _update_uses_post = True
+        _update_method = UpdateMethod.POST
 
     url = "http://localhost/api/v4/tests/1"
     responses.add(
