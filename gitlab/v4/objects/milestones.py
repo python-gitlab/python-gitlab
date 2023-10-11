@@ -4,7 +4,13 @@ from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
 from gitlab.base import RESTManager, RESTObject, RESTObjectList
-from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, PromoteMixin, SaveMixin
+from gitlab.mixins import (
+    CRUDMixin,
+    ObjectDeleteMixin,
+    PromoteMixin,
+    SaveMixin,
+    UpdateMethod,
+)
 from gitlab.types import RequiredOptional
 
 from .issues import GroupIssue, GroupIssueManager, ProjectIssue, ProjectIssueManager
@@ -100,7 +106,7 @@ class GroupMilestoneManager(CRUDMixin, RESTManager):
 
 class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "title"
-    _update_uses_post = True
+    _update_method = UpdateMethod.POST
 
     @cli.register_custom_action("ProjectMilestone")
     @exc.on_http_error(exc.GitlabListError)

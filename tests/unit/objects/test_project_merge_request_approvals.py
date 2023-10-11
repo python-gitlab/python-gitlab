@@ -8,6 +8,7 @@ import pytest
 import responses
 
 import gitlab
+from gitlab.mixins import UpdateMethod
 
 approval_rule_id = 1
 approval_rule_name = "security"
@@ -157,15 +158,15 @@ def resp_delete_mr_approval_rule():
         yield rsps
 
 
-def test_project_approval_manager_update_uses_post(project):
+def test_project_approval_manager_update_method_post(project):
     """Ensure the
     gitlab.v4.objects.merge_request_approvals.ProjectApprovalManager object has
-    _update_uses_post set to True"""
+    _update_method set to UpdateMethod.POST"""
     approvals = project.approvals
     assert isinstance(
         approvals, gitlab.v4.objects.merge_request_approvals.ProjectApprovalManager
     )
-    assert approvals._update_uses_post is True
+    assert approvals._update_method is UpdateMethod.POST
 
 
 def test_list_merge_request_approval_rules(project, resp_mr_approval_rules):
@@ -187,7 +188,7 @@ def test_update_merge_request_approvals_set_approvers(project, resp_mr_approval_
         approvals,
         gitlab.v4.objects.merge_request_approvals.ProjectMergeRequestApprovalManager,
     )
-    assert approvals._update_uses_post is True
+    assert approvals._update_method is UpdateMethod.POST
     response = approvals.set_approvers(
         updated_approval_rule_approvals_required,
         approver_ids=updated_approval_rule_user_ids,
@@ -207,7 +208,7 @@ def test_create_merge_request_approvals_set_approvers(project, resp_mr_approval_
         approvals,
         gitlab.v4.objects.merge_request_approvals.ProjectMergeRequestApprovalManager,
     )
-    assert approvals._update_uses_post is True
+    assert approvals._update_method is UpdateMethod.POST
     response = approvals.set_approvers(
         new_approval_rule_approvals_required,
         approver_ids=new_approval_rule_user_ids,

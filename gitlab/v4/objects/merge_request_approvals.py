@@ -10,6 +10,7 @@ from gitlab.mixins import (
     ListMixin,
     ObjectDeleteMixin,
     SaveMixin,
+    UpdateMethod,
     UpdateMixin,
 )
 from gitlab.types import RequiredOptional
@@ -45,7 +46,7 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
             "merge_requests_disable_committers_approval",
         ),
     )
-    _update_uses_post = True
+    _update_method = UpdateMethod.POST
 
     def get(self, **kwargs: Any) -> ProjectApproval:
         return cast(ProjectApproval, super().get(**kwargs))
@@ -76,7 +77,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
     _obj_cls = ProjectMergeRequestApproval
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
     _update_attrs = RequiredOptional(required=("approvals_required",))
-    _update_uses_post = True
+    _update_method = UpdateMethod.POST
 
     def get(self, **kwargs: Any) -> ProjectMergeRequestApproval:
         return cast(ProjectMergeRequestApproval, super().get(**kwargs))
