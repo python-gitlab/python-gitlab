@@ -1,10 +1,20 @@
+import pathlib
+
 import pytest
 import requests
+import responses
 from requests import PreparedRequest
 
 from gitlab import Gitlab
 from gitlab._backends import JobTokenAuth, OAuthTokenAuth, PrivateTokenAuth
 from gitlab.config import GitlabConfigParser
+
+
+@pytest.fixture
+def netrc(monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path):
+    netrc_file = tmp_path / ".netrc"
+    netrc_file.write_text("machine localhost login test password test")
+    monkeypatch.setenv("NETRC", str(netrc_file))
 
 
 def test_invalid_auth_args():
@@ -99,6 +109,30 @@ def test_http_auth():
     assert p.headers["Authorization"] == "Basic Zm9vOmJhcg=="
     assert "PRIVATE-TOKEN" not in p.headers
     assert "JOB-TOKEN" not in p.headers
+
+
+@responses.activate
+def test_with_no_auth_uses_netrc_file(netrc):
+    responses.get(
+        url="http://localhost/api/v4/test",
+        match=[
+            responses.matchers.header_matcher({"Authorization": "Basic dGVzdDp0ZXN0"})
+        ],
+    )
+
+    gl = Gitlab("http://localhost")
+    gl.http_get("/test")
+
+
+@responses.activate
+def test_with_auth_ignores_netrc_file(netrc):
+    responses.get(
+        url="http://localhost/api/v4/test",
+        match=[responses.matchers.header_matcher({"Authorization": "Bearer test"})],
+    )
+
+    gl = Gitlab("http://localhost", oauth_token="test")
+    gl.http_get("/test")
 
 
 @pytest.mark.parametrize(
