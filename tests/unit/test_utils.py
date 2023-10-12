@@ -1,4 +1,5 @@
 import json
+import logging
 import warnings
 
 import pytest
@@ -197,3 +198,19 @@ def test_transform_types_not_params_array():
     assert new_data is not data
     assert new_data == data
     assert files == {}
+
+
+def test_masking_formatter_masks_token(capsys: pytest.CaptureFixture):
+    token = "glpat-private-token"
+
+    logger = logging.getLogger()
+    handler = logging.StreamHandler()
+    handler.setFormatter(utils.MaskingFormatter(masked=token))
+    logger.handlers.clear()
+    logger.addHandler(handler)
+
+    logger.info(token)
+    captured = capsys.readouterr()
+
+    assert "[MASKED]" in captured.err
+    assert token not in captured.err

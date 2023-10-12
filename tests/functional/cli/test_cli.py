@@ -198,3 +198,12 @@ def test_cli_display_without_fields_warns(gitlab_cli, project):
 
     assert "No default fields to show" in ret.stdout
     assert "merged_yaml" not in ret.stdout
+
+
+def test_cli_does_not_print_token(gitlab_cli, gitlab_token):
+    ret = gitlab_cli(["--debug", "current-user", "get"])
+    assert ret.success
+
+    assert gitlab_token not in ret.stdout
+    assert gitlab_token not in ret.stderr
+    assert "[MASKED]" in ret.stderr
