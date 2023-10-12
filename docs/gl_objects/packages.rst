@@ -107,11 +107,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectPackagePipelineManager`
   + :attr:`gitlab.v4.objects.ProjectPackage.pipelines`
 
-..
-  TODO: Not yet published (see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/117539).
-  Add anchor/fragment once available.
-
-* GitLab API: https://docs.gitlab.com/ee/api/packages.html
+* GitLab API: https://docs.gitlab.com/ee/api/packages.html#list-package-pipelines
 
 Examples
 --------
