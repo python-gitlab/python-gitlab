@@ -38,7 +38,7 @@ def test_upload_generic_package(tmp_path, project):
     assert package.message == "201 Created"
 
 
-def test_download_generic_package_bytes(tmp_path, project):
+def test_upload_generic_package_as_bytes(tmp_path, project):
     path = tmp_path / file_name
 
     path.write_text(file_content)
@@ -54,7 +54,7 @@ def test_download_generic_package_bytes(tmp_path, project):
     assert package.message == "201 Created"
 
 
-def test_download_generic_package_file(tmp_path, project):
+def test_upload_generic_package_as_file(tmp_path, project):
     path = tmp_path / file_name
 
     path.write_text(file_content)
