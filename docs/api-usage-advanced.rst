@@ -44,11 +44,11 @@ properly closed when you exit a ``with`` block:
 netrc authentication
 --------------------
 
-python-gitlab reads credentials from ``.netrc`` files via the ``requests`` backend by default,
-which may override authentication headers you set on your client.
+python-gitlab reads credentials from ``.netrc`` files via the ``requests`` backend
+only if you do not provide any other type of authentication yourself.
 
-For more granular control, you can disable this `Using a custom session`_
-and explicitly setting ``trust_env=False`` as described in the ``requests`` documentation.
+If you'd like to disable reading netrc files altogether, you can follow `Using a custom session`_
+and explicitly set ``trust_env=False`` as described in the ``requests`` documentation.
 
 .. code-block:: python
 
