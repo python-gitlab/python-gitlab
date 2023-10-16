@@ -88,11 +88,11 @@ disable_error_code = ["no-untyped-def"]
 
 [tool.semantic_release]
 branch = "main"
+build_command = "python -m build ."
 version_variables = [
     "gitlab/_version.py:__version__",
 ]
-commit_subject = "chore: release v{version}"
-commit_message = ""
+commit_message = "chore: release v{version}"
 
 [tool.pylint.messages_control]
 max-line-length = 88
