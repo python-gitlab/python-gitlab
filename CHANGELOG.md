@@ -2,6 +2,63 @@
 
 <!--next-version-placeholder-->
 
+## v4.0.0
+
+### Feature
+
+* client: mask tokens by default when logging ([`1611d78`](https://github.com/python-gitlab/python-gitlab/commit/1611d78263284508326347843f634d2ca8b41215))
+* api: add ProjectPackagePipeline
+* feat: officially support Python 3.12 ([`2a69c0e`](https://github.com/python-gitlab/python-gitlab/commit/2a69c0ee0a86315a3ed4750f59bd6ab3e4199b8e))
+* packages: Allow uploading bytes and files
+* feat: Use requests AuthBase classes ([`5f46cfd`](https://github.com/python-gitlab/python-gitlab/commit/5f46cfd235dbbcf80678e45ad39a2c3b32ca2e39))
+* api: add support for job token scope settings ([`59d6a88`](https://github.com/python-gitlab/python-gitlab/commit/59d6a880aacd7cf6f443227071bb8288efb958c4))
+* api: support project remote mirror deletion ([`d900910`](https://github.com/python-gitlab/python-gitlab/commit/d9009100ec762c307b46372243d93f9bc2de7a2b))
+* api: add optional GET attrs for /projects/:id/ci/lint ([`40a102d`](https://github.com/python-gitlab/python-gitlab/commit/40a102d4f5c8ff89fae56cd9b7c8030c5070112c))
+* api: add support for new runner creation API (#2635)
+* releases: Add support for direct_asset_path
+* feat: Added iteration to issue and group filters ([`8d2d297`](https://github.com/python-gitlab/python-gitlab/commit/8d2d2971c3909fb5461a9f7b2d07508866cd456c))
+
+### Fix
+
+* cli: add _from_parent_attrs to user-project manager (#2558) ([`016d90c`](https://github.com/python-gitlab/python-gitlab/commit/016d90c3c22bfe6fc4e866d120d2c849764ef9d2))
+* cli: fix action display in --help when there are few actions
+* client: support empty 204 responses in http_patch ([`e15349c`](https://github.com/python-gitlab/python-gitlab/commit/e15349c9a796f2d82f72efbca289740016c47716))
+* snippets: allow passing list of files ([`31c3c5e`](https://github.com/python-gitlab/python-gitlab/commit/31c3c5ea7cbafb4479825ec40bc34e3b8cb427fd))
+
+### Documentation
+
+* correct error with back-ticks (#2653)
+* access_token: adopt token docs to 16.1
+* files: fix minor typo in variable declaration ([`118ce42`](https://github.com/python-gitlab/python-gitlab/commit/118ce4282abc4397c4e9370407b1ab6866de9f97))
+
+### Breaking
+
+* python-gitlab now explicitly passes auth to requests, meaning
+  it will only read netrc credentials if no token is provided, fixing a bug where
+  netrc credentials took precedence over OAuth tokens. This also affects the CLI,
+  where all environment variables now take precedence over netrc files. ([`45b8930`](https://github.com/python-gitlab/python-gitlab/commit/45b89304d9745be1b87449805bf53d45bf740e90))
+* python-gitlab now stores metadata in pyproject.toml
+  as per PEP 621, with setup.py removed. pip version v21.1 or higher is
+  required if you want to perform an editable install. ([`71fca8c`](https://github.com/python-gitlab/python-gitlab/commit/71fca8c8f5c7f3d6ab06dd4e6c0d91003705be09))
+* Constants defined in `gitlab.const` can no longer be imported globally from `gitlab`.
+  Import them from `gitlab.const` instead. ([`e4a1f6e`](https://github.com/python-gitlab/python-gitlab/commit/e4a1f6e2d1c4e505f38f9fd948d0fea9520aa909))
+* Support for the deprecated `as_list` argument in
+  `list()` calls has been removed. Use `iterator` instead. ([`9b6d89e`](https://github.com/python-gitlab/python-gitlab/commit/9b6d89edad07979518a399229c6f55bffeb9af08))
+* The deprecated `lint()` method is no longer available.
+  Use `ci_lint.create()` instead. ([`0b17a2d`](https://github.com/python-gitlab/python-gitlab/commit/0b17a2d24a3f9463dfbcab6b4fddfba2aced350b))
+* The deprecated `project.artifact()` method is no longer available.
+  Use `project.artifacts.raw()` instead. ([`90134c9`](https://github.com/python-gitlab/python-gitlab/commit/90134c949b38c905f9cacf3b4202c25dec0282f3))
+* The deprecated `project.artifacts()` method is no longer available.
+  Use `project.artifacts.download()` instead. ([`42639f3`](https://github.com/python-gitlab/python-gitlab/commit/42639f3ec88f3a3be32e36b97af55240e98c1d9a))
+* The deprecated `group.add_ldap_group_link()` and `group.delete_ldap_group_link()`
+  methods are no longer available. Use `group.ldap_group_links.create()` and `group.ldap_group_links.delete()`
+  instead. ([`5c8b7c1`](https://github.com/python-gitlab/python-gitlab/commit/5c8b7c1369a28d75261002e7cb6d804f7d5658c6))
+* The deprecated `project.transfer_project()` method is no longer available.
+  Use `project.transfer()` instead. ([`27ed490`](https://github.com/python-gitlab/python-gitlab/commit/27ed490c22008eef383e1a346ad0c721cdcc6198))
+* The `--all` option is no longer available in the CLI. Use `--get-all` instead. ([`e9d48cf`](https://github.com/python-gitlab/python-gitlab/commit/e9d48cf69e0dbe93f917e6f593d31327cd99f917))
+* As of python-gitlab 4.0.0, Python 3.7 is no longer
+  supported. Python 3.8 or higher is required. ([`058d5a5`](https://github.com/python-gitlab/python-gitlab/commit/058d5a56c284c771f1fb5fad67d4ef2eeb4d1916))
+
 ## v3.15.0 (2023-06-09)
 ### Feature
 * Add support for `select="package_file"` in package upload ([`3a49f09`](https://github.com/python-gitlab/python-gitlab/commit/3a49f099d54000089e217b61ffcf60b6a28b4420))
