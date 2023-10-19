@@ -54,6 +54,34 @@ class SearchScope(GitlabEnum):
     PROJECT_NOTES: str = "notes"
 
 
+# https://archives.docs.gitlab.com/15.5/ee/api/merge_requests.html#single-merge-request-response-notes
+class MergeStatus(GitlabEnum):
+    # depricated since GitLab 15.6, use DetailedMergeStatus instead
+    UNCHECKED: str = "unchecked"
+    CHECKING: str = "checking"
+    CAN_BE_MERGED: str = "can_be_merged"
+    CANNOT_BE_MERGED: str = "cannot_be_merged"
+    CANNOT_BE_MERGED_RECHECK: str = "cannot_be_merged_recheck"
+
+
+# https://docs.gitlab.com/ee/api/merge_requests.html#merge-status
+class DetailedMergeStatus(GitlabEnum):
+    # possible values for the detailed_merge_status field of Merge Requests
+    BLOCKED_STATUS: str = "blocked_status"
+    BROKEN_STATUS: str = "broken_status"
+    CHECKING: str = "checking"
+    UNCHECKED: str = "unchecked"
+    CI_MUST_PASS: str = "ci_must_pass"
+    CI_STILL_RUNNING: str = "ci_still_running"
+    DISCUSSIONS_NOT_RESOLVED: str = "discussions_not_resolved"
+    DRAFT_STATUS: str = "draft_status"
+    EXTERNAL_STATUS_CHECKS: str = "external_status_checks"
+    MERGEABLE: str = "mergeable"
+    NOT_APPROVED: str = "not_approved"
+    NOT_OPEN: str = "not_open"
+    POLICIES_DENIED: str = "policies_denied"
+
+
 DEFAULT_URL: str = "https://gitlab.com"
 
 NO_ACCESS = AccessLevel.NO_ACCESS.value
