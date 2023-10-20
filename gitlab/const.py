@@ -54,16 +54,6 @@ class SearchScope(GitlabEnum):
     PROJECT_NOTES: str = "notes"
 
 
-# https://archives.docs.gitlab.com/15.5/ee/api/merge_requests.html#single-merge-request-response-notes
-class MergeStatus(GitlabEnum):
-    # depricated since GitLab 15.6, use DetailedMergeStatus instead
-    UNCHECKED: str = "unchecked"
-    CHECKING: str = "checking"
-    CAN_BE_MERGED: str = "can_be_merged"
-    CANNOT_BE_MERGED: str = "cannot_be_merged"
-    CANNOT_BE_MERGED_RECHECK: str = "cannot_be_merged_recheck"
-
-
 # https://docs.gitlab.com/ee/api/merge_requests.html#merge-status
 class DetailedMergeStatus(GitlabEnum):
     # possible values for the detailed_merge_status field of Merge Requests
