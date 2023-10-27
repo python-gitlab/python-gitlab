@@ -483,7 +483,7 @@ Create an instance-wide runner::
         "description": "My brand new runner",
         "paused": True,
         "locked": False,
-        "run_untagged": True
+        "run_untagged": True,
         "tag_list": ["linux", "docker", "testing"],
         "access_level": "not_protected"
     })
@@ -496,7 +496,7 @@ Create a group runner::
         "description": "My brand new runner",
         "paused": True,
         "locked": False,
-        "run_untagged": True
+        "run_untagged": True,
         "tag_list": ["linux", "docker", "testing"],
         "access_level": "not_protected"
     })
@@ -509,7 +509,7 @@ Create a project runner::
         "description": "My brand new runner",
         "paused": True,
         "locked": False,
-        "run_untagged": True
+        "run_untagged": True,
         "tag_list": ["linux", "docker", "testing"],
         "access_level": "not_protected"
     })
