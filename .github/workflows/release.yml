@@ -20,7 +20,7 @@ jobs:
         token: ${{ secrets.RELEASE_GITHUB_TOKEN }}
 
     - name: Python Semantic Release
-      uses: python-semantic-release/python-semantic-release@v8.1.2
+      uses: python-semantic-release/python-semantic-release@v8.3.0
       with:
         github_token: ${{ secrets.RELEASE_GITHUB_TOKEN }}
 
