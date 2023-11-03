@@ -2,6 +2,26 @@
 
 
 
+## v4.1.1 (2023-11-03)
+
+### Chore
+
+* chore(ci): add release id to workflow step ([`9270e10`](https://github.com/python-gitlab/python-gitlab/commit/9270e10d94101117bec300c756889e4706f41f36))
+
+* chore(deps): update all non-major dependencies ([`32954fb`](https://github.com/python-gitlab/python-gitlab/commit/32954fb95dcc000100b48c4b0b137ebe2eca85a3))
+
+### Documentation
+
+* docs(users): add missing comma in v4 API create runner examples
+
+The examples which show usage of new runner registration api endpoint
+are missing commas. This change adds the missing commas. ([`b1b2edf`](https://github.com/python-gitlab/python-gitlab/commit/b1b2edfa05be8b957c796dc6d111f40c9f753dcf))
+
+### Fix
+
+* fix(build): include py.typed in dists ([`b928639`](https://github.com/python-gitlab/python-gitlab/commit/b928639f7ca252e0abb8ded8f9f142316a4dc823))
+
+
 ## v4.1.0 (2023-10-28)
 
 ### Chore
