@@ -106,6 +106,13 @@ def test_base_parser():
     assert args.verbose
     assert args.gitlab == "gl_id"
     assert args.config_file == ["foo.cfg", "bar.cfg"]
+    assert args.ssl_verify is None
+
+
+def test_no_ssl_verify():
+    parser = cli._get_base_parser()
+    args = parser.parse_args(["--no-ssl-verify"])
+    assert args.ssl_verify is False
 
 
 def test_v4_parse_args():
