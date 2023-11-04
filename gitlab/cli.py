@@ -194,14 +194,25 @@ def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
         required=False,
         default=os.getenv("GITLAB_URL"),
     )
-    parser.add_argument(
+
+    ssl_verify_group = parser.add_mutually_exclusive_group()
+    ssl_verify_group.add_argument(
         "--ssl-verify",
         help=(
-            "Whether SSL certificates should be validated. [env var: GITLAB_SSL_VERIFY]"
+            "Path to a CA_BUNDLE file or directory with certificates of trusted CAs. "
+            "[env var: GITLAB_SSL_VERIFY]"
         ),
         required=False,
         default=os.getenv("GITLAB_SSL_VERIFY"),
     )
+    ssl_verify_group.add_argument(
+        "--no-ssl-verify",
+        help="Disable SSL verification",
+        required=False,
+        dest="ssl_verify",
+        action="store_false",
+    )
+
     parser.add_argument(
         "--timeout",
         help=(
