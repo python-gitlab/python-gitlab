@@ -2,12 +2,9 @@
 GitLab API: https://docs.gitlab.com/ce/api/projects.html
 """
 
-from unittest.mock import mock_open, patch
-
 import pytest
 import responses
 
-from gitlab import exceptions
 from gitlab.const import DEVELOPER_ACCESS, SEARCH_SCOPE_ISSUES
 from gitlab.v4.objects import (
     Project,
@@ -52,12 +49,7 @@ project_starrers_content = {
         "name": "name",
     },
 }
-upload_file_content = {
-    "alt": "filename",
-    "url": "/uploads/66dbcd21ec5d24ed6ea225176098d52b/filename.png",
-    "full_path": "/namespace/project/uploads/66dbcd21ec5d24ed6ea225176098d52b/filename.png",
-    "markdown": "![dk](/uploads/66dbcd21ec5d24ed6ea225176098d52b/filename.png)",
-}
+
 share_project_content = {
     "id": 1,
     "project_id": 1,
@@ -330,19 +322,6 @@ def resp_delete_project(accepted_content):
             json=accepted_content,
             content_type="application/json",
             status=202,
-        )
-        yield rsps
-
-
-@pytest.fixture
-def resp_upload_file_project():
-    with responses.RequestsMock() as rsps:
-        rsps.add(
-            method=responses.POST,
-            url="http://localhost/api/v4/projects/1/uploads",
-            json=upload_file_content,
-            content_type="application/json",
-            status=201,
         )
         yield rsps
 
@@ -680,29 +659,6 @@ def test_unarchive_project(project, resp_unarchive_project):
 
 def test_delete_project(project, resp_delete_project):
     project.delete()
-
-
-def test_upload_file(project, resp_upload_file_project):
-    project.upload("filename.png", "raw\nfile\ndata")
-
-
-def test_upload_file_with_filepath(project, resp_upload_file_project):
-    with patch("builtins.open", mock_open(read_data="raw\nfile\ndata")):
-        project.upload("filename.png", None, "/filepath")
-
-
-def test_upload_file_without_filepath_nor_filedata(project):
-    with pytest.raises(
-        exceptions.GitlabUploadError, match="No file contents or path specified"
-    ):
-        project.upload("filename.png")
-
-
-def test_upload_file_with_filepath_and_filedata(project):
-    with pytest.raises(
-        exceptions.GitlabUploadError, match="File contents and file path specified"
-    ):
-        project.upload("filename.png", "filedata", "/filepath")
 
 
 def test_share_project(project, group, resp_share_project):

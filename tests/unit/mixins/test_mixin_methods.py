@@ -1,8 +1,10 @@
+from unittest.mock import mock_open, patch
+
 import pytest
 import requests
 import responses
 
-from gitlab import base
+from gitlab import base, GitlabUploadError
 from gitlab import types as gl_types
 from gitlab.mixins import (
     CreateMixin,
@@ -15,6 +17,7 @@ from gitlab.mixins import (
     SetMixin,
     UpdateMethod,
     UpdateMixin,
+    UploadMixin,
 )
 
 
@@ -502,3 +505,44 @@ def test_set_mixin(gl):
     assert obj.key == "foo"
     assert obj.value == "bar"
     assert responses.assert_call_count(url, 1) is True
+
+
+@responses.activate
+def test_upload_mixin(gl):
+    class TestClass(UploadMixin, FakeObject):
+        _upload_path = "/tests/{id}/uploads"
+
+    url = "http://localhost/api/v4/tests/42/uploads"
+    responses.add(
+        method=responses.POST,
+        url=url,
+        json={"id": 42, "file_name": "test.txt", "file_content": "testing contents"},
+        status=200,
+        match=[responses.matchers.query_param_matcher({})],
+    )
+
+    mgr = FakeManager(gl)
+    obj = TestClass(mgr, {"id": 42})
+
+    with pytest.raises(
+        GitlabUploadError, match="File contents and file path specified"
+    ):
+        obj.upload("test.txt", "testing contents", "/home/test.txt")
+
+    with pytest.raises(GitlabUploadError, match="No file contents or path specified"):
+        obj.upload("test.txt")
+
+    res_only_data = obj.upload("test.txt", "testing contents")
+    assert obj._get_upload_path() == "/tests/42/uploads"
+    assert isinstance(res_only_data, dict)
+    assert res_only_data["file_name"] == "test.txt"
+    assert res_only_data["file_content"] == "testing contents"
+    assert responses.assert_call_count(url, 1) is True
+
+    with patch("builtins.open", mock_open(read_data="raw\nfile\ndata")):
+        res_only_path = obj.upload("test.txt", None, "/filepath")
+    assert obj._get_upload_path() == "/tests/42/uploads"
+    assert isinstance(res_only_path, dict)
+    assert res_only_path["file_name"] == "test.txt"
+    assert res_only_path["file_content"] == "testing contents"
+    assert responses.assert_call_count(url, 2) is True

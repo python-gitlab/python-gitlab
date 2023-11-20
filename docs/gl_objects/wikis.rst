@@ -54,3 +54,39 @@ Update a wiki page::
 Delete a wiki page::
 
     page.delete()
+
+
+File uploads
+============
+
+Reference
+---------
+
+* v4 API:
+
+  + :attr:`gitlab.v4.objects.ProjectWiki.upload`
+  + :attr:`gitlab.v4.objects.GrouptWiki.upload`
+
+
+* Gitlab API for Projects: https://docs.gitlab.com/ee/api/wikis.html#upload-an-attachment-to-the-wiki-repository
+* Gitlab API for Groups: https://docs.gitlab.com/ee/api/group_wikis.html#upload-an-attachment-to-the-wiki-repository
+
+Examples
+--------
+
+Upload a file into a project wiki using a filesystem path::
+
+    page.upload("filename.txt", filepath="/some/path/filename.txt")
+
+Upload a file into a project wiki without a filesystem path::
+
+    page.upload("filename.txt", filedata="Raw data")
+
+Upload a file into a project wiki using a filesystem path::
+
+    page.upload("filename.txt", filepath="/some/path/filename.txt")
+
+Upload a file into a project wiki without a filesystem path::
+
+    page.upload("filename.txt", filedata="Raw data")
+
