@@ -1,7 +1,7 @@
 from typing import Any, cast, Union
 
 from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
+from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin, UploadMixin
 from gitlab.types import RequiredOptional
 
 __all__ = [
@@ -12,9 +12,10 @@ __all__ = [
 ]
 
 
-class ProjectWiki(SaveMixin, ObjectDeleteMixin, RESTObject):
+class ProjectWiki(SaveMixin, ObjectDeleteMixin, UploadMixin, RESTObject):
     _id_attr = "slug"
     _repr_attr = "slug"
+    _upload_path = "/projects/{project_id}/wikis/attachments"
 
 
 class ProjectWikiManager(CRUDMixin, RESTManager):
@@ -33,9 +34,10 @@ class ProjectWikiManager(CRUDMixin, RESTManager):
         return cast(ProjectWiki, super().get(id=id, lazy=lazy, **kwargs))
 
 
-class GroupWiki(SaveMixin, ObjectDeleteMixin, RESTObject):
+class GroupWiki(SaveMixin, ObjectDeleteMixin, UploadMixin, RESTObject):
     _id_attr = "slug"
     _repr_attr = "slug"
+    _upload_path = "/groups/{group_id}/wikis/attachments"
 
 
 class GroupWikiManager(CRUDMixin, RESTManager):

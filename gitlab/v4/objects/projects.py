@@ -30,6 +30,7 @@ from gitlab.mixins import (
     RefreshMixin,
     SaveMixin,
     UpdateMixin,
+    UploadMixin,
 )
 from gitlab.types import RequiredOptional
 
@@ -158,8 +159,11 @@ class ProjectGroupManager(ListMixin, RESTManager):
     _types = {"skip_groups": types.ArrayAttribute}
 
 
-class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTObject):
+class Project(
+    RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, UploadMixin, RESTObject
+):
     _repr_attr = "path_with_namespace"
+    _upload_path = "/projects/{id}/uploads"
 
     access_tokens: ProjectAccessTokenManager
     accessrequests: ProjectAccessRequestManager
@@ -436,59 +440,6 @@ class Project(RefreshMixin, SaveMixin, ObjectDeleteMixin, RepositoryMixin, RESTO
         """
         path = f"/projects/{self.encoded_id}/housekeeping"
         self.manager.gitlab.http_post(path, **kwargs)
-
-    # see #56 - add file attachment features
-    @cli.register_custom_action("Project", ("filename", "filepath"))
-    @exc.on_http_error(exc.GitlabUploadError)
-    def upload(
-        self,
-        filename: str,
-        filedata: Optional[bytes] = None,
-        filepath: Optional[str] = None,
-        **kwargs: Any,
-    ) -> Dict[str, Any]:
-        """Upload the specified file into the project.
-
-        .. note::
-
-            Either ``filedata`` or ``filepath`` *MUST* be specified.
-
-        Args:
-            filename: The name of the file being uploaded
-            filedata: The raw data of the file being uploaded
-            filepath: The path to a local file to upload (optional)
-
-        Raises:
-            GitlabConnectionError: If the server cannot be reached
-            GitlabUploadError: If the file upload fails
-            GitlabUploadError: If ``filedata`` and ``filepath`` are not
-                specified
-            GitlabUploadError: If both ``filedata`` and ``filepath`` are
-                specified
-
-        Returns:
-            A ``dict`` with the keys:
-                * ``alt`` - The alternate text for the upload
-                * ``url`` - The direct url to the uploaded file
-                * ``markdown`` - Markdown for the uploaded file
-        """
-        if filepath is None and filedata is None:
-            raise exc.GitlabUploadError("No file contents or path specified")
-
-        if filedata is not None and filepath is not None:
-            raise exc.GitlabUploadError("File contents and file path specified")
-
-        if filepath is not None:
-            with open(filepath, "rb") as f:
-                filedata = f.read()
-
-        url = f"/projects/{self.encoded_id}/uploads"
-        file_info = {"file": (filename, filedata)}
-        data = self.manager.gitlab.http_post(url, files=file_info, **kwargs)
-
-        if TYPE_CHECKING:
-            assert isinstance(data, dict)
-        return {"alt": data["alt"], "url": data["url"], "markdown": data["markdown"]}
 
     @cli.register_custom_action("Project")
     @exc.on_http_error(exc.GitlabRestoreError)
