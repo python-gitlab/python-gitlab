@@ -508,7 +508,7 @@ def test_set_mixin(gl):
 
 
 @responses.activate
-def test_upload_mixin(gl):
+def test_upload_mixin_with_filepath_and_filedata(gl):
     class TestClass(UploadMixin, FakeObject):
         _upload_path = "/tests/{id}/uploads"
 
@@ -523,15 +523,48 @@ def test_upload_mixin(gl):
 
     mgr = FakeManager(gl)
     obj = TestClass(mgr, {"id": 42})
-
     with pytest.raises(
         GitlabUploadError, match="File contents and file path specified"
     ):
         obj.upload("test.txt", "testing contents", "/home/test.txt")
 
+
+@responses.activate
+def test_upload_mixin_without_filepath_nor_filedata(gl):
+    class TestClass(UploadMixin, FakeObject):
+        _upload_path = "/tests/{id}/uploads"
+
+    url = "http://localhost/api/v4/tests/42/uploads"
+    responses.add(
+        method=responses.POST,
+        url=url,
+        json={"id": 42, "file_name": "test.txt", "file_content": "testing contents"},
+        status=200,
+        match=[responses.matchers.query_param_matcher({})],
+    )
+
+    mgr = FakeManager(gl)
+    obj = TestClass(mgr, {"id": 42})
     with pytest.raises(GitlabUploadError, match="No file contents or path specified"):
         obj.upload("test.txt")
 
+
+@responses.activate
+def test_upload_mixin_with_filedata(gl):
+    class TestClass(UploadMixin, FakeObject):
+        _upload_path = "/tests/{id}/uploads"
+
+    url = "http://localhost/api/v4/tests/42/uploads"
+    responses.add(
+        method=responses.POST,
+        url=url,
+        json={"id": 42, "file_name": "test.txt", "file_content": "testing contents"},
+        status=200,
+        match=[responses.matchers.query_param_matcher({})],
+    )
+
+    mgr = FakeManager(gl)
+    obj = TestClass(mgr, {"id": 42})
     res_only_data = obj.upload("test.txt", "testing contents")
     assert obj._get_upload_path() == "/tests/42/uploads"
     assert isinstance(res_only_data, dict)
@@ -539,10 +572,27 @@ def test_upload_mixin(gl):
     assert res_only_data["file_content"] == "testing contents"
     assert responses.assert_call_count(url, 1) is True
 
+
+@responses.activate
+def test_upload_mixin_with_filepath(gl):
+    class TestClass(UploadMixin, FakeObject):
+        _upload_path = "/tests/{id}/uploads"
+
+    url = "http://localhost/api/v4/tests/42/uploads"
+    responses.add(
+        method=responses.POST,
+        url=url,
+        json={"id": 42, "file_name": "test.txt", "file_content": "testing contents"},
+        status=200,
+        match=[responses.matchers.query_param_matcher({})],
+    )
+
+    mgr = FakeManager(gl)
+    obj = TestClass(mgr, {"id": 42})
     with patch("builtins.open", mock_open(read_data="raw\nfile\ndata")):
         res_only_path = obj.upload("test.txt", None, "/filepath")
     assert obj._get_upload_path() == "/tests/42/uploads"
     assert isinstance(res_only_path, dict)
     assert res_only_path["file_name"] == "test.txt"
     assert res_only_path["file_content"] == "testing contents"
-    assert responses.assert_call_count(url, 2) is True
+    assert responses.assert_call_count(url, 1) is True

@@ -982,7 +982,6 @@ class UploadMixin(_RestObjectBase):
             Either ``filedata`` or ``filepath`` *MUST* be specified.
 
         Args:
-            path: api endpoint where file is to be posted
             filename: The name of the file being uploaded
             filedata: The raw data of the file being uploaded
             filepath: The path to a local file to upload (optional)
