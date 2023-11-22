@@ -1061,6 +1061,8 @@ class Gitlab:
             raw=raw,
             **kwargs,
         )
+        if result.status_code in gitlab.const.NO_JSON_RESPONSE_CODES:
+            return result
         try:
             json_result = result.json()
             if TYPE_CHECKING:
