@@ -28,6 +28,7 @@ from gitlab.types import RequiredOptional
 from .award_emojis import ProjectMergeRequestAwardEmojiManager  # noqa: F401
 from .commits import ProjectCommit, ProjectCommitManager
 from .discussions import ProjectMergeRequestDiscussionManager  # noqa: F401
+from .draft_notes import ProjectMergeRequestDraftNoteManager
 from .events import (  # noqa: F401
     ProjectMergeRequestResourceLabelEventManager,
     ProjectMergeRequestResourceMilestoneEventManager,
@@ -157,6 +158,7 @@ class ProjectMergeRequest(
     awardemojis: ProjectMergeRequestAwardEmojiManager
     diffs: "ProjectMergeRequestDiffManager"
     discussions: ProjectMergeRequestDiscussionManager
+    draft_notes: ProjectMergeRequestDraftNoteManager
     notes: ProjectMergeRequestNoteManager
     pipelines: ProjectMergeRequestPipelineManager
     resourcelabelevents: ProjectMergeRequestResourceLabelEventManager
