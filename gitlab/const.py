@@ -72,6 +72,21 @@ class DetailedMergeStatus(GitlabEnum):
     POLICIES_DENIED: str = "policies_denied"
 
 
+# https://docs.gitlab.com/ee/api/pipelines.html
+class PipelineStatus(GitlabEnum):
+    CREATED: str = "created"
+    WAITING_FOR_RESOURCE: str = "waiting_for_resource"
+    PREPARING: str = "preparing"
+    PENDING: str = "pending"
+    RUNNING: str = "running"
+    SUCCESS: str = "success"
+    FAILED: str = "failed"
+    CANCELED: str = "canceled"
+    SKIPPED: str = "skipped"
+    MANUAL: str = "manual"
+    SCHEDULED: str = "scheduled"
+
+
 DEFAULT_URL: str = "https://gitlab.com"
 
 NO_ACCESS = AccessLevel.NO_ACCESS.value
