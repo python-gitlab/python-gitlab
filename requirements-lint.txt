@@ -4,10 +4,10 @@ black==23.11.0
 commitizen==3.12.0
 flake8==6.1.0
 isort==5.12.0
-mypy==1.7.0
+mypy==1.7.1
 pylint==3.0.2
 pytest==7.4.3
 responses==0.24.1
 types-PyYAML==6.0.12.12
 types-requests==2.31.0.10
-types-setuptools==68.2.0.1
+types-setuptools==68.2.0.2
