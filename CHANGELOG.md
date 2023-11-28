@@ -2,6 +2,35 @@
 
 
 
+## v4.2.0 (2023-11-28)
+
+### Chore
+
+* chore(deps): update all non-major dependencies ([`8aeb853`](https://github.com/python-gitlab/python-gitlab/commit/8aeb8531ebd3ddf0d1da3fd74597356ef65c00b3))
+
+* chore(deps): update dessant/lock-threads action to v5 ([`f4ce867`](https://github.com/python-gitlab/python-gitlab/commit/f4ce86770befef77c7c556fd5cfe25165f59f515))
+
+* chore(deps): update all non-major dependencies ([`9fe2335`](https://github.com/python-gitlab/python-gitlab/commit/9fe2335b9074feaabdb683b078ff8e12edb3959e))
+
+* chore(deps): update all non-major dependencies ([`91e66e9`](https://github.com/python-gitlab/python-gitlab/commit/91e66e9b65721fa0e890a6664178d77ddff4272a))
+
+* chore(deps): update all non-major dependencies ([`d0546e0`](https://github.com/python-gitlab/python-gitlab/commit/d0546e043dfeb988a161475de53d4ec7d756bdd9))
+
+### Feature
+
+* feat: add pipeline status as Enum
+
+https://docs.gitlab.com/ee/api/pipelines.html ([`4954bbc`](https://github.com/python-gitlab/python-gitlab/commit/4954bbcd7e8433aac672405f3f4741490cb4561a))
+
+* feat(api): add support for wiki attachments (#2722)
+
+Added UploadMixin in mixin module
+Added UploadMixin dependency for Project, ProjectWiki, GroupWiki
+Added api tests for wiki upload
+Added unit test for mixin
+Added docs sections to wikis.rst ([`7b864b8`](https://github.com/python-gitlab/python-gitlab/commit/7b864b81fd348c6a42e32ace846d1acbcfc43998))
+
+
 ## v4.1.1 (2023-11-03)
 
 ### Chore
