@@ -19,6 +19,7 @@ API examples
    gl_objects/deploy_tokens
    gl_objects/deployments
    gl_objects/discussions
+   gl_objects/draft_notes
    gl_objects/environments
    gl_objects/events
    gl_objects/epics

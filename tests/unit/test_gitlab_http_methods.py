@@ -767,6 +767,21 @@ def test_put_request_404(gl):
 
 
 @responses.activate
+def test_put_request_204(gl):
+    url = "http://localhost/api/v4/projects"
+    responses.add(
+        method=responses.PUT,
+        url=url,
+        status=204,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+    )
+
+    result = gl.http_put("/projects")
+    assert isinstance(result, requests.Response)
+    assert responses.assert_call_count(url, 1) is True
+
+
+@responses.activate
 def test_put_request_invalid_data(gl):
     url = "http://localhost/api/v4/projects"
     responses.add(

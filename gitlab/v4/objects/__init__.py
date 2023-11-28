@@ -18,6 +18,7 @@ from .deploy_keys import *
 from .deploy_tokens import *
 from .deployments import *
 from .discussions import *
+from .draft_notes import *
 from .environments import *
 from .epics import *
 from .events import *
