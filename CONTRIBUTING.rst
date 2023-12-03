@@ -42,7 +42,7 @@ This creates a clearer project history, and automates our `Releases`_ and change
 Coding Style
 ------------
 
-We use `black<https://github.com/python/black>`_ and `isort <https://pycqa.github.io/isort/>`_
+We use `black <https://github.com/python/black/>`_ and `isort <https://pycqa.github.io/isort/>`_
 to format our code, so you'll need to make sure you use it when committing.
 
 Pre-commit hooks will validate and format your code, so you can then stage any changes done if the commit failed.
