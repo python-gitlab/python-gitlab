@@ -56,6 +56,7 @@ from .push_rules import *
 from .releases import *
 from .repositories import *
 from .resource_groups import *
+from .reviewers import *
 from .runners import *
 from .secure_files import *
 from .settings import *

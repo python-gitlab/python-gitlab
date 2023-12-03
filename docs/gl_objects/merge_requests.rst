@@ -94,6 +94,10 @@ Get a single MR::
 
     mr = project.mergerequests.get(mr_iid)
 
+Get MR reviewer details::
+    mr = project.mergerequests.get(mr_iid)
+    reviewers = mr.reviewer_details.list()
+
 Create a MR::
 
     mr = project.mergerequests.create({'source_branch': 'cool_feature',
