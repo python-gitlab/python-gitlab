@@ -16,11 +16,11 @@ repos:
     hooks:
       - id: flake8
   - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+    rev: 5.13.1
     hooks:
       - id: isort
   - repo: https://github.com/pycqa/pylint
-    rev: v3.0.2
+    rev: v3.0.3
     hooks:
       - id: pylint
         additional_dependencies:
@@ -47,6 +47,6 @@ repos:
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
   - repo: https://github.com/maxbrunet/pre-commit-renovate
-    rev: 37.83.0
+    rev: 37.91.0
     hooks:
       - id: renovate-config-validator
