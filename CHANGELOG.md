@@ -2,6 +2,45 @@
 
 
 
+## v4.3.0 (2023-12-28)
+
+### Chore
+
+* chore(deps): update all non-major dependencies ([`d7bdb02`](https://github.com/python-gitlab/python-gitlab/commit/d7bdb0257a5587455c3722f65c4a632f24d395be))
+
+* chore(deps): update actions/stale action to v9 ([`c01988b`](https://github.com/python-gitlab/python-gitlab/commit/c01988b12c7745929d0c591f2fa265df2929a859))
+
+* chore(deps): update all non-major dependencies ([`9e067e5`](https://github.com/python-gitlab/python-gitlab/commit/9e067e5c67dcf9f5e6c3408b30d9e2525c768e0a))
+
+* chore(deps): update actions/setup-python action to v5 ([`fad1441`](https://github.com/python-gitlab/python-gitlab/commit/fad14413f4f27f1b6f902703b5075528aac52451))
+
+* chore(deps): update all non-major dependencies ([`bb2af7b`](https://github.com/python-gitlab/python-gitlab/commit/bb2af7bfe8aa59ea8b9ad7ca2d6e56f4897b704a))
+
+* chore(deps): update all non-major dependencies ([`5ef1b4a`](https://github.com/python-gitlab/python-gitlab/commit/5ef1b4a6c8edd34c381c6e08cd3893ef6c0685fd))
+
+* chore(deps): update dependency types-setuptools to v69 ([`de11192`](https://github.com/python-gitlab/python-gitlab/commit/de11192455f1c801269ecb3bdcbc7c5b769ff354))
+
+### Documentation
+
+* docs: fix rst link typo in CONTRIBUTING.rst ([`2b6da6e`](https://github.com/python-gitlab/python-gitlab/commit/2b6da6e63c82a61b8e21d193cfd46baa3fcf8937))
+
+### Feature
+
+* feat(api): add support for the Draft notes API (#2728)
+
+* feat(api): add support for the Draft notes API
+
+* fix(client): handle empty 204 reponses in PUT requests ([`ebf9d82`](https://github.com/python-gitlab/python-gitlab/commit/ebf9d821cfc36071fca05d38b82c641ae30c974c))
+
+### Fix
+
+* fix(cli): add ability to disable SSL verification
+
+Add a `--no-ssl-verify` option to disable SSL verification
+
+Closes: #2714 ([`3fe9fa6`](https://github.com/python-gitlab/python-gitlab/commit/3fe9fa64d9a38bc77950046f2950660d8d7e27a6))
+
+
 ## v4.2.0 (2023-11-28)
 
 ### Chore
