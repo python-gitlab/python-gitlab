@@ -5,27 +5,29 @@ GitLab API: https://docs.gitlab.com/ee/api/project_access_tokens.html
 import pytest
 import responses
 
+from gitlab.v4.objects import ProjectAccessToken
+
 
 @pytest.fixture
-def resp_list_project_access_token():
-    content = [
-        {
-            "user_id": 141,
-            "scopes": ["api"],
-            "name": "token",
-            "expires_at": "2021-01-31",
-            "id": 42,
-            "active": True,
-            "created_at": "2021-01-20T22:11:48.151Z",
-            "revoked": False,
-        }
-    ]
-
+def resp_list_project_access_token(token_content):
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
             method=responses.GET,
             url="http://localhost/api/v4/projects/1/access_tokens",
-            json=content,
+            json=[token_content],
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_get_project_access_token(token_content):
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/access_tokens/1",
+            json=token_content,
             content_type="application/json",
             status=200,
         )
@@ -92,6 +94,13 @@ def test_list_project_access_tokens(gl, resp_list_project_access_token):
     assert len(access_tokens) == 1
     assert access_tokens[0].revoked is False
     assert access_tokens[0].name == "token"
+
+
+def test_get_project_access_token(project, resp_get_project_access_token):
+    access_token = project.access_tokens.get(1)
+    assert isinstance(access_token, ProjectAccessToken)
+    assert access_token.revoked is False
+    assert access_token.name == "token"
 
 
 def test_create_project_access_token(gl, resp_create_project_access_token):

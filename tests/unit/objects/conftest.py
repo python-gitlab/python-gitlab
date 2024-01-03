@@ -22,6 +22,20 @@ def created_content():
 
 
 @pytest.fixture
+def token_content():
+    return {
+        "user_id": 141,
+        "scopes": ["api"],
+        "name": "token",
+        "expires_at": "2021-01-31",
+        "id": 42,
+        "active": True,
+        "created_at": "2021-01-20T22:11:48.151Z",
+        "revoked": False,
+    }
+
+
+@pytest.fixture
 def resp_export(accepted_content, binary_content):
     """Common fixture for group and project exports."""
     export_status_content = {
