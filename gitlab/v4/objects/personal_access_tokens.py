@@ -1,7 +1,14 @@
 from typing import Any, cast, Union
 
 from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import CreateMixin, DeleteMixin, ObjectDeleteMixin, RetrieveMixin
+from gitlab.mixins import (
+    CreateMixin,
+    DeleteMixin,
+    ObjectDeleteMixin,
+    ObjectRotateMixin,
+    RetrieveMixin,
+    RotateMixin,
+)
 from gitlab.types import ArrayAttribute, RequiredOptional
 
 __all__ = [
@@ -12,11 +19,11 @@ __all__ = [
 ]
 
 
-class PersonalAccessToken(ObjectDeleteMixin, RESTObject):
+class PersonalAccessToken(ObjectDeleteMixin, ObjectRotateMixin, RESTObject):
     pass
 
 
-class PersonalAccessTokenManager(DeleteMixin, RetrieveMixin, RESTManager):
+class PersonalAccessTokenManager(DeleteMixin, RetrieveMixin, RotateMixin, RESTManager):
     _path = "/personal_access_tokens"
     _obj_cls = PersonalAccessToken
     _list_filters = ("user_id",)

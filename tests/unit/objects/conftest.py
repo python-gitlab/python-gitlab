@@ -32,6 +32,7 @@ def token_content():
         "active": True,
         "created_at": "2021-01-20T22:11:48.151Z",
         "revoked": False,
+        "token": "s3cr3t",
     }
 
 

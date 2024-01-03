@@ -288,6 +288,10 @@ class GitlabRevertError(GitlabOperationError):
     pass
 
 
+class GitlabRotateError(GitlabOperationError):
+    pass
+
+
 class GitlabLicenseError(GitlabOperationError):
     pass
 
@@ -397,6 +401,7 @@ __all__ = [
     "GitlabRestoreError",
     "GitlabRetryError",
     "GitlabRevertError",
+    "GitlabRotateError",
     "GitlabSearchError",
     "GitlabSetError",
     "GitlabStopError",

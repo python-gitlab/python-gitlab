@@ -7,6 +7,8 @@ https://docs.gitlab.com/ee/api/users.html#create-a-personal-access-token
 import pytest
 import responses
 
+from gitlab.v4.objects import PersonalAccessToken
+
 user_id = 1
 token_id = 1
 token_name = "Test Token"
@@ -91,6 +93,19 @@ def resp_delete_personal_access_token():
         yield rsps
 
 
+@pytest.fixture
+def resp_rotate_personal_access_token(token_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/personal_access_tokens/1/rotate",
+            json=token_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
 def test_create_personal_access_token(gl, resp_create_user_personal_access_token):
     user = gl.users.get(1, lazy=True)
     access_token = user.personal_access_tokens.create(
@@ -135,3 +150,10 @@ def test_delete_personal_access_token(gl, resp_delete_personal_access_token):
 
 def test_revoke_personal_access_token_by_id(gl, resp_delete_personal_access_token):
     gl.personal_access_tokens.delete(token_id)
+
+
+def test_rotate_project_access_token(gl, resp_rotate_personal_access_token):
+    access_token = gl.personal_access_tokens.get(1, lazy=True)
+    access_token.rotate()
+    assert isinstance(access_token, PersonalAccessToken)
+    assert access_token.token == "s3cr3t"

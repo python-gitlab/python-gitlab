@@ -35,23 +35,12 @@ def resp_get_project_access_token(token_content):
 
 
 @pytest.fixture
-def resp_create_project_access_token():
-    content = {
-        "user_id": 141,
-        "scopes": ["api"],
-        "name": "token",
-        "expires_at": "2021-01-31",
-        "id": 42,
-        "active": True,
-        "created_at": "2021-01-20T22:11:48.151Z",
-        "revoked": False,
-    }
-
+def resp_create_project_access_token(token_content):
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
             method=responses.POST,
             url="http://localhost/api/v4/projects/1/access_tokens",
-            json=content,
+            json=token_content,
             content_type="application/json",
             status=200,
         )
@@ -89,6 +78,19 @@ def resp_revoke_project_access_token():
         yield rsps
 
 
+@pytest.fixture
+def resp_rotate_project_access_token(token_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/access_tokens/1/rotate",
+            json=token_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
 def test_list_project_access_tokens(gl, resp_list_project_access_token):
     access_tokens = gl.projects.get(1, lazy=True).access_tokens.list()
     assert len(access_tokens) == 1
@@ -118,3 +120,10 @@ def test_revoke_project_access_token(
     gl.projects.get(1, lazy=True).access_tokens.delete(42)
     access_token = gl.projects.get(1, lazy=True).access_tokens.list()[0]
     access_token.delete()
+
+
+def test_rotate_project_access_token(project, resp_rotate_project_access_token):
+    access_token = project.access_tokens.get(1, lazy=True)
+    access_token.rotate()
+    assert isinstance(access_token, ProjectAccessToken)
+    assert access_token.token == "s3cr3t"
