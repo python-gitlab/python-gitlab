@@ -32,8 +32,17 @@ Create project access token::
 
     access_token = gl.projects.get(1).access_tokens.create({"name": "test", "scopes": ["api"], "expires_at": "2023-06-06"})
 
-Revoke a project access tokens::
+Revoke a project access token::
 
     gl.projects.get(1).access_tokens.delete(42)
     # or
     access_token.delete()
+
+Rotate a project access token and retrieve its new value::
+
+    token = project.access_tokens.get(42, lazy=True)
+    token.rotate()
+    print(token.token)
+    # or directly using a token ID
+    new_token = project.access_tokens.rotate(42)
+    print(new_token.token)

@@ -37,3 +37,12 @@ Revoke a group access token::
     gl.groups.get(1).access_tokens.delete(42)
     # or
     access_token.delete()
+
+Rotate a group access token and retrieve its new value::
+
+    token = group.access_tokens.get(42, lazy=True)
+    token.rotate()
+    print(token.token)
+    # or directly using a token ID
+    new_token = group.access_tokens.rotate(42)
+    print(new_token.token)

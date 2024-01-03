@@ -52,6 +52,15 @@ Revoke the personal access token currently used::
 
     gl.personal_access_tokens.delete("self")
 
+Rotate a personal access token and retrieve its new value::
+
+    token = gl.personal_access_tokens.get(42, lazy=True)
+    token.rotate()
+    print(token.token)
+    # or directly using a token ID
+    new_token = gl.personal_access_tokens.rotate(42)
+    print(new_token.token)
+
 Create a personal access token for a user (admin only)::
 
     user = gl.users.get(25, lazy=True)

@@ -1,7 +1,14 @@
 from typing import Any, cast, Union
 
 from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import CreateMixin, DeleteMixin, ObjectDeleteMixin, RetrieveMixin
+from gitlab.mixins import (
+    CreateMixin,
+    DeleteMixin,
+    ObjectDeleteMixin,
+    ObjectRotateMixin,
+    RetrieveMixin,
+    RotateMixin,
+)
 from gitlab.types import ArrayAttribute, RequiredOptional
 
 __all__ = [
@@ -10,11 +17,13 @@ __all__ = [
 ]
 
 
-class GroupAccessToken(ObjectDeleteMixin, RESTObject):
+class GroupAccessToken(ObjectDeleteMixin, ObjectRotateMixin, RESTObject):
     pass
 
 
-class GroupAccessTokenManager(CreateMixin, DeleteMixin, RetrieveMixin, RESTManager):
+class GroupAccessTokenManager(
+    CreateMixin, DeleteMixin, RetrieveMixin, RotateMixin, RESTManager
+):
     _path = "/groups/{group_id}/access_tokens"
     _obj_cls = GroupAccessToken
     _from_parent_attrs = {"group_id": "id"}
