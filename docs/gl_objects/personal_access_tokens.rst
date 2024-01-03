@@ -60,7 +60,4 @@ Create a personal access token for a user (admin only)::
 .. note:: As you can see above, you can only create personal access tokens
     via the Users API, but you cannot revoke these objects directly.
     This is because the create API uses a different endpoint than the list and revoke APIs.
-    You need to fetch the token via the list API first to revoke it.
-
-    As of 14.2, GitLab does not provide a GET API for single personal access tokens.
-    You must use the list method to retrieve single tokens.
+    You need to fetch the token via the list or get API first to revoke it.
