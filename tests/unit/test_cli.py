@@ -1,9 +1,9 @@
 import argparse
+import contextlib
 import io
 import os
 import sys
 import tempfile
-from contextlib import redirect_stderr  # noqa: H302
 from unittest import mock
 
 import pytest
@@ -62,7 +62,7 @@ def test_cls_to_gitlab_resource(class_name, expected_gitlab_resource):
 )
 def test_die(message, error, expected):
     fl = io.StringIO()
-    with redirect_stderr(fl):
+    with contextlib.redirect_stderr(fl):
         with pytest.raises(SystemExit) as test:
             cli.die(message, error)
     assert fl.getvalue() == expected
@@ -90,12 +90,11 @@ def test_parse_value():
     os.unlink(temp_path)
 
     fl = io.StringIO()
-    with redirect_stderr(fl):
+    with contextlib.redirect_stderr(fl):
         with pytest.raises(SystemExit) as exc:
             cli._parse_value("@/thisfileprobablydoesntexist")
-        assert (
-            fl.getvalue() == "[Errno 2] No such file or directory:"
-            " '/thisfileprobablydoesntexist'\n"
+        assert fl.getvalue().startswith(
+            "FileNotFoundError: [Errno 2] No such file or directory:"
         )
         assert exc.value.code == 1
 

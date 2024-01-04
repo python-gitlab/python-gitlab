@@ -540,12 +540,15 @@ def test_update_application_settings(gitlab_cli):
     assert ret.success
 
 
-def test_create_project_with_values_from_file(gitlab_cli, tmpdir):
+def test_create_project_with_values_from_file(gitlab_cli, fixture_dir, tmpdir):
     name = "gitlab-project-from-file"
     description = "Multiline\n\nData\n"
     from_file = tmpdir.join(name)
     from_file.write(description)
     from_file_path = f"@{str(from_file)}"
+    avatar_file = fixture_dir / "avatar.png"
+    assert avatar_file.exists()
+    avatar_file_path = f"@{avatar_file}"
 
     cmd = [
         "-v",
@@ -555,6 +558,8 @@ def test_create_project_with_values_from_file(gitlab_cli, tmpdir):
         name,
         "--description",
         from_file_path,
+        "--avatar",
+        avatar_file_path,
     ]
     ret = gitlab_cli(cmd)
 

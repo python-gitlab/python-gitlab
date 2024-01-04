@@ -1,6 +1,7 @@
 import argparse
 import functools
 import os
+import pathlib
 import re
 import sys
 import textwrap
@@ -298,12 +299,17 @@ def _parse_value(v: Any) -> Any:
         return v[1:]
     if isinstance(v, str) and v.startswith("@"):
         # If the user-provided value starts with @, we try to read the file
-        # path provided after @ as the real value. Exit on any error.
+        # path provided after @ as the real value.
+        filepath = pathlib.Path(v[1:]).expanduser().resolve()
         try:
-            with open(v[1:], encoding="utf-8") as f:
+            with open(filepath, encoding="utf-8") as f:
                 return f.read()
-        except Exception as e:
-            sys.stderr.write(f"{e}\n")
+        except UnicodeDecodeError:
+            with open(filepath, "rb") as f:
+                return f.read()
+        except OSError as exc:
+            exc_name = type(exc).__name__
+            sys.stderr.write(f"{exc_name}: {exc}\n")
             sys.exit(1)
 
     return v
