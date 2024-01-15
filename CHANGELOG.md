@@ -2,6 +2,59 @@
 
 
 
+## v4.4.0 (2024-01-15)
+
+### Chore
+
+* chore(deps): update all non-major dependencies ([`550f935`](https://github.com/python-gitlab/python-gitlab/commit/550f9355d29a502bb022f68dab6c902bf6913552))
+
+* chore(deps): update pre-commit hook pycqa/flake8 to v7 ([`9a199b6`](https://github.com/python-gitlab/python-gitlab/commit/9a199b6089152e181e71a393925e0ec581bc55ca))
+
+* chore(deps): update dependency jinja2 to v3.1.3 [security] ([`880913b`](https://github.com/python-gitlab/python-gitlab/commit/880913b67cce711d96e89ce6813e305e4ba10908))
+
+* chore(deps): update dependency flake8 to v7 ([`20243c5`](https://github.com/python-gitlab/python-gitlab/commit/20243c532a8a6d28eee0caff5b9c30cc7376a162))
+
+* chore(deps): update all non-major dependencies ([`cbc13a6`](https://github.com/python-gitlab/python-gitlab/commit/cbc13a61e0f15880b49a3d0208cc603d7d0b57e3))
+
+* chore(ci): align upload and download action versions ([`dcca59d`](https://github.com/python-gitlab/python-gitlab/commit/dcca59d1a5966283c1120cfb639c01a76214d2b2))
+
+* chore(deps): update actions/upload-artifact action to v4 ([`7114af3`](https://github.com/python-gitlab/python-gitlab/commit/7114af341dd12b7fb63ffc08650c455ead18ab70))
+
+* chore(ci): add Python 3.13 development CI job
+
+Add a job to test the development versions of Python 3.13. ([`ff0c11b`](https://github.com/python-gitlab/python-gitlab/commit/ff0c11b7b75677edd85f846a4dbdab08491a6bd7))
+
+* chore(deps): update all non-major dependencies ([`369a595`](https://github.com/python-gitlab/python-gitlab/commit/369a595a8763109a2af8a95a8e2423ebb30b9320))
+
+### Feature
+
+* feat(api): add reviewer_details manager for mergrequest to get reviewers of merge request
+
+Those changes implements &#39;GET /projects/:id/merge_requests/:merge_request_iid/reviewers&#39; gitlab API call.
+Naming for call is not reviewers because reviewers atribute already presen in merge request response ([`adbd90c`](https://github.com/python-gitlab/python-gitlab/commit/adbd90cadffe1d9e9716a6e3826f30664866ad3f))
+
+* feat(api): support access token rotate API ([`b13971d`](https://github.com/python-gitlab/python-gitlab/commit/b13971d5472cb228f9e6a8f2fa05a7cc94d03ebe))
+
+* feat(api): support single resource access token get API ([`dae9e52`](https://github.com/python-gitlab/python-gitlab/commit/dae9e522a26041f5b3c6461cc8a5e284f3376a79))
+
+### Fix
+
+* fix(cli): support binary files with `@` notation
+
+Support binary files being used in the CLI with arguments using the
+`@` notation. For example `--avatar @/path/to/avatar.png`
+
+Also explicitly catch the common OSError exception, which is the
+parent exception for things like: FileNotFoundError, PermissionError
+and more exceptions.
+
+Remove the bare exception handling. We would rather have the full
+traceback of any exceptions that we don&#39;t know about and add them
+later if needed.
+
+Closes: #2752 ([`57749d4`](https://github.com/python-gitlab/python-gitlab/commit/57749d46de1d975aacb82758c268fc26e5e6ed8b))
+
+
 ## v4.3.0 (2023-12-28)
 
 ### Chore
