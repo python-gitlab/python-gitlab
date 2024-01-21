@@ -259,11 +259,21 @@ def test_project_pages_domains(gl, project):
 
 
 def test_project_protected_branches(project):
-    p_b = project.protectedbranches.create({"name": "*-stable"})
+    p_b = project.protectedbranches.create(
+        {
+            "name": "*-stable",
+            "allow_force_push": False,
+        }
+    )
     assert p_b.name == "*-stable"
+    assert not p_b.allow_force_push
     assert p_b in project.protectedbranches.list()
 
+    p_b.allow_force_push = True
+    p_b.save()
+
     p_b = project.protectedbranches.get("*-stable")
+    assert p_b.allow_force_push
     p_b.delete()
     assert p_b not in project.protectedbranches.list()
 
