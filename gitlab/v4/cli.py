@@ -258,7 +258,7 @@ def _populate_sub_parser_by_class(
                 sub_parser_action.add_argument(
                     f"--{x.replace('_', '-')}", required=True
                 )
-            for x in mgr_cls._create_attrs.optional:
+            for x in mgr_cls._create_attrs.optional + mgr_cls._create_attrs.exclusive:
                 sub_parser_action.add_argument(
                     f"--{x.replace('_', '-')}", required=False
                 )
@@ -274,7 +274,7 @@ def _populate_sub_parser_by_class(
                         f"--{x.replace('_', '-')}", required=True
                     )
 
-            for x in mgr_cls._update_attrs.optional:
+            for x in mgr_cls._update_attrs.optional + mgr_cls._update_attrs.exclusive:
                 if x != cls._id_attr:
                     sub_parser_action.add_argument(
                         f"--{x.replace('_', '-')}", required=False
