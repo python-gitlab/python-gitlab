@@ -1,4 +1,4 @@
-from typing import Any, cast, Dict, List, Optional, TYPE_CHECKING, Union
+from typing import Any, cast, List, Optional, TYPE_CHECKING, Union
 
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
@@ -132,42 +132,16 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
 
 class ProjectMergeRequestApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "name"
-    id: int
-    approval_rule_id: int
-    merge_request_iid: int
-
-    @exc.on_http_error(exc.GitlabUpdateError)
-    def save(self, **kwargs: Any) -> None:
-        """Save the changes made to the object to the server.
-
-        The object is updated to match what the server returns.
-
-        Args:
-            **kwargs: Extra options to send to the server (e.g. sudo)
-
-        Raise:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabUpdateError: If the server cannot perform the request
-        """
-        # There is a mismatch between the name of our id attribute and the put
-        # REST API name for the project_id, so we override it here.
-        self.approval_rule_id = self.id
-        self.merge_request_iid = self._parent_attrs["mr_iid"]
-        self.id = self._parent_attrs["project_id"]
-        # save will update self.id with the result from the server, so no need
-        # to overwrite with what it was before we overwrote it.
-        SaveMixin.save(self, **kwargs)
 
 
 class ProjectMergeRequestApprovalRuleManager(CRUDMixin, RESTManager):
-    _path = "/projects/{project_id}/merge_requests/{mr_iid}/approval_rules"
+    _path = "/projects/{project_id}/merge_requests/{merge_request_iid}/approval_rules"
     _obj_cls = ProjectMergeRequestApprovalRule
-    _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
+    _from_parent_attrs = {"project_id": "project_id", "merge_request_iid": "iid"}
     _update_attrs = RequiredOptional(
         required=(
             "id",
             "merge_request_iid",
-            "approval_rule_id",
             "name",
             "approvals_required",
         ),
@@ -177,7 +151,7 @@ class ProjectMergeRequestApprovalRuleManager(CRUDMixin, RESTManager):
     # groups of project-level rule will be copied. The approvals_required
     # specified will be used.
     _create_attrs = RequiredOptional(
-        required=("id", "merge_request_iid", "name", "approvals_required"),
+        required=("name", "approvals_required"),
         optional=("approval_project_rule_id", "user_ids", "group_ids"),
     )
 
@@ -187,32 +161,6 @@ class ProjectMergeRequestApprovalRuleManager(CRUDMixin, RESTManager):
         return cast(
             ProjectMergeRequestApprovalRule, super().get(id=id, lazy=lazy, **kwargs)
         )
-
-    def create(
-        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> RESTObject:
-        """Create a new object.
-
-        Args:
-            data: Parameters to send to the server to create the
-                         resource
-            **kwargs: Extra options to send to the server (e.g. sudo or
-                      'ref_name', 'stage', 'name', 'all')
-
-        Raises:
-            GitlabAuthenticationError: If authentication is not correct
-            GitlabCreateError: If the server cannot perform the request
-
-        Returns:
-            A new instance of the manage object class build with
-                the data sent by the server
-        """
-        if TYPE_CHECKING:
-            assert data is not None
-        new_data = data.copy()
-        new_data["id"] = self._from_parent_attrs["project_id"]
-        new_data["merge_request_iid"] = self._from_parent_attrs["mr_iid"]
-        return CreateMixin.create(self, new_data, **kwargs)
 
 
 class ProjectMergeRequestApprovalState(RESTObject):
