@@ -1,6 +1,6 @@
 -r requirements.txt
 build==1.0.3
-coverage==7.4.0
+coverage==7.4.1
 pytest-console-scripts==1.4.1
 pytest-cov==4.1.0
 pytest-github-actions-annotate-failures==0.2.0
