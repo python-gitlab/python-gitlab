@@ -41,3 +41,14 @@ jobs:
         run: tox -e isort -- --check
       - name: Run pylint Python code static checker (https://github.com/PyCQA/pylint)
         run: tox -e pylint
+      - name: Ensure no merge-commits in the Pull Request (PR)
+        if: github.event_name == 'pull_request'
+        run: |
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          echo "GITHUB_BASE_REF: ${GITHUB_BASE_REF}"
+          echo "HEAD_SHA: ${HEAD_SHA}"
+          MERGE_COMMITS=$(git rev-list --merges origin/${GITHUB_BASE_REF}..${HEAD_SHA})
+          if [[ -n "${MERGE_COMMITS}" ]]; then
+            echo "ERROR: The Pull Request (PR) contains a 'merge commit': ${MERGE_COMMITS}"
+            exit 1
+          fi
