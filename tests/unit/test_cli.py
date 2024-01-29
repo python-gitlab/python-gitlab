@@ -11,6 +11,8 @@ import pytest
 import gitlab.base
 from gitlab import cli
 from gitlab.exceptions import GitlabError
+from gitlab.mixins import CreateMixin, UpdateMixin
+from gitlab.types import RequiredOptional
 from gitlab.v4 import cli as v4_cli
 
 
@@ -155,6 +157,65 @@ def test_v4_parser():
     )
     actions = user_subparsers.choices["create"]._option_string_actions
     assert actions["--name"].required
+
+
+def test_extend_parser():
+    class ExceptionArgParser(argparse.ArgumentParser):
+        def error(self, message):
+            "Raise error instead of exiting on invalid arguments, to make testing easier"
+            raise ValueError(message)
+
+    class Fake:
+        _id_attr = None
+
+    class FakeManager(gitlab.base.RESTManager, CreateMixin, UpdateMixin):
+        _obj_cls = Fake
+        _create_attrs = RequiredOptional(
+            required=("create",),
+            optional=("opt_create",),
+            exclusive=("create_a", "create_b"),
+        )
+        _update_attrs = RequiredOptional(
+            required=("update",),
+            optional=("opt_update",),
+            exclusive=("update_a", "update_b"),
+        )
+
+    parser = ExceptionArgParser()
+    with mock.patch.dict(
+        "gitlab.v4.objects.__dict__", {"FakeManager": FakeManager}, clear=True
+    ):
+        v4_cli.extend_parser(parser)
+
+    assert parser.parse_args(["fake", "create", "--create", "1"])
+    assert parser.parse_args(["fake", "create", "--create", "1", "--opt-create", "1"])
+    assert parser.parse_args(["fake", "create", "--create", "1", "--create-a", "1"])
+    assert parser.parse_args(["fake", "create", "--create", "1", "--create-b", "1"])
+
+    with pytest.raises(ValueError):
+        # missing required "create"
+        parser.parse_args(["fake", "create", "--opt_create", "1"])
+
+    with pytest.raises(ValueError):
+        # both exclusive options
+        parser.parse_args(
+            ["fake", "create", "--create", "1", "--create-a", "1", "--create-b", "1"]
+        )
+
+    assert parser.parse_args(["fake", "update", "--update", "1"])
+    assert parser.parse_args(["fake", "update", "--update", "1", "--opt-update", "1"])
+    assert parser.parse_args(["fake", "update", "--update", "1", "--update-a", "1"])
+    assert parser.parse_args(["fake", "update", "--update", "1", "--update-b", "1"])
+
+    with pytest.raises(ValueError):
+        # missing required "update"
+        parser.parse_args(["fake", "update", "--opt_update", "1"])
+
+    with pytest.raises(ValueError):
+        # both exclusive options
+        parser.parse_args(
+            ["fake", "update", "--update", "1", "--update-a", "1", "--update-b", "1"]
+        )
 
 
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="added in 3.8")

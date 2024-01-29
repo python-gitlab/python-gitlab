@@ -262,6 +262,10 @@ def _populate_sub_parser_by_class(
                 sub_parser_action.add_argument(
                     f"--{x.replace('_', '-')}", required=False
                 )
+            if mgr_cls._create_attrs.exclusive:
+                group = sub_parser_action.add_mutually_exclusive_group()
+                for x in mgr_cls._create_attrs.exclusive:
+                    group.add_argument(f"--{x.replace('_', '-')}")
 
         if action_name == "update":
             if cls._id_attr is not None:
@@ -279,6 +283,11 @@ def _populate_sub_parser_by_class(
                     sub_parser_action.add_argument(
                         f"--{x.replace('_', '-')}", required=False
                     )
+
+            if mgr_cls._update_attrs.exclusive:
+                group = sub_parser_action.add_mutually_exclusive_group()
+                for x in mgr_cls._update_attrs.exclusive:
+                    group.add_argument(f"--{x.replace('_', '-')}")
 
     if cls.__name__ in cli.custom_actions:
         name = cls.__name__
