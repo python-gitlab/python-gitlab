@@ -3,6 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ee/api/users.html
 https://docs.gitlab.com/ee/api/users.html#delete-authentication-identity-from-user
 """
+
 import requests
 
 

@@ -3,6 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ce/api/merge_requests.html
 https://docs.gitlab.com/ee/api/deployments.html#list-of-merge-requests-associated-with-a-deployment
 """
+
 import re
 
 import pytest

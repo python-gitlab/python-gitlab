@@ -2,6 +2,7 @@
 GitLab API:
 https://docs.gitlab.com/ee/api/projects.html
 """
+
 from typing import (
     Any,
     Callable,

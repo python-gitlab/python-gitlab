@@ -1,6 +1,7 @@
 """
 GitLab API: https://docs.gitlab.com/ee/api/jobs.html
 """
+
 import pytest
 import responses
 

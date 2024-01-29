@@ -1,6 +1,7 @@
 """
 GitLab API: https://docs.gitlab.com/ce/api/issues.html
 """
+
 import re
 
 import pytest

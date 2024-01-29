@@ -2,6 +2,7 @@
 GitLab API:
 https://docs.gitlab.com/ee/api/deployments.html
 """
+
 from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
 
 from gitlab import cli

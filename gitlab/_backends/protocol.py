@@ -13,8 +13,7 @@ else:
 
 class BackendResponse(Protocol):
     @abc.abstractmethod
-    def __init__(self, response: requests.Response) -> None:
-        ...
+    def __init__(self, response: requests.Response) -> None: ...
 
 
 class Backend(Protocol):
@@ -30,5 +29,4 @@ class Backend(Protocol):
         verify: Optional[Union[bool, str]],
         stream: Optional[bool],
         **kwargs: Any,
-    ) -> BackendResponse:
-        ...
+    ) -> BackendResponse: ...

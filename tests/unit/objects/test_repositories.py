@@ -3,6 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ee/api/repositories.html
 https://docs.gitlab.com/ee/api/repository_files.html
 """
+
 from urllib.parse import quote
 
 import pytest

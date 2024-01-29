@@ -3,6 +3,7 @@ GitLab API: https://docs.gitlab.com/ee/api/repositories.html
 
 Currently this module only contains repository-related methods for projects.
 """
+
 from typing import Any, Callable, Dict, Iterator, List, Optional, TYPE_CHECKING, Union
 
 import requests

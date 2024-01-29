@@ -2,6 +2,7 @@
 GitLab API:
 https://docs.gitlab.com/ee/api/resource_groups.html
 """
+
 import pytest
 import responses
 

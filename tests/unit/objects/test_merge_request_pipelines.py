@@ -1,6 +1,7 @@
 """
 GitLab API: https://docs.gitlab.com/ee/api/merge_requests.html#list-mr-pipelines
 """
+
 import pytest
 import responses
 

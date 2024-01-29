@@ -3,6 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ce/api/packages.html
 https://docs.gitlab.com/ee/user/packages/generic_packages
 """
+
 from collections.abc import Iterator
 
 from gitlab.v4.objects import GenericPackage

@@ -1,6 +1,7 @@
 """
 GitLab API: https://docs.gitlab.com/ce/api/project_statistics.html
 """
+
 import pytest
 import responses
 

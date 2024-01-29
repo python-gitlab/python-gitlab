@@ -2,6 +2,7 @@
 GitLab API:
 https://docs.gitlab.com/ce/api/topics.html
 """
+
 import pytest
 import responses
 

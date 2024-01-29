@@ -2,6 +2,7 @@
 GitLab API:
 https://docs.gitlab.com/ee/api/features.html
 """
+
 from typing import Any, Optional, TYPE_CHECKING, Union
 
 from gitlab import exceptions as exc

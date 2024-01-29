@@ -3,6 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ee/api/users.html
 https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
 """
+
 from typing import Any, cast, Dict, List, Optional, Union
 
 import requests

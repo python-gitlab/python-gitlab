@@ -1,6 +1,7 @@
 """
 GitLab API: https://docs.gitlab.com/ee/api/draft_notes.html
 """
+
 from copy import deepcopy
 
 import pytest

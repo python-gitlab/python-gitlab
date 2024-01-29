@@ -4,6 +4,7 @@ Ensure type-hints are setup correctly and detect if missing functions.
 Original notes by John L. Villalovos
 
 """
+
 import dataclasses
 import functools
 import inspect

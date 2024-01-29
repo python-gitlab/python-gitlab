@@ -1,6 +1,7 @@
 """
 GitLab API: https://docs.gitlab.com/ee/api/container_registry.html
 """
+
 import re
 
 import pytest

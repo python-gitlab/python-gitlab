@@ -3,6 +3,7 @@ Ensure objects defined in gitlab.v4.objects are imported in
 `gitlab/v4/objects/__init__.py`
 
 """
+
 import pkgutil
 from typing import Set
 

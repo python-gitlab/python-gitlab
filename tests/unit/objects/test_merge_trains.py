@@ -2,6 +2,7 @@
 GitLab API:
 https://docs.gitlab.com/ee/api/merge_trains.html
 """
+
 import pytest
 import responses
 

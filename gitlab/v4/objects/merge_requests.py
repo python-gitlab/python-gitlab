@@ -3,6 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ee/api/merge_requests.html
 https://docs.gitlab.com/ee/api/merge_request_approvals.html
 """
+
 from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
 
 import requests
