@@ -1,6 +1,7 @@
 """
 GitLab API: https://docs.gitlab.com/ce/api/repository_submodules.html
 """
+
 import pytest
 import responses
 

@@ -42,6 +42,7 @@ Why this is an issue:
 Almost all classes in gitlab/v4/objects/*py were already correct before this
 check was added.
 """
+
 import inspect
 
 import pytest
@@ -53,11 +54,9 @@ def test_show_issue() -> None:
     """Test case to demonstrate the TypeError that occurs"""
 
     class RESTObject:
-        def __init__(self, manager: str, attrs: int) -> None:
-            ...
+        def __init__(self, manager: str, attrs: int) -> None: ...
 
-    class Mixin(RESTObject):
-        ...
+    class Mixin(RESTObject): ...
 
     with pytest.raises(TypeError) as exc_info:
         # Wrong ordering here
@@ -72,8 +71,7 @@ def test_show_issue() -> None:
     assert "MRO" in exc_info.exconly()
 
     # Correctly ordered class, no exception
-    class Correctv4Object(Mixin, RESTObject):
-        ...
+    class Correctv4Object(Mixin, RESTObject): ...
 
 
 def test_mros() -> None:

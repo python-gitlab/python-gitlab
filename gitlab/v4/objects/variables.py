@@ -4,6 +4,7 @@ https://docs.gitlab.com/ee/api/instance_level_ci_variables.html
 https://docs.gitlab.com/ee/api/project_level_variables.html
 https://docs.gitlab.com/ee/api/group_level_variables.html
 """
+
 from typing import Any, cast, Union
 
 from gitlab.base import RESTManager, RESTObject

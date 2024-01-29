@@ -2,6 +2,7 @@
 GitLab API: https://docs.gitlab.com/ee/api/project_badges.html
 GitLab API: https://docs.gitlab.com/ee/api/group_badges.html
 """
+
 import re
 
 import pytest

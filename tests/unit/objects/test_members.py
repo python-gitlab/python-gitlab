@@ -1,6 +1,7 @@
 """
 GitLab API: https://docs.gitlab.com/ee/api/members.html
 """
+
 import pytest
 import responses
 

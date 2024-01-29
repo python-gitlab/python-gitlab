@@ -133,9 +133,9 @@ def resp_mr_approval_rules():
             mr_ars_content[0]["eligible_approvers"][0]
         ]
 
-        updated_mr_ars_content[
-            "approvals_required"
-        ] = updated_approval_rule_approvals_required
+        updated_mr_ars_content["approvals_required"] = (
+            updated_approval_rule_approvals_required
+        )
 
         rsps.add(
             method=responses.PUT,

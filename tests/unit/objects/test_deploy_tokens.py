@@ -1,6 +1,7 @@
 """
 GitLab API: https://docs.gitlab.com/ce/api/deploy_tokens.html
 """
+
 import pytest
 import responses
 

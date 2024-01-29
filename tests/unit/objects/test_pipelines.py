@@ -1,6 +1,7 @@
 """
 GitLab API: https://docs.gitlab.com/ee/api/pipelines.html
 """
+
 import pytest
 import responses
 

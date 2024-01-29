@@ -1,6 +1,7 @@
 """
 GitLab API: https://docs.gitlab.com/ee/api/jobs.html#list-pipeline-bridges
 """
+
 import pytest
 import responses
 

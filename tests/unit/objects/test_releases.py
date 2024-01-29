@@ -3,6 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ee/api/releases/index.html
 https://docs.gitlab.com/ee/api/releases/links.html
 """
+
 import re
 
 import pytest

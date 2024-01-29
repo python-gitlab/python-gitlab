@@ -2,6 +2,7 @@
 GitLab API:
 https://docs.gitlab.com/ee/api/secure_files.html
 """
+
 from typing import Any, Callable, cast, Iterator, Optional, TYPE_CHECKING, Union
 
 import requests

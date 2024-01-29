@@ -2,6 +2,7 @@
 GitLab API:
 https://docs.gitlab.com/ee/api/job_artifacts.html
 """
+
 from typing import Any, Callable, Iterator, Optional, TYPE_CHECKING, Union
 
 import requests

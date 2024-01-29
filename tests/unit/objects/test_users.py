@@ -3,6 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ce/api/users.html
 https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
 """
+
 import pytest
 import responses
 

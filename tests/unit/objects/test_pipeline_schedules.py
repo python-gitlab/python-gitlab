@@ -1,6 +1,7 @@
 """
 GitLab API: https://docs.gitlab.com/ce/api/pipeline_schedules.html
 """
+
 import pytest
 import responses
 

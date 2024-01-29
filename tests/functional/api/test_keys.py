@@ -2,6 +2,7 @@
 GitLab API:
 https://docs.gitlab.com/ce/api/keys.html
 """
+
 import base64
 import hashlib
 

@@ -40,7 +40,6 @@ _PAGINATION_URL = (
 
 
 class Gitlab:
-
     """Represents a GitLab server connection.
 
     Args:

@@ -1,6 +1,7 @@
 """
 GitLab API: https://docs.gitlab.com/ce/api/deployments.html
 """
+
 import pytest
 import responses
 
