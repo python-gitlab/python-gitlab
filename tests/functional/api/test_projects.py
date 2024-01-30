@@ -258,7 +258,7 @@ def test_project_pages_domains(gl, project):
     assert domain not in project.pagesdomains.list()
 
 
-def test_project_protected_branches(project):
+def test_project_protected_branches(project, wait_for_sidekiq):
     p_b = project.protectedbranches.create(
         {
             "name": "*-stable",
@@ -271,6 +271,8 @@ def test_project_protected_branches(project):
 
     p_b.allow_force_push = True
     p_b.save()
+
+    wait_for_sidekiq(timeout=60)
 
     p_b = project.protectedbranches.get("*-stable")
     assert p_b.allow_force_push
