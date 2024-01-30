@@ -10,7 +10,7 @@ import responses
 import gitlab
 from gitlab.mixins import UpdateMethod
 
-approval_rule_id = 1
+approval_rule_id = 7
 approval_rule_name = "security"
 approvals_required = 3
 user_ids = [5, 50]
@@ -96,21 +96,21 @@ def resp_mr_approval_rules():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
             method=responses.GET,
-            url="http://localhost/api/v4/projects/1/merge_requests/1/approval_rules",
+            url="http://localhost/api/v4/projects/1/merge_requests/3/approval_rules",
             json=mr_ars_content,
             content_type="application/json",
             status=200,
         )
         rsps.add(
             method=responses.GET,
-            url="http://localhost/api/v4/projects/1/merge_requests/1/approval_rules/1",
+            url="http://localhost/api/v4/projects/1/merge_requests/3/approval_rules/7",
             json=mr_ars_content[0],
             content_type="application/json",
             status=200,
         )
         rsps.add(
             method=responses.GET,
-            url="http://localhost/api/v4/projects/1/merge_requests/1/approval_state",
+            url="http://localhost/api/v4/projects/1/merge_requests/3/approval_state",
             json=mr_approval_state_content,
             content_type="application/json",
             status=200,
@@ -122,7 +122,7 @@ def resp_mr_approval_rules():
 
         rsps.add(
             method=responses.POST,
-            url="http://localhost/api/v4/projects/1/merge_requests/1/approval_rules",
+            url="http://localhost/api/v4/projects/1/merge_requests/3/approval_rules",
             json=new_mr_ars_content,
             content_type="application/json",
             status=200,
@@ -139,7 +139,7 @@ def resp_mr_approval_rules():
 
         rsps.add(
             method=responses.PUT,
-            url="http://localhost/api/v4/projects/1/merge_requests/1/approval_rules/1",
+            url="http://localhost/api/v4/projects/1/merge_requests/3/approval_rules/7",
             json=updated_mr_ars_content,
             content_type="application/json",
             status=200,
@@ -152,7 +152,7 @@ def resp_delete_mr_approval_rule():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.DELETE,
-            url="http://localhost/api/v4/projects/1/merge_requests/1/approval_rules/1",
+            url="http://localhost/api/v4/projects/1/merge_requests/3/approval_rules/7",
             status=204,
         )
         yield rsps
@@ -170,7 +170,7 @@ def test_project_approval_manager_update_method_post(project):
 
 
 def test_list_merge_request_approval_rules(project, resp_mr_approval_rules):
-    approval_rules = project.mergerequests.get(1, lazy=True).approval_rules.list()
+    approval_rules = project.mergerequests.get(3, lazy=True).approval_rules.list()
     assert len(approval_rules) == 1
     assert approval_rules[0].name == approval_rule_name
     assert approval_rules[0].id == approval_rule_id
@@ -178,12 +178,12 @@ def test_list_merge_request_approval_rules(project, resp_mr_approval_rules):
 
 
 def test_delete_merge_request_approval_rule(project, resp_delete_mr_approval_rule):
-    merge_request = project.mergerequests.get(1, lazy=True)
+    merge_request = project.mergerequests.get(3, lazy=True)
     merge_request.approval_rules.delete(approval_rule_id)
 
 
 def test_update_merge_request_approvals_set_approvers(project, resp_mr_approval_rules):
-    approvals = project.mergerequests.get(1, lazy=True).approvals
+    approvals = project.mergerequests.get(3, lazy=True).approvals
     assert isinstance(
         approvals,
         gitlab.v4.objects.merge_request_approvals.ProjectMergeRequestApprovalManager,
@@ -203,7 +203,7 @@ def test_update_merge_request_approvals_set_approvers(project, resp_mr_approval_
 
 
 def test_create_merge_request_approvals_set_approvers(project, resp_mr_approval_rules):
-    approvals = project.mergerequests.get(1, lazy=True).approvals
+    approvals = project.mergerequests.get(3, lazy=True).approvals
     assert isinstance(
         approvals,
         gitlab.v4.objects.merge_request_approvals.ProjectMergeRequestApprovalManager,
@@ -222,7 +222,7 @@ def test_create_merge_request_approvals_set_approvers(project, resp_mr_approval_
 
 
 def test_create_merge_request_approval_rule(project, resp_mr_approval_rules):
-    approval_rules = project.mergerequests.get(1, lazy=True).approval_rules
+    approval_rules = project.mergerequests.get(3, lazy=True).approval_rules
     data = {
         "name": new_approval_rule_name,
         "approvals_required": new_approval_rule_approvals_required,
@@ -238,7 +238,7 @@ def test_create_merge_request_approval_rule(project, resp_mr_approval_rules):
 
 
 def test_update_merge_request_approval_rule(project, resp_mr_approval_rules):
-    approval_rules = project.mergerequests.get(1, lazy=True).approval_rules
+    approval_rules = project.mergerequests.get(3, lazy=True).approval_rules
     ar_1 = approval_rules.list()[0]
     ar_1.user_ids = updated_approval_rule_user_ids
     ar_1.approvals_required = updated_approval_rule_approvals_required
@@ -250,7 +250,7 @@ def test_update_merge_request_approval_rule(project, resp_mr_approval_rules):
 
 
 def test_get_merge_request_approval_rule(project, resp_mr_approval_rules):
-    merge_request = project.mergerequests.get(1, lazy=True)
+    merge_request = project.mergerequests.get(3, lazy=True)
     approval_rule = merge_request.approval_rules.get(approval_rule_id)
     assert isinstance(
         approval_rule,
@@ -261,7 +261,7 @@ def test_get_merge_request_approval_rule(project, resp_mr_approval_rules):
 
 
 def test_get_merge_request_approval_state(project, resp_mr_approval_rules):
-    merge_request = project.mergerequests.get(1, lazy=True)
+    merge_request = project.mergerequests.get(3, lazy=True)
     approval_state = merge_request.approval_state.get()
     assert isinstance(
         approval_state,
