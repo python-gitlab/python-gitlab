@@ -258,7 +258,13 @@ def test_project_pages_domains(gl, project):
     assert domain not in project.pagesdomains.list()
 
 
-def test_project_protected_branches(project, wait_for_sidekiq):
+def test_project_protected_branches(project, wait_for_sidekiq, gitlab_version):
+    # Updating a protected branch is possible from Gitlab 15.6
+    # https://docs.gitlab.com/ee/api/protected_branches.html#update-a-protected-branch
+    can_update_prot_branch = gitlab_version.major > 15 or (
+        gitlab_version.major == 15 and gitlab_version.minor >= 6
+    )
+
     p_b = project.protectedbranches.create(
         {
             "name": "*-stable",
@@ -269,13 +275,14 @@ def test_project_protected_branches(project, wait_for_sidekiq):
     assert not p_b.allow_force_push
     assert p_b in project.protectedbranches.list()
 
-    p_b.allow_force_push = True
-    p_b.save()
-
-    wait_for_sidekiq(timeout=60)
+    if can_update_prot_branch:
+        p_b.allow_force_push = True
+        p_b.save()
+        wait_for_sidekiq(timeout=60)
 
     p_b = project.protectedbranches.get("*-stable")
-    assert p_b.allow_force_push
+    if can_update_prot_branch:
+        assert p_b.allow_force_push
     p_b.delete()
     assert p_b not in project.protectedbranches.list()
 
