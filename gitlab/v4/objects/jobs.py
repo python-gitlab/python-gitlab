@@ -65,7 +65,10 @@ class ProjectJob(RefreshMixin, RESTObject):
             GitlabJobPlayError: If the job could not be triggered
         """
         path = f"{self.manager.path}/{self.encoded_id}/play"
-        self.manager.gitlab.http_post(path, **kwargs)
+        result = self.manager.gitlab.http_post(path, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(result, dict)
+        self._update_attrs(result)
 
     @cli.register_custom_action("ProjectJob")
     @exc.on_http_error(exc.GitlabJobEraseError)
