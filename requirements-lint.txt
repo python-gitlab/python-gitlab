@@ -1,7 +1,7 @@
 -r requirements.txt
 argcomplete==2.0.0
 black==24.1.1
-commitizen==3.13.0
+commitizen==3.14.1
 flake8==7.0.0
 isort==5.13.2
 mypy==1.8.0
