@@ -1,4 +1,4 @@
-import pytest
+from datetime import date
 
 
 def test_list_project_access_tokens(gitlab_cli, project):
@@ -18,13 +18,14 @@ def test_create_project_access_token_with_scopes(gitlab_cli, project):
         "test-token",
         "--scopes",
         "api,read_repository",
+        "--expires-at",
+        date.today().isoformat(),
     ]
     ret = gitlab_cli(cmd)
 
     assert ret.success
 
 
-@pytest.mark.skip(reason="Requires GitLab 14.7")
 def test_list_group_access_tokens(gitlab_cli, group):
     cmd = ["group-access-token", "list", "--group-id", group.id]
     ret = gitlab_cli(cmd)
@@ -42,6 +43,8 @@ def test_create_group_access_token_with_scopes(gitlab_cli, group):
         "test-token",
         "--scopes",
         "api,read_repository",
+        "--expires-at",
+        date.today().isoformat(),
     ]
     ret = gitlab_cli(cmd)
 

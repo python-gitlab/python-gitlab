@@ -16,7 +16,7 @@ def test_merge_requests(project):
         }
     )
 
-    source_branch = "branch1"
+    source_branch = "branch-merge-request-api"
     project.branches.create({"branch": source_branch, "ref": "main"})
 
     project.files.create(
@@ -28,7 +28,7 @@ def test_merge_requests(project):
         }
     )
     project.mergerequests.create(
-        {"source_branch": "branch1", "target_branch": "main", "title": "MR readme2"}
+        {"source_branch": source_branch, "target_branch": "main", "title": "MR readme2"}
     )
 
 

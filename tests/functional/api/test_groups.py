@@ -10,7 +10,7 @@ def test_groups(gl):
             "email": "user@test.com",
             "username": "user",
             "name": "user",
-            "password": "user_pass",
+            "password": "E4596f8be406Bc3a14a4ccdb1df80587",
         }
     )
     user2 = gl.users.create(
@@ -18,7 +18,7 @@ def test_groups(gl):
             "email": "user2@test.com",
             "username": "user2",
             "name": "user2",
-            "password": "user2_pass",
+            "password": "E4596f8be406Bc3a14a4ccdb1df80587$2",
         }
     )
     group1 = gl.groups.create(
