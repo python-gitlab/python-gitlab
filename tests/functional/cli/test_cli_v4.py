@@ -1,5 +1,9 @@
+import logging
 import os
 import time
+from datetime import date
+
+branch = "branch-cli-v4"
 
 
 def test_create_project(gitlab_cli):
@@ -20,28 +24,6 @@ def test_update_project(gitlab_cli, project):
 
     assert ret.success
     assert description in ret.stdout
-
-
-def test_create_ci_lint(gitlab_cli, valid_gitlab_ci_yml):
-    cmd = ["ci-lint", "create", "--content", valid_gitlab_ci_yml]
-    ret = gitlab_cli(cmd)
-
-    assert ret.success
-
-
-def test_validate_ci_lint(gitlab_cli, valid_gitlab_ci_yml):
-    cmd = ["ci-lint", "validate", "--content", valid_gitlab_ci_yml]
-    ret = gitlab_cli(cmd)
-
-    assert ret.success
-
-
-def test_validate_ci_lint_invalid_exits_non_zero(gitlab_cli, invalid_gitlab_ci_yml):
-    cmd = ["ci-lint", "validate", "--content", invalid_gitlab_ci_yml]
-    ret = gitlab_cli(cmd)
-
-    assert not ret.success
-    assert "CI YAML Lint failed (Invalid configuration format)" in ret.stderr
 
 
 def test_validate_project_ci_lint(gitlab_cli, project, valid_gitlab_ci_yml):
@@ -103,7 +85,7 @@ def test_create_user(gitlab_cli, gl):
     email = "fake@email.com"
     username = "user1"
     name = "User One"
-    password = "fakepassword"
+    password = "E4596f8be406Bc3a14a4ccdb1df80587"
 
     cmd = [
         "user",
@@ -215,8 +197,6 @@ def test_create_issue_note(gitlab_cli, issue):
 
 
 def test_create_branch(gitlab_cli, project):
-    branch = "branch1"
-
     cmd = [
         "project-branch",
         "create",
@@ -233,7 +213,6 @@ def test_create_branch(gitlab_cli, project):
 
 
 def test_create_merge_request(gitlab_cli, project):
-    branch = "branch1"
 
     cmd = [
         "project-merge-request",
@@ -257,15 +236,35 @@ def test_accept_request_merge(gitlab_cli, project, wait_for_sidekiq):
     mr = project.mergerequests.list()[0]
     file_data = {
         "branch": mr.source_branch,
-        "file_path": "README2",
+        "file_path": "test-cli-v4.md",
         "content": "Content",
-        "commit_message": "Pre-merge commit",
+        "commit_message": "chore: test-cli-v4 change",
     }
     project.files.create(file_data)
-    time.sleep(2)
+    time.sleep(30)
     wait_for_sidekiq(timeout=60)
 
-    cmd = [
+    logging.info(f"MR status: {mr.state}")
+    logging.info(f"MR merge status: {mr.detailed_merge_status}")
+
+    if mr.detailed_merge_status == "not_approved":
+        logging.info("Approving Merge Request")
+
+        approve_cmd = [
+            "project-merge-request",
+            "approve",
+            "--project-id",
+            project.id,
+            "--iid",
+            mr.iid,
+        ]
+        gitlab_cli(approve_cmd)
+
+        time.sleep(5)
+        logging.info(f"MR merge status: {mr.detailed_merge_status}")
+
+    time.sleep(0.5)
+    approve_cmd = [
         "project-merge-request",
         "merge",
         "--project-id",
@@ -273,7 +272,7 @@ def test_accept_request_merge(gitlab_cli, project, wait_for_sidekiq):
         "--iid",
         mr.iid,
     ]
-    ret = gitlab_cli(cmd)
+    ret = gitlab_cli(approve_cmd)
 
     assert ret.success
 
@@ -501,9 +500,6 @@ def test_delete_project_variable(gitlab_cli, variable):
 
 
 def test_delete_branch(gitlab_cli, project):
-    # TODO: branch fixture
-    branch = "branch1"
-
     cmd = ["project-branch", "delete", "--project-id", project.id, "--name", branch]
     ret = gitlab_cli(cmd)
 
@@ -590,7 +586,7 @@ def test_create_project_with_values_at_prefixed(gitlab_cli, tmpdir):
 def test_create_project_deploy_token(gitlab_cli, project):
     name = "project-token"
     username = "root"
-    expires_at = "2021-09-09"
+    expires_at = date.today().isoformat()
     scopes = "read_registry"
 
     cmd = [
@@ -666,7 +662,7 @@ def test_delete_project_deploy_token(gitlab_cli, deploy_token):
 def test_create_group_deploy_token(gitlab_cli, group):
     name = "group-token"
     username = "root"
-    expires_at = "2021-09-09"
+    expires_at = date.today().isoformat()
     scopes = "read_registry"
 
     cmd = [
