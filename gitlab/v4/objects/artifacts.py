@@ -62,7 +62,7 @@ class ProjectArtifactManager(RESTManager):
 
         Args:
             ref_name: Branch or tag name in repository. HEAD or SHA references
-            are not supported.
+                are not supported.
             job: The name of the job.
             job_token: Job token for multi-project pipeline triggers.
             streamed: If True the data will be processed by chunks of
