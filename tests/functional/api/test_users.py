@@ -13,7 +13,7 @@ def test_create_user(gl, fixture_dir):
             "email": "foo@bar.com",
             "username": "foo",
             "name": "foo",
-            "password": "foo_password",
+            "password": "E4596f8be406Bc3a14a4ccdb1df80587$3",
             "avatar": open(fixture_dir / "avatar.png", "rb"),
         }
     )

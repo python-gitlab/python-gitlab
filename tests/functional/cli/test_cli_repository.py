@@ -1,4 +1,5 @@
 import json
+import logging
 import time
 
 
@@ -31,9 +32,13 @@ def test_list_all_commits(gitlab_cli, project):
     data = {
         "branch": "new-branch",
         "start_branch": "main",
-        "commit_message": "New commit on new branch",
+        "commit_message": "chore: test commit on new branch",
         "actions": [
-            {"action": "create", "file_path": "new-file", "content": "new content"}
+            {
+                "action": "create",
+                "file_path": "test-cli-repo.md",
+                "content": "new content",
+            }
         ],
     }
     commit = project.commits.create(data)
@@ -76,6 +81,19 @@ def test_commit_merge_requests(gitlab_cli, project, merge_request, wait_for_side
     """This tests the `project-commit merge-requests` command and also tests
     that we can print the result using the `json` formatter"""
     # Merge the MR first
+    wait_for_sidekiq(timeout=60)
+
+    logging.info(f"MR status: {merge_request.state}")
+    logging.info(f"MR merge status: {merge_request.detailed_merge_status}")
+
+    if merge_request.detailed_merge_status == "not_approved":
+        logging.info("Approving Merge Request")
+
+        merge_request.approve()
+
+        logging.info(f"MR merge status: {merge_request.detailed_merge_status}")
+        time.sleep(5)
+
     merge_result = merge_request.merge(should_remove_source_branch=True)
     wait_for_sidekiq(timeout=60)
 

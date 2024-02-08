@@ -1,9 +1,13 @@
+from datetime import date
+
+
 def test_project_deploy_tokens(gl, project):
+    today = date.today().isoformat()
     deploy_token = project.deploytokens.create(
         {
             "name": "foo",
             "username": "bar",
-            "expires_at": "2022-01-01",
+            "expires_at": today,
             "scopes": ["read_registry"],
         }
     )
@@ -12,7 +16,7 @@ def test_project_deploy_tokens(gl, project):
 
     deploy_token = project.deploytokens.get(deploy_token.id)
     assert deploy_token.name == "foo"
-    assert deploy_token.expires_at == "2022-01-01T00:00:00.000Z"
+    assert deploy_token.expires_at == today + "T00:00:00.000Z"
     assert deploy_token.scopes == ["read_registry"]
     assert deploy_token.username == "bar"
 
