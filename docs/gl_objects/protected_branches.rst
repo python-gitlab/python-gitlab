@@ -27,6 +27,11 @@ Get a single protected branch::
 
     p_branch = project.protectedbranches.get('main')
 
+Update a protected branch:
+
+    p_branch.allow_force_push = True
+    p_branch.save()
+
 Create a protected branch::
 
     p_branch = project.protectedbranches.create({
