@@ -92,6 +92,22 @@ def test_uses_ci_job_token(monkeypatch, script_runner, resp_get_project):
 
 @pytest.mark.script_launch_mode("inprocess")
 @responses.activate
+def test_does_not_auth_on_skip_login(
+    monkeypatch, script_runner, resp_get_project, resp_current_user
+):
+    monkeypatch.setenv("GITLAB_PRIVATE_TOKEN", PRIVATE_TOKEN)
+    monkeypatch.setattr(config, "_DEFAULT_FILES", [])
+
+    resp_user = responses.add(**resp_current_user)
+    resp_project = responses.add(**resp_get_project)
+    ret = script_runner.run(["gitlab", "--skip-login", "project", "get", "--id", "1"])
+    assert ret.success
+    assert resp_user.call_count == 0
+    assert resp_project.call_count == 1
+
+
+@pytest.mark.script_launch_mode("inprocess")
+@responses.activate
 def test_private_token_overrides_job_token(
     monkeypatch, script_runner, resp_get_project
 ):
