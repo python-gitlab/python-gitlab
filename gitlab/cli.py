@@ -282,6 +282,16 @@ def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
         help=("GitLab CI job token [env var: CI_JOB_TOKEN]"),
         required=False,
     )
+    parser.add_argument(
+        "--skip-login",
+        help=(
+            "Skip initial authenticated API call to the current user endpoint. "
+            "This may  be useful when invoking the CLI in scripts. "
+            "[env var: GITLAB_SKIP_LOGIN]"
+        ),
+        action="store_true",
+        default=os.getenv("GITLAB_SKIP_LOGIN"),
+    )
     return parser
 
 
@@ -368,6 +378,7 @@ def main() -> None:
     debug = args.debug
     gitlab_resource = args.gitlab_resource
     resource_action = args.resource_action
+    skip_login = args.skip_login
 
     args_dict = vars(args)
     # Remove CLI behavior-related args
@@ -390,6 +401,7 @@ def main() -> None:
         "private_token",
         "oauth_token",
         "job_token",
+        "skip_login",
     ):
         args_dict.pop(item)
     args_dict = {k: _parse_value(v) for k, v in args_dict.items() if v is not None}
@@ -398,7 +410,7 @@ def main() -> None:
         gl = gitlab.Gitlab.merge_config(vars(options), gitlab_id, config_files)
         if debug:
             gl.enable_debug()
-        if gl.private_token or gl.oauth_token:
+        if not skip_login and (gl.private_token or gl.oauth_token):
             gl.auth()
     except Exception as e:
         die(str(e))

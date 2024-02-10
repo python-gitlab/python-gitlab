@@ -36,6 +36,17 @@ def resp_get_project():
 
 
 @pytest.fixture
+def resp_current_user():
+    return {
+        "method": responses.GET,
+        "url": f"{DEFAULT_URL}/api/v4/user",
+        "json": {"username": "name", "id": 1},
+        "content_type": "application/json",
+        "status": 200,
+    }
+
+
+@pytest.fixture
 def resp_delete_registry_tags_in_bulk():
     return {
         "method": responses.DELETE,
