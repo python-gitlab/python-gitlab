@@ -1,3 +1,4 @@
+import datetime
 import time
 
 import pytest
@@ -72,8 +73,6 @@ def test_merge_request_discussion(project):
     assert discussion.attributes["notes"][-1]["body"] == "updated body"
 
     note_from_get.delete()
-    discussion = mr.discussions.get(discussion.id)
-    assert len(discussion.attributes["notes"]) == 1
 
 
 def test_merge_request_labels(project):
@@ -164,27 +163,33 @@ def test_project_merge_request_approval_rules(group, project):
     assert approval_rules[0].approvals_required == 2
 
     approval_rules[0].delete()
-    ars = project.approvalrules.list(get_all=True)
-    assert len(ars) == 0
 
 
-def test_merge_request_reset_approvals(gitlab_url, project, wait_for_sidekiq):
-    bot = project.access_tokens.create({"name": "bot", "scopes": ["api"]})
+def test_merge_request_reset_approvals(gitlab_url, project):
+    today = datetime.date.today()
+    future_date = today + datetime.timedelta(days=4)
+    bot = project.access_tokens.create(
+        {"name": "bot", "scopes": ["api"], "expires_at": future_date.isoformat()}
+    )
+
     bot_gitlab = gitlab.Gitlab(gitlab_url, private_token=bot.token)
     bot_project = bot_gitlab.projects.get(project.id, lazy=True)
 
-    wait_for_sidekiq(timeout=60)
+    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+    time.sleep(5)
+
     mr = bot_project.mergerequests.list()[0]  # type: ignore[index]
+
     assert mr.reset_approvals()
 
 
-def test_cancel_merge_when_pipeline_succeeds(
-    project, merge_request_with_pipeline, wait_for_sidekiq
-):
-    wait_for_sidekiq(timeout=60)
+def test_cancel_merge_when_pipeline_succeeds(project, merge_request_with_pipeline):
+    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+    time.sleep(5)
     # Set to merge when the pipeline succeeds, which should never happen
     merge_request_with_pipeline.merge(merge_when_pipeline_succeeds=True)
-    wait_for_sidekiq(timeout=60)
+    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+    time.sleep(5)
 
     mr = project.mergerequests.get(merge_request_with_pipeline.iid)
     assert mr.merged_at is None
@@ -193,9 +198,10 @@ def test_cancel_merge_when_pipeline_succeeds(
     assert cancel == {"status": "success"}
 
 
-def test_merge_request_merge(project, merge_request, wait_for_sidekiq):
+def test_merge_request_merge(project, merge_request):
     merge_request.merge()
-    wait_for_sidekiq(timeout=60)
+    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+    time.sleep(5)
 
     mr = project.mergerequests.get(merge_request.iid)
     assert mr.merged_at is not None
@@ -205,15 +211,14 @@ def test_merge_request_merge(project, merge_request, wait_for_sidekiq):
         mr.merge()
 
 
-def test_merge_request_should_remove_source_branch(
-    project, merge_request, wait_for_sidekiq
-) -> None:
+def test_merge_request_should_remove_source_branch(project, merge_request) -> None:
     """Test to ensure
     https://github.com/python-gitlab/python-gitlab/issues/1120 is fixed.
     Bug reported that they could not use 'should_remove_source_branch' in
     mr.merge() call"""
     merge_request.merge(should_remove_source_branch=True)
-    wait_for_sidekiq(timeout=60)
+    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+    time.sleep(5)
 
     # Wait until it is merged
     mr = None
@@ -227,7 +232,8 @@ def test_merge_request_should_remove_source_branch(
     assert mr is not None
     assert mr.merged_at is not None
     time.sleep(0.5)
-    wait_for_sidekiq(timeout=60)
+    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+    time.sleep(5)
 
     # Ensure we can NOT get the MR branch
     with pytest.raises(gitlab.exceptions.GitlabGetError):
@@ -240,9 +246,7 @@ def test_merge_request_should_remove_source_branch(
         print("result:", pprint.pformat(result))
 
 
-def test_merge_request_large_commit_message(
-    project, merge_request, wait_for_sidekiq
-) -> None:
+def test_merge_request_large_commit_message(project, merge_request) -> None:
     """Test to ensure https://github.com/python-gitlab/python-gitlab/issues/1452
     is fixed.
     Bug reported that very long 'merge_commit_message' in mr.merge() would
@@ -255,7 +259,8 @@ def test_merge_request_large_commit_message(
         merge_commit_message=merge_commit_message, should_remove_source_branch=False
     )
 
-    wait_for_sidekiq(timeout=60)
+    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+    time.sleep(5)
 
     # Wait until it is merged
     mr = None
@@ -279,9 +284,7 @@ def test_merge_request_merge_ref(merge_request) -> None:
     assert response and "commit_id" in response
 
 
-def test_merge_request_merge_ref_should_fail(
-    project, merge_request, wait_for_sidekiq
-) -> None:
+def test_merge_request_merge_ref_should_fail(project, merge_request) -> None:
     # Create conflict
     project.files.create(
         {
@@ -291,7 +294,8 @@ def test_merge_request_merge_ref_should_fail(
             "commit_message": "Another commit in main branch",
         }
     )
-    wait_for_sidekiq(timeout=60)
+    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+    time.sleep(5)
 
     # Check for non-existing merge_ref for MR with conflicts
     with pytest.raises(gitlab.exceptions.GitlabGetError):

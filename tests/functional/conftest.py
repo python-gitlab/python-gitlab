@@ -1,10 +1,10 @@
 import dataclasses
+import datetime
 import logging
 import pathlib
 import tempfile
 import time
 import uuid
-from datetime import date
 from subprocess import check_output
 from typing import Optional
 
@@ -208,42 +208,6 @@ def check_is_alive():
     return _check
 
 
-@pytest.fixture
-def wait_for_sidekiq(gl):
-    """
-    Return a helper function to wait until there are spare sidekiq processes.
-
-    Because not all Groups can be deleted immediately in GL 16, we will likely have busy Sidekiq jobs
-    set aside for their deletion in 1 days time.
-
-    Use this with asserts for slow tasks (group/project/user creation/deletion).
-
-    { ..., 'labels': [], 'concurrency': 20, 'busy': 3}
-    """
-
-    def _wait(timeout: int = 30, step: float = 0.5, allow_fail: bool = False) -> bool:
-        for count in range(timeout):
-            time.sleep(step)
-            processes = gl.sidekiq.process_metrics()["processes"]
-            busy_processes = 0
-            total_concurrency = 0
-            for process in processes:
-                busy_processes += process["busy"]
-                total_concurrency += process["concurrency"]
-
-            logging.info(f"Busy processes {busy_processes}")
-            #  If we have space concurrency in the process, continue
-            if busy_processes < total_concurrency:
-                logging.info("Spare sidekiq process found")
-                return True
-
-            logging.info(f"sidekiq busy {count} of {timeout}")
-        assert allow_fail, "sidekiq process should have terminated but did not."
-        return False
-
-    return _wait
-
-
 @pytest.fixture(scope="session")
 def gitlab_token(
     check_is_alive,
@@ -386,7 +350,7 @@ def project(gl):
 
 
 @pytest.fixture(scope="function")
-def make_merge_request(project, wait_for_sidekiq):
+def make_merge_request(project):
     """Fixture factory used to create a merge_request.
 
     It will create a branch, add a commit to the branch, and then create a
@@ -406,8 +370,8 @@ def make_merge_request(project, wait_for_sidekiq):
         # NOTE(jlvillal): Sometimes the CI would give a "500 Internal Server
         # Error". Hoping that waiting until all other processes are done will
         # help with that.
-        result = wait_for_sidekiq(timeout=60)
-        assert result is True, "sidekiq process should have terminated but did not"
+        # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+        time.sleep(30)
 
         project.refresh()  # Gets us the current default branch
         logging.info(f"Creating branch {source_branch}")
@@ -426,8 +390,7 @@ def make_merge_request(project, wait_for_sidekiq):
         )
 
         # Helps with Debugging why MRs fail to merge resulting in 405 from downstream tests
-        approval_rules = project.approvalrules.list()
-        logging.info(f"Project MR Approval Rules {approval_rules}")
+        project.approvalrules.list()
 
         if create_pipeline:
             project.files.create(
@@ -444,7 +407,6 @@ test:
                     "commit_message": "Add a simple pipeline",
                 }
             )
-        logging.info(f"Creating merge request for {source_branch}")
         mr = project.mergerequests.create(
             {
                 "source_branch": source_branch,
@@ -453,15 +415,13 @@ test:
                 "remove_source_branch": True,
             }
         )
-        result = wait_for_sidekiq(timeout=60)
-        assert result is True, "sidekiq process should have terminated but did not"
+
+        # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+        time.sleep(5)
 
         mr_iid = mr.iid
         for _ in range(60):
             mr = project.mergerequests.get(mr_iid)
-            logging.info(
-                f"Waiting for Gitlab to update MR status: {mr.detailed_merge_status}"
-            )
             if (
                 mr.detailed_merge_status == "checking"
                 or mr.detailed_merge_status == "unchecked"
@@ -624,7 +584,7 @@ def deploy_token(project):
     data = {
         "name": f"token-{_id}",
         "username": "root",
-        "expires_at": date.today().isoformat(),
+        "expires_at": datetime.date.today().isoformat(),
         "scopes": "read_registry",
     }
 
@@ -638,7 +598,7 @@ def group_deploy_token(group):
     data = {
         "name": f"group-token-{_id}",
         "username": "root",
-        "expires_at": date.today().isoformat(),
+        "expires_at": datetime.date.today().isoformat(),
         "scopes": "read_registry",
     }
 

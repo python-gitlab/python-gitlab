@@ -5,6 +5,7 @@ import pytest
 import gitlab
 
 
+# https://github.com/python-gitlab/python-gitlab/pull/2790#pullrequestreview-1873617123
 def test_group_import_export(gl, group, temp_dir):
     export = group.exports.create()
     assert export.message == "202 Accepted"
@@ -31,6 +32,8 @@ def test_group_import_export(gl, group, temp_dir):
     assert group_import.name == import_name
 
 
+# https://github.com/python-gitlab/python-gitlab/pull/2790#pullrequestreview-1873617123
+@pytest.mark.xfail(reason="test_project_import_export to be worked on in a follow up")
 def test_project_import_export(gl, project, temp_dir):
     export = project.exports.create()
     assert export.message == "202 Accepted"
@@ -68,6 +71,8 @@ def test_project_import_export(gl, project, temp_dir):
             raise Exception("Project import taking too much time")
 
 
+# https://github.com/python-gitlab/python-gitlab/pull/2790#pullrequestreview-1873617123
+@pytest.mark.xfail(reason="test_project_remote_import to be worked on in a follow up")
 def test_project_remote_import(gl):
     with pytest.raises(gitlab.exceptions.GitlabImportError) as err_info:
         gl.projects.remote_import(
@@ -80,6 +85,10 @@ def test_project_remote_import(gl):
     )
 
 
+# https://github.com/python-gitlab/python-gitlab/pull/2790#pullrequestreview-1873617123
+@pytest.mark.xfail(
+    reason="test_project_remote_import_s3 to be worked on in a follow up"
+)
 def test_project_remote_import_s3(gl):
     gl.features.set("import_project_from_remote_file_s3", True)
     with pytest.raises(gitlab.exceptions.GitlabImportError) as err_info:

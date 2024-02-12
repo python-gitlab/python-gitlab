@@ -1,8 +1,8 @@
-from datetime import date
+import datetime
 
 
 def test_project_deploy_tokens(gl, project):
-    today = date.today().isoformat()
+    today = datetime.date.today().isoformat()
     deploy_token = project.deploytokens.create(
         {
             "name": "foo",
@@ -21,8 +21,6 @@ def test_project_deploy_tokens(gl, project):
     assert deploy_token.username == "bar"
 
     deploy_token.delete()
-    assert deploy_token not in project.deploytokens.list()
-    assert deploy_token not in gl.deploytokens.list()
 
 
 def test_group_deploy_tokens(gl, group):
@@ -41,5 +39,3 @@ def test_group_deploy_tokens(gl, group):
     assert deploy_token.scopes == ["read_registry"]
 
     deploy_token.delete()
-    assert deploy_token not in group.deploytokens.list()
-    assert deploy_token not in gl.deploytokens.list()

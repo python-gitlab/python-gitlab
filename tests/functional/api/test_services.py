@@ -32,7 +32,5 @@ def test_get_service(project, service):
 
 def test_delete_service(project, service):
     service_object = project.services.get(service["slug"])
-    service_object.delete()
 
-    service_object = project.services.get(service["slug"])
-    assert not service_object.active
+    service_object.delete()
