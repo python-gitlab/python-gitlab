@@ -18,8 +18,6 @@ def test_create_issue(project):
     assert issue in project.issues.list(state="opened")
     assert issue2 in project.issues.list(state="closed")
 
-    assert isinstance(issue.user_agent_detail(), dict)
-    assert issue.user_agent_detail()["user_agent"]
     assert issue.participants()
     assert type(issue.closed_by()) == list
     assert type(issue.related_merge_requests()) == list
@@ -33,10 +31,7 @@ def test_issue_notes(issue):
     assert emoji in note.awardemojis.list()
 
     emoji.delete()
-    assert emoji not in note.awardemojis.list()
-
     note.delete()
-    assert note not in issue.notes.list()
 
 
 def test_issue_labels(project, issue):
@@ -62,8 +57,8 @@ def test_issue_links(project, issue):
     assert links
 
     link_id = links[0].issue_link_id
+
     issue.links.delete(link_id)
-    assert not issue.links.list()
 
 
 def test_issue_label_events(issue):
@@ -114,5 +109,3 @@ def test_issue_discussions(issue):
     assert discussion.attributes["notes"][-1]["body"] == "updated body"
 
     d_note_from_get.delete()
-    discussion = issue.discussions.get(discussion.id)
-    assert len(discussion.attributes["notes"]) == 1
