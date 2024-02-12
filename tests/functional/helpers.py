@@ -36,8 +36,6 @@ def safe_delete(object: gitlab.base.RESTObject) -> None:
         except gitlab.exceptions.GitlabGetError:
             return
 
-        logging.info(f"Deleting object type {type(object)}")
-
         if index:
             logging.info(f"Attempt {index + 1} to delete {object!r}.")
         try:
