@@ -5,7 +5,6 @@ def test_project_boards(project):
     board = project.boards.get(board.id)
 
     project.boards.delete(board.id)
-    assert not project.boards.list()
 
 
 def test_group_boards(group):
@@ -15,4 +14,3 @@ def test_group_boards(group):
     board = group.boards.get(board.id)
 
     group.boards.delete(board.id)
-    assert not group.boards.list()

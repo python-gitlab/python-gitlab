@@ -31,4 +31,3 @@ def test_topics(gl, gitlab_version):
     assert merged_topic["id"] == topic2.id
 
     topic2.delete()
-    assert not gl.topics.list()

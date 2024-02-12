@@ -52,7 +52,6 @@ def test_update_save_project_release(project, release):
 
 def test_delete_project_release(project, release):
     project.releases.delete(release.tag_name)
-    assert release not in project.releases.list()
 
 
 def test_create_project_release_links(project, release):

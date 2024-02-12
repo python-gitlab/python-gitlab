@@ -36,12 +36,10 @@ def safe_delete(object: gitlab.base.RESTObject) -> None:
         except gitlab.exceptions.GitlabGetError:
             return
 
-        logging.info(f"Deleting object type {type(object)}")
-
         if index:
             logging.info(f"Attempt {index + 1} to delete {object!r}.")
         try:
-            if type(object) is gitlab.v4.objects.User:
+            if isinstance(object, gitlab.v4.objects.User):
                 # You can't use this option if the selected user is the sole owner of any groups
                 # Use `hard_delete=True` or a 'Ghost User' may be created.
                 # https://docs.gitlab.com/ee/api/users.html#user-deletion
@@ -51,7 +49,7 @@ def safe_delete(object: gitlab.base.RESTObject) -> None:
                     # which combined with parents group never immediately deleting in GL 16
                     # we shouldn't cause test to fail if it still exists
                     return
-            elif type(object) is gitlab.v4.objects.Project:
+            elif isinstance(object, gitlab.v4.objects.Project):
                 # Immediately delete rather than waiting for at least 1day
                 # https://docs.gitlab.com/ee/api/projects.html#delete-project
                 object.delete(permanently_remove=True)
@@ -59,11 +57,11 @@ def safe_delete(object: gitlab.base.RESTObject) -> None:
             else:
                 # We only attempt to delete parent groups to prevent dangling sub-groups
                 # However parent groups can only be deleted on a delay in Gl 16
-                # https://docs.gitlab.com/ee/api/projects.html#delete-group
+                # https://docs.gitlab.com/ee/api/groups.html#remove-group
                 object.delete()
         except gitlab.exceptions.GitlabDeleteError:
             logging.info(f"{object!r} already deleted or scheduled for deletion.")
-            if type(object) is gitlab.v4.objects.Group:
+            if isinstance(object, gitlab.v4.objects.Group):
                 # Parent groups can never be immediately deleted in GL 16,
                 # so don't cause test to fail if it still exists
                 return

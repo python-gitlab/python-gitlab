@@ -1,7 +1,6 @@
-import logging
+import datetime
 import os
 import time
-from datetime import date
 
 branch = "branch-cli-v4"
 
@@ -231,7 +230,7 @@ def test_create_merge_request(gitlab_cli, project):
     assert ret.success
 
 
-def test_accept_request_merge(gitlab_cli, project, wait_for_sidekiq):
+def test_accept_request_merge(gitlab_cli, project):
     # MR needs at least 1 commit before we can merge
     mr = project.mergerequests.list()[0]
     file_data = {
@@ -241,15 +240,10 @@ def test_accept_request_merge(gitlab_cli, project, wait_for_sidekiq):
         "commit_message": "chore: test-cli-v4 change",
     }
     project.files.create(file_data)
+    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
     time.sleep(30)
-    wait_for_sidekiq(timeout=60)
-
-    logging.info(f"MR status: {mr.state}")
-    logging.info(f"MR merge status: {mr.detailed_merge_status}")
 
     if mr.detailed_merge_status == "not_approved":
-        logging.info("Approving Merge Request")
-
         approve_cmd = [
             "project-merge-request",
             "approve",
@@ -260,10 +254,9 @@ def test_accept_request_merge(gitlab_cli, project, wait_for_sidekiq):
         ]
         gitlab_cli(approve_cmd)
 
+        # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
         time.sleep(5)
-        logging.info(f"MR merge status: {mr.detailed_merge_status}")
 
-    time.sleep(0.5)
     approve_cmd = [
         "project-merge-request",
         "merge",
@@ -586,7 +579,7 @@ def test_create_project_with_values_at_prefixed(gitlab_cli, tmpdir):
 def test_create_project_deploy_token(gitlab_cli, project):
     name = "project-token"
     username = "root"
-    expires_at = date.today().isoformat()
+    expires_at = datetime.date.today().isoformat()
     scopes = "read_registry"
 
     cmd = [
@@ -662,7 +655,7 @@ def test_delete_project_deploy_token(gitlab_cli, deploy_token):
 def test_create_group_deploy_token(gitlab_cli, group):
     name = "group-token"
     username = "root"
-    expires_at = date.today().isoformat()
+    expires_at = datetime.date.today().isoformat()
     scopes = "read_registry"
 
     cmd = [

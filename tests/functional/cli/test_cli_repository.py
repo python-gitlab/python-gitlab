@@ -1,5 +1,4 @@
 import json
-import logging
 import time
 
 
@@ -77,25 +76,13 @@ def test_list_merge_request_commits(gitlab_cli, merge_request, project):
     assert ret.stdout
 
 
-def test_commit_merge_requests(gitlab_cli, project, merge_request, wait_for_sidekiq):
-    """This tests the `project-commit merge-requests` command and also tests
-    that we can print the result using the `json` formatter"""
-    # Merge the MR first
-    wait_for_sidekiq(timeout=60)
-
-    logging.info(f"MR status: {merge_request.state}")
-    logging.info(f"MR merge status: {merge_request.detailed_merge_status}")
-
-    if merge_request.detailed_merge_status == "not_approved":
-        logging.info("Approving Merge Request")
-
-        merge_request.approve()
-
-        logging.info(f"MR merge status: {merge_request.detailed_merge_status}")
-        time.sleep(5)
+def test_commit_merge_requests(gitlab_cli, project, merge_request):
+    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+    time.sleep(30)
 
     merge_result = merge_request.merge(should_remove_source_branch=True)
-    wait_for_sidekiq(timeout=60)
+    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+    time.sleep(5)
 
     # Wait until it is merged
     mr = None
@@ -108,8 +95,8 @@ def test_commit_merge_requests(gitlab_cli, project, merge_request, wait_for_side
 
     assert mr is not None
     assert mr.merged_at is not None
-    time.sleep(0.5)
-    wait_for_sidekiq(timeout=60)
+    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+    time.sleep(5)
 
     commit_sha = merge_result["sha"]
     cmd = [

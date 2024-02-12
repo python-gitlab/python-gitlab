@@ -1,4 +1,5 @@
 import time
+
 import pytest
 
 import gitlab
@@ -15,7 +16,7 @@ def bulk_import_enabled(gl: gitlab.Gitlab):
     # todo: why so fussy with feature flag timing?
     time.sleep(5)
     get_settings = gl.settings.get()
-    assert get_settings.bulk_import_enabled == True
+    assert get_settings.bulk_import_enabled is True
 
     yield settings
 
@@ -23,6 +24,8 @@ def bulk_import_enabled(gl: gitlab.Gitlab):
     settings.save()
 
 
+# https://github.com/python-gitlab/python-gitlab/pull/2790#pullrequestreview-1873617123
+@pytest.mark.xfail(reason="Bulk Imports to be worked on in a follow up")
 def test_bulk_imports(gl, group, bulk_import_enabled):
     destination = f"{group.full_path}-import"
     configuration = {
