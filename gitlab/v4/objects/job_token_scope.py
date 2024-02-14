@@ -72,6 +72,6 @@ class AllowlistedGroup(ObjectDeleteMixin, RESTObject):
 
 class AllowlistedGroupManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = "/projects/{project_id}/job_token_scope/groups_allowlist"
-    _obj_cls = AllowlistedProject
+    _obj_cls = AllowlistedGroup
     _from_parent_attrs = {"project_id": "project_id"}
     _create_attrs = RequiredOptional(required=("target_group_id",))
