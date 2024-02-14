@@ -69,3 +69,24 @@ Remove a project from the project's inbound allowlist::
    Similar to above, the ID attributes you receive from the create and list
    APIs are not consistent. To safely retrieve the ID of the allowlisted project
    regardless of how the object was created, always use its ``.get_id()`` method.
+
+Get a project's CI/CD job token inbound groups allowlist::
+
+    allowlist = scope.groups_allowlist.list()
+
+Add a project to the project's inbound groups allowlist::
+
+    allowed_project = scope.groups_allowlist.create({"target_project_id": 42})
+
+Remove a project from the project's inbound agroups llowlist::
+
+    allowed_project.delete()
+    # or directly using a Group ID
+    scope.groups_allowlist.delete(42)
+
+.. warning::
+
+   Similar to above, the ID attributes you receive from the create and list
+   APIs are not consistent. To safely retrieve the ID of the allowlisted group
+   regardless of how the object was created, always use its ``.get_id()`` method.
+
