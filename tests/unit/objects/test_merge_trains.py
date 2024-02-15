@@ -6,7 +6,7 @@ https://docs.gitlab.com/ee/api/merge_trains.html
 import pytest
 import responses
 
-from gitlab.v4.objects import ProjectMergeTrain
+from gitlab.v4.objects import ProjectMergeTrain, ProjectMergeTrainMergeRequest
 
 mr_content = {
     "id": 110,
@@ -60,7 +60,31 @@ def resp_list_merge_trains():
         yield rsps
 
 
+@pytest.fixture
+def resp_merge_trains_merge_request_get():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/merge_trains/merge_requests/123",
+            json=mr_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
 def test_list_project_merge_requests(project, resp_list_merge_trains):
     merge_trains = project.merge_trains.list()
     assert isinstance(merge_trains[0], ProjectMergeTrain)
     assert merge_trains[0].id == mr_content["id"]
+
+
+def test_merge_trains_status_merge_request(
+    project, resp_merge_trains_merge_request_get
+):
+    # flow will be : project -> merge_trains : -> get merge_requests -> merge_request_iod
+    merge_train_mr: ProjectMergeTrainMergeRequest = project.merge_trains.get(
+        1, lazy=True
+    ).merge_requests.get(123)
+    assert isinstance(merge_train_mr, ProjectMergeTrainMergeRequest)
+    assert merge_train_mr.get_id() == 110
