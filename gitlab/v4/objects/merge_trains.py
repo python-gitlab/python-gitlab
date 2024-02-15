@@ -1,6 +1,5 @@
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, GetMixin, ListMixin
-from gitlab.types import RequiredOptional
 
 __all__ = [
     "ProjectMergeTrain",
@@ -18,8 +17,6 @@ class ProjectMergeTrainMergeRequestManager(CRUDMixin, RESTManager):
     _path = "/projects/{project_id}/merge_trains/merge_requests"
     _obj_cls = ProjectMergeTrainMergeRequest
     _from_parent_attrs = {"project_id": "project_id"}
-
-    _update_attrs = RequiredOptional(optional=("position",))
 
 
 class ProjectMergeTrain(RESTObject):
