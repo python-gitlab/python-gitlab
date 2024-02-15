@@ -41,6 +41,10 @@ Get an instance variable by key::
 
     variable = gl.variables.get('key_name')
 
+Get an instance variable by key for an environment using filters::
+
+    variable = gl.variables.get('key_name', filter={"environment_scope": "test"})
+
 Create an instance variable::
 
     variable = gl.variables.create({'key': 'key1', 'value': 'value1'})
