@@ -252,6 +252,7 @@ def test_list_default_warning(gl):
     assert len(record) == 1
     warning = record[0]
     assert __file__ == warning.filename
+    assert __file__ in str(warning.message)
 
 
 def test_list_page_nowarning(gl, recwarn):
