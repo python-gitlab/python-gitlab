@@ -191,8 +191,7 @@ def warn(
     stacklevel = 1
     warning_from = ""
     for stacklevel, frame in enumerate(reversed(stack), start=1):
-        if stacklevel == 2:
-            warning_from = f" (python-gitlab: {frame.filename}:{frame.lineno})"
+        warning_from = f" (python-gitlab: {frame.filename}:{frame.lineno})"
         frame_dir = str(pathlib.Path(frame.filename).parent.resolve())
         if not frame_dir.startswith(str(pg_dir)):
             break

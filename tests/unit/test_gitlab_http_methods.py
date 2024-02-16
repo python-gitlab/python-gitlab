@@ -600,6 +600,7 @@ def test_list_request_pagination_warning(gl):
     message = str(warning.message)
     assert "Calling a `list()` method" in message
     assert "python-gitlab.readthedocs.io" in message
+    assert __file__ in message
     assert __file__ == warning.filename
     assert isinstance(result, list)
     assert len(result) == 20
