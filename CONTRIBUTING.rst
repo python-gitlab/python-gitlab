@@ -81,6 +81,17 @@ You need to install ``tox`` (``pip3 install tox``) to run tests and lint checks 
    # List all available tox environments
    tox list
 
+   # "label" based tests. These use the '-m' flag to tox
+
+   # run all the linter checks:
+   tox -m lint
+
+   # run only the unit tests:
+   tox -m unit
+
+   # run the functional tests. This is very time consuming:
+   tox -m func
+
 Running integration tests
 -------------------------
 
