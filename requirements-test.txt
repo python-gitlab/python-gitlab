@@ -1,10 +1,10 @@
 -r requirements.txt
 build==1.0.3
-coverage==7.4.1
+coverage==7.4.3
 pytest-console-scripts==1.4.1
 pytest-cov==4.1.0
 pytest-github-actions-annotate-failures==0.2.0
-pytest==8.0.1
+pytest==8.0.2
 PyYaml==6.0.1
 responses==0.25.0
 wheel==0.42.0
