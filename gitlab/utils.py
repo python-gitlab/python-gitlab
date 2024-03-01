@@ -137,6 +137,14 @@ def copy_dict(
             #   "custom_attributes['foo']": "bar"
             for dict_k, dict_v in v.items():
                 dest[f"{k}[{dict_k}]"] = dict_v
+        elif isinstance(v, list):
+            # Transform list key to array version. For example:
+            # scope: ['failed', 'success'] =>
+            #   "scope[]": ['failed', 'success']
+            # If the transformation is already done, no change will be made
+            # scope[]: ['failed', 'success'] =>
+            #   "scope[]": ['failed', 'success']
+            dest[f"{k.rstrip('[]')}[]"] = v
         else:
             dest[k] = v
 

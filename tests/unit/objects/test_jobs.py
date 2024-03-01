@@ -37,6 +37,10 @@ job_content = {
     "user": {"id": 1},
 }
 
+job_list = [
+    job_content,
+]
+
 
 @pytest.fixture
 def resp_get_job():
@@ -77,6 +81,24 @@ def resp_retry_job():
         yield rsps
 
 
+@pytest.fixture
+def resp_list_job():
+    urls = [
+        "http://localhost/api/v4/projects/1/jobs",
+        "http://localhost/api/v4/projects/1/pipelines/1/jobs",
+    ]
+    with responses.RequestsMock() as rsps:
+        for url in urls:
+            rsps.add(
+                method=responses.GET,
+                url=url,
+                json=job_list,
+                content_type="application/json",
+                status=200,
+            )
+        yield rsps
+
+
 def test_get_project_job(project, resp_get_job):
     job = project.jobs.get(1)
     assert isinstance(job, ProjectJob)
@@ -95,3 +117,32 @@ def test_retry_project_job(project, resp_retry_job):
 
     output = job.retry()
     assert output["ref"] == "main"
+
+
+def test_list_project_job(project, resp_list_job):
+    jobs_failed = project.jobs.list(scope="failed")
+    jobs_failed_and_success = project.jobs.list(scope=["failed", "success"])
+    pipeline_lazy = project.pipelines.get(1, lazy=True)
+    pjobs_failed = pipeline_lazy.jobs.list(scope="failed")
+    pjobs_failed_and_success = pipeline_lazy.jobs.list(scope=["failed", "success"])
+
+    # Both pipelines and pipelines/jobs should behave the same way
+    # When `scope` is scalar, one can use scope=value or scope[]=value
+    assert jobs_failed_and_success == jobs_failed
+    assert pjobs_failed_and_success == pjobs_failed
+    assert resp_list_job.calls[0].request.url in (
+        "http://localhost/api/v4/projects/1/jobs?scope=failed",
+        "http://localhost/api/v4/projects/1/jobs?scope%5B%5D=failed",
+    )
+    assert (
+        resp_list_job.calls[1].request.url
+        == "http://localhost/api/v4/projects/1/jobs?scope%5B%5D=failed&scope%5B%5D=success"
+    )
+    assert resp_list_job.calls[2].request.url in (
+        "http://localhost/api/v4/projects/1/pipelines/1/jobs?scope=failed",
+        "http://localhost/api/v4/projects/1/pipelines/1/jobs?scope%5B%5D=failed",
+    )
+    assert (
+        resp_list_job.calls[3].request.url
+        == "http://localhost/api/v4/projects/1/pipelines/1/jobs?scope%5B%5D=failed&scope%5B%5D=success"
+    )
