@@ -8,7 +8,7 @@ import responses
 
 from gitlab.v4.objects import ProjectResourceGroup, ProjectResourceGroupUpcomingJob
 
-from .test_jobs import job_content
+from .test_jobs import failed_job_content
 
 resource_group_content = {
     "id": 3,
@@ -51,7 +51,7 @@ def resp_list_upcoming_jobs():
         rsps.add(
             method=responses.GET,
             url="http://localhost/api/v4/projects/1/resource_groups/production/upcoming_jobs",
-            json=[job_content],
+            json=[failed_job_content],
             content_type="application/json",
             status=200,
         )
