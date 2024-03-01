@@ -2,12 +2,14 @@
 GitLab API: https://docs.gitlab.com/ee/api/jobs.html
 """
 
+from functools import partial
+
 import pytest
 import responses
 
 from gitlab.v4.objects import ProjectJob
 
-job_content = {
+failed_job_content = {
     "commit": {
         "author_email": "admin@example.com",
         "author_name": "Administrator",
@@ -37,6 +39,12 @@ job_content = {
     "user": {"id": 1},
 }
 
+success_job_content = {
+    **failed_job_content,
+    "status": "success",
+    "id": failed_job_content["id"] + 1,
+}
+
 
 @pytest.fixture
 def resp_get_job():
@@ -44,7 +52,7 @@ def resp_get_job():
         rsps.add(
             method=responses.GET,
             url="http://localhost/api/v4/projects/1/jobs/1",
-            json=job_content,
+            json=failed_job_content,
             content_type="application/json",
             status=200,
         )
@@ -57,7 +65,7 @@ def resp_cancel_job():
         rsps.add(
             method=responses.POST,
             url="http://localhost/api/v4/projects/1/jobs/1/cancel",
-            json=job_content,
+            json=failed_job_content,
             content_type="application/json",
             status=201,
         )
@@ -70,10 +78,50 @@ def resp_retry_job():
         rsps.add(
             method=responses.POST,
             url="http://localhost/api/v4/projects/1/jobs/1/retry",
-            json=job_content,
+            json=failed_job_content,
             content_type="application/json",
             status=201,
         )
+        yield rsps
+
+
+@pytest.fixture
+def resp_list_job():
+    urls = [
+        "http://localhost/api/v4/projects/1/jobs",
+        "http://localhost/api/v4/projects/1/pipelines/1/jobs",
+    ]
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        register_endpoint = partial(
+            rsps.add,
+            method=responses.GET,
+            content_type="application/json",
+            status=200,
+        )
+        for url in urls:
+            register_endpoint(
+                url=url,
+                json=[failed_job_content],
+                match=[responses.matchers.query_param_matcher({"scope[]": "failed"})],
+            )
+            register_endpoint(
+                url=url,
+                json=[success_job_content],
+                match=[responses.matchers.query_param_matcher({"scope[]": "success"})],
+            )
+            register_endpoint(
+                url=url,
+                json=[success_job_content, failed_job_content],
+                match=[
+                    responses.matchers.query_string_matcher(
+                        "scope[]=success&scope[]failed"
+                    )
+                ],
+            )
+            register_endpoint(
+                url=url,
+                json=[success_job_content, failed_job_content],
+            )
         yield rsps
 
 
@@ -95,3 +143,28 @@ def test_retry_project_job(project, resp_retry_job):
 
     output = job.retry()
     assert output["ref"] == "main"
+
+
+def test_list_project_job(project, resp_list_job):
+    failed_jobs = project.jobs.list(scope="failed")
+    success_jobs = project.jobs.list(scope="success")
+    failed_and_success_jobs = project.jobs.list(scope=["failed", "success"])
+    pipeline_lazy = project.pipelines.get(1, lazy=True)
+    pjobs_failed = pipeline_lazy.jobs.list(scope="failed")
+    pjobs_success = pipeline_lazy.jobs.list(scope="success")
+    pjobs_failed_and_success = pipeline_lazy.jobs.list(scope=["failed", "success"])
+
+    prepared_urls = [c.request.url for c in resp_list_job.calls]
+
+    # Both pipelines and pipelines/jobs should behave the same way
+    # When `scope` is scalar, one can use scope=value or scope[]=value
+    assert set(failed_and_success_jobs) == set(failed_jobs + success_jobs)
+    assert set(pjobs_failed_and_success) == set(pjobs_failed + pjobs_success)
+    assert prepared_urls == [
+        "http://localhost/api/v4/projects/1/jobs?scope%5B%5D=failed",
+        "http://localhost/api/v4/projects/1/jobs?scope%5B%5D=success",
+        "http://localhost/api/v4/projects/1/jobs?scope%5B%5D=failed&scope%5B%5D=success",
+        "http://localhost/api/v4/projects/1/pipelines/1/jobs?scope%5B%5D=failed",
+        "http://localhost/api/v4/projects/1/pipelines/1/jobs?scope%5B%5D=success",
+        "http://localhost/api/v4/projects/1/pipelines/1/jobs?scope%5B%5D=failed&scope%5B%5D=success",
+    ]

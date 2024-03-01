@@ -17,7 +17,7 @@ from gitlab.mixins import (
     SaveMixin,
     UpdateMixin,
 )
-from gitlab.types import RequiredOptional
+from gitlab.types import ArrayAttribute, RequiredOptional
 
 __all__ = [
     "ProjectMergeRequestPipeline",
@@ -149,6 +149,7 @@ class ProjectPipelineJobManager(ListMixin, RESTManager):
     _obj_cls = ProjectPipelineJob
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
     _list_filters = ("scope", "include_retried")
+    _types = {"scope": ArrayAttribute}
 
 
 class ProjectPipelineBridge(RESTObject):
