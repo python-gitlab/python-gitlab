@@ -46,6 +46,10 @@ mr_content = {
     "duration": 70,
 }
 
+merge_train_update = mr_content.copy()
+merge_train_update["id"] = 123
+merge_train_update["pipeline"]["sha"] = "ef33a3zxc3"
+
 
 @pytest.fixture
 def resp_list_merge_trains():
@@ -65,8 +69,21 @@ def resp_merge_trains_merge_request_get():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.GET,
-            url="http://localhost/api/v4/projects/1/merge_trains/merge_requests/123",
+            url="http://localhost/api/v4/projects/1/merge_trains/merge_requests/110",
             json=mr_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_merge_trains_merge_request_post():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/merge_trains/merge_requests/123",
+            json=[merge_train_update],
             content_type="application/json",
             status=200,
         )
@@ -79,12 +96,24 @@ def test_list_project_merge_requests(project, resp_list_merge_trains):
     assert merge_trains[0].id == mr_content["id"]
 
 
-def test_merge_trains_status_merge_request(
+def test_merge_trains_status_merge_request_get_status(
     project, resp_merge_trains_merge_request_get
 ):
-    # flow will be : project -> merge_trains : -> get merge_requests -> merge_request_iod
     merge_train_mr: ProjectMergeTrainMergeRequest = project.merge_trains.get(
         1, lazy=True
-    ).merge_requests.get(123)
+    ).merge_requests.get(110)
     assert isinstance(merge_train_mr, ProjectMergeTrainMergeRequest)
     assert merge_train_mr.get_id() == 110
+    assert merge_train_mr.pipeline.get("status") == mr_content["pipeline"]["status"]
+
+
+def test_merge_train_add_merge_request(project, resp_merge_trains_merge_request_post):
+    merge_train: ProjectMergeTrain = project.merge_trains.get(1, lazy=True)
+    merge_requests_update = merge_train.merge_requests.update(
+        123, new_data={"sha": "ef33a3zxc3"}
+    )
+    assert isinstance(merge_train, ProjectMergeTrain)
+    assert (
+        merge_requests_update[0]["pipeline"]["sha"]
+        == merge_train_update["pipeline"]["sha"]
+    )
