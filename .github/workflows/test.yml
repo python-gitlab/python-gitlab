@@ -78,7 +78,7 @@ jobs:
           TOXENV: ${{ matrix.toxenv }}
         run: tox -- --override-ini='log_cli=True'
       - name: Upload codecov coverage
-        uses: codecov/codecov-action@v4.0.1
+        uses: codecov/codecov-action@v4.1.0
         with:
           files: ./coverage.xml
           flags: ${{ matrix.toxenv }}
@@ -100,7 +100,7 @@ jobs:
           TOXENV: cover
         run: tox
       - name: Upload codecov coverage
-        uses: codecov/codecov-action@v4.0.1
+        uses: codecov/codecov-action@v4.1.0
         with:
           files: ./coverage.xml
           flags: unit
@@ -133,7 +133,7 @@ jobs:
       uses: actions/setup-python@v5.0.0
       with:
         python-version: '3.12'
-    - uses: actions/download-artifact@v4.1.2
+    - uses: actions/download-artifact@v4.1.4
       with:
         name: dist
         path: dist
