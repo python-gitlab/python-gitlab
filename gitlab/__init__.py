@@ -32,7 +32,6 @@ from gitlab.exceptions import *  # noqa: F401,F403
 
 warnings.filterwarnings("default", category=DeprecationWarning, module="^gitlab")
 
-
 __all__ = [
     "__author__",
     "__copyright__",
@@ -44,3 +43,4 @@ __all__ = [
     "GitlabList",
 ]
 __all__.extend(gitlab.exceptions.__all__)
+__all__.extend(gitlab.const.__all__)
