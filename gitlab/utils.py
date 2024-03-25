@@ -18,7 +18,8 @@ class _StdoutStream:
 
 def get_content_type(content_type: Optional[str]) -> str:
     message = email.message.Message()
-    message["content-type"] = content_type
+    if content_type is not None:
+        message["content-type"] = content_type
 
     return message.get_content_type()
 

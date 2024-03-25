@@ -4,7 +4,7 @@ black==24.3.0
 commitizen==3.16.0
 flake8==7.0.0
 isort==5.13.2
-mypy==1.8.0
+mypy==1.9.0
 pylint==3.1.0
 pytest==8.0.2
 responses==0.25.0
