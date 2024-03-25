@@ -30,7 +30,7 @@ repos:
           - requests-toolbelt==1.0.0
         files: 'gitlab/'
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
+    rev: v1.9.0
     hooks:
       - id: mypy
         args: []
