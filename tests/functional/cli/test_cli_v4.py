@@ -103,7 +103,7 @@ def test_create_user(gitlab_cli, gl):
     email = "fake@email.com"
     username = "user1"
     name = "User One"
-    password = "fakepassword"
+    password = "E4596f8be406Bc3a14a4ccdb1df80587#!"
 
     cmd = [
         "user",

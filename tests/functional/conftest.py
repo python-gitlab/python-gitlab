@@ -523,7 +523,7 @@ def user(gl):
     email = f"user{_id}@email.com"
     username = f"user{_id}"
     name = f"User {_id}"
-    password = "fakepassword"
+    password = "E4596f8be406Bc3a14a4ccdb1df80587#!"
 
     user = gl.users.create(email=email, username=username, name=name, password=password)
 
