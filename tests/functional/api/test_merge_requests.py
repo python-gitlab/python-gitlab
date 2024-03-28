@@ -1,5 +1,5 @@
+import datetime
 import time
-from datetime import date, timedelta
 
 import pytest
 
@@ -166,8 +166,8 @@ def test_project_merge_request_approval_rules(group, project):
 
 
 def test_merge_request_reset_approvals(gitlab_url, project):
-    today = date.today()
-    future_date = today + timedelta(days=4)
+    today = datetime.date.today()
+    future_date = today + datetime.timedelta(days=4)
     bot = project.access_tokens.create(
         {"name": "bot", "scopes": ["api"], "expires_at": future_date.isoformat()}
     )

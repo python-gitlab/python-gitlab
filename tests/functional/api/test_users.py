@@ -4,8 +4,8 @@ https://docs.gitlab.com/ee/api/users.html
 https://docs.gitlab.com/ee/api/users.html#delete-authentication-identity-from-user
 """
 
+import datetime
 import time
-from datetime import date, timedelta
 
 import requests
 
@@ -161,8 +161,8 @@ def test_user_custom_attributes(gl, user):
 
 
 def test_user_impersonation_tokens(gl, user):
-    today = date.today()
-    future_date = today + timedelta(days=4)
+    today = datetime.date.today()
+    future_date = today + datetime.timedelta(days=4)
 
     token = user.impersonationtokens.create(
         {

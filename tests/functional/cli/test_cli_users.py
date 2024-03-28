@@ -1,4 +1,4 @@
-from datetime import date
+import datetime
 
 
 def test_create_user_impersonation_token_with_scopes(gitlab_cli, user):
@@ -12,7 +12,7 @@ def test_create_user_impersonation_token_with_scopes(gitlab_cli, user):
         "--scopes",
         "api,read_user",
         "--expires-at",
-        date.today().isoformat(),
+        datetime.date.today().isoformat(),
     ]
     ret = gitlab_cli(cmd)
 

@@ -1,8 +1,8 @@
-from datetime import date
+import datetime
 
 
 def test_project_deploy_tokens(gl, project):
-    today = date.today().isoformat()
+    today = datetime.date.today().isoformat()
     deploy_token = project.deploytokens.create(
         {
             "name": "foo",

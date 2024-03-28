@@ -1,4 +1,4 @@
-from datetime import date
+import datetime
 
 
 def test_list_project_access_tokens(gitlab_cli, project):
@@ -19,7 +19,7 @@ def test_create_project_access_token_with_scopes(gitlab_cli, project):
         "--scopes",
         "api,read_repository",
         "--expires-at",
-        date.today().isoformat(),
+        datetime.date.today().isoformat(),
     ]
     ret = gitlab_cli(cmd)
 
@@ -44,7 +44,7 @@ def test_create_group_access_token_with_scopes(gitlab_cli, group):
         "--scopes",
         "api,read_repository",
         "--expires-at",
-        date.today().isoformat(),
+        datetime.date.today().isoformat(),
     ]
     ret = gitlab_cli(cmd)
 

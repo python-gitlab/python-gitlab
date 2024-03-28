@@ -1,6 +1,6 @@
+import datetime
 import os
 import time
-from datetime import date
 
 branch = "branch-cli-v4"
 
@@ -579,7 +579,7 @@ def test_create_project_with_values_at_prefixed(gitlab_cli, tmpdir):
 def test_create_project_deploy_token(gitlab_cli, project):
     name = "project-token"
     username = "root"
-    expires_at = date.today().isoformat()
+    expires_at = datetime.date.today().isoformat()
     scopes = "read_registry"
 
     cmd = [
@@ -655,7 +655,7 @@ def test_delete_project_deploy_token(gitlab_cli, deploy_token):
 def test_create_group_deploy_token(gitlab_cli, group):
     name = "group-token"
     username = "root"
-    expires_at = date.today().isoformat()
+    expires_at = datetime.date.today().isoformat()
     scopes = "read_registry"
 
     cmd = [

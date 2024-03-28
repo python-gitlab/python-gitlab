@@ -1,10 +1,10 @@
 import dataclasses
+import datetime
 import logging
 import pathlib
 import tempfile
 import time
 import uuid
-from datetime import date
 from subprocess import check_output
 from typing import Optional
 
@@ -584,7 +584,7 @@ def deploy_token(project):
     data = {
         "name": f"token-{_id}",
         "username": "root",
-        "expires_at": date.today().isoformat(),
+        "expires_at": datetime.date.today().isoformat(),
         "scopes": "read_registry",
     }
 
@@ -598,7 +598,7 @@ def group_deploy_token(group):
     data = {
         "name": f"group-token-{_id}",
         "username": "root",
-        "expires_at": date.today().isoformat(),
+        "expires_at": datetime.date.today().isoformat(),
         "scopes": "read_registry",
     }
 
