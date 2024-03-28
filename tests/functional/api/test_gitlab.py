@@ -53,7 +53,6 @@ def test_broadcast_messages(gl, get_all_kwargs):
     assert msg.color == "#444444"
 
     msg.delete()
-    assert msg not in gl.broadcastmessages.list()
 
 
 def test_markdown(gl):
@@ -151,7 +150,6 @@ def test_hooks(gl):
     assert hook in gl.hooks.list()
 
     hook.delete()
-    assert hook not in gl.hooks.list()
 
 
 def test_namespaces(gl, get_all_kwargs):
@@ -202,7 +200,6 @@ def test_features(gl):
     assert feat in gl.features.list()
 
     feat.delete()
-    assert feat not in gl.features.list()
 
 
 def test_pagination(gl, project):

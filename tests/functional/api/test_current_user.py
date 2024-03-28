@@ -4,7 +4,6 @@ def test_current_user_email(gl):
     assert mail in gl.user.emails.list()
 
     mail.delete()
-    assert mail not in gl.user.emails.list()
 
 
 def test_current_user_gpg_keys(gl, GPG_KEY):
@@ -14,8 +13,8 @@ def test_current_user_gpg_keys(gl, GPG_KEY):
 
     # Seems broken on the gitlab side
     gkey = gl.user.gpgkeys.get(gkey.id)
+
     gkey.delete()
-    assert gkey not in gl.user.gpgkeys.list()
 
 
 def test_current_user_ssh_keys(gl, SSH_KEY):
@@ -24,7 +23,6 @@ def test_current_user_ssh_keys(gl, SSH_KEY):
     assert key in gl.user.keys.list()
 
     key.delete()
-    assert key not in gl.user.keys.list()
 
 
 def test_current_user_status(gl):

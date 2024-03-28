@@ -9,9 +9,11 @@ CLI examples
 CI Lint
 -------
 
+**ci-lint has been Removed in Gitlab 16, use project-ci-lint instead**
+
 Lint a CI YAML configuration from a string:
 
-.. note:: 
+.. note::
 
    To see output, you will need to use the ``-v``/``--verbose`` flag.
 
@@ -38,6 +40,9 @@ Validate a CI YAML configuration from a file (lints and exits with non-zero on f
 .. code-block:: console
 
    $ gitlab ci-lint validate --content @.gitlab-ci.yml
+
+Project CI Lint
+---------------
 
 Lint a project's CI YAML configuration:
 

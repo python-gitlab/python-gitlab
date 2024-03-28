@@ -31,9 +31,13 @@ def test_list_all_commits(gitlab_cli, project):
     data = {
         "branch": "new-branch",
         "start_branch": "main",
-        "commit_message": "New commit on new branch",
+        "commit_message": "chore: test commit on new branch",
         "actions": [
-            {"action": "create", "file_path": "new-file", "content": "new content"}
+            {
+                "action": "create",
+                "file_path": "test-cli-repo.md",
+                "content": "new content",
+            }
         ],
     }
     commit = project.commits.create(data)
@@ -72,12 +76,13 @@ def test_list_merge_request_commits(gitlab_cli, merge_request, project):
     assert ret.stdout
 
 
-def test_commit_merge_requests(gitlab_cli, project, merge_request, wait_for_sidekiq):
-    """This tests the `project-commit merge-requests` command and also tests
-    that we can print the result using the `json` formatter"""
-    # Merge the MR first
+def test_commit_merge_requests(gitlab_cli, project, merge_request):
+    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+    time.sleep(30)
+
     merge_result = merge_request.merge(should_remove_source_branch=True)
-    wait_for_sidekiq(timeout=60)
+    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+    time.sleep(5)
 
     # Wait until it is merged
     mr = None
@@ -90,8 +95,8 @@ def test_commit_merge_requests(gitlab_cli, project, merge_request, wait_for_side
 
     assert mr is not None
     assert mr.merged_at is not None
-    time.sleep(0.5)
-    wait_for_sidekiq(timeout=60)
+    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
+    time.sleep(5)
 
     commit_sha = merge_result["sha"]
     cmd = [

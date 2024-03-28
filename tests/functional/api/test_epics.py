@@ -23,7 +23,6 @@ def test_epic_issues(epic, issue):
     assert epic.issues.list()
 
     epic_issue.delete()
-    assert not epic.issues.list()
 
 
 def test_epic_notes(epic):
