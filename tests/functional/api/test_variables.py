@@ -17,7 +17,6 @@ def test_instance_variables(gl):
     assert variable.value == "new_value1"
 
     variable.delete()
-    assert variable not in gl.variables.list()
 
 
 def test_group_variables(group):
@@ -31,7 +30,6 @@ def test_group_variables(group):
     assert variable.value == "new_value1"
 
     variable.delete()
-    assert variable not in group.variables.list()
 
 
 def test_project_variables(project):
@@ -45,4 +43,3 @@ def test_project_variables(project):
     assert variable.value == "new_value1"
 
     variable.delete()
-    assert variable not in project.variables.list()

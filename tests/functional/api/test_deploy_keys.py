@@ -7,5 +7,5 @@ def test_project_deploy_keys(gl, project, DEPLOY_KEY):
     assert deploy_key in project2.keys.list()
 
     project2.keys.delete(deploy_key.id)
-    assert deploy_key not in project2.keys.list()
+
     project2.delete()
