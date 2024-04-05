@@ -58,8 +58,8 @@ Rotate a personal access token and retrieve its new value::
     token.rotate()
     print(token.token)
     # or directly using a token ID
-    new_token = gl.personal_access_tokens.rotate(42)
-    print(new_token.token)
+    new_token_dict = gl.personal_access_tokens.rotate(42)
+    print(new_token_dict)
 
 Create a personal access token for a user (admin only)::
 
