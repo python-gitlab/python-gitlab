@@ -2,7 +2,7 @@ import datetime
 import os
 import time
 
-branch = "branch-cli-v4"
+branch = "BRANCH-cli-v4"
 
 
 def test_create_project(gitlab_cli):
@@ -242,6 +242,8 @@ def test_accept_request_merge(gitlab_cli, project):
     project.files.create(file_data)
     # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
     time.sleep(30)
+
+    mr = project.mergerequests.get(mr.iid)
 
     if mr.detailed_merge_status == "not_approved":
         approve_cmd = [

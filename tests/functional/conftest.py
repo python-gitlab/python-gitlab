@@ -389,9 +389,6 @@ def make_merge_request(project):
             }
         )
 
-        # Helps with Debugging why MRs fail to merge resulting in 405 from downstream tests
-        project.approvalrules.list()
-
         if create_pipeline:
             project.files.create(
                 {

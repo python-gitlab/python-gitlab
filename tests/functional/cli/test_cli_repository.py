@@ -77,6 +77,9 @@ def test_list_merge_request_commits(gitlab_cli, merge_request, project):
 
 
 def test_commit_merge_requests(gitlab_cli, project, merge_request):
+    """This tests the `project-commit merge-requests` command and also tests
+    that we can print the result using the `json` formatter"""
+
     # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
     time.sleep(30)
 
