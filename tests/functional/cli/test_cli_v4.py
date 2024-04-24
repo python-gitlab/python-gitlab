@@ -243,22 +243,6 @@ def test_accept_request_merge(gitlab_cli, project):
     # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
     time.sleep(30)
 
-    mr = project.mergerequests.get(mr.iid)
-
-    if mr.detailed_merge_status == "not_approved":
-        approve_cmd = [
-            "project-merge-request",
-            "approve",
-            "--project-id",
-            project.id,
-            "--iid",
-            mr.iid,
-        ]
-        gitlab_cli(approve_cmd)
-
-        # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
-        time.sleep(5)
-
     approve_cmd = [
         "project-merge-request",
         "merge",
