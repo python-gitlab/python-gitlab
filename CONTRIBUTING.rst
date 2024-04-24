@@ -75,6 +75,9 @@ You need to install ``tox`` (``pip3 install tox``) to run tests and lint checks 
    # run unit tests in one python environment only (useful for quick testing during development):
    tox -e py311
 
+   # run unit and smoke tests in one python environment only
+   tox -e py312,smoke
+
    # build the documentation - the result will be generated in build/sphinx/html/:
    tox -e docs
 
