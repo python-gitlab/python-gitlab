@@ -14,14 +14,14 @@ jobs:
       id-token: write
     environment: pypi.org
     steps:
-    - uses: actions/checkout@v4.1.1
+    - uses: actions/checkout@v4.1.3
       with:
         fetch-depth: 0
         token: ${{ secrets.RELEASE_GITHUB_TOKEN }}
 
     - name: Python Semantic Release
       id: release
-      uses: python-semantic-release/python-semantic-release@v9.3.1
+      uses: python-semantic-release/python-semantic-release@v9.5.0
       with:
         github_token: ${{ secrets.RELEASE_GITHUB_TOKEN }}
 

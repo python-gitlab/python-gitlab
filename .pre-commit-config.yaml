@@ -3,11 +3,11 @@ default_language_version:
 
 repos:
   - repo: https://github.com/psf/black
-    rev: 24.3.0
+    rev: 24.4.1
     hooks:
       - id: black
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v3.20.0
+    rev: v3.24.0
     hooks:
       - id: commitizen
         stages: [commit-msg]
@@ -30,7 +30,7 @@ repos:
           - requests-toolbelt==1.0.0
         files: 'gitlab/'
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.9.0
+    rev: v1.10.0
     hooks:
       - id: mypy
         args: []
@@ -47,6 +47,6 @@ repos:
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
   - repo: https://github.com/maxbrunet/pre-commit-renovate
-    rev: 37.272.0
+    rev: 37.321.2
     hooks:
       - id: renovate-config-validator
