@@ -10,8 +10,9 @@ from gitlab._version import __title__, __version__
 
 DOCS_DIR = "docs"
 TEST_DIR = "tests"
-SDIST_FILE = f"{__title__}-{__version__}.tar.gz"
-WHEEL_FILE = f"{__title__.replace('-', '_')}-{__version__}-py{sys.version_info.major}-none-any.whl"
+DIST_NORMALIZED_TITLE = f"{__title__.replace('-', '_')}-{__version__}"
+SDIST_FILE = f"{DIST_NORMALIZED_TITLE}.tar.gz"
+WHEEL_FILE = f"{DIST_NORMALIZED_TITLE}-py{sys.version_info.major}-none-any.whl"
 PY_TYPED = "gitlab/py.typed"
 
 
@@ -24,12 +25,11 @@ def build(tmp_path_factory: pytest.TempPathFactory):
 
 def test_sdist_includes_correct_files(build: Path) -> None:
     sdist = tarfile.open(build / SDIST_FILE, "r:gz")
-    sdist_dir = f"{__title__}-{__version__}"
 
-    docs_dir = sdist.getmember(f"{sdist_dir}/{DOCS_DIR}")
-    test_dir = sdist.getmember(f"{sdist_dir}/{TEST_DIR}")
-    readme = sdist.getmember(f"{sdist_dir}/README.rst")
-    py_typed = sdist.getmember(f"{sdist_dir}/{PY_TYPED}")
+    docs_dir = sdist.getmember(f"{DIST_NORMALIZED_TITLE}/{DOCS_DIR}")
+    test_dir = sdist.getmember(f"{DIST_NORMALIZED_TITLE}/{TEST_DIR}")
+    readme = sdist.getmember(f"{DIST_NORMALIZED_TITLE}/README.rst")
+    py_typed = sdist.getmember(f"{DIST_NORMALIZED_TITLE}/{PY_TYPED}")
 
     assert docs_dir.isdir()
     assert test_dir.isdir()
