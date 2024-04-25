@@ -115,8 +115,8 @@ You can also mount your own config file:
 Usage inside GitLab CI
 ~~~~~~~~~~~~~~~~~~~~~~
 
-If you want to use the Docker image directly inside your GitLab CI as an `image`, you will need to override
-the `entrypoint`, `as noted in the official GitLab documentation <https://docs.gitlab.com/ee/ci/docker/using_docker_images.html#override-the-entrypoint-of-an-image>`__:
+If you want to use the Docker image directly inside your GitLab CI as an ``image``, you will need to override
+the ``entrypoint``, `as noted in the official GitLab documentation <https://docs.gitlab.com/ee/ci/docker/using_docker_images.html#override-the-entrypoint-of-an-image>`__:
 
 .. code-block:: yaml
 
