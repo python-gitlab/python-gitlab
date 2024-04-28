@@ -78,3 +78,23 @@ access an attribute that is shadowed by python-gitlab's own methods or managers.
 
 You can use the object's ``attributes`` dictionary to access it directly instead.
 See the :ref:`objects` section for more details on how attributes are exposed.
+
+.. _conflicting_parameters_faq:
+
+I cannot use the parameter ``path`` (or some other parameter) as it conflicts with the library
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+``path`` is used by the python-gitlab library and cannot be used as a parameter
+if wanting to send it to the GitLab instance.  You can use the
+``query_parameters`` argument to send arguments that would conflict with python
+or python-gitlab when using them as kwargs:
+
+.. code-block:: python
+
+   ## invalid, as ``path`` is interpreted by python-gitlab as the Path or full
+   ## URL to query ('/projects' or 'http://whatever/v4/api/projects')
+   project.commits.list(path='some_file_path', iterator=True)
+
+   project.commits.list(query_parameters={'path': 'some_file_path'}, iterator=True)  # OK
+
+See :ref:`Conflicting Parameters <conflicting_parameters>` for more information.
