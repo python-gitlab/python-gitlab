@@ -162,6 +162,11 @@ with the GitLab server error message:
    ...
    GitlabListError: 400: sort does not have a valid value
 
+.. _conflicting_parameters:
+
+Conflicting Parameters
+======================
+
 You can use the ``query_parameters`` argument to send arguments that would
 conflict with python or python-gitlab when using them as kwargs:
 
