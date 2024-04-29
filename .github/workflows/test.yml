@@ -48,7 +48,7 @@ jobs:
               version: "3.12"
               toxenv: py312,smoke
     steps:
-      - uses: actions/checkout@v4.1.3
+      - uses: actions/checkout@v4.1.4
       - name: Set up Python ${{ matrix.python.version }}
         uses: actions/setup-python@v5.1.0
         with:
@@ -66,7 +66,7 @@ jobs:
       matrix:
         toxenv: [api_func_v4, cli_func_v4]
     steps:
-      - uses: actions/checkout@v4.1.3
+      - uses: actions/checkout@v4.1.4
       - name: Set up Python
         uses: actions/setup-python@v5.1.0
         with:
@@ -87,7 +87,7 @@ jobs:
   coverage:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.1.3
+      - uses: actions/checkout@v4.1.4
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5.1.0
         with:
@@ -110,7 +110,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Python wheel
     steps:
-    - uses: actions/checkout@v4.1.3
+    - uses: actions/checkout@v4.1.4
     - uses: actions/setup-python@v5.1.0
       with:
         python-version: "3.12"
@@ -128,7 +128,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [dist]
     steps:
-    - uses: actions/checkout@v4.1.3
+    - uses: actions/checkout@v4.1.4
     - name: Set up Python
       uses: actions/setup-python@v5.1.0
       with:
