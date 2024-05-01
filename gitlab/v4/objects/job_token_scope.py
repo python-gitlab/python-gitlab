@@ -62,7 +62,7 @@ class AllowlistedGroup(ObjectDeleteMixin, RESTObject):
 
     def get_id(self) -> int:
         """Returns the id of the resource. This override deals with
-        the fact that either an `id` or a `target_project_id` attribute
+        the fact that either an `id` or a `target_group_id` attribute
         is returned by the server depending on the endpoint called."""
         try:
             return cast(int, getattr(self, self._id_attr))

@@ -47,6 +47,11 @@ project_allowlist_content = [
     }
 ]
 
+project_allowlist_created_content = {
+    "target_project_id": 2,
+    "project_id": 1,
+}
+
 groups_allowlist_content = [
     {
         "id": 4,
@@ -54,6 +59,11 @@ groups_allowlist_content = [
         "name": "namegroup",
     }
 ]
+
+group_allowlist_created_content = {
+    "target_group_id": 4,
+    "project_id": 1,
+}
 
 
 @pytest.fixture
@@ -83,12 +93,38 @@ def resp_get_allowlist():
 
 
 @pytest.fixture
+def resp_add_to_allowlist():
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/job_token_scope/allowlist",
+            json=project_allowlist_created_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
 def resp_get_groups_allowlist():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
             method=responses.GET,
             url="http://localhost/api/v4/projects/1/job_token_scope/groups_allowlist",
             json=groups_allowlist_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
+def resp_add_to_groups_allowlist():
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/job_token_scope/groups_allowlist",
+            json=group_allowlist_created_content,
             content_type="application/json",
             status=200,
         )
@@ -140,9 +176,25 @@ def test_get_projects_allowlist(job_token_scope, resp_get_allowlist):
     assert isinstance(allowlist_content, list)
 
 
+def test_add_project_to_allowlist(job_token_scope, resp_add_to_allowlist):
+    allowlist = job_token_scope.allowlist
+    assert isinstance(allowlist, AllowlistedProjectManager)
+
+    resp = allowlist.create({"target_project_id": 2})
+    assert resp.get_id() == 2
+
+
 def test_get_groups_allowlist(job_token_scope, resp_get_groups_allowlist):
     allowlist = job_token_scope.groups_allowlist
     assert isinstance(allowlist, AllowlistedGroupManager)
 
     allowlist_content = allowlist.list()
     assert isinstance(allowlist_content, list)
+
+
+def test_add_group_to_allowlist(job_token_scope, resp_add_to_groups_allowlist):
+    allowlist = job_token_scope.groups_allowlist
+    assert isinstance(allowlist, AllowlistedGroupManager)
+
+    resp = allowlist.create({"target_group_id": 4})
+    assert resp.get_id() == 4
