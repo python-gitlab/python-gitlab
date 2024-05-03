@@ -46,6 +46,7 @@ from .packages import GroupPackageManager  # noqa: F401
 from .projects import GroupProjectManager, SharedProjectManager  # noqa: F401
 from .push_rules import GroupPushRulesManager
 from .runners import GroupRunnerManager  # noqa: F401
+from .service_accounts import GroupServiceAccountManager  # noqa: F401
 from .statistics import GroupIssuesStatisticsManager  # noqa: F401
 from .variables import GroupVariableManager  # noqa: F401
 from .wikis import GroupWikiManager  # noqa: F401
@@ -102,6 +103,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     variables: GroupVariableManager
     wikis: GroupWikiManager
     saml_group_links: "GroupSAMLGroupLinkManager"
+    service_accounts: "GroupServiceAccountManager"
 
     @cli.register_custom_action("Group", ("project_id",))
     @exc.on_http_error(exc.GitlabTransferProjectError)

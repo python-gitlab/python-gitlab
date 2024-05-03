@@ -458,3 +458,24 @@ Edit group push rules::
 Delete group push rules::
 
     pr.delete()
+
+Group Service Account
+=====================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.GroupServiceAccount`
+  + :class:`gitlab.v4.objects.GroupServiceAccountManager`
+  + :attr:`gitlab.v4.objects.Group.serviceaccounts`
+
+* GitLab API: https://docs.gitlab.com/ee/api/groups.html#service-accounts
+
+Examples
+---------
+
+Create group service account (only allowed at top level group)::
+
+    group.serviceaccount.create({'name': 'group-service-account', 'username': 'group-service-account'})

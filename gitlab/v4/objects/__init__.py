@@ -59,6 +59,7 @@ from .resource_groups import *
 from .reviewers import *
 from .runners import *
 from .secure_files import *
+from .service_accounts import *
 from .settings import *
 from .sidekiq import *
 from .snippets import *
