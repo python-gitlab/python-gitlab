@@ -89,6 +89,8 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
         approver_ids: Optional[List[int]] = None,
         approver_group_ids: Optional[List[int]] = None,
         approval_rule_name: str = "name",
+        *,
+        approver_usernames: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> RESTObject:
         """Change MR-level allowed approvers and approver groups.
@@ -104,6 +106,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
         """
         approver_ids = approver_ids or []
         approver_group_ids = approver_group_ids or []
+        approver_usernames = approver_usernames or []
 
         data = {
             "name": approval_rule_name,
@@ -111,6 +114,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
             "rule_type": "regular",
             "user_ids": approver_ids,
             "group_ids": approver_group_ids,
+            "usernames": approver_usernames,
         }
         if TYPE_CHECKING:
             assert self._parent is not None
@@ -124,6 +128,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
                 ar.user_ids = data["user_ids"]
                 ar.approvals_required = data["approvals_required"]
                 ar.group_ids = data["group_ids"]
+                ar.usernames = data["usernames"]
                 ar.save()
                 return ar
         # if there was no rule matching the rule name, create a new one
@@ -145,14 +150,14 @@ class ProjectMergeRequestApprovalRuleManager(CRUDMixin, RESTManager):
             "name",
             "approvals_required",
         ),
-        optional=("user_ids", "group_ids"),
+        optional=("user_ids", "group_ids", "usernames"),
     )
     # Important: When approval_project_rule_id is set, the name, users and
     # groups of project-level rule will be copied. The approvals_required
     # specified will be used.
     _create_attrs = RequiredOptional(
         required=("name", "approvals_required"),
-        optional=("approval_project_rule_id", "user_ids", "group_ids"),
+        optional=("approval_project_rule_id", "user_ids", "group_ids", "usernames"),
     )
 
     def get(
