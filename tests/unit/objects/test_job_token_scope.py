@@ -7,8 +7,8 @@ import responses
 
 from gitlab.v4.objects import ProjectJobTokenScope
 from gitlab.v4.objects.job_token_scope import (
-    AllowlistedGroupManager,
-    AllowlistedProjectManager,
+    AllowlistGroupManager,
+    AllowlistProjectManager,
 )
 
 job_token_scope_content = {
@@ -170,7 +170,7 @@ def test_update_job_token_scope(project, resp_patch_job_token_scope):
 
 def test_get_projects_allowlist(job_token_scope, resp_get_allowlist):
     allowlist = job_token_scope.allowlist
-    assert isinstance(allowlist, AllowlistedProjectManager)
+    assert isinstance(allowlist, AllowlistProjectManager)
 
     allowlist_content = allowlist.list()
     assert isinstance(allowlist_content, list)
@@ -178,7 +178,7 @@ def test_get_projects_allowlist(job_token_scope, resp_get_allowlist):
 
 def test_add_project_to_allowlist(job_token_scope, resp_add_to_allowlist):
     allowlist = job_token_scope.allowlist
-    assert isinstance(allowlist, AllowlistedProjectManager)
+    assert isinstance(allowlist, AllowlistProjectManager)
 
     resp = allowlist.create({"target_project_id": 2})
     assert resp.get_id() == 2
@@ -186,7 +186,7 @@ def test_add_project_to_allowlist(job_token_scope, resp_add_to_allowlist):
 
 def test_get_groups_allowlist(job_token_scope, resp_get_groups_allowlist):
     allowlist = job_token_scope.groups_allowlist
-    assert isinstance(allowlist, AllowlistedGroupManager)
+    assert isinstance(allowlist, AllowlistGroupManager)
 
     allowlist_content = allowlist.list()
     assert isinstance(allowlist_content, list)
@@ -194,7 +194,7 @@ def test_get_groups_allowlist(job_token_scope, resp_get_groups_allowlist):
 
 def test_add_group_to_allowlist(job_token_scope, resp_add_to_groups_allowlist):
     allowlist = job_token_scope.groups_allowlist
-    assert isinstance(allowlist, AllowlistedGroupManager)
+    assert isinstance(allowlist, AllowlistGroupManager)
 
     resp = allowlist.create({"target_group_id": 4})
     assert resp.get_id() == 4

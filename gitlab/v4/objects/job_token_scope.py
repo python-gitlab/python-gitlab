@@ -23,8 +23,8 @@ __all__ = [
 class ProjectJobTokenScope(RefreshMixin, SaveMixin, RESTObject):
     _id_attr = None
 
-    allowlist: "AllowlistedProjectManager"
-    groups_allowlist: "AllowlistedGroupManager"
+    allowlist: "AllowlistProjectManager"
+    groups_allowlist: "AllowlistGroupManager"
 
 
 class ProjectJobTokenScopeManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
@@ -37,7 +37,7 @@ class ProjectJobTokenScopeManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         return cast(ProjectJobTokenScope, super().get(**kwargs))
 
 
-class AllowlistedProject(ObjectDeleteMixin, RESTObject):
+class AllowlistProject(ObjectDeleteMixin, RESTObject):
     _id_attr = "target_project_id"  # note: only true for create endpoint
 
     def get_id(self) -> int:
@@ -47,17 +47,17 @@ class AllowlistedProject(ObjectDeleteMixin, RESTObject):
         try:
             return cast(int, getattr(self, self._id_attr))
         except AttributeError:
-            return cast(int, getattr(self, "id"))
+            return cast(int, self.id)
 
 
-class AllowlistedProjectManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
+class AllowlistProjectManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = "/projects/{project_id}/job_token_scope/allowlist"
-    _obj_cls = AllowlistedProject
+    _obj_cls = AllowlistProject
     _from_parent_attrs = {"project_id": "project_id"}
     _create_attrs = RequiredOptional(required=("target_project_id",))
 
 
-class AllowlistedGroup(ObjectDeleteMixin, RESTObject):
+class AllowlistGroup(ObjectDeleteMixin, RESTObject):
     _id_attr = "target_group_id"  # note: only true for create endpoint
 
     def get_id(self) -> int:
@@ -67,11 +67,11 @@ class AllowlistedGroup(ObjectDeleteMixin, RESTObject):
         try:
             return cast(int, getattr(self, self._id_attr))
         except AttributeError:
-            return cast(int, getattr(self, "id"))
+            return cast(int, self.id)
 
 
-class AllowlistedGroupManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
+class AllowlistGroupManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     _path = "/projects/{project_id}/job_token_scope/groups_allowlist"
-    _obj_cls = AllowlistedGroup
+    _obj_cls = AllowlistGroup
     _from_parent_attrs = {"project_id": "project_id"}
     _create_attrs = RequiredOptional(required=("target_group_id",))
