@@ -44,10 +44,10 @@ class AllowlistProject(ObjectDeleteMixin, RESTObject):
         """Returns the id of the resource. This override deals with
         the fact that either an `id` or a `target_project_id` attribute
         is returned by the server depending on the endpoint called."""
-        try:
-            return cast(int, getattr(self, self._id_attr))
-        except AttributeError:
-            return cast(int, self.id)
+        project_id = cast(int, super().get_id())
+        if project_id is not None:
+            return project_id
+        return cast(int, self.id)
 
 
 class AllowlistProjectManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
@@ -64,10 +64,10 @@ class AllowlistGroup(ObjectDeleteMixin, RESTObject):
         """Returns the id of the resource. This override deals with
         the fact that either an `id` or a `target_group_id` attribute
         is returned by the server depending on the endpoint called."""
-        try:
-            return cast(int, getattr(self, self._id_attr))
-        except AttributeError:
-            return cast(int, self.id)
+        group_id = cast(int, super().get_id())
+        if group_id is not None:
+            return group_id
+        return cast(int, self.id)
 
 
 class AllowlistGroupManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
