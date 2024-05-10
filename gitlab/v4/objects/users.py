@@ -190,7 +190,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
     starred_projects: "StarredProjectManager"
     status: "UserStatusManager"
 
-    @cli.register_custom_action("User")
+    @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabBlockError)
     def block(self, **kwargs: Any) -> Optional[bool]:
         """Block the user.
@@ -215,7 +215,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             self._attrs["state"] = "blocked"
         return server_data
 
-    @cli.register_custom_action("User")
+    @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabFollowError)
     def follow(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Follow the user.
@@ -233,7 +233,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"/users/{self.encoded_id}/follow"
         return self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("User")
+    @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabUnfollowError)
     def unfollow(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Unfollow the user.
@@ -251,7 +251,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"/users/{self.encoded_id}/unfollow"
         return self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("User")
+    @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabUnblockError)
     def unblock(self, **kwargs: Any) -> Optional[bool]:
         """Unblock the user.
@@ -276,7 +276,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             self._attrs["state"] = "active"
         return server_data
 
-    @cli.register_custom_action("User")
+    @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabDeactivateError)
     def deactivate(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Deactivate the user.
@@ -297,7 +297,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             self._attrs["state"] = "deactivated"
         return server_data
 
-    @cli.register_custom_action("User")
+    @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabActivateError)
     def activate(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Activate the user.
@@ -318,7 +318,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             self._attrs["state"] = "active"
         return server_data
 
-    @cli.register_custom_action("User")
+    @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabUserApproveError)
     def approve(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Approve a user creation request.
@@ -336,7 +336,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"/users/{self.encoded_id}/approve"
         return self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("User")
+    @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabUserRejectError)
     def reject(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Reject a user creation request.
@@ -354,7 +354,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"/users/{self.encoded_id}/reject"
         return self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("User")
+    @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabBanError)
     def ban(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Ban the user.
@@ -375,7 +375,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
             self._attrs["state"] = "banned"
         return server_data
 
-    @cli.register_custom_action("User")
+    @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabUnbanError)
     def unban(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Unban the user.

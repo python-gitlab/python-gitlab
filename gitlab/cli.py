@@ -72,8 +72,9 @@ class VerticalHelpFormatter(argparse.HelpFormatter):
 
 
 def register_custom_action(
+    *,
     cls_names: Union[str, Tuple[str, ...]],
-    mandatory: Tuple[str, ...] = (),
+    required: Tuple[str, ...] = (),
     optional: Tuple[str, ...] = (),
     custom_action: Optional[str] = None,
 ) -> Callable[[__F], __F]:
@@ -98,7 +99,7 @@ def register_custom_action(
                 custom_actions[final_name] = {}
 
             action = custom_action or f.__name__.replace("_", "-")
-            custom_actions[final_name][action] = (mandatory, optional, in_obj)
+            custom_actions[final_name][action] = (required, optional, in_obj)
 
         return cast(__F, wrapped_f)
 

@@ -16,7 +16,7 @@ __all__ = [
 
 
 class ProjectJob(RefreshMixin, RESTObject):
-    @cli.register_custom_action("ProjectJob")
+    @cli.register_custom_action(cls_names="ProjectJob")
     @exc.on_http_error(exc.GitlabJobCancelError)
     def cancel(self, **kwargs: Any) -> Dict[str, Any]:
         """Cancel the job.
@@ -34,7 +34,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             assert isinstance(result, dict)
         return result
 
-    @cli.register_custom_action("ProjectJob")
+    @cli.register_custom_action(cls_names="ProjectJob")
     @exc.on_http_error(exc.GitlabJobRetryError)
     def retry(self, **kwargs: Any) -> Dict[str, Any]:
         """Retry the job.
@@ -52,7 +52,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             assert isinstance(result, dict)
         return result
 
-    @cli.register_custom_action("ProjectJob")
+    @cli.register_custom_action(cls_names="ProjectJob")
     @exc.on_http_error(exc.GitlabJobPlayError)
     def play(self, **kwargs: Any) -> None:
         """Trigger a job explicitly.
@@ -70,7 +70,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             assert isinstance(result, dict)
         self._update_attrs(result)
 
-    @cli.register_custom_action("ProjectJob")
+    @cli.register_custom_action(cls_names="ProjectJob")
     @exc.on_http_error(exc.GitlabJobEraseError)
     def erase(self, **kwargs: Any) -> None:
         """Erase the job (remove job artifacts and trace).
@@ -85,7 +85,7 @@ class ProjectJob(RefreshMixin, RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/erase"
         self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("ProjectJob")
+    @cli.register_custom_action(cls_names="ProjectJob")
     @exc.on_http_error(exc.GitlabCreateError)
     def keep_artifacts(self, **kwargs: Any) -> None:
         """Prevent artifacts from being deleted when expiration is set.
@@ -100,7 +100,7 @@ class ProjectJob(RefreshMixin, RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/artifacts/keep"
         self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("ProjectJob")
+    @cli.register_custom_action(cls_names="ProjectJob")
     @exc.on_http_error(exc.GitlabCreateError)
     def delete_artifacts(self, **kwargs: Any) -> None:
         """Delete artifacts of a job.
@@ -115,7 +115,7 @@ class ProjectJob(RefreshMixin, RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/artifacts"
         self.manager.gitlab.http_delete(path, **kwargs)
 
-    @cli.register_custom_action("ProjectJob")
+    @cli.register_custom_action(cls_names="ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
     def artifacts(
         self,
@@ -156,7 +156,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             result, streamed, action, chunk_size, iterator=iterator
         )
 
-    @cli.register_custom_action("ProjectJob")
+    @cli.register_custom_action(cls_names="ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
     def artifact(
         self,
@@ -199,7 +199,7 @@ class ProjectJob(RefreshMixin, RESTObject):
             result, streamed, action, chunk_size, iterator=iterator
         )
 
-    @cli.register_custom_action("ProjectJob")
+    @cli.register_custom_action(cls_names="ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
     def trace(
         self,

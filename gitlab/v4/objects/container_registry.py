@@ -42,8 +42,8 @@ class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
     _path = "/projects/{project_id}/registry/repositories/{repository_id}/tags"
 
     @cli.register_custom_action(
-        "ProjectRegistryTagManager",
-        ("name_regex_delete",),
+        cls_names="ProjectRegistryTagManager",
+        required=("name_regex_delete",),
         optional=("keep_n", "name_regex_keep", "older_than"),
     )
     @exc.on_http_error(exc.GitlabDeleteError)

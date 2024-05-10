@@ -24,7 +24,9 @@ class NamespaceManager(RetrieveMixin, RESTManager):
     def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Namespace:
         return cast(Namespace, super().get(id=id, lazy=lazy, **kwargs))
 
-    @cli.register_custom_action("NamespaceManager", ("namespace", "parent_id"))
+    @cli.register_custom_action(
+        cls_names="NamespaceManager", required=("namespace", "parent_id")
+    )
     @exc.on_http_error(exc.GitlabGetError)
     def exists(self, namespace: str, **kwargs: Any) -> Namespace:
         """Get existence of a namespace by path.

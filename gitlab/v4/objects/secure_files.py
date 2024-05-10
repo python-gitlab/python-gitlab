@@ -18,7 +18,7 @@ __all__ = ["ProjectSecureFile", "ProjectSecureFileManager"]
 
 
 class ProjectSecureFile(ObjectDeleteMixin, RESTObject):
-    @cli.register_custom_action("ProjectSecureFile")
+    @cli.register_custom_action(cls_names="ProjectSecureFile")
     @exc.on_http_error(exc.GitlabGetError)
     def download(
         self,

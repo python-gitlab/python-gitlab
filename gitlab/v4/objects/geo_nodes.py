@@ -19,7 +19,7 @@ __all__ = [
 
 
 class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
-    @cli.register_custom_action("GeoNode")
+    @cli.register_custom_action(cls_names="GeoNode")
     @exc.on_http_error(exc.GitlabRepairError)
     def repair(self, **kwargs: Any) -> None:
         """Repair the OAuth authentication of the geo node.
@@ -37,7 +37,7 @@ class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
             assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action("GeoNode")
+    @cli.register_custom_action(cls_names="GeoNode")
     @exc.on_http_error(exc.GitlabGetError)
     def status(self, **kwargs: Any) -> Dict[str, Any]:
         """Get the status of the geo node.
@@ -69,7 +69,7 @@ class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
     def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> GeoNode:
         return cast(GeoNode, super().get(id=id, lazy=lazy, **kwargs))
 
-    @cli.register_custom_action("GeoNodeManager")
+    @cli.register_custom_action(cls_names="GeoNodeManager")
     @exc.on_http_error(exc.GitlabGetError)
     def status(self, **kwargs: Any) -> List[Dict[str, Any]]:
         """Get the status of all the geo nodes.
@@ -89,7 +89,7 @@ class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
             assert isinstance(result, list)
         return result
 
-    @cli.register_custom_action("GeoNodeManager")
+    @cli.register_custom_action(cls_names="GeoNodeManager")
     @exc.on_http_error(exc.GitlabGetError)
     def current_failures(self, **kwargs: Any) -> List[Dict[str, Any]]:
         """Get the list of failures on the current geo node.

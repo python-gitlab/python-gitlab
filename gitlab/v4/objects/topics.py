@@ -33,8 +33,8 @@ class TopicManager(CRUDMixin, RESTManager):
         return cast(Topic, super().get(id=id, lazy=lazy, **kwargs))
 
     @cli.register_custom_action(
-        "TopicManager",
-        mandatory=("source_topic_id", "target_topic_id"),
+        cls_names="TopicManager",
+        required=("source_topic_id", "target_topic_id"),
     )
     @exc.on_http_error(exc.GitlabMRClosedError)
     def merge(

@@ -60,7 +60,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
     test_report_summary: "ProjectPipelineTestReportSummaryManager"
     variables: "ProjectPipelineVariableManager"
 
-    @cli.register_custom_action("ProjectPipeline")
+    @cli.register_custom_action(cls_names="ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineCancelError)
     def cancel(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Cancel the job.
@@ -75,7 +75,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/cancel"
         return self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("ProjectPipeline")
+    @cli.register_custom_action(cls_names="ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineRetryError)
     def retry(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Retry the job.
@@ -201,7 +201,7 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
     variables: ProjectPipelineScheduleVariableManager
     pipelines: ProjectPipelineSchedulePipelineManager
 
-    @cli.register_custom_action("ProjectPipelineSchedule")
+    @cli.register_custom_action(cls_names="ProjectPipelineSchedule")
     @exc.on_http_error(exc.GitlabOwnershipError)
     def take_ownership(self, **kwargs: Any) -> None:
         """Update the owner of a pipeline schedule.
@@ -219,7 +219,7 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
             assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action("ProjectPipelineSchedule")
+    @cli.register_custom_action(cls_names="ProjectPipelineSchedule")
     @exc.on_http_error(exc.GitlabPipelinePlayError)
     def play(self, **kwargs: Any) -> Dict[str, Any]:
         """Trigger a new scheduled pipeline, which runs immediately.

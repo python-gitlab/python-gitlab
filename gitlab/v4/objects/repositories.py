@@ -21,7 +21,9 @@ else:
 
 
 class RepositoryMixin(_RestObjectBase):
-    @cli.register_custom_action("Project", ("submodule", "branch", "commit_sha"))
+    @cli.register_custom_action(
+        cls_names="Project", required=("submodule", "branch", "commit_sha")
+    )
     @exc.on_http_error(exc.GitlabUpdateError)
     def update_submodule(
         self, submodule: str, branch: str, commit_sha: str, **kwargs: Any
@@ -47,7 +49,9 @@ class RepositoryMixin(_RestObjectBase):
             data["commit_message"] = kwargs["commit_message"]
         return self.manager.gitlab.http_put(path, post_data=data)
 
-    @cli.register_custom_action("Project", (), ("path", "ref", "recursive"))
+    @cli.register_custom_action(
+        cls_names="Project", optional=("path", "ref", "recursive")
+    )
     @exc.on_http_error(exc.GitlabGetError)
     def repository_tree(
         self, path: str = "", ref: str = "", recursive: bool = False, **kwargs: Any
@@ -80,7 +84,7 @@ class RepositoryMixin(_RestObjectBase):
             query_data["ref"] = ref
         return self.manager.gitlab.http_list(gl_path, query_data=query_data, **kwargs)
 
-    @cli.register_custom_action("Project", ("sha",))
+    @cli.register_custom_action(cls_names="Project", required=("sha",))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_blob(
         self, sha: str, **kwargs: Any
@@ -102,7 +106,7 @@ class RepositoryMixin(_RestObjectBase):
         path = f"/projects/{self.encoded_id}/repository/blobs/{sha}"
         return self.manager.gitlab.http_get(path, **kwargs)
 
-    @cli.register_custom_action("Project", ("sha",))
+    @cli.register_custom_action(cls_names="Project", required=("sha",))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_raw_blob(
         self,
@@ -145,7 +149,7 @@ class RepositoryMixin(_RestObjectBase):
             result, streamed, action, chunk_size, iterator=iterator
         )
 
-    @cli.register_custom_action("Project", ("from_", "to"))
+    @cli.register_custom_action(cls_names="Project", required=("from_", "to"))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_compare(
         self, from_: str, to: str, **kwargs: Any
@@ -168,7 +172,7 @@ class RepositoryMixin(_RestObjectBase):
         query_data = {"from": from_, "to": to}
         return self.manager.gitlab.http_get(path, query_data=query_data, **kwargs)
 
-    @cli.register_custom_action("Project")
+    @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabGetError)
     def repository_contributors(
         self, **kwargs: Any
@@ -193,7 +197,7 @@ class RepositoryMixin(_RestObjectBase):
         path = f"/projects/{self.encoded_id}/repository/contributors"
         return self.manager.gitlab.http_list(path, **kwargs)
 
-    @cli.register_custom_action("Project", (), ("sha", "format"))
+    @cli.register_custom_action(cls_names="Project", optional=("sha", "format"))
     @exc.on_http_error(exc.GitlabListError)
     def repository_archive(
         self,
@@ -247,7 +251,7 @@ class RepositoryMixin(_RestObjectBase):
             result, streamed, action, chunk_size, iterator=iterator
         )
 
-    @cli.register_custom_action("Project", ("refs",))
+    @cli.register_custom_action(cls_names="Project", required=("refs",))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_merge_base(
         self, refs: List[str], **kwargs: Any
@@ -273,7 +277,7 @@ class RepositoryMixin(_RestObjectBase):
         )
         return self.manager.gitlab.http_get(path, query_data=query_data, **kwargs)
 
-    @cli.register_custom_action("Project")
+    @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete_merged_branches(self, **kwargs: Any) -> None:
         """Delete merged branches.

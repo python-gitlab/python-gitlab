@@ -231,7 +231,7 @@ class Project(
     variables: ProjectVariableManager
     wikis: ProjectWikiManager
 
-    @cli.register_custom_action("Project", ("forked_from_id",))
+    @cli.register_custom_action(cls_names="Project", required=("forked_from_id",))
     @exc.on_http_error(exc.GitlabCreateError)
     def create_fork_relation(self, forked_from_id: int, **kwargs: Any) -> None:
         """Create a forked from/to relation between existing projects.
@@ -247,7 +247,7 @@ class Project(
         path = f"/projects/{self.encoded_id}/fork/{forked_from_id}"
         self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("Project")
+    @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete_fork_relation(self, **kwargs: Any) -> None:
         """Delete a forked relation between existing projects.
@@ -262,7 +262,7 @@ class Project(
         path = f"/projects/{self.encoded_id}/fork"
         self.manager.gitlab.http_delete(path, **kwargs)
 
-    @cli.register_custom_action("Project")
+    @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabGetError)
     def languages(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Get languages used in the project with percentage value.
@@ -277,7 +277,7 @@ class Project(
         path = f"/projects/{self.encoded_id}/languages"
         return self.manager.gitlab.http_get(path, **kwargs)
 
-    @cli.register_custom_action("Project")
+    @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabCreateError)
     def star(self, **kwargs: Any) -> None:
         """Star a project.
@@ -295,7 +295,7 @@ class Project(
             assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action("Project")
+    @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabDeleteError)
     def unstar(self, **kwargs: Any) -> None:
         """Unstar a project.
@@ -313,7 +313,7 @@ class Project(
             assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action("Project")
+    @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabCreateError)
     def archive(self, **kwargs: Any) -> None:
         """Archive a project.
@@ -331,7 +331,7 @@ class Project(
             assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action("Project")
+    @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabDeleteError)
     def unarchive(self, **kwargs: Any) -> None:
         """Unarchive a project.
@@ -350,7 +350,9 @@ class Project(
         self._update_attrs(server_data)
 
     @cli.register_custom_action(
-        "Project", ("group_id", "group_access"), ("expires_at",)
+        cls_names="Project",
+        required=("group_id", "group_access"),
+        optional=("expires_at",),
     )
     @exc.on_http_error(exc.GitlabCreateError)
     def share(
@@ -379,7 +381,7 @@ class Project(
         }
         self.manager.gitlab.http_post(path, post_data=data, **kwargs)
 
-    @cli.register_custom_action("Project", ("group_id",))
+    @cli.register_custom_action(cls_names="Project", required=("group_id",))
     @exc.on_http_error(exc.GitlabDeleteError)
     def unshare(self, group_id: int, **kwargs: Any) -> None:
         """Delete a shared project link within a group.
@@ -396,7 +398,7 @@ class Project(
         self.manager.gitlab.http_delete(path, **kwargs)
 
     # variables not supported in CLI
-    @cli.register_custom_action("Project", ("ref", "token"))
+    @cli.register_custom_action(cls_names="Project", required=("ref", "token"))
     @exc.on_http_error(exc.GitlabCreateError)
     def trigger_pipeline(
         self,
@@ -427,7 +429,7 @@ class Project(
             assert isinstance(attrs, dict)
         return ProjectPipeline(self.pipelines, attrs)
 
-    @cli.register_custom_action("Project")
+    @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabHousekeepingError)
     def housekeeping(self, **kwargs: Any) -> None:
         """Start the housekeeping task.
@@ -443,7 +445,7 @@ class Project(
         path = f"/projects/{self.encoded_id}/housekeeping"
         self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("Project")
+    @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabRestoreError)
     def restore(self, **kwargs: Any) -> None:
         """Restore a project marked for deletion.
@@ -458,7 +460,7 @@ class Project(
         path = f"/projects/{self.encoded_id}/restore"
         self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("Project", optional=("wiki",))
+    @cli.register_custom_action(cls_names="Project", optional=("wiki",))
     @exc.on_http_error(exc.GitlabGetError)
     def snapshot(
         self,
@@ -501,7 +503,7 @@ class Project(
             result, streamed, action, chunk_size, iterator=iterator
         )
 
-    @cli.register_custom_action("Project", ("scope", "search"))
+    @cli.register_custom_action(cls_names="Project", required=("scope", "search"))
     @exc.on_http_error(exc.GitlabSearchError)
     def search(
         self, scope: str, search: str, **kwargs: Any
@@ -524,7 +526,7 @@ class Project(
         path = f"/projects/{self.encoded_id}/search"
         return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
 
-    @cli.register_custom_action("Project")
+    @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabCreateError)
     def mirror_pull(self, **kwargs: Any) -> None:
         """Start the pull mirroring process for the project.
@@ -539,7 +541,7 @@ class Project(
         path = f"/projects/{self.encoded_id}/mirror/pull"
         self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("Project")
+    @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabGetError)
     def mirror_pull_details(self, **kwargs: Any) -> Dict[str, Any]:
         """Get a project's pull mirror details.
@@ -562,7 +564,7 @@ class Project(
             assert isinstance(result, dict)
         return result
 
-    @cli.register_custom_action("Project", ("to_namespace",))
+    @cli.register_custom_action(cls_names="Project", required=("to_namespace",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
     def transfer(self, to_namespace: Union[int, str], **kwargs: Any) -> None:
         """Transfer a project to the given namespace ID
