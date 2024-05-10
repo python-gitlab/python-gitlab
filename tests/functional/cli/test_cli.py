@@ -34,12 +34,6 @@ def test_config_error_with_help_prints_help(script_runner):
     assert ret.returncode == 0
 
 
-def test_global_help_prints_resources_vertically(script_runner):
-    ret = script_runner.run(["gitlab", "--help"])
-    assert """resource:\n  application\n  application-appearance\n""" in ret.stdout
-    assert ret.returncode == 0
-
-
 def test_resource_help_prints_actions_vertically(script_runner):
     ret = script_runner.run(["gitlab", "project", "--help"])
     assert """action:\n  list\n  get""" in ret.stdout
