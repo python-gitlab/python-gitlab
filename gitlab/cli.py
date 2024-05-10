@@ -1,4 +1,5 @@
 import argparse
+import dataclasses
 import functools
 import os
 import pathlib
@@ -29,12 +30,20 @@ from gitlab.base import RESTObject
 camel_upperlower_regex = re.compile(r"([A-Z]+)([A-Z][a-z])")
 camel_lowerupper_regex = re.compile(r"([a-z\d])([A-Z])")
 
+
+@dataclasses.dataclass
+class CustomAction:
+    required: Tuple[str, ...]
+    optional: Tuple[str, ...]
+    in_object: bool
+
+
 # custom_actions = {
 #    cls: {
 #        action: (mandatory_args, optional_args, in_obj),
 #    },
 # }
-custom_actions: Dict[str, Dict[str, Tuple[Tuple[str, ...], Tuple[str, ...], bool]]] = {}
+custom_actions: Dict[str, Dict[str, CustomAction]] = {}
 
 
 # For an explanation of how these type-hints work see:
@@ -99,7 +108,9 @@ def register_custom_action(
                 custom_actions[final_name] = {}
 
             action = custom_action or f.__name__.replace("_", "-")
-            custom_actions[final_name][action] = (required, optional, in_obj)
+            custom_actions[final_name][action] = CustomAction(
+                required=required, optional=optional, in_object=in_obj
+            )
 
         return cast(__F, wrapped_f)
 
