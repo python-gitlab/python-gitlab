@@ -174,6 +174,7 @@ def test_get_projects_allowlist(job_token_scope, resp_get_allowlist):
 
     allowlist_content = allowlist.list()
     assert isinstance(allowlist_content, list)
+    assert allowlist_content[0].get_id() == 4
 
 
 def test_add_project_to_allowlist(job_token_scope, resp_add_to_allowlist):
@@ -190,6 +191,7 @@ def test_get_groups_allowlist(job_token_scope, resp_get_groups_allowlist):
 
     allowlist_content = allowlist.list()
     assert isinstance(allowlist_content, list)
+    assert allowlist_content[0].get_id() == 4
 
 
 def test_add_group_to_allowlist(job_token_scope, resp_add_to_groups_allowlist):
