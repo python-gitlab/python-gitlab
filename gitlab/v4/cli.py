@@ -82,7 +82,7 @@ class GitlabCLI:
 
     def do_custom(self) -> Any:
         class_instance: Union[gitlab.base.RESTManager, gitlab.base.RESTObject]
-        in_obj = cli.custom_actions[self.cls_name][self.resource_action][2]
+        in_obj = cli.custom_actions[self.cls_name][self.resource_action].in_object
 
         # Get the object (lazy), then act
         if in_obj:
@@ -321,13 +321,13 @@ def _populate_sub_parser_by_class(
                     id_attr = cls._id_attr.replace("_", "-")
                     sub_parser_action.add_argument(f"--{id_attr}", required=True)
 
-            required, optional, dummy = cli.custom_actions[name][action_name]
-            for x in required:
+            custom_action = cli.custom_actions[name][action_name]
+            for x in custom_action.required:
                 if x != cls._id_attr:
                     sub_parser_action.add_argument(
                         f"--{x.replace('_', '-')}", required=True
                     )
-            for x in optional:
+            for x in custom_action.optional:
                 if x != cls._id_attr:
                     sub_parser_action.add_argument(
                         f"--{x.replace('_', '-')}", required=False
@@ -350,13 +350,13 @@ def _populate_sub_parser_by_class(
                     )
                 sub_parser_action.add_argument("--sudo", required=False)
 
-            required, optional, dummy = cli.custom_actions[name][action_name]
-            for x in required:
+            custom_action = cli.custom_actions[name][action_name]
+            for x in custom_action.required:
                 if x != cls._id_attr:
                     sub_parser_action.add_argument(
                         f"--{x.replace('_', '-')}", required=True
                     )
-            for x in optional:
+            for x in custom_action.optional:
                 if x != cls._id_attr:
                     sub_parser_action.add_argument(
                         f"--{x.replace('_', '-')}", required=False
