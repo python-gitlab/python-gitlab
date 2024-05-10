@@ -207,12 +207,20 @@ def _populate_sub_parser_by_class(
     mgr_cls = getattr(gitlab.v4.objects, mgr_cls_name)
 
     action_parsers: Dict[str, argparse.ArgumentParser] = {}
-    for action_name in ["list", "get", "create", "update", "delete"]:
+    for action_name, help_text in [
+        ("list", "List the GitLab resources"),
+        ("get", "Get a GitLab resource"),
+        ("create", "Create a GitLab resource"),
+        ("update", "Update a GitLab resource"),
+        ("delete", "Delete a GitLab resource"),
+    ]:
         if not hasattr(mgr_cls, action_name):
             continue
 
         sub_parser_action = sub_parser.add_parser(
-            action_name, conflict_handler="resolve"
+            action_name,
+            conflict_handler="resolve",
+            help=help_text,
         )
         action_parsers[action_name] = sub_parser_action
         sub_parser_action.add_argument("--sudo", required=False)
