@@ -31,8 +31,8 @@ class CiLintManager(CreateMixin, RESTManager):
     )
 
     @register_custom_action(
-        "CiLintManager",
-        ("content",),
+        cls_names="CiLintManager",
+        required=("content",),
         optional=("include_merged_yaml", "include_jobs"),
     )
     def validate(self, *args: Any, **kwargs: Any) -> None:
@@ -63,8 +63,8 @@ class ProjectCiLintManager(GetWithoutIdMixin, CreateMixin, RESTManager):
         return cast(ProjectCiLint, super().get(**kwargs))
 
     @register_custom_action(
-        "ProjectCiLintManager",
-        ("content",),
+        cls_names="ProjectCiLintManager",
+        required=("content",),
         optional=("dry_run", "include_jobs", "ref"),
     )
     def validate(self, *args: Any, **kwargs: Any) -> None:

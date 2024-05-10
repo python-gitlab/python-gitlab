@@ -270,7 +270,9 @@ class ProjectIntegrationManager(
     ) -> ProjectIntegration:
         return cast(ProjectIntegration, super().get(id=id, lazy=lazy, **kwargs))
 
-    @cli.register_custom_action(("ProjectIntegrationManager", "ProjectServiceManager"))
+    @cli.register_custom_action(
+        cls_names=("ProjectIntegrationManager", "ProjectServiceManager")
+    )
     def available(self) -> List[str]:
         """List the services known by python-gitlab.
 

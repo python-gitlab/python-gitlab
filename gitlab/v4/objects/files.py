@@ -109,7 +109,9 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         optional=("encoding", "author_email", "author_name"),
     )
 
-    @cli.register_custom_action("ProjectFileManager", ("file_path", "ref"))
+    @cli.register_custom_action(
+        cls_names="ProjectFileManager", required=("file_path", "ref")
+    )
     # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
     # type error
     def get(  # type: ignore
@@ -132,9 +134,9 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         return cast(ProjectFile, GetMixin.get(self, file_path, ref=ref, **kwargs))
 
     @cli.register_custom_action(
-        "ProjectFileManager",
-        ("file_path", "branch", "content", "commit_message"),
-        ("encoding", "author_email", "author_name"),
+        cls_names="ProjectFileManager",
+        required=("file_path", "branch", "content", "commit_message"),
+        optional=("encoding", "author_email", "author_name"),
     )
     @exc.on_http_error(exc.GitlabCreateError)
     def create(
@@ -199,7 +201,8 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         return result
 
     @cli.register_custom_action(
-        "ProjectFileManager", ("file_path", "branch", "commit_message")
+        cls_names="ProjectFileManager",
+        required=("file_path", "branch", "commit_message"),
     )
     @exc.on_http_error(exc.GitlabDeleteError)
     # NOTE(jlvillal): Signature doesn't match DeleteMixin.delete() so ignore
@@ -224,7 +227,9 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         data = {"branch": branch, "commit_message": commit_message}
         self.gitlab.http_delete(path, query_data=data, **kwargs)
 
-    @cli.register_custom_action("ProjectFileManager", ("file_path", "ref"))
+    @cli.register_custom_action(
+        cls_names="ProjectFileManager", required=("file_path", "ref")
+    )
     @exc.on_http_error(exc.GitlabGetError)
     def raw(
         self,
@@ -271,7 +276,9 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
             result, streamed, action, chunk_size, iterator=iterator
         )
 
-    @cli.register_custom_action("ProjectFileManager", ("file_path", "ref"))
+    @cli.register_custom_action(
+        cls_names="ProjectFileManager", required=("file_path", "ref")
+    )
     @exc.on_http_error(exc.GitlabListError)
     def blame(self, file_path: str, ref: str, **kwargs: Any) -> List[Dict[str, Any]]:
         """Return the content of a file for a commit.

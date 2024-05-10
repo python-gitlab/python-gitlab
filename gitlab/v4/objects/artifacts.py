@@ -44,7 +44,9 @@ class ProjectArtifactManager(RESTManager):
         self.gitlab.http_delete(path, **kwargs)
 
     @cli.register_custom_action(
-        "ProjectArtifactManager", ("ref_name", "job"), ("job_token",)
+        cls_names="ProjectArtifactManager",
+        required=("ref_name", "job"),
+        optional=("job_token",),
     )
     @exc.on_http_error(exc.GitlabGetError)
     def download(
@@ -93,7 +95,8 @@ class ProjectArtifactManager(RESTManager):
         )
 
     @cli.register_custom_action(
-        "ProjectArtifactManager", ("ref_name", "artifact_path", "job")
+        cls_names="ProjectArtifactManager",
+        required=("ref_name", "artifact_path", "job"),
     )
     @exc.on_http_error(exc.GitlabGetError)
     def raw(

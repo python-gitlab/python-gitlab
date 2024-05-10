@@ -23,8 +23,8 @@ class ProjectDeployment(SaveMixin, RESTObject):
     mergerequests: ProjectDeploymentMergeRequestManager
 
     @cli.register_custom_action(
-        "ProjectDeployment",
-        mandatory=("status",),
+        cls_names="ProjectDeployment",
+        required=("status",),
         optional=("comment", "represented_as"),
     )
     @exc.on_http_error(exc.GitlabDeploymentApprovalError)

@@ -24,7 +24,7 @@ __all__ = [
 class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "title"
 
-    @cli.register_custom_action("Snippet")
+    @cli.register_custom_action(cls_names="Snippet")
     @exc.on_http_error(exc.GitlabGetError)
     def content(
         self,
@@ -89,7 +89,7 @@ class SnippetManager(CRUDMixin, RESTManager):
         ),
     )
 
-    @cli.register_custom_action("SnippetManager")
+    @cli.register_custom_action(cls_names="SnippetManager")
     def public(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
         """List all the public snippets.
 
@@ -117,7 +117,7 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
     discussions: ProjectSnippetDiscussionManager
     notes: ProjectSnippetNoteManager
 
-    @cli.register_custom_action("ProjectSnippet")
+    @cli.register_custom_action(cls_names="ProjectSnippet")
     @exc.on_http_error(exc.GitlabGetError)
     def content(
         self,

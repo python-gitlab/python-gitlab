@@ -12,7 +12,7 @@ __all__ = [
 
 
 class Todo(ObjectDeleteMixin, RESTObject):
-    @cli.register_custom_action("Todo")
+    @cli.register_custom_action(cls_names="Todo")
     @exc.on_http_error(exc.GitlabTodoError)
     def mark_as_done(self, **kwargs: Any) -> Dict[str, Any]:
         """Mark the todo as done.
@@ -40,7 +40,7 @@ class TodoManager(ListMixin, DeleteMixin, RESTManager):
     _obj_cls = Todo
     _list_filters = ("action", "author_id", "project_id", "state", "type")
 
-    @cli.register_custom_action("TodoManager")
+    @cli.register_custom_action(cls_names="TodoManager")
     @exc.on_http_error(exc.GitlabTodoError)
     def mark_all_as_done(self, **kwargs: Any) -> None:
         """Mark all the todos as done.

@@ -48,8 +48,8 @@ class GenericPackageManager(RESTManager):
     _from_parent_attrs = {"project_id": "id"}
 
     @cli.register_custom_action(
-        "GenericPackageManager",
-        ("package_name", "package_version", "file_name", "path"),
+        cls_names="GenericPackageManager",
+        required=("package_name", "package_version", "file_name", "path"),
     )
     @exc.on_http_error(exc.GitlabUploadError)
     def upload(
@@ -123,8 +123,8 @@ class GenericPackageManager(RESTManager):
         return self._obj_cls(self, attrs=attrs)
 
     @cli.register_custom_action(
-        "GenericPackageManager",
-        ("package_name", "package_version", "file_name"),
+        cls_names="GenericPackageManager",
+        required=("package_name", "package_version", "file_name"),
     )
     @exc.on_http_error(exc.GitlabGetError)
     def download(

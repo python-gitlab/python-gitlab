@@ -105,7 +105,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     saml_group_links: "GroupSAMLGroupLinkManager"
     service_accounts: "GroupServiceAccountManager"
 
-    @cli.register_custom_action("Group", ("project_id",))
+    @cli.register_custom_action(cls_names="Group", required=("project_id",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
     def transfer_project(self, project_id: int, **kwargs: Any) -> None:
         """Transfer a project to this group.
@@ -121,7 +121,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"/groups/{self.encoded_id}/projects/{project_id}"
         self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("Group", (), ("group_id",))
+    @cli.register_custom_action(cls_names="Group", required=(), optional=("group_id",))
     @exc.on_http_error(exc.GitlabGroupTransferError)
     def transfer(self, group_id: Optional[int] = None, **kwargs: Any) -> None:
         """Transfer the group to a new parent group or make it a top-level group.
@@ -143,7 +143,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             post_data["group_id"] = group_id
         self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
-    @cli.register_custom_action("Group", ("scope", "search"))
+    @cli.register_custom_action(cls_names="Group", required=("scope", "search"))
     @exc.on_http_error(exc.GitlabSearchError)
     def search(
         self, scope: str, search: str, **kwargs: Any
@@ -166,7 +166,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"/groups/{self.encoded_id}/search"
         return self.manager.gitlab.http_list(path, query_data=data, **kwargs)
 
-    @cli.register_custom_action("Group")
+    @cli.register_custom_action(cls_names="Group")
     @exc.on_http_error(exc.GitlabCreateError)
     def ldap_sync(self, **kwargs: Any) -> None:
         """Sync LDAP groups.
@@ -181,7 +181,11 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"/groups/{self.encoded_id}/ldap_sync"
         self.manager.gitlab.http_post(path, **kwargs)
 
-    @cli.register_custom_action("Group", ("group_id", "group_access"), ("expires_at",))
+    @cli.register_custom_action(
+        cls_names="Group",
+        required=("group_id", "group_access"),
+        optional=("expires_at",),
+    )
     @exc.on_http_error(exc.GitlabCreateError)
     def share(
         self,
@@ -215,7 +219,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
             assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action("Group", ("group_id",))
+    @cli.register_custom_action(cls_names="Group", required=("group_id",))
     @exc.on_http_error(exc.GitlabDeleteError)
     def unshare(self, group_id: int, **kwargs: Any) -> None:
         """Delete a shared group link within a group.
@@ -231,7 +235,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"/groups/{self.encoded_id}/share/{group_id}"
         self.manager.gitlab.http_delete(path, **kwargs)
 
-    @cli.register_custom_action("Group")
+    @cli.register_custom_action(cls_names="Group")
     @exc.on_http_error(exc.GitlabRestoreError)
     def restore(self, **kwargs: Any) -> None:
         """Restore a  group marked for deletion..

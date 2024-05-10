@@ -28,7 +28,7 @@ class ProjectCommit(RESTObject):
     discussions: ProjectCommitDiscussionManager
     statuses: "ProjectCommitStatusManager"
 
-    @cli.register_custom_action("ProjectCommit")
+    @cli.register_custom_action(cls_names="ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
     def diff(self, **kwargs: Any) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
         """Generate the commit diff.
@@ -46,7 +46,7 @@ class ProjectCommit(RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/diff"
         return self.manager.gitlab.http_list(path, **kwargs)
 
-    @cli.register_custom_action("ProjectCommit", ("branch",))
+    @cli.register_custom_action(cls_names="ProjectCommit", required=("branch",))
     @exc.on_http_error(exc.GitlabCherryPickError)
     def cherry_pick(self, branch: str, **kwargs: Any) -> None:
         """Cherry-pick a commit into a branch.
@@ -63,7 +63,7 @@ class ProjectCommit(RESTObject):
         post_data = {"branch": branch}
         self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
-    @cli.register_custom_action("ProjectCommit", optional=("type",))
+    @cli.register_custom_action(cls_names="ProjectCommit", optional=("type",))
     @exc.on_http_error(exc.GitlabGetError)
     def refs(
         self, type: str = "all", **kwargs: Any
@@ -85,7 +85,7 @@ class ProjectCommit(RESTObject):
         query_data = {"type": type}
         return self.manager.gitlab.http_list(path, query_data=query_data, **kwargs)
 
-    @cli.register_custom_action("ProjectCommit")
+    @cli.register_custom_action(cls_names="ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
     def merge_requests(
         self, **kwargs: Any
@@ -105,7 +105,7 @@ class ProjectCommit(RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/merge_requests"
         return self.manager.gitlab.http_list(path, **kwargs)
 
-    @cli.register_custom_action("ProjectCommit", ("branch",))
+    @cli.register_custom_action(cls_names="ProjectCommit", required=("branch",))
     @exc.on_http_error(exc.GitlabRevertError)
     def revert(
         self, branch: str, **kwargs: Any
@@ -127,7 +127,7 @@ class ProjectCommit(RESTObject):
         post_data = {"branch": branch}
         return self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
-    @cli.register_custom_action("ProjectCommit")
+    @cli.register_custom_action(cls_names="ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
     def signature(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Get the signature of the commit.

@@ -74,7 +74,7 @@ class RunnerManager(CRUDMixin, RESTManager):
     _list_filters = ("scope", "type", "status", "paused", "tag_list")
     _types = {"tag_list": types.CommaSeparatedListAttribute}
 
-    @cli.register_custom_action("RunnerManager", (), ("scope",))
+    @cli.register_custom_action(cls_names="RunnerManager", optional=("scope",))
     @exc.on_http_error(exc.GitlabListError)
     def all(self, scope: Optional[str] = None, **kwargs: Any) -> List[Runner]:
         """List all the runners.
@@ -103,7 +103,7 @@ class RunnerManager(CRUDMixin, RESTManager):
         obj = self.gitlab.http_list(path, query_data, **kwargs)
         return [self._obj_cls(self, item) for item in obj]
 
-    @cli.register_custom_action("RunnerManager", ("token",))
+    @cli.register_custom_action(cls_names="RunnerManager", required=("token",))
     @exc.on_http_error(exc.GitlabVerifyError)
     def verify(self, token: str, **kwargs: Any) -> None:
         """Validates authentication credentials for a registered Runner.

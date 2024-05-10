@@ -18,7 +18,7 @@ class SidekiqManager(RESTManager):
     for the sidekiq metrics API.
     """
 
-    @cli.register_custom_action("SidekiqManager")
+    @cli.register_custom_action(cls_names="SidekiqManager")
     @exc.on_http_error(exc.GitlabGetError)
     def queue_metrics(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Return the registered queues information.
@@ -35,7 +35,7 @@ class SidekiqManager(RESTManager):
         """
         return self.gitlab.http_get("/sidekiq/queue_metrics", **kwargs)
 
-    @cli.register_custom_action("SidekiqManager")
+    @cli.register_custom_action(cls_names="SidekiqManager")
     @exc.on_http_error(exc.GitlabGetError)
     def process_metrics(
         self, **kwargs: Any
@@ -54,7 +54,7 @@ class SidekiqManager(RESTManager):
         """
         return self.gitlab.http_get("/sidekiq/process_metrics", **kwargs)
 
-    @cli.register_custom_action("SidekiqManager")
+    @cli.register_custom_action(cls_names="SidekiqManager")
     @exc.on_http_error(exc.GitlabGetError)
     def job_stats(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Return statistics about the jobs performed.
@@ -71,7 +71,7 @@ class SidekiqManager(RESTManager):
         """
         return self.gitlab.http_get("/sidekiq/job_stats", **kwargs)
 
-    @cli.register_custom_action("SidekiqManager")
+    @cli.register_custom_action(cls_names="SidekiqManager")
     @exc.on_http_error(exc.GitlabGetError)
     def compound_metrics(
         self, **kwargs: Any

@@ -126,7 +126,7 @@ class ProjectIssue(
     resource_iteration_events: ProjectIssueResourceIterationEventManager
     resource_weight_events: ProjectIssueResourceWeightEventManager
 
-    @cli.register_custom_action("ProjectIssue", ("to_project_id",))
+    @cli.register_custom_action(cls_names="ProjectIssue", required=("to_project_id",))
     @exc.on_http_error(exc.GitlabUpdateError)
     def move(self, to_project_id: int, **kwargs: Any) -> None:
         """Move the issue to another project.
@@ -146,7 +146,9 @@ class ProjectIssue(
             assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action("ProjectIssue", ("move_after_id", "move_before_id"))
+    @cli.register_custom_action(
+        cls_names="ProjectIssue", required=("move_after_id", "move_before_id")
+    )
     @exc.on_http_error(exc.GitlabUpdateError)
     def reorder(
         self,
@@ -178,7 +180,7 @@ class ProjectIssue(
             assert isinstance(server_data, dict)
         self._update_attrs(server_data)
 
-    @cli.register_custom_action("ProjectIssue")
+    @cli.register_custom_action(cls_names="ProjectIssue")
     @exc.on_http_error(exc.GitlabGetError)
     def related_merge_requests(self, **kwargs: Any) -> Dict[str, Any]:
         """List merge requests related to the issue.
@@ -199,7 +201,7 @@ class ProjectIssue(
             assert isinstance(result, dict)
         return result
 
-    @cli.register_custom_action("ProjectIssue")
+    @cli.register_custom_action(cls_names="ProjectIssue")
     @exc.on_http_error(exc.GitlabGetError)
     def closed_by(self, **kwargs: Any) -> Dict[str, Any]:
         """List merge requests that will close the issue when merged.

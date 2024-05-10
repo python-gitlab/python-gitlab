@@ -31,7 +31,7 @@ __all__ = [
 class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "title"
 
-    @cli.register_custom_action("GroupMilestone")
+    @cli.register_custom_action(cls_names="GroupMilestone")
     @exc.on_http_error(exc.GitlabListError)
     def issues(self, **kwargs: Any) -> RESTObjectList:
         """List issues related to this milestone.
@@ -58,7 +58,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, GroupIssue, data_list)
 
-    @cli.register_custom_action("GroupMilestone")
+    @cli.register_custom_action(cls_names="GroupMilestone")
     @exc.on_http_error(exc.GitlabListError)
     def merge_requests(self, **kwargs: Any) -> RESTObjectList:
         """List the merge requests related to this milestone.
@@ -108,7 +108,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "title"
     _update_method = UpdateMethod.POST
 
-    @cli.register_custom_action("ProjectMilestone")
+    @cli.register_custom_action(cls_names="ProjectMilestone")
     @exc.on_http_error(exc.GitlabListError)
     def issues(self, **kwargs: Any) -> RESTObjectList:
         """List issues related to this milestone.
@@ -135,7 +135,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, ProjectIssue, data_list)
 
-    @cli.register_custom_action("ProjectMilestone")
+    @cli.register_custom_action(cls_names="ProjectMilestone")
     @exc.on_http_error(exc.GitlabListError)
     def merge_requests(self, **kwargs: Any) -> RESTObjectList:
         """List the merge requests related to this milestone.
