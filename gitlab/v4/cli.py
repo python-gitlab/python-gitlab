@@ -382,8 +382,12 @@ def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
 
     for cls in sorted(classes, key=operator.attrgetter("__name__")):
         arg_name = cli.cls_to_gitlab_resource(cls)
+        mgr_cls_name = f"{cls.__name__}Manager"
+        mgr_cls = getattr(gitlab.v4.objects, mgr_cls_name)
         object_group = subparsers.add_parser(
-            arg_name, formatter_class=cli.VerticalHelpFormatter
+            arg_name,
+            formatter_class=cli.VerticalHelpFormatter,
+            help=f"API endpoint: {mgr_cls._path}",
         )
 
         object_subparsers = object_group.add_subparsers(
