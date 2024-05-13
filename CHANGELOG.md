@@ -2,6 +2,239 @@
 
 
 
+## v4.5.0 (2024-05-13)
+
+### Build
+
+* build: Add &#34;--no-cache-dir&#34; to pip commands in Dockerfile
+
+This would not leave cache files in the built docker image.
+
+Additionally, also only build the wheel in the build phase.
+
+On my machine, before this PR, size is 74845395; after this PR, size is
+72617713. ([`4ef94c8`](https://github.com/python-gitlab/python-gitlab/commit/4ef94c8260e958873bb626e86d3241daa22f7ce6))
+
+### Chore
+
+* chore(deps): update all non-major dependencies ([`4f338ae`](https://github.com/python-gitlab/python-gitlab/commit/4f338aed9c583a20ff5944e6ccbba5737c18b0f4))
+
+* chore(deps): update gitlab/gitlab-ee docker tag to v16.11.2-ee.0 ([`9be48f0`](https://github.com/python-gitlab/python-gitlab/commit/9be48f0bcc2d32b5e8489f62f963389d5d54b2f2))
+
+* chore(deps): update dependency myst-parser to v3 ([`9289189`](https://github.com/python-gitlab/python-gitlab/commit/92891890eb4730bc240213a212d392bcb869b800))
+
+* chore(deps): update all non-major dependencies ([`65d0e65`](https://github.com/python-gitlab/python-gitlab/commit/65d0e6520dcbcf5a708a87960c65fdcaf7e44bf3))
+
+* chore(deps): update dependency jinja2 to v3.1.4 [security] ([`8ea10c3`](https://github.com/python-gitlab/python-gitlab/commit/8ea10c360175453c721ad8e27386e642c2b68d88))
+
+* chore(deps): update all non-major dependencies ([`1f0343c`](https://github.com/python-gitlab/python-gitlab/commit/1f0343c1154ca8ae5b1f61de1db2343a2ad652ec))
+
+* chore(deps): update gitlab/gitlab-ee docker tag to v16.11.1-ee.0 ([`1ed8d6c`](https://github.com/python-gitlab/python-gitlab/commit/1ed8d6c21d3463b2ad09eb553871042e98090ffd))
+
+* chore(deps): update all non-major dependencies ([`0e9f4da`](https://github.com/python-gitlab/python-gitlab/commit/0e9f4da30cea507fcf83746008d9de2ee5a3bb9d))
+
+* chore(deps): update gitlab/gitlab-ee docker tag to v16 ([`ea8c4c2`](https://github.com/python-gitlab/python-gitlab/commit/ea8c4c2bc9f17f510415a697e0fb19cabff4135e))
+
+* chore(deps): update all non-major dependencies ([`d5b5fb0`](https://github.com/python-gitlab/python-gitlab/commit/d5b5fb00d8947ed9733cbb5a273e2866aecf33bf))
+
+* chore(deps): update dependency pytest-cov to v5 ([`db32000`](https://github.com/python-gitlab/python-gitlab/commit/db3200089ea83588ea7ad8bd5a7175d81f580630))
+
+* chore: update `mypy` to 1.9.0 and resolve one issue
+
+mypy 1.9.0 flagged one issue in the code. Resolve the issue. Current
+unit tests already check that a `None` value returns `text/plain`. So
+function is still working as expected. ([`dd00bfc`](https://github.com/python-gitlab/python-gitlab/commit/dd00bfc9c832aba0ed377573fe2e9120b296548d))
+
+* chore(deps): update dependency black to v24.3.0 [security] ([`f6e8692`](https://github.com/python-gitlab/python-gitlab/commit/f6e8692cfc84b5af2eb6deec4ae1c4935b42e91c))
+
+* chore(deps): update all non-major dependencies ([`14a3ffe`](https://github.com/python-gitlab/python-gitlab/commit/14a3ffe4cc161be51a39c204350b5cd45c602335))
+
+* chore(deps): update all non-major dependencies ([`3c4dcca`](https://github.com/python-gitlab/python-gitlab/commit/3c4dccaf51695334a5057b85d5ff4045739d1ad1))
+
+* chore(deps): update all non-major dependencies ([`04c569a`](https://github.com/python-gitlab/python-gitlab/commit/04c569a2130d053e35c1f2520ef8bab09f2f9651))
+
+* chore: add tox `labels` to enable running groups of environments
+
+tox now has a feature of `labels` which allows running groups of
+environments using the command `tox -m LABEL_NAME`. For example
+`tox -m lint` which has been setup to run the linters.
+
+Bumped the minimum required version of tox to be 4.0, which was
+released over a year ago. ([`d7235c7`](https://github.com/python-gitlab/python-gitlab/commit/d7235c74f8605f4abfb11eb257246864c7dcf709))
+
+* chore: add py312 &amp; py313 to tox environment list
+
+Even though there isn&#39;t a Python 3.13 at this time, this is done for
+the future.  tox is already configured to just warn about missing
+Python versions, but not fail if they don&#39;t exist. ([`679ddc7`](https://github.com/python-gitlab/python-gitlab/commit/679ddc7587d2add676fd2398cb9673bd1ca272e3))
+
+* chore(deps): update python-semantic-release/python-semantic-release action to v9 ([`e11d889`](https://github.com/python-gitlab/python-gitlab/commit/e11d889cd19ec1555b2bbee15355a8cdfad61d5f))
+
+* chore(deps): update all non-major dependencies ([`3c4b27e`](https://github.com/python-gitlab/python-gitlab/commit/3c4b27e64f4b51746b866f240a1291c2637355cc))
+
+* chore(deps): update dependency furo to v2024 ([`f6fd02d`](https://github.com/python-gitlab/python-gitlab/commit/f6fd02d956529e2c4bce261fe7b3da1442aaea12))
+
+* chore(deps): update dependency pytest to v8 ([`253babb`](https://github.com/python-gitlab/python-gitlab/commit/253babb9a7f8a7d469440fcfe1b2741ddcd8475e))
+
+* chore(deps): update dependency pytest-docker to v3 ([`35d2aec`](https://github.com/python-gitlab/python-gitlab/commit/35d2aec04532919d6dd7b7090bc4d5209eddd10d))
+
+* chore: update version of `black` for `pre-commit`
+
+The version of `black` needs to be updated to be in sync with what is
+in `requirements-lint.txt` ([`3501716`](https://github.com/python-gitlab/python-gitlab/commit/35017167a80809a49351f9e95916fafe61c7bfd5))
+
+* chore(deps): update all non-major dependencies ([`7dc2fa6`](https://github.com/python-gitlab/python-gitlab/commit/7dc2fa6e632ed2c9adeb6ed32c4899ec155f6622))
+
+* chore(deps): update codecov/codecov-action action to v4 ([`d2be1f7`](https://github.com/python-gitlab/python-gitlab/commit/d2be1f7608acadcc2682afd82d16d3706b7f7461))
+
+* chore: adapt style for black v24 ([`4e68d32`](https://github.com/python-gitlab/python-gitlab/commit/4e68d32c77ed587ab42d229d9f44c3bc40d1d0e5))
+
+* chore(deps): update dependency black to v24 ([`f59aee3`](https://github.com/python-gitlab/python-gitlab/commit/f59aee3ddcfaeeb29fcfab4cc6768dff6b5558cb))
+
+* chore(deps): update all non-major dependencies ([`48726fd`](https://github.com/python-gitlab/python-gitlab/commit/48726fde9b3c2424310ff590b366b9fdefa4a146))
+
+### Documentation
+
+* docs: add FAQ about conflicting parameters
+
+We have received multiple issues lately about this. Add it to the FAQ. ([`683ce72`](https://github.com/python-gitlab/python-gitlab/commit/683ce723352cc09e1a4b65db28be981ae6bb9f71))
+
+* docs(README): tweak GitLab CI usage docs ([`d9aaa99`](https://github.com/python-gitlab/python-gitlab/commit/d9aaa994568ad4896a1e8a0533ef0d1d2ba06bfa))
+
+* docs: how to run smoke tests
+
+Signed-off-by: Tim Knight &lt;tim.knight1@engineering.digital.dwp.gov.uk&gt; ([`2d1f487`](https://github.com/python-gitlab/python-gitlab/commit/2d1f4872390df10174f865f7a935bc73f7865fec))
+
+* docs(objects): minor rst formatting typo
+
+To correctly format a code block have to use `::` ([`57dfd17`](https://github.com/python-gitlab/python-gitlab/commit/57dfd1769b4e22b43dc0936aa3600cd7e78ba289))
+
+* docs: correct rotate token example
+
+Rotate token returns a dict. Change example to print the entire dict.
+
+Closes: #2836 ([`c53e695`](https://github.com/python-gitlab/python-gitlab/commit/c53e6954f097ed10d52b40660d2fba73c2e0e300))
+
+* docs: Note how to use the Docker image from within GitLab CI
+
+Ref: #2823 ([`6d4bffb`](https://github.com/python-gitlab/python-gitlab/commit/6d4bffb5aaa676d32fc892ef1ac002973bc040cb))
+
+* docs(artifacts): Fix argument indentation ([`c631eeb`](https://github.com/python-gitlab/python-gitlab/commit/c631eeb55556920f5975b1fa2b1a0354478ce3c0))
+
+### Feature
+
+* feat(job_token_scope): support Groups in job token allowlist API  (#2816)
+
+* feat(job_token_scope): support job token access allowlist API
+
+Signed-off-by: Tim Knight &lt;tim.knight1@engineering.digital.dwp.gov.uk&gt;
+l.dwp.gov.uk&gt;
+Co-authored-by: Nejc Habjan &lt;nejc.habjan@siemens.com&gt; ([`2d1b749`](https://github.com/python-gitlab/python-gitlab/commit/2d1b7499a93db2c9600b383e166f7463a5f22085))
+
+* feat(cli): allow skipping initial auth calls ([`001e596`](https://github.com/python-gitlab/python-gitlab/commit/001e59675f4a417a869f813d79c298a14268b87d))
+
+* feat(api): allow updating protected branches (#2771)
+
+* feat(api): allow updating protected branches
+
+Closes #2390 ([`a867c48`](https://github.com/python-gitlab/python-gitlab/commit/a867c48baa6f10ffbfb785e624a6e3888a859571))
+
+### Fix
+
+* fix: Consider `scope` an ArrayAttribute in PipelineJobManager
+
+List query params like &#39;scope&#39; were not being handled correctly for
+pipeline/jobs endpoint.
+This change ensures multiple values are appended with &#39;[]&#39;, resulting in
+the correct URL structure.
+
+Signed-off-by: Guilherme Gallo &lt;guilherme.gallo@collabora.com&gt;
+
+---
+
+Background:
+If one queries for pipeline jobs with `scope=[&#34;failed&#34;, &#34;success&#34;]`
+
+One gets:
+GET /api/v4/projects/176/pipelines/1113028/jobs?scope=success&amp;scope=failed
+
+But it is supposed to get:
+GET /api/v4/projects/176/pipelines/1113028/jobs?scope[]=success&amp;scope[]=failed
+
+The current version only considers the last element of the list argument.
+
+Signed-off-by: Guilherme Gallo &lt;guilherme.gallo@collabora.com&gt; ([`c5d0404`](https://github.com/python-gitlab/python-gitlab/commit/c5d0404ac9edfbfd328e7b4f07f554366377df3f))
+
+* fix(test): use different ids for merge request, approval rule, project
+
+The original bug was that the merge request identifier was used instead of the
+approval rule identifier. The test didn&#39;t notice that because it used `1` for
+all identifiers. Make these identifiers different so that a mixup will become
+apparent. ([`c23e6bd`](https://github.com/python-gitlab/python-gitlab/commit/c23e6bd5785205f0f4b4c80321153658fc23fb98))
+
+* fix(api): fix saving merge request approval rules
+
+Closes #2548 ([`b8b3849`](https://github.com/python-gitlab/python-gitlab/commit/b8b3849b2d4d3f2d9e81e5cf4f6b53368f7f0127))
+
+* fix: user.warn() to show correct filename of issue
+
+Previously would only go to the 2nd level of the stack for determining
+the offending filename and line number. When it should be showing the
+first filename outside of the python-gitlab source code. As we want it
+to show the warning for the user of the libraries code.
+
+Update test to show it works as expected. ([`529f1fa`](https://github.com/python-gitlab/python-gitlab/commit/529f1faacee46a88cb0a542306309eb835516796))
+
+* fix(api): update manual job status when playing it ([`9440a32`](https://github.com/python-gitlab/python-gitlab/commit/9440a3255018d6a6e49269caf4c878d80db508a8))
+
+* fix(cli): allow exclusive arguments as optional (#2770)
+
+* fix(cli): allow exclusive arguments as optional
+
+The CLI takes its arguments from the RequiredOptional, which has three fields: required, optional, and exclusive. In practice, the exclusive options are not defined as either required or optional, and would not be allowed in the CLI. This changes that, so that exclusive options are also added to the argument parser.
+
+  * fix(cli): inform argument parser that options are mutually exclusive
+
+  * fix(cli): use correct exclusive options, add unit test
+
+Closes #2769 ([`7ec3189`](https://github.com/python-gitlab/python-gitlab/commit/7ec3189d6eacdb55925e8be886a44d7ee09eb9ca))
+
+### Test
+
+* test: remove approve step
+
+Signed-off-by: Tim Knight &lt;tim.knight1@engineering.digital.dwp.gov.uk&gt; ([`48a6705`](https://github.com/python-gitlab/python-gitlab/commit/48a6705558c5ab6fb08c62a18de350a5985099f8))
+
+* test: tidy up functional tests
+
+Signed-off-by: Tim Knight &lt;tim.knight1@engineering.digital.dwp.gov.uk&gt; ([`06266ea`](https://github.com/python-gitlab/python-gitlab/commit/06266ea5966c601c035ad8ce5840729e5f9baa57))
+
+* test: update api tests for GL 16.10
+
+- Make sure we&#39;re testing python-gitlab functionality,
+make sure we&#39;re not awaiting on Gitlab Async functions
+- Decouple and improve test stability
+
+Signed-off-by: Tim Knight &lt;tim.knight1@engineering.digital.dwp.gov.uk&gt; ([`4bef473`](https://github.com/python-gitlab/python-gitlab/commit/4bef47301342703f87c1ce1d2920d54f9927a66a))
+
+* test(functional): enable bulk import feature flag before test ([`b81da2e`](https://github.com/python-gitlab/python-gitlab/commit/b81da2e66ce385525730c089dbc2a5a85ba23287))
+
+* test: don&#39;t use weak passwords
+
+Newer versions of GitLab will refuse to create a user with a weak
+password. In order for us to move to a newer GitLab version in testing
+use a stronger password for the tests that create a user. ([`c64d126`](https://github.com/python-gitlab/python-gitlab/commit/c64d126142cc77eae4297b8deec27bb1d68b7a13))
+
+* test: update tests for gitlab 16.8 functionality
+
+- use programmatic dates for expires_at in tokens tests
+- set PAT for 16.8 into tests
+
+Signed-off-by: Tim Knight &lt;tim.knight1@engineering.digital.dwp.gov.uk&gt; ([`f8283ae`](https://github.com/python-gitlab/python-gitlab/commit/f8283ae69efd86448ae60d79dd8321af3f19ba1b))
+
+* test(smoke): normalize all dist titles for smoke tests ([`ee013fe`](https://github.com/python-gitlab/python-gitlab/commit/ee013fe1579b001b4b30bae33404e827c7bdf8c1))
+
+
 ## v4.4.0 (2024-01-15)
 
 ### Chore
