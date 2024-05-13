@@ -49,3 +49,53 @@ Refresh the current state of job token scope::
     scope.refresh()
     print(scope.inbound_enabled)
     # False
+
+Get a project's CI/CD job token inbound allowlist::
+
+    allowlist = scope.allowlist.list()
+
+Add a project to the project's inbound allowlist::
+
+    allowed_project = scope.allowlist.create({"target_project_id": 42})
+
+Remove a project from the project's inbound allowlist::
+
+    allowed_project.delete()
+    # or directly using a project ID
+    scope.allowlist.delete(42)
+
+.. warning::
+
+   Similar to above, the ID attributes you receive from the create and list
+   APIs are not consistent (in create() the id is returned as ``source_project_id`` whereas list() returns as ``id``). To safely retrieve the ID of the allowlisted project
+   regardless of how the object was created, always use its ``.get_id()`` method.
+
+Using ``.get_id()``::
+
+    resp = allowlist.create({"target_project_id": 2})
+    allowlist_id = resp.get_id()
+
+    allowlists = project.allowlist.list()
+    for allowlist in allowlists:
+      allowlist_id == allowlist.get_id()
+
+Get a project's CI/CD job token inbound groups allowlist::
+
+    allowlist = scope.groups_allowlist.list()
+
+Add a project to the project's inbound groups allowlist::
+
+    allowed_project = scope.groups_allowlist.create({"target_project_id": 42})
+
+Remove a project from the project's inbound agroups llowlist::
+
+    allowed_project.delete()
+    # or directly using a Group ID
+    scope.groups_allowlist.delete(42)
+
+.. warning::
+
+   Similar to above, the ID attributes you receive from the create and list
+   APIs are not consistent. To safely retrieve the ID of the allowlisted group
+   regardless of how the object was created, always use its ``.get_id()`` method.
+
