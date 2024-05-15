@@ -122,7 +122,7 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
             self._parent.approval_rules
         )
         # update any existing approval rule matching the name
-        existing_approval_rules = approval_rules.list()
+        existing_approval_rules = approval_rules.list(iterator=True)
         for ar in existing_approval_rules:
             if ar.name == approval_rule_name:
                 ar.user_ids = data["user_ids"]
