@@ -40,6 +40,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
     commit_message: str
     file_path: str
     manager: "ProjectFileManager"
+    content: str  # since the `decode()` method uses `self.content`
 
     def decode(self) -> bytes:
         """Returns the decoded content of the file.
