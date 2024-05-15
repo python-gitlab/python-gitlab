@@ -209,7 +209,7 @@ class ProjectJob(RefreshMixin, RESTObject):
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Dict[str, Any]:
+    ) -> Optional[Union[bytes, Iterator[Any]]]:
         """Get the job trace.
 
         Args:
@@ -236,12 +236,9 @@ class ProjectJob(RefreshMixin, RESTObject):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return_value = utils.response_content(
+        return utils.response_content(
             result, streamed, action, chunk_size, iterator=iterator
         )
-        if TYPE_CHECKING:
-            assert isinstance(return_value, dict)
-        return return_value
 
 
 class ProjectJobManager(RetrieveMixin, RESTManager):
