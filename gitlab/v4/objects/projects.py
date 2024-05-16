@@ -3,6 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ee/api/projects.html
 """
 
+import io
 from typing import (
     Any,
     Callable,
@@ -786,7 +787,7 @@ class ProjectManager(CRUDMixin, RESTManager):
     @exc.on_http_error(exc.GitlabImportError)
     def import_project(
         self,
-        file: str,
+        file: io.BufferedReader,
         path: str,
         name: Optional[str] = None,
         namespace: Optional[str] = None,
