@@ -14,8 +14,5 @@ class GroupServiceAccountManager(CreateMixin, RESTManager):
     _obj_cls = GroupServiceAccount
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(
-        optional=(
-            "name",
-            "username",
-        ),
+        optional=("name", "username"),
     )
