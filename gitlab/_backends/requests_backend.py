@@ -4,9 +4,6 @@ import dataclasses
 from typing import Any, BinaryIO, Dict, Optional, TYPE_CHECKING, Union
 
 import requests
-from requests import PreparedRequest
-from requests.auth import AuthBase
-from requests.structures import CaseInsensitiveDict
 from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
 
 from . import protocol
@@ -17,24 +14,24 @@ class TokenAuth:
         self.token = token
 
 
-class OAuthTokenAuth(TokenAuth, AuthBase):
-    def __call__(self, r: PreparedRequest) -> PreparedRequest:
+class OAuthTokenAuth(TokenAuth, requests.auth.AuthBase):
+    def __call__(self, r: requests.PreparedRequest) -> requests.PreparedRequest:
         r.headers["Authorization"] = f"Bearer {self.token}"
         r.headers.pop("PRIVATE-TOKEN", None)
         r.headers.pop("JOB-TOKEN", None)
         return r
 
 
-class PrivateTokenAuth(TokenAuth, AuthBase):
-    def __call__(self, r: PreparedRequest) -> PreparedRequest:
+class PrivateTokenAuth(TokenAuth, requests.auth.AuthBase):
+    def __call__(self, r: requests.PreparedRequest) -> requests.PreparedRequest:
         r.headers["PRIVATE-TOKEN"] = self.token
         r.headers.pop("JOB-TOKEN", None)
         r.headers.pop("Authorization", None)
         return r
 
 
-class JobTokenAuth(TokenAuth, AuthBase):
-    def __call__(self, r: PreparedRequest) -> PreparedRequest:
+class JobTokenAuth(TokenAuth, requests.auth.AuthBase):
+    def __call__(self, r: requests.PreparedRequest) -> requests.PreparedRequest:
         r.headers["JOB-TOKEN"] = self.token
         r.headers.pop("PRIVATE-TOKEN", None)
         r.headers.pop("Authorization", None)
@@ -68,7 +65,7 @@ class RequestsResponse(protocol.BackendResponse):
         return self._response.status_code
 
     @property
-    def headers(self) -> CaseInsensitiveDict[str]:
+    def headers(self) -> requests.structures.CaseInsensitiveDict[str]:
         return self._response.headers
 
     @property
