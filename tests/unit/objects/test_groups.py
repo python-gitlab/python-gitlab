@@ -83,6 +83,11 @@ push_rules_content = {
     "max_file_size": 100,
 }
 
+service_account_content = {
+    "name": "gitlab-service-account",
+    "username": "gitlab-service-account",
+}
+
 
 @pytest.fixture
 def resp_groups():
@@ -325,6 +330,19 @@ def resp_restore_group(created_content):
         yield rsps
 
 
+@pytest.fixture
+def resp_create_group_service_account():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/groups/1/service_accounts",
+            json=service_account_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
 def test_get_group(gl, resp_groups):
     data = gl.groups.get(1)
     assert isinstance(data, gitlab.v4.objects.Group)
@@ -466,3 +484,11 @@ def test_delete_saml_group_link(group, resp_delete_saml_group_link):
 
 def test_group_restore(group, resp_restore_group):
     group.restore()
+
+
+def test_create_group_service_account(group, resp_create_group_service_account):
+    service_account = group.service_accounts.create(
+        {"name": "gitlab-service-account", "username": "gitlab-service-account"}
+    )
+    assert service_account.name == "gitlab-service-account"
+    assert service_account.username == "gitlab-service-account"

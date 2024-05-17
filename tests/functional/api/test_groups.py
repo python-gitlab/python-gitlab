@@ -308,3 +308,12 @@ def test_group_saml_group_links(group):
     group.saml_group_links.create(
         {"saml_group_name": "saml-group-1", "access_level": 10}
     )
+
+
+@pytest.mark.gitlab_premium
+def test_group_service_account(group):
+    service_account = group.service_accounts.create(
+        {"name": "gitlab-service-account", "username": "gitlab-service-account"}
+    )
+    assert service_account.name == "gitlab-service-account"
+    assert service_account.username == "gitlab-service-account"
