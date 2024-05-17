@@ -6,7 +6,7 @@ __all__ = ["GroupServiceAccount", "GroupServiceAccountManager"]
 
 
 class GroupServiceAccount(RESTObject):
-    _id_attr = "id"
+    pass
 
 
 class GroupServiceAccountManager(CreateMixin, RESTManager):
