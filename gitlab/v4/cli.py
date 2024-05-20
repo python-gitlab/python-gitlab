@@ -315,13 +315,13 @@ def _populate_sub_parser_by_class(
                     )
                 sub_parser_action.add_argument("--sudo", required=False)
 
+            custom_action = cli.custom_actions[name][action_name]
             # We need to get the object somehow
             if not issubclass(cls, gitlab.mixins.GetWithoutIdMixin):
-                if cls._id_attr is not None:
+                if cls._id_attr is not None and custom_action.requires_id:
                     id_attr = cls._id_attr.replace("_", "-")
                     sub_parser_action.add_argument(f"--{id_attr}", required=True)
 
-            custom_action = cli.custom_actions[name][action_name]
             for x in custom_action.required:
                 if x != cls._id_attr:
                     sub_parser_action.add_argument(
