@@ -36,6 +36,7 @@ class CustomAction:
     required: Tuple[str, ...]
     optional: Tuple[str, ...]
     in_object: bool
+    requires_id: bool  # if the `_id_attr` value should be a required argument
 
 
 # custom_actions = {
@@ -86,6 +87,7 @@ def register_custom_action(
     required: Tuple[str, ...] = (),
     optional: Tuple[str, ...] = (),
     custom_action: Optional[str] = None,
+    requires_id: bool = True,  # if the `_id_attr` value should be a required argument
 ) -> Callable[[__F], __F]:
     def wrap(f: __F) -> __F:
         @functools.wraps(f)
@@ -109,7 +111,10 @@ def register_custom_action(
 
             action = custom_action or f.__name__.replace("_", "-")
             custom_actions[final_name][action] = CustomAction(
-                required=required, optional=optional, in_object=in_obj
+                required=required,
+                optional=optional,
+                in_object=in_obj,
+                requires_id=requires_id,
             )
 
         return cast(__F, wrapped_f)
