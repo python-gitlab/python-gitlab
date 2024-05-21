@@ -625,8 +625,8 @@ class Gitlab:
         for item in result.history:
             if item.status_code not in (301, 302):
                 continue
-            # GET methods can be redirected without issue
-            if item.request.method == "GET":
+            # GET and HEAD methods can be redirected without issue
+            if item.request.method in ("GET", "HEAD"):
                 continue
             target = item.headers.get("location")
             raise gitlab.exceptions.RedirectError(
