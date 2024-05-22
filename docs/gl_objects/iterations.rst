@@ -31,3 +31,13 @@ List iterations for a project's ancestor groups::
 List iterations for a group::
 
     iterations = group.iterations.list()
+
+Unavailable filters or keyword conflicts::
+    
+    In case you are trying to pass a parameter that collides with a python
+    keyword (i.e. `in`) or with python-gitlab's internal arguments, you'll have
+    to use the `query_parameters` argument:
+
+    ```
+    group.iterations.list(query_parameters={"in": "title"}) 
+    ```
