@@ -30,7 +30,7 @@ class GroupIterationManager(ListMixin, RESTManager):
         "updated_after",
         "updated_before",
     )
-    _types = {"scopes": types.ArrayAttribute}
+    _types = {"in": types.ArrayAttribute}
 
 
 class ProjectIterationManager(ListMixin, RESTManager):
