@@ -17,8 +17,8 @@ maintainers = [
 ]
 requires-python = ">=3.8.0"
 dependencies = [
-    "requests>=2.25.0",
-    "requests-toolbelt>=0.10.1",
+    "requests>=2.32.0",
+    "requests-toolbelt>=1.0.0",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
