@@ -37,7 +37,10 @@ class ProjectKeyManager(CRUDMixin, RESTManager):
     _update_attrs = RequiredOptional(optional=("title", "can_push"))
 
     @cli.register_custom_action(
-        cls_names="ProjectKeyManager", required=("key_id",), requires_id=False
+        cls_names="ProjectKeyManager",
+        required=("key_id",),
+        requires_id=False,
+        help="Enable a deploy key for the project",
     )
     @exc.on_http_error(exc.GitlabProjectDeployKeyError)
     def enable(
