@@ -2,6 +2,161 @@
 
 
 
+## v4.6.0 (2024-05-28)
+
+### Chore
+
+* chore(deps): update python-semantic-release/upload-to-gh-release digest to 673709c ([`1b550ac`](https://github.com/python-gitlab/python-gitlab/commit/1b550ac706c8c31331a7a9dac607aed49f5e1fcf))
+
+* chore(deps): update all non-major dependencies ([`4c7014c`](https://github.com/python-gitlab/python-gitlab/commit/4c7014c13ed63f994e05b498d63b93dc8ab90c2e))
+
+* chore: update commit reference in git-blame-ignore-revs ([`d0fd5ad`](https://github.com/python-gitlab/python-gitlab/commit/d0fd5ad5a70e7eb70aedba5a0d3082418c5ffa34))
+
+* chore(cli): add ability to not add `_id_attr` as an argument
+
+In some cases we don&#39;t want to have `_id_attr` as an argument.
+
+Add ability to have it not be added as an argument. ([`2037352`](https://github.com/python-gitlab/python-gitlab/commit/20373525c1a1f98c18b953dbef896b2570d3d191))
+
+* chore: create a CustomAction dataclass ([`61d8679`](https://github.com/python-gitlab/python-gitlab/commit/61d867925772cf38f20360c9b40140ac3203efb9))
+
+* chore: add an initial .git-blame-ignore-revs
+
+This adds the `.git-blame-ignore-revs` file which allows ignoring
+certain commits when doing a `git blame --ignore-revs`
+
+Ignore the commit that requires keyword arguments for
+`register_custom_action()`
+
+https://docs.github.com/en/repositories/working-with-files/using-files/viewing-a-file#ignore-commits-in-the-blame-view ([`74db84c`](https://github.com/python-gitlab/python-gitlab/commit/74db84ca878ec7029643ff7b00db55f9ea085e9b))
+
+* chore: require keyword arguments for register_custom_action
+
+This makes it more obvious when reading the code what each argument is
+for. ([`7270523`](https://github.com/python-gitlab/python-gitlab/commit/7270523ad89a463c3542e072df73ba2255a49406))
+
+* chore: remove typing-extensions from requirements.txt
+
+We no longer support Python versions before 3.8. So it isn&#39;t needed
+anymore. ([`d569128`](https://github.com/python-gitlab/python-gitlab/commit/d56912835360a1b5a03a20390fb45cb5e8b49ce4))
+
+* chore(deps): update dependency requests to v2.32.0 [security] ([`1bc788c`](https://github.com/python-gitlab/python-gitlab/commit/1bc788ca979a36eeff2e35241bdefc764cf335ce))
+
+* chore(deps): update all non-major dependencies ([`ba1eec4`](https://github.com/python-gitlab/python-gitlab/commit/ba1eec49556ee022de471aae8d15060189f816e3))
+
+* chore(deps): update gitlab/gitlab-ee docker tag to v17 ([`5070d07`](https://github.com/python-gitlab/python-gitlab/commit/5070d07d13b9c87588dbfde3750340e322118779))
+
+* chore(cli): on the CLI help show the API endpoint of resources
+
+This makes it easier for people to map CLI command names to the API.
+
+Looks like this:
+    $ gitlab --help
+    &lt;snip&gt;
+                            The GitLab resource to manipulate.
+        application         API endpoint: /applications
+        application-appearance
+                            API endpoint: /application/appearance
+        application-settings
+                            API endpoint: /application/settings
+        application-statistics
+                            API endpoint: /application/statistics
+    &lt;snip&gt; ([`f1ef565`](https://github.com/python-gitlab/python-gitlab/commit/f1ef5650c3201f3883eb04ad90a874e8adcbcde2))
+
+* chore(cli): add some simple help for the standard operations
+
+Add help for the following standard operations:
+  * list: List the GitLab resources
+  * get: Get a GitLab resource
+  * create: Create a GitLab resource
+  * update: Update a GitLab resource
+  * delete: Delete a GitLab resource
+
+For example:
+  $ gitlab project-key --help
+  usage: gitlab project-key [-h] {list,get,create,update,delete,enable} ...
+
+  options:
+    -h, --help            show this help message and exit
+
+  action:
+    list
+    get
+    create
+    update
+    delete
+    enable
+                          Action to execute on the GitLab resource.
+      list                List the GitLab resources
+      get                 Get a GitLab resource
+      create              Create a GitLab resource
+      update              Update a GitLab resource
+      delete              Delete a GitLab resource ([`5a4a940`](https://github.com/python-gitlab/python-gitlab/commit/5a4a940f42e43ed066838503638fe612813e504f))
+
+* chore: correct type-hint for `job.trace()`
+
+Closes: #2808 ([`840572e`](https://github.com/python-gitlab/python-gitlab/commit/840572e4fa36581405b604a985d0e130fe43f4ce))
+
+* chore: add type info for ProjectFile.content
+
+Closes: #2821 ([`62fa271`](https://github.com/python-gitlab/python-gitlab/commit/62fa2719ea129b3428e5e67d3d3a493f9aead863))
+
+### Feature
+
+* feat(api):  add additional parameter to project/group iteration search (#2796)
+
+Co-authored-by: Cristiano Casella &lt;cristiano.casella@seacom.it&gt;
+Co-authored-by: Nejc Habjan &lt;hab.nejc@gmail.com&gt; ([`623dac9`](https://github.com/python-gitlab/python-gitlab/commit/623dac9c8363c61dbf53f72af58835743e96656b))
+
+* feat(api): add support for gitlab service account (#2851)
+
+
+Co-authored-by: Nejc Habjan &lt;hab.nejc@siemens.com&gt; ([`b187dea`](https://github.com/python-gitlab/python-gitlab/commit/b187deadabbfdf0326ecd79a3ee64c9de10c53e0))
+
+* feat: more usernames support for MR approvals
+
+I don&#39;t think commit a2b8c8ccfb5d went far enough to enable usernames
+support. We create and edit a lot of approval rules based on an external
+service (similar to CODE_OWNERS), but only have the usernames available,
+and currently, have to look up each user to get their user ID to populate
+user_ids for .set_approvers() calls. Would very much like to skip the
+lookup and just send the usernames, which this change should allow.
+
+See: https://docs.gitlab.com/ee/api/merge_request_approvals.html#create-project-level-rule
+
+Signed-off-by: Jarod Wilson &lt;jarod@redhat.com&gt; ([`12d195a`](https://github.com/python-gitlab/python-gitlab/commit/12d195a35a1bd14947fbd6688a8ad1bd3fc21617))
+
+### Fix
+
+* fix(deps): update minimum dependency versions in pyproject.toml
+
+Update the minimum versions of the dependencies in the pyproject.toml
+file.
+
+This is related to PR #2878 ([`37b5a70`](https://github.com/python-gitlab/python-gitlab/commit/37b5a704ef6b94774e54110ba3746a950e733986))
+
+* fix(cli): don&#39;t require `--id` when enabling a deploy key
+
+No longer require `--id` when doing:
+  gitlab project-key enable
+
+Now only the --project-id and --key-id are required. ([`98fc578`](https://github.com/python-gitlab/python-gitlab/commit/98fc5789d39b81197351660b7a3f18903c2b91ba))
+
+* fix: don&#39;t raise `RedirectError` for redirected `HEAD` requests ([`8fc13b9`](https://github.com/python-gitlab/python-gitlab/commit/8fc13b91d63d57c704d03b98920522a6469c96d7))
+
+* fix: handle large number of approval rules
+
+Use `iterator=True` when going through the list of current approval
+rules. This allows it to handle more than the default of 20 approval
+rules.
+
+Closes: #2825 ([`ef8f0e1`](https://github.com/python-gitlab/python-gitlab/commit/ef8f0e190b1add3bbba9a7b194aba2f3c1a83b2e))
+
+* fix(projects): fix &#39;import_project&#39; file argument type for typings
+
+Signed-off-by: Adrian DC &lt;radian.dc@gmail.com&gt; ([`33fbc14`](https://github.com/python-gitlab/python-gitlab/commit/33fbc14ea8432df7e637462379e567f4d0ad6c18))
+
+
 ## v4.5.0 (2024-05-13)
 
 ### Build
