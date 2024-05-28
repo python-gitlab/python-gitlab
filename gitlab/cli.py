@@ -399,25 +399,25 @@ def main() -> None:
     args_dict = vars(args)
     # Remove CLI behavior-related args
     for item in (
-        "gitlab",
+        "api_version",
         "config_file",
-        "verbose",
         "debug",
-        "gitlab_resource",
-        "resource_action",
-        "version",
-        "output",
         "fields",
+        "gitlab",
+        "gitlab_resource",
+        "job_token",
+        "oauth_token",
+        "output",
+        "pagination",
+        "private_token",
+        "resource_action",
         "server_url",
+        "skip_login",
         "ssl_verify",
         "timeout",
-        "api_version",
-        "pagination",
         "user_agent",
-        "private_token",
-        "oauth_token",
-        "job_token",
-        "skip_login",
+        "verbose",
+        "version",
     ):
         args_dict.pop(item)
     args_dict = {k: _parse_value(v) for k, v in args_dict.items() if v is not None}
