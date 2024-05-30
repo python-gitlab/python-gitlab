@@ -308,6 +308,12 @@ def _get_base_parser(add_help: bool = True) -> argparse.ArgumentParser:
         action="store_true",
         default=os.getenv("GITLAB_SKIP_LOGIN"),
     )
+    parser.add_argument(
+        "--no-mask-credentials",
+        help="Don't mask credentials in debug mode",
+        dest="mask_credentials",
+        action="store_false",
+    )
     return parser
 
 
@@ -395,6 +401,7 @@ def main() -> None:
     gitlab_resource = args.gitlab_resource
     resource_action = args.resource_action
     skip_login = args.skip_login
+    mask_credentials = args.mask_credentials
 
     args_dict = vars(args)
     # Remove CLI behavior-related args
@@ -406,6 +413,7 @@ def main() -> None:
         "gitlab",
         "gitlab_resource",
         "job_token",
+        "mask_credentials",
         "oauth_token",
         "output",
         "pagination",
@@ -425,7 +433,7 @@ def main() -> None:
     try:
         gl = gitlab.Gitlab.merge_config(vars(options), gitlab_id, config_files)
         if debug:
-            gl.enable_debug()
+            gl.enable_debug(mask_credentials=mask_credentials)
         if not skip_login and (gl.private_token or gl.oauth_token):
             gl.auth()
     except Exception as e:
