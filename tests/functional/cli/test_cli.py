@@ -36,13 +36,15 @@ def test_config_error_with_help_prints_help(script_runner):
 
 def test_resource_help_prints_actions_vertically(script_runner):
     ret = script_runner.run(["gitlab", "project", "--help"])
-    assert """action:\n  list\n  get""" in ret.stdout
+    assert "    list                List the GitLab resources\n" in ret.stdout
+    assert "    get                 Get a GitLab resource\n" in ret.stdout
     assert ret.returncode == 0
 
 
 def test_resource_help_prints_actions_vertically_only_one_action(script_runner):
     ret = script_runner.run(["gitlab", "event", "--help"])
-    assert """action:\n  list\n""" in ret.stdout
+    assert "  {list}      Action to execute on the GitLab resource.\n"
+    assert "    list      List the GitLab resources\n" in ret.stdout
     assert ret.returncode == 0
 
 
