@@ -300,11 +300,14 @@ def _populate_sub_parser_by_class(
     if cls.__name__ in cli.custom_actions:
         name = cls.__name__
         for action_name in cli.custom_actions[name]:
+            custom_action = cli.custom_actions[name][action_name]
             # NOTE(jlvillal): If we put a function for the `default` value of
             # the `get` it will always get called, which will break things.
             action_parser = action_parsers.get(action_name)
             if action_parser is None:
-                sub_parser_action = sub_parser.add_parser(action_name)
+                sub_parser_action = sub_parser.add_parser(
+                    action_name, help=custom_action.help
+                )
             else:
                 sub_parser_action = action_parser
             # Get the attributes for URL/path construction
@@ -315,7 +318,6 @@ def _populate_sub_parser_by_class(
                     )
                 sub_parser_action.add_argument("--sudo", required=False)
 
-            custom_action = cli.custom_actions[name][action_name]
             # We need to get the object somehow
             if not issubclass(cls, gitlab.mixins.GetWithoutIdMixin):
                 if cls._id_attr is not None and custom_action.requires_id:
@@ -386,7 +388,6 @@ def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
         mgr_cls = getattr(gitlab.v4.objects, mgr_cls_name)
         object_group = subparsers.add_parser(
             arg_name,
-            formatter_class=cli.VerticalHelpFormatter,
             help=f"API endpoint: {mgr_cls._path}",
         )
 

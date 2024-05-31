@@ -5,7 +5,6 @@ import os
 import pathlib
 import re
 import sys
-import textwrap
 from types import ModuleType
 from typing import (
     Any,
@@ -37,11 +36,12 @@ class CustomAction:
     optional: Tuple[str, ...]
     in_object: bool
     requires_id: bool  # if the `_id_attr` value should be a required argument
+    help: Optional[str]  # help text for the custom action
 
 
 # custom_actions = {
 #    cls: {
-#        action: (mandatory_args, optional_args, in_obj),
+#        action: CustomAction,
 #    },
 # }
 custom_actions: Dict[str, Dict[str, CustomAction]] = {}
@@ -54,33 +54,6 @@ custom_actions: Dict[str, Dict[str, CustomAction]] = {}
 __F = TypeVar("__F", bound=Callable[..., Any])
 
 
-class VerticalHelpFormatter(argparse.HelpFormatter):
-    def format_help(self) -> str:
-        result = super().format_help()
-        output = ""
-        indent = self._indent_increment * " "
-        for line in result.splitlines(keepends=True):
-            # All of our resources are on one line and wrapped inside braces.
-            # For example: {application,resource1,resource2}
-            # except if there are fewer resources - then the line and help text
-            # are collapsed on the same line.
-            # For example:  {list}      Action to execute on the GitLab resource.
-            # We then put each resource on its own line to make it easier to read.
-            if line.strip().startswith("{"):
-                choice_string, help_string = line.split("}", 1)
-                choice_list = choice_string.strip(" {").split(",")
-                help_string = help_string.strip()
-
-                if help_string:
-                    help_indent = len(max(choice_list, key=len)) * " "
-                    choice_list.append(f"{help_indent} {help_string}")
-
-                choices = "\n".join(choice_list)
-                line = f"{textwrap.indent(choices, indent)}\n"
-            output += line
-        return output
-
-
 def register_custom_action(
     *,
     cls_names: Union[str, Tuple[str, ...]],
@@ -88,6 +61,7 @@ def register_custom_action(
     optional: Tuple[str, ...] = (),
     custom_action: Optional[str] = None,
     requires_id: bool = True,  # if the `_id_attr` value should be a required argument
+    help: Optional[str] = None,  # help text for the action
 ) -> Callable[[__F], __F]:
     def wrap(f: __F) -> __F:
         @functools.wraps(f)
@@ -115,6 +89,7 @@ def register_custom_action(
                 optional=optional,
                 in_object=in_obj,
                 requires_id=requires_id,
+                help=help,
             )
 
         return cast(__F, wrapped_f)
