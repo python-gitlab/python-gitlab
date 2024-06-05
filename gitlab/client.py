@@ -3,6 +3,7 @@
 import os
 import re
 import time
+import urllib
 from typing import (
     Any,
     BinaryIO,
@@ -15,7 +16,6 @@ from typing import (
     TYPE_CHECKING,
     Union,
 )
-from urllib import parse
 
 import requests
 
@@ -517,10 +517,10 @@ class Gitlab:
             )
 
     def enable_debug(self, mask_credentials: bool = True) -> None:
+        import http.client
         import logging
-        from http import client
 
-        client.HTTPConnection.debuglevel = 1
+        http.client.HTTPConnection.debuglevel = 1
         logging.basicConfig()
         logger = logging.getLogger()
         logger.setLevel(logging.DEBUG)
@@ -538,7 +538,7 @@ class Gitlab:
         def print_as_log(*args: Any) -> None:
             httpclient_log.log(logging.DEBUG, " ".join(args))
 
-        setattr(client, "print", print_as_log)
+        setattr(http.client, "print", print_as_log)
 
         if not mask_credentials:
             return
@@ -684,11 +684,11 @@ class Gitlab:
         raw_url = self._build_url(path)
 
         # parse user-provided URL params to ensure we don't add our own duplicates
-        parsed = parse.urlparse(raw_url)
-        params = parse.parse_qs(parsed.query)
+        parsed = urllib.parse.urlparse(raw_url)
+        params = urllib.parse.parse_qs(parsed.query)
         utils.copy_dict(src=query_data, dest=params)
 
-        url = parse.urlunparse(parsed._replace(query=""))
+        url = urllib.parse.urlunparse(parsed._replace(query=""))
 
         # Deal with kwargs: by default a user uses kwargs to send data to the
         # gitlab server, but this generates problems (python keyword conflicts

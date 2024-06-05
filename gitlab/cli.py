@@ -19,7 +19,7 @@ from typing import (
     Union,
 )
 
-from requests.structures import CaseInsensitiveDict
+import requests
 
 import gitlab.config
 from gitlab.base import RESTObject
@@ -107,7 +107,7 @@ def die(msg: str, e: Optional[Exception] = None) -> None:
 def gitlab_resource_to_cls(
     gitlab_resource: str, namespace: ModuleType
 ) -> Type[RESTObject]:
-    classes = CaseInsensitiveDict(namespace.__dict__)
+    classes = requests.structures.CaseInsensitiveDict(namespace.__dict__)
     lowercase_class = gitlab_resource.replace("-", "")
     class_type = classes[lowercase_class]
     if TYPE_CHECKING:

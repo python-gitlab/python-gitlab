@@ -1,16 +1,15 @@
 import configparser
 import os
+import pathlib
 import shlex
 import subprocess
-from os.path import expanduser, expandvars
-from pathlib import Path
 from typing import List, Optional, Union
 
 from gitlab.const import USER_AGENT
 
 _DEFAULT_FILES: List[str] = [
     "/etc/python-gitlab.cfg",
-    str(Path.home() / ".python-gitlab.cfg"),
+    str(pathlib.Path.home() / ".python-gitlab.cfg"),
 ]
 
 HELPER_PREFIX = "helper:"
@@ -20,8 +19,8 @@ HELPER_ATTRIBUTES = ["job_token", "http_password", "private_token", "oauth_token
 _CONFIG_PARSER_ERRORS = (configparser.NoOptionError, configparser.NoSectionError)
 
 
-def _resolve_file(filepath: Union[Path, str]) -> str:
-    resolved = Path(filepath).resolve(strict=True)
+def _resolve_file(filepath: Union[pathlib.Path, str]) -> str:
+    resolved = pathlib.Path(filepath).resolve(strict=True)
     return str(resolved)
 
 
@@ -269,7 +268,10 @@ class GitlabConfigParser:
                 continue
 
             helper = value[len(HELPER_PREFIX) :].strip()
-            commmand = [expanduser(expandvars(token)) for token in shlex.split(helper)]
+            commmand = [
+                os.path.expanduser(os.path.expandvars(token))
+                for token in shlex.split(helper)
+            ]
 
             try:
                 value = (

@@ -4,7 +4,7 @@ https://docs.gitlab.com/ee/api/packages.html
 https://docs.gitlab.com/ee/user/packages/generic_packages/
 """
 
-from pathlib import Path
+import pathlib
 from typing import (
     Any,
     BinaryIO,
@@ -57,7 +57,7 @@ class GenericPackageManager(RESTManager):
         package_name: str,
         package_version: str,
         file_name: str,
-        path: Optional[Union[str, Path]] = None,
+        path: Optional[Union[str, pathlib.Path]] = None,
         select: Optional[str] = None,
         data: Optional[Union[bytes, BinaryIO]] = None,
         **kwargs: Any,
