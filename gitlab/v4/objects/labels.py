@@ -23,7 +23,8 @@ __all__ = [
 
 
 class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
-    _id_attr = "name"
+    _id_attr = "id"
+    _repr_attr = "name"
     manager: "GroupLabelManager"
 
     # Update without ID, but we need an ID to get from list.
@@ -87,7 +88,8 @@ class GroupLabelManager(
 class ProjectLabel(
     PromoteMixin, SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject
 ):
-    _id_attr = "name"
+    _id_attr = "id"
+    _repr_attr = "name"
     manager: "ProjectLabelManager"
 
     # Update without ID, but we need an ID to get from list.
