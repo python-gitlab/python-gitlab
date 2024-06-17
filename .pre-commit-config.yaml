@@ -12,7 +12,7 @@ repos:
       - id: commitizen
         stages: [commit-msg]
   - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
+    rev: 7.1.0
     hooks:
       - id: flake8
   - repo: https://github.com/pycqa/isort
@@ -47,6 +47,6 @@ repos:
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
   - repo: https://github.com/maxbrunet/pre-commit-renovate
-    rev: 37.399.9
+    rev: 37.409.1
     hooks:
       - id: renovate-config-validator
