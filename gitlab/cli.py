@@ -11,6 +11,7 @@ from typing import (
     Callable,
     cast,
     Dict,
+    NoReturn,
     Optional,
     Tuple,
     Type,
@@ -97,7 +98,7 @@ def register_custom_action(
     return wrap
 
 
-def die(msg: str, e: Optional[Exception] = None) -> None:
+def die(msg: str, e: Optional[Exception] = None) -> NoReturn:
     if e:
         msg = f"{msg} ({e})"
     sys.stderr.write(f"{msg}\n")
