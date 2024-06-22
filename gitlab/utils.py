@@ -177,6 +177,7 @@ def warn(
     *,
     category: Optional[Type[Warning]] = None,
     source: Optional[Any] = None,
+    show_caller: bool = True,
 ) -> None:
     """This `warnings.warn` wrapper function attempts to show the location causing the
     warning in the user code that called the library.
@@ -196,8 +197,10 @@ def warn(
         frame_dir = str(pathlib.Path(frame.filename).parent.resolve())
         if not frame_dir.startswith(str(pg_dir)):
             break
+    if show_caller:
+        message += warning_from
     warnings.warn(
-        message=message + warning_from,
+        message=message,
         category=category,
         stacklevel=stacklevel,
         source=source,
