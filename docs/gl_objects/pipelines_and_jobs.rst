@@ -49,6 +49,11 @@ Delete a pipeline::
 
     pipeline.delete()
 
+Get latest pipeline::
+
+    projet.pipelines.latest(ref="main")
+
+
 Triggers
 ========
 

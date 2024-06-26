@@ -139,6 +139,27 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManage
             ProjectPipeline, CreateMixin.create(self, data, path=path, **kwargs)
         )
 
+    def latest(self, ref: Optional[str] = None, lazy: bool = False) -> ProjectPipeline:
+        """Get the latest pipeline for the most recent commit
+                            on a specific ref in a project
+
+        Args:
+            ref: The branch or tag to check for the latest pipeline.
+                            Defaults to the default branch when not specified.
+        Returns:
+            A Pipeline instance
+        """
+        data = {}
+        if ref:
+            data = {"ref": ref}
+        if TYPE_CHECKING:
+            assert self._obj_cls is not None
+            assert self.path is not None
+        server_data = self.gitlab.http_get(self.path + "/latest", query_data=data)
+        if TYPE_CHECKING:
+            assert not isinstance(server_data, requests.Response)
+        return self._obj_cls(self, server_data, lazy=lazy)
+
 
 class ProjectPipelineJob(RESTObject):
     pass
