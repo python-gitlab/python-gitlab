@@ -436,8 +436,11 @@ Get a file::
     # get the base64 encoded content
     print(f.content)
 
-    # get the decoded content
+    # get the decoded content as bytes
     print(f.decode())
+
+    # get the decoded content as a string
+    print(f.decode("utf-8"))
 
 Get file details from headers, without fetching its entire content::
 

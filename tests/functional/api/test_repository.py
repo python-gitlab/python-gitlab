@@ -36,9 +36,9 @@ def test_repository_files(project):
         }
     )
     readme = project.files.get(file_path="README.rst", ref="main")
-    # The first decode() is the ProjectFile method, the second one is the bytes
-    # object method
-    assert readme.decode().decode() == "Initial content"
+
+    assert readme.decode() == b"Initial content"
+    assert readme.decode("utf-8") == "Initial content"
 
     headers = project.files.head("README.rst", ref="main")
     assert headers["X-Gitlab-File-Path"] == "README.rst"
