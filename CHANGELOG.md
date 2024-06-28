@@ -1,6 +1,73 @@
 # CHANGELOG
 
+## v4.7.0 (2024-06-28)
 
+### Chore
+
+* chore(deps): update all non-major dependencies ([`88de2f0`](https://github.com/python-gitlab/python-gitlab/commit/88de2f0fc52f4f02e1d44139f4404acf172624d7))
+
+* chore(deps): update all non-major dependencies ([`a510f43`](https://github.com/python-gitlab/python-gitlab/commit/a510f43d990c3a3fd169854218b64d4eb9491628))
+
+* chore(deps): update gitlab/gitlab-ee docker tag to v17.0.2-ee.0 ([`51779c6`](https://github.com/python-gitlab/python-gitlab/commit/51779c63e6a58e1ae68e9b1c3ffff998211d4e66))
+
+* chore(deps): update python-semantic-release/upload-to-gh-release digest to 6b7558f ([`fd0f0b0`](https://github.com/python-gitlab/python-gitlab/commit/fd0f0b0338623a98e9368c30b600d603b966f8b7))
+
+* chore(deps): update all non-major dependencies ([`d4fdf90`](https://github.com/python-gitlab/python-gitlab/commit/d4fdf90655c2cb5124dc2ecd8b449e1e16d0add5))
+
+* chore(deps): update dependency types-setuptools to v70 ([`7767514`](https://github.com/python-gitlab/python-gitlab/commit/7767514a1ad4269a92a6610aa71aa8c595565a7d))
+
+* chore(deps): update gitlab/gitlab-ee docker tag to v17.0.1-ee.0 ([`df0ff4c`](https://github.com/python-gitlab/python-gitlab/commit/df0ff4c4c1497d6449488b8577ad7188b55c41a9))
+
+* chore(deps): update python-semantic-release/upload-to-gh-release digest to 477a404 ([`02a551d`](https://github.com/python-gitlab/python-gitlab/commit/02a551d82327b879b7a903b56b7962da552d1089))
+
+* chore(deps): update all non-major dependencies ([`d5de288`](https://github.com/python-gitlab/python-gitlab/commit/d5de28884f695a79e49605a698c4f17b868ddeb8))
+
+* chore: add a help message for `gitlab project-key enable`
+
+Add some help text for `gitlab project-key enable`. This both adds
+help text and shows how to use the new `help` feature.
+
+Example:
+
+$ gitlab project-key --help
+usage: gitlab project-key [-h] {list,get,create,update,delete,enable} ...
+
+options:
+  -h, --help            show this help message and exit
+
+action:
+  {list,get,create,update,delete,enable}
+                        Action to execute on the GitLab resource.
+    list                List the GitLab resources
+    get                 Get a GitLab resource
+    create              Create a GitLab resource
+    update              Update a GitLab resource
+    delete              Delete a GitLab resource
+    enable              Enable a deploy key for the project ([`1291dbb`](https://github.com/python-gitlab/python-gitlab/commit/1291dbb588d3a5a54ee54d9bb93c444ce23efa8c))
+
+* chore: sort CLI behavior-related args to remove
+
+Sort the list of CLI behavior-related args that are to be removed. ([`9b4b0ef`](https://github.com/python-gitlab/python-gitlab/commit/9b4b0efa1ccfb155aee8384de9e00f922b989850))
+
+### Feature
+
+* feat(api): add support for latest pipeline ([`635f5a7`](https://github.com/python-gitlab/python-gitlab/commit/635f5a7128c780880824f69a9aba23af148dfeb4))
+
+* feat: add `--no-mask-credentials` CLI argument
+
+This gives the ability to not mask credentials when using the
+`--debug` argument. ([`18aa1fc`](https://github.com/python-gitlab/python-gitlab/commit/18aa1fc074b9f477cf0826933184bd594b63b489))
+
+### Fix
+
+* fix: add ability to add help to custom_actions
+
+Now when registering a custom_action can add help text if desired.
+
+Also delete the VerticalHelpFormatter as no longer needed. When the
+help value is set to `None` or some other value, the actions will get
+printed vertically. Before when the help value was not set the actions
+would all get put onto one line. ([`9acd2d2`](https://github.com/python-gitlab/python-gitlab/commit/9acd2d23dd8c87586aa99c70b4b47fa47528472b))
 
 ## v4.6.0 (2024-05-28)
 
@@ -155,7 +222,6 @@ Closes: #2825 ([`ef8f0e1`](https://github.com/python-gitlab/python-gitlab/commit
 * fix(projects): fix &#39;import_project&#39; file argument type for typings
 
 Signed-off-by: Adrian DC &lt;radian.dc@gmail.com&gt; ([`33fbc14`](https://github.com/python-gitlab/python-gitlab/commit/33fbc14ea8432df7e637462379e567f4d0ad6c18))
-
 
 ## v4.5.0 (2024-05-13)
 
@@ -389,7 +455,6 @@ Signed-off-by: Tim Knight &lt;tim.knight1@engineering.digital.dwp.gov.uk&gt; ([`
 
 * test(smoke): normalize all dist titles for smoke tests ([`ee013fe`](https://github.com/python-gitlab/python-gitlab/commit/ee013fe1579b001b4b30bae33404e827c7bdf8c1))
 
-
 ## v4.4.0 (2024-01-15)
 
 ### Chore
@@ -442,7 +507,6 @@ later if needed.
 
 Closes: #2752 ([`57749d4`](https://github.com/python-gitlab/python-gitlab/commit/57749d46de1d975aacb82758c268fc26e5e6ed8b))
 
-
 ## v4.3.0 (2023-12-28)
 
 ### Chore
@@ -481,7 +545,6 @@ Add a `--no-ssl-verify` option to disable SSL verification
 
 Closes: #2714 ([`3fe9fa6`](https://github.com/python-gitlab/python-gitlab/commit/3fe9fa64d9a38bc77950046f2950660d8d7e27a6))
 
-
 ## v4.2.0 (2023-11-28)
 
 ### Chore
@@ -510,7 +573,6 @@ Added api tests for wiki upload
 Added unit test for mixin
 Added docs sections to wikis.rst ([`7b864b8`](https://github.com/python-gitlab/python-gitlab/commit/7b864b81fd348c6a42e32ace846d1acbcfc43998))
 
-
 ## v4.1.1 (2023-11-03)
 
 ### Chore
@@ -529,7 +591,6 @@ are missing commas. This change adds the missing commas. ([`b1b2edf`](https://gi
 ### Fix
 
 * fix(build): include py.typed in dists ([`b928639`](https://github.com/python-gitlab/python-gitlab/commit/b928639f7ca252e0abb8ded8f9f142316a4dc823))
-
 
 ## v4.1.0 (2023-10-28)
 
@@ -556,7 +617,6 @@ are missing commas. This change adds the missing commas. ([`b1b2edf`](https://gi
 ### Fix
 
 * fix: remove depricated MergeStatus ([`c6c012b`](https://github.com/python-gitlab/python-gitlab/commit/c6c012b9834b69f1fe45689519fbcd92928cfbad))
-
 
 ## v4.0.0 (2023-10-17)
 
@@ -843,7 +903,6 @@ Also update dependency `responses==0.23.3` as it provides support for
 
 Closes: #2626 ([`988a6e7`](https://github.com/python-gitlab/python-gitlab/commit/988a6e7eff5d24b2432d3d85f1e750f4f95563f7))
 
-
 ## v3.15.0 (2023-06-09)
 
 ### Chore
@@ -893,7 +952,6 @@ Closes: #2557 ([`3a49f09`](https://github.com/python-gitlab/python-gitlab/commit
 This can be used instead of &#39;user_ids&#39;
 
 See: https://docs.gitlab.com/ee/api/merge_request_approvals.html#create-project-level-rule ([`a2b8c8c`](https://github.com/python-gitlab/python-gitlab/commit/a2b8c8ccfb5d4fa4d134300861a3bfb0b10246ca))
-
 
 ## v3.14.0 (2023-04-11)
 
@@ -1112,7 +1170,6 @@ docs: fix typo in issue docs ([`43f5ac5`](https://github.com/python-gitlab/pytho
 
 * Merge branch &#39;main&#39; into typos ([`3cfd390`](https://github.com/python-gitlab/python-gitlab/commit/3cfd3903757bf61386972a18f3225665145324eb))
 
-
 ## v3.13.0 (2023-01-30)
 
 ### Chore
@@ -1256,7 +1313,6 @@ Resolves #2403 ([`44f05dc`](https://github.com/python-gitlab/python-gitlab/commi
 
 * test(unit): expand tests for pipeline schedules ([`c7cf0d1`](https://github.com/python-gitlab/python-gitlab/commit/c7cf0d1f172c214a11b30622fbccef57d9c86e93))
 
-
 ## v3.12.0 (2022-11-28)
 
 ### Chore
@@ -1398,7 +1454,6 @@ chore(deps): update all non-major dependencies ([`2974966`](https://github.com/p
 * Merge pull request #2352 from python-gitlab/renovate/maxbrunet-pre-commit-renovate-34.x
 
 chore(deps): update pre-commit hook maxbrunet/pre-commit-renovate to v34 ([`c3d9820`](https://github.com/python-gitlab/python-gitlab/commit/c3d982096d0ce562e63716decbce8185e61bc2f1))
-
 
 ## v3.11.0 (2022-10-28)
 
@@ -1601,7 +1656,6 @@ test: use false instead of /usr/bin/false ([`4eca9b9`](https://github.com/python
 
 chore(deps): update all non-major dependencies ([`9410acb`](https://github.com/python-gitlab/python-gitlab/commit/9410acb79a65420c344bdf3b9c06eb92c7ad10a1))
 
-
 ## v3.10.0 (2022-09-28)
 
 ### Chore
@@ -1658,7 +1712,6 @@ chore(deps): update pre-commit hook commitizen-tools/commitizen to v2.32.2 ([`89
 * Merge pull request #2254 from python-gitlab/jlvillal/deploy_approve
 
 feat: add support for deployment approval endpoint ([`56fbe02`](https://github.com/python-gitlab/python-gitlab/commit/56fbe022e11b3b47fef0bd45b41543c9d73ec94e))
-
 
 ## v3.9.0 (2022-08-28)
 
@@ -1735,7 +1788,6 @@ chore(deps): update pre-commit hook commitizen-tools/commitizen to v2.31.0 ([`93
 
 chore(deps): update dependency commitizen to v2.31.0 ([`b432e47`](https://github.com/python-gitlab/python-gitlab/commit/b432e47d2e05d36a308d513007e8aecbd10ac001))
 
-
 ## v3.8.1 (2022-08-10)
 
 ### Chore
@@ -1773,7 +1825,6 @@ chore(deps): update dependency sphinx to v5 ([`1e12eaf`](https://github.com/pyth
 * Merge pull request #2212 from python-gitlab/jlvillal/config
 
 chore: remove broad Exception catching from `config.py` ([`70e67bf`](https://github.com/python-gitlab/python-gitlab/commit/70e67bfec915a9404acdedf615e7548d75317ea3))
-
 
 ## v3.8.0 (2022-08-04)
 
@@ -1927,7 +1978,6 @@ chore: make code PEP597 compliant ([`1b7cd31`](https://github.com/python-gitlab/
 * Merge pull request #2194 from python-gitlab/jlvillal/update-gitlab
 
 test(functional): bump GitLab docker image to 15.2.0-ee.0 ([`7a53c69`](https://github.com/python-gitlab/python-gitlab/commit/7a53c6950bb7df90e2a3f4e6d0436cb5d06c3b46))
-
 
 ## v3.7.0 (2022-07-28)
 
@@ -2362,7 +2412,6 @@ chore: fix misspelling ([`6486566`](https://github.com/python-gitlab/python-gitl
 * Merge pull request #2112 from python-gitlab/jlvillal/doc_remove_tabs
 
 chore(docs): convert tabs to spaces ([`8771ad8`](https://github.com/python-gitlab/python-gitlab/commit/8771ad8ff3391ce42440fcb8df8da5dbe346e09e))
-
 
 ## v3.6.0 (2022-06-28)
 
@@ -2859,7 +2908,6 @@ feat(client): introduce `iterator=True` and deprecate `as_list=False` in `list()
 
 docs: use `as_list=False` or `all=True` in Getting started ([`5ae18d0`](https://github.com/python-gitlab/python-gitlab/commit/5ae18d08aa11a01347514b43db8470bfd65fd534))
 
-
 ## v3.5.0 (2022-05-28)
 
 ### Chore
@@ -3015,7 +3063,6 @@ chore(deps): update dependency types-requests to v2.27.25 ([`04e0d24`](https://g
 * Merge pull request #1994 from python-gitlab/renovate/typing-dependencies
 
 chore(deps): update dependency types-requests to v2.27.24 ([`79b903d`](https://github.com/python-gitlab/python-gitlab/commit/79b903d24bf518b67c7da9ead2cdaec3c3f67f88))
-
 
 ## v3.4.0 (2022-04-28)
 
@@ -3192,7 +3239,6 @@ chore(deps): update dependency pylint to v2.13.3 ([`5498f9e`](https://github.com
 
 chore(deps): update black to v22.3.0 ([`f942e65`](https://github.com/python-gitlab/python-gitlab/commit/f942e65ad6e0ab911de1ee32b4f720cf061e3dec))
 
-
 ## v3.3.0 (2022-03-28)
 
 ### Chore
@@ -3298,7 +3344,6 @@ chore(deps): update pre-commit hook alessandrojcm/commitlint-pre-commit-hook to 
 * Merge pull request #1915 from kinbald/test-report-summary
 
 feat: add support for test report summary ([`7966584`](https://github.com/python-gitlab/python-gitlab/commit/79665841e5d998872876987e1c3f480e455951a4))
-
 
 ## v3.2.0 (2022-02-28)
 
@@ -3463,7 +3508,6 @@ fix: remove custom `delete` method for labels ([`0ab0fc1`](https://github.com/py
 
 chore: create new ArrayAttribute class ([`7646360`](https://github.com/python-gitlab/python-gitlab/commit/7646360d6b622b1008917116dc4f64ced32f4057))
 
-
 ## v3.1.1 (2022-01-28)
 
 ### Chore
@@ -3603,7 +3647,6 @@ docs(changelog): add missing changelog items ([`a1dbe86`](https://github.com/pyt
 * Merge pull request #1839 from python-gitlab/jlvillal/catch_warnings
 
 chore(tests): use method `projects.transfer()` ([`48b06a9`](https://github.com/python-gitlab/python-gitlab/commit/48b06a95ad08c5d937d602357895b09d5dcecd9e))
-
 
 ## v3.1.0 (2022-01-14)
 
@@ -3916,7 +3959,6 @@ chore: add a stale workflow ([`9896340`](https://github.com/python-gitlab/python
 * Merge pull request #1803 from python-gitlab/jlvillal/test_1425
 
 chore: add functional test of mergerequest.get() ([`bc6c6e6`](https://github.com/python-gitlab/python-gitlab/commit/bc6c6e69e81db5f52afd422d8c8ec0c57a385acd))
-
 
 ## v3.0.0 (2022-01-05)
 
@@ -4993,7 +5035,6 @@ docs: correct documented return type ([`557c7d2`](https://github.com/python-gitl
 
 feat: allow global retry_transient_errors ([`d98d948`](https://github.com/python-gitlab/python-gitlab/commit/d98d948f997e973a42a8a21dfdbba0b435a602df))
 
-
 ## v2.10.1 (2021-08-28)
 
 ### Chore
@@ -5047,7 +5088,6 @@ docs(mergerequests): gl.mergerequests.list documentation was misleading ([`8e277
 * Merge pull request #1571 from python-gitlab/fix-mixings-improve-deprecation-warning
 
 fix(mixins): improve deprecation warning ([`e2fdfbb`](https://github.com/python-gitlab/python-gitlab/commit/e2fdfbb02516360d56d3b7a88a3ef245faf37941))
-
 
 ## v2.10.0 (2021-07-28)
 
@@ -5105,7 +5145,6 @@ Signed-off-by: Matej Focko &lt;mfocko@redhat.com&gt; ([`a9924f4`](https://github
 * Merge pull request #1537 from antti-mikael/feat/registry-deleteinbulk-keepregex
 
 feat(api): add `name_regex_keep` attribute in `delete_in_bulk()` ([`85713bb`](https://github.com/python-gitlab/python-gitlab/commit/85713bbbecdcec577a72749d2e495f823791b00f))
-
 
 ## v2.9.0 (2021-06-28)
 
@@ -5206,7 +5245,6 @@ chore: add new required type packages for mypy ([`5446423`](https://github.com/p
 * Merge pull request #1511 from JohnVillalovos/jlvillal/testing-type-hints
 
  chore: add type-hints to gitlab/v4/objects/projects.py ([`8e6aaf5`](https://github.com/python-gitlab/python-gitlab/commit/8e6aaf552ac44c21c70f902e5bdf1a2f631e347c))
-
 
 ## v2.8.0 (2021-06-10)
 
@@ -5667,7 +5705,6 @@ feat: add support for lists of integers to ListAttribute ([`dde01c7`](https://gi
 
 chore: make Get.*Mixin._optional_get_attrs always present ([`5b81d7d`](https://github.com/python-gitlab/python-gitlab/commit/5b81d7d25e5deefa4333098ebb5bc646fcee2c8d))
 
-
 ## v2.7.1 (2021-04-26)
 
 ### Feature
@@ -5690,7 +5727,6 @@ This will help us fix issue #1407 by using ListAttribute for the
 * Merge pull request #1418 from python-gitlab/fix/urlencode-file-paths
 
 fix(files): do not url-encode filepaths twice ([`37af229`](https://github.com/python-gitlab/python-gitlab/commit/37af2296703a481721489a66c5fc554257e34527))
-
 
 ## v2.7.0 (2021-04-25)
 
@@ -6638,7 +6674,6 @@ feat(api,cli): make user agent configurable ([`643454c`](https://github.com/pyth
 
 docs: switch from travis-ci.org to GitHub Actions ([`071d699`](https://github.com/python-gitlab/python-gitlab/commit/071d699f7e4bf7eb3aa49b78f9cc9e56a473e281))
 
-
 ## v2.6.0 (2021-01-29)
 
 ### Chore
@@ -6972,7 +7007,6 @@ chore(deps): update gitlab/gitlab-ce docker tag to v13.3.4-ce.0 ([`2a6801e`](htt
 
 chore(deps): update gitlab/gitlab-ce docker tag to v13.3.3-ce.0 ([`769367c`](https://github.com/python-gitlab/python-gitlab/commit/769367c41d71610cc7d6a5eee67ebaaecb8b66bf))
 
-
 ## v2.5.0 (2020-09-01)
 
 ### Chore
@@ -7140,7 +7174,6 @@ feat: add share/unshare the group with a group ([`cfa8097`](https://github.com/p
 
 docs: additional project file delete example ([`5b92de8`](https://github.com/python-gitlab/python-gitlab/commit/5b92de8eba9224210ecff1a1d4dae6a561c894be))
 
-
 ## v2.4.0 (2020-07-09)
 
 ### Chore
@@ -7195,7 +7228,6 @@ Add masked parameter for project-variable and group-variable ([`bfb5034`](https:
 
 fix(merge): parse arguments as query_data ([`1d82310`](https://github.com/python-gitlab/python-gitlab/commit/1d82310da1a15f7172a3f87c2cf062bc0c17944d))
 
-
 ## v2.3.1 (2020-06-09)
 
 ### Chore
@@ -7213,7 +7245,6 @@ Instead we set pagination to offset on the other paths ([`e71fe16`](https://gith
 * Merge pull request #1115 from python-gitlab/fix/keyset-pagination-revert
 
 Fix/keyset pagination revert ([`3f585ad`](https://github.com/python-gitlab/python-gitlab/commit/3f585ad3f823aef4dd848942399e2bd0530a09b2))
-
 
 ## v2.3.0 (2020-06-08)
 
@@ -7388,7 +7419,6 @@ chore: use pytest to run unit tests and coverage ([`efc6182`](https://github.com
 
 fix(project): add missing project parameters ([`29fd95e`](https://github.com/python-gitlab/python-gitlab/commit/29fd95e7edbb0369b845afb7e9ee4dbed2e1d483))
 
-
 ## v2.2.0 (2020-04-07)
 
 ### Chore
@@ -7515,7 +7545,6 @@ feat: add support for commit GPG signature ([`1b8e748`](https://github.com/pytho
 
 test: update tests and params for project export/import ([`4ffaf1d`](https://github.com/python-gitlab/python-gitlab/commit/4ffaf1dc0365690df810c99573f5737f635240e0))
 
-
 ## v2.1.2 (2020-03-09)
 
 ### Chore
@@ -7529,7 +7558,6 @@ test: update tests and params for project export/import ([`4ffaf1d`](https://git
 Revert &#34;feat: use keyset pagination by default for `all=True`&#34; ([`6d941bd`](https://github.com/python-gitlab/python-gitlab/commit/6d941bdd90414d9ddce9f90166dbdc2adaf01d7d))
 
 * Revert &#34;feat: use keyset pagination by default for `all=True`&#34; ([`6f843b6`](https://github.com/python-gitlab/python-gitlab/commit/6f843b63f7227ee3d338724d49b3ce111366a738))
-
 
 ## v2.1.1 (2020-03-09)
 
@@ -7552,7 +7580,6 @@ chore(user): update user attributes to 12.8 ([`8c44bb6`](https://github.com/pyth
 * Merge pull request #1042 from khuedoan98/patch-1
 
 fix(docs): additional project statistics example ([`be5b15e`](https://github.com/python-gitlab/python-gitlab/commit/be5b15e27ad4a58d61f26e9f5ca3868f72959faa))
-
 
 ## v2.1.0 (2020-03-08)
 
@@ -7671,7 +7698,6 @@ change path for set_approvers to new api, with defaulted rule_type an… ([`1924
 
 Add capability to control GitLab features per project or group ([`066fc9b`](https://github.com/python-gitlab/python-gitlab/commit/066fc9bfdc1d8e6295cb924ea8471268ee869a90))
 
-
 ## v2.0.1 (2020-02-05)
 
 ### Chore
@@ -7725,7 +7751,6 @@ chore(user): update user attributes ([`f6d9858`](https://github.com/python-gitla
 * Merge pull request #1000 from matusf/update-auth-docs
 
 Update auth docs ([`7843ace`](https://github.com/python-gitlab/python-gitlab/commit/7843ace913589cf629f448a2541f290a4c7214cd))
-
 
 ## v2.0.0 (2020-01-26)
 
@@ -7820,7 +7845,6 @@ Fix/project snippets ([`5a10eb3`](https://github.com/python-gitlab/python-gitlab
 * Merge pull request #941 from mchlumsky/feat/autocompletion
 
 feat: add autocompletion support ([`ec6e04c`](https://github.com/python-gitlab/python-gitlab/commit/ec6e04c16a8509519387b985a3ceef89d51a200b))
-
 
 ## v1.15.0 (2019-12-16)
 
@@ -7947,7 +7971,6 @@ Retry transient HTTP errors ([`36bbd37`](https://github.com/python-gitlab/python
 
 Fix/as list ([`3e2d694`](https://github.com/python-gitlab/python-gitlab/commit/3e2d69417aa8c6b043ee99fea5f8d7e31a2ba3e8))
 
-
 ## v1.14.0 (2019-12-07)
 
 ### Chore
@@ -8058,7 +8081,6 @@ docs(pipelines_and_jobs): add pipeline custom variables usage example ([`4efa6e6
 * Merge pull request #932 from ConorNevin/master
 
 Add support for include_subgroups filter ([`1f18230`](https://github.com/python-gitlab/python-gitlab/commit/1f182302c206502f5202d1707fef69adf527fea7))
-
 
 ## v1.13.0 (2019-11-02)
 
@@ -8189,7 +8211,6 @@ Remove warning about open files from test_todo() ([`ff808ee`](https://github.com
 
 remove references to api v3 in docs ([`92ba028`](https://github.com/python-gitlab/python-gitlab/commit/92ba0283b63e562e181061252787e0e46da83a29))
 
-
 ## v1.12.1 (2019-10-07)
 
 ### Fix
@@ -8201,7 +8222,6 @@ remove references to api v3 in docs ([`92ba028`](https://github.com/python-gitla
 * Merge pull request #901 from python-gitlab/fix/non-auth
 
 fix: fix not working without auth ([`f4b2927`](https://github.com/python-gitlab/python-gitlab/commit/f4b29278771e48320e2da4bacc4544d263d1754c))
-
 
 ## v1.12.0 (2019-10-06)
 
@@ -8333,7 +8353,6 @@ feat(user): add status api ([`b7f3342`](https://github.com/python-gitlab/python-
 
 test: re-enabled py_func_v4 test ([`1490b0e`](https://github.com/python-gitlab/python-gitlab/commit/1490b0e7f175d54cc6d35de7aac6d9e45c0e3d51))
 
-
 ## v1.11.0 (2019-08-31)
 
 ### Chore
@@ -8381,7 +8400,6 @@ Fix mutable default arguments ([`e8a3585`](https://github.com/python-gitlab/pyth
 * Merge pull request #847 from sidisel-albertolopez/feat/grouplabels
 
 feat: Add grouplabel support with subscribable mixin ([`edb3359`](https://github.com/python-gitlab/python-gitlab/commit/edb3359fb3a77050d3e162da641445952397279b))
-
 
 ## v1.10.0 (2019-07-22)
 
