@@ -123,6 +123,27 @@ class TestWarningsWrapper:
         assert __file__ in str(warning.message)
         assert warn_source == warning.source
 
+    def test_warn_no_show_caller(self):
+        warn_message = "short and stout"
+        warn_source = "teapot"
+
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            utils.warn(
+                message=warn_message,
+                category=UserWarning,
+                source=warn_source,
+                show_caller=False,
+            )
+        assert len(caught_warnings) == 1
+        warning = caught_warnings[0]
+        # File name is this file as it is the first file outside of the `gitlab/` path.
+        assert __file__ == warning.filename
+        assert warning.category == UserWarning
+        assert isinstance(warning.message, UserWarning)
+        assert warn_message in str(warning.message)
+        assert __file__ not in str(warning.message)
+        assert warn_source == warning.source
+
 
 @pytest.mark.parametrize(
     "source,expected",
