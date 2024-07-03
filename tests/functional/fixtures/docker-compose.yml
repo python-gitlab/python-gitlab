@@ -29,7 +29,6 @@ services:
         postgres_exporter['enable'] = false
         pgbouncer_exporter['enable'] = false
         gitlab_exporter['enable'] = false
-        grafana['enable'] = false
         letsencrypt['enable'] = false
         gitlab_rails['initial_license_file'] = '/python-gitlab-ci.gitlab-license'
         gitlab_rails['monitoring_whitelist'] = ['0.0.0.0/0']
