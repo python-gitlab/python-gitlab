@@ -129,6 +129,24 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action(cls_names="ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
+    def sequence(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+        """Get the sequence number of the commit.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the sequence number could not be retrieved
+
+        Returns:
+            The commit's sequence number
+        """
+        path = f"{self.manager.path}/{self.encoded_id}/sequence"
+        return self.manager.gitlab.http_get(path, **kwargs)
+
+    @cli.register_custom_action(cls_names="ProjectCommit")
+    @exc.on_http_error(exc.GitlabGetError)
     def signature(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
         """Get the signature of the commit.
 
