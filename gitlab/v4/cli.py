@@ -1,4 +1,5 @@
 import argparse
+import json
 import operator
 import sys
 from typing import Any, Dict, List, Optional, Type, TYPE_CHECKING, Union
@@ -140,8 +141,16 @@ class GitlabCLI:
     ) -> Union[gitlab.base.RESTObjectList, List[gitlab.base.RESTObject]]:
         if TYPE_CHECKING:
             assert isinstance(self.mgr, gitlab.mixins.ListMixin)
+        message_details = gitlab.utils.WarnMessageData(
+            message=(
+                "Your query returned {len_items} of {total_items} items. To return all "
+                "items use `--get-all`. To silence this warning use `--no-get-all`."
+            ),
+            show_caller=False,
+        )
+
         try:
-            result = self.mgr.list(**self.args)
+            result = self.mgr.list(**self.args, message_details=message_details)
         except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to list objects", e)
         return result
@@ -238,11 +247,24 @@ def _populate_sub_parser_by_class(
 
             sub_parser_action.add_argument("--page", required=False, type=int)
             sub_parser_action.add_argument("--per-page", required=False, type=int)
-            sub_parser_action.add_argument(
+            get_all_group = sub_parser_action.add_mutually_exclusive_group()
+            get_all_group.add_argument(
                 "--get-all",
                 required=False,
-                action="store_true",
+                action="store_const",
+                const=True,
+                default=None,
+                dest="get_all",
                 help="Return all items from the server, without pagination.",
+            )
+            get_all_group.add_argument(
+                "--no-get-all",
+                required=False,
+                action="store_const",
+                const=False,
+                default=None,
+                dest="get_all",
+                help="Don't return all items from the server.",
             )
 
         if action_name == "delete":
@@ -416,8 +438,6 @@ def get_dict(
 class JSONPrinter:
     @staticmethod
     def display(d: Union[str, Dict[str, Any]], **_kwargs: Any) -> None:
-        import json  # noqa
-
         print(json.dumps(d))
 
     @staticmethod
@@ -426,8 +446,6 @@ class JSONPrinter:
         fields: List[str],
         **_kwargs: Any,
     ) -> None:
-        import json  # noqa
-
         print(json.dumps([get_dict(obj, fields) for obj in data]))
 
 

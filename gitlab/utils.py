@@ -1,3 +1,4 @@
+import dataclasses
 import email.message
 import logging
 import pathlib
@@ -205,3 +206,9 @@ def warn(
         stacklevel=stacklevel,
         source=source,
     )
+
+
+@dataclasses.dataclass
+class WarnMessageData:
+    message: str
+    show_caller: bool
