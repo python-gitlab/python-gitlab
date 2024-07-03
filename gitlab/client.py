@@ -869,6 +869,7 @@ class Gitlab:
         query_data: Optional[Dict[str, Any]] = None,
         *,
         iterator: Optional[bool] = None,
+        message_details: Optional[utils.WarnMessageData] = None,
         **kwargs: Any,
     ) -> Union["GitlabList", List[Dict[str, Any]]]:
         """Make a GET request to the Gitlab server for list-oriented queries.
@@ -952,16 +953,29 @@ class Gitlab:
         # Warn the user that they are only going to retrieve `per_page`
         # maximum items. This is a common cause of issues filed.
         total_items = "many" if gl_list.total is None else gl_list.total
-        utils.warn(
-            message=(
+        if message_details is not None:
+            message = message_details.message.format_map(
+                {
+                    "len_items": len(items),
+                    "per_page": gl_list.per_page,
+                    "total_items": total_items,
+                }
+            )
+            show_caller = message_details.show_caller
+        else:
+            message = (
                 f"Calling a `list()` method without specifying `get_all=True` or "
                 f"`iterator=True` will return a maximum of {gl_list.per_page} items. "
                 f"Your query returned {len(items)} of {total_items} items. See "
                 f"{_PAGINATION_URL} for more details. If this was done intentionally, "
                 f"then this warning can be supressed by adding the argument "
                 f"`get_all=False` to the `list()` call."
-            ),
+            )
+            show_caller = True
+        utils.warn(
+            message=message,
             category=UserWarning,
+            show_caller=show_caller,
         )
         return items
 
