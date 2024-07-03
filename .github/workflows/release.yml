@@ -33,7 +33,7 @@ jobs:
 
     - name: Publish package distributions to GitHub Releases
       # TODO: track tags after https://github.com/python-semantic-release/upload-to-gh-release/issues/2
-      uses: python-semantic-release/upload-to-gh-release@6b7558f9096923624896fdb2a161b191279c6cf3
+      uses: python-semantic-release/upload-to-gh-release@c7c3b69570cbd3011111d2673d8f07142473a871
       if: steps.release.outputs.released == 'true'
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
