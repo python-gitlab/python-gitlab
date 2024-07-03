@@ -78,6 +78,23 @@ def resp_get_commit_gpg_signature():
         yield rsps
 
 
+@pytest.fixture
+def resp_get_commit_sequence():
+    content = {
+        "count": 1,
+    }
+
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/projects/1/repository/commits/6b2257ea/sequence",
+            json=content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
 def test_get_commit(project, resp_commit):
     commit = project.commits.get("6b2257ea")
     assert commit.short_id == "6b2257ea"
@@ -113,3 +130,9 @@ def test_get_commit_gpg_signature(project, resp_get_commit_gpg_signature):
     signature = commit.signature()
     assert signature["gpg_key_primary_keyid"] == "8254AAB3FBD54AC9"
     assert signature["verification_status"] == "verified"
+
+
+def test_get_commit_sequence(project, resp_get_commit_sequence):
+    commit = project.commits.get("6b2257ea", lazy=True)
+    sequence = commit.sequence()
+    assert sequence["count"] == 1
