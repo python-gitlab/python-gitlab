@@ -46,7 +46,7 @@ def test_repository_files(project):
     blame = project.files.blame(file_path="README.rst", ref="main")
     assert blame
 
-    raw_file = project.files.raw(file_path="README.rst", ref="main")
+    raw_file = project.files.raw(file_path="README.rst")
     assert os.fsdecode(raw_file) == "Initial content"
 
 
