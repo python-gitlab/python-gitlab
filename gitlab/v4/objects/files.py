@@ -228,13 +228,14 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         self.gitlab.http_delete(path, query_data=data, **kwargs)
 
     @cli.register_custom_action(
-        cls_names="ProjectFileManager", required=("file_path", "ref")
+        cls_names="ProjectFileManager",
+        required=("file_path",),
     )
     @exc.on_http_error(exc.GitlabGetError)
     def raw(
         self,
         file_path: str,
-        ref: str,
+        ref: Optional[str] = None,
         streamed: bool = False,
         action: Optional[Callable[..., Any]] = None,
         chunk_size: int = 1024,
@@ -245,16 +246,16 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         """Return the content of a file for a commit.
 
         Args:
-            ref: ID of the commit
             file_path: Path of the file to return
+            ref: ID of the commit
             streamed: If True the data will be processed by chunks of
                 `chunk_size` and each chunk is passed to `action` for
                 treatment
-            iterator: If True directly return the underlying response
-                iterator
-            action: Callable responsible of dealing with chunk of
+            action: Callable responsible for dealing with each chunk of
                 data
             chunk_size: Size of each chunk
+            iterator: If True directly return the underlying response
+                iterator
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -266,7 +267,10 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         """
         file_path = utils.EncodedId(file_path)
         path = f"{self.path}/{file_path}/raw"
-        query_data = {"ref": ref}
+        if ref:
+            query_data = {"ref": ref}
+        else:
+            query_data = None
         result = self.gitlab.http_get(
             path, query_data=query_data, streamed=streamed, raw=True, **kwargs
         )
