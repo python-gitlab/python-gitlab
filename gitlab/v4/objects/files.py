@@ -267,7 +267,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         """
         file_path = utils.EncodedId(file_path)
         path = f"{self.path}/{file_path}/raw"
-        if ref:
+        if ref is not None:
             query_data = {"ref": ref}
         else:
             query_data = None
