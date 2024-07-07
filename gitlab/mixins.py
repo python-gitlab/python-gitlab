@@ -911,7 +911,9 @@ class ParticipantsMixin(_RestObjectBase):
 
     @cli.register_custom_action(cls_names=("ProjectMergeRequest", "ProjectIssue"))
     @exc.on_http_error(exc.GitlabListError)
-    def participants(self, **kwargs: Any) -> Dict[str, Any]:
+    def participants(
+        self, **kwargs: Any
+    ) -> Union[gitlab.client.GitlabList, List[Dict[str, Any]]]:
         """List the participants.
 
         Args:
@@ -929,7 +931,7 @@ class ParticipantsMixin(_RestObjectBase):
         """
 
         path = f"{self.manager.path}/{self.encoded_id}/participants"
-        result = self.manager.gitlab.http_get(path, **kwargs)
+        result = self.manager.gitlab.http_list(path, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(result, requests.Response)
         return result

@@ -18,7 +18,9 @@ def test_create_issue(project):
     assert issue in project.issues.list(state="opened")
     assert issue2 in project.issues.list(state="closed")
 
-    assert issue.participants()
+    participants = issue.participants()
+    assert participants
+    assert isinstance(participants, list)
     assert type(issue.closed_by()) == list
     assert type(issue.related_merge_requests()) == list
 
