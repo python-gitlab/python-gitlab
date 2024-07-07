@@ -104,7 +104,9 @@ def test_merge_request_basic(project):
     # basic testing: only make sure that the methods exist
     mr.commits()
     mr.changes()
-    assert mr.participants()
+    participants = mr.participants()
+    assert participants
+    assert isinstance(participants, list)
 
 
 def test_merge_request_rebase(project):
