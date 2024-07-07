@@ -1,6 +1,8 @@
-from typing import Any, cast, Dict, Optional, Tuple, TYPE_CHECKING, Union
+from typing import Any, cast, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
 
-from gitlab import cli
+import requests
+
+from gitlab import cli, client
 from gitlab import exceptions as exc
 from gitlab import types
 from gitlab.base import RESTManager, RESTObject
@@ -182,7 +184,9 @@ class ProjectIssue(
 
     @cli.register_custom_action(cls_names="ProjectIssue")
     @exc.on_http_error(exc.GitlabGetError)
-    def related_merge_requests(self, **kwargs: Any) -> Dict[str, Any]:
+    def related_merge_requests(
+        self, **kwargs: Any
+    ) -> Union[client.GitlabList, List[Dict[str, Any]]]:
         """List merge requests related to the issue.
 
         Args:
@@ -196,14 +200,16 @@ class ProjectIssue(
             The list of merge requests.
         """
         path = f"{self.manager.path}/{self.encoded_id}/related_merge_requests"
-        result = self.manager.gitlab.http_get(path, **kwargs)
+        result = self.manager.gitlab.http_list(path, **kwargs)
         if TYPE_CHECKING:
-            assert isinstance(result, dict)
+            assert not isinstance(result, requests.Response)
         return result
 
     @cli.register_custom_action(cls_names="ProjectIssue")
     @exc.on_http_error(exc.GitlabGetError)
-    def closed_by(self, **kwargs: Any) -> Dict[str, Any]:
+    def closed_by(
+        self, **kwargs: Any
+    ) -> Union[client.GitlabList, List[Dict[str, Any]]]:
         """List merge requests that will close the issue when merged.
 
         Args:
@@ -217,9 +223,9 @@ class ProjectIssue(
             The list of merge requests.
         """
         path = f"{self.manager.path}/{self.encoded_id}/closed_by"
-        result = self.manager.gitlab.http_get(path, **kwargs)
+        result = self.manager.gitlab.http_list(path, **kwargs)
         if TYPE_CHECKING:
-            assert isinstance(result, dict)
+            assert not isinstance(result, requests.Response)
         return result
 
 
