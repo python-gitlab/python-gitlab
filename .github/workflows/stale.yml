@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/stale@v9.0.0
         with:
-          any-of-labels: 'need info,Waiting for response'
+          any-of-labels: 'need info,Waiting for response,stale'
           stale-issue-message: >
             This issue was marked stale because it has been open 60 days with no
             activity. Please remove the stale label or comment on this issue. Otherwise,
