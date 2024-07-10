@@ -6,13 +6,21 @@ https://docs.gitlab.com/ee/user/packages/generic_packages
 
 from collections.abc import Iterator
 
-from gitlab.v4.objects import GenericPackage
+import pytest
+
+from gitlab import Gitlab
+from gitlab.v4.objects import GenericPackage, Project, ProjectPackageProtectionRule
 
 package_name = "hello-world"
 package_version = "v1.0.0"
 file_name = "hello.tar.gz"
 file_name2 = "hello2.tar.gz"
 file_content = "package content"
+
+
+@pytest.fixture(scope="module", autouse=True)
+def protected_package_feature(gl: Gitlab):
+    gl.features.set(name="packages_protected_packages", value=True)
 
 
 def test_list_project_packages(project):
@@ -148,3 +156,26 @@ def test_stream_generic_package_to_file(tmp_path, project):
 
     with open(path, "r") as f:
         assert f.read() == file_content
+
+
+def test_list_project_protected_packages(project: Project):
+    rules = project.package_protection_rules.list()
+    assert isinstance(rules, list)
+
+
+@pytest.mark.skip(reason="Not released yet")
+def test_create_project_protected_packages(project: Project):
+    protected_package = project.package_protection_rules.create(
+        {
+            "package_name_pattern": "v*",
+            "package_type": "npm",
+            "minimum_access_level_for_push": "maintainer",
+        }
+    )
+    assert isinstance(protected_package, ProjectPackageProtectionRule)
+    assert protected_package.package_type == "npm"
+
+    protected_package.minimum_access_level_for_push = "owner"
+    protected_package.save()
+
+    protected_package.delete()

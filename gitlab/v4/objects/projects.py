@@ -75,6 +75,7 @@ from .merge_trains import ProjectMergeTrainManager  # noqa: F401
 from .milestones import ProjectMilestoneManager  # noqa: F401
 from .notes import ProjectNoteManager  # noqa: F401
 from .notification_settings import ProjectNotificationSettingsManager  # noqa: F401
+from .package_protection_rules import ProjectPackageProtectionRuleManager
 from .packages import GenericPackageManager, ProjectPackageManager  # noqa: F401
 from .pages import ProjectPagesDomainManager  # noqa: F401
 from .pipelines import (  # noqa: F401
@@ -209,6 +210,7 @@ class Project(
     notes: ProjectNoteManager
     notificationsettings: ProjectNotificationSettingsManager
     packages: ProjectPackageManager
+    package_protection_rules: ProjectPackageProtectionRuleManager
     pagesdomains: ProjectPagesDomainManager
     pipelines: ProjectPipelineManager
     pipelineschedules: ProjectPipelineScheduleManager

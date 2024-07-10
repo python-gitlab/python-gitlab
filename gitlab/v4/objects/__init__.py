@@ -46,6 +46,7 @@ from .milestones import *
 from .namespaces import *
 from .notes import *
 from .notification_settings import *
+from .package_protection_rules import *
 from .packages import *
 from .pages import *
 from .personal_access_tokens import *
