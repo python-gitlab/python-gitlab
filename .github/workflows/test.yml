@@ -83,6 +83,7 @@ jobs:
           files: ./coverage.xml
           flags: ${{ matrix.toxenv }}
           fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   coverage:
     runs-on: ubuntu-22.04
@@ -105,6 +106,7 @@ jobs:
           files: ./coverage.xml
           flags: unit
           fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   dist:
     runs-on: ubuntu-latest
