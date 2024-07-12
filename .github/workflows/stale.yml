@@ -17,6 +17,9 @@ jobs:
     steps:
       - uses: actions/stale@v9.0.0
         with:
+          stale-issue-label: "stale"
+          stale-pr-label: "stale"
+
           any-of-labels: 'need info,Waiting for response,stale'
           stale-issue-message: >
             This issue was marked stale because it has been open 60 days with no
