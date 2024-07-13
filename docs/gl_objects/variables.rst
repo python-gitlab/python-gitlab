@@ -90,10 +90,23 @@ Get a variable::
     p_var = project.variables.get('key_name')
     g_var = group.variables.get('key_name')
 
+.. note::
+
+   If there are multiple variables with the same key, use ``filter`` to select
+   the correct ``environment_scope``. See the GitLab API docs for more
+   information.
+
 Create a variable::
 
     var = project.variables.create({'key': 'key1', 'value': 'value1'})
     var = group.variables.create({'key': 'key1', 'value': 'value1'})
+
+.. note::
+
+   If a variable with the same key already exists, the new variable must have a
+   different ``environment_scope``. Otherwise, GitLab returns a message similar
+   to: ``VARIABLE_NAME has already been taken``. See the GitLab API docs for
+   more information.
 
 Update a variable value::
 
@@ -102,9 +115,21 @@ Update a variable value::
     # or
     project.variables.update("key1", {"value": "new_value"})
 
+.. note::
+
+   If there are multiple variables with the same key, use ``filter`` to select
+   the correct ``environment_scope``. See the GitLab API docs for more
+   information.
+
 Remove a variable::
 
     project.variables.delete('key_name')
     group.variables.delete('key_name')
     # or
     var.delete()
+
+.. note::
+
+   If there are multiple variables with the same key, use ``filter`` to select
+   the correct ``environment_scope``. See the GitLab API docs for more
+   information.
