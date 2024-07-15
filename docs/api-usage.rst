@@ -411,6 +411,27 @@ user. For example:
 
    p = gl.projects.create({'name': 'awesome_project'}, sudo='user1')
 
+.. warning::
+   When using ``sudo``, its usage is not remembered. If you use ``sudo`` to
+   retrieve an object and then later use ``save()`` to modify the object, it
+   will not use ``sudo``.  You should use ``save(sudo='user1')`` if you want to
+   perform subsequent actions as the  user.
+
+Updating with ``sudo``
+----------------------
+
+An example of how to ``get`` an object (using ``sudo``), modify the object, and
+then ``save`` the object (using ``sudo``):
+
+.. code-block:: python
+
+   group = gl.groups.get('example-group')
+   notification_setting = group.notificationsettings.get(sudo='user1')
+   notification_setting.level = gitlab.const.NOTIFICATION_LEVEL_GLOBAL
+   # Must use `sudo` again when doing the save.
+   notification_setting.save(sudo='user1')
+
+
 Logging
 =======
 
