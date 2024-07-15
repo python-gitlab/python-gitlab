@@ -48,6 +48,7 @@ API examples
    gl_objects/projects
    gl_objects/project_access_tokens
    gl_objects/protected_branches
+   gl_objects/protected_container_repositories
    gl_objects/protected_environments
    gl_objects/protected_packages
    gl_objects/releases
