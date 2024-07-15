@@ -17,7 +17,7 @@ __all__ = [
 
 
 class ProjectPackageProtectionRule(ObjectDeleteMixin, SaveMixin, RESTObject):
-    _repr_attr = "name"
+    _repr_attr = "package_name_pattern"
 
 
 class ProjectPackageProtectionRuleManager(
@@ -28,6 +28,13 @@ class ProjectPackageProtectionRuleManager(
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
         required=(
+            "package_name_pattern",
+            "package_type",
+            "minimum_access_level_for_push",
+        ),
+    )
+    _update_attrs = RequiredOptional(
+        optional=(
             "package_name_pattern",
             "package_type",
             "minimum_access_level_for_push",
