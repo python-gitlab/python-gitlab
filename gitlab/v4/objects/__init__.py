@@ -10,6 +10,7 @@ from .branches import *
 from .broadcast_messages import *
 from .bulk_imports import *
 from .ci_lint import *
+from .cluster_agents import *
 from .clusters import *
 from .commits import *
 from .container_registry import *
