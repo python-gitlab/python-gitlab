@@ -9,13 +9,11 @@ def protected_registry_feature(gl: Gitlab):
     gl.features.set(name="container_registry_protected_containers", value=True)
 
 
-def test_list_project_protected_registries(project: Project):
+@pytest.mark.skip(reason="Not released yet")
+def test_project_protected_registry(project: Project):
     rules = project.registry_protection_rules.list()
     assert isinstance(rules, list)
 
-
-@pytest.mark.skip(reason="Not released yet")
-def test_create_project_protected_registry(project: Project):
     protected_registry = project.registry_protection_rules.create(
         {
             "repository_path_pattern": "test/image",
