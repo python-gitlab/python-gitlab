@@ -1,5 +1,134 @@
 # CHANGELOG
 
+## v4.8.0 (2024-07-16)
+
+### Chore
+
+* chore(deps): update gitlab/gitlab-ee docker tag to v17.1.2-ee.0 ([`6fedfa5`](https://github.com/python-gitlab/python-gitlab/commit/6fedfa546120942757ea48337ce7446914eb3813))
+
+* chore(deps): update all non-major dependencies ([`4a2b213`](https://github.com/python-gitlab/python-gitlab/commit/4a2b2133b52dac102d6f623bf028bdef6dd5a92f))
+
+* chore(ci): specify name of &#34;stale&#34; label
+
+Saw the following error in the log:
+  [#2618] Removing the label &#34;Stale&#34; from this issue...
+  ##[error][#2618] Error when removing the label: &#34;Label does not exist&#34;
+
+My theory is that the case doesn&#39;t match (&#34;Stale&#34; != &#34;stale&#34;) and that
+is why it failed.  Our label is &#34;stale&#34; so update this to match.
+Thought of changing the label name on GitHub but then would also
+require a change here to the &#34;any-of-labels&#34;. So it seemed simpler to
+just change it here.
+
+It is confusing though that it detected the label &#34;stale&#34;, but then
+couldn&#39;t delete it. ([`44f62c4`](https://github.com/python-gitlab/python-gitlab/commit/44f62c49106abce2099d5bb1f3f97b64971da406))
+
+* chore(ci): stale: allow issues/PRs that have stale label to be closed
+
+If a `stale` label is manually applied, allow the issue or PR to be
+closed by the stale job.
+
+Previously it would require the `stale` label and to also have one of
+&#39;need info&#39; or &#39;Waiting for response&#39; labels added. ([`2ab88b2`](https://github.com/python-gitlab/python-gitlab/commit/2ab88b25a64bd8e028cee2deeb842476de54b109))
+
+* chore(ci): use codecov token when available ([`b74a6fb`](https://github.com/python-gitlab/python-gitlab/commit/b74a6fb5157e55d3e4471a0c5c8378fed8075edc))
+
+* chore(deps): update python-semantic-release/upload-to-gh-release digest to fe6cc89 ([`3f3ad80`](https://github.com/python-gitlab/python-gitlab/commit/3f3ad80ef5bb2ed837adceae061291b2b5545ed3))
+
+* chore(deps): update all non-major dependencies ([`0f59069`](https://github.com/python-gitlab/python-gitlab/commit/0f59069420f403a17f67a5c36c81485c9016b59b))
+
+* chore: add `show_caller` argument to `utils.warn()`
+
+This allows us to not add the caller&#39;s location to the UserWarning
+message. ([`7d04315`](https://github.com/python-gitlab/python-gitlab/commit/7d04315d7d9641d88b0649e42bf24dd160629af5))
+
+* chore: use correct type-hint for `die()` ([`9358640`](https://github.com/python-gitlab/python-gitlab/commit/93586405fbfa61317dc75e186799549573bc0bbb))
+
+* chore(deps): update gitlab/gitlab-ee docker tag to v17.1.1-ee.0 ([`5e98510`](https://github.com/python-gitlab/python-gitlab/commit/5e98510a6c918b33c0db0a7756e8a43a8bdd868a))
+
+* chore(deps): update python-semantic-release/upload-to-gh-release digest to c7c3b69 ([`23393fa`](https://github.com/python-gitlab/python-gitlab/commit/23393faa0642c66a991fd88f1d2d68aed1d2f172))
+
+* chore(deps): update all non-major dependencies ([`cf87226`](https://github.com/python-gitlab/python-gitlab/commit/cf87226a81108fbed4f58751f1c03234cc57bcf1))
+
+### Documentation
+
+* docs: document how to use `sudo` if modifying an object
+
+Add a warning about using `sudo` when saving.
+
+Give an example of how to `get` an object, modify it, and then `save`
+it using `sudo`
+
+Closes: #532 ([`d509da6`](https://github.com/python-gitlab/python-gitlab/commit/d509da60155e9470dee197d91926850ea9548de9))
+
+* docs: variables: add note about `filter` for updating
+
+Add a note about using `filter` when updating a variable.
+
+Closes: #2835
+Closes: #1387
+Closes: #1125 ([`c378817`](https://github.com/python-gitlab/python-gitlab/commit/c378817389a9510ef508b5a3c90282e5fb60049f))
+
+### Feature
+
+* feat(api): add support for project cluster agents ([`32dbc6f`](https://github.com/python-gitlab/python-gitlab/commit/32dbc6f2bee5b22d18c4793f135223d9b9824d15))
+
+* feat(api): add support for container registry protection rules ([`6d31649`](https://github.com/python-gitlab/python-gitlab/commit/6d31649190279a844bfa591a953b0556cd6fc492))
+
+* feat(api): add support for package protection rules ([`6b37811`](https://github.com/python-gitlab/python-gitlab/commit/6b37811c3060620afd8b81e54a99d96e4e094ce9))
+
+* feat(api): add support for commit sequence ([`1f97be2`](https://github.com/python-gitlab/python-gitlab/commit/1f97be2a540122cb872ff59500d85a35031cab5f))
+
+### Fix
+
+* fix: issues `closed_by()/related_merge_requests()` use `http_list`
+
+The `closed_by()` and `related_merge_requests()` API calls return
+lists. So use the `http_list()` method.
+
+This will also warn the user if only a subset of the data is returned. ([`de2e4dd`](https://github.com/python-gitlab/python-gitlab/commit/de2e4dd7e80c7b84fd41458117a85558fcbac32d))
+
+* fix: Have `participants()` method use `http_list()`
+
+Previously it was using `http_get()` but the `participants` API
+returns a list of participants. Also by using this then we will warn
+if only a subset of the participants are returned.
+
+Closes: #2913 ([`d065275`](https://github.com/python-gitlab/python-gitlab/commit/d065275f2fe296dd00e9bbd0f676d1596f261a85))
+
+* fix(files): CR: add explicit comparison to `None`
+
+Co-authored-by: Nejc Habjan &lt;hab.nejc@gmail.com&gt; ([`51d8f88`](https://github.com/python-gitlab/python-gitlab/commit/51d8f888aca469cff1c5ee5e158fb259d2862017))
+
+* fix(files): make `ref` parameter optional in get raw file api
+
+The `ref` parameter was made optional in gitlab v13.11.0. ([`00640ac`](https://github.com/python-gitlab/python-gitlab/commit/00640ac11f77e338919d7e9a1457d111c82af371))
+
+* fix(cli): generate UserWarning if `list` does not return all entries
+
+Previously in the CLI, calls to `list()` would have `get_all=False` by
+default. Therefore hiding the fact that not all items are being
+returned if there were more than 20 items.
+
+Added `--no-get-all` option to `list` actions. Along with the already
+existing `--get-all`.
+
+Closes: #2900 ([`e5a4379`](https://github.com/python-gitlab/python-gitlab/commit/e5a43799b5039261d7034af909011444718a5814))
+
+### Refactor
+
+* refactor(package_protection_rules): add missing attributes ([`c307dd2`](https://github.com/python-gitlab/python-gitlab/commit/c307dd20e3df61b118b3b1a8191c0f1880bc9ed6))
+
+### Test
+
+* test(registry): disable functional tests for unavailable endpoints ([`ee393a1`](https://github.com/python-gitlab/python-gitlab/commit/ee393a16e1aa6dbf2f9785eb3ef486f7d5b9276f))
+
+* test(files): test with and without `ref` parameter in test case ([`f316b46`](https://github.com/python-gitlab/python-gitlab/commit/f316b466c04f8ff3c0cca06d0e18ddf2d62d033c))
+
+* test(files): omit optional `ref` parameter in test case ([`9cb3396`](https://github.com/python-gitlab/python-gitlab/commit/9cb3396d3bd83e82535a2a173b6e52b4f8c020f4))
+
+* test(fixtures): remove deprecated config option ([`2156949`](https://github.com/python-gitlab/python-gitlab/commit/2156949866ce95af542c127ba4b069e83fcc8104))
+
 ## v4.7.0 (2024-06-28)
 
 ### Chore
@@ -1140,8 +1269,6 @@ Co-authored-by: Nejc Habjan &lt;hab.nejc@gmail.com&gt; ([`4f7c784`](https://gith
 
 * fix(cli): display items when iterator is returned ([`33a04e7`](https://github.com/python-gitlab/python-gitlab/commit/33a04e74fc42d720c7be32172133a614f7268ec1))
 
-* fix: typo fixed in docs ([`ee5f444`](https://github.com/python-gitlab/python-gitlab/commit/ee5f444b16e4d2f645499ac06f5d81f22867f050))
-
 ### Refactor
 
 * refactor(client): let mypy know http_password is set ([`2dd177b`](https://github.com/python-gitlab/python-gitlab/commit/2dd177bf83fdf62f0e9bdcb3bc41d5e4f5631504))
@@ -1282,6 +1409,8 @@ too much memory. ([`585e3a8`](https://github.com/python-gitlab/python-gitlab/com
 * fix: change return value to &#34;None&#34; in case getattr returns None to prevent error ([`3f86d36`](https://github.com/python-gitlab/python-gitlab/commit/3f86d36218d80b293b346b37f8be5efa6455d10c))
 
 * fix(deps): bump requests-toolbelt to fix deprecation warning ([`faf842e`](https://github.com/python-gitlab/python-gitlab/commit/faf842e97d4858ff5ebd8ae6996e0cb3ca29881c))
+
+* fix: typo fixed in docs ([`ee5f444`](https://github.com/python-gitlab/python-gitlab/commit/ee5f444b16e4d2f645499ac06f5d81f22867f050))
 
 * fix: Use the ProjectIterationManager within the Project object
 
@@ -1677,9 +1806,9 @@ chore(deps): update all non-major dependencies ([`9410acb`](https://github.com/p
 
 * chore(deps): update dependency commitizen to v2.32.5 ([`e180f14`](https://github.com/python-gitlab/python-gitlab/commit/e180f14309fa728e612ad6259c2e2c1f328a140c))
 
-* chore(deps): update pre-commit hook commitizen-tools/commitizen to v2.32.2 ([`31ba64f`](https://github.com/python-gitlab/python-gitlab/commit/31ba64f2849ce85d434cd04ec7b837ca8f659e03))
-
 * chore(deps): update dependency commitizen to v2.32.2 ([`31aea28`](https://github.com/python-gitlab/python-gitlab/commit/31aea286e0767148498af300e78db7dbdf715bda))
+
+* chore(deps): update pre-commit hook commitizen-tools/commitizen to v2.32.2 ([`31ba64f`](https://github.com/python-gitlab/python-gitlab/commit/31ba64f2849ce85d434cd04ec7b837ca8f659e03))
 
 ### Feature
 
@@ -1688,6 +1817,13 @@ chore(deps): update all non-major dependencies ([`9410acb`](https://github.com/p
 Added the newly added reset_approvals merge request api.
 
 Signed-off-by: Lucas Zampieri &lt;lzampier@redhat.com&gt; ([`88693ff`](https://github.com/python-gitlab/python-gitlab/commit/88693ff2d6f4eecf3c79d017df52738886e2d636))
+
+* feat: add support for deployment approval endpoint
+
+Add support for the deployment approval endpoint[1]
+
+[1] https://docs.gitlab.com/ee/api/deployments.html#approve-or-reject-a-blocked-deployment
+Closes: #2253 ([`9c9eeb9`](https://github.com/python-gitlab/python-gitlab/commit/9c9eeb901b1f3acd3fb0c4f24014ae2ed7c975ec))
 
 ### Fix
 
@@ -1749,24 +1885,17 @@ $ tox -e api_func_v4 -- -k test_gitlab.py ([`98f1956`](https://github.com/python
 
 * chore(deps): update dependency types-requests to v2.28.9 ([`be932f6`](https://github.com/python-gitlab/python-gitlab/commit/be932f6dde5f47fb3d30e654b82563cd719ae8ce))
 
-* chore(deps): update dependency types-setuptools to v64 ([`4c97f26`](https://github.com/python-gitlab/python-gitlab/commit/4c97f26287cc947ab5ee228a5862f2a20535d2ae))
-
 * chore(deps): update pre-commit hook pycqa/flake8 to v5 ([`835d884`](https://github.com/python-gitlab/python-gitlab/commit/835d884e702f1ee48575b3154136f1ef4b2f2ff2))
-
-* chore(deps): update dependency types-requests to v2.28.8 ([`8e5b86f`](https://github.com/python-gitlab/python-gitlab/commit/8e5b86fcc72bf30749228519f1b4a6e29a8dbbe9))
 
 * chore(deps): update pre-commit hook commitizen-tools/commitizen to v2.31.0 ([`71d37d9`](https://github.com/python-gitlab/python-gitlab/commit/71d37d98721c0813b096124ed2ccf5487ab463b9))
 
 * chore(deps): update dependency commitizen to v2.31.0 ([`4ff0894`](https://github.com/python-gitlab/python-gitlab/commit/4ff0894870977f07657e80bfaa06387f2af87d10))
 
+* chore(deps): update dependency types-setuptools to v64 ([`4c97f26`](https://github.com/python-gitlab/python-gitlab/commit/4c97f26287cc947ab5ee228a5862f2a20535d2ae))
+
+* chore(deps): update dependency types-requests to v2.28.8 ([`8e5b86f`](https://github.com/python-gitlab/python-gitlab/commit/8e5b86fcc72bf30749228519f1b4a6e29a8dbbe9))
+
 ### Feature
-
-* feat: add support for deployment approval endpoint
-
-Add support for the deployment approval endpoint[1]
-
-[1] https://docs.gitlab.com/ee/api/deployments.html#approve-or-reject-a-blocked-deployment
-Closes: #2253 ([`9c9eeb9`](https://github.com/python-gitlab/python-gitlab/commit/9c9eeb901b1f3acd3fb0c4f24014ae2ed7c975ec))
 
 * feat: add support for merge_base API ([`dd4fbd5`](https://github.com/python-gitlab/python-gitlab/commit/dd4fbd5e43adbbc502624a8de0d30925d798dec0))
 
@@ -1839,13 +1968,13 @@ query parameters. ([`6d1b62d`](https://github.com/python-gitlab/python-gitlab/co
 
 * chore: enable mypy check `disallow_any_generics` ([`24d17b4`](https://github.com/python-gitlab/python-gitlab/commit/24d17b43da16dd11ab37b2cee561d9392c90f32e))
 
-* chore: enable mypy check `no_implicit_optional` ([`64b208e`](https://github.com/python-gitlab/python-gitlab/commit/64b208e0e91540af2b645da595f0ef79ee7522e1))
+* chore(deps): update pre-commit hook commitizen-tools/commitizen to v2.29.2 ([`4988c02`](https://github.com/python-gitlab/python-gitlab/commit/4988c029e0dda89ff43375d1cd2f407abdbe3dc7))
 
-* chore(deps): update dependency types-requests to v2.28.6 ([`54dd4c3`](https://github.com/python-gitlab/python-gitlab/commit/54dd4c3f857f82aa8781b0daf22fa2dd3c60c2c4))
+* chore: enable mypy check `no_implicit_optional` ([`64b208e`](https://github.com/python-gitlab/python-gitlab/commit/64b208e0e91540af2b645da595f0ef79ee7522e1))
 
 * chore(deps): update dependency flake8 to v5 ([`cdc384b`](https://github.com/python-gitlab/python-gitlab/commit/cdc384b8a2096e31aff12ea98383e2b1456c5731))
 
-* chore(deps): update pre-commit hook commitizen-tools/commitizen to v2.29.2 ([`4988c02`](https://github.com/python-gitlab/python-gitlab/commit/4988c029e0dda89ff43375d1cd2f407abdbe3dc7))
+* chore(deps): update dependency types-requests to v2.28.6 ([`54dd4c3`](https://github.com/python-gitlab/python-gitlab/commit/54dd4c3f857f82aa8781b0daf22fa2dd3c60c2c4))
 
 * chore(deps): update dependency commitizen to v2.29.2 ([`30274ea`](https://github.com/python-gitlab/python-gitlab/commit/30274ead81205946a5a7560e592f346075035e0e))
 
@@ -1856,15 +1985,15 @@ the path.  So https://gitlab.com/gitlab-org/gitlab would only show
 &#34;gitlab&#34;. Using `path_with_namespace` it will now show
 &#34;gitlab-org/gitlab&#34; ([`7cccefe`](https://github.com/python-gitlab/python-gitlab/commit/7cccefe6da0e90391953734d95debab2fe07ea49))
 
+* chore: enable mypy check `warn_return_any`
+
+Update code so that the `warn_return_any` check passes. ([`76ec4b4`](https://github.com/python-gitlab/python-gitlab/commit/76ec4b481fa931ea36a195ac474812c11babef7b))
+
 * chore: make code PEP597 compliant
 
 Use `encoding=&#34;utf-8&#34;` in `open()` and open-like functions.
 
 https://peps.python.org/pep-0597/ ([`433dba0`](https://github.com/python-gitlab/python-gitlab/commit/433dba02e0d4462ae84a73d8699fe7f3e07aa410))
-
-* chore: enable mypy check `warn_return_any`
-
-Update code so that the `warn_return_any` check passes. ([`76ec4b4`](https://github.com/python-gitlab/python-gitlab/commit/76ec4b481fa931ea36a195ac474812c11babef7b))
 
 * chore(clusters): deprecate clusters support
 
@@ -1924,6 +2053,10 @@ running.
   * Increase timeout from 300 to 400 seconds
 
 [1] https://docs.gitlab.com/ee/user/admin_area/monitoring/health_check.html ([`67508e8`](https://github.com/python-gitlab/python-gitlab/commit/67508e8100be18ce066016dcb8e39fa9f0c59e51))
+
+* test(functional): bump GitLab docker image to 15.2.0-ee.0
+
+Use the GitLab docker image 15.2.0-ee.0 in the functional testing. ([`69014e9`](https://github.com/python-gitlab/python-gitlab/commit/69014e9be3a781be6742478af820ea097d004791))
 
 ### Unknown
 
@@ -1993,13 +2126,13 @@ Enable using GitLab Enterprise Edition (EE) in the functional tests.
 This will allow us to add functional tests for EE only features in the
 functional tests. ([`17c01ea`](https://github.com/python-gitlab/python-gitlab/commit/17c01ea55806c722523f2f9aef0175455ec942c5))
 
-* chore(deps): update dependency mypy to v0.971 ([`7481d27`](https://github.com/python-gitlab/python-gitlab/commit/7481d271512eaa234315bcdbaf329026589bfda7))
-
 * chore(deps): update pre-commit hook commitizen-tools/commitizen to v2.29.0 ([`ad8d62a`](https://github.com/python-gitlab/python-gitlab/commit/ad8d62ae9612c173a749d413f7a84e5b8c0167cf))
 
-* chore(deps): update typing dependencies ([`f2209a0`](https://github.com/python-gitlab/python-gitlab/commit/f2209a0ea084eaf7fbc89591ddfea138d99527a6))
-
 * chore(deps): update dependency commitizen to v2.29.0 ([`c365be1`](https://github.com/python-gitlab/python-gitlab/commit/c365be1b908c5e4fda445680c023607bdf6c6281))
+
+* chore(deps): update dependency mypy to v0.971 ([`7481d27`](https://github.com/python-gitlab/python-gitlab/commit/7481d271512eaa234315bcdbaf329026589bfda7))
+
+* chore(deps): update typing dependencies ([`f2209a0`](https://github.com/python-gitlab/python-gitlab/commit/f2209a0ea084eaf7fbc89591ddfea138d99527a6))
 
 * chore(authors): fix email and do the ABC ([`9833632`](https://github.com/python-gitlab/python-gitlab/commit/98336320a66d1859ba73e084a5e86edc3aa1643c))
 
@@ -2061,20 +2194,20 @@ that naming convention. ([`8cf5cd9`](https://github.com/python-gitlab/python-git
 
 * chore(ci_lint): add create attributes ([`6e1342f`](https://github.com/python-gitlab/python-gitlab/commit/6e1342fc0b7cf740b25a939942ea02cdd18a9625))
 
-* chore(deps): update dependency requests to v2.28.1 ([`be33245`](https://github.com/python-gitlab/python-gitlab/commit/be3324597aa3f22b0692d3afa1df489f2709a73e))
-
-* chore(deps): update dependency pylint to v2.14.4 ([`2cee2d4`](https://github.com/python-gitlab/python-gitlab/commit/2cee2d4a86e76d3f63f3608ed6a92e64813613d3))
-
 * chore: simplify multi-nested try blocks
 
 Instead of have a multi-nested series of try blocks. Convert it to a
 more readable series of `if` statements. ([`e734470`](https://github.com/python-gitlab/python-gitlab/commit/e7344709d931e2b254d225d77ca1474bc69971f8))
 
+* chore(deps): update dependency requests to v2.28.1 ([`be33245`](https://github.com/python-gitlab/python-gitlab/commit/be3324597aa3f22b0692d3afa1df489f2709a73e))
+
+* chore(deps): update dependency pylint to v2.14.4 ([`2cee2d4`](https://github.com/python-gitlab/python-gitlab/commit/2cee2d4a86e76d3f63f3608ed6a92e64813613d3))
+
+* chore: fix misspelling ([`2d08fc8`](https://github.com/python-gitlab/python-gitlab/commit/2d08fc89fb67de25ad41f64c86a9b8e96e4c261a))
+
 * chore(docs): convert tabs to spaces
 
 Some tabs snuck into the documentation. Convert them to 4-spaces. ([`9ea5520`](https://github.com/python-gitlab/python-gitlab/commit/9ea5520cec8979000d7f5dbcc950f2250babea96))
-
-* chore: fix misspelling ([`2d08fc8`](https://github.com/python-gitlab/python-gitlab/commit/2d08fc89fb67de25ad41f64c86a9b8e96e4c261a))
 
 ### Documentation
 
@@ -2250,6 +2383,8 @@ Closes: #2116 ([`5d9c198`](https://github.com/python-gitlab/python-gitlab/commit
 
 * refactor(test-projects): apply suggestions and use fixtures ([`a51f848`](https://github.com/python-gitlab/python-gitlab/commit/a51f848db4204b2f37ae96fd235ae33cb7c2fe98))
 
+* refactor(test-projects): remove test_restore_project ([`9be0875`](https://github.com/python-gitlab/python-gitlab/commit/9be0875c3793324b4c4dde29519ee62b39a8cc18))
+
 ### Test
 
 * test(cli): add tests for token scopes ([`263fe3d`](https://github.com/python-gitlab/python-gitlab/commit/263fe3d24836b34dccdcee0221bd417e0b74fb2e))
@@ -2258,10 +2393,6 @@ Closes: #2116 ([`5d9c198`](https://github.com/python-gitlab/python-gitlab/commit
 
 https://github.com/python-gitlab/python-gitlab/issues/1698 has been
 fixed. Add test to show that. ([`75bec7d`](https://github.com/python-gitlab/python-gitlab/commit/75bec7d543dd740c50452b21b0b4509377cd40ce))
-
-* test(functional): bump GitLab docker image to 15.2.0-ee.0
-
-Use the GitLab docker image 15.2.0-ee.0 in the functional testing. ([`69014e9`](https://github.com/python-gitlab/python-gitlab/commit/69014e9be3a781be6742478af820ea097d004791))
 
 * test: always ensure clean config environment ([`8d4f13b`](https://github.com/python-gitlab/python-gitlab/commit/8d4f13b192afd5d4610eeaf2bbea71c3b6a25964))
 
@@ -2294,6 +2425,8 @@ show up in the log. ([`95fe924`](https://github.com/python-gitlab/python-gitlab/
 * test: add more tests for container registries ([`f6b6e18`](https://github.com/python-gitlab/python-gitlab/commit/f6b6e18f96f4cdf67c8c53ae79e6a8259dcce9ee))
 
 * test(functional): replace len() calls with list membership checks ([`97e0eb9`](https://github.com/python-gitlab/python-gitlab/commit/97e0eb9267202052ed14882258dceca0f6c4afd7))
+
+* test(projects): add unit tests for projects ([`67942f0`](https://github.com/python-gitlab/python-gitlab/commit/67942f0d46b7d445f28f80d3f57aa91eeea97a24))
 
 ### Unknown
 
@@ -2421,9 +2554,9 @@ chore(docs): convert tabs to spaces ([`8771ad8`](https://github.com/python-gitla
 
 * chore(workflows): explicitly use python-version ([`eb14475`](https://github.com/python-gitlab/python-gitlab/commit/eb1447588dfbbdfe724fca9009ea5451061b5ff0))
 
-* chore(deps): update typing dependencies ([`acc5c39`](https://github.com/python-gitlab/python-gitlab/commit/acc5c3971f13029288dff2909692a0171f4a66f7))
-
 * chore(deps): update actions/setup-python action to v4 ([`77c1f03`](https://github.com/python-gitlab/python-gitlab/commit/77c1f0352adc8488041318e5dfd2fa98a5b5af62))
+
+* chore(deps): update typing dependencies ([`acc5c39`](https://github.com/python-gitlab/python-gitlab/commit/acc5c3971f13029288dff2909692a0171f4a66f7))
 
 * chore(deps): update pre-commit hook pycqa/pylint to v2.14.3 ([`d1fe838`](https://github.com/python-gitlab/python-gitlab/commit/d1fe838b65ccd1a68fb6301bbfd06cd19425a75c))
 
@@ -2447,16 +2580,16 @@ this will help people when their job fails. ([`d08d07d`](https://github.com/pyth
 
 * chore(deps): update dependency pylint to v2.14.3 ([`9a16bb1`](https://github.com/python-gitlab/python-gitlab/commit/9a16bb158f3cb34a4c4cb7451127fbc7c96642e2))
 
-* chore(deps): update pre-commit hook commitizen-tools/commitizen to v2.27.1 ([`22c5db4`](https://github.com/python-gitlab/python-gitlab/commit/22c5db4bcccf592f5cf7ea34c336208c21769896))
-
-* chore(deps): update dependency requests to v2.28.0 ([`d361f4b`](https://github.com/python-gitlab/python-gitlab/commit/d361f4bd4ec066452a75cf04f64334234478bb02))
-
 * chore: fix issue found with pylint==2.14.3
 
 A new error was reported when running pylint==2.14.3:
   gitlab/client.py:488:0: W1404: Implicit string concatenation found in call (implicit-str-concat)
 
 Fixed this issue. ([`eeab035`](https://github.com/python-gitlab/python-gitlab/commit/eeab035ab715e088af73ada00e0a3b0c03527187))
+
+* chore(deps): update pre-commit hook commitizen-tools/commitizen to v2.27.1 ([`22c5db4`](https://github.com/python-gitlab/python-gitlab/commit/22c5db4bcccf592f5cf7ea34c336208c21769896))
+
+* chore(deps): update dependency requests to v2.28.0 ([`d361f4b`](https://github.com/python-gitlab/python-gitlab/commit/d361f4bd4ec066452a75cf04f64334234478bb02))
 
 * chore(deps): update dependency mypy to v0.961 ([`f117b2f`](https://github.com/python-gitlab/python-gitlab/commit/f117b2f92226a507a8adbb42023143dac0cc07fc))
 
@@ -2474,11 +2607,6 @@ Make the parser name more user friendly by renaming from generic
 Use multiple processors when running PyLint. On my system it took
 about 10.3 seconds to run PyLint before this change. After this change
 it takes about 5.8 seconds to run PyLint. ([`7f2240f`](https://github.com/python-gitlab/python-gitlab/commit/7f2240f1b9231e8b856706952ec84234177a495b))
-
-* chore: rename `whaction` and `action` to `resource_action` in CLI
-
-Rename the variables `whaction` and `action` to `resource_action` to
-improve code-readability. ([`fb3f28a`](https://github.com/python-gitlab/python-gitlab/commit/fb3f28a053f0dcf0a110bb8b6fd11696b4ba3dd9))
 
 * chore: enable pylint check: &#34;redefined-outer-name&#34;,
 
@@ -2514,6 +2642,11 @@ Enable the pylint checks:
   * unspecified-encoding
 
 Update code to resolve errors found ([`1e89164`](https://github.com/python-gitlab/python-gitlab/commit/1e8916438f7c4f67bd7745103b870d84f6ba2d01))
+
+* chore: rename `whaction` and `action` to `resource_action` in CLI
+
+Rename the variables `whaction` and `action` to `resource_action` to
+improve code-readability. ([`fb3f28a`](https://github.com/python-gitlab/python-gitlab/commit/fb3f28a053f0dcf0a110bb8b6fd11696b4ba3dd9))
 
 * chore: rename `what` to `gitlab_resource`
 
@@ -2576,10 +2709,6 @@ where `get()` in a `GetWithoutIdMixin` based class could return `None`
 
 Update the type-hints to no longer return `Optional` AKA `None` ([`aa972d4`](https://github.com/python-gitlab/python-gitlab/commit/aa972d49c57f2ebc983d2de1cfb8d18924af6734))
 
-* chore(deps): update dependency commitizen to v2.27.1 ([`456f9f1`](https://github.com/python-gitlab/python-gitlab/commit/456f9f14453f2090fdaf88734fe51112bf4e7fde))
-
-* chore(deps): update typing dependencies ([`f3f79c1`](https://github.com/python-gitlab/python-gitlab/commit/f3f79c1d3afa923405b83dcea905fec213201452))
-
 * chore: correct ModuleNotFoundError() arguments
 
 Previously in commit 233b79ed442aac66faf9eb4b0087ea126d6dffc5 I had
@@ -2590,6 +2719,10 @@ very helpful.
 
 Correct that and add a unit-test that shows we get the message we
 expect. ([`0b7933c`](https://github.com/python-gitlab/python-gitlab/commit/0b7933c5632c2f81c89f9a97e814badf65d1eb38))
+
+* chore(deps): update typing dependencies ([`f3f79c1`](https://github.com/python-gitlab/python-gitlab/commit/f3f79c1d3afa923405b83dcea905fec213201452))
+
+* chore(deps): update dependency commitizen to v2.27.1 ([`456f9f1`](https://github.com/python-gitlab/python-gitlab/commit/456f9f14453f2090fdaf88734fe51112bf4e7fde))
 
 * chore(mixins): remove None check as http_get always returns value ([`f0152dc`](https://github.com/python-gitlab/python-gitlab/commit/f0152dc3cc9a42aa4dc3c0014b4c29381e9b39d6))
 
@@ -2659,15 +2792,15 @@ artifacts
 
 * test(packages): add tests for streaming downloads ([`b644721`](https://github.com/python-gitlab/python-gitlab/commit/b6447211754e126f64e12fc735ad74fe557b7fb4))
 
-* feat(api): support head() method for get and list endpoints ([`ce9216c`](https://github.com/python-gitlab/python-gitlab/commit/ce9216ccc542d834be7f29647c7ee98c2ca5bb01))
-
-* feat(api): implement HEAD method ([`90635a7`](https://github.com/python-gitlab/python-gitlab/commit/90635a7db3c9748745471d2282260418e31c7797))
-
 * feat(users): add approve and reject methods to User
 
 As requested in #1604.
 
 Co-authored-by: John Villalovos &lt;john@sodarock.com&gt; ([`f57139d`](https://github.com/python-gitlab/python-gitlab/commit/f57139d8f1dafa6eb19d0d954b3634c19de6413c))
+
+* feat(api): support head() method for get and list endpoints ([`ce9216c`](https://github.com/python-gitlab/python-gitlab/commit/ce9216ccc542d834be7f29647c7ee98c2ca5bb01))
+
+* feat(api): implement HEAD method ([`90635a7`](https://github.com/python-gitlab/python-gitlab/commit/90635a7db3c9748745471d2282260418e31c7797))
 
 * feat(api): convert gitlab.const to Enums
 
@@ -2750,8 +2883,6 @@ requires it to be a keyword-only argument. ([`212ddfc`](https://github.com/pytho
 
 * refactor: remove no-op id argument in GetWithoutIdMixin ([`0f2a602`](https://github.com/python-gitlab/python-gitlab/commit/0f2a602d3a9d6579f5fdfdf945a236ae44e93a12))
 
-* refactor(test-projects): remove test_restore_project ([`9be0875`](https://github.com/python-gitlab/python-gitlab/commit/9be0875c3793324b4c4dde29519ee62b39a8cc18))
-
 * refactor(mixins): extract custom type transforms into utils ([`09b3b22`](https://github.com/python-gitlab/python-gitlab/commit/09b3b2225361722f2439952d2dbee6a48a9f9fd9))
 
 ### Test
@@ -2770,13 +2901,11 @@ Enable the pylint &#34;unused-argument&#34; check and resolve issues it found.
 
 * test(api): add tests for HEAD method ([`b0f02fa`](https://github.com/python-gitlab/python-gitlab/commit/b0f02facef2ea30f24dbfb3c52974f34823e9bba))
 
-* test(projects): add unit tests for projects ([`67942f0`](https://github.com/python-gitlab/python-gitlab/commit/67942f0d46b7d445f28f80d3f57aa91eeea97a24))
+* test: add more tests for RequiredOptional ([`ce40fde`](https://github.com/python-gitlab/python-gitlab/commit/ce40fde9eeaabb4a30c5a87d9097b1d4eced1c1b))
 
 * test: move back to using latest Python 3.11 version ([`8c34781`](https://github.com/python-gitlab/python-gitlab/commit/8c347813e7aaf26a33fe5ae4ae73448beebfbc6c))
 
 * test: increase client coverage ([`00aec96`](https://github.com/python-gitlab/python-gitlab/commit/00aec96ed0b60720362c6642b416567ff39aef09))
-
-* test: add more tests for RequiredOptional ([`ce40fde`](https://github.com/python-gitlab/python-gitlab/commit/ce40fde9eeaabb4a30c5a87d9097b1d4eced1c1b))
 
 * test(cli): improve coverage for custom actions ([`7327f78`](https://github.com/python-gitlab/python-gitlab/commit/7327f78073caa2fb8aaa6bf0e57b38dd7782fa57))
 
@@ -2934,6 +3063,12 @@ call it `flake8` to be more precise. ([`78b4f99`](https://github.com/python-gitl
 
 * chore(deps): update dependency pylint to v2.13.8 ([`b235bb0`](https://github.com/python-gitlab/python-gitlab/commit/b235bb00f3c09be5bb092a5bb7298e7ca55f2366))
 
+* chore: exclude `build/` directory from mypy check
+
+The `build/` directory is created by the tox environment
+`twine-check`. When the `build/` directory exists `mypy` will have an
+error. ([`989a12b`](https://github.com/python-gitlab/python-gitlab/commit/989a12b79ac7dff8bf0d689f36ccac9e3494af01))
+
 * chore: add `cz` to default tox environment list and skip_missing_interpreters
 
 Add the `cz` (`comittizen`) check by default.
@@ -2941,12 +3076,6 @@ Add the `cz` (`comittizen`) check by default.
 Set skip_missing_interpreters = True so that when a user runs tox and
 doesn&#39;t have a specific version of Python it doesn&#39;t mark it as an
 error. ([`ba8c052`](https://github.com/python-gitlab/python-gitlab/commit/ba8c0522dc8a116e7a22c42e21190aa205d48253))
-
-* chore: exclude `build/` directory from mypy check
-
-The `build/` directory is created by the tox environment
-`twine-check`. When the `build/` directory exists `mypy` will have an
-error. ([`989a12b`](https://github.com/python-gitlab/python-gitlab/commit/989a12b79ac7dff8bf0d689f36ccac9e3494af01))
 
 * chore(deps): update dependency types-requests to v2.27.25 ([`d6ea47a`](https://github.com/python-gitlab/python-gitlab/commit/d6ea47a175c17108e5388213abd59c3e7e847b02))
 
@@ -3084,9 +3213,9 @@ chore(deps): update dependency types-requests to v2.27.24 ([`79b903d`](https://g
 
 * chore(deps): update typing dependencies ([`d27cc6a`](https://github.com/python-gitlab/python-gitlab/commit/d27cc6a1219143f78aad7e063672c7442e15672e))
 
-* chore(deps): update dependency pylint to v2.13.5 ([`5709675`](https://github.com/python-gitlab/python-gitlab/commit/570967541ecd46bfb83461b9d2c95bb0830a84fa))
-
 * chore(deps): update pre-commit hook pycqa/pylint to v2.13.5 ([`17d5c6c`](https://github.com/python-gitlab/python-gitlab/commit/17d5c6c3ba26f8b791ec4571726c533f5bbbde7d))
+
+* chore(deps): update dependency pylint to v2.13.5 ([`5709675`](https://github.com/python-gitlab/python-gitlab/commit/570967541ecd46bfb83461b9d2c95bb0830a84fa))
 
 * chore(deps): update codecov/codecov-action action to v3 ([`292e91b`](https://github.com/python-gitlab/python-gitlab/commit/292e91b3cbc468c4a40ed7865c3c98180c1fe864))
 
@@ -3114,6 +3243,10 @@ chore(deps): update dependency types-requests to v2.27.24 ([`79b903d`](https://g
 
 ### Feature
 
+* feat(objects): support getting project/group deploy tokens by id ([`fcd37fe`](https://github.com/python-gitlab/python-gitlab/commit/fcd37feff132bd5b225cde9d5f9c88e62b3f1fd6))
+
+* feat(user): support getting user SSH key by id ([`6f93c05`](https://github.com/python-gitlab/python-gitlab/commit/6f93c0520f738950a7c67dbeca8d1ac8257e2661))
+
 * feat: emit a warning when using a `list()` method returns max
 
 A common cause of issues filed and questions raised is that a user
@@ -3125,19 +3258,15 @@ To help with this we now emit a warning when the result from a
 `per_page` value) and the user is not using either `all=True`,
 `all=False`, `as_list=False`, or `page=X`. ([`1339d64`](https://github.com/python-gitlab/python-gitlab/commit/1339d645ce58a2e1198b898b9549ba5917b1ff12))
 
-* feat(objects): support getting project/group deploy tokens by id ([`fcd37fe`](https://github.com/python-gitlab/python-gitlab/commit/fcd37feff132bd5b225cde9d5f9c88e62b3f1fd6))
-
-* feat(user): support getting user SSH key by id ([`6f93c05`](https://github.com/python-gitlab/python-gitlab/commit/6f93c0520f738950a7c67dbeca8d1ac8257e2661))
-
 * feat(api): re-add topic delete endpoint
 
 This reverts commit e3035a799a484f8d6c460f57e57d4b59217cd6de. ([`d1d96bd`](https://github.com/python-gitlab/python-gitlab/commit/d1d96bda5f1c6991c8ea61dca8f261e5b74b5ab6))
 
 ### Fix
 
-* fix: add ChunkedEncodingError to list of retryable exceptions ([`7beb20f`](https://github.com/python-gitlab/python-gitlab/commit/7beb20ff7b7b85fb92fc6b647d9c1bdb7568f27c))
-
 * fix: avoid passing redundant arguments to API ([`3431887`](https://github.com/python-gitlab/python-gitlab/commit/34318871347b9c563d01a13796431c83b3b1d58c))
+
+* fix: add ChunkedEncodingError to list of retryable exceptions ([`7beb20f`](https://github.com/python-gitlab/python-gitlab/commit/7beb20ff7b7b85fb92fc6b647d9c1bdb7568f27c))
 
 * fix(cli): add missing filters for project commit list ([`149d244`](https://github.com/python-gitlab/python-gitlab/commit/149d2446fcc79b31d3acde6e6d51adaf37cbb5d3))
 
@@ -3277,6 +3406,10 @@ chore(deps): update black to v22.3.0 ([`f942e65`](https://github.com/python-gitl
 
 * chore(deps): update dependency mypy to v0.940 ([`dd11084`](https://github.com/python-gitlab/python-gitlab/commit/dd11084dd281e270a480b338aba88b27b991e58e))
 
+* chore(deps): update black to v22 ([`3f84f1b`](https://github.com/python-gitlab/python-gitlab/commit/3f84f1bb805691b645fac2d1a41901abefccb17e))
+
+* chore(deps): update pre-commit hook alessandrojcm/commitlint-pre-commit-hook to v8 ([`5440780`](https://github.com/python-gitlab/python-gitlab/commit/544078068bc9d7a837e75435e468e4749f7375ac))
+
 * chore(deps): update dependency types-setuptools to v57.4.10 ([`b37fc41`](https://github.com/python-gitlab/python-gitlab/commit/b37fc4153a00265725ca655bc4482714d6b02809))
 
 * chore(deps): update dependency pytest to v7 ([`ae8d70d`](https://github.com/python-gitlab/python-gitlab/commit/ae8d70de2ad3ceb450a33b33e189bb0a3f0ff563))
@@ -3286,10 +3419,6 @@ chore(deps): update black to v22.3.0 ([`f942e65`](https://github.com/python-gitl
 * chore(deps): update actions/stale action to v5 ([`d841185`](https://github.com/python-gitlab/python-gitlab/commit/d8411853e224a198d0ead94242acac3aadef5adc))
 
 * chore(deps): update actions/setup-python action to v3 ([`7f845f7`](https://github.com/python-gitlab/python-gitlab/commit/7f845f7eade3c0cdceec6bfe7b3d087a8586edc5))
-
-* chore(deps): update pre-commit hook alessandrojcm/commitlint-pre-commit-hook to v8 ([`5440780`](https://github.com/python-gitlab/python-gitlab/commit/544078068bc9d7a837e75435e468e4749f7375ac))
-
-* chore(deps): update black to v22 ([`3f84f1b`](https://github.com/python-gitlab/python-gitlab/commit/3f84f1bb805691b645fac2d1a41901abefccb17e))
 
 * chore(deps): update dependency sphinx to v4.4.0 ([`425d161`](https://github.com/python-gitlab/python-gitlab/commit/425d1610ca19be775d9fdd857e61d8b4a4ae4db3))
 
@@ -3305,15 +3434,27 @@ chore(deps): update black to v22.3.0 ([`f942e65`](https://github.com/python-gitl
 
 ### Documentation
 
+* docs(chore): include docs .js files in sdist ([`3010b40`](https://github.com/python-gitlab/python-gitlab/commit/3010b407bc9baabc6cef071507e8fa47c0f1624d))
+
 * docs: fix typo and incorrect style ([`2828b10`](https://github.com/python-gitlab/python-gitlab/commit/2828b10505611194bebda59a0e9eb41faf24b77b))
 
 * docs: add pipeline test report summary support ([`d78afb3`](https://github.com/python-gitlab/python-gitlab/commit/d78afb36e26f41d727dee7b0952d53166e0df850))
 
-* docs(chore): include docs .js files in sdist ([`3010b40`](https://github.com/python-gitlab/python-gitlab/commit/3010b407bc9baabc6cef071507e8fa47c0f1624d))
-
 ### Feature
 
 * feat(object): add pipeline test report summary support ([`a97e0cf`](https://github.com/python-gitlab/python-gitlab/commit/a97e0cf81b5394b3a2b73d927b4efe675bc85208))
+
+### Fix
+
+* fix: support RateLimit-Reset header
+
+Some endpoints are not returning the `Retry-After` header when
+rate-limiting occurrs. In those cases use the `RateLimit-Reset` [1]
+header, if available.
+
+Closes: #1889
+
+[1] https://docs.gitlab.com/ee/user/admin_area/settings/user_and_ip_rate_limits.html#response-headers ([`4060146`](https://github.com/python-gitlab/python-gitlab/commit/40601463c78a6f5d45081700164899b2559b7e55))
 
 ### Style
 
@@ -3425,16 +3566,6 @@ Co-authored-by: Wadim Klincov &lt;wadim.klincov@siemens.com&gt; ([`7a13b9b`](htt
 * feat(objects): add a complete artifacts manager ([`c8c2fa7`](https://github.com/python-gitlab/python-gitlab/commit/c8c2fa763558c4d9906e68031a6602e007fec930))
 
 ### Fix
-
-* fix: support RateLimit-Reset header
-
-Some endpoints are not returning the `Retry-After` header when
-rate-limiting occurrs. In those cases use the `RateLimit-Reset` [1]
-header, if available.
-
-Closes: #1889
-
-[1] https://docs.gitlab.com/ee/user/admin_area/settings/user_and_ip_rate_limits.html#response-headers ([`4060146`](https://github.com/python-gitlab/python-gitlab/commit/40601463c78a6f5d45081700164899b2559b7e55))
 
 * fix(services): use slug for id_attr instead of custom methods ([`e30f39d`](https://github.com/python-gitlab/python-gitlab/commit/e30f39dff5726266222b0f56c94f4ccfe38ba527))
 
@@ -3703,21 +3834,21 @@ Add logging to `tests/functional/conftest.py` to have a better
 understanding of what is happening during a test run which is useful
 when trying to troubleshoot issues in the CI. ([`a1ac9ae`](https://github.com/python-gitlab/python-gitlab/commit/a1ac9ae63828ca2012289817410d420da066d8df))
 
-* chore(docs): use admonitions consistently ([`55c67d1`](https://github.com/python-gitlab/python-gitlab/commit/55c67d1fdb81dcfdf8f398b3184fc59256af513d))
-
 * chore: fix functional test failure if config present
 
 Previously c8256a5933d745f70c7eea0a7d6230b51bac0fbc was done to fix
 this but it missed two other failures. ([`c9ed3dd`](https://github.com/python-gitlab/python-gitlab/commit/c9ed3ddc1253c828dc877dcd55000d818c297ee7))
 
-* chore: fix missing comma
-
-There was a missing comma which meant the strings were concatenated
-instead of being two separate strings. ([`7c59fac`](https://github.com/python-gitlab/python-gitlab/commit/7c59fac12fe69a1080cc227512e620ac5ae40b13))
+* chore(docs): use admonitions consistently ([`55c67d1`](https://github.com/python-gitlab/python-gitlab/commit/55c67d1fdb81dcfdf8f398b3184fc59256af513d))
 
 * chore(dist): add docs *.md files to sdist
 
 build_sphinx to fail due to setup.cfg warning-is-error ([`d9457d8`](https://github.com/python-gitlab/python-gitlab/commit/d9457d860ae7293ca218ab25e9501b0f796caa57))
+
+* chore: fix missing comma
+
+There was a missing comma which meant the strings were concatenated
+instead of being two separate strings. ([`7c59fac`](https://github.com/python-gitlab/python-gitlab/commit/7c59fac12fe69a1080cc227512e620ac5ae40b13))
 
 * chore: add a stale workflow
 
@@ -3733,6 +3864,13 @@ them once they have been stale for 15 days.
 https://github.com/actions/stale
 
 Closes: #1649 ([`2c036a9`](https://github.com/python-gitlab/python-gitlab/commit/2c036a992c9d7fdf6ccf0d3132d9b215c6d197f5))
+
+* chore: add functional test of mergerequest.get()
+
+Add a functional test of test mergerequest.get() and
+mergerequest.get(..., lazy=True)
+
+Closes: #1425 ([`a92b55b`](https://github.com/python-gitlab/python-gitlab/commit/a92b55b81eb3586e4144f9332796c94747bf9cfe))
 
 * chore: add temporary banner for v3 ([`a349793`](https://github.com/python-gitlab/python-gitlab/commit/a349793307e3a975bb51f864b48e5e9825f70182))
 
@@ -3769,8 +3907,6 @@ Closes: #1081 ([`e6258a4`](https://github.com/python-gitlab/python-gitlab/commit
 See https://docs.gitlab.com/ee/api/group_access_tokens.html ([`c01b7c4`](https://github.com/python-gitlab/python-gitlab/commit/c01b7c494192c5462ec673848287ef2a5c9bd737))
 
 ### Fix
-
-* fix(cli): add missing list filters for environments ([`6f64d40`](https://github.com/python-gitlab/python-gitlab/commit/6f64d4098ed4a890838c6cf43d7a679e6be4ac6c))
 
 * fix: use url-encoded ID in all paths
 
@@ -3810,6 +3946,8 @@ Closes: #848
 
 [1] https://docs.gitlab.com/ee/api/members.html#list-all-members-of-a-group-or-project-including-inherited-and-invited-members
 [2] https://docs.gitlab.com/ee/api/members.html#get-a-member-of-a-group-or-project-including-inherited-and-invited-members ([`755e0a3`](https://github.com/python-gitlab/python-gitlab/commit/755e0a32e8ca96a3a3980eb7d7346a1a899ad58b))
+
+* fix(cli): add missing list filters for environments ([`6f64d40`](https://github.com/python-gitlab/python-gitlab/commit/6f64d4098ed4a890838c6cf43d7a679e6be4ac6c))
 
 * fix(api): services: add missing `lazy` parameter
 
@@ -4104,13 +4242,6 @@ Closes: #1477 ([`d56a434`](https://github.com/python-gitlab/python-gitlab/commit
 
 * chore: fix typo in MR documentation ([`2254222`](https://github.com/python-gitlab/python-gitlab/commit/2254222094d218b31a6151049c7a43e19c593a97))
 
-* chore: add functional test of mergerequest.get()
-
-Add a functional test of test mergerequest.get() and
-mergerequest.get(..., lazy=True)
-
-Closes: #1425 ([`a92b55b`](https://github.com/python-gitlab/python-gitlab/commit/a92b55b81eb3586e4144f9332796c94747bf9cfe))
-
 * chore(deps): update dependency argcomplete to v2 ([`c6d7e9a`](https://github.com/python-gitlab/python-gitlab/commit/c6d7e9aaddda2f39262b695bb98ea4d90575fcce))
 
 * chore(deps): update dependency requests to v2.27.0 ([`f8c3d00`](https://github.com/python-gitlab/python-gitlab/commit/f8c3d009db3aca004bbd64894a795ee01378cd26))
@@ -4160,13 +4291,6 @@ When running with docker-compose on Ubuntu 20.04 I got the error:
 Changing the version in the docker-compose.yml file fro &#39;3&#39; to &#39;3.5&#39;
 resolved the issue. ([`79321aa`](https://github.com/python-gitlab/python-gitlab/commit/79321aa0e33f0f4bd2ebcdad47769a1a6e81cba8))
 
-* chore: add and document optional parameters for get MR
-
-Add and document (some of the) optional parameters that can be done
-for a `project.merge_requests.get()`
-
-Closes #1775 ([`bfa3dbe`](https://github.com/python-gitlab/python-gitlab/commit/bfa3dbe516cfa8824b720ba4c52dd05054a855d7))
-
 * chore: generate artifacts for the docs build in the CI
 
 When building the docs store the created documentation as an artifact
@@ -4180,11 +4304,14 @@ reviewing changes to the documentation.
 See https://github.com/actions/upload-artifact for more information on
 how this works. ([`85b43ae`](https://github.com/python-gitlab/python-gitlab/commit/85b43ae4a96b72e2f29e36a0aca5321ed78f28d2))
 
-* chore(deps): update pre-commit hook pycqa/flake8 to v4 ([`98a5592`](https://github.com/python-gitlab/python-gitlab/commit/98a5592ae7246bf927beb3300211007c0fadba2f))
+* chore: add and document optional parameters for get MR
 
-* chore(deps): update pre-commit hook psf/black to v21 ([`b86e819`](https://github.com/python-gitlab/python-gitlab/commit/b86e819e6395a84755aaf42334b17567a1bed5fd))
+Add and document (some of the) optional parameters that can be done
+for a `project.merge_requests.get()`
 
-* chore(deps): update pre-commit hook pycqa/isort to v5.10.1 ([`8ac4f4a`](https://github.com/python-gitlab/python-gitlab/commit/8ac4f4a2ba901de1ad809e4fc2fe787e37703a50))
+Closes #1775 ([`bfa3dbe`](https://github.com/python-gitlab/python-gitlab/commit/bfa3dbe516cfa8824b720ba4c52dd05054a855d7))
+
+* chore(deps): update pre-commit hook alessandrojcm/commitlint-pre-commit-hook to v6 ([`fb9110b`](https://github.com/python-gitlab/python-gitlab/commit/fb9110b1849cea8fa5eddf56f1dbfc1c75f10ad9))
 
 * chore: remove &#39;# type: ignore&#39; for new mypy version
 
@@ -4194,7 +4321,11 @@ mypy 0.920 now understands the type of
 
 * chore(deps): update dependency mypy to v0.920 ([`a519b2f`](https://github.com/python-gitlab/python-gitlab/commit/a519b2ffe9c8a4bb42d6add5117caecc4bf6ec66))
 
-* chore(deps): update pre-commit hook alessandrojcm/commitlint-pre-commit-hook to v6 ([`fb9110b`](https://github.com/python-gitlab/python-gitlab/commit/fb9110b1849cea8fa5eddf56f1dbfc1c75f10ad9))
+* chore(deps): update pre-commit hook pycqa/flake8 to v4 ([`98a5592`](https://github.com/python-gitlab/python-gitlab/commit/98a5592ae7246bf927beb3300211007c0fadba2f))
+
+* chore(deps): update pre-commit hook psf/black to v21 ([`b86e819`](https://github.com/python-gitlab/python-gitlab/commit/b86e819e6395a84755aaf42334b17567a1bed5fd))
+
+* chore(deps): update pre-commit hook pycqa/isort to v5.10.1 ([`8ac4f4a`](https://github.com/python-gitlab/python-gitlab/commit/8ac4f4a2ba901de1ad809e4fc2fe787e37703a50))
 
 * chore(ci): enable renovate for pre-commit ([`1ac4329`](https://github.com/python-gitlab/python-gitlab/commit/1ac432900d0f87bb83c77aa62757f8f819296e3e))
 
@@ -4202,13 +4333,13 @@ mypy 0.920 now understands the type of
 
 Closes #1764 ([`c80b3b7`](https://github.com/python-gitlab/python-gitlab/commit/c80b3b75aff53ae228ec05ddf1c1e61d91762846))
 
-* chore(deps): update dependency sphinx to v4.3.2 ([`2210e56`](https://github.com/python-gitlab/python-gitlab/commit/2210e56da57a9e82e6fd2977453b2de4af14bb6f))
-
 * chore: add .env as a file that search tools should not ignore
 
 The `.env` file was not set as a file that should not be ignored by
 search tools. We want to have the search tools search any `.env`
 files. ([`c9318a9`](https://github.com/python-gitlab/python-gitlab/commit/c9318a9f73c532bee7ba81a41de1fb521ab25ced))
+
+* chore(deps): update dependency sphinx to v4.3.2 ([`2210e56`](https://github.com/python-gitlab/python-gitlab/commit/2210e56da57a9e82e6fd2977453b2de4af14bb6f))
 
 * chore(deps): update dependency types-requests to v2.26.2 ([`ac7e329`](https://github.com/python-gitlab/python-gitlab/commit/ac7e32989a1e7b217b448f57bf2943ff56531983))
 
@@ -4240,6 +4371,11 @@ ensure that the get methods are defined with the correct return type. ([`d27c50a
 If new new push is done to a pull-request, then cancel any already
 running github workflow jobs in order to conserve resources. ([`fd81569`](https://github.com/python-gitlab/python-gitlab/commit/fd8156991556706f776c508c373224b54ef4e14f))
 
+* chore: add running unit tests on windows/macos
+
+Add running the unit tests on windows-latest and macos-latest with
+Python 3.10. ([`ad5d60c`](https://github.com/python-gitlab/python-gitlab/commit/ad5d60c305857a8e8c06ba4f6db788bf918bb63f))
+
 * chore: fix pylint error &#34;expression-not-assigned&#34;
 
 Fix pylint error &#34;expression-not-assigned&#34; and remove check from the
@@ -4247,11 +4383,6 @@ disabled list.
 
 And I personally think it is much more readable now and is less lines
 of code. ([`a90eb23`](https://github.com/python-gitlab/python-gitlab/commit/a90eb23cb4903ba25d382c37ce1c0839642ba8fd))
-
-* chore: add running unit tests on windows/macos
-
-Add running the unit tests on windows-latest and macos-latest with
-Python 3.10. ([`ad5d60c`](https://github.com/python-gitlab/python-gitlab/commit/ad5d60c305857a8e8c06ba4f6db788bf918bb63f))
 
 * chore: set pre-commit mypy args to empty list
 
@@ -4282,10 +4413,11 @@ changes to the code. ([`a86d049`](https://github.com/python-gitlab/python-gitlab
 
 * chore(deps): update dependency black to v21.12b0 ([`ab841b8`](https://github.com/python-gitlab/python-gitlab/commit/ab841b8c63183ca20b866818ab2f930a5643ba5f))
 
-* chore: use constants from gitlab.const module
+* chore(docs): link to main, not master ([`af0cb4d`](https://github.com/python-gitlab/python-gitlab/commit/af0cb4d18b8bfbc0624ea2771d73544dc1b24b54))
 
-Have code use constants from the gitlab.const module instead of from
-the top-level gitlab module. ([`6b8067e`](https://github.com/python-gitlab/python-gitlab/commit/6b8067e668b6a37a19e07d84e9a0d2d2a99b4d31))
+* chore(docs): use builtin autodoc hints ([`5e9c943`](https://github.com/python-gitlab/python-gitlab/commit/5e9c94313f6714a159993cefb488aca3326e3e66))
+
+* chore(docs): load autodoc-typehints module ([`bd366ab`](https://github.com/python-gitlab/python-gitlab/commit/bd366ab9e4b552fb29f7a41564cc180a659bba2f))
 
 * chore: attempt to be more informative for missing attributes
 
@@ -4303,11 +4435,10 @@ Update the FAQ in the docs to add a section discussing the issue.
 
 Closes #1138 ([`1839c9e`](https://github.com/python-gitlab/python-gitlab/commit/1839c9e7989163a5cc9a201241942b7faca6e214))
 
-* chore(docs): link to main, not master ([`af0cb4d`](https://github.com/python-gitlab/python-gitlab/commit/af0cb4d18b8bfbc0624ea2771d73544dc1b24b54))
+* chore: use constants from gitlab.const module
 
-* chore(docs): use builtin autodoc hints ([`5e9c943`](https://github.com/python-gitlab/python-gitlab/commit/5e9c94313f6714a159993cefb488aca3326e3e66))
-
-* chore(docs): load autodoc-typehints module ([`bd366ab`](https://github.com/python-gitlab/python-gitlab/commit/bd366ab9e4b552fb29f7a41564cc180a659bba2f))
+Have code use constants from the gitlab.const module instead of from
+the top-level gitlab module. ([`6b8067e`](https://github.com/python-gitlab/python-gitlab/commit/6b8067e668b6a37a19e07d84e9a0d2d2a99b4d31))
 
 * chore(tests): apply review suggestions ([`381c748`](https://github.com/python-gitlab/python-gitlab/commit/381c748415396e0fe54bb1f41a3303bab89aa065))
 
@@ -4347,25 +4478,6 @@ so remove installation of `types-toml`.
 To determine the test count the following command was run:
   $ tox -e py39 -- -k test_ensure_type_hints ([`a2f59f4`](https://github.com/python-gitlab/python-gitlab/commit/a2f59f4e3146b8871a9a1d66ee84295b44321ecb))
 
-* chore(deps): update dependency types-setuptools to v57.4.3 ([`ec2c68b`](https://github.com/python-gitlab/python-gitlab/commit/ec2c68b0b41ac42a2bca61262a917a969cbcbd09))
-
-* chore(deps): update dependency black to v21 ([`5bca87c`](https://github.com/python-gitlab/python-gitlab/commit/5bca87c1e3499eab9b9a694c1f5d0d474ffaca39))
-
-* chore: have renovate upgrade black version (#1700)
-
-renovate is not upgrading the `black` package. There is an open
-issue[1] about this.
-
-Also change .commitlintrc.json to allow 200 character footer lines in
-the commit message. Otherwise would be forced to split the URL across
-multiple lines making it un-clickable :(
-
-Use suggested work-arounds from:
-  https://github.com/renovatebot/renovate/issues/7167#issuecomment-904106838
-  https://github.com/scop/bash-completion/blob/e7497f6ee8232065ec11450a52a1f244f345e2c6/renovate.json#L34-L38
-
-[1] https://github.com/renovatebot/renovate/issues/7167 ([`21228cd`](https://github.com/python-gitlab/python-gitlab/commit/21228cd14fe18897485728a01c3d7103bff7f822))
-
 * chore: add type-hints to gitlab/v4/objects/files.py ([`0c22bd9`](https://github.com/python-gitlab/python-gitlab/commit/0c22bd921bc74f48fddd0ff7d5e7525086264d54))
 
 * chore: add type-hints to gitlab/v4/objects/labels.py ([`d04e557`](https://github.com/python-gitlab/python-gitlab/commit/d04e557fb09655a0433363843737e19d8e11c936))
@@ -4400,6 +4512,27 @@ breaks things.
 Now check in our auto-manager creation if our attribute is called
 &#39;manager&#39;. If so we ignore it. ([`9a451a8`](https://github.com/python-gitlab/python-gitlab/commit/9a451a892d37e0857af5c82c31a96d68ac161738))
 
+* chore(deps): update dependency types-setuptools to v57.4.3 ([`ec2c68b`](https://github.com/python-gitlab/python-gitlab/commit/ec2c68b0b41ac42a2bca61262a917a969cbcbd09))
+
+* chore(deps): update dependency black to v21 ([`5bca87c`](https://github.com/python-gitlab/python-gitlab/commit/5bca87c1e3499eab9b9a694c1f5d0d474ffaca39))
+
+* chore: enable mypy for tests/meta/* ([`ba7707f`](https://github.com/python-gitlab/python-gitlab/commit/ba7707f6161463260710bd2b109b172fd63472a1))
+
+* chore: have renovate upgrade black version (#1700)
+
+renovate is not upgrading the `black` package. There is an open
+issue[1] about this.
+
+Also change .commitlintrc.json to allow 200 character footer lines in
+the commit message. Otherwise would be forced to split the URL across
+multiple lines making it un-clickable :(
+
+Use suggested work-arounds from:
+  https://github.com/renovatebot/renovate/issues/7167#issuecomment-904106838
+  https://github.com/scop/bash-completion/blob/e7497f6ee8232065ec11450a52a1f244f345e2c6/renovate.json#L34-L38
+
+[1] https://github.com/renovatebot/renovate/issues/7167 ([`21228cd`](https://github.com/python-gitlab/python-gitlab/commit/21228cd14fe18897485728a01c3d7103bff7f822))
+
 * chore: correct test_groups.py test
 
 The test was checking twice if the same group3 was not in the returned
@@ -4410,8 +4543,6 @@ group was not in the returned list and a non-skipped group was in the
 list. ([`9c878a4`](https://github.com/python-gitlab/python-gitlab/commit/9c878a4090ddb9c0ef63d06b57eb0e4926276e2f))
 
 * chore: add type-hints to gitlab/v4/objects/merge_request_approvals.py ([`cf3a99a`](https://github.com/python-gitlab/python-gitlab/commit/cf3a99a0c4cf3dc51e946bf29dc44c21b3be9dac))
-
-* chore: enable mypy for tests/meta/* ([`ba7707f`](https://github.com/python-gitlab/python-gitlab/commit/ba7707f6161463260710bd2b109b172fd63472a1))
 
 * chore: check setup.py with mypy
 
@@ -4512,6 +4643,10 @@ GetMixin. ([`8b75a77`](https://github.com/python-gitlab/python-gitlab/commit/8b7
 
 * chore(objects): remove non-existing trigger ownership method ([`8dc7f40`](https://github.com/python-gitlab/python-gitlab/commit/8dc7f40044ce8c478769f25a87c5ceb1aa76b595))
 
+* chore: add type-hints to gitlab/v4/objects/users.py
+
+Adding type-hints to gitlab/v4/objects/users.py ([`88988e3`](https://github.com/python-gitlab/python-gitlab/commit/88988e3059ebadd3d1752db60c2d15b7e60e7c46))
+
 * chore(deps): update dependency types-requests to v2.25.9 ([`e3912ca`](https://github.com/python-gitlab/python-gitlab/commit/e3912ca69c2213c01cd72728fd669724926fd57a))
 
 * chore: fix type-check issue shown by new requests-types
@@ -4519,9 +4654,9 @@ GetMixin. ([`8b75a77`](https://github.com/python-gitlab/python-gitlab/commit/8b7
 types-requests==2.25.9 changed a type-hint. Update code to handle this
 change. ([`0ee9aa4`](https://github.com/python-gitlab/python-gitlab/commit/0ee9aa4117b1e0620ba3cade10ccb94944754071))
 
-* chore(deps): update dependency sphinx to v4 ([`73745f7`](https://github.com/python-gitlab/python-gitlab/commit/73745f73e5180dd21f450ac4d8cbcca19930e549))
-
 * chore(deps): update python docker tag to v3.10 ([`b3d6d91`](https://github.com/python-gitlab/python-gitlab/commit/b3d6d91fed4e5b8424e1af9cadb2af5b6cd8162f))
+
+* chore(deps): update dependency sphinx to v4 ([`73745f7`](https://github.com/python-gitlab/python-gitlab/commit/73745f73e5180dd21f450ac4d8cbcca19930e549))
 
 * chore: clean up install docs ([`a5d8b7f`](https://github.com/python-gitlab/python-gitlab/commit/a5d8b7f2a9cf019c82bef1a166d2dc24f93e1992))
 
@@ -4542,10 +4677,6 @@ do:
 Any type-annotation that annotates it to be of type *Manager (with the
 exception of RESTManager) will cause the manager to be created on the
 object. ([`d8de4dc`](https://github.com/python-gitlab/python-gitlab/commit/d8de4dc373dc608be6cf6ba14a2acc7efd3fa7a7))
-
-* chore: add type-hints to gitlab/v4/objects/users.py
-
-Adding type-hints to gitlab/v4/objects/users.py ([`88988e3`](https://github.com/python-gitlab/python-gitlab/commit/88988e3059ebadd3d1752db60c2d15b7e60e7c46))
 
 * chore: improve type-hinting for managers
 
@@ -4585,11 +4716,11 @@ Rename:
 
 * docs: use annotations for return types ([`79e785e`](https://github.com/python-gitlab/python-gitlab/commit/79e785e765f4219fe6001ef7044235b82c5e7754))
 
+* docs: only use type annotations for documentation ([`b7dde0d`](https://github.com/python-gitlab/python-gitlab/commit/b7dde0d7aac8dbaa4f47f9bfb03fdcf1f0b01c41))
+
 * docs: update docs to use gitlab.const for constants
 
 Update the docs to use gitlab.const to access constants. ([`b3b0b5f`](https://github.com/python-gitlab/python-gitlab/commit/b3b0b5f1da5b9da9bf44eac33856ed6eadf37dd6))
-
-* docs: only use type annotations for documentation ([`b7dde0d`](https://github.com/python-gitlab/python-gitlab/commit/b7dde0d7aac8dbaa4f47f9bfb03fdcf1f0b01c41))
 
 * docs: add links to the GitLab API docs
 
@@ -4659,27 +4790,27 @@ Closes #1744 ([`a246ce8`](https://github.com/python-gitlab/python-gitlab/commit/
 
 * feat: add delete on package_file object ([`124667b`](https://github.com/python-gitlab/python-gitlab/commit/124667bf16b1843ae52e65a3cc9b8d9235ff467e))
 
-* feat: add support for `projects.groups.list()`
-
-Add support for `projects.groups.list()` endpoint.
-
-Closes #1717 ([`68ff595`](https://github.com/python-gitlab/python-gitlab/commit/68ff595967a5745b369a93d9d18fef48b65ebedb))
-
 * feat(api): add support for epic notes
 
 Added support for notes on group epics
 
 Signed-off-by: Raimund Hook &lt;raimund.hook@exfo.com&gt; ([`7f4edb5`](https://github.com/python-gitlab/python-gitlab/commit/7f4edb53e9413f401c859701d8c3bac4a40706af))
 
+* feat: add support for `projects.groups.list()`
+
+Add support for `projects.groups.list()` endpoint.
+
+Closes #1717 ([`68ff595`](https://github.com/python-gitlab/python-gitlab/commit/68ff595967a5745b369a93d9d18fef48b65ebedb))
+
+* feat(api): add merge trains
+
+Add support for merge trains ([`fd73a73`](https://github.com/python-gitlab/python-gitlab/commit/fd73a738b429be0a2642d5b777d5e56a4c928787))
+
 * feat(api): add project milestone promotion
 
 Adds promotion to Project Milestones
 
 Signed-off-by: Raimund Hook &lt;raimund.hook@exfo.com&gt; ([`f068520`](https://github.com/python-gitlab/python-gitlab/commit/f0685209f88d1199873c1f27d27f478706908fd3))
-
-* feat(api): add merge trains
-
-Add support for merge trains ([`fd73a73`](https://github.com/python-gitlab/python-gitlab/commit/fd73a738b429be0a2642d5b777d5e56a4c928787))
 
 * feat(api): add merge request approval state
 
@@ -5152,9 +5283,9 @@ feat(api): add `name_regex_keep` attribute in `delete_in_bulk()` ([`85713bb`](ht
 
 * chore: skip EE test case in functional tests ([`953f207`](https://github.com/python-gitlab/python-gitlab/commit/953f207466c53c28a877f2a88da9160acef40643))
 
-* chore(deps): update dependency mypy to v0.910 ([`02a56f3`](https://github.com/python-gitlab/python-gitlab/commit/02a56f397880b3939b8e737483ac6f95f809ac9c))
-
 * chore(deps): update dependency types-requests to v2 ([`a81a926`](https://github.com/python-gitlab/python-gitlab/commit/a81a926a0979e3272abfb2dc40d2f130d3a0ba5a))
+
+* chore(deps): update dependency mypy to v0.910 ([`02a56f3`](https://github.com/python-gitlab/python-gitlab/commit/02a56f397880b3939b8e737483ac6f95f809ac9c))
 
 * chore(deps): update precommit hook pycqa/isort to v5.9.1 ([`c57ffe3`](https://github.com/python-gitlab/python-gitlab/commit/c57ffe3958c1475c8c79bb86fc4b101d82350d75))
 
@@ -5170,9 +5301,14 @@ feat(api): add `name_regex_keep` attribute in `delete_in_bulk()` ([`85713bb`](ht
 
 * chore(deps): update dependency types-pyyaml to v0.1.8 ([`e566767`](https://github.com/python-gitlab/python-gitlab/commit/e56676730d3407efdf4255b3ca7ee13b7c36eb53))
 
+* chore(deps): update dependency types-requests to v0.1.11 ([`6ba629c`](https://github.com/python-gitlab/python-gitlab/commit/6ba629c71a4cf8ced7060580a6e6643738bc4186))
+
 * chore(deps): update dependency mypy to v0.902 ([`19c9736`](https://github.com/python-gitlab/python-gitlab/commit/19c9736de06d032569020697f15ea9d3e2b66120))
 
-* chore(deps): update dependency types-requests to v0.1.11 ([`6ba629c`](https://github.com/python-gitlab/python-gitlab/commit/6ba629c71a4cf8ced7060580a6e6643738bc4186))
+* chore: add new required type packages for mypy
+
+New version of mypy flagged errors for missing types. Install the
+recommended type-* packages that resolve the issues. ([`a7371e1`](https://github.com/python-gitlab/python-gitlab/commit/a7371e19520325a725813e328004daecf9259dd2))
 
 * chore: add type-hints to gitlab/v4/objects/projects.py
 
@@ -5188,13 +5324,15 @@ Adding type-hints to gitlab/v4/objects/projects.py ([`872dd6d`](https://github.c
 
 ### Feature
 
+* feat(api): add group hooks ([`4a7e9b8`](https://github.com/python-gitlab/python-gitlab/commit/4a7e9b86aa348b72925bce3af1e5d988b8ce3439))
+
 * feat(release): allow to update release
 
 Release API now supports PUT. ([`b4c4787`](https://github.com/python-gitlab/python-gitlab/commit/b4c4787af54d9db6c1f9e61154be5db9d46de3dd))
 
-* feat(api): add group hooks ([`4a7e9b8`](https://github.com/python-gitlab/python-gitlab/commit/4a7e9b86aa348b72925bce3af1e5d988b8ce3439))
-
 * feat(api): remove responsibility for API inconsistencies for MR reviewers ([`3d985ee`](https://github.com/python-gitlab/python-gitlab/commit/3d985ee8cdd5d27585678f8fbb3eb549818a78eb))
+
+* feat(api): add support for creating/editing reviewers in project merge requests ([`676d1f6`](https://github.com/python-gitlab/python-gitlab/commit/676d1f6565617a28ee84eae20e945f23aaf3d86f))
 
 * feat(api): add MR pipeline manager in favor of pipelines() method ([`954357c`](https://github.com/python-gitlab/python-gitlab/commit/954357c49963ef51945c81c41fd4345002f9fb98))
 
@@ -5250,10 +5388,7 @@ chore: add new required type packages for mypy ([`5446423`](https://github.com/p
 
 ### Chore
 
-* chore: add new required type packages for mypy
-
-New version of mypy flagged errors for missing types. Install the
-recommended type-* packages that resolve the issues. ([`a7371e1`](https://github.com/python-gitlab/python-gitlab/commit/a7371e19520325a725813e328004daecf9259dd2))
+* chore(ci): use admin PAT for release workflow ([`d175d41`](https://github.com/python-gitlab/python-gitlab/commit/d175d416d5d94f4806f4262e1f11cfee99fb0135))
 
 * chore: sync create and update attributes for Projects
 
@@ -5270,7 +5405,11 @@ Closes: #1497 ([`0044bd2`](https://github.com/python-gitlab/python-gitlab/commit
 
 * chore: add missing linters to pre-commit and pin versions ([`85bbd1a`](https://github.com/python-gitlab/python-gitlab/commit/85bbd1a5db5eff8a8cea63b2b192aae66030423d))
 
-* chore(ci): use admin PAT for release workflow ([`d175d41`](https://github.com/python-gitlab/python-gitlab/commit/d175d416d5d94f4806f4262e1f11cfee99fb0135))
+* chore: add type-hints to gitlab/v4/cli.py
+
+  * Add type-hints to gitlab/v4/cli.py
+  * Add required type-hints to other files based on adding type-hints
+    to gitlab/v4/cli.py ([`2673af0`](https://github.com/python-gitlab/python-gitlab/commit/2673af0c09a7c5669d8f62c3cc42f684a9693a0f))
 
 * chore: add missing optional create parameter for approval_rules
 
@@ -5282,12 +5421,6 @@ https://docs.gitlab.com/ee/api/merge_request_approvals.html#create-project-level
 * chore: apply typing suggestions
 
 Co-authored-by: John Villalovos &lt;john@sodarock.com&gt; ([`a11623b`](https://github.com/python-gitlab/python-gitlab/commit/a11623b1aa6998e6520f3975f0f3f2613ceee5fb))
-
-* chore: add type-hints to gitlab/v4/cli.py
-
-  * Add type-hints to gitlab/v4/cli.py
-  * Add required type-hints to other files based on adding type-hints
-    to gitlab/v4/cli.py ([`2673af0`](https://github.com/python-gitlab/python-gitlab/commit/2673af0c09a7c5669d8f62c3cc42f684a9693a0f))
 
 * chore(ci): ignore .python-version from pyenv ([`149953d`](https://github.com/python-gitlab/python-gitlab/commit/149953dc32c28fe413c9f3a0066575caeab12bc8))
 
@@ -5310,12 +5443,12 @@ built-in function issubclass()
 
 Switch to using issubclass() ([`81f6386`](https://github.com/python-gitlab/python-gitlab/commit/81f63866593a0486b03a4383d87ef7bc01f4e45f))
 
-* chore: correct a type-hint ([`046607c`](https://github.com/python-gitlab/python-gitlab/commit/046607cf7fd95c3d25f5af9383fdf10a5bba42c1))
-
 * chore: move &#39;gitlab/tests/&#39; dir to &#39;tests/unit/&#39;
 
 Move the &#39;gitlab/tests/&#39; directory to &#39;tests/unit/&#39; so we have all the
 tests located under the &#39;tests/&#39; directory. ([`1ac0722`](https://github.com/python-gitlab/python-gitlab/commit/1ac0722bc086b18c070132a0eb53747bbdf2ce0a))
+
+* chore: correct a type-hint ([`046607c`](https://github.com/python-gitlab/python-gitlab/commit/046607cf7fd95c3d25f5af9383fdf10a5bba42c1))
 
 * chore: rename &#39;tools/functional/&#39; to &#39;tests/functional/&#39;
 
@@ -5373,9 +5506,18 @@ https://pycqa.github.io/isort/ ([`dda646e`](https://github.com/python-gitlab/pyt
 
 * chore(deps): update dependency docker-compose to v1.29.2 ([`fc241e1`](https://github.com/python-gitlab/python-gitlab/commit/fc241e1ffa995417a969354e37d8fefc21bb4621))
 
+* chore(ci): automate releases ([`0ef497e`](https://github.com/python-gitlab/python-gitlab/commit/0ef497e458f98acee36529e8bda2b28b3310de69))
+
 * chore(ci): ignore debug and type_checking in coverage ([`885b608`](https://github.com/python-gitlab/python-gitlab/commit/885b608194a55bd60ef2a2ad180c5caa8f15f8d2))
 
-* chore(ci): automate releases ([`0ef497e`](https://github.com/python-gitlab/python-gitlab/commit/0ef497e458f98acee36529e8bda2b28b3310de69))
+* chore: mypy: Disallow untyped definitions
+
+Be more strict and don&#39;t allow untyped definitions on the files we
+check.
+
+Also this adds type-hints for two of the decorators so that now
+functions/methods decorated by them will have their types be revealed
+correctly. ([`6aef2da`](https://github.com/python-gitlab/python-gitlab/commit/6aef2dadf715e601ae9c302be0ad9958345a97f2))
 
 * chore(docs): fix import order for readthedocs build ([`c3de1fb`](https://github.com/python-gitlab/python-gitlab/commit/c3de1fb8ec17f5f704a19df4a56a668570e6fe0a))
 
@@ -5393,16 +5535,15 @@ gitlab directory. ([`ab343ef`](https://github.com/python-gitlab/python-gitlab/co
 
 * chore(deps): update gitlab/gitlab-ce docker tag to v13.11.2-ce.0 ([`434d15d`](https://github.com/python-gitlab/python-gitlab/commit/434d15d1295187d1970ebef01f4c8a44a33afa31))
 
-* chore: mypy: Disallow untyped definitions
-
-Be more strict and don&#39;t allow untyped definitions on the files we
-check.
-
-Also this adds type-hints for two of the decorators so that now
-functions/methods decorated by them will have their types be revealed
-correctly. ([`6aef2da`](https://github.com/python-gitlab/python-gitlab/commit/6aef2dadf715e601ae9c302be0ad9958345a97f2))
-
 * chore: remove commented-out print ([`0357c37`](https://github.com/python-gitlab/python-gitlab/commit/0357c37fb40fb6aef175177fab98d0eadc26b667))
+
+* chore: make Get.*Mixin._optional_get_attrs always present
+
+Always create GetMixin/GetWithoutIdMixin._optional_get_attrs attribute
+with a default value of tuple()
+
+This way we don&#39;t need to use hasattr() and we will know the type of
+the attribute. ([`3c1a0b3`](https://github.com/python-gitlab/python-gitlab/commit/3c1a0b3ba1f529fab38829c9d355561fd36f4f5d))
 
 ### Documentation
 
@@ -5423,8 +5564,6 @@ This is useful when docs aren&#39;t included in the toctree and don&#39;t show u
 feat(objects): add support for Group wikis ([`74f5e62`](https://github.com/python-gitlab/python-gitlab/commit/74f5e62ef5bfffc7ba21494d05dbead60b59ecf0))
 
 * feat(objects): add support for generic packages API ([`79d88bd`](https://github.com/python-gitlab/python-gitlab/commit/79d88bde9e5e6c33029e4a9f26c97404e6a7a874))
-
-* feat(api): add support for creating/editing reviewers in project merge requests ([`676d1f6`](https://github.com/python-gitlab/python-gitlab/commit/676d1f6565617a28ee84eae20e945f23aaf3d86f))
 
 * feat(api): add deployment mergerequests interface ([`fbbc0d4`](https://github.com/python-gitlab/python-gitlab/commit/fbbc0d400015d7366952a66e4401215adff709f0))
 
@@ -5450,6 +5589,15 @@ it indicates that python-gitlab is a typed package and contains
 type-hints.
 
 https://www.python.org/dev/peps/pep-0561/ ([`e4421ca`](https://github.com/python-gitlab/python-gitlab/commit/e4421caafeeb0236df19fe7b9233300727e1933b))
+
+* feat: add support for lists of integers to ListAttribute
+
+Previously ListAttribute only support lists of integers. Now be more
+flexible and support lists of items which can be coerced into strings,
+for example integers.
+
+This will help us fix issue #1407 by using ListAttribute for the
+&#39;iids&#39; field. ([`115938b`](https://github.com/python-gitlab/python-gitlab/commit/115938b3e5adf9a2fb5ecbfb34d9c92bf788035e))
 
 ### Fix
 
@@ -5489,11 +5637,11 @@ Related to: #1120 ([`cb6a3c6`](https://github.com/python-gitlab/python-gitlab/co
 
 * fix(cli): fix parsing CLI objects to classnames ([`4252070`](https://github.com/python-gitlab/python-gitlab/commit/42520705a97289ac895a6b110d34d6c115e45500))
 
+* fix(objects): allow lists for filters for in all objects ([`603a351`](https://github.com/python-gitlab/python-gitlab/commit/603a351c71196a7f516367fbf90519f9452f3c55))
+
 * fix(objects): return server data in cancel/retry methods ([`9fed061`](https://github.com/python-gitlab/python-gitlab/commit/9fed06116bfe5df79e6ac5be86ae61017f9a2f57))
 
 * fix(objects): add missing group attributes ([`d20ff4f`](https://github.com/python-gitlab/python-gitlab/commit/d20ff4ff7427519c8abccf53e3213e8929905441))
-
-* fix(objects): allow lists for filters for in all objects ([`603a351`](https://github.com/python-gitlab/python-gitlab/commit/603a351c71196a7f516367fbf90519f9452f3c55))
 
 * fix: iids not working as a list in projects.issues.list()
 
@@ -5503,6 +5651,21 @@ as a comma-separated string, instead of a list.
 Add a functional test.
 
 Closes: #1407 ([`45f806c`](https://github.com/python-gitlab/python-gitlab/commit/45f806c7a7354592befe58a76b7e33a6d5d0fe6e))
+
+* fix: add a check to ensure the MRO is correct
+
+Add a check to ensure the MRO (Method Resolution Order) is correct for classes in
+gitlab.v4.objects when doing type-checking.
+
+An example of an incorrect definition:
+    class ProjectPipeline(RESTObject, RefreshMixin, ObjectDeleteMixin):
+                          ^^^^^^^^^^ This should be at the end.
+
+Correct way would be:
+    class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
+                                      Correctly at the end ^^^^^^^^^^
+
+Also fix classes which have the issue. ([`565d548`](https://github.com/python-gitlab/python-gitlab/commit/565d5488b779de19a720d7a904c6fc14c394a4b9))
 
 ### Style
 
@@ -5539,9 +5702,9 @@ duplicate tokens with the same value. ([`4c475ab`](https://github.com/python-git
 
 * test(cli): add more real class scenarios ([`8cf5031`](https://github.com/python-gitlab/python-gitlab/commit/8cf5031a2caf2f39ce920c5f80316cc774ba7a36))
 
-* test(functional): add test for skip_groups list filter ([`a014774`](https://github.com/python-gitlab/python-gitlab/commit/a014774a6a2523b73601a1930c44ac259d03a50e))
-
 * test(functional): start tracking functional test coverage ([`f875786`](https://github.com/python-gitlab/python-gitlab/commit/f875786ce338b329421f772b181e7183f0fcb333))
+
+* test(functional): add test for skip_groups list filter ([`a014774`](https://github.com/python-gitlab/python-gitlab/commit/a014774a6a2523b73601a1930c44ac259d03a50e))
 
 ### Unknown
 
@@ -5707,17 +5870,6 @@ chore: make Get.*Mixin._optional_get_attrs always present ([`5b81d7d`](https://g
 
 ## v2.7.1 (2021-04-26)
 
-### Feature
-
-* feat: add support for lists of integers to ListAttribute
-
-Previously ListAttribute only support lists of integers. Now be more
-flexible and support lists of items which can be coerced into strings,
-for example integers.
-
-This will help us fix issue #1407 by using ListAttribute for the
-&#39;iids&#39; field. ([`115938b`](https://github.com/python-gitlab/python-gitlab/commit/115938b3e5adf9a2fb5ecbfb34d9c92bf788035e))
-
 ### Fix
 
 * fix(files): do not url-encode file paths twice ([`8e25cec`](https://github.com/python-gitlab/python-gitlab/commit/8e25cecce3c0a19884a8d231ee1a672b80e94398))
@@ -5732,17 +5884,7 @@ fix(files): do not url-encode filepaths twice ([`37af229`](https://github.com/py
 
 ### Chore
 
-* chore(objects): remove noisy deprecation warning for audit events
-
-It&#39;s mostly an internal thing anyway and can be removed in 3.0.0 ([`2953642`](https://github.com/python-gitlab/python-gitlab/commit/29536423e3e8866eda7118527a49b120fefb4065))
-
-* chore: make Get.*Mixin._optional_get_attrs always present
-
-Always create GetMixin/GetWithoutIdMixin._optional_get_attrs attribute
-with a default value of tuple()
-
-This way we don&#39;t need to use hasattr() and we will know the type of
-the attribute. ([`3c1a0b3`](https://github.com/python-gitlab/python-gitlab/commit/3c1a0b3ba1f529fab38829c9d355561fd36f4f5d))
+* chore: bump version to 2.7.0 ([`34c4052`](https://github.com/python-gitlab/python-gitlab/commit/34c4052327018279c9a75d6b849da74eccc8819b))
 
 * chore: make ListMixin._list_filters always present
 
@@ -5760,17 +5902,11 @@ None.
 This way we don&#39;t need to use hasattr() and we will know the type of
 the attribute. ([`6d55120`](https://github.com/python-gitlab/python-gitlab/commit/6d551208f4bc68d091a16323ae0d267fbb6003b6))
 
-* chore: bump version to 2.7.0 ([`34c4052`](https://github.com/python-gitlab/python-gitlab/commit/34c4052327018279c9a75d6b849da74eccc8819b))
+* chore(objects): remove noisy deprecation warning for audit events
+
+It&#39;s mostly an internal thing anyway and can be removed in 3.0.0 ([`2953642`](https://github.com/python-gitlab/python-gitlab/commit/29536423e3e8866eda7118527a49b120fefb4065))
 
 * chore(deps): update gitlab/gitlab-ce docker tag to v13.11.1-ce.0 ([`3088714`](https://github.com/python-gitlab/python-gitlab/commit/308871496041232f555cf4cb055bf7f4aaa22b23))
-
-* chore(deps): update gitlab/gitlab-ce docker tag to v13.11.0-ce.0 ([`711896f`](https://github.com/python-gitlab/python-gitlab/commit/711896f20ff81826c58f1f86dfb29ad860e1d52a))
-
-* chore: remove unused function sanitize_parameters()
-
-The function sanitize_parameters() was used when the v3 API was in
-use. Since v3 API support has been removed there are no more users of
-this function. ([`443b934`](https://github.com/python-gitlab/python-gitlab/commit/443b93482e29fecc12fdbd2329427b37b05ba425))
 
 * chore: fix F841 errors reported by flake8
 
@@ -5805,29 +5941,25 @@ Fixes to resolve errors for:
     https://www.flake8rules.com/rules/E742.html
       Do not define classes named &#39;I&#39;, &#39;O&#39;, or &#39;l&#39; (E742) ([`380f227`](https://github.com/python-gitlab/python-gitlab/commit/380f227a1ecffd5e22ae7aefed95af3b5d830994))
 
+* chore(deps): update gitlab/gitlab-ce docker tag to v13.11.0-ce.0 ([`711896f`](https://github.com/python-gitlab/python-gitlab/commit/711896f20ff81826c58f1f86dfb29ad860e1d52a))
+
+* chore: remove unused function sanitize_parameters()
+
+The function sanitize_parameters() was used when the v3 API was in
+use. Since v3 API support has been removed there are no more users of
+this function. ([`443b934`](https://github.com/python-gitlab/python-gitlab/commit/443b93482e29fecc12fdbd2329427b37b05ba425))
+
 * chore: fix typo in mr events ([`c5e6fb3`](https://github.com/python-gitlab/python-gitlab/commit/c5e6fb3bc74c509f35f973e291a7551b2b64dba5))
 
 * chore(config): allow simple commands without external script ([`91ffb8e`](https://github.com/python-gitlab/python-gitlab/commit/91ffb8e97e213d2f14340b952630875995ecedb2))
 
-* chore: have _create_attrs &amp; _update_attrs be a namedtuple
+* chore: make lint happy ([`7a7c9fd`](https://github.com/python-gitlab/python-gitlab/commit/7a7c9fd932def75a2f2c517482784e445d83881a))
 
-Convert _create_attrs and _update_attrs to use a NamedTuple
-(RequiredOptional) to help with code readability. Update all code to
-use the NamedTuple. ([`aee1f49`](https://github.com/python-gitlab/python-gitlab/commit/aee1f496c1f414c1e30909767d53ae624fe875e7))
+* chore: make lint happy ([`b5f43c8`](https://github.com/python-gitlab/python-gitlab/commit/b5f43c83b25271f7aff917a9ce8826d39ff94034))
 
-* chore(deps): update dependency docker-compose to v1.29.1 ([`a89ec43`](https://github.com/python-gitlab/python-gitlab/commit/a89ec43ee7a60aacd1ac16f0f1f51c4abeaaefef))
+* chore: make lint happy ([`732e49c`](https://github.com/python-gitlab/python-gitlab/commit/732e49c6547c181de8cc56e93b30dc399e87091d))
 
-* chore(deps): update gitlab/gitlab-ce docker tag to v13.10.3-ce.0 ([`eabe091`](https://github.com/python-gitlab/python-gitlab/commit/eabe091945d3fe50472059431e599117165a815a))
-
-* chore(deps): update dependency sphinx to v3.5.4 ([`a886d28`](https://github.com/python-gitlab/python-gitlab/commit/a886d28a893ac592b930ce54111d9ae4e90f458e))
-
-* chore(deps): update gitlab/gitlab-ce docker tag to v13.10.1-ce.0 ([`1995361`](https://github.com/python-gitlab/python-gitlab/commit/1995361d9a767ad5af5338f4555fa5a3914c7374))
-
-* chore(deps): update dependency docker-compose to v1.28.6 ([`46b05d5`](https://github.com/python-gitlab/python-gitlab/commit/46b05d525d0ade6f2aadb6db23fadc85ad48cd3d))
-
-* chore(deps): update gitlab/gitlab-ce docker tag to v13.10.0-ce.0 ([`5221e33`](https://github.com/python-gitlab/python-gitlab/commit/5221e33768fe1e49456d5df09e3f50b46933c8a4))
-
-* chore(deps): update gitlab/gitlab-ce docker tag to v13.9.4-ce.0 ([`939f769`](https://github.com/python-gitlab/python-gitlab/commit/939f769e7410738da2e1c5d502caa765f362efdd))
+* chore: add test ([`f8cf1e1`](https://github.com/python-gitlab/python-gitlab/commit/f8cf1e110401dcc6b9b176beb8675513fc1c7d17))
 
 * chore: remove usage of getattr()
 
@@ -5837,6 +5969,28 @@ Instead add it to class and set default value to False.
 
 Add a tests that shows it is set to True for the
 ProjectMergeRequestApprovalManager and ProjectApprovalManager classes. ([`2afd18a`](https://github.com/python-gitlab/python-gitlab/commit/2afd18aa28742a3267742859a88be6912a803874))
+
+* chore: have _create_attrs &amp; _update_attrs be a namedtuple
+
+Convert _create_attrs and _update_attrs to use a NamedTuple
+(RequiredOptional) to help with code readability. Update all code to
+use the NamedTuple. ([`aee1f49`](https://github.com/python-gitlab/python-gitlab/commit/aee1f496c1f414c1e30909767d53ae624fe875e7))
+
+* chore(deps): update dependency docker-compose to v1.29.1 ([`a89ec43`](https://github.com/python-gitlab/python-gitlab/commit/a89ec43ee7a60aacd1ac16f0f1f51c4abeaaefef))
+
+* chore(deps): update dependency sphinx to v3.5.4 ([`a886d28`](https://github.com/python-gitlab/python-gitlab/commit/a886d28a893ac592b930ce54111d9ae4e90f458e))
+
+* chore(deps): update gitlab/gitlab-ce docker tag to v13.10.3-ce.0 ([`eabe091`](https://github.com/python-gitlab/python-gitlab/commit/eabe091945d3fe50472059431e599117165a815a))
+
+* chore(deps): update gitlab/gitlab-ce docker tag to v13.10.1-ce.0 ([`1995361`](https://github.com/python-gitlab/python-gitlab/commit/1995361d9a767ad5af5338f4555fa5a3914c7374))
+
+* chore: import audit events in objects ([`35a190c`](https://github.com/python-gitlab/python-gitlab/commit/35a190cfa0902d6a298aba0a3135c5a99edfe0fa))
+
+* chore(deps): update dependency docker-compose to v1.28.6 ([`46b05d5`](https://github.com/python-gitlab/python-gitlab/commit/46b05d525d0ade6f2aadb6db23fadc85ad48cd3d))
+
+* chore(deps): update gitlab/gitlab-ce docker tag to v13.10.0-ce.0 ([`5221e33`](https://github.com/python-gitlab/python-gitlab/commit/5221e33768fe1e49456d5df09e3f50b46933c8a4))
+
+* chore(deps): update gitlab/gitlab-ce docker tag to v13.9.4-ce.0 ([`939f769`](https://github.com/python-gitlab/python-gitlab/commit/939f769e7410738da2e1c5d502caa765f362efdd))
 
 * chore: fix package file test naming ([`8c80268`](https://github.com/python-gitlab/python-gitlab/commit/8c802680ae7d3bff13220a55efeed9ca79104b10))
 
@@ -5859,14 +6013,6 @@ simpler. We no longer have to do:
 
 And the type checker now understands the type. ([`924f83e`](https://github.com/python-gitlab/python-gitlab/commit/924f83eb4b5e160bd231efc38e2eea0231fa311f))
 
-* chore: make lint happy ([`7a7c9fd`](https://github.com/python-gitlab/python-gitlab/commit/7a7c9fd932def75a2f2c517482784e445d83881a))
-
-* chore: make lint happy ([`b5f43c8`](https://github.com/python-gitlab/python-gitlab/commit/b5f43c83b25271f7aff917a9ce8826d39ff94034))
-
-* chore: make lint happy ([`732e49c`](https://github.com/python-gitlab/python-gitlab/commit/732e49c6547c181de8cc56e93b30dc399e87091d))
-
-* chore: import audit events in objects ([`35a190c`](https://github.com/python-gitlab/python-gitlab/commit/35a190cfa0902d6a298aba0a3135c5a99edfe0fa))
-
 * chore: add type-hints for gitlab/mixins.py
 
   * Added type-hints for gitlab/mixins.py
@@ -5874,11 +6020,9 @@ And the type checker now understands the type. ([`924f83e`](https://github.com/p
     list-comprehension. mypy was not able to understand the previous
     code. Also list-comprehension is better :) ([`baea721`](https://github.com/python-gitlab/python-gitlab/commit/baea7215bbbe07c06b2ca0f97a1d3d482668d887))
 
-* chore(deps): update dependency sphinx to v3.5.2 ([`9dee5c4`](https://github.com/python-gitlab/python-gitlab/commit/9dee5c420633bc27e1027344279c47862f7b16da))
+* chore: add type hints to gitlab/base.py:RESTManager
 
-* chore: add test ([`f8cf1e1`](https://github.com/python-gitlab/python-gitlab/commit/f8cf1e110401dcc6b9b176beb8675513fc1c7d17))
-
-* chore(deps): update gitlab/gitlab-ce docker tag to v13.9.2-ce.0 ([`933ba52`](https://github.com/python-gitlab/python-gitlab/commit/933ba52475e5dae4cf7c569d8283e60eebd5b7b6))
+Add some additional type hints to gitlab/base.py ([`9c55593`](https://github.com/python-gitlab/python-gitlab/commit/9c55593ae6a7308176710665f8bec094d4cadc2e))
 
 * chore: put assert statements inside &#39;if TYPE_CHECKING:&#39;
 
@@ -5891,9 +6035,9 @@ that it is not a requests.Response object. Theoretically the JSON
 could return as a list or dict, though at this time we are assuming a
 dict. ([`b562458`](https://github.com/python-gitlab/python-gitlab/commit/b562458f063c6be970f58c733fe01ec786798549))
 
-* chore: add type hints to gitlab/base.py:RESTManager
+* chore(deps): update dependency sphinx to v3.5.2 ([`9dee5c4`](https://github.com/python-gitlab/python-gitlab/commit/9dee5c420633bc27e1027344279c47862f7b16da))
 
-Add some additional type hints to gitlab/base.py ([`9c55593`](https://github.com/python-gitlab/python-gitlab/commit/9c55593ae6a7308176710665f8bec094d4cadc2e))
+* chore(deps): update gitlab/gitlab-ce docker tag to v13.9.2-ce.0 ([`933ba52`](https://github.com/python-gitlab/python-gitlab/commit/933ba52475e5dae4cf7c569d8283e60eebd5b7b6))
 
 * chore: del &#39;import *&#39; in gitlab/v4/objects/project_access_tokens.py
 
@@ -5912,6 +6056,10 @@ to Tuple[str, ...] ([`907634f`](https://github.com/python-gitlab/python-gitlab/c
 
 * chore(api): move repository endpoints into separate module ([`1ed154c`](https://github.com/python-gitlab/python-gitlab/commit/1ed154c276fb2429d3b45058b9314d6391dbff02))
 
+* chore: add and fix some type-hints in gitlab/client.py
+
+Was able to figure out better type-hints for gitlab/client.py ([`8837207`](https://github.com/python-gitlab/python-gitlab/commit/88372074a703910ba533237e6901e5af4c26c2bd))
+
 * chore: add additional type-hints for gitlab/base.py
 
 Add type-hints for the variables which are set via self.__dict__
@@ -5919,9 +6067,9 @@ Add type-hints for the variables which are set via self.__dict__
 mypy doesn&#39;t see them when they are assigned via self.__dict__. So
 declare them in the class definition. ([`ad72ef3`](https://github.com/python-gitlab/python-gitlab/commit/ad72ef35707529058c7c680f334c285746b2f690))
 
-* chore: add and fix some type-hints in gitlab/client.py
+* chore: add type-hints to gitlab/client.py
 
-Was able to figure out better type-hints for gitlab/client.py ([`8837207`](https://github.com/python-gitlab/python-gitlab/commit/88372074a703910ba533237e6901e5af4c26c2bd))
+Adding some initial type-hints to gitlab/client.py ([`c9e5b4f`](https://github.com/python-gitlab/python-gitlab/commit/c9e5b4f6285ec94d467c7c10c45f4e2d5f656430))
 
 * chore: remove import of gitlab.utils from __init__.py
 
@@ -5931,27 +6079,21 @@ remove this but functional tests failed.
 Later we fixed the functional test that was failing, so now remove the
 unneeded import. ([`39b9183`](https://github.com/python-gitlab/python-gitlab/commit/39b918374b771f1d417196ca74fa04fe3968c412))
 
-* chore: add type-hints to gitlab/client.py
-
-Adding some initial type-hints to gitlab/client.py ([`c9e5b4f`](https://github.com/python-gitlab/python-gitlab/commit/c9e5b4f6285ec94d467c7c10c45f4e2d5f656430))
-
 * chore: improve type-hints for gitlab/base.py
 
 Determined the base class for obj_cls and adding type-hints for it. ([`cbd43d0`](https://github.com/python-gitlab/python-gitlab/commit/cbd43d0b4c95e46fc3f1cffddc6281eced45db4a))
 
-* chore(deps): update dependency docker-compose to v1.28.5 ([`f4ab558`](https://github.com/python-gitlab/python-gitlab/commit/f4ab558f2cd85fe716e24f3aa4ede5db5b06e7c4))
-
 * chore: add type-hints to gitlab/cli.py ([`10b7b83`](https://github.com/python-gitlab/python-gitlab/commit/10b7b836d31fbe36a7096454287004b46a7799dd))
 
-* chore: add type-hints to gitlab/config.py ([`213e563`](https://github.com/python-gitlab/python-gitlab/commit/213e5631b1efce11f8a1419cd77df5d9da7ec0ac))
-
-* chore: add type hints to gitlab/utils.py ([`acd9294`](https://github.com/python-gitlab/python-gitlab/commit/acd9294fac52a636a016a7a3c14416b10573da28))
-
-* chore: add type-hints to gitlab/const.py ([`a10a777`](https://github.com/python-gitlab/python-gitlab/commit/a10a7777caabd6502d04f3947a317b5b0ac869f2))
+* chore(deps): update dependency docker-compose to v1.28.5 ([`f4ab558`](https://github.com/python-gitlab/python-gitlab/commit/f4ab558f2cd85fe716e24f3aa4ede5db5b06e7c4))
 
 * chore(deps): update wagoid/commitlint-github-action action to v3 ([`b3274cf`](https://github.com/python-gitlab/python-gitlab/commit/b3274cf93dfb8ae85e4a636a1ffbfa7c48f1c8f6))
 
-* chore(deps): update gitlab/gitlab-ce docker tag to v13.9.1-ce.0 ([`f6fd995`](https://github.com/python-gitlab/python-gitlab/commit/f6fd99530d70f2a7626602fd9132b628bb968eab))
+* chore: add type-hints to gitlab/const.py ([`a10a777`](https://github.com/python-gitlab/python-gitlab/commit/a10a7777caabd6502d04f3947a317b5b0ac869f2))
+
+* chore: add type hints to gitlab/utils.py ([`acd9294`](https://github.com/python-gitlab/python-gitlab/commit/acd9294fac52a636a016a7a3c14416b10573da28))
+
+* chore: add type-hints to gitlab/config.py ([`213e563`](https://github.com/python-gitlab/python-gitlab/commit/213e5631b1efce11f8a1419cd77df5d9da7ec0ac))
 
 * chore: remove usage of &#39;from ... import *&#39;
 
@@ -5970,6 +6112,8 @@ After the change the output of:
 
 Is empty. Before many messages about unable to determine if it was a
 valid name. ([`c83eaf4`](https://github.com/python-gitlab/python-gitlab/commit/c83eaf4f395300471311a67be34d8d306c2b3861))
+
+* chore(deps): update gitlab/gitlab-ce docker tag to v13.9.1-ce.0 ([`f6fd995`](https://github.com/python-gitlab/python-gitlab/commit/f6fd99530d70f2a7626602fd9132b628bb968eab))
 
 * chore: remove unused function _construct_url()
 
@@ -5995,8 +6139,6 @@ gitlab.exceptions
 A flake8 run no longer lists any undefined variables. Before it listed
 possible undefined variables. ([`bf0c8c5`](https://github.com/python-gitlab/python-gitlab/commit/bf0c8c5d123a7ad0587cb97c3aafd97ab2a9dabf))
 
-* chore(deps): update gitlab/gitlab-ce docker tag to v13.9.0-ce.0 ([`3aef19c`](https://github.com/python-gitlab/python-gitlab/commit/3aef19c51713bdc7ca0a84752da3ca22329fd4c4))
-
 * chore: explicitly import gitlab.v4.objects/cli
 
 As we only support the v4 Gitlab API, explicitly import
@@ -6014,17 +6156,17 @@ according to https://docs.gitlab.com/ee/api/,
     &#34;GraphQL co-exists with the current v4 REST API. If we have a v5 API, this
     should be a compatibility layer on top of GraphQL.&#34; ([`233b79e`](https://github.com/python-gitlab/python-gitlab/commit/233b79ed442aac66faf9eb4b0087ea126d6dffc5))
 
+* chore(deps): update gitlab/gitlab-ce docker tag to v13.9.0-ce.0 ([`3aef19c`](https://github.com/python-gitlab/python-gitlab/commit/3aef19c51713bdc7ca0a84752da3ca22329fd4c4))
+
 * chore(objects): make Project refreshable
 
 Helps getting the real state of the project from the server. ([`958a6aa`](https://github.com/python-gitlab/python-gitlab/commit/958a6aa83ead3fb6be6ec61bdd894ad78346e7bd))
 
-* chore(tests): remove unused URL segment ([`66f0b6c`](https://github.com/python-gitlab/python-gitlab/commit/66f0b6c23396b849f8653850b099e664daa05eb4))
-
 * chore(deps): update dependency docker-compose to v1.28.4 ([`8938484`](https://github.com/python-gitlab/python-gitlab/commit/89384846445be668ca6c861f295297d048cae914))
 
-* chore(deps): update dependency docker-compose to v1.28.3 ([`2358d48`](https://github.com/python-gitlab/python-gitlab/commit/2358d48acbe1c378377fb852b41ec497217d2555))
+* chore(tests): remove unused URL segment ([`66f0b6c`](https://github.com/python-gitlab/python-gitlab/commit/66f0b6c23396b849f8653850b099e664daa05eb4))
 
-* chore(deps): update dependency sphinx to v3.5.1 ([`f916f09`](https://github.com/python-gitlab/python-gitlab/commit/f916f09d3a9cac07246035066d4c184103037026))
+* chore(deps): update dependency docker-compose to v1.28.3 ([`2358d48`](https://github.com/python-gitlab/python-gitlab/commit/2358d48acbe1c378377fb852b41ec497217d2555))
 
 * chore: remove unused ALLOWED_KEYSET_ENDPOINTS variable
 
@@ -6034,6 +6176,8 @@ f86ef3bbdb5bffa1348a802e62b281d3f31d33ad.
 Then most of that commit was removed in commit
 e71fe16b47835aa4db2834e98c7ffc6bdec36723, but ALLOWED_KEYSET_ENDPOINTS
 was missed. ([`3d5d5d8`](https://github.com/python-gitlab/python-gitlab/commit/3d5d5d8b13fc8405e9ef3e14be1fd8bd32235221))
+
+* chore(deps): update dependency sphinx to v3.5.1 ([`f916f09`](https://github.com/python-gitlab/python-gitlab/commit/f916f09d3a9cac07246035066d4c184103037026))
 
 * chore: remove Python 2 code
 
@@ -6075,16 +6219,16 @@ already exists and is useful but very easy to miss. ([`6ff67e7`](https://github.
 
 * feat(objects): add support for resource state events API ([`d4799c4`](https://github.com/python-gitlab/python-gitlab/commit/d4799c40bd12ed85d4bb834464fdb36c4dadcab6))
 
+* feat: option to add a helper to lookup token ([`8ecf559`](https://github.com/python-gitlab/python-gitlab/commit/8ecf55926f8e345960560e5c5dd6716199cfb0ec))
+
+* feat(objects): add support for group audit events API ([`2a0fbdf`](https://github.com/python-gitlab/python-gitlab/commit/2a0fbdf9fe98da6c436230be47b0ddb198c7eca9))
+
 * feat: add ProjectPackageFile
 
 Add ProjectPackageFile and the ability to list project package
 package_files.
 
 Fixes #1372 ([`b9d469b`](https://github.com/python-gitlab/python-gitlab/commit/b9d469bc4e847ae0301be28a0c70019a7f6ab8b6))
-
-* feat(objects): add support for group audit events API ([`2a0fbdf`](https://github.com/python-gitlab/python-gitlab/commit/2a0fbdf9fe98da6c436230be47b0ddb198c7eca9))
-
-* feat: option to add a helper to lookup token ([`8ecf559`](https://github.com/python-gitlab/python-gitlab/commit/8ecf55926f8e345960560e5c5dd6716199cfb0ec))
 
 * feat(users): add follow/unfollow API ([`e456869`](https://github.com/python-gitlab/python-gitlab/commit/e456869d98a1b7d07e6f878a0d6a9719c1b10fd4))
 
@@ -6121,20 +6265,24 @@ to do this, but it is not exposed through this library.
 
 ### Fix
 
-* fix: add a check to ensure the MRO is correct
+* fix: only append kwargs as query parameters
 
-Add a check to ensure the MRO (Method Resolution Order) is correct for classes in
-gitlab.v4.objects when doing type-checking.
+Some arguments to `http_request` were being read
+from kwargs, but kwargs is where this function
+creates query parameters from, by default. In
+the absence of a `query_parameters` param, the
+function would construct URLs with query
+parameters such as `retry_transient_errors=True`
+despite those parameters having no meaning to
+the API to which the request was sent.
 
-An example of an incorrect definition:
-    class ProjectPipeline(RESTObject, RefreshMixin, ObjectDeleteMixin):
-                          ^^^^^^^^^^ This should be at the end.
+This change names those arguments that are
+specific to `http_request` so that they do not
+end up as query parameters read from kwargs. ([`b9ecc9a`](https://github.com/python-gitlab/python-gitlab/commit/b9ecc9a8c5d958bd7247946c4e8d29c18163c578))
 
-Correct way would be:
-    class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
-                                      Correctly at the end ^^^^^^^^^^
+* fix: only add query_parameters to GitlabList once
 
-Also fix classes which have the issue. ([`565d548`](https://github.com/python-gitlab/python-gitlab/commit/565d5488b779de19a720d7a904c6fc14c394a4b9))
+Fixes #1386 ([`ca2c3c9`](https://github.com/python-gitlab/python-gitlab/commit/ca2c3c9dee5dc61ea12af5b39d51b1606da32f9c))
 
 * fix: correct ProjectFile.decode() documentation
 
@@ -6157,11 +6305,7 @@ confirmation change (`skip_reconfirmation` = True), `MultipartEncoder`
 will try to encode everything except None and bytes. So it tries to encode bools.
 Casting bool&#39;s values to their stringified int representation fix it. ([`3ba27ff`](https://github.com/python-gitlab/python-gitlab/commit/3ba27ffb6ae995c27608f84eef0abe636e2e63da))
 
-* fix: argument type was not a tuple as expected
-
-While adding type-hints mypy flagged this as an issue. The third
-argument to register_custom_action is supposed to be a tuple. It was
-being passed as a string rather than a tuple of strings. ([`062f8f6`](https://github.com/python-gitlab/python-gitlab/commit/062f8f6a917abc037714129691a845c16b070ff6))
+* fix(types): prevent __dir__ from producing duplicates ([`5bf7525`](https://github.com/python-gitlab/python-gitlab/commit/5bf7525d2d37968235514d1b93a403d037800652))
 
 * fix: correct some type-hints in gitlab/mixins.py
 
@@ -6176,26 +6320,25 @@ Main error was using &#39;=&#39; instead of &#39;:&#39;. For example:
 
 Resolved those issues. ([`8bd3124`](https://github.com/python-gitlab/python-gitlab/commit/8bd312404cf647674baea792547705ef1948043d))
 
-* fix: only append kwargs as query parameters
+* fix: argument type was not a tuple as expected
 
-Some arguments to `http_request` were being read
-from kwargs, but kwargs is where this function
-creates query parameters from, by default. In
-the absence of a `query_parameters` param, the
-function would construct URLs with query
-parameters such as `retry_transient_errors=True`
-despite those parameters having no meaning to
-the API to which the request was sent.
+While adding type-hints mypy flagged this as an issue. The third
+argument to register_custom_action is supposed to be a tuple. It was
+being passed as a string rather than a tuple of strings. ([`062f8f6`](https://github.com/python-gitlab/python-gitlab/commit/062f8f6a917abc037714129691a845c16b070ff6))
 
-This change names those arguments that are
-specific to `http_request` so that they do not
-end up as query parameters read from kwargs. ([`b9ecc9a`](https://github.com/python-gitlab/python-gitlab/commit/b9ecc9a8c5d958bd7247946c4e8d29c18163c578))
+* fix: handling config value in _get_values_from_helper ([`9dfb4cd`](https://github.com/python-gitlab/python-gitlab/commit/9dfb4cd97e6eb5bbfc29935cbb190b70b739cf9f))
 
-* fix: only add query_parameters to GitlabList once
+* fix: update doc for token helper ([`3ac6fa1`](https://github.com/python-gitlab/python-gitlab/commit/3ac6fa12b37dd33610ef2206ef4ddc3b20d9fd3f))
 
-Fixes #1386 ([`ca2c3c9`](https://github.com/python-gitlab/python-gitlab/commit/ca2c3c9dee5dc61ea12af5b39d51b1606da32f9c))
+* fix: let the homedir be expanded in path of helper ([`fc7387a`](https://github.com/python-gitlab/python-gitlab/commit/fc7387a0a6039bc58b2a741ac9b73d7068375be7))
 
-* fix(types): prevent __dir__ from producing duplicates ([`5bf7525`](https://github.com/python-gitlab/python-gitlab/commit/5bf7525d2d37968235514d1b93a403d037800652))
+* fix: make secret helper more user friendly ([`fc2798f`](https://github.com/python-gitlab/python-gitlab/commit/fc2798fc31a08997c049f609c19dd4ab8d75964e))
+
+* fix: linting issues and test ([`b04dd2c`](https://github.com/python-gitlab/python-gitlab/commit/b04dd2c08b69619bb58832f40a4c4391e350a735))
+
+* fix: better real life token lookup example ([`9ef8311`](https://github.com/python-gitlab/python-gitlab/commit/9ef83118efde3d0f35d73812ce8398be2c18ebff))
+
+* fix(objects): add single get endpoint for instance audit events ([`c3f0a6f`](https://github.com/python-gitlab/python-gitlab/commit/c3f0a6f158fbc7d90544274b9bf09d5ac9ac0060))
 
 * fix: checking if RESTManager._from_parent_attrs is set
 
@@ -6208,20 +6351,6 @@ So the checks using hasattr() were no longer valid.
 
 Update the checks to check if RESTManager._from_parent_attrs has a
 value. ([`8224b40`](https://github.com/python-gitlab/python-gitlab/commit/8224b4066e84720d7efed3b7891c47af73cc57ca))
-
-* fix: handling config value in _get_values_from_helper ([`9dfb4cd`](https://github.com/python-gitlab/python-gitlab/commit/9dfb4cd97e6eb5bbfc29935cbb190b70b739cf9f))
-
-* fix: update doc for token helper ([`3ac6fa1`](https://github.com/python-gitlab/python-gitlab/commit/3ac6fa12b37dd33610ef2206ef4ddc3b20d9fd3f))
-
-* fix: let the homedir be expanded in path of helper ([`fc7387a`](https://github.com/python-gitlab/python-gitlab/commit/fc7387a0a6039bc58b2a741ac9b73d7068375be7))
-
-* fix: make secret helper more user friendly ([`fc2798f`](https://github.com/python-gitlab/python-gitlab/commit/fc2798fc31a08997c049f609c19dd4ab8d75964e))
-
-* fix(objects): add single get endpoint for instance audit events ([`c3f0a6f`](https://github.com/python-gitlab/python-gitlab/commit/c3f0a6f158fbc7d90544274b9bf09d5ac9ac0060))
-
-* fix: linting issues and test ([`b04dd2c`](https://github.com/python-gitlab/python-gitlab/commit/b04dd2c08b69619bb58832f40a4c4391e350a735))
-
-* fix: better real life token lookup example ([`9ef8311`](https://github.com/python-gitlab/python-gitlab/commit/9ef83118efde3d0f35d73812ce8398be2c18ebff))
 
 * fix: handle tags like debian/2%2.6-21 as identifiers
 
@@ -6720,17 +6849,19 @@ This ensures python-dotenv with expected behavior for .env processing ([`1f7a2ab
 
 There is no way to edit the raw commit ([`35e43c5`](https://github.com/python-gitlab/python-gitlab/commit/35e43c54cd282f06dde0d24326641646fc3fa29e))
 
-* chore(deps): update gitlab/gitlab-ce docker tag to v13.4.3-ce.0 ([`bc17889`](https://github.com/python-gitlab/python-gitlab/commit/bc178898776d2d61477ff773248217adfac81f56))
-
 * chore(cli): remove python2 code ([`1030e0a`](https://github.com/python-gitlab/python-gitlab/commit/1030e0a7e13c4ec3fdc48b9010e9892833850db9))
 
-* chore: apply suggestions ([`65ce026`](https://github.com/python-gitlab/python-gitlab/commit/65ce02675d9c9580860df91b41c3cf5e6bb8d318))
-
-* chore(deps): update python docker tag to v3.9 ([`1fc65e0`](https://github.com/python-gitlab/python-gitlab/commit/1fc65e072003a2d1ebc29d741e9cef1860b5ff78))
+* chore(deps): update gitlab/gitlab-ce docker tag to v13.4.3-ce.0 ([`bc17889`](https://github.com/python-gitlab/python-gitlab/commit/bc178898776d2d61477ff773248217adfac81f56))
 
 * chore: simplified search scope constants ([`16fc048`](https://github.com/python-gitlab/python-gitlab/commit/16fc0489b2fe24e0356e9092c9878210b7330a72))
 
 * chore: added docs for search scopes constants ([`7565bf0`](https://github.com/python-gitlab/python-gitlab/commit/7565bf059b240c9fffaf6959ee168a12d0fedd77))
+
+* chore: added constants for search API ([`8ef53d6`](https://github.com/python-gitlab/python-gitlab/commit/8ef53d6f6180440582d1cca305fd084c9eb70443))
+
+* chore: apply suggestions ([`65ce026`](https://github.com/python-gitlab/python-gitlab/commit/65ce02675d9c9580860df91b41c3cf5e6bb8d318))
+
+* chore(deps): update python docker tag to v3.9 ([`1fc65e0`](https://github.com/python-gitlab/python-gitlab/commit/1fc65e072003a2d1ebc29d741e9cef1860b5ff78))
 
 * chore: use helper fixtures for test directories ([`40ec2f5`](https://github.com/python-gitlab/python-gitlab/commit/40ec2f528b885290fbb3e2d7ef0f5f8615219326))
 
@@ -6772,13 +6903,13 @@ work around this shortcoming. Until we know better. ([`f2cf467`](https://github.
 
 * docs: add Project Merge Request approval rule documentation ([`449fc26`](https://github.com/python-gitlab/python-gitlab/commit/449fc26ffa98ef5703d019154f37a4959816f607))
 
-* docs(readme): also add hint to delete gitlab-runner-test
-
-Otherwise the whole testsuite will refuse to run ([`8894f2d`](https://github.com/python-gitlab/python-gitlab/commit/8894f2da81d885c1e788a3b21686212ad91d5bf2))
-
 * docs(issues): add admin, project owner hint
 
 Closes #1101 ([`609c03b`](https://github.com/python-gitlab/python-gitlab/commit/609c03b7139db8af5524ebeb741fd5b003e17038))
+
+* docs(readme): also add hint to delete gitlab-runner-test
+
+Otherwise the whole testsuite will refuse to run ([`8894f2d`](https://github.com/python-gitlab/python-gitlab/commit/8894f2da81d885c1e788a3b21686212ad91d5bf2))
 
 * docs(projects): correct fork docs
 
@@ -6792,19 +6923,19 @@ Closes #1126 ([`54921db`](https://github.com/python-gitlab/python-gitlab/commit/
 
 * feat: support multipart uploads ([`2fa3004`](https://github.com/python-gitlab/python-gitlab/commit/2fa3004d9e34cc4b77fbd6bd89a15957898e1363))
 
-* feat(tests): test label getter ([`a41af90`](https://github.com/python-gitlab/python-gitlab/commit/a41af902675a07cd4772bb122c152547d6d570f7))
-
 * feat: add MINIMAL_ACCESS constant
 
 A &#34;minimal access&#34; access level was
 [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/220203) in
 GitLab 13.5. ([`49eb3ca`](https://github.com/python-gitlab/python-gitlab/commit/49eb3ca79172905bf49bab1486ecb91c593ea1d7))
 
+* feat(tests): test label getter ([`a41af90`](https://github.com/python-gitlab/python-gitlab/commit/a41af902675a07cd4772bb122c152547d6d570f7))
+
+* feat: adds support for project merge request approval rules (#1199) ([`c6fbf39`](https://github.com/python-gitlab/python-gitlab/commit/c6fbf399ec5cbc92f995a5d61342f295be68bd79))
+
 * feat: unit tests added ([`f37ebf5`](https://github.com/python-gitlab/python-gitlab/commit/f37ebf5fd792c8e8a973443a1df386fa77d1248f))
 
 * feat: added support for pipeline bridges ([`05cbdc2`](https://github.com/python-gitlab/python-gitlab/commit/05cbdc224007e9dda10fc2f6f7d63c82cf36dec0))
-
-* feat: adds support for project merge request approval rules (#1199) ([`c6fbf39`](https://github.com/python-gitlab/python-gitlab/commit/c6fbf399ec5cbc92f995a5d61342f295be68bd79))
 
 * feat(api): added wip filter param for merge requests ([`d6078f8`](https://github.com/python-gitlab/python-gitlab/commit/d6078f808bf19ef16cfebfaeabb09fbf70bfb4c7))
 
@@ -6827,11 +6958,11 @@ Fixes #1155 ([`e1e0d8c`](https://github.com/python-gitlab/python-gitlab/commit/e
 
 * fix(cli): write binary data to stdout buffer ([`0733ec6`](https://github.com/python-gitlab/python-gitlab/commit/0733ec6cad5c11b470ce6bad5dc559018ff73b3c))
 
-* fix(cli): add missing args for project lists ([`c73e237`](https://github.com/python-gitlab/python-gitlab/commit/c73e23747d24ffef3c1a2a4e5f4ae24252762a71))
-
 * fix: docs changed using the consts ([`650b65c`](https://github.com/python-gitlab/python-gitlab/commit/650b65c389c686bcc9a9cef81b6ca2a509d8cad2))
 
 * fix: typo ([`9baa905`](https://github.com/python-gitlab/python-gitlab/commit/9baa90535b5a8096600f9aec96e528f4d2ac7d74))
+
+* fix(cli): add missing args for project lists ([`c73e237`](https://github.com/python-gitlab/python-gitlab/commit/c73e23747d24ffef3c1a2a4e5f4ae24252762a71))
 
 * fix(api): add missing runner access_level param ([`92669f2`](https://github.com/python-gitlab/python-gitlab/commit/92669f2ef2af3cac1c5f06f9299975060cc5e64a))
 
@@ -7015,9 +7146,9 @@ chore(deps): update gitlab/gitlab-ce docker tag to v13.3.3-ce.0 ([`769367c`](htt
 
 * chore(deps): update python docker tag to v3.8 ([`a8070f2`](https://github.com/python-gitlab/python-gitlab/commit/a8070f2d9a996e57104f29539069273774cf5493))
 
-* chore(deps): update gitlab/gitlab-ce docker tag to v13.3.2-ce.0 ([`9fd778b`](https://github.com/python-gitlab/python-gitlab/commit/9fd778b4a7e92a7405ac2f05c855bafbc51dc6a8))
-
 * chore(test): use pathlib for paths ([`5a56b6b`](https://github.com/python-gitlab/python-gitlab/commit/5a56b6b55f761940f80491eddcdcf17d37215cfd))
+
+* chore(deps): update gitlab/gitlab-ce docker tag to v13.3.2-ce.0 ([`9fd778b`](https://github.com/python-gitlab/python-gitlab/commit/9fd778b4a7e92a7405ac2f05c855bafbc51dc6a8))
 
 * chore(ci): pin gitlab-ce version for renovate ([`cb79fb7`](https://github.com/python-gitlab/python-gitlab/commit/cb79fb72e899e65a1ad77ccd508f1a1baca30309))
 
@@ -7027,15 +7158,15 @@ chore(deps): update gitlab/gitlab-ce docker tag to v13.3.3-ce.0 ([`769367c`](htt
 
 * chore: make latest black happy with existing code ([`6961479`](https://github.com/python-gitlab/python-gitlab/commit/696147922552a8e6ddda3a5b852ee2de6b983e37))
 
-* chore: update tools dir for latest black version ([`f245ffb`](https://github.com/python-gitlab/python-gitlab/commit/f245ffbfad6f1d1f66d386a4b00b3a6ff3e74daa))
-
-* chore: make latest black happy with existing code ([`d299753`](https://github.com/python-gitlab/python-gitlab/commit/d2997530bc3355048143bc29580ef32fc21dac3d))
-
 * chore: update tools dir for latest black version ([`c2806d8`](https://github.com/python-gitlab/python-gitlab/commit/c2806d8c0454a83dfdafd1bdbf7e10bb28d205e0))
 
 * chore: remove unnecessary import ([`f337b7a`](https://github.com/python-gitlab/python-gitlab/commit/f337b7ac43e49f9d3610235749b1e2a21731352d))
 
 * chore: make latest black happy with existing code ([`4039c8c`](https://github.com/python-gitlab/python-gitlab/commit/4039c8cfc6c7783270f0da1e235ef5d70b420ba9))
+
+* chore: update tools dir for latest black version ([`f245ffb`](https://github.com/python-gitlab/python-gitlab/commit/f245ffbfad6f1d1f66d386a4b00b3a6ff3e74daa))
+
+* chore: make latest black happy with existing code ([`d299753`](https://github.com/python-gitlab/python-gitlab/commit/d2997530bc3355048143bc29580ef32fc21dac3d))
 
 * chore: run unittest2pytest on all unit tests ([`11383e7`](https://github.com/python-gitlab/python-gitlab/commit/11383e70f74c70e6fe8a56f18b5b170db982f402))
 
@@ -7045,9 +7176,9 @@ chore(deps): update gitlab/gitlab-ce docker tag to v13.3.3-ce.0 ([`769367c`](htt
 
 * docs(variables): add docs for instance-level variables ([`ad4b87c`](https://github.com/python-gitlab/python-gitlab/commit/ad4b87cb3d6802deea971e6574ae9afe4f352e31))
 
-* docs(packages): add examples for Packages API and cli usage ([`a47dfcd`](https://github.com/python-gitlab/python-gitlab/commit/a47dfcd9ded3a0467e83396f21e6dcfa232dfdd7))
-
 * docs(api): add example for latest pipeline job artifacts ([`d20f022`](https://github.com/python-gitlab/python-gitlab/commit/d20f022a8fe29a6086d30aa7616aa1dac3e1bb17))
+
+* docs(packages): add examples for Packages API and cli usage ([`a47dfcd`](https://github.com/python-gitlab/python-gitlab/commit/a47dfcd9ded3a0467e83396f21e6dcfa232dfdd7))
 
 * docs(cli): add examples for group-project list ([`af86dcd`](https://github.com/python-gitlab/python-gitlab/commit/af86dcdd28ee1b16d590af31672c838597e3f3ec))
 
@@ -7059,13 +7190,13 @@ Showing how to delete without having to pull the file ([`9e94b75`](https://githu
 
 * feat(api): add support for instance variables ([`4492fc4`](https://github.com/python-gitlab/python-gitlab/commit/4492fc42c9f6e0031dd3f3c6c99e4c58d4f472ff))
 
-* feat(api): add support for Packages API ([`71495d1`](https://github.com/python-gitlab/python-gitlab/commit/71495d127d30d2f4c00285485adae5454a590584))
-
-* feat(api): add endpoint for latest ref artifacts ([`b7a07fc`](https://github.com/python-gitlab/python-gitlab/commit/b7a07fca775b278b1de7d5cb36c8421b7d9bebb7))
-
 * feat: add support to resource milestone events
 
 Fixes #1154 ([`88f8cc7`](https://github.com/python-gitlab/python-gitlab/commit/88f8cc78f97156d5888a9600bdb8721720563120))
+
+* feat(api): add endpoint for latest ref artifacts ([`b7a07fc`](https://github.com/python-gitlab/python-gitlab/commit/b7a07fca775b278b1de7d5cb36c8421b7d9bebb7))
+
+* feat(api): add support for Packages API ([`71495d1`](https://github.com/python-gitlab/python-gitlab/commit/71495d127d30d2f4c00285485adae5454a590584))
 
 * feat: add share/unshare group with group ([`7c6e541`](https://github.com/python-gitlab/python-gitlab/commit/7c6e541dc2642740a6ec2d7ed7921aca41446b37))
 
@@ -7100,11 +7231,11 @@ Fixes #1146 ([`0078f89`](https://github.com/python-gitlab/python-gitlab/commit/0
 
 * test(api): add tests for variables API ([`66d108d`](https://github.com/python-gitlab/python-gitlab/commit/66d108de9665055921123476426fb6716c602496))
 
-* test(packages): add tests for Packages API ([`7ea178b`](https://github.com/python-gitlab/python-gitlab/commit/7ea178bad398c8c2851a4584f4dca5b8adc89d29))
-
 * test: add unit tests for resource milestone events API
 
 Fixes #1154 ([`1317f4b`](https://github.com/python-gitlab/python-gitlab/commit/1317f4b62afefcb2504472d5b5d8e24f39b0d86f))
+
+* test(packages): add tests for Packages API ([`7ea178b`](https://github.com/python-gitlab/python-gitlab/commit/7ea178bad398c8c2851a4584f4dca5b8adc89d29))
 
 ### Unknown
 
@@ -7144,6 +7275,8 @@ chore(ci): use fixed black version ([`28aa17e`](https://github.com/python-gitlab
 
 Add support to resource milestone events ([`750f4ee`](https://github.com/python-gitlab/python-gitlab/commit/750f4ee6554381830e6add55583903919db2ba29))
 
+* Merge branch &#39;master&#39; into issue-1154 ([`fa899d7`](https://github.com/python-gitlab/python-gitlab/commit/fa899d7a6e76acbe392f3debb5fd61d71bd88ed2))
+
 * Merge pull request #1159 from python-gitlab/feat/project-artifacts
 
 Feat: Project job artifacts for latest successful pipeline ([`26f95f3`](https://github.com/python-gitlab/python-gitlab/commit/26f95f30a5219243f33d505747c65f798ac6a486))
@@ -7151,8 +7284,6 @@ Feat: Project job artifacts for latest successful pipeline ([`26f95f3`](https://
 * Merge pull request #1160 from python-gitlab/feat/packages-api
 
 Feat: Add support for packages API ([`0f42e32`](https://github.com/python-gitlab/python-gitlab/commit/0f42e32cb756766735c7e277f099030f6b3d8fc7))
-
-* Merge branch &#39;master&#39; into issue-1154 ([`fa899d7`](https://github.com/python-gitlab/python-gitlab/commit/fa899d7a6e76acbe392f3debb5fd61d71bd88ed2))
 
 * Merge pull request #1156 from python-gitlab/docs/group-projects-list-cli
 
@@ -7180,7 +7311,14 @@ docs: additional project file delete example ([`5b92de8`](https://github.com/pyt
 
 * chore: bump version to 2.4.0 ([`1606310`](https://github.com/python-gitlab/python-gitlab/commit/1606310a880f8a8a2a370db27511b57732caf178))
 
-* chore: added constants for search API ([`8ef53d6`](https://github.com/python-gitlab/python-gitlab/commit/8ef53d6f6180440582d1cca305fd084c9eb70443))
+### Documentation
+
+* docs(pipelines): simplify download
+
+This uses a context instead of inventing your own stream handler which
+makes the code simpler and should be fine for most use cases.
+
+Signed-off-by: Paul Spooren &lt;mail@aparcar.org&gt; ([`9a068e0`](https://github.com/python-gitlab/python-gitlab/commit/9a068e00eba364eb121a2d7d4c839e2f4c7371c8))
 
 ### Feature
 
@@ -7194,8 +7332,6 @@ https://docs.gitlab.com/ee/api/protected_branches.html ([`dab4d0a`](https://gith
 
 ### Fix
 
-* fix: add masked parameter for variables command ([`b6339bf`](https://github.com/python-gitlab/python-gitlab/commit/b6339bf85f3ae11d31bf03c4132f6e7b7c343900))
-
 * fix: do not check if kwargs is none
 
 Co-authored-by: Traian Nedelea &lt;tron1point0@pm.me&gt; ([`a349b90`](https://github.com/python-gitlab/python-gitlab/commit/a349b90ea6016ec8fbe91583f2bbd9832b41a368))
@@ -7203,6 +7339,8 @@ Co-authored-by: Traian Nedelea &lt;tron1point0@pm.me&gt; ([`a349b90`](https://gi
 * fix: make query kwargs consistent between call in init and next ([`72ffa01`](https://github.com/python-gitlab/python-gitlab/commit/72ffa0164edc44a503364f9b7e25c5b399f648c3))
 
 * fix: pass kwargs to subsequent queries in gitlab list ([`1d011ac`](https://github.com/python-gitlab/python-gitlab/commit/1d011ac72aeb18b5f31d10e42ffb49cf703c3e3a))
+
+* fix: add masked parameter for variables command ([`b6339bf`](https://github.com/python-gitlab/python-gitlab/commit/b6339bf85f3ae11d31bf03c4132f6e7b7c343900))
 
 * fix(merge): parse arguments as query_data ([`878098b`](https://github.com/python-gitlab/python-gitlab/commit/878098b74e216b4359e0ce012ff5cd6973043a0a))
 
@@ -7276,16 +7414,9 @@ Fix/keyset pagination revert ([`3f585ad`](https://github.com/python-gitlab/pytho
 
 ### Documentation
 
-* docs(remote_mirrors): fix create command ([`1bb4e42`](https://github.com/python-gitlab/python-gitlab/commit/1bb4e42858696c9ac8cbfc0f89fa703921b969f3))
-
 * docs(remote_mirrors): fix create command ([`bab91fe`](https://github.com/python-gitlab/python-gitlab/commit/bab91fe86fc8d23464027b1c3ab30619e520235e))
 
-* docs(pipelines): simplify download
-
-This uses a context instead of inventing your own stream handler which
-makes the code simpler and should be fine for most use cases.
-
-Signed-off-by: Paul Spooren &lt;mail@aparcar.org&gt; ([`9a068e0`](https://github.com/python-gitlab/python-gitlab/commit/9a068e00eba364eb121a2d7d4c839e2f4c7371c8))
+* docs(remote_mirrors): fix create command ([`1bb4e42`](https://github.com/python-gitlab/python-gitlab/commit/1bb4e42858696c9ac8cbfc0f89fa703921b969f3))
 
 * docs: update authors ([`ac0c84d`](https://github.com/python-gitlab/python-gitlab/commit/ac0c84de02a237db350d3b21fe74d0c24d85a94e))
 
@@ -7307,6 +7438,11 @@ docs: add documentation for pipeline schedule play ([`07b9988`](https://github.c
 
 * feat(api): added support in the GroupManager to upload Group avatars ([`28eb7ea`](https://github.com/python-gitlab/python-gitlab/commit/28eb7eab8fbe3750fb56e85967e8179b7025f441))
 
+* feat(services): add project service list API
+
+Can be used to list available services
+It was introduced in GitLab 12.7 ([`fc52221`](https://github.com/python-gitlab/python-gitlab/commit/fc5222188ad096932fa89bb53f03f7118926898a))
+
 * feat: allow an environment variable to specify config location
 
 It can be useful (especially in scripts) to specify a configuration
@@ -7314,11 +7450,6 @@ location via an environment variable. If the &#34;PYTHON_GITLAB_CFG&#34;
 environment variable is defined, treat its value as the path to a
 configuration file and include it in the set of default configuration
 locations. ([`401e702`](https://github.com/python-gitlab/python-gitlab/commit/401e702a9ff14bf4cc33b3ed3acf16f3c60c6945))
-
-* feat(services): add project service list API
-
-Can be used to list available services
-It was introduced in GitLab 12.7 ([`fc52221`](https://github.com/python-gitlab/python-gitlab/commit/fc5222188ad096932fa89bb53f03f7118926898a))
 
 * feat(types): add __dir__ to RESTObject to expose attributes ([`cad134c`](https://github.com/python-gitlab/python-gitlab/commit/cad134c078573c009af18160652182e39ab5b114))
 
@@ -7425,17 +7556,17 @@ fix(project): add missing project parameters ([`29fd95e`](https://github.com/pyt
 
 * chore: bump to 2.2.0 ([`22d4b46`](https://github.com/python-gitlab/python-gitlab/commit/22d4b465c3217536cb444dafe5c25e9aaa3aa7be))
 
-* chore(group): update group_manager attributes (#1062)
-
-* chore(group): update group_manager attributes
-
-Co-Authored-By: Nejc Habjan &lt;hab.nejc@gmail.com&gt; ([`fa34f5e`](https://github.com/python-gitlab/python-gitlab/commit/fa34f5e20ecbd3f5d868df2fa9e399ac6559c5d5))
+* chore: use raise..from for chained exceptions (#939) ([`79fef26`](https://github.com/python-gitlab/python-gitlab/commit/79fef262c3e05ff626981c891d9377abb1e18533))
 
 * chore: rename ExportMixin to DownloadMixin ([`847da60`](https://github.com/python-gitlab/python-gitlab/commit/847da6063b4c63c8133e5e5b5b45e5b4f004bdc4))
 
 * chore(mixins): factor out export download into ExportMixin ([`6ce5d1f`](https://github.com/python-gitlab/python-gitlab/commit/6ce5d1f14060a403f05993d77bf37720c25534ba))
 
-* chore: use raise..from for chained exceptions (#939) ([`79fef26`](https://github.com/python-gitlab/python-gitlab/commit/79fef262c3e05ff626981c891d9377abb1e18533))
+* chore(group): update group_manager attributes (#1062)
+
+* chore(group): update group_manager attributes
+
+Co-Authored-By: Nejc Habjan &lt;hab.nejc@gmail.com&gt; ([`fa34f5e`](https://github.com/python-gitlab/python-gitlab/commit/fa34f5e20ecbd3f5d868df2fa9e399ac6559c5d5))
 
 * chore: fix typo in allow_failures ([`265bbdd`](https://github.com/python-gitlab/python-gitlab/commit/265bbddacc25d709a8f13807ed04cae393d9802d))
 
@@ -7467,19 +7598,19 @@ Co-Authored-By: Nejc Habjan &lt;hab.nejc@gmail.com&gt; ([`ac6b2da`](https://gith
 
 ### Feature
 
-* feat(api): add support for remote mirrors API (#1056) ([`4cfaa2f`](https://github.com/python-gitlab/python-gitlab/commit/4cfaa2fd44b64459f6fc268a91d4469284c0e768))
-
 * feat(api): add support for Gitlab Deploy Token API ([`01de524`](https://github.com/python-gitlab/python-gitlab/commit/01de524ce39a67b549b3157bf4de827dd0568d6b))
 
-* feat(api): add support for Group Import/Export API (#1037) ([`6cb9d92`](https://github.com/python-gitlab/python-gitlab/commit/6cb9d9238ea3cc73689d6b71e991f2ec233ee8e6))
+* feat(api): add support for remote mirrors API (#1056) ([`4cfaa2f`](https://github.com/python-gitlab/python-gitlab/commit/4cfaa2fd44b64459f6fc268a91d4469284c0e768))
 
-* feat: add support for commit GPG signature API ([`da7a809`](https://github.com/python-gitlab/python-gitlab/commit/da7a809772233be27fa8e563925dd2e44e1ce058))
+* feat(api): add support for Group Import/Export API (#1037) ([`6cb9d92`](https://github.com/python-gitlab/python-gitlab/commit/6cb9d9238ea3cc73689d6b71e991f2ec233ee8e6))
 
 * feat: add create from template args to ProjectManager
 
 This commit adds the v4 Create project attributes necessary to create a
 project from a project, instance, or group level template as documented
 in https://docs.gitlab.com/ee/api/projects.html#create-project ([`f493b73`](https://github.com/python-gitlab/python-gitlab/commit/f493b73e1fbd3c3f1a187fed2de26030f00a89c9))
+
+* feat: add support for commit GPG signature API ([`da7a809`](https://github.com/python-gitlab/python-gitlab/commit/da7a809772233be27fa8e563925dd2e44e1ce058))
 
 ### Fix
 
@@ -7605,6 +7736,8 @@ Co-Authored-By: Mitar &lt;mitar.git@tnode.com&gt; ([`1609824`](https://github.co
 
 * feat(api): add support for GitLab OAuth Applications API ([`4e12356`](https://github.com/python-gitlab/python-gitlab/commit/4e12356d6da58c9ef3d8bf9ae67e8aef8fafac0a))
 
+* feat: use keyset pagination by default for `all=True` ([`99b4484`](https://github.com/python-gitlab/python-gitlab/commit/99b4484da924f9378518a1a1194e1a3e75b48073))
+
 * feat: add support for user memberships API (#1009) ([`c313c2b`](https://github.com/python-gitlab/python-gitlab/commit/c313c2b01d796418539e42d578fed635f750cdc1))
 
 * feat: add support for commit revert API (#991) ([`5298964`](https://github.com/python-gitlab/python-gitlab/commit/5298964ee7db8a610f23de2d69aad8467727ca97))
@@ -7615,17 +7748,33 @@ Co-Authored-By: Mitar &lt;mitar.git@tnode.com&gt; ([`1609824`](https://github.co
 
 * fix(projects): correct copy-paste error ([`adc9101`](https://github.com/python-gitlab/python-gitlab/commit/adc91011e46dfce909b7798b1257819ec09d01bd))
 
-* fix: do not require empty data dict for create() ([`99d959f`](https://github.com/python-gitlab/python-gitlab/commit/99d959f74d06cca8df3f2d2b3a4709faba7799cb))
-
-* fix: remove trailing slashes from base URL (#913) ([`2e396e4`](https://github.com/python-gitlab/python-gitlab/commit/2e396e4a84690c2ea2ea7035148b1a6038c03301))
-
-* fix(docs): fix typo in user memberships example ([`33889bc`](https://github.com/python-gitlab/python-gitlab/commit/33889bcbedb4aa421ea5bf83c13abe3168256c62))
-
-* fix: return response with commit data ([`b77b945`](https://github.com/python-gitlab/python-gitlab/commit/b77b945c7e0000fad4c422a5331c7e905e619a33))
-
 * fix(objects): add default name data and use http post
 
 Updating approvers new api needs a POST call. Also It needs a name of the new rule, defaulting this to &#39;name&#39;. ([`70c0cfb`](https://github.com/python-gitlab/python-gitlab/commit/70c0cfb686177bc17b796bf4d7eea8b784cf9651))
+
+* fix: do not require empty data dict for create() ([`99d959f`](https://github.com/python-gitlab/python-gitlab/commit/99d959f74d06cca8df3f2d2b3a4709faba7799cb))
+
+* fix(docs): fix typo in user memberships example ([`33889bc`](https://github.com/python-gitlab/python-gitlab/commit/33889bcbedb4aa421ea5bf83c13abe3168256c62))
+
+* fix: remove trailing slashes from base URL (#913) ([`2e396e4`](https://github.com/python-gitlab/python-gitlab/commit/2e396e4a84690c2ea2ea7035148b1a6038c03301))
+
+* fix: return response with commit data ([`b77b945`](https://github.com/python-gitlab/python-gitlab/commit/b77b945c7e0000fad4c422a5331c7e905e619a33))
+
+* fix(docs): update to new set approvers call for # of approvers
+
+to set the # of approvers for an MR you need to use the same function as for setting the approvers id. ([`8e0c526`](https://github.com/python-gitlab/python-gitlab/commit/8e0c52620af47a9e2247eeb7dcc7a2e677822ff4))
+
+* fix(objects): update set_approvers function call
+
+Added a miss paramter update to the set_approvers function ([`65ecadc`](https://github.com/python-gitlab/python-gitlab/commit/65ecadcfc724a7086e5f84dbf1ecc9f7a02e5ed8))
+
+* fix(docs and tests): update docs and tests for set_approvers
+
+Updated the docs with the new set_approvers arguments, and updated tests with the arg as well. ([`2cf12c7`](https://github.com/python-gitlab/python-gitlab/commit/2cf12c7973e139c4932da1f31c33bb7658b132f7))
+
+* fix(objects): update to new gitlab api for path, and args
+
+Updated the gitlab path for set_approvers to approvers_rules, added default arg for rule type, and added arg for # of approvals required. ([`e512cdd`](https://github.com/python-gitlab/python-gitlab/commit/e512cddd30f3047230e8eedb79d98dc06e93a77b))
 
 * fix: remove null values from features POST data, because it fails
 with HTTP 500 ([`1ec1816`](https://github.com/python-gitlab/python-gitlab/commit/1ec1816d7c76ae079ad3b3e3b7a1bae70e0dd95b))
@@ -7719,28 +7868,6 @@ This also workarounds an GitLab issue, where private_profile, would reset to fal
 ### Documentation
 
 * docs(auth): remove email/password auth ([`c9329bb`](https://github.com/python-gitlab/python-gitlab/commit/c9329bbf028c5e5ce175e99859c9e842ab8234bc))
-
-### Feature
-
-* feat: use keyset pagination by default for `all=True` ([`99b4484`](https://github.com/python-gitlab/python-gitlab/commit/99b4484da924f9378518a1a1194e1a3e75b48073))
-
-### Fix
-
-* fix(docs): update to new set approvers call for # of approvers
-
-to set the # of approvers for an MR you need to use the same function as for setting the approvers id. ([`8e0c526`](https://github.com/python-gitlab/python-gitlab/commit/8e0c52620af47a9e2247eeb7dcc7a2e677822ff4))
-
-* fix(objects): update set_approvers function call
-
-Added a miss paramter update to the set_approvers function ([`65ecadc`](https://github.com/python-gitlab/python-gitlab/commit/65ecadcfc724a7086e5f84dbf1ecc9f7a02e5ed8))
-
-* fix(docs and tests): update docs and tests for set_approvers
-
-Updated the docs with the new set_approvers arguments, and updated tests with the arg as well. ([`2cf12c7`](https://github.com/python-gitlab/python-gitlab/commit/2cf12c7973e139c4932da1f31c33bb7658b132f7))
-
-* fix(objects): update to new gitlab api for path, and args
-
-Updated the gitlab path for set_approvers to approvers_rules, added default arg for rule type, and added arg for # of approvals required. ([`e512cdd`](https://github.com/python-gitlab/python-gitlab/commit/e512cddd30f3047230e8eedb79d98dc06e93a77b))
 
 ### Unknown
 
@@ -7898,18 +8025,6 @@ repositories into gitlab. ([`aa4d41b`](https://github.com/python-gitlab/python-g
 
 * feat: nicer stacktrace ([`697cda2`](https://github.com/python-gitlab/python-gitlab/commit/697cda241509dd76adc1249b8029366cfc1d9d6e))
 
-* feat: retry transient HTTP errors
-
-Fixes #970 ([`59fe271`](https://github.com/python-gitlab/python-gitlab/commit/59fe2714741133989a7beed613f1eeb67c18c54e))
-
-* feat: access project&#39;s issues statistics
-
-Fixes #966 ([`482e57b`](https://github.com/python-gitlab/python-gitlab/commit/482e57ba716c21cd7b315e5803ecb3953c479b33))
-
-* feat: adding project stats
-
-Fixes #967 ([`db0b00a`](https://github.com/python-gitlab/python-gitlab/commit/db0b00a905c14d52eaca831fcc9243f33d2f092d))
-
 * feat: add variable_type/protected to projects ci variables
 
 This adds the ci variables types and protected flag for create/update 
@@ -7924,6 +8039,18 @@ This adds the ci variables types for create/update requests.
 
 See 
 https://docs.gitlab.com/ee/api/group_level_variables.html#create-variable ([`0986c93`](https://github.com/python-gitlab/python-gitlab/commit/0986c93177cde1f3be77d4f73314c37b14bba011))
+
+* feat: access project&#39;s issues statistics
+
+Fixes #966 ([`482e57b`](https://github.com/python-gitlab/python-gitlab/commit/482e57ba716c21cd7b315e5803ecb3953c479b33))
+
+* feat: adding project stats
+
+Fixes #967 ([`db0b00a`](https://github.com/python-gitlab/python-gitlab/commit/db0b00a905c14d52eaca831fcc9243f33d2f092d))
+
+* feat: retry transient HTTP errors
+
+Fixes #970 ([`59fe271`](https://github.com/python-gitlab/python-gitlab/commit/59fe2714741133989a7beed613f1eeb67c18c54e))
 
 ### Fix
 
@@ -7998,6 +8125,8 @@ Fixes #954 ([`bbaa754`](https://github.com/python-gitlab/python-gitlab/commit/bb
 * docs: add project and group cluster examples ([`d15801d`](https://github.com/python-gitlab/python-gitlab/commit/d15801d7e7742a43ad9517f0ac13b6dba24c6283))
 
 * docs(changelog): add notice for release-notes on Github (#938) ([`de98e57`](https://github.com/python-gitlab/python-gitlab/commit/de98e572b003ee4cf2c1ef770a692f442c216247))
+
+* docs(pipelines_and_jobs): add pipeline custom variables usage example ([`b275eb0`](https://github.com/python-gitlab/python-gitlab/commit/b275eb03c5954ca24f249efad8125d1eacadd3ac))
 
 ### Feature
 
@@ -8102,8 +8231,6 @@ Closes #907 ([`3133ed7`](https://github.com/python-gitlab/python-gitlab/commit/3
 
 ### Documentation
 
-* docs(pipelines_and_jobs): add pipeline custom variables usage example ([`b275eb0`](https://github.com/python-gitlab/python-gitlab/commit/b275eb03c5954ca24f249efad8125d1eacadd3ac))
-
 * docs: projects get requires id
 
 Also, add an example value for project_id to the other projects.get()
@@ -8129,9 +8256,9 @@ Fixes #917 ([`ca256a0`](https://github.com/python-gitlab/python-gitlab/commit/ca
 
 * feat(test): unused unittest2, type -&gt; isinstance ([`33b1801`](https://github.com/python-gitlab/python-gitlab/commit/33b180120f30515d0f76fcf635cb8c76045b1b42))
 
-* feat(doc): remove refs to api v3 in docs ([`6beeaa9`](https://github.com/python-gitlab/python-gitlab/commit/6beeaa993f8931d6b7fe682f1afed2bd4c8a4b73))
-
 * feat(auth): remove deprecated session auth ([`b751cdf`](https://github.com/python-gitlab/python-gitlab/commit/b751cdf424454d3859f3f038b58212e441faafaf))
+
+* feat(doc): remove refs to api v3 in docs ([`6beeaa9`](https://github.com/python-gitlab/python-gitlab/commit/6beeaa993f8931d6b7fe682f1afed2bd4c8a4b73))
 
 ### Fix
 
@@ -8417,9 +8544,9 @@ feat: Add grouplabel support with subscribable mixin ([`edb3359`](https://github
 
 * chore(ci): update the GitLab version in the test image ([`c410699`](https://github.com/python-gitlab/python-gitlab/commit/c41069992de392747ccecf8c282ac0549932ccd1))
 
-* chore(ci): fix gitlab PyPI publish ([`3e37df1`](https://github.com/python-gitlab/python-gitlab/commit/3e37df16e2b6a8f1beffc3a595abcb06fd48a17c))
-
 * chore(ci): add automatic GitLab image pushes ([`95c9b6d`](https://github.com/python-gitlab/python-gitlab/commit/95c9b6dd489fc15c7dfceffca909917f4f3d4312))
+
+* chore(ci): fix gitlab PyPI publish ([`3e37df1`](https://github.com/python-gitlab/python-gitlab/commit/3e37df16e2b6a8f1beffc3a595abcb06fd48a17c))
 
 * chore: add a tox job to run black
 
@@ -8478,13 +8605,13 @@ Fixes #660 ([`bed8e1b`](https://github.com/python-gitlab/python-gitlab/commit/be
 
 * docs(setup): use proper readme on PyPI ([`6898097`](https://github.com/python-gitlab/python-gitlab/commit/6898097c45d53a3176882a3d9cb86c0015f8d491))
 
-* docs(groups): fix typo
-
-Fixes #635 ([`ac2d65a`](https://github.com/python-gitlab/python-gitlab/commit/ac2d65aacba5c19eca857290c5b47ead6bb4356d))
-
 * docs(projects): fix typo in code sample
 
 Fixes #630 ([`b93f2a9`](https://github.com/python-gitlab/python-gitlab/commit/b93f2a9ea9661521878ac45d70c7bd9a5a470548))
+
+* docs(groups): fix typo
+
+Fixes #635 ([`ac2d65a`](https://github.com/python-gitlab/python-gitlab/commit/ac2d65aacba5c19eca857290c5b47ead6bb4356d))
 
 * docs(cli): add PyYAML requirement notice
 
@@ -8575,13 +8702,13 @@ Fix #175 ([`ca014f8`](https://github.com/python-gitlab/python-gitlab/commit/ca01
 
 * feat: get artifact by ref and job ([`cda1174`](https://github.com/python-gitlab/python-gitlab/commit/cda117456791977ad300a1dd26dec56009dac55e))
 
-* feat: add support for board update
-
-Closes #801 ([`908d79f`](https://github.com/python-gitlab/python-gitlab/commit/908d79fa56965e7b3afcfa23236beef457cfa4b4))
-
 * feat: add support for issue.related_merge_requests
 
 Closes #794 ([`90a3631`](https://github.com/python-gitlab/python-gitlab/commit/90a363154067bcf763043124d172eaf705c8fe90))
+
+* feat: add support for board update
+
+Closes #801 ([`908d79f`](https://github.com/python-gitlab/python-gitlab/commit/908d79fa56965e7b3afcfa23236beef457cfa4b4))
 
 * feat: bump version to 1.9.0 ([`aaed448`](https://github.com/python-gitlab/python-gitlab/commit/aaed44837869bd2ce22b6f0d2e1196b1d0e626a6))
 
@@ -8896,13 +9023,13 @@ Revert &#34;Custom cli actions fix&#34; ([`ef32990`](https://github.com/python-g
 
 Custom cli actions fix ([`e8823e9`](https://github.com/python-gitlab/python-gitlab/commit/e8823e91b04fd6cf3838ad256c02373db7029191))
 
+* fix -/_ replacament for *Manager custom actions ([`6158fd2`](https://github.com/python-gitlab/python-gitlab/commit/6158fd23022b2e2643b6da7a39708b28ce59270a))
+
+* dont ask for id attr if this is *Manager originating custom action ([`adb6305`](https://github.com/python-gitlab/python-gitlab/commit/adb63054add31e06cefec09982a02b1cd21c2cbd))
+
 * Merge pull request #759 from kkoralsky/registry_api
 
 registry api implementation ([`84bcdc0`](https://github.com/python-gitlab/python-gitlab/commit/84bcdc0c452d2ada9a47aa9907d7551aeac23821))
-
-* Merge pull request #773 from python-gitlab/chore/ci-reliable-system
-
-chore(ci): use reliable ci system ([`3dc6413`](https://github.com/python-gitlab/python-gitlab/commit/3dc64131eaec7d08b059039f446cc8d8c4b58c81))
 
 * documentation fix ([`2d9078e`](https://github.com/python-gitlab/python-gitlab/commit/2d9078e8e785e3a17429623693f84bbf8526ee58))
 
@@ -8918,6 +9045,10 @@ chore(ci): use reliable ci system ([`3dc6413`](https://github.com/python-gitlab/
 
 * merged new release &amp; registry apis ([`910c286`](https://github.com/python-gitlab/python-gitlab/commit/910c2861a3c895cca5aff0a0df1672bb7388c526))
 
+* Merge pull request #773 from python-gitlab/chore/ci-reliable-system
+
+chore(ci): use reliable ci system ([`3dc6413`](https://github.com/python-gitlab/python-gitlab/commit/3dc64131eaec7d08b059039f446cc8d8c4b58c81))
+
 * Merge pull request #769 from python-gitlab/pep-fixes
 
 fix: pep8 errors ([`a730598`](https://github.com/python-gitlab/python-gitlab/commit/a7305980ef4065a6518951fb166b11eec9003b4d))
@@ -8925,10 +9056,6 @@ fix: pep8 errors ([`a730598`](https://github.com/python-gitlab/python-gitlab/com
 * Merge pull request #746 from therealgambo/master
 
 add project releases api ([`16de1b0`](https://github.com/python-gitlab/python-gitlab/commit/16de1b03fde3dbbe8f851614dd1d8c09de102fe5))
-
-* fix -/_ replacament for *Manager custom actions ([`6158fd2`](https://github.com/python-gitlab/python-gitlab/commit/6158fd23022b2e2643b6da7a39708b28ce59270a))
-
-* dont ask for id attr if this is *Manager originating custom action ([`adb6305`](https://github.com/python-gitlab/python-gitlab/commit/adb63054add31e06cefec09982a02b1cd21c2cbd))
 
 * Use NoUpdateMixin for now ([`8e55a3c`](https://github.com/python-gitlab/python-gitlab/commit/8e55a3c85f3537e2be1032bf7d28080a4319ec89))
 
@@ -8954,13 +9081,13 @@ Re-enable command specific help messages ([`a6e10f9`](https://github.com/python-
 
 * Use sys.exit as in rest of code ([`6fe2988`](https://github.com/python-gitlab/python-gitlab/commit/6fe2988dd050c05b17556cacac4e283fbf5242a8))
 
-* Merge pull request #729 from xarx00/PR-bugfix-716
-
-Fix for #716: %d replaced by %s ([`bc973d4`](https://github.com/python-gitlab/python-gitlab/commit/bc973d450114fcdb2fb8222ab598b5d932585064))
-
 * Re-enable command specific help mesaages
 
 This makes sure that the global help message wont be printed instead of the command spedific one unless we fail to read the configuration file ([`a8caddc`](https://github.com/python-gitlab/python-gitlab/commit/a8caddcb1e193c5472f5521dee0e18b1af32c89b))
+
+* Merge pull request #729 from xarx00/PR-bugfix-716
+
+Fix for #716: %d replaced by %s ([`bc973d4`](https://github.com/python-gitlab/python-gitlab/commit/bc973d450114fcdb2fb8222ab598b5d932585064))
 
 * Fix for #716: %d replaced by %s ([`675f879`](https://github.com/python-gitlab/python-gitlab/commit/675f879c1ec6cf1c77cbf96d8b7b2cd51e1cbaad))
 
@@ -8986,6 +9113,10 @@ chore(ci): don&#39;t try to publish existing release ([`39cb97d`](https://github
 
 Implement __eq__ and __hash__ methods ([`a4ea0fe`](https://github.com/python-gitlab/python-gitlab/commit/a4ea0fe6b91d856b30d25c9f0f71ef9cae8f3f08))
 
+* Implement __eq__ and __hash__ methods
+
+To ease lists and sets manipulations. ([`3d60850`](https://github.com/python-gitlab/python-gitlab/commit/3d60850aa42351a0bb0066ef579ade95df5a81ee))
+
 * Merge pull request #705 from python-gitlab/release-1.8.0
 
 Release version 1.8.0 ([`57fa4e3`](https://github.com/python-gitlab/python-gitlab/commit/57fa4e37aaf6ccee0d75085520f96fd15752a3df))
@@ -8995,10 +9126,6 @@ Release version 1.8.0 ([`57fa4e3`](https://github.com/python-gitlab/python-gitla
 * Merge pull request #701 from jpiron/fix_all_behaviour
 
 Fix all kwarg behaviour ([`8ce4e9e`](https://github.com/python-gitlab/python-gitlab/commit/8ce4e9e07913d9b9bb916d079ff0a7c528830a2d))
-
-* Implement __eq__ and __hash__ methods
-
-To ease lists and sets manipulations. ([`3d60850`](https://github.com/python-gitlab/python-gitlab/commit/3d60850aa42351a0bb0066ef579ade95df5a81ee))
 
 * Fix all kwarg behaviour
 
@@ -9076,18 +9203,6 @@ fix: docker entry point argument passing ([`f945910`](https://github.com/python-
 
 Improve error message handling in exceptions ([`7bd41cb`](https://github.com/python-gitlab/python-gitlab/commit/7bd41cbf88af87a31ad1943f58c5f7f8295d956b))
 
-* Merge pull request #625 from python-gitlab/fix/611/resource_label_event
-
-Add support to resource label events ([`20eb7d8`](https://github.com/python-gitlab/python-gitlab/commit/20eb7d8900cdc24c3ea1e7ef2262dca9965a2884))
-
-* Merge pull request #642 from python-gitlab/feature/589/member_all
-
-[feature] Add support for members all() method ([`22536f3`](https://github.com/python-gitlab/python-gitlab/commit/22536f34d87e5df1a3400d3f474a988c93b9bfb1))
-
-* [feature] Add support for members all() method
-
-Closes #589 ([`ef1523a`](https://github.com/python-gitlab/python-gitlab/commit/ef1523a23737db45d0f439badcd8be564bcb67fb))
-
 * Improve error message handling in exceptions
 
 * Depending on the request Gitlab has a &#39;message&#39; or &#39;error&#39; attribute
@@ -9097,25 +9212,37 @@ exceptions (depending on the python version)
 
 Closes #616 ([`1fb1296`](https://github.com/python-gitlab/python-gitlab/commit/1fb1296c9191e57e109c4e5eb9504bce191a6ff1))
 
+* Merge pull request #625 from python-gitlab/fix/611/resource_label_event
+
+Add support to resource label events ([`20eb7d8`](https://github.com/python-gitlab/python-gitlab/commit/20eb7d8900cdc24c3ea1e7ef2262dca9965a2884))
+
+* Add support to resource label events
+
+Closes #611 ([`95d0d74`](https://github.com/python-gitlab/python-gitlab/commit/95d0d745d4bafe702c89c972f644b049d6c810ab))
+
+* Merge pull request #642 from python-gitlab/feature/589/member_all
+
+[feature] Add support for members all() method ([`22536f3`](https://github.com/python-gitlab/python-gitlab/commit/22536f34d87e5df1a3400d3f474a988c93b9bfb1))
+
+* [feature] Add support for members all() method
+
+Closes #589 ([`ef1523a`](https://github.com/python-gitlab/python-gitlab/commit/ef1523a23737db45d0f439badcd8be564bcb67fb))
+
 * Merge pull request #639 from python-gitlab/fix/628/doc_typo
 
 [docs] Fix typo in custom attributes example ([`011274e`](https://github.com/python-gitlab/python-gitlab/commit/011274e7f94519d30dee59f5448215838d058e37))
-
-* Merge pull request #638 from python-gitlab/fix/633/milestone_filter
-
-[docs] Fix the milestone filetring doc (iid -&gt; iids) ([`e6df9a8`](https://github.com/python-gitlab/python-gitlab/commit/e6df9a8b2f9c2397ea3ae67dfe19a2fa91f41c19))
 
 * [docs] Fix typo in custom attributes example
 
 Closes #628 ([`bb251b8`](https://github.com/python-gitlab/python-gitlab/commit/bb251b8ef780216de03dde67912ad5fffbb30390))
 
+* Merge pull request #638 from python-gitlab/fix/633/milestone_filter
+
+[docs] Fix the milestone filetring doc (iid -&gt; iids) ([`e6df9a8`](https://github.com/python-gitlab/python-gitlab/commit/e6df9a8b2f9c2397ea3ae67dfe19a2fa91f41c19))
+
 * [docs] Fix the milestone filetring doc (iid -&gt; iids)
 
 Fixes #633 ([`0c9a00b`](https://github.com/python-gitlab/python-gitlab/commit/0c9a00bb154007a0a9f665ca38e6fec50d378eaf))
-
-* Add support to resource label events
-
-Closes #611 ([`95d0d74`](https://github.com/python-gitlab/python-gitlab/commit/95d0d745d4bafe702c89c972f644b049d6c810ab))
 
 * Merge pull request #634 from python-gitlab/docs/project-typo
 
@@ -9137,9 +9264,19 @@ Fix 3 typos in docs ([`7f09666`](https://github.com/python-gitlab/python-gitlab/
 
 Use the pythongitlab/test-python-gitlab docker image for tests ([`742243f`](https://github.com/python-gitlab/python-gitlab/commit/742243f4f43042d4b561e3875dc38e560bb71624))
 
+* Use the pythongitlab/test-python-gitlab docker image for tests
+
+This images is updated to the latest GitLab CE.
+
+Fix the diff() test to match the change in the API output. ([`2c6c929`](https://github.com/python-gitlab/python-gitlab/commit/2c6c929f78dfda92d5ae93235bb9065d289a68cc))
+
 * Merge pull request #619 from python-gitlab/issue/595
 
 [docs] Add an example of pipeline schedule vars listing ([`fcce7a3`](https://github.com/python-gitlab/python-gitlab/commit/fcce7a316968a9aea7aa504730cea1734c2f897a))
+
+* [docs] Add an example of pipeline schedule vars listing
+
+Closes #595 ([`f7fbfca`](https://github.com/python-gitlab/python-gitlab/commit/f7fbfca7e6a32a31dbf7ca8e1d4f83b34b7ac9db))
 
 * Merge pull request #626 from python-gitlab/fix/596/maintainer_wanted
 
@@ -9148,16 +9285,6 @@ Use the pythongitlab/test-python-gitlab docker image for tests ([`742243f`](http
 * [README] Remove the &#34;maintainer(s) wanted&#34; notice
 
 Closes #596 ([`f51fa19`](https://github.com/python-gitlab/python-gitlab/commit/f51fa19dc4f78d036f18217436add00b7d94c39d))
-
-* [docs] Add an example of pipeline schedule vars listing
-
-Closes #595 ([`f7fbfca`](https://github.com/python-gitlab/python-gitlab/commit/f7fbfca7e6a32a31dbf7ca8e1d4f83b34b7ac9db))
-
-* Use the pythongitlab/test-python-gitlab docker image for tests
-
-This images is updated to the latest GitLab CE.
-
-Fix the diff() test to match the change in the API output. ([`2c6c929`](https://github.com/python-gitlab/python-gitlab/commit/2c6c929f78dfda92d5ae93235bb9065d289a68cc))
 
 * Merge pull request #620 from bittner/patch-1
 
@@ -9378,6 +9505,8 @@ Fixes #526 ([`617aa64`](https://github.com/python-gitlab/python-gitlab/commit/61
 
 make as_list=False work for all=True queries ([`a6512f9`](https://github.com/python-gitlab/python-gitlab/commit/a6512f9efcf50db1354bbd903526b78d8e766ae1))
 
+* make as_list work for all queries ([`8e78761`](https://github.com/python-gitlab/python-gitlab/commit/8e787612fa77dc945a4c1327e9faa6eee10c48f2))
+
 * Add support for issue links (EE)
 
 Fixes #422 ([`8873eda`](https://github.com/python-gitlab/python-gitlab/commit/8873edaeebd18d6b2ed08a8609c011ad29249b48))
@@ -9392,6 +9521,8 @@ Fixes #524 ([`39c8ad5`](https://github.com/python-gitlab/python-gitlab/commit/39
 
 fix #521 change post_data default value to None ([`6dd8774`](https://github.com/python-gitlab/python-gitlab/commit/6dd8774e1fa62e6f29cd760509e0274f4205683f))
 
+* fix #521 change post_data default value to None ([`d4c1a8c`](https://github.com/python-gitlab/python-gitlab/commit/d4c1a8ce8f0b0a9d60922e22cdc044343fe24cd3))
+
 * Add basic testing forr EE endpoints
 
 Today we don&#39;t have a solution for easily deploying an EE instance so
@@ -9401,10 +9532,6 @@ This patch provides a testing script that needs to be run against a
 private EE instance. ([`c88333b`](https://github.com/python-gitlab/python-gitlab/commit/c88333bdd89df81d469018c76025d01fba2eaba9))
 
 * Add support for project-level MR approval configuration ([`473dc6f`](https://github.com/python-gitlab/python-gitlab/commit/473dc6f50d27b2e5349bb2e7c8bc07b48e9834d1))
-
-* fix #521 change post_data default value to None ([`d4c1a8c`](https://github.com/python-gitlab/python-gitlab/commit/d4c1a8ce8f0b0a9d60922e22cdc044343fe24cd3))
-
-* make as_list work for all queries ([`8e78761`](https://github.com/python-gitlab/python-gitlab/commit/8e787612fa77dc945a4c1327e9faa6eee10c48f2))
 
 * Merge pull request #519 from jouve/silence
 
@@ -9449,6 +9576,8 @@ Fixes #469 ([`9412a5d`](https://github.com/python-gitlab/python-gitlab/commit/94
 * Merge pull request #507 from Miouge1/badges
 
 Add support for Project badges ([`01a41ef`](https://github.com/python-gitlab/python-gitlab/commit/01a41efd271dd08d4b5744473fb71a67d9f5dea5))
+
+* Add support for Project badges ([`e00cad4`](https://github.com/python-gitlab/python-gitlab/commit/e00cad4f73c43d28799ec6e79e32fd03e58e79b4))
 
 * Add support for the gitlab CI lint API ([`40b9f4d`](https://github.com/python-gitlab/python-gitlab/commit/40b9f4d62d5b9853bfd63317d8ad578b4525e665))
 
@@ -9497,8 +9626,6 @@ Testing will be enable when GitLab 11.0 is available. ([`9be50be`](https://githu
 * Implement user_agent_detail for snippets
 
 Add a new UserAgentDetail mixin to avoid code duplication. ([`7025743`](https://github.com/python-gitlab/python-gitlab/commit/70257438044b793a42adce791037b9b86ae35d9b))
-
-* Add support for Project badges ([`e00cad4`](https://github.com/python-gitlab/python-gitlab/commit/e00cad4f73c43d28799ec6e79e32fd03e58e79b4))
 
 * Add support for merged branches deletion ([`590ea0d`](https://github.com/python-gitlab/python-gitlab/commit/590ea0da7e5617c42e705c62370d6e94ff46ea74))
 
@@ -9595,11 +9722,13 @@ Fixes #491 ([`037585c`](https://github.com/python-gitlab/python-gitlab/commit/03
 
 Change method for getting content of snippet ([`85f2388`](https://github.com/python-gitlab/python-gitlab/commit/85f238846071724c9323df06fdc757de2b453608))
 
+* Add API v3 example ([`5c16c8d`](https://github.com/python-gitlab/python-gitlab/commit/5c16c8d03c39d4b6d87490a36102cdd4d2ad2160))
+
+* Change method for getting content of snippet ([`505c749`](https://github.com/python-gitlab/python-gitlab/commit/505c74907fca52d315b273033e3d62643623425b))
+
 * Fix URL encoding on branch methods
 
 Fixes #493 ([`736fece`](https://github.com/python-gitlab/python-gitlab/commit/736fece2219658ff446ea31ee3c03dfe18ecaacb))
-
-* Add API v3 example ([`5c16c8d`](https://github.com/python-gitlab/python-gitlab/commit/5c16c8d03c39d4b6d87490a36102cdd4d2ad2160))
 
 * Merge pull request #488 from siemens/feat/rate-limit
 
@@ -9612,8 +9741,6 @@ This reverts commit 32b399af0e506b38a10a2c625338848a03f0b35d. ([`25ed8e7`](https
 * Merge pull request #483 from ToonMeynen/patch-2
 
 Update projects.py documentation ([`2b9ae5c`](https://github.com/python-gitlab/python-gitlab/commit/2b9ae5ce1664b97414152dfb1acb50fbcd05f95e))
-
-* Change method for getting content of snippet ([`505c749`](https://github.com/python-gitlab/python-gitlab/commit/505c74907fca52d315b273033e3d62643623425b))
 
 * Update projects.py
 
@@ -9754,21 +9881,31 @@ Add documentation about labels update ([`0cbd9c6`](https://github.com/python-git
 
 * Merge branch &#39;mlq-feature/pipeline-schedules&#39; ([`39a0429`](https://github.com/python-gitlab/python-gitlab/commit/39a04297d2661f82980f1b1921a3aba1ab1feb32))
 
+* Update pipeline schedules code ([`6a87d38`](https://github.com/python-gitlab/python-gitlab/commit/6a87d38b0c5ffdfa9c78dcf5232ec78986010ce6))
+
+* Project pipeline jobs ([`b861837`](https://github.com/python-gitlab/python-gitlab/commit/b861837b25bb45dbe40b035dff5f41898450e22b))
+
+* Project pipeline schedules ([`34e32a0`](https://github.com/python-gitlab/python-gitlab/commit/34e32a0944b65583a57b97bf0124b8935ab49fa7))
+
 * Project pipeline jobs ([`fd726cd`](https://github.com/python-gitlab/python-gitlab/commit/fd726cdb61a78aafb780cae56a7909e7b648e4dc))
 
 * Project pipeline schedules ([`31eb913`](https://github.com/python-gitlab/python-gitlab/commit/31eb913be34f8dea0c4b1f8396b74bb74b32a6f0))
-
-* Update pipeline schedules code ([`6a87d38`](https://github.com/python-gitlab/python-gitlab/commit/6a87d38b0c5ffdfa9c78dcf5232ec78986010ce6))
 
 * Merge pull request #420 from tardyp/patch-2
 
 make trigger_pipeline return the pipeline ([`70c779c`](https://github.com/python-gitlab/python-gitlab/commit/70c779c4243d1807323cc1afc8cbc97918c3b8fc))
 
+* fix pep8 ([`8134f84`](https://github.com/python-gitlab/python-gitlab/commit/8134f84f96059dbde72359c414352e2dbe3535e0))
+
+* make trigger_pipeline return the pipeline
+
+Trigger_pipeline returns nothing, which makes it difficult to track the pipeline being trigger.
+
+Next PR will be about updating a pipeline object to get latest status (not sure yet the best way to do it) ([`72ade19`](https://github.com/python-gitlab/python-gitlab/commit/72ade19046f47b35c1b5ad7333f11fee0dc1e56f))
+
 * Merge pull request #419 from tardyp/patch-1
 
 Simplify the example for streamed artifacts ([`6ea7ab7`](https://github.com/python-gitlab/python-gitlab/commit/6ea7ab73eb6be20c4e8c092044bf0efe421ce4f5))
-
-* fix pep8 ([`8134f84`](https://github.com/python-gitlab/python-gitlab/commit/8134f84f96059dbde72359c414352e2dbe3535e0))
 
 * add a Simplified example for streamed artifacts
 
@@ -9784,12 +9921,6 @@ Fixes #371 ([`b4f0317`](https://github.com/python-gitlab/python-gitlab/commit/b4
 * config: support api_version in the global section
 
 Fixes #421 ([`29bd813`](https://github.com/python-gitlab/python-gitlab/commit/29bd81336828b72a47673c76862cb4b532401766))
-
-* make trigger_pipeline return the pipeline
-
-Trigger_pipeline returns nothing, which makes it difficult to track the pipeline being trigger.
-
-Next PR will be about updating a pipeline object to get latest status (not sure yet the best way to do it) ([`72ade19`](https://github.com/python-gitlab/python-gitlab/commit/72ade19046f47b35c1b5ad7333f11fee0dc1e56f))
 
 * Add Gitlab and User events support
 
@@ -9817,13 +9948,13 @@ Fixes #416 ([`e957817`](https://github.com/python-gitlab/python-gitlab/commit/e9
 
 Adding the supported version badge ([`5149651`](https://github.com/python-gitlab/python-gitlab/commit/5149651fb4d21dabfde012238abad470bb0aa9b5))
 
+* Adding the supported version badge ([`9253661`](https://github.com/python-gitlab/python-gitlab/commit/9253661c381e9298643e689074c00b7fae831955))
+
 * Merge pull request #409 from movermeyer/patch-2
 
 Clarifying what compatible means ([`8a953c2`](https://github.com/python-gitlab/python-gitlab/commit/8a953c2d3ede2bdd672323621b4e72a5f660f6f5))
 
 * Clarifying what supports means ([`b980c9f`](https://github.com/python-gitlab/python-gitlab/commit/b980c9f7db97f8d55ed50d116a1d9fcf817ebf0d))
-
-* Adding the supported version badge ([`9253661`](https://github.com/python-gitlab/python-gitlab/commit/9253661c381e9298643e689074c00b7fae831955))
 
 * Prepare v1.2.0 ([`3a119cd`](https://github.com/python-gitlab/python-gitlab/commit/3a119cd6a4841fae5b2f116512830ed12b4b29f0))
 
@@ -9924,9 +10055,18 @@ Fixes #361 ([`b33265c`](https://github.com/python-gitlab/python-gitlab/commit/b3
 
 Expected HTTP response for subscribe is 201 ([`f624d2e`](https://github.com/python-gitlab/python-gitlab/commit/f624d2e642e4ebabb8d330595f3fe0fc9882add7))
 
+* Expected HTTP response for subscribe is 201
+
+It seems that the GitLab API gives HTTP response code 201 (&#34;created&#34;) when
+successfully subscribing to an object, not 200. ([`0d5f275`](https://github.com/python-gitlab/python-gitlab/commit/0d5f275d9b23d20da45ac675da10bfd428327a2f))
+
 * Merge pull request #374 from benjamb/typos
 
 Fix typos in docs ([`8f3b656`](https://github.com/python-gitlab/python-gitlab/commit/8f3b656d007c95fa2fa99389aaf326a2eb998e16))
+
+* Fix typos in docs ([`7c886de`](https://github.com/python-gitlab/python-gitlab/commit/7c886dea5e9c42c88be01ef077532202cbad65ea))
+
+* Fix link to settings API ([`be386b8`](https://github.com/python-gitlab/python-gitlab/commit/be386b81049e84a4b9a0daeb6cbba15ddb4b041e))
 
 * Update pagination docs for ProjectCommit
 
@@ -9934,22 +10074,9 @@ In v3 pagination starts at page 0 instead of page 1.
 
 Fixes: #377 ([`c6c0686`](https://github.com/python-gitlab/python-gitlab/commit/c6c068629273393eaf4f7063e1e01c5f0528c4ec))
 
-* Expected HTTP response for subscribe is 201
-
-It seems that the GitLab API gives HTTP response code 201 (&#34;created&#34;) when
-successfully subscribing to an object, not 200. ([`0d5f275`](https://github.com/python-gitlab/python-gitlab/commit/0d5f275d9b23d20da45ac675da10bfd428327a2f))
-
-* Fix typos in docs ([`7c886de`](https://github.com/python-gitlab/python-gitlab/commit/7c886dea5e9c42c88be01ef077532202cbad65ea))
-
-* Fix link to settings API ([`be386b8`](https://github.com/python-gitlab/python-gitlab/commit/be386b81049e84a4b9a0daeb6cbba15ddb4b041e))
-
 * Revert &#34;Add unit tests for mixin exceptions&#34;
 
 This reverts commit 4ee139ad5c58006da1f9af93fdd4e70592e6daa0. ([`084b905`](https://github.com/python-gitlab/python-gitlab/commit/084b905f78046d894fc76d3ad545689312b94bb8))
-
-* Project pipeline jobs ([`b861837`](https://github.com/python-gitlab/python-gitlab/commit/b861837b25bb45dbe40b035dff5f41898450e22b))
-
-* Project pipeline schedules ([`34e32a0`](https://github.com/python-gitlab/python-gitlab/commit/34e32a0944b65583a57b97bf0124b8935ab49fa7))
 
 * Add support for project housekeeping
 
@@ -10011,6 +10138,8 @@ Add docs and unit tests ([`e9b1583`](https://github.com/python-gitlab/python-git
 * Merge pull request #342 from matejzero/mattermost
 
 Add mattermost service support ([`82897b7`](https://github.com/python-gitlab/python-gitlab/commit/82897b7c0461f069f5067de3ebf787466a6c4486))
+
+* Add mattermost service support ([`b5e6a46`](https://github.com/python-gitlab/python-gitlab/commit/b5e6a469e7e299dfa09bac730daee48432454075))
 
 * Add users custome attributes support ([`4fb2e43`](https://github.com/python-gitlab/python-gitlab/commit/4fb2e439803bd55868b91827a5fbaa448f1dff56))
 
@@ -10101,8 +10230,6 @@ so let&#39;s drop the _constructor_types definitions. ([`32ea62a`](https://githu
 * Snippet notes support all the CRUD methods
 
 Fixes #343 ([`dc504ab`](https://github.com/python-gitlab/python-gitlab/commit/dc504ab815cc9ad74a6a6beaf6faa88a5d99c293))
-
-* Add mattermost service support ([`b5e6a46`](https://github.com/python-gitlab/python-gitlab/commit/b5e6a469e7e299dfa09bac730daee48432454075))
 
 * ProjectFileManager.create: handle / in file paths
 
@@ -10309,13 +10436,13 @@ Support SSL verification via internal CA bundle ([`0e70dd9`](https://github.com/
 
 Docs: Add link to gitlab docs on obtaining a token ([`657f011`](https://github.com/python-gitlab/python-gitlab/commit/657f0119a3e13ceb07e4d0b17fa126260a4dafc7))
 
-* update tox/travis test envs ([`759f6ed`](https://github.com/python-gitlab/python-gitlab/commit/759f6edaf71b456cc36e9de00157385c28e2e3e7))
-
-* Merge branch &#39;rework_api&#39; ([`3ccdec0`](https://github.com/python-gitlab/python-gitlab/commit/3ccdec04525456c906f26ee2e931607a5d0dcd20))
-
 * Docs: Add link to gitlab docs on obtaining a token
 
 I find these sort of links very user friendly 😅 ([`9b8b806`](https://github.com/python-gitlab/python-gitlab/commit/9b8b8060a56465d8aade2368033172387e15527a))
+
+* update tox/travis test envs ([`759f6ed`](https://github.com/python-gitlab/python-gitlab/commit/759f6edaf71b456cc36e9de00157385c28e2e3e7))
+
+* Merge branch &#39;rework_api&#39; ([`3ccdec0`](https://github.com/python-gitlab/python-gitlab/commit/3ccdec04525456c906f26ee2e931607a5d0dcd20))
 
 * Make the project services work in v4 ([`2816c1a`](https://github.com/python-gitlab/python-gitlab/commit/2816c1ae51b01214012679b74aa14de1a6696eb5))
 
@@ -10343,41 +10470,11 @@ Match the exceptions raised in v3 for v4.
 
 Also update the doc strings with correct information. ([`c15ba3b`](https://github.com/python-gitlab/python-gitlab/commit/c15ba3b61065973da983ff792a34268a3ba75e12))
 
-* Merge pull request #282 from velvetz7/docs_typo
-
-Fixed repository_compare examples ([`e87835f`](https://github.com/python-gitlab/python-gitlab/commit/e87835fe02aeb174c1b0355a1733733d89b2e404))
-
-* Changed attribution reference ([`73be8f9`](https://github.com/python-gitlab/python-gitlab/commit/73be8f9a64b8a8db39f1a9d39b7bd677e1c68b0a))
-
 * Fix merge_when_build_succeeds attribute name
 
 Fixes #285 ([`374a6c4`](https://github.com/python-gitlab/python-gitlab/commit/374a6c4544931a564221cccabb6abbda9e6bc558))
 
-* Fix merge_when_build_succeeds attribute name
-
-Fixes #285 ([`67d9a89`](https://github.com/python-gitlab/python-gitlab/commit/67d9a8989b76af25fca1b5f0f82c4af5e81332eb))
-
 * Merge branch &#39;master&#39; into rework_api ([`274b3bf`](https://github.com/python-gitlab/python-gitlab/commit/274b3bffc3365eca2fd3fa10c1e7e9b49990533e))
-
-* Merge pull request #286 from jonafato/python3.6
-
-Declare support for Python 3.6 ([`cb8c1a1`](https://github.com/python-gitlab/python-gitlab/commit/cb8c1a198276cc6aa2a3ddbf52bcc3866418e9fd))
-
-* Merge pull request #287 from guyzmo/features/dependency_injection
-
-Added dependency injection support for Session ([`46b7f48`](https://github.com/python-gitlab/python-gitlab/commit/46b7f488c3dcd6f2e975f69fe1a378b920721b87))
-
-* Added dependency injection support for Session
-
-fixes #280
-
-Signed-off-by: Guyzmo &lt;guyzmo+github+pub@m0g.net&gt; ([`116e3d4`](https://github.com/python-gitlab/python-gitlab/commit/116e3d42c9e94c6d23128533da6c25920ff04d0f))
-
-* Declare support for Python 3.6
-
-Add Python 3.6 environments to `tox.ini` and `.travis.yml`. ([`4c916b8`](https://github.com/python-gitlab/python-gitlab/commit/4c916b893e84993369d06dee5523cd00ea6b626a))
-
-* fixed repository_compare examples ([`261db17`](https://github.com/python-gitlab/python-gitlab/commit/261db178f2e91b68f45a6535009367b56af75769))
 
 * remove useless attributes ([`fe3a06c`](https://github.com/python-gitlab/python-gitlab/commit/fe3a06c2a6a9776c22ff9120c99b3654e02e5e50))
 
@@ -10396,19 +10493,11 @@ For now v4 isn&#39;t working at all. ([`e3d50b5`](https://github.com/python-gitl
 
 * Fix GroupProject constructor ([`afe4b05`](https://github.com/python-gitlab/python-gitlab/commit/afe4b05de9833d450b9bb52f572be5663d8f4dd7))
 
-* Merge pull request #276 from elisarver/patch-1
-
-Missing expires_at in GroupMembers update ([`f19681f`](https://github.com/python-gitlab/python-gitlab/commit/f19681fc0d1aeb36f56c9c7f07aac83915a59497))
-
 * minor doc updates ([`6e5a6ec`](https://github.com/python-gitlab/python-gitlab/commit/6e5a6ec1f7c2993697c359b2bcab0e1324e219bc))
 
 * Fix changelog and release notes inclusion in sdist ([`1922cd5`](https://github.com/python-gitlab/python-gitlab/commit/1922cd5d9b182902586170927acb758f8a6f614c))
 
 * Rework documentation ([`1a7f672`](https://github.com/python-gitlab/python-gitlab/commit/1a7f67274c9175f46a76c5ae0d8bde7ca2731014))
-
-* Missing expires_at in GroupMembers update
-
-CreateAttrs was set twice in GroupMember due to possible copy-paste error. ([`d41e972`](https://github.com/python-gitlab/python-gitlab/commit/d41e9728c0f583e031313419bcf998bfdfb8688a))
 
 * Remove unused future.division import
 
@@ -10421,8 +10510,6 @@ We don&#39;t do math. ([`2a0afc5`](https://github.com/python-gitlab/python-gitla
 * Document switching to v4 ([`186e11a`](https://github.com/python-gitlab/python-gitlab/commit/186e11a2135ae7df759641982fd42b3bc1bb944d))
 
 * 0.10 is old history: remove the upgrade doc ([`76e9b12`](https://github.com/python-gitlab/python-gitlab/commit/76e9b1211fd23a3565ab00be0b169d782a14dca7))
-
-* 0.21.2 release ([`19f1b1a`](https://github.com/python-gitlab/python-gitlab/commit/19f1b1a968aba7bd9604511c015e8930e5111324))
 
 * Add laziness to get()
 
@@ -10442,15 +10529,7 @@ gl.project_issue_notes) ([`61fba84`](https://github.com/python-gitlab/python-git
 
 * Add new event types to ProjectHook ([`a0f215c`](https://github.com/python-gitlab/python-gitlab/commit/a0f215c2deb16ce5d9e96de5b36e4f360ac1b168))
 
-* Merge pull request #272 from astronouth7303/patch-1
-
-Add new event types to ProjectHook ([`4ce2794`](https://github.com/python-gitlab/python-gitlab/commit/4ce2794b284647283c861d28f77a6d63ba809bc9))
-
 * Fix a few remaining methods ([`3488c5c`](https://github.com/python-gitlab/python-gitlab/commit/3488c5cf137b0dbe6e96a4412698bafaaa640143))
-
-* Add new event types to ProjectHook
-
-These are being returned in the live API, but can&#39;t set them. ([`1a58f7e`](https://github.com/python-gitlab/python-gitlab/commit/1a58f7e522bb4784e2127582b2d46d6991a8f2a9))
 
 * tests for objects mixins ([`68f4114`](https://github.com/python-gitlab/python-gitlab/commit/68f411478f0d693f7d37436a9280847cb610a15b))
 
@@ -10464,7 +10543,56 @@ These are being returned in the live API, but can&#39;t set them. ([`1a58f7e`](h
 
 * Merge branch &#39;rework_api&#39; of github.com:python-gitlab/python-gitlab into rework_api ([`a5b39a5`](https://github.com/python-gitlab/python-gitlab/commit/a5b39a526035c1868a39f0533f019e5e24eeb4db))
 
-* Fixed spelling mistake (#269) ([`2b1e0f0`](https://github.com/python-gitlab/python-gitlab/commit/2b1e0f0041ae04134d38a5db47cc301aa757d7ea))
+* Tests and fixes for the http_* methods ([`904c9fa`](https://github.com/python-gitlab/python-gitlab/commit/904c9fadaa892cb4a2dbd12e564841281aa86c51))
+
+* make the tests pass ([`d0a9334`](https://github.com/python-gitlab/python-gitlab/commit/d0a933404f4acec28956e1f07e9dcc3261fae87e))
+
+* Migrate all v4 objects to new API
+
+Some things are probably broken. Next step is writting unit and
+functional tests.
+
+And fix. ([`6be990c`](https://github.com/python-gitlab/python-gitlab/commit/6be990cef8725eca6954e9098f83ff8f4ad202a8))
+
+* Simplify SidekiqManager ([`230b567`](https://github.com/python-gitlab/python-gitlab/commit/230b5679ee083dc8a5f3a8deb0bef2dab0fe12d6))
+
+* New API: handle gl.auth() and CurrentUser* classes ([`7193034`](https://github.com/python-gitlab/python-gitlab/commit/71930345be5b7a1a89f7f823a563cb6cd4bd790b))
+
+* Add support for managers in objects for new API
+
+Convert User* to the new REST* API. ([`5319d0d`](https://github.com/python-gitlab/python-gitlab/commit/5319d0de2fa13e6ed7c65b4d8e9dc26ccb6f18eb))
+
+* pep8 ([`29cb0e4`](https://github.com/python-gitlab/python-gitlab/commit/29cb0e42116ad066e6aabb39362785fd61c65924))
+
+* Move the mixins in their own module ([`0748c89`](https://github.com/python-gitlab/python-gitlab/commit/0748c8993f0afa6ca89836601a19c7aeeaaf8397))
+
+* Rework the manager and object classes
+
+Add new RESTObject and RESTManager base class, linked to a bunch of
+Mixin class to implement the actual CRUD methods.
+
+Object are generated by the managers, and special cases are handled in
+the derivated classes.
+
+Both ways (old and new) can be used together, migrate only a few v4
+objects to the new method as a POC.
+
+TODO: handle managers on generated objects (have to deal with attributes
+in the URLs). ([`29e0bae`](https://github.com/python-gitlab/python-gitlab/commit/29e0baee39728472abd6b67822b04518c3985d97))
+
+* pep8 again ([`b7298de`](https://github.com/python-gitlab/python-gitlab/commit/b7298dea19f37d3ae0dfb3e233f3bc7cf5bda10d))
+
+* Add lower-level methods for Gitlab()
+
+Multiple goals:
+* Support making direct queries to the Gitlab server, without objects
+  and managers.
+* Progressively remove the need to know about managers and objects in
+  the Gitlab class; the Gitlab should only be an HTTP proxy to the
+  gitlab server.
+* With this the objects gain control on how they should do requests.
+  The complexities of dealing with object specifics will be moved in the
+  object classes where they belong. ([`7ddbd5e`](https://github.com/python-gitlab/python-gitlab/commit/7ddbd5e5e124be1d93fbc77da7229fc80062b35f))
 
 * Tests and fixes for the http_* methods ([`ff82c88`](https://github.com/python-gitlab/python-gitlab/commit/ff82c88df5794dbf0020989cfc52412cefc4c176))
 
@@ -10517,62 +10645,61 @@ Multiple goals:
   The complexities of dealing with object specifics will be moved in the
   object classes where they belong. ([`c5ad540`](https://github.com/python-gitlab/python-gitlab/commit/c5ad54062ad767c0d2882f64381ad15c034e8872))
 
+* Merge pull request #282 from velvetz7/docs_typo
+
+Fixed repository_compare examples ([`e87835f`](https://github.com/python-gitlab/python-gitlab/commit/e87835fe02aeb174c1b0355a1733733d89b2e404))
+
+* Changed attribution reference ([`73be8f9`](https://github.com/python-gitlab/python-gitlab/commit/73be8f9a64b8a8db39f1a9d39b7bd677e1c68b0a))
+
+* fixed repository_compare examples ([`261db17`](https://github.com/python-gitlab/python-gitlab/commit/261db178f2e91b68f45a6535009367b56af75769))
+
+* Fix merge_when_build_succeeds attribute name
+
+Fixes #285 ([`67d9a89`](https://github.com/python-gitlab/python-gitlab/commit/67d9a8989b76af25fca1b5f0f82c4af5e81332eb))
+
+* Merge pull request #286 from jonafato/python3.6
+
+Declare support for Python 3.6 ([`cb8c1a1`](https://github.com/python-gitlab/python-gitlab/commit/cb8c1a198276cc6aa2a3ddbf52bcc3866418e9fd))
+
+* Declare support for Python 3.6
+
+Add Python 3.6 environments to `tox.ini` and `.travis.yml`. ([`4c916b8`](https://github.com/python-gitlab/python-gitlab/commit/4c916b893e84993369d06dee5523cd00ea6b626a))
+
+* Merge pull request #287 from guyzmo/features/dependency_injection
+
+Added dependency injection support for Session ([`46b7f48`](https://github.com/python-gitlab/python-gitlab/commit/46b7f488c3dcd6f2e975f69fe1a378b920721b87))
+
+* Added dependency injection support for Session
+
+fixes #280
+
+Signed-off-by: Guyzmo &lt;guyzmo+github+pub@m0g.net&gt; ([`116e3d4`](https://github.com/python-gitlab/python-gitlab/commit/116e3d42c9e94c6d23128533da6c25920ff04d0f))
+
+* Merge pull request #276 from elisarver/patch-1
+
+Missing expires_at in GroupMembers update ([`f19681f`](https://github.com/python-gitlab/python-gitlab/commit/f19681fc0d1aeb36f56c9c7f07aac83915a59497))
+
+* Missing expires_at in GroupMembers update
+
+CreateAttrs was set twice in GroupMember due to possible copy-paste error. ([`d41e972`](https://github.com/python-gitlab/python-gitlab/commit/d41e9728c0f583e031313419bcf998bfdfb8688a))
+
+* 0.21.2 release ([`19f1b1a`](https://github.com/python-gitlab/python-gitlab/commit/19f1b1a968aba7bd9604511c015e8930e5111324))
+
+* Merge pull request #272 from astronouth7303/patch-1
+
+Add new event types to ProjectHook ([`4ce2794`](https://github.com/python-gitlab/python-gitlab/commit/4ce2794b284647283c861d28f77a6d63ba809bc9))
+
+* Add new event types to ProjectHook
+
+These are being returned in the live API, but can&#39;t set them. ([`1a58f7e`](https://github.com/python-gitlab/python-gitlab/commit/1a58f7e522bb4784e2127582b2d46d6991a8f2a9))
+
+* Fixed spelling mistake (#269) ([`2b1e0f0`](https://github.com/python-gitlab/python-gitlab/commit/2b1e0f0041ae04134d38a5db47cc301aa757d7ea))
+
 * import urlencode() from six.moves.urllib.parse instead of from urllib (#268)
 
 Fixes AttributeError on Python 3, as `urlencode` function has been moved to `urllib.parse` module.
 
 `six.moves.urllib.parse.urlencode()` is an py2.py3 compatible alias of `urllib.parse.urlencode()` on Python 3, and of `urllib.urlencode()` on Python 2. ([`88900e0`](https://github.com/python-gitlab/python-gitlab/commit/88900e06761794442716c115229bd1f780cfbcef))
-
-* Tests and fixes for the http_* methods ([`904c9fa`](https://github.com/python-gitlab/python-gitlab/commit/904c9fadaa892cb4a2dbd12e564841281aa86c51))
-
-* make the tests pass ([`d0a9334`](https://github.com/python-gitlab/python-gitlab/commit/d0a933404f4acec28956e1f07e9dcc3261fae87e))
-
-* Migrate all v4 objects to new API
-
-Some things are probably broken. Next step is writting unit and
-functional tests.
-
-And fix. ([`6be990c`](https://github.com/python-gitlab/python-gitlab/commit/6be990cef8725eca6954e9098f83ff8f4ad202a8))
-
-* Simplify SidekiqManager ([`230b567`](https://github.com/python-gitlab/python-gitlab/commit/230b5679ee083dc8a5f3a8deb0bef2dab0fe12d6))
-
-* New API: handle gl.auth() and CurrentUser* classes ([`7193034`](https://github.com/python-gitlab/python-gitlab/commit/71930345be5b7a1a89f7f823a563cb6cd4bd790b))
-
-* Add support for managers in objects for new API
-
-Convert User* to the new REST* API. ([`5319d0d`](https://github.com/python-gitlab/python-gitlab/commit/5319d0de2fa13e6ed7c65b4d8e9dc26ccb6f18eb))
-
-* pep8 ([`29cb0e4`](https://github.com/python-gitlab/python-gitlab/commit/29cb0e42116ad066e6aabb39362785fd61c65924))
-
-* Move the mixins in their own module ([`0748c89`](https://github.com/python-gitlab/python-gitlab/commit/0748c8993f0afa6ca89836601a19c7aeeaaf8397))
-
-* Rework the manager and object classes
-
-Add new RESTObject and RESTManager base class, linked to a bunch of
-Mixin class to implement the actual CRUD methods.
-
-Object are generated by the managers, and special cases are handled in
-the derivated classes.
-
-Both ways (old and new) can be used together, migrate only a few v4
-objects to the new method as a POC.
-
-TODO: handle managers on generated objects (have to deal with attributes
-in the URLs). ([`29e0bae`](https://github.com/python-gitlab/python-gitlab/commit/29e0baee39728472abd6b67822b04518c3985d97))
-
-* pep8 again ([`b7298de`](https://github.com/python-gitlab/python-gitlab/commit/b7298dea19f37d3ae0dfb3e233f3bc7cf5bda10d))
-
-* Add lower-level methods for Gitlab()
-
-Multiple goals:
-* Support making direct queries to the Gitlab server, without objects
-  and managers.
-* Progressively remove the need to know about managers and objects in
-  the Gitlab class; the Gitlab should only be an HTTP proxy to the
-  gitlab server.
-* With this the objects gain control on how they should do requests.
-  The complexities of dealing with object specifics will be moved in the
-  object classes where they belong. ([`7ddbd5e`](https://github.com/python-gitlab/python-gitlab/commit/7ddbd5e5e124be1d93fbc77da7229fc80062b35f))
 
 * Prepare for v4 API testing ([`38bff3e`](https://github.com/python-gitlab/python-gitlab/commit/38bff3eb43ee6526b3e3b35c8207fac9ef9bc9d9))
 
@@ -10637,14 +10764,6 @@ Fixes #267 ([`a3b8858`](https://github.com/python-gitlab/python-gitlab/commit/a3
 * [v4] User: drop the manager filters ([`dcbb501`](https://github.com/python-gitlab/python-gitlab/commit/dcbb5015626190528a160b4bf93ba18e72c48fff))
 
 * [v4] Remove deprecated objects methods and classes ([`8e4b65f`](https://github.com/python-gitlab/python-gitlab/commit/8e4b65fc78f47a2be658b11ae30f84da66b13c2a))
-
-* Deprecate parameter related methods in gitlab.Gitlab
-
-These methods change the auth information and URL, and might have some
-unwanted side effects.
-
-Users should create a new Gitlab instance to change the URL and
-authentication information. ([`7ac1e4c`](https://github.com/python-gitlab/python-gitlab/commit/7ac1e4c1fe4ccff8c8ee4a9ae212a227d5499bce))
 
 * pop8 fixes ([`441244b`](https://github.com/python-gitlab/python-gitlab/commit/441244b8d91ac0674195dbb2151570712d234d15))
 
@@ -10725,6 +10844,14 @@ some code duplication, but it should be maintainable. ([`e853a30`](https://githu
 
 * Initial, non-functional v4 support ([`c02dabd`](https://github.com/python-gitlab/python-gitlab/commit/c02dabd25507a14d666e85c7f1ea7831c64d0394))
 
+* Deprecate parameter related methods in gitlab.Gitlab
+
+These methods change the auth information and URL, and might have some
+unwanted side effects.
+
+Users should create a new Gitlab instance to change the URL and
+authentication information. ([`7ac1e4c`](https://github.com/python-gitlab/python-gitlab/commit/7ac1e4c1fe4ccff8c8ee4a9ae212a227d5499bce))
+
 * Add &#39;search&#39; attribute to projects.list()
 
 projects.search() has been deprecated by Gitlab ([`ce3dd0d`](https://github.com/python-gitlab/python-gitlab/commit/ce3dd0d1ac3fbed3cf671720e273470fb1ccdbc6))
@@ -10781,6 +10908,10 @@ Add time_stats to ProjectMergeRequest ([`f05a24b`](https://github.com/python-git
 
 Make GroupProject inherit from Project ([`20d6678`](https://github.com/python-gitlab/python-gitlab/commit/20d667840ab7097260d453e9a79b7377f216bc1c))
 
+* Make GroupProject inherit from Project
+
+Fixes #209 ([`380bcc4`](https://github.com/python-gitlab/python-gitlab/commit/380bcc4cce66d7b2c080f258a1acb0d14a5a1fc3))
+
 * Stop listing if recursion limit is hit (#234) ([`989f3b7`](https://github.com/python-gitlab/python-gitlab/commit/989f3b706d97045f4ea6af69fd11233e2f54adbf))
 
 * Provide API wrapper for cherry picking commits (#236) ([`22bf128`](https://github.com/python-gitlab/python-gitlab/commit/22bf12827387cb1719bacae6c0c745cd768eee6c))
@@ -10792,10 +10923,6 @@ Make GroupProject inherit from Project ([`20d6678`](https://github.com/python-gi
 Change to correct logic of functions ([`cc4fe78`](https://github.com/python-gitlab/python-gitlab/commit/cc4fe787a584501a1aa4218be4796ce88048cc1f))
 
 * Change to correct logic of functions ([`889bbe5`](https://github.com/python-gitlab/python-gitlab/commit/889bbe57d07966f1f146245db1e62accd5b23d93))
-
-* Make GroupProject inherit from Project
-
-Fixes #209 ([`380bcc4`](https://github.com/python-gitlab/python-gitlab/commit/380bcc4cce66d7b2c080f258a1acb0d14a5a1fc3))
 
 * Implement pipeline creation API (#237) ([`8c27e70`](https://github.com/python-gitlab/python-gitlab/commit/8c27e70b821e02921dfec4f8e4c6b77b5b284009))
 
@@ -10858,6 +10985,8 @@ This fixes the tests. ([`41ca449`](https://github.com/python-gitlab/python-gitla
 
 added due_date attribute to ProjectIssue ([`1e0ae59`](https://github.com/python-gitlab/python-gitlab/commit/1e0ae591616b297739bb5f35db6697eee88909a3))
 
+* fixes gpocentek/python-gitlab#215 ([`58708b1`](https://github.com/python-gitlab/python-gitlab/commit/58708b186e71289427cbce8decfeab28fdf66ad6))
+
 * Merge pull request #220 from alexwidener/master
 
 Added pipeline_events to ProjectHook attrs ([`19c7784`](https://github.com/python-gitlab/python-gitlab/commit/19c77845a2d69bed180f175f3a98761655631d0f))
@@ -10865,8 +10994,6 @@ Added pipeline_events to ProjectHook attrs ([`19c7784`](https://github.com/pytho
 * Added pipeline_events to ProejctHook attrs
 
 Ran tests, all passed. ([`3f98e03`](https://github.com/python-gitlab/python-gitlab/commit/3f98e0345c451a8ecb7d46d727acf7725ce73d80))
-
-* fixes gpocentek/python-gitlab#215 ([`58708b1`](https://github.com/python-gitlab/python-gitlab/commit/58708b186e71289427cbce8decfeab28fdf66ad6))
 
 * document the dynamic aspect of objects ([`2f274bc`](https://github.com/python-gitlab/python-gitlab/commit/2f274bcd0bfb9fef2a2682445843b7804980ecf6))
 
@@ -10953,6 +11080,12 @@ Rename the method to make what it does more explicit. ([`7453895`](https://githu
 
 * Merge branch &#39;features/personal_snippets&#39; of https://github.com/guyzmo/python-gitlab into guyzmo-features/personal_snippets ([`26c8a0f`](https://github.com/python-gitlab/python-gitlab/commit/26c8a0f25707dafdf772d1e7ed455ee065b7e277))
 
+* Added support for Snippets (new API in Gitlab 8.15)
+
+cf [Gitlab-CE MR !6373](https://gitlab.com/gitlab-org/gitlab-ce/merge_requests/6373)
+
+Signed-off-by: Guyzmo &lt;guyzmo+github@m0g.net&gt; ([`6022dfe`](https://github.com/python-gitlab/python-gitlab/commit/6022dfec44c67f7f45b0c3274f5eef02e8ac93f0))
+
 * [CLI] Fix wrong use of arguments
 
 The previous change removed undefined arguments from the args dict,
@@ -10975,12 +11108,6 @@ First page is page 1.
 
 Fixes #197 ([`d86ca59`](https://github.com/python-gitlab/python-gitlab/commit/d86ca59dbe1d7f852416ec227a7d241d236424cf))
 
-* Added support for Snippets (new API in Gitlab 8.15)
-
-cf [Gitlab-CE MR !6373](https://gitlab.com/gitlab-org/gitlab-ce/merge_requests/6373)
-
-Signed-off-by: Guyzmo &lt;guyzmo+github@m0g.net&gt; ([`6022dfe`](https://github.com/python-gitlab/python-gitlab/commit/6022dfec44c67f7f45b0c3274f5eef02e8ac93f0))
-
 * Merge pull request #192 from galet/gitlab-8.14-jira
 
 Fix JIRA service editing for GitLab 8.14+ ([`15d3362`](https://github.com/python-gitlab/python-gitlab/commit/15d336256c0dca756e189fb9746ab60be2d3c886))
@@ -10999,12 +11126,12 @@ moved to optional section. ([`343c131`](https://github.com/python-gitlab/python-
 
 Fix `should_remove_source_branch` ([`39288c8`](https://github.com/python-gitlab/python-gitlab/commit/39288c8fca774112ef1445c1281001a6190dd080))
 
+* Fix `should_remove_source_branch` ([`ac2bf24`](https://github.com/python-gitlab/python-gitlab/commit/ac2bf240510f26c477ea02eddb0425f2afb64fcc))
+
 * Rework requests arguments
 
 * Factorize the code
 * Don&#39;t send empty auth information to requests (Fixes #188) ([`6e5734b`](https://github.com/python-gitlab/python-gitlab/commit/6e5734bd910ef2d04122c162bac44c8843793312))
-
-* Fix `should_remove_source_branch` ([`ac2bf24`](https://github.com/python-gitlab/python-gitlab/commit/ac2bf240510f26c477ea02eddb0425f2afb64fcc))
 
 * Add support for triggering a new build
 
@@ -11024,11 +11151,11 @@ Please add these missing attrs ([`840cb89`](https://github.com/python-gitlab/pyt
 
 Add attr &#39;updated_at&#39; to ProjectIssue ([`f290b2b`](https://github.com/python-gitlab/python-gitlab/commit/f290b2b6e413604bc1b966266ab87f301cd0e32b))
 
+* Add attr &#39;updated_at&#39; to ProjectIssue ([`a25fef5`](https://github.com/python-gitlab/python-gitlab/commit/a25fef5076286543a522b907c51f2c9060262867))
+
 * Merge pull request #1 from GregoryEAllen/GregoryEAllen-patch-1
 
 Add attr &#39;created_at&#39; to ProjectIssueNote ([`14e7ccd`](https://github.com/python-gitlab/python-gitlab/commit/14e7ccd10f04b2aa5b986580bca52f9361af4858))
-
-* Add attr &#39;updated_at&#39; to ProjectIssue ([`a25fef5`](https://github.com/python-gitlab/python-gitlab/commit/a25fef5076286543a522b907c51f2c9060262867))
 
 * Add attr &#39;created_at&#39; to ProjectIssueNote ([`5b24122`](https://github.com/python-gitlab/python-gitlab/commit/5b2412217481b6ddf654277e0748585135a4fe64))
 
@@ -11091,12 +11218,6 @@ available on the object itself, not the manager. ([`c17ecc0`](https://github.com
 
 * Merge branch &#39;master-project-deploy-keys&#39; of https://github.com/Asher256/python-gitlab into Asher256-master-project-deploy-keys ([`0c1817f`](https://github.com/python-gitlab/python-gitlab/commit/0c1817f8be113a949218332a61655a1a835248c5))
 
-* add missing files in MANIFEST.in ([`12fca84`](https://github.com/python-gitlab/python-gitlab/commit/12fca8409156b910cab0240bf77726a0b0bca1e0))
-
-* ProjectHook: support the token attribute
-
-Fix #170 ([`cd5f849`](https://github.com/python-gitlab/python-gitlab/commit/cd5f84967444cc07cf9e7bdfd63324ad4890b370))
-
 * Project deploy key response code = 201 ([`6bedfc3`](https://github.com/python-gitlab/python-gitlab/commit/6bedfc32e1f35e21ab3f1c6f0a2cf5c66b06a95e))
 
 * Fixing the response and project_id argument ([`72d982b`](https://github.com/python-gitlab/python-gitlab/commit/72d982b70b00f4018de3c1cac3bbf1507283aa33))
@@ -11110,6 +11231,12 @@ Fix #170 ([`cd5f849`](https://github.com/python-gitlab/python-gitlab/commit/cd5f
 * Delete is used for &#39;/projects/%s/deploy_keys/%s/disable&#39; ([`67aa795`](https://github.com/python-gitlab/python-gitlab/commit/67aa79550ab9f39071652ced840f7963ec7a3992))
 
 * Feature: enable / disable the deploy key in a project ([`6310d71`](https://github.com/python-gitlab/python-gitlab/commit/6310d71c53558a201600bd48a174147623c99462))
+
+* add missing files in MANIFEST.in ([`12fca84`](https://github.com/python-gitlab/python-gitlab/commit/12fca8409156b910cab0240bf77726a0b0bca1e0))
+
+* ProjectHook: support the token attribute
+
+Fix #170 ([`cd5f849`](https://github.com/python-gitlab/python-gitlab/commit/cd5f84967444cc07cf9e7bdfd63324ad4890b370))
 
 * Merge pull request #178 from cgumpert/master
 
@@ -11214,10 +11341,6 @@ Fixes #156 ([`d09eaa0`](https://github.com/python-gitlab/python-gitlab/commit/d0
 
 * Merge branch &#39;master&#39; of github.com:gpocentek/python-gitlab ([`6f7e499`](https://github.com/python-gitlab/python-gitlab/commit/6f7e499a93b8e80181cb8c91a5b1d63ec76f1ba0))
 
-* Add support for --all in CLI
-
-Fixes #153 ([`5860421`](https://github.com/python-gitlab/python-gitlab/commit/58604213efbe4d275be8da6615ed77d6f3510cbe))
-
 * Merge pull request #155 from rafaeleyng/add-only_allow_merge_if_build_succeeds
 
 add only_allow_merge_if_build_succeeds option to project objects ([`26d97a7`](https://github.com/python-gitlab/python-gitlab/commit/26d97a736022c7f6828529920d2dbc88ecada18c))
@@ -11225,6 +11348,10 @@ add only_allow_merge_if_build_succeeds option to project objects ([`26d97a7`](ht
 * break lines too long ([`608ebbd`](https://github.com/python-gitlab/python-gitlab/commit/608ebbd0f50e3f526f8110d2596e1c9cae5f252b))
 
 * add only_allow_merge_if_build_succeeds option to project objects ([`94932a0`](https://github.com/python-gitlab/python-gitlab/commit/94932a038bc6a862ecaaa1da87141b832b10ceda))
+
+* Add support for --all in CLI
+
+Fixes #153 ([`5860421`](https://github.com/python-gitlab/python-gitlab/commit/58604213efbe4d275be8da6615ed77d6f3510cbe))
 
 * Merge pull request #154 from derek-austin/patch-1
 
@@ -11371,11 +11498,11 @@ Fixes #132 ([`922041d`](https://github.com/python-gitlab/python-gitlab/commit/92
 
 * Merge branch &#39;master&#39; of github.com:gpocentek/python-gitlab ([`e3ac32f`](https://github.com/python-gitlab/python-gitlab/commit/e3ac32f76a54e06c9c465c5acd41398988154fe9))
 
-* add a contributing section in README ([`e6ffd69`](https://github.com/python-gitlab/python-gitlab/commit/e6ffd69bc745ce1a5b857fc248a3bef793e30138))
-
 * doc: replace incorrect archive call() ([`e1f5e15`](https://github.com/python-gitlab/python-gitlab/commit/e1f5e1560e53019d45b113a71916ad9a7695afeb))
 
 * document namespaces API ([`1f52cd2`](https://github.com/python-gitlab/python-gitlab/commit/1f52cd2df35dab33dbf7429c8d514443278b549a))
+
+* add a contributing section in README ([`e6ffd69`](https://github.com/python-gitlab/python-gitlab/commit/e6ffd69bc745ce1a5b857fc248a3bef793e30138))
 
 * Merge pull request #131 from chrwen-omicron/enable_container_registry
 
@@ -11487,11 +11614,15 @@ add `note_events` to project hooks attributes ([`c88c638`](https://github.com/py
 
 * Merge branch &#39;master&#39; of github.com:gpocentek/python-gitlab ([`2e0ac3f`](https://github.com/python-gitlab/python-gitlab/commit/2e0ac3fa4a66a63921b2aeee81dcc942a0849985))
 
-* issues: add optional listing parameters ([`c85276a`](https://github.com/python-gitlab/python-gitlab/commit/c85276a6e6c5088ea6f2ecb13059488c9779ea2c))
-
 * Merge pull request #125 from gpocentek/issue-122
 
 Add support for build artifacts and trace ([`80a1908`](https://github.com/python-gitlab/python-gitlab/commit/80a190888028db4eb1df0c4f827938e89b20f8a1))
+
+* Add support for build artifacts and trace
+
+Fixes #122 ([`b3e0974`](https://github.com/python-gitlab/python-gitlab/commit/b3e0974451b49ab64866dc131bff59e5471ea620))
+
+* issues: add optional listing parameters ([`c85276a`](https://github.com/python-gitlab/python-gitlab/commit/c85276a6e6c5088ea6f2ecb13059488c9779ea2c))
 
 * Add support for commit comments
 
@@ -11511,19 +11642,19 @@ https://github.com/gitlabhq/gitlabhq/blob/master/doc/api/commits.md ([`412e2bc`]
 
 * move into own class &amp; create manager class ([`eb6c26f`](https://github.com/python-gitlab/python-gitlab/commit/eb6c26f51131fa171c71c19c28448e736f2f5243))
 
+* update docblock ([`cd13aff`](https://github.com/python-gitlab/python-gitlab/commit/cd13aff8a0df9136ba3e289fbccd85de3f159bb5))
+
+* list projects under group ([`d4e2cd6`](https://github.com/python-gitlab/python-gitlab/commit/d4e2cd6c618d137df645c182271f67c5ae7e8ff5))
+
 * Merge pull request #124 from Condla/master
 
 Fix: --title is required argument, when in reality optional ([`18de4ef`](https://github.com/python-gitlab/python-gitlab/commit/18de4ef22f5f801dd721d76d0721c5b4cd459c37))
 
 * Fix --title is not a required argument anymore ([`899490b`](https://github.com/python-gitlab/python-gitlab/commit/899490b04055029196eff9e03b496131e2238e61))
 
-* Fix --title is not a required argument anymore ([`c24f0d9`](https://github.com/python-gitlab/python-gitlab/commit/c24f0d9a3664c025e3284e056d5b4c007dcf5435))
-
 * Fix that --title is a required argument, when trying to update a ProjectMilestone ([`bea8ea9`](https://github.com/python-gitlab/python-gitlab/commit/bea8ea9d0fa921cc5c4fdd1b948420f1f780770c))
 
-* Add support for build artifacts and trace
-
-Fixes #122 ([`b3e0974`](https://github.com/python-gitlab/python-gitlab/commit/b3e0974451b49ab64866dc131bff59e5471ea620))
+* Fix --title is not a required argument anymore ([`c24f0d9`](https://github.com/python-gitlab/python-gitlab/commit/c24f0d9a3664c025e3284e056d5b4c007dcf5435))
 
 * Merge pull request #121 from PeterMosmans/httpauthextended
 
@@ -11547,17 +11678,24 @@ Added support for HTTP basic authentication ([`11f1e2d`](https://github.com/pyth
 
 Add support for subscribe and unsubscribe in issues ([`7bbbfbd`](https://github.com/python-gitlab/python-gitlab/commit/7bbbfbdc534a4d26aa61b1b4287911c9f7c6f8a5))
 
-* Merge branch &#39;master&#39; of github.com:gpocentek/python-gitlab ([`b8f19ca`](https://github.com/python-gitlab/python-gitlab/commit/b8f19ca9f64b737296782e74816f4b0b88a05d2f))
-
 * Add support for subscribe and unsubscribe in issues ([`d42687d`](https://github.com/python-gitlab/python-gitlab/commit/d42687db9f0c58ea8a08532fbf6c524b0cc5ed17))
 
-* version bump ([`0535808`](https://github.com/python-gitlab/python-gitlab/commit/0535808d5a82ffbcd5a7ea23ecc4d0c22dad34a1))
-
-* update changelog and authors ([`57936af`](https://github.com/python-gitlab/python-gitlab/commit/57936af70758f35ea28ad060c4ead2d916a3b47e))
+* Merge branch &#39;master&#39; of github.com:gpocentek/python-gitlab ([`b8f19ca`](https://github.com/python-gitlab/python-gitlab/commit/b8f19ca9f64b737296782e74816f4b0b88a05d2f))
 
 * Merge pull request #110 from chrwen-omicron/remove_next_url_from_cls_kwargs
 
 Remove &#39;next_url&#39; from kwargs before passing it to the cls constructor. ([`05dd8dc`](https://github.com/python-gitlab/python-gitlab/commit/05dd8dc353fb5ebcb04cad72db19a8e08e0f7c56))
+
+* Remove &#39;next_url&#39; from kwargs before passing it to the cls constructor.
+
+The &#39;next_url&#39; argument causes problems in the _construct_url method if it
+doesn&#39;t belong there. E.g. if you list all projects, change an attribute
+of a project and then try to save it, the _construct_url will use the
+&#39;next_url&#39; from the list method and the save will fail. ([`c261875`](https://github.com/python-gitlab/python-gitlab/commit/c261875cf167e6858d052dc983fb0dcb03e3ea40))
+
+* version bump ([`0535808`](https://github.com/python-gitlab/python-gitlab/commit/0535808d5a82ffbcd5a7ea23ecc4d0c22dad34a1))
+
+* update changelog and authors ([`57936af`](https://github.com/python-gitlab/python-gitlab/commit/57936af70758f35ea28ad060c4ead2d916a3b47e))
 
 * Manage optional parameters for list() and get()
 
@@ -11570,13 +11708,19 @@ Remove &#39;next_url&#39; from kwargs before passing it to the cls constructor. 
 
 * Merge branch &#39;master&#39; of github.com:gpocentek/python-gitlab ([`ee1620b`](https://github.com/python-gitlab/python-gitlab/commit/ee1620bcfe0533b70c9ceebb34968d3633e2613c))
 
-* implement star/unstar for projects ([`1de6b7e`](https://github.com/python-gitlab/python-gitlab/commit/1de6b7e7641f2c0cb101a82385cee569aa786e3f))
-
-* Deprecate Project.archive() ([`24c283f`](https://github.com/python-gitlab/python-gitlab/commit/24c283f5861f21e51489afc815bd9f31bff58bee))
-
 * Merge pull request #113 from adamreid/master
 
 Enable updates on ProjectIssueNotes ([`f5c75cb`](https://github.com/python-gitlab/python-gitlab/commit/f5c75cbf05ded3a326db6050c11dbdf67b5eca99))
+
+* Merge branch &#39;master&#39; of https://github.com/gpocentek/python-gitlab ([`8edd7f7`](https://github.com/python-gitlab/python-gitlab/commit/8edd7f79050559062ac119797329d0a8dba57a06))
+
+* Remove unnecessary canUpdate property from ProjectIssuesNote ([`111b7d9`](https://github.com/python-gitlab/python-gitlab/commit/111b7d9a4ee60176714b950d7ed9da86c6051feb))
+
+* Enable updates on ProjectIssueNotes ([`5fe7e27`](https://github.com/python-gitlab/python-gitlab/commit/5fe7e27bb16a06271f87bf19473b8604df92b4f7))
+
+* implement star/unstar for projects ([`1de6b7e`](https://github.com/python-gitlab/python-gitlab/commit/1de6b7e7641f2c0cb101a82385cee569aa786e3f))
+
+* Deprecate Project.archive() ([`24c283f`](https://github.com/python-gitlab/python-gitlab/commit/24c283f5861f21e51489afc815bd9f31bff58bee))
 
 * Rename some methods to better match the API URLs
 
@@ -11606,10 +11750,6 @@ Fixes #96 ([`d204e66`](https://github.com/python-gitlab/python-gitlab/commit/d20
 
 Fixes #116 ([`f12c732`](https://github.com/python-gitlab/python-gitlab/commit/f12c732f5e0dff7db1048adf50f54bfdd63ca6fc))
 
-* Merge branch &#39;master&#39; of https://github.com/gpocentek/python-gitlab ([`8edd7f7`](https://github.com/python-gitlab/python-gitlab/commit/8edd7f79050559062ac119797329d0a8dba57a06))
-
-* Remove unnecessary canUpdate property from ProjectIssuesNote ([`111b7d9`](https://github.com/python-gitlab/python-gitlab/commit/111b7d9a4ee60176714b950d7ed9da86c6051feb))
-
 * Drop the next_url attribute when listing
 
 Fixes #106 ([`64af398`](https://github.com/python-gitlab/python-gitlab/commit/64af39818d02af1b40644d71fd047d6bc3f6e69e))
@@ -11625,19 +11765,6 @@ Fixes #112 ([`250f348`](https://github.com/python-gitlab/python-gitlab/commit/25
 * Merge pull request #108 from guyzmo/using_requests_session
 
 Adding a Session instance for all HTTP requests ([`23e8146`](https://github.com/python-gitlab/python-gitlab/commit/23e8146a391e4269e9b3d57a553148963d412179))
-
-* Enable updates on ProjectIssueNotes ([`5fe7e27`](https://github.com/python-gitlab/python-gitlab/commit/5fe7e27bb16a06271f87bf19473b8604df92b4f7))
-
-* update docblock ([`cd13aff`](https://github.com/python-gitlab/python-gitlab/commit/cd13aff8a0df9136ba3e289fbccd85de3f159bb5))
-
-* list projects under group ([`d4e2cd6`](https://github.com/python-gitlab/python-gitlab/commit/d4e2cd6c618d137df645c182271f67c5ae7e8ff5))
-
-* Remove &#39;next_url&#39; from kwargs before passing it to the cls constructor.
-
-The &#39;next_url&#39; argument causes problems in the _construct_url method if it
-doesn&#39;t belong there. E.g. if you list all projects, change an attribute
-of a project and then try to save it, the _construct_url will use the
-&#39;next_url&#39; from the list method and the save will fail. ([`c261875`](https://github.com/python-gitlab/python-gitlab/commit/c261875cf167e6858d052dc983fb0dcb03e3ea40))
 
 * Adding a Session instance for all HTTP requests
 
@@ -11680,8 +11807,6 @@ fixes #105 ([`43e8a2a`](https://github.com/python-gitlab/python-gitlab/commit/43
 
 * Merge branch &#39;master&#39; of github.com:gpocentek/python-gitlab ([`e46c188`](https://github.com/python-gitlab/python-gitlab/commit/e46c18898deb8579d4fee0e76bfc17abed12c512))
 
-* pep8 ignore H803 errors (git messages) ([`86ade4a`](https://github.com/python-gitlab/python-gitlab/commit/86ade4ac78fd14cc8f12be39c74ff60688a2fcf7))
-
 * Merge pull request #98 from Asher256/fix-unicode-syntax-py3
 
 Fix the &#39;invalid syntax&#39; on Python 3.2, because of u&#39;password&#39; ([`aea678b`](https://github.com/python-gitlab/python-gitlab/commit/aea678b9398f87b6943f005ff207755aa8a982a4))
@@ -11711,6 +11836,8 @@ It is a recent change:
 01802c0 (Richard Hansen 2016-02-11 22:43:25 -0500 547) otherdict.pop(u&#39;password&#39;, None)
 
 To solve the issue, &#39;u&#39; was removed. ([`7ed84a7`](https://github.com/python-gitlab/python-gitlab/commit/7ed84a7b4ca73d1b0cc6be7db0c43958ff9f4c47))
+
+* pep8 ignore H803 errors (git messages) ([`86ade4a`](https://github.com/python-gitlab/python-gitlab/commit/86ade4ac78fd14cc8f12be39c74ff60688a2fcf7))
 
 * Re-implement _custom_list in the Gitlab class
 
@@ -11749,6 +11876,18 @@ get_by_username(). ([`b79af1d`](https://github.com/python-gitlab/python-gitlab/c
 
 Adding new `ProjectHook` attributes: ([`81be3cf`](https://github.com/python-gitlab/python-gitlab/commit/81be3cf181f5e49ef20c2824eb8c48785f4ab922))
 
+* Added missing comma ([`1f81c2d`](https://github.com/python-gitlab/python-gitlab/commit/1f81c2d7a93cc7c719bf8bda627020946aa975d3))
+
+* Adding new `ProjectHook` attributes:
+
+* `build_events`
+* `enable_ssl_verification`
+
+See the two links below:
+
+* https://github.com/gitlabhq/gitlabhq/blob/master/doc/api/projects.md#add-project-hook
+* https://github.com/pyapi-gitlab/pyapi-gitlab/pull/173 ([`db9bbf6`](https://github.com/python-gitlab/python-gitlab/commit/db9bbf6528e792976e80f870b2013199569a0021))
+
 * Add a coverage tox env ([`2e1f84e`](https://github.com/python-gitlab/python-gitlab/commit/2e1f84ede56b73c5b6857515d24d061a60b509fb))
 
 * Add some unit tests for CLI
@@ -11766,18 +11905,6 @@ fix GitlabObject creation in _custom_list ([`f5ca0eb`](https://github.com/python
 * fix GitlabObject creation in _custom_list ([`293a9dc`](https://github.com/python-gitlab/python-gitlab/commit/293a9dc9b086568a043040f07fdf1aa574a52500))
 
 * Add support for user block/unblock ([`e387de5`](https://github.com/python-gitlab/python-gitlab/commit/e387de528ad21766747b91bb7e1cd91f6e4642b5))
-
-* Added missing comma ([`1f81c2d`](https://github.com/python-gitlab/python-gitlab/commit/1f81c2d7a93cc7c719bf8bda627020946aa975d3))
-
-* Adding new `ProjectHook` attributes:
-
-* `build_events`
-* `enable_ssl_verification`
-
-See the two links below:
-
-* https://github.com/gitlabhq/gitlabhq/blob/master/doc/api/projects.md#add-project-hook
-* https://github.com/pyapi-gitlab/pyapi-gitlab/pull/173 ([`db9bbf6`](https://github.com/python-gitlab/python-gitlab/commit/db9bbf6528e792976e80f870b2013199569a0021))
 
 * bump version to cleanup my mess on pypi ([`942468d`](https://github.com/python-gitlab/python-gitlab/commit/942468d344eac2a70f73ed69a43c27a87baf78db))
 
@@ -11814,10 +11941,6 @@ is very abrupt.) ([`c56fc47`](https://github.com/python-gitlab/python-gitlab/com
 * use ${CONFIG} instead of repeating the filename ([`033881e`](https://github.com/python-gitlab/python-gitlab/commit/033881e3195388b9f92765a68e5c713953f9086e))
 
 * fix usage error message ([`bc7332f`](https://github.com/python-gitlab/python-gitlab/commit/bc7332f3462295320bf76e056a5ab6206ffa4d6b))
-
-* Add docstrings to some methods ([`1b5c8f1`](https://github.com/python-gitlab/python-gitlab/commit/1b5c8f1b0bf9766ea09ef864b9bf4c1dc313f168))
-
-* Fix the RTD requirements ([`2e5476e`](https://github.com/python-gitlab/python-gitlab/commit/2e5476e5cb465680b2e48308d92109c408b9f1ef))
 
 * improve error handling
 
@@ -11869,14 +11992,18 @@ it easy to prefix all log messages if desired. ([`867fe2f`](https://github.com/p
 Note that build_test_env.sh now creates and prepares the Python
 virtualenv (it didn&#39;t before). ([`26999bf`](https://github.com/python-gitlab/python-gitlab/commit/26999bf0132eeac7e5b78094c54e6436964007ef))
 
+* wrap long lines
+
+Use line continuations to keep lines shorter than 80 columns. ([`6df844a`](https://github.com/python-gitlab/python-gitlab/commit/6df844a49c2631fd38940db4679ab1cba760e4ab))
+
+* Add docstrings to some methods ([`1b5c8f1`](https://github.com/python-gitlab/python-gitlab/commit/1b5c8f1b0bf9766ea09ef864b9bf4c1dc313f168))
+
+* Fix the RTD requirements ([`2e5476e`](https://github.com/python-gitlab/python-gitlab/commit/2e5476e5cb465680b2e48308d92109c408b9f1ef))
+
 * Automatic doc generation for BaseManager classes
 
 Provide a sphinx extension that parses the required/optioanl attributes
 and add infoo to the class docstring. ([`a2eca72`](https://github.com/python-gitlab/python-gitlab/commit/a2eca72246ab40a0d96f6389c99e3a0b54e9342e))
-
-* wrap long lines
-
-Use line continuations to keep lines shorter than 80 columns. ([`6df844a`](https://github.com/python-gitlab/python-gitlab/commit/6df844a49c2631fd38940db4679ab1cba760e4ab))
 
 * travis lacks py35 support without tricks ([`770dd4b`](https://github.com/python-gitlab/python-gitlab/commit/770dd4b3fee1fe9f4e40a144777afb6030992149))
 
@@ -11951,8 +12078,6 @@ Also add unit tests and fix pep8 test ([`d7271b1`](https://github.com/python-git
 
 * Merge branch &#39;fix-json&#39; of https://github.com/rhansen/python-gitlab into rhansen-fix-json ([`26d73e2`](https://github.com/python-gitlab/python-gitlab/commit/26d73e2828db89f9464c291de7607b7e78c58ca4))
 
-* use a custom docker image for tests ([`3f38689`](https://github.com/python-gitlab/python-gitlab/commit/3f386891ecf15ac4f0da34bdda59cf8e8d2f6ff0))
-
 * skip BaseManager attributes when encoding to JSON
 
 This fixes the following exception when calling User.json():
@@ -11963,6 +12088,8 @@ This fixes the following exception when calling User.json():
 
 Add the import inside the function rather than at the top of the file
 because otherwise it would introduce a circular dependency. ([`c95b3c3`](https://github.com/python-gitlab/python-gitlab/commit/c95b3c3b54c412cd5cc77c4d58816139363fb2d1))
+
+* use a custom docker image for tests ([`3f38689`](https://github.com/python-gitlab/python-gitlab/commit/3f386891ecf15ac4f0da34bdda59cf8e8d2f6ff0))
 
 * Add an initial set of API tests ([`7e4e1a3`](https://github.com/python-gitlab/python-gitlab/commit/7e4e1a32ec2481453475a5da5186d187e704cf19))
 
@@ -12064,11 +12191,11 @@ Unit tests have been added. ([`689ecae`](https://github.com/python-gitlab/python
 
 * Merge branch &#39;add_fork_support&#39; of https://github.com/fgouteroux/python-gitlab into fgouteroux-add_fork_support ([`77d34b3`](https://github.com/python-gitlab/python-gitlab/commit/77d34b353a1dfb1892de316a58b461c26eead66b))
 
+* add fork project support ([`cedf080`](https://github.com/python-gitlab/python-gitlab/commit/cedf080ff8553b6ef5cd7995f5ab3608aaeb3793))
+
 * Deprecate the &#34;old&#34; Gitlab methods
 
 Update the associated unit tests. ([`2bf9794`](https://github.com/python-gitlab/python-gitlab/commit/2bf9794c81487883c346850a79d6b7db1295fd95))
-
-* add fork project support ([`cedf080`](https://github.com/python-gitlab/python-gitlab/commit/cedf080ff8553b6ef5cd7995f5ab3608aaeb3793))
 
 * README update ([`dc0099d`](https://github.com/python-gitlab/python-gitlab/commit/dc0099d7901bd381fabadb8be77b93e7258454b3))
 
@@ -12141,10 +12268,6 @@ Closes #73 ([`99c4710`](https://github.com/python-gitlab/python-gitlab/commit/99
 
 * Merge branch &#39;master&#39; of github.com:gpocentek/python-gitlab ([`45becb9`](https://github.com/python-gitlab/python-gitlab/commit/45becb92f47c74cb6433cdb644da5e2052a337e8))
 
-* Sanitize the id used to construct URLs
-
-Closes #28 ([`5d88f68`](https://github.com/python-gitlab/python-gitlab/commit/5d88f68ddadddf98c42940a713817487058f8c17))
-
 * Merge pull request #78 from cdbennett/fix_python3_sort_types
 
 Use name as sort key to fix Python 3 TypeError ([`6f1fd7e`](https://github.com/python-gitlab/python-gitlab/commit/6f1fd7ea8d203b771e32393b5270a6af490b37a8))
@@ -12157,6 +12280,10 @@ Python 3.
 The call to sort() on cli.py line 259 produced the error:
 
     TypeError: unorderable types: type() &lt; type() ([`363b75e`](https://github.com/python-gitlab/python-gitlab/commit/363b75e73c2b66ab625811accdb9d639fb068675))
+
+* Sanitize the id used to construct URLs
+
+Closes #28 ([`5d88f68`](https://github.com/python-gitlab/python-gitlab/commit/5d88f68ddadddf98c42940a713817487058f8c17))
 
 * try to fix the RTD build ([`acc1511`](https://github.com/python-gitlab/python-gitlab/commit/acc151190e32ddaf9198a10c5b816af2d36c0f19))
 
@@ -12197,6 +12324,12 @@ just like the CLI does. ([`fef8c7f`](https://github.com/python-gitlab/python-git
 
 python-gitlab Issue #63 - implement pagination for list() ([`24d5035`](https://github.com/python-gitlab/python-gitlab/commit/24d5035558dec227d2a497d7bf5be3bbaafc0c00))
 
+* issue #63 add unit tests for &#39;next&#39; link handling in list() ([`719526d`](https://github.com/python-gitlab/python-gitlab/commit/719526dc8b0fb7d577f0a5ffa80d8f0ca31a95c6))
+
+* issue #63 - revert logging additions ([`f9654cd`](https://github.com/python-gitlab/python-gitlab/commit/f9654cd1c0dca5b75a2ae78634b06feea7cc3b62))
+
+* python-gitlab Issue #63 - implement pagination for list() ([`33ceed6`](https://github.com/python-gitlab/python-gitlab/commit/33ceed61759e1eb5197154d16cd81030e138921d))
+
 * Merge pull request #66 from stefanklug/master
 
 Fix error when fetching single MergeRequests ([`adbe0a4`](https://github.com/python-gitlab/python-gitlab/commit/adbe0a4391f1e3b4d615ef7966dfa66e75b9a6fa))
@@ -12204,12 +12337,6 @@ Fix error when fetching single MergeRequests ([`adbe0a4`](https://github.com/pyt
 * add support to update MergeRequestNotes ([`79d452d`](https://github.com/python-gitlab/python-gitlab/commit/79d452d3ebf73d4385eb3b259d7c0bab8f914241))
 
 * fix url when fetching a single MergeRequest ([`227f71c`](https://github.com/python-gitlab/python-gitlab/commit/227f71ce49cc3e0a3537a52dd2fac1d8045110f4))
-
-* issue #63 add unit tests for &#39;next&#39; link handling in list() ([`719526d`](https://github.com/python-gitlab/python-gitlab/commit/719526dc8b0fb7d577f0a5ffa80d8f0ca31a95c6))
-
-* issue #63 - revert logging additions ([`f9654cd`](https://github.com/python-gitlab/python-gitlab/commit/f9654cd1c0dca5b75a2ae78634b06feea7cc3b62))
-
-* python-gitlab Issue #63 - implement pagination for list() ([`33ceed6`](https://github.com/python-gitlab/python-gitlab/commit/33ceed61759e1eb5197154d16cd81030e138921d))
 
 * Fix the update/delete CLI subcommands
 
@@ -12289,6 +12416,11 @@ closes #31 ([`8b42559`](https://github.com/python-gitlab/python-gitlab/commit/8b
 
 Conflicts:
 	setup.py ([`0443256`](https://github.com/python-gitlab/python-gitlab/commit/04432561cb0e1a7e658cf771fd530835b4f463c8))
+
+* Added tests.
+
+Uses httmock library to abstract away requests-library.
+Uses nose to actually run tests. ([`f458522`](https://github.com/python-gitlab/python-gitlab/commit/f45852205397d84a3ca2b9554ffaacae153791cc))
 
 * Deprecate some Gitlab object methods
 
@@ -12408,73 +12540,68 @@ Changed Gitlab-class to use GitlabObject-class version of _getListOrObject ([`90
 
 Classes for ProjectLabels and ProjectFiles ([`928b9f0`](https://github.com/python-gitlab/python-gitlab/commit/928b9f09291a45283ed371b931288b1caddb5b1c))
 
+* Classes for ProjectLabels and ProjectFiles ([`ad63e17`](https://github.com/python-gitlab/python-gitlab/commit/ad63e17ce7b6fd8c8eef993a44a1b18cc73fc4be))
+
 * Merge pull request #44 from mjmaenpaa/noid_objects
 
 Support api-objects which don&#39;t have id in api response. ([`afe0ab4`](https://github.com/python-gitlab/python-gitlab/commit/afe0ab4b7ecf9a37b88a3d8f77a2c17d95e571d3))
+
+* Fixed object creation in list ([`134fc7a`](https://github.com/python-gitlab/python-gitlab/commit/134fc7ac024aa96b1d22cc421a081df6cd2724f3))
+
+* Support api-objects which don&#39;t have id in api response. ([`c3ab869`](https://github.com/python-gitlab/python-gitlab/commit/c3ab869711276522fe2997ba6e6332704a059d22))
 
 * Merge pull request #43 from mjmaenpaa/url_delete_attrs
 
 Moved url attributes to separate list. Added list for delete attributes. ([`f7dfad3`](https://github.com/python-gitlab/python-gitlab/commit/f7dfad38877f9886d891ed19a21188de61e5c5bc))
 
+* Moved url attributes to separate list. Added list for delete attributes. ([`ea4c099`](https://github.com/python-gitlab/python-gitlab/commit/ea4c099532993cdb3ea547fcbd931127c03fdffa))
+
 * Merge pull request #40 from mjmaenpaa/py3
 
 Python3 compatibility ([`1eccc3b`](https://github.com/python-gitlab/python-gitlab/commit/1eccc3b38bdb6d0b53d76b6a5099db89dcb53871))
 
-* Fixed object creation in list ([`134fc7a`](https://github.com/python-gitlab/python-gitlab/commit/134fc7ac024aa96b1d22cc421a081df6cd2724f3))
+* Py3 compatibility with six ([`431e4bd`](https://github.com/python-gitlab/python-gitlab/commit/431e4bdf089354534f6877d39631ff23038e8866))
 
-* Classes for ProjectLabels and ProjectFiles ([`ad63e17`](https://github.com/python-gitlab/python-gitlab/commit/ad63e17ce7b6fd8c8eef993a44a1b18cc73fc4be))
+* Python 3 compatibility for cli-program ([`d714c4d`](https://github.com/python-gitlab/python-gitlab/commit/d714c4d35bc627d9113a4925f843c54d6123e621))
 
-* Support api-objects which don&#39;t have id in api response. ([`c3ab869`](https://github.com/python-gitlab/python-gitlab/commit/c3ab869711276522fe2997ba6e6332704a059d22))
-
-* Moved url attributes to separate list. Added list for delete attributes. ([`ea4c099`](https://github.com/python-gitlab/python-gitlab/commit/ea4c099532993cdb3ea547fcbd931127c03fdffa))
+* Python3 compatibility ([`15c0da5`](https://github.com/python-gitlab/python-gitlab/commit/15c0da5552aa57340d25946bb41d0cd079ec495d))
 
 * Merge pull request #42 from mjmaenpaa/constructUrl
 
 Moved url-construction to separate function ([`221f418`](https://github.com/python-gitlab/python-gitlab/commit/221f41806d0dad67adada158a9352aa9e2f2036f))
 
+* Moved url-construction to separate function ([`e14e3bf`](https://github.com/python-gitlab/python-gitlab/commit/e14e3bf0f675c54930af53c832ccd7ab98df89f3))
+
 * Merge pull request #41 from mjmaenpaa/gitlab_get_exception
 
 Gitlab.get() raised GitlabListError instead of GitlabGetError ([`9736e0b`](https://github.com/python-gitlab/python-gitlab/commit/9736e0b0893e298712d1ad356e3f8341852ef0f7))
 
-* Moved url-construction to separate function ([`e14e3bf`](https://github.com/python-gitlab/python-gitlab/commit/e14e3bf0f675c54930af53c832ccd7ab98df89f3))
-
 * Gitlab.get() raised GitlabListError instead of GitlabGetError ([`ee54b3e`](https://github.com/python-gitlab/python-gitlab/commit/ee54b3e6927f6c8d3b5f9bcbec0e67b94be8566d))
-
-* Py3 compatibility with six ([`431e4bd`](https://github.com/python-gitlab/python-gitlab/commit/431e4bdf089354534f6877d39631ff23038e8866))
 
 * Merge pull request #39 from mjmaenpaa/timeout
 
 Timeout support ([`9f134fc`](https://github.com/python-gitlab/python-gitlab/commit/9f134fcaf41594e2e37bf24f20cde128bd21364b))
 
-* Python 3 compatibility for cli-program ([`d714c4d`](https://github.com/python-gitlab/python-gitlab/commit/d714c4d35bc627d9113a4925f843c54d6123e621))
-
 * Timeout support ([`d2e591e`](https://github.com/python-gitlab/python-gitlab/commit/d2e591ec75aec916f3b37192ddcdc2163d558995))
-
-* Python3 compatibility ([`15c0da5`](https://github.com/python-gitlab/python-gitlab/commit/15c0da5552aa57340d25946bb41d0cd079ec495d))
 
 * Merge pull request #38 from mjmaenpaa/currentuser_key
 
 Changed CurrentUser.Key to use _getListOrObject-method like all other functions ([`4664ebd`](https://github.com/python-gitlab/python-gitlab/commit/4664ebd9125d4eb07ee2add768b89362c6902f81))
 
+* CurrentUser.Key uses _getListOrObject-method ([`afcf1c2`](https://github.com/python-gitlab/python-gitlab/commit/afcf1c23c36a7aa0f65392892ca4abb973e35b43))
+
 * Merge pull request #37 from mjmaenpaa/list_kwargs
 
 No reason to add kwargs to object in Gitlab.list()-method ([`2c86085`](https://github.com/python-gitlab/python-gitlab/commit/2c860856689bac90bbda44d4812a27d5b22144c0))
+
+* No reason to add kwargs to object in Gitlab.list()-method because GitlabObject
+constructor can handle them. ([`40ce81e`](https://github.com/python-gitlab/python-gitlab/commit/40ce81e9b9cea0dd75c712ccac887afd37416996))
 
 * Merge pull request #36 from mjmaenpaa/setFromDict
 
 _setFromDict thinks False is None ([`4c5c39d`](https://github.com/python-gitlab/python-gitlab/commit/4c5c39de41221696fa1d63de13ec61ae88f85f9f))
 
-* CurrentUser.Key uses _getListOrObject-method ([`afcf1c2`](https://github.com/python-gitlab/python-gitlab/commit/afcf1c23c36a7aa0f65392892ca4abb973e35b43))
-
-* No reason to add kwargs to object in Gitlab.list()-method because GitlabObject
-constructor can handle them. ([`40ce81e`](https://github.com/python-gitlab/python-gitlab/commit/40ce81e9b9cea0dd75c712ccac887afd37416996))
-
 * _setFromDict thinks False is None ([`3cf35ce`](https://github.com/python-gitlab/python-gitlab/commit/3cf35cedfff4784af9e7b882b85f71b22ec93c25))
-
-* Added tests.
-
-Uses httmock library to abstract away requests-library.
-Uses nose to actually run tests. ([`f458522`](https://github.com/python-gitlab/python-gitlab/commit/f45852205397d84a3ca2b9554ffaacae153791cc))
 
 * Merge pull request #34 from tekacs/master
 
@@ -12515,16 +12642,6 @@ Closes #28 ([`34d6952`](https://github.com/python-gitlab/python-gitlab/commit/34
 
 Fix encoding errors on display and update with redirected output ([`2b5ea46`](https://github.com/python-gitlab/python-gitlab/commit/2b5ea468c68058a2d9141ecafda02263dd1845ca))
 
-* Support state_event in ProjectMilestone
-
-Closes #30 ([`2281283`](https://github.com/python-gitlab/python-gitlab/commit/22812832021911dccdd93ced0ef1088441e3d227))
-
-* add support for branches creation and deletion ([`97e2689`](https://github.com/python-gitlab/python-gitlab/commit/97e26896a7c2916b0f0d2c64934f280d4c9e5dc7))
-
-* add support for UserKey listing and deletion ([`09e4a64`](https://github.com/python-gitlab/python-gitlab/commit/09e4a64cda0531f7dd45984625cf5e1c90bb430f))
-
-* drop the module shebang ([`01335f3`](https://github.com/python-gitlab/python-gitlab/commit/01335f3b904a7ea4c1fee2d5b7f84f6420577834))
-
 * Fix encoding error when updating with redirected output
 
 When output is redirected sys.stdout.encoding is None. Fix this by
@@ -12535,6 +12652,16 @@ used by the local system is irrelevant here. ([`ec185cf`](https://github.com/pyt
 
 When redirecting output to a file sys.stdout.encoding is None, so use
 sys.getdefaultencoding() instead. ([`e236fd9`](https://github.com/python-gitlab/python-gitlab/commit/e236fd94c48b949bbbc8e0dc2d55ebfaa1ef0069))
+
+* Support state_event in ProjectMilestone
+
+Closes #30 ([`2281283`](https://github.com/python-gitlab/python-gitlab/commit/22812832021911dccdd93ced0ef1088441e3d227))
+
+* add support for branches creation and deletion ([`97e2689`](https://github.com/python-gitlab/python-gitlab/commit/97e26896a7c2916b0f0d2c64934f280d4c9e5dc7))
+
+* add support for UserKey listing and deletion ([`09e4a64`](https://github.com/python-gitlab/python-gitlab/commit/09e4a64cda0531f7dd45984625cf5e1c90bb430f))
+
+* drop the module shebang ([`01335f3`](https://github.com/python-gitlab/python-gitlab/commit/01335f3b904a7ea4c1fee2d5b7f84f6420577834))
 
 * Merge pull request #16 from locke105/master
 
@@ -12552,15 +12679,15 @@ Update Changelog and AUTHORS ([`1fe783d`](https://github.com/python-gitlab/pytho
 
 Add support for extra parameters when listing all projects (Refs #12) ([`4b882b7`](https://github.com/python-gitlab/python-gitlab/commit/4b882b7b6b4b303fc18c428a3da2a26e1001e5c2))
 
+* Add support for extra parameters when listing all projects (Refs #12)
+
+Signed-off-by: Diego Giovane Pasqualin &lt;dpasqualin@c3sl.ufpr.br&gt; ([`1b6c595`](https://github.com/python-gitlab/python-gitlab/commit/1b6c5952f06fe1236e1e75ae68f9c2325e78d372))
+
 * ProjectMember: constructor should not create a User object ([`1c21423`](https://github.com/python-gitlab/python-gitlab/commit/1c214233360524fae06c9f6946e0956843a000f3))
 
 * ids can be unicode
 
 Fixes #15 ([`c6e371e`](https://github.com/python-gitlab/python-gitlab/commit/c6e371e7b2e2e499e32dd11feb81c013b8ab32c4))
-
-* Add support for extra parameters when listing all projects (Refs #12)
-
-Signed-off-by: Diego Giovane Pasqualin &lt;dpasqualin@c3sl.ufpr.br&gt; ([`1b6c595`](https://github.com/python-gitlab/python-gitlab/commit/1b6c5952f06fe1236e1e75ae68f9c2325e78d372))
 
 * version bump ([`04574f3`](https://github.com/python-gitlab/python-gitlab/commit/04574f381d3d50afa86ec890681105f8f5a2a31e))
 
@@ -12584,6 +12711,10 @@ Signed-off-by: Diego Giovane Pasqualin &lt;dpasqualin@c3sl.ufpr.br&gt; ([`1b6c59
 
 * Merge remote-tracking branch &#39;github-mrts/master&#39; ([`7fb7c47`](https://github.com/python-gitlab/python-gitlab/commit/7fb7c473c58cc2b4e7567d444ffff3b3ecdb3243))
 
+* Add support for project events. ([`32d4224`](https://github.com/python-gitlab/python-gitlab/commit/32d422445388766e7cc4913a51bf8890487d4ce5))
+
+* Fix comments. ([`6705928`](https://github.com/python-gitlab/python-gitlab/commit/6705928406667ee010f448e41c14cfa63c263178))
+
 * add a Key() method for User objects ([`1969abb`](https://github.com/python-gitlab/python-gitlab/commit/1969abb3bbb61c4cbb8499496be9f48bd74cf558))
 
 * Merge pull request #10 from ksmets/master
@@ -12591,10 +12722,6 @@ Signed-off-by: Diego Giovane Pasqualin &lt;dpasqualin@c3sl.ufpr.br&gt; ([`1b6c59
 Add SSH key for user ([`e31bb9e`](https://github.com/python-gitlab/python-gitlab/commit/e31bb9ea26a5ab3299464f37e0931bfee8b7cb62))
 
 * Add SSH key for user ([`909c10e`](https://github.com/python-gitlab/python-gitlab/commit/909c10e0d155b0fcfcd63129e2f5921a11d9c017))
-
-* Add support for project events. ([`32d4224`](https://github.com/python-gitlab/python-gitlab/commit/32d422445388766e7cc4913a51bf8890487d4ce5))
-
-* Fix comments. ([`6705928`](https://github.com/python-gitlab/python-gitlab/commit/6705928406667ee010f448e41c14cfa63c263178))
 
 * Merge pull request #8 from Itxaka/master
 
@@ -12626,6 +12753,8 @@ fixed the requirements auto install from setup.py ([`37e6648`](https://github.co
 * doc updates ([`b73c92d`](https://github.com/python-gitlab/python-gitlab/commit/b73c92dd022d6133c04fe98da68423ec5ae16e21))
 
 * Merge branch &#39;header-private-token&#39; of https://github.com/dekimsey/python-gitlab into token_in_header ([`9adb4fa`](https://github.com/python-gitlab/python-gitlab/commit/9adb4fae912279b7635820029fe0b12013e6332e))
+
+* Use PRIVATE-TOKEN header for passing the auth token ([`d39c471`](https://github.com/python-gitlab/python-gitlab/commit/d39c471b188ad1302f0ef6c5f7eac4c6e0d1b742))
 
 * provide a ChangeLog ([`2d5342b`](https://github.com/python-gitlab/python-gitlab/commit/2d5342b54f723f621ada53acdfc5ff5d8b1b8b8b))
 
@@ -12662,9 +12791,9 @@ Addded API for team access. ([`8f65cf8`](https://github.com/python-gitlab/python
 Conflicts:
 	gitlab.py ([`cb5b754`](https://github.com/python-gitlab/python-gitlab/commit/cb5b7542edde926f73be6e7a2ab55f944ccbca00))
 
-* Addded API for team access. ([`8a22958`](https://github.com/python-gitlab/python-gitlab/commit/8a22958e20a622400daecb288135793544ad01ad))
+* Basic team support. ([`5388d19`](https://github.com/python-gitlab/python-gitlab/commit/5388d19f8885d3ca2f93c5e07ed58a1b84a87475))
 
-* Use PRIVATE-TOKEN header for passing the auth token ([`d39c471`](https://github.com/python-gitlab/python-gitlab/commit/d39c471b188ad1302f0ef6c5f7eac4c6e0d1b742))
+* Addded API for team access. ([`8a22958`](https://github.com/python-gitlab/python-gitlab/commit/8a22958e20a622400daecb288135793544ad01ad))
 
 * improve pretty_print() ([`05ab473`](https://github.com/python-gitlab/python-gitlab/commit/05ab4732ceaee7d6d6c1f162b5925602b7c9ad44))
 
@@ -12747,8 +12876,6 @@ We can use a more common syntax (-- prefix for options) this way. ([`a8072d9`](h
 * raise an exception if deletion fails ([`4ee9c8c`](https://github.com/python-gitlab/python-gitlab/commit/4ee9c8c72325e145b1349e325a335b744455d3da))
 
 * Allow creation of objects using the &#34;hidden API&#34; ([`1d55e67`](https://github.com/python-gitlab/python-gitlab/commit/1d55e67b7335926435cb2298b675698cec1873d0))
-
-* Basic team support. ([`5388d19`](https://github.com/python-gitlab/python-gitlab/commit/5388d19f8885d3ca2f93c5e07ed58a1b84a87475))
 
 * Check the needed attributes to create objects
 
