@@ -14,6 +14,7 @@ API examples
    gl_objects/bulk_imports
    gl_objects/messages
    gl_objects/ci_lint
+   gl_objects/cluster_agents
    gl_objects/commits
    gl_objects/deploy_keys
    gl_objects/deploy_tokens

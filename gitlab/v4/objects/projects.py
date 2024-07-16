@@ -43,6 +43,7 @@ from .badges import ProjectBadgeManager  # noqa: F401
 from .boards import ProjectBoardManager  # noqa: F401
 from .branches import ProjectBranchManager, ProjectProtectedBranchManager  # noqa: F401
 from .ci_lint import ProjectCiLintManager  # noqa: F401
+from .cluster_agents import ProjectClusterAgentManager  # noqa: F401
 from .clusters import ProjectClusterManager  # noqa: F401
 from .commits import ProjectCommitManager  # noqa: F401
 from .container_registry import ProjectRegistryRepositoryManager  # noqa: F401
@@ -183,6 +184,7 @@ class Project(
     branches: ProjectBranchManager
     ci_lint: ProjectCiLintManager
     clusters: ProjectClusterManager
+    cluster_agents: ProjectClusterAgentManager
     commits: ProjectCommitManager
     customattributes: ProjectCustomAttributeManager
     deployments: ProjectDeploymentManager
