@@ -428,7 +428,7 @@ then ``save`` the object (using ``sudo``):
    group = gl.groups.get('example-group')
    notification_setting = group.notificationsettings.get(sudo='user1')
    notification_setting.level = gitlab.const.NOTIFICATION_LEVEL_GLOBAL
-   # Must use `sudo` again when doing the save.
+   # Must use 'sudo' again when doing the save.
    notification_setting.save(sudo='user1')
 
 
