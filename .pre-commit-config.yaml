@@ -3,7 +3,7 @@ default_language_version:
 
 repos:
   - repo: https://github.com/psf/black
-    rev: 24.4.2
+    rev: 24.8.0
     hooks:
       - id: black
   - repo: https://github.com/commitizen-tools/commitizen
@@ -12,7 +12,7 @@ repos:
       - id: commitizen
         stages: [commit-msg]
   - repo: https://github.com/pycqa/flake8
-    rev: 7.1.0
+    rev: 7.1.1
     hooks:
       - id: flake8
   - repo: https://github.com/pycqa/isort
@@ -30,7 +30,7 @@ repos:
           - requests-toolbelt==1.0.0
         files: 'gitlab/'
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.0
+    rev: v1.11.1
     hooks:
       - id: mypy
         args: []
