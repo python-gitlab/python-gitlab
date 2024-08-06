@@ -23,6 +23,13 @@ def test_snippets(gl):
     content = snippet.content()
     assert content.decode() == "import gitlab"
 
+    all_snippets = gl.snippets.list_all(get_all=True)
+    public_snippets = gl.snippets.public(get_all=True)
+    list_public_snippets = gl.snippets.list_public(get_all=True)
+    assert isinstance(all_snippets, list)
+    assert isinstance(list_public_snippets, list)
+    assert public_snippets == list_public_snippets
+
     snippet.delete()
 
 

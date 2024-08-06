@@ -22,7 +22,16 @@ List snippets owned by the current user::
 
 List the public snippets::
 
-    public_snippets = gl.snippets.public()
+    public_snippets = gl.snippets.list_public()
+
+List all snippets::
+
+    all_snippets = gl.snippets.list_all()
+
+.. warning::
+
+   Only users with the Administrator or Auditor access levels can see all snippets
+   (both personal and project). See the upstream API documentation for more details.
 
 Get a snippet::
 

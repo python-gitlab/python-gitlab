@@ -90,11 +90,35 @@ class SnippetManager(CRUDMixin, RESTManager):
     )
 
     @cli.register_custom_action(cls_names="SnippetManager")
-    def public(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
-        """List all the public snippets.
+    def list_public(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+        """List all public snippets.
 
         Args:
-            all: If True the returned object will be a list
+            get_all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            iterator: If set to True and no pagination option is
+                defined, return a generator instead of a list
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabListError: If the list could not be retrieved
+
+        Returns:
+            The list of snippets, or a generator if `iterator` is True
+        """
+        return self.list(path="/snippets/public", **kwargs)
+
+    @cli.register_custom_action(cls_names="SnippetManager")
+    def list_all(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+        """List all snippets.
+
+        Args:
+            get_all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            iterator: If set to True and no pagination option is
+                defined, return a generator instead of a list
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -103,6 +127,32 @@ class SnippetManager(CRUDMixin, RESTManager):
         Returns:
             A generator for the snippets list
         """
+        return self.list(path="/snippets/all", **kwargs)
+
+    def public(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+        """List all public snippets.
+
+        Args:
+            get_all: If True, return all the items, without pagination
+            per_page: Number of items to retrieve per request
+            page: ID of the page to return (starts with page 1)
+            iterator: If set to True and no pagination option is
+                defined, return a generator instead of a list
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabListError: If the list could not be retrieved
+
+        Returns:
+            The list of snippets, or a generator if `iterator` is True
+        """
+        utils.warn(
+            message=(
+                "Gitlab.snippets.public() is deprecated and will be removed in a"
+                "future major version. Use Gitlab.snippets.list_public() instead."
+            ),
+            category=DeprecationWarning,
+        )
         return self.list(path="/snippets/public", **kwargs)
 
     def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Snippet:
