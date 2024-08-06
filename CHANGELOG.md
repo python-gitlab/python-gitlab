@@ -1,5 +1,34 @@
 # CHANGELOG
 
+## v4.9.0 (2024-08-06)
+
+### Chore
+
+* chore(deps): update pre-commit hook maxbrunet/pre-commit-renovate to v38 ([`f13968b`](https://github.com/python-gitlab/python-gitlab/commit/f13968be9e2bb532f3c1185c1fa4185c05335552))
+
+* chore(deps): update all non-major dependencies ([`f95ca26`](https://github.com/python-gitlab/python-gitlab/commit/f95ca26b411e5a8998eb4b81e41c061726271240))
+
+* chore(deps): update dependency types-setuptools to v71 ([`d6a7dba`](https://github.com/python-gitlab/python-gitlab/commit/d6a7dba600923e582064a77579dea82281871c25))
+
+* chore(deps): update python-semantic-release/upload-to-gh-release digest to 0dcddac ([`eb5c6f7`](https://github.com/python-gitlab/python-gitlab/commit/eb5c6f7fb6487da21c69582adbc69aaf36149143))
+
+* chore(deps): update gitlab/gitlab-ee docker tag to v17.2.1-ee.0 ([`d13a656`](https://github.com/python-gitlab/python-gitlab/commit/d13a656565898886cc6ba11028b3bcb719c21f0f))
+
+* chore(deps): update all non-major dependencies ([`7adc86b`](https://github.com/python-gitlab/python-gitlab/commit/7adc86b2e202cad42776991f0ed8c81517bb37ad))
+
+* chore(deps): update python-semantic-release/upload-to-gh-release digest to e2355e1 ([`eb18552`](https://github.com/python-gitlab/python-gitlab/commit/eb18552e423e270a27a2b205bfd2f22fcb2eb949))
+
+* chore(deps): update all non-major dependencies ([`e820db0`](https://github.com/python-gitlab/python-gitlab/commit/e820db0d9db42a826884b45a76267fee861453d4))
+
+* chore(ci): make pre-commit check happy
+
+pre-commit incorrectly wants double back-quotes inside the code
+section. Rather than fight it, just use single quotes. ([`67370d8`](https://github.com/python-gitlab/python-gitlab/commit/67370d8f083ddc34c0acf0c0b06742a194dfa735))
+
+### Feature
+
+* feat(snippets): add support for listing all instance snippets ([`64ae61e`](https://github.com/python-gitlab/python-gitlab/commit/64ae61ed9ba60169037703041c2a9a71017475b9))
+
 ## v4.8.0 (2024-07-16)
 
 ### Chore
