@@ -3,9 +3,8 @@ from typing import Any, BinaryIO, cast, Dict, List, Optional, Type, TYPE_CHECKIN
 import requests
 
 import gitlab
-from gitlab import cli
+from gitlab import cli, types
 from gitlab import exceptions as exc
-from gitlab import types
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,

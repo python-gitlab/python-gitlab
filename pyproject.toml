@@ -138,8 +138,19 @@ log_cli_format = "%(asctime)s.%(msecs)03d [%(levelname)8s] (%(filename)s:%(funcN
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 
 [tool.ruff.lint]
-# these will be done in a follow-up
-ignore = ["E721"]
+select = [
+            # See https://docs.astral.sh/ruff/rules
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+]
+ignore = [
+    "E501", # let line-length format it, not line-too-long
+]
+
+[tool.ruff.lint.isort]
+order-by-type = false
 
 [tool.ruff.lint.per-file-ignores]
 "gitlab/v4/objects/__init__.py" = ["F401", "F403"]

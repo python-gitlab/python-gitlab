@@ -9,9 +9,8 @@ from typing import Any, Callable, Dict, Iterator, List, Optional, TYPE_CHECKING,
 import requests
 
 import gitlab
-from gitlab import cli
+from gitlab import cli, types, utils
 from gitlab import exceptions as exc
-from gitlab import types, utils
 
 if TYPE_CHECKING:
     # When running mypy we use these as the base classes

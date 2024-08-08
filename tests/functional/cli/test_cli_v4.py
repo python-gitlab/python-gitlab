@@ -212,7 +212,6 @@ def test_create_branch(gitlab_cli, project):
 
 
 def test_create_merge_request(gitlab_cli, project):
-
     cmd = [
         "project-merge-request",
         "create",

@@ -117,7 +117,7 @@ class TestWarningsWrapper:
         warning = caught_warnings[0]
         # File name is this file as it is the first file outside of the `gitlab/` path.
         assert __file__ == warning.filename
-        assert warning.category == UserWarning
+        assert warning.category is UserWarning
         assert isinstance(warning.message, UserWarning)
         assert warn_message in str(warning.message)
         assert __file__ in str(warning.message)
@@ -138,7 +138,7 @@ class TestWarningsWrapper:
         warning = caught_warnings[0]
         # File name is this file as it is the first file outside of the `gitlab/` path.
         assert __file__ == warning.filename
-        assert warning.category == UserWarning
+        assert warning.category is UserWarning
         assert isinstance(warning.message, UserWarning)
         assert warn_message in str(warning.message)
         assert __file__ not in str(warning.message)

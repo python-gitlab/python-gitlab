@@ -9,9 +9,8 @@ from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
 import requests
 
 import gitlab
-from gitlab import cli
+from gitlab import cli, types
 from gitlab import exceptions as exc
-from gitlab import types
 from gitlab.base import RESTManager, RESTObject, RESTObjectList
 from gitlab.mixins import (
     CRUDMixin,

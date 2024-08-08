@@ -2,9 +2,8 @@ from typing import Any, cast, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
 
 import requests
 
-from gitlab import cli, client
+from gitlab import cli, client, types
 from gitlab import exceptions as exc
-from gitlab import types
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,

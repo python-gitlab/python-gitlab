@@ -21,8 +21,8 @@ def test_create_issue(project):
     participants = issue.participants()
     assert participants
     assert isinstance(participants, list)
-    assert type(issue.closed_by()) == list
-    assert type(issue.related_merge_requests()) == list
+    assert isinstance(issue.closed_by(), list)
+    assert isinstance(issue.related_merge_requests(), list)
 
 
 def test_issue_notes(issue):

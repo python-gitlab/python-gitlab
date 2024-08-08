@@ -18,9 +18,8 @@ from typing import (
 
 import requests
 
-from gitlab import cli, client
+from gitlab import cli, client, types, utils
 from gitlab import exceptions as exc
-from gitlab import types, utils
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,

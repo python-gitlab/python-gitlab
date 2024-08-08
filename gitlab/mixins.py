@@ -16,9 +16,8 @@ from typing import (
 import requests
 
 import gitlab
-from gitlab import base, cli
+from gitlab import base, cli, utils
 from gitlab import exceptions as exc
-from gitlab import utils
 
 __all__ = [
     "GetMixin",
