@@ -31,13 +31,9 @@ jobs:
       - run: pip install --upgrade tox
       - name: Run commitizen (https://commitizen-tools.github.io/commitizen/)
         run: tox -e cz
-      - name: Run black code formatter (https://black.readthedocs.io/en/stable/)
-        run: tox -e black -- --check
-      - name: Run flake8 (https://flake8.pycqa.org/en/latest/)
-        run: tox -e flake8
+      - name: Run ruff linter and formatter (https://docs.astral.sh/ruff/)
+        run: tox -e ruff-check
       - name: Run mypy static typing checker (http://mypy-lang.org/)
         run: tox -e mypy
-      - name: Run isort import order checker (https://pycqa.github.io/isort/)
-        run: tox -e isort -- --check
       - name: Run pylint Python code static checker (https://github.com/PyCQA/pylint)
         run: tox -e pylint

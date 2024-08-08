@@ -19,9 +19,6 @@ python-gitlab
 .. image:: https://img.shields.io/gitter/room/python-gitlab/Lobby.svg
    :target: https://gitter.im/python-gitlab/Lobby
 
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :target: https://github.com/python/black
-
 .. image:: https://img.shields.io/github/license/python-gitlab/python-gitlab
    :target: https://github.com/python-gitlab/python-gitlab/blob/main/COPYING
 

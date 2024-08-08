@@ -42,8 +42,8 @@ This creates a clearer project history, and automates our `Releases`_ and change
 Coding Style
 ------------
 
-We use `black <https://github.com/python/black/>`_ and `isort <https://pycqa.github.io/isort/>`_
-to format our code, so you'll need to make sure you use it when committing.
+We use `ruff <https://docs.astral.sh/ruff>`_
+to lint and format our code, so you'll need to make sure you use it when committing.
 
 Pre-commit hooks will validate and format your code, so you can then stage any changes done if the commit failed.
 
@@ -52,7 +52,7 @@ To format your code according to our guidelines before committing, run:
 .. code-block:: bash
 
   cd python-gitlab/
-  tox -e black,isort
+  tox -e lint
 
 Running unit tests
 ------------------

@@ -2,23 +2,11 @@ default_language_version:
     python: python3
 
 repos:
-  - repo: https://github.com/psf/black
-    rev: 24.8.0
-    hooks:
-      - id: black
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v3.28.0
     hooks:
       - id: commitizen
         stages: [commit-msg]
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.1.1
-    hooks:
-      - id: flake8
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
   - repo: https://github.com/pycqa/pylint
     rev: v3.2.6
     hooks:
@@ -50,3 +38,10 @@ repos:
     rev: 38.18.17
     hooks:
       - id: renovate-config-validator
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.6
+    hooks:
+      - id: ruff
+        args:
+          - --fix
+      - id: ruff-format

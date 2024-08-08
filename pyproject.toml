@@ -59,11 +59,6 @@ exclude = ["docs*", "tests*"]
 [tool.setuptools.dynamic]
 version = { attr = "gitlab._version.__version__" }
 
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-order_by_type = false
-
 [tool.mypy]
 files = "."
 exclude = "build/.*"
@@ -141,3 +136,10 @@ markers = [
 log_cli_level = "INFO"
 log_cli_format = "%(asctime)s.%(msecs)03d [%(levelname)8s] (%(filename)s:%(funcName)s:L%(lineno)s) %(message)s"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+
+[tool.ruff.lint]
+# these will be done in a follow-up
+ignore = ["E721"]
+
+[tool.ruff.lint.per-file-ignores]
+"gitlab/v4/objects/__init__.py" = ["F401", "F403"]
