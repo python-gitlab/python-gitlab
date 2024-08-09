@@ -353,7 +353,7 @@ Import the project using file stored on a remote URL::
     output = gl.projects.remote_import(
         url="https://whatever.com/url/file.tar.gz",
         path="my_new_remote_project",
-        name="My New Remote Project", 
+        name="My New Remote Project",
         namespace="my-group",
         override_params={'visibility': 'private'},
     )
@@ -367,7 +367,7 @@ Import the project using file stored on AWS S3::
         file_key="aws-file-key",
         access_key_id="aws-access-key-id",
         secret_access_key="secret-access-key",
-        name="My New Remote Project", 
+        name="My New Remote Project",
         namespace="my-group",
         override_params={'visibility': 'private'},
     )
@@ -449,7 +449,7 @@ Get file details from headers, without fetching its entire content::
     print(headers["X-Gitlab-Size"])
 
 Get a raw file::
-    
+
     raw_content = project.files.raw(file_path='README.rst', ref='main')
     print(raw_content)
     with open('/tmp/raw-download.txt', 'wb') as f:
@@ -688,6 +688,10 @@ Update a project hook::
 
     hook.push_events = 0
     hook.save()
+
+Test a project hook::
+
+    hook.test("push_events")
 
 Delete a project hook::
 

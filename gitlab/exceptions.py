@@ -316,6 +316,10 @@ class GitlabDeploymentApprovalError(GitlabOperationError):
     pass
 
 
+class GitlabHookTestError(GitlabOperationError):
+    pass
+
+
 # For an explanation of how these type-hints work see:
 # https://mypy.readthedocs.io/en/stable/generics.html#declaring-decorators
 #
@@ -370,6 +374,7 @@ __all__ = [
     "GitlabGetError",
     "GitlabGroupTransferError",
     "GitlabHeadError",
+    "GitlabHookTestError",
     "GitlabHousekeepingError",
     "GitlabHttpError",
     "GitlabImportError",

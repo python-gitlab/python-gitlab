@@ -1,5 +1,6 @@
 from typing import Any, cast, Union
 
+from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, NoUpdateMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
@@ -30,6 +31,20 @@ class HookManager(NoUpdateMixin, RESTManager):
 
 class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "url"
+
+    @exc.on_http_error(exc.GitlabHookTestError)
+    def test(self, trigger: str) -> None:
+        """
+        Test a Project Hook
+
+        Args:
+            trigger: Type of trigger event to test
+
+        Raises:
+            GitlabHookTestError: If the hook test attempt failed
+        """
+        path = f"{self.manager.path}/{self.encoded_id}/test/{trigger}"
+        self.manager.gitlab.http_post(path)
 
 
 class ProjectHookManager(CRUDMixin, RESTManager):
@@ -77,6 +92,20 @@ class ProjectHookManager(CRUDMixin, RESTManager):
 
 class GroupHook(SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "url"
+
+    @exc.on_http_error(exc.GitlabHookTestError)
+    def test(self, trigger: str) -> None:
+        """
+        Test a Group Hook
+
+        Args:
+            trigger: Type of trigger event to test
+
+        Raises:
+            GitlabHookTestError: If the hook test attempt failed
+        """
+        path = f"{self.manager.path}/{self.encoded_id}/test/{trigger}"
+        self.manager.gitlab.http_post(path)
 
 
 class GroupHookManager(CRUDMixin, RESTManager):

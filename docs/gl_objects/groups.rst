@@ -89,7 +89,7 @@ Remove a group::
     group.delete()
 
 Restore a Group marked for deletion (Premium only):::
-    
+
     group.restore()
 
 
@@ -368,9 +368,9 @@ SAML group links
 
 Add a SAML group link to an existing GitLab group::
 
-    saml_link = group.saml_group_links.create({ 
-        "saml_group_name": "<your_saml_group_name>", 
-        "access_level": <chosen_access_level> 
+    saml_link = group.saml_group_links.create({
+        "saml_group_name": "<your_saml_group_name>",
+        "access_level": <chosen_access_level>
     })
 
 List a group's SAML group links::
@@ -418,6 +418,10 @@ Update a group hook::
 
     hook.push_events = 0
     hook.save()
+
+Test a group hook::
+
+    hook.test("push_events")
 
 Delete a group hook::
 
