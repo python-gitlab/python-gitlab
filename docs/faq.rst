@@ -58,7 +58,7 @@ To retrieve an object with all attributes, use a ``get()`` call.
 
 Example with projects::
 
-    for projects in gl.projects.list():
+    for project in gl.projects.list():
         # Retrieve project object with all attributes
         project = gl.projects.get(project.id)
 
