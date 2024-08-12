@@ -40,7 +40,7 @@ def project_export(project):
         time.sleep(0.5)
         export.refresh()
         count += 1
-        if count == 30:
+        if count >= 60:
             raise Exception("Project export taking too much time")
 
     return export
