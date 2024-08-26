@@ -10,4 +10,4 @@ pytest==8.3.2
 responses==0.25.3
 types-PyYAML==6.0.12.20240808
 types-requests==2.32.0.20240712
-types-setuptools==71.1.0.20240818
+types-setuptools==73.0.0.20240822
