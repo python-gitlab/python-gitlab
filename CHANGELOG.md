@@ -1,5 +1,65 @@
 # CHANGELOG
 
+## v4.10.0 (2024-08-28)
+
+### Chore
+
+* chore(release): track tags for renovate ([`d600444`](https://github.com/python-gitlab/python-gitlab/commit/d6004449ad5aaaf2132318a78523818996ec3e21))
+
+* chore(deps): update python-semantic-release/upload-to-gh-release digest to 17c75b7 ([`12caaa4`](https://github.com/python-gitlab/python-gitlab/commit/12caaa496740cb15e6220511751b7a20e2d29d07))
+
+* chore(deps): update dependency types-setuptools to v73 ([`d55c045`](https://github.com/python-gitlab/python-gitlab/commit/d55c04502bee0fb42e2ef359cde3bc1b4b510b1a))
+
+* chore(deps): update all non-major dependencies ([`2ade0d9`](https://github.com/python-gitlab/python-gitlab/commit/2ade0d9f4922226143e2e3835a7449fde9c49d66))
+
+* chore(deps): update gitlab/gitlab-ee docker tag to v17.3.1-ee.0 ([`3fdd130`](https://github.com/python-gitlab/python-gitlab/commit/3fdd130a8e87137e5a048d5cb78e43aa476c8f34))
+
+* chore(deps): update all non-major dependencies ([`0578bf0`](https://github.com/python-gitlab/python-gitlab/commit/0578bf07e7903037ffef6558e914766b6cf6f545))
+
+* chore(deps): update gitlab/gitlab-ee docker tag to v17.3.0-ee.0 ([`e5a46f5`](https://github.com/python-gitlab/python-gitlab/commit/e5a46f57de166f94e01f5230eb6ad91f319791e4))
+
+* chore(deps): update dependency myst-parser to v4 ([`930d4a2`](https://github.com/python-gitlab/python-gitlab/commit/930d4a21b8afed833b4b2e6879606bbadaee19a1))
+
+* chore(deps): update dependency sphinx to v8 ([`cb65ffb`](https://github.com/python-gitlab/python-gitlab/commit/cb65ffb6957bf039f35926d01f15db559e663915))
+
+* chore(deps): update gitlab/gitlab-ee docker tag to v17.2.2-ee.0 ([`b2275f7`](https://github.com/python-gitlab/python-gitlab/commit/b2275f767dd620c6cb2c27b0470f4e8151c76550))
+
+* chore(deps): update all non-major dependencies ([`31786a6`](https://github.com/python-gitlab/python-gitlab/commit/31786a60da4b9a10dec0eab3a0b078aa1e94d809))
+
+### Documentation
+
+* docs(faq): correct the attribute fetching example
+
+There is an example about object attributes in the FAQ. It shows how to
+properly fetch all attributes of all projects, by using list() followed
+by a get(id) call.
+
+Unfortunately this example used a wrong variable name, which caused it
+not to work and which could have made it slightly confusing to readers.
+This commit fixes that, by changing the variable name.
+
+Now the example uses one variable for two Python objects. As they
+correspond to the same GitLab object and the intended behavior is to
+obtain that very object, just with all attributes, this is fine and is
+probably what readers will find most useful in this context. ([`43a16ac`](https://github.com/python-gitlab/python-gitlab/commit/43a16ac17ce78cf18e0fc10fa8229f052eed3946))
+
+### Feature
+
+* feat(api): project/group hook test triggering
+
+Add the ability to trigger tests of project and group hooks.
+
+Fixes #2924 ([`9353f54`](https://github.com/python-gitlab/python-gitlab/commit/9353f5406d6762d09065744bfca360ccff36defe))
+
+### Test
+
+* test(cli): allow up to 30 seconds for a project export
+
+Before we allowed a maximum of around 15 seconds for the
+project-export. Often times the CI was failing with this value.
+
+Change it to a maximum of around 30 seconds. ([`bdc155b`](https://github.com/python-gitlab/python-gitlab/commit/bdc155b716ef63ef1398ee1e6f5ca67da1109c13))
+
 ## v4.9.0 (2024-08-06)
 
 ### Chore
