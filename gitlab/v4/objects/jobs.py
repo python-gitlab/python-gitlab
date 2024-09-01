@@ -4,7 +4,6 @@ import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab import utils
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import RefreshMixin, RetrieveMixin
 from gitlab.types import ArrayAttribute
@@ -152,7 +151,7 @@ class ProjectJob(RefreshMixin, RESTObject):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(
+        return self.manager.gitlab._backend.response_content(
             result, streamed, action, chunk_size, iterator=iterator
         )
 
@@ -195,7 +194,7 @@ class ProjectJob(RefreshMixin, RESTObject):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(
+        return self.manager.gitlab._backend.response_content(
             result, streamed, action, chunk_size, iterator=iterator
         )
 
@@ -236,7 +235,7 @@ class ProjectJob(RefreshMixin, RESTObject):
         )
         if TYPE_CHECKING:
             assert isinstance(result, requests.Response)
-        return utils.response_content(
+        return self.manager.gitlab._backend.response_content(
             result, streamed, action, chunk_size, iterator=iterator
         )
 
