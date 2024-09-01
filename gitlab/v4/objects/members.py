@@ -37,8 +37,9 @@ class GroupMemberManager(CRUDMixin, RESTManager):
     _obj_cls = GroupMember
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(
-        required=("access_level", "user_id"),
+        required=("access_level",),
         optional=("expires_at", "tasks_to_be_done"),
+        exclusive=("username", "user_id"),
     )
     _update_attrs = RequiredOptional(
         required=("access_level",), optional=("expires_at",)
