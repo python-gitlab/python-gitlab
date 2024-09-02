@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.7
       - name: Set up Python
-        uses: actions/setup-python@v5.1.1
+        uses: actions/setup-python@v5.2.0
         with:
           python-version: "3.12"
       - name: Install dependencies
@@ -34,7 +34,7 @@ jobs:
           TOXENV: docs
         run: tox
       - name: Archive generated docs
-        uses: actions/upload-artifact@v4.3.6
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: html-docs
           path: build/sphinx/html/
@@ -44,7 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.7
       - name: Set up Python
-        uses: actions/setup-python@v5.1.1
+        uses: actions/setup-python@v5.2.0
         with:
           python-version: "3.12"
       - name: Install dependencies
