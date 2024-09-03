@@ -43,6 +43,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 autocompletion = ["argcomplete>=1.10.0,<3"]
 yaml = ["PyYaml>=6.0.1"]
+graphql = ["gql[httpx]>=3.5.0,<4"]
 
 [project.scripts]
 gitlab = "gitlab.cli:main"

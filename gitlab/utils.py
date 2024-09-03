@@ -9,12 +9,24 @@ from typing import Any, Callable, Dict, Iterator, Literal, Optional, Tuple, Type
 
 import requests
 
-from gitlab import types
+from gitlab import const, types
 
 
 class _StdoutStream:
     def __call__(self, chunk: Any) -> None:
         print(chunk)
+
+
+def get_base_url(url: Optional[str] = None) -> str:
+    """Return the base URL with the trailing slash stripped.
+    If the URL is a Falsy value, return the default URL.
+    Returns:
+        The base URL
+    """
+    if not url:
+        return const.DEFAULT_URL
+
+    return url.rstrip("/")
 
 
 def get_content_type(content_type: Optional[str]) -> str:

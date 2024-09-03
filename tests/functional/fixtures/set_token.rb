@@ -3,7 +3,7 @@
 user = User.find_by_username('root')
 
 token = user.personal_access_tokens.first_or_create(scopes: ['api', 'sudo'], name: 'default', expires_at: 365.days.from_now);
-token.set_token('python-gitlab-token');
+token.set_token('glpat-python-gitlab-token_');
 token.save!
 
 puts token.token

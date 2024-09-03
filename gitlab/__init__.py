@@ -27,7 +27,7 @@ from gitlab._version import (  # noqa: F401
     __title__,
     __version__,
 )
-from gitlab.client import Gitlab, GitlabList  # noqa: F401
+from gitlab.client import Gitlab, GitlabList, GraphQL  # noqa: F401
 from gitlab.exceptions import *  # noqa: F401,F403
 
 warnings.filterwarnings("default", category=DeprecationWarning, module="^gitlab")
@@ -42,5 +42,6 @@ __all__ = [
     "__version__",
     "Gitlab",
     "GitlabList",
+    "GraphQL",
 ]
 __all__.extend(gitlab.exceptions.__all__)
