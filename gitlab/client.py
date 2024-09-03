@@ -25,6 +25,18 @@ import gitlab.const
 import gitlab.exceptions
 from gitlab import _backends, utils
 
+try:
+    import gql
+    import graphql
+    import httpx
+
+    from ._backends.graphql import GitlabTransport
+
+    _GQL_INSTALLED = True
+except ImportError:  # pragma: no cover
+    _GQL_INSTALLED = False
+
+
 REDIRECT_MSG = (
     "python-gitlab detected a {status_code} ({reason!r}) redirection. You must update "
     "your GitLab URL to the correct URL to avoid issues. The redirection was from: "
@@ -89,7 +101,7 @@ class Gitlab:
         self._api_version = str(api_version)
         self._server_version: Optional[str] = None
         self._server_revision: Optional[str] = None
-        self._base_url = self._get_base_url(url)
+        self._base_url = utils.get_base_url(url)
         self._url = f"{self._base_url}/api/v{api_version}"
         #: Timeout to use for requests to gitlab server
         self.timeout = timeout
@@ -556,18 +568,6 @@ class Gitlab:
             "timeout": self.timeout,
             "verify": self.ssl_verify,
         }
-
-    @staticmethod
-    def _get_base_url(url: Optional[str] = None) -> str:
-        """Return the base URL with the trailing slash stripped.
-        If the URL is a Falsy value, return the default URL.
-        Returns:
-            The base URL
-        """
-        if not url:
-            return gitlab.const.DEFAULT_URL
-
-        return url.rstrip("/")
 
     def _build_url(self, path: str) -> str:
         """Returns the full url from path.
@@ -1296,3 +1296,62 @@ class GitlabList:
             return self.next()
 
         raise StopIteration
+
+
+class GraphQL:
+    def __init__(
+        self,
+        url: Optional[str] = None,
+        *,
+        token: Optional[str] = None,
+        ssl_verify: Union[bool, str] = True,
+        client: Optional[httpx.Client] = None,
+        timeout: Optional[float] = None,
+        user_agent: str = gitlab.const.USER_AGENT,
+        fetch_schema_from_transport: bool = False,
+    ) -> None:
+        if not _GQL_INSTALLED:
+            raise ImportError(
+                "The GraphQL client could not be initialized because "
+                "the gql dependencies are not installed. "
+                "Install them with 'pip install python-gitlab[graphql]'"
+            )
+        self._base_url = utils.get_base_url(url)
+        self._timeout = timeout
+        self._token = token
+        self._url = f"{self._base_url}/api/graphql"
+        self._user_agent = user_agent
+        self._ssl_verify = ssl_verify
+
+        opts = self._get_client_opts()
+        self._http_client = client or httpx.Client(**opts)
+        self._transport = GitlabTransport(self._url, client=self._http_client)
+        self._client = gql.Client(
+            transport=self._transport,
+            fetch_schema_from_transport=fetch_schema_from_transport,
+        )
+        self._gql = gql.gql
+
+    def __enter__(self) -> "GraphQL":
+        return self
+
+    def __exit__(self, *args: Any) -> None:
+        self._http_client.close()
+
+    def _get_client_opts(self) -> Dict[str, Any]:
+        headers = {"User-Agent": self._user_agent}
+
+        if self._token:
+            headers["Authorization"] = f"Bearer {self._token}"
+
+        return {
+            "headers": headers,
+            "timeout": self._timeout,
+            "verify": self._ssl_verify,
+        }
+
+    def execute(
+        self, request: Union[str, graphql.Source], *args: Any, **kwargs: Any
+    ) -> Any:
+        parsed_document = self._gql(request)
+        return self._client.execute(parsed_document, *args, **kwargs)

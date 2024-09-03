@@ -1,8 +1,8 @@
-############################
-Getting started with the API
-############################
+##################
+Using the REST API
+##################
 
-python-gitlab only supports GitLab API v4.
+python-gitlab currently only supports v4 of the GitLab REST API.
 
 ``gitlab.Gitlab`` class
 =======================
