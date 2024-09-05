@@ -1,14 +1,14 @@
-from enum import Enum, IntEnum
+import enum
 
 from gitlab._version import __title__, __version__
 
 
-class GitlabEnum(str, Enum):
+class GitlabEnum(str, enum.Enum):
     """An enum mixed in with str to make it JSON-serializable."""
 
 
 # https://gitlab.com/gitlab-org/gitlab/-/blob/e97357824bedf007e75f8782259fe07435b64fbb/lib/gitlab/access.rb#L12-18
-class AccessLevel(IntEnum):
+class AccessLevel(enum.IntEnum):
     NO_ACCESS: int = 0
     MINIMAL_ACCESS: int = 5
     GUEST: int = 10
