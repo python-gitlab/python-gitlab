@@ -1,5 +1,5 @@
 -r requirements.txt
-build==1.2.1
+build==1.2.2
 coverage==7.6.1
 pytest-console-scripts==1.4.1
 pytest-cov==5.0.0
