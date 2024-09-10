@@ -2,7 +2,6 @@
 
 import os
 import re
-import time
 from typing import (
     Any,
     BinaryIO,
@@ -718,7 +717,12 @@ class Gitlab:
         send_data = self._backend.prepare_send_data(files, post_data, raw)
         opts["headers"]["Content-type"] = send_data.content_type
 
-        cur_retries = 0
+        retry = utils.Retry(
+            max_retries=max_retries,
+            obey_rate_limit=obey_rate_limit,
+            retry_transient_errors=retry_transient_errors,
+        )
+
         while True:
             try:
                 result = self._backend.http_request(
@@ -733,14 +737,8 @@ class Gitlab:
                     **opts,
                 )
             except (requests.ConnectionError, requests.exceptions.ChunkedEncodingError):
-                if retry_transient_errors and (
-                    max_retries == -1 or cur_retries < max_retries
-                ):
-                    wait_time = 2**cur_retries * 0.1
-                    cur_retries += 1
-                    time.sleep(wait_time)
+                if retry.handle_retry():
                     continue
-
                 raise
 
             self._check_redirects(result.response)
@@ -748,31 +746,8 @@ class Gitlab:
             if 200 <= result.status_code < 300:
                 return result.response
 
-            def should_retry() -> bool:
-                if result.status_code == 429 and obey_rate_limit:
-                    return True
-
-                if not retry_transient_errors:
-                    return False
-                if result.status_code in gitlab.const.RETRYABLE_TRANSIENT_ERROR_CODES:
-                    return True
-                if result.status_code == 409 and "Resource lock" in result.reason:
-                    return True
-
-                return False
-
-            if should_retry():
-                # Response headers documentation:
-                # https://docs.gitlab.com/ee/user/admin_area/settings/user_and_ip_rate_limits.html#response-headers
-                if max_retries == -1 or cur_retries < max_retries:
-                    wait_time = 2**cur_retries * 0.1
-                    if "Retry-After" in result.headers:
-                        wait_time = int(result.headers["Retry-After"])
-                    elif "RateLimit-Reset" in result.headers:
-                        wait_time = int(result.headers["RateLimit-Reset"]) - time.time()
-                    cur_retries += 1
-                    time.sleep(wait_time)
-                    continue
+            if retry.handle_retry_on_status(result):
+                continue
 
             error_message = result.content
             try:
