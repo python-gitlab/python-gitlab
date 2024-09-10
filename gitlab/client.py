@@ -26,6 +26,7 @@ from gitlab import _backends, utils
 
 try:
     import gql
+    import gql.transport.exceptions
     import graphql
     import httpx
 
@@ -746,7 +747,9 @@ class Gitlab:
             if 200 <= result.status_code < 300:
                 return result.response
 
-            if retry.handle_retry_on_status(result):
+            if retry.handle_retry_on_status(
+                result.status_code, result.headers, result.reason
+            ):
                 continue
 
             error_message = result.content
@@ -1329,4 +1332,28 @@ class GraphQL:
         self, request: Union[str, graphql.Source], *args: Any, **kwargs: Any
     ) -> Any:
         parsed_document = self._gql(request)
-        return self._client.execute(parsed_document, *args, **kwargs)
+        retry = utils.Retry(
+            max_retries=3, obey_rate_limit=True, retry_transient_errors=False
+        )
+
+        while True:
+            try:
+                result = self._client.execute(parsed_document, *args, **kwargs)
+            except gql.transport.exceptions.TransportServerError as e:
+                if retry.handle_retry_on_status(
+                    status_code=e.code, headers=self._transport.response_headers
+                ):
+                    continue
+
+                if e.code == 401:
+                    raise gitlab.exceptions.GitlabAuthenticationError(
+                        response_code=e.code,
+                        error_message=str(e),
+                    )
+
+                raise gitlab.exceptions.GitlabHttpError(
+                    response_code=e.code,
+                    error_message=str(e),
+                )
+
+            return result

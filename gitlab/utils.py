@@ -6,12 +6,22 @@ import time
 import traceback
 import urllib.parse
 import warnings
-from typing import Any, Callable, Dict, Iterator, Literal, Optional, Tuple, Type, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterator,
+    Literal,
+    MutableMapping,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+)
 
 import requests
 
 from gitlab import const, types
-from gitlab._backends import requests_backend
 
 
 class _StdoutStream:
@@ -100,33 +110,40 @@ class Retry:
         self.retry_transient_errors = retry_transient_errors
 
     def _retryable_status_code(
-        self,
-        result: requests_backend.RequestsResponse,
+        self, status_code: Optional[int], reason: str = ""
     ) -> bool:
-        if result.status_code == 429 and self.obey_rate_limit:
+        if status_code == 429 and self.obey_rate_limit:
             return True
 
         if not self.retry_transient_errors:
             return False
-        if result.status_code in const.RETRYABLE_TRANSIENT_ERROR_CODES:
+        if status_code in const.RETRYABLE_TRANSIENT_ERROR_CODES:
             return True
-        if result.status_code == 409 and "Resource lock" in result.reason:
+        if status_code == 409 and "Resource lock" in reason:
             return True
 
         return False
 
-    def handle_retry_on_status(self, result: requests_backend.RequestsResponse) -> bool:
-        if not self._retryable_status_code(result):
+    def handle_retry_on_status(
+        self,
+        status_code: Optional[int],
+        headers: Optional[MutableMapping[str, str]] = None,
+        reason: str = "",
+    ) -> bool:
+        if not self._retryable_status_code(status_code, reason):
             return False
+
+        if headers is None:
+            headers = {}
 
         # Response headers documentation:
         # https://docs.gitlab.com/ee/user/admin_area/settings/user_and_ip_rate_limits.html#response-headers
         if self.max_retries == -1 or self.cur_retries < self.max_retries:
             wait_time = 2**self.cur_retries * 0.1
-            if "Retry-After" in result.headers:
-                wait_time = int(result.headers["Retry-After"])
-            elif "RateLimit-Reset" in result.headers:
-                wait_time = int(result.headers["RateLimit-Reset"]) - time.time()
+            if "Retry-After" in headers:
+                wait_time = int(headers["Retry-After"])
+            elif "RateLimit-Reset" in headers:
+                wait_time = int(headers["RateLimit-Reset"]) - time.time()
             self.cur_retries += 1
             time.sleep(wait_time)
             return True
