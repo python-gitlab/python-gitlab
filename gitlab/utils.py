@@ -2,6 +2,7 @@ import dataclasses
 import email.message
 import logging
 import pathlib
+import time
 import traceback
 import urllib.parse
 import warnings
@@ -10,6 +11,7 @@ from typing import Any, Callable, Dict, Iterator, Literal, Optional, Tuple, Type
 import requests
 
 from gitlab import const, types
+from gitlab._backends import requests_backend
 
 
 class _StdoutStream:
@@ -83,6 +85,64 @@ def response_content(
         if chunk:
             action(chunk)
     return None
+
+
+class Retry:
+    def __init__(
+        self,
+        max_retries: int,
+        obey_rate_limit: Optional[bool] = True,
+        retry_transient_errors: Optional[bool] = False,
+    ) -> None:
+        self.cur_retries = 0
+        self.max_retries = max_retries
+        self.obey_rate_limit = obey_rate_limit
+        self.retry_transient_errors = retry_transient_errors
+
+    def _retryable_status_code(
+        self,
+        result: requests_backend.RequestsResponse,
+    ) -> bool:
+        if result.status_code == 429 and self.obey_rate_limit:
+            return True
+
+        if not self.retry_transient_errors:
+            return False
+        if result.status_code in const.RETRYABLE_TRANSIENT_ERROR_CODES:
+            return True
+        if result.status_code == 409 and "Resource lock" in result.reason:
+            return True
+
+        return False
+
+    def handle_retry_on_status(self, result: requests_backend.RequestsResponse) -> bool:
+        if not self._retryable_status_code(result):
+            return False
+
+        # Response headers documentation:
+        # https://docs.gitlab.com/ee/user/admin_area/settings/user_and_ip_rate_limits.html#response-headers
+        if self.max_retries == -1 or self.cur_retries < self.max_retries:
+            wait_time = 2**self.cur_retries * 0.1
+            if "Retry-After" in result.headers:
+                wait_time = int(result.headers["Retry-After"])
+            elif "RateLimit-Reset" in result.headers:
+                wait_time = int(result.headers["RateLimit-Reset"]) - time.time()
+            self.cur_retries += 1
+            time.sleep(wait_time)
+            return True
+
+        return False
+
+    def handle_retry(self) -> bool:
+        if self.retry_transient_errors and (
+            self.max_retries == -1 or self.cur_retries < self.max_retries
+        ):
+            wait_time = 2**self.cur_retries * 0.1
+            self.cur_retries += 1
+            time.sleep(wait_time)
+            return True
+
+        return False
 
 
 def _transform_types(
