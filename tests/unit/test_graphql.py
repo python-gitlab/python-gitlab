@@ -35,18 +35,18 @@ def test_graphql_retries_on_429_response(
     gl_gql.execute("query {currentUser {id}}")
 
 
-def test_graphql_raises_when_max_retries_exceeded(
-    gl_gql: gitlab.GraphQL, respx_mock: respx.MockRouter
-):
+def test_graphql_raises_when_max_retries_exceeded(respx_mock: respx.MockRouter):
     url = "https://gitlab.example.com/api/graphql"
     responses = [
         httpx.Response(502),
         httpx.Response(502),
         httpx.Response(502),
-        httpx.Response(502),
-        httpx.Response(502),
     ]
     respx_mock.post(url).mock(side_effect=responses)
+
+    gl_gql = gitlab.GraphQL(
+        "https://gitlab.example.com", max_retries=1, retry_transient_errors=True
+    )
     with pytest.raises(gitlab.GitlabHttpError):
         gl_gql.execute("query {currentUser {id}}")
 

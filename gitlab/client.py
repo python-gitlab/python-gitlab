@@ -1287,6 +1287,9 @@ class GraphQL:
         timeout: Optional[float] = None,
         user_agent: str = gitlab.const.USER_AGENT,
         fetch_schema_from_transport: bool = False,
+        max_retries: int = 10,
+        obey_rate_limit: bool = True,
+        retry_transient_errors: bool = False,
     ) -> None:
         if not _GQL_INSTALLED:
             raise ImportError(
@@ -1300,6 +1303,9 @@ class GraphQL:
         self._url = f"{self._base_url}/api/graphql"
         self._user_agent = user_agent
         self._ssl_verify = ssl_verify
+        self._max_retries = max_retries
+        self._obey_rate_limit = obey_rate_limit
+        self._retry_transient_errors = retry_transient_errors
 
         opts = self._get_client_opts()
         self._http_client = client or httpx.Client(**opts)
@@ -1333,7 +1339,9 @@ class GraphQL:
     ) -> Any:
         parsed_document = self._gql(request)
         retry = utils.Retry(
-            max_retries=3, obey_rate_limit=True, retry_transient_errors=False
+            max_retries=self._max_retries,
+            obey_rate_limit=self._obey_rate_limit,
+            retry_transient_errors=self._retry_transient_errors,
         )
 
         while True:
