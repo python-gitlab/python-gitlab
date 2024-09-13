@@ -51,7 +51,7 @@ Delete a pipeline::
 
 Get latest pipeline::
 
-    projet.pipelines.latest(ref="main")
+    project.pipelines.latest(ref="main")
 
 
 Triggers
