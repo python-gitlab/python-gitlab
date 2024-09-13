@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v4.11.1 (2024-09-13)
+
+### Fix
+
+* fix(client): ensure type evaluations are postponed ([`b41b2de`](https://github.com/python-gitlab/python-gitlab/commit/b41b2de8884c2dc8c8be467f480c7161db6a1c87))
+
 ## v4.11.0 (2024-09-13)
 
 ### Chore
