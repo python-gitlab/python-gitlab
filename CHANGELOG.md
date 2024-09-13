@@ -1,5 +1,37 @@
 # CHANGELOG
 
+## v4.11.0 (2024-09-13)
+
+### Chore
+
+* chore(pre-commit): add deps ([`fe5e608`](https://github.com/python-gitlab/python-gitlab/commit/fe5e608bc6cc04863bd4d1d9dbe101fffd88e954))
+
+* chore(deps): update all non-major dependencies ([`fac8bf9`](https://github.com/python-gitlab/python-gitlab/commit/fac8bf9f3e2a0218f96337536d08dec9991bfc1a))
+
+* chore(deps): update dependency types-setuptools to v74 ([`bdfaddb`](https://github.com/python-gitlab/python-gitlab/commit/bdfaddb89ae7ba351bd3a21c6cecc528772db4de))
+
+* chore(deps): update all non-major dependencies ([`88c7529`](https://github.com/python-gitlab/python-gitlab/commit/88c75297377dd1f1106b5bc673946cebd563e0a1))
+
+### Documentation
+
+* docs(objects): fix typo in get latest pipeline ([`b9f5c12`](https://github.com/python-gitlab/python-gitlab/commit/b9f5c12d3ba6ca4e4321a81e7610d03fb4440c02))
+
+### Feature
+
+* feat(client): make retries configurable in GraphQL ([`145870e`](https://github.com/python-gitlab/python-gitlab/commit/145870e628ed3b648a0a29fc551a6f38469b684a))
+
+* feat(client): add retry handling to GraphQL client ([`8898c38`](https://github.com/python-gitlab/python-gitlab/commit/8898c38b97ed36d9ff8f2f20dee27ef1448b9f83))
+
+* feat(api): add exclusive GET attrs for /projects/:id/members ([`e637808`](https://github.com/python-gitlab/python-gitlab/commit/e637808bcb74498438109d7ed352071ebaa192d5))
+
+* feat: add a minimal GraphQL client ([`d6b1b0a`](https://github.com/python-gitlab/python-gitlab/commit/d6b1b0a962bbf0f4e0612067fc075dbdcbb772f8))
+
+* feat(api): add exclusive GET attrs for /groups/:id/members ([`d44ddd2`](https://github.com/python-gitlab/python-gitlab/commit/d44ddd2b00d78bb87ff6a4776e64e05e0c1524e1))
+
+### Refactor
+
+* refactor(client): move retry logic into utility ([`3235c48`](https://github.com/python-gitlab/python-gitlab/commit/3235c48328c2866f7d46597ba3c0c2488e6c375c))
+
 ## v4.10.0 (2024-08-28)
 
 ### Chore
