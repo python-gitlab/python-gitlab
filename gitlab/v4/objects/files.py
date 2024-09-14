@@ -2,11 +2,11 @@ import base64
 from typing import (
     Any,
     Callable,
-    cast,
     Dict,
     Iterator,
     List,
     Optional,
+    Tuple,
     TYPE_CHECKING,
     Union,
 )
@@ -20,7 +20,6 @@ from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
-    GetMixin,
     ObjectDeleteMixin,
     SaveMixin,
     UpdateMixin,
@@ -96,10 +95,11 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.manager.delete(file_path, branch, commit_message, **kwargs)
 
 
-class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
+class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
     _path = "/projects/{project_id}/repository/files"
     _obj_cls = ProjectFile
     _from_parent_attrs = {"project_id": "id"}
+    _optional_get_attrs: Tuple[str, ...] = ()
     _create_attrs = RequiredOptional(
         required=("file_path", "branch", "content", "commit_message"),
         optional=("encoding", "author_email", "author_name"),
@@ -112,11 +112,7 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
     @cli.register_custom_action(
         cls_names="ProjectFileManager", required=("file_path", "ref")
     )
-    # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
-    # type error
-    def get(  # type: ignore
-        self, file_path: str, ref: str, **kwargs: Any
-    ) -> ProjectFile:
+    def get(self, file_path: str, ref: str, **kwargs: Any) -> ProjectFile:
         """Retrieve a single file.
 
         Args:
@@ -131,7 +127,37 @@ class ProjectFileManager(GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTMa
         Returns:
             The generated RESTObject
         """
-        return cast(ProjectFile, GetMixin.get(self, file_path, ref=ref, **kwargs))
+        if TYPE_CHECKING:
+            assert file_path is not None
+        file_path = utils.EncodedId(file_path)
+        path = f"{self.path}/{file_path}"
+        server_data = self.gitlab.http_get(path, ref=ref, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
+        return self._obj_cls(self, server_data)
+
+    def head(
+        self, file_path: str, ref: str, **kwargs: Any
+    ) -> "requests.structures.CaseInsensitiveDict[Any]":
+        """Retrieve just metadata for a single file.
+
+        Args:
+            file_path: Path of the file to retrieve
+            ref: Name of the branch, tag or commit
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabGetError: If the file could not be retrieved
+
+        Returns:
+            The response headers as a dictionary
+        """
+        if TYPE_CHECKING:
+            assert file_path is not None
+        file_path = utils.EncodedId(file_path)
+        path = f"{self.path}/{file_path}"
+        return self.gitlab.http_head(path, ref=ref, **kwargs)
 
     @cli.register_custom_action(
         cls_names="ProjectFileManager",
