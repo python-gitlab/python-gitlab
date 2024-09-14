@@ -151,7 +151,7 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
             GitlabGetError: If the file could not be retrieved
 
         Returns:
-            The generated RESTObject
+            The response headers as a dictionary
         """
         if TYPE_CHECKING:
             assert file_path is not None
