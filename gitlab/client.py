@@ -1174,6 +1174,8 @@ class GitlabList:
         # Preserve kwargs for subsequent queries
         self._kwargs = kwargs.copy()
 
+        self._prev_page_objects = []
+
         self._query(url, query_data, **self._kwargs)
         self._get_next = get_next
 
@@ -1199,12 +1201,26 @@ class GitlabList:
         self._total: Optional[str] = result.headers.get("X-Total")
 
         try:
-            self._data: List[Dict[str, Any]] = result.json()
+            data: List[Dict[str, Any]] = result.json()
         except Exception as e:
             raise gitlab.exceptions.GitlabParsingError(
                 error_message="Failed to parse the server message"
             ) from e
 
+        self._data = []
+        for item in data:
+            if item in self._prev_page_objects:
+                utils.warn(
+                    message=(
+                        f"During pagination duplicate object with id "
+                        f"{item['id']} returned from Gitlab and filtered"
+                    ),
+                    category=UserWarning,
+                )
+                continue
+            self._data.append(item)
+
+        self._prev_page_objects = list(self._data)
         self._current = 0
 
     @property
