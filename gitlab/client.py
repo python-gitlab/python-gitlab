@@ -1174,6 +1174,8 @@ class GitlabList:
         # Preserve kwargs for subsequent queries
         self._kwargs = kwargs.copy()
 
+        self._retrieved_object_ids: set[int] = set()
+
         self._query(url, query_data, **self._kwargs)
         self._get_next = get_next
 
@@ -1204,6 +1206,18 @@ class GitlabList:
             raise gitlab.exceptions.GitlabParsingError(
                 error_message="Failed to parse the server message"
             ) from e
+
+        duplicate_ids = set(o["id"] for o in self._data) & self._retrieved_object_ids
+        if duplicate_ids:
+            utils.warn(
+                message=(
+                    f"During pagination duplicate object(s) with id(s) "
+                    f"{duplicate_ids} returned from Gitlab and filtered"
+                ),
+                category=UserWarning,
+            )
+        self._data = [o for o in self._data if o["id"] not in duplicate_ids]
+        self._retrieved_object_ids.update(o["id"] for o in self._data)
 
         self._current = 0
 
