@@ -26,7 +26,7 @@ class ProjectBranchManager(NoUpdateMixin, RESTManager):
     _path = "/projects/{project_id}/repository/branches"
     _obj_cls = ProjectBranch
     _from_parent_attrs = {"project_id": "id"}
-    _create_attrs = RequiredOptional(required=("branch", "ref"))
+    _create_attrs = RequiredOptional(required=("branch", "ref"), optional=("default",))
 
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any
