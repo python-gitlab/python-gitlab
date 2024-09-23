@@ -178,7 +178,7 @@ def resp_list_merge_requests_related_issues():
         )
         rsps.add(
             method=responses.GET,
-            url="http://localhost/api/v4/projects/3/merge_requests/1/related_issues",
+            url="http://localhost/api/v4/projects/1/merge_requests/1/related_issues",
             json=related_issues,
             content_type="application/json",
             status=200,
