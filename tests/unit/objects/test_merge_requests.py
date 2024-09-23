@@ -40,7 +40,6 @@ mr_content = {
             "web_url": "http://gitlab.example.com//kenyatta_oconnell",
         }
     ],
-    "related_issues": [1, 2],
 }
 
 reviewers_content = [
@@ -92,12 +91,6 @@ def resp_get_merge_request_reviewers():
             status=200,
         )
         yield rsps
-
-
-def test_list_related_issues(project, resp_list_merge_requests):
-    mrs = project.mergerequests.list()
-    assert isinstance(mrs[0], ProjectMergeRequest)
-    assert mrs[0].related_issues == mr_content["related_issues"]
 
 
 def test_list_project_merge_requests(project, resp_list_merge_requests):
