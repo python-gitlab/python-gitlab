@@ -171,9 +171,7 @@ def resp_list_merge_requests_related_issues():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.GET,
-            url=re.compile(
-                r"http://localhost/api/v4/projects/1/(deployments/1/)?merge_requests"
-            ),
+            url="http://localhost/api/v4/projects/1/merge_requests/1",
             json=[mr_content],
             content_type="application/json",
             status=200,
@@ -214,8 +212,8 @@ def test_get_merge_request_reviewers(project, resp_get_merge_request_reviewers):
 
 def test_list_related_issues(project, resp_list_merge_requests_related_issues):
     mr = project.mergerequests.get(1)
-    this_mr_related_issue = mr.related_issues.list()
+    this_mrs_related_issues = mr.related_issues.list()
     assert isinstance(mr, ProjectMergeRequest)
-    assert isinstance(this_mr_related_issue, list)
-    assert isinstance(this_mr_related_issue[0], ProjectIssue)
-    assert this_mr_related_issue[0]["title"] == related_issues[0]["title"]
+    assert isinstance(this_mrs_related_issues, list)
+    assert isinstance(this_mrs_related_issues[0], ProjectIssue)
+    assert this_mr_related_issue[0].title == related_issues[0]["title"]
