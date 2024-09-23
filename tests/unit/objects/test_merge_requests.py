@@ -172,13 +172,13 @@ def resp_list_merge_requests_related_issues():
         rsps.add(
             method=responses.GET,
             url="http://localhost/api/v4/projects/1/merge_requests/1",
-            json=[mr_content],
+            json=mr_content,
             content_type="application/json",
             status=200,
         )
         rsps.add(
             method=responses.GET,
-            url="http://localhost/api/v4/projects/1/merge_requests/1/related_issues",
+            url="http://localhost/api/v4/projects/3/merge_requests/1/related_issues",
             json=related_issues,
             content_type="application/json",
             status=200,
@@ -211,9 +211,9 @@ def test_get_merge_request_reviewers(project, resp_get_merge_request_reviewers):
 
 
 def test_list_related_issues(project, resp_list_merge_requests_related_issues):
-    mrs = project.mergerequests.list()
-    this_mr_related_issues = mrs[0].related_issues.list()
-    assert isinstance(mrs[0], ProjectMergeRequest)
+    mr = project.mergerequests.get(1)
+    this_mr_related_issues = mr.related_issues.list()
+    assert isinstance(mr, ProjectMergeRequest)
     assert isinstance(this_mr_related_issues, list)
     assert isinstance(this_mr_related_issues[0], ProjectIssue)
     assert this_mr_related_issues[0].title == related_issues[0]["title"]
