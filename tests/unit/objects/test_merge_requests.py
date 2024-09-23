@@ -9,13 +9,13 @@ import re
 import pytest
 import responses
 
+from gitlab.base import RESTObjectList
 from gitlab.v4.objects import (
     ProjectDeploymentMergeRequest,
+    ProjectIssue,
     ProjectMergeRequest,
     ProjectMergeRequestReviewerDetail,
-    ProjectIssue,
 )
-from gitlab.base import RESTObjectList
 
 mr_content = {
     "id": 1,
@@ -214,7 +214,8 @@ def test_get_merge_request_reviewers(project, resp_get_merge_request_reviewers):
 def test_list_related_issues(project, resp_list_merge_requests_related_issues):
     mr = project.mergerequests.get(1)
     this_mr_related_issues = mr.related_issues()
+    the_issue = next(iter(this_mr_related_issues))
     assert isinstance(mr, ProjectMergeRequest)
     assert isinstance(this_mr_related_issues, RESTObjectList)
-    assert isinstance(this_mr_related_issues[0], ProjectIssue)
-    assert this_mr_related_issues[0].title == related_issues[0]["title"]
+    assert isinstance(the_issue, ProjectIssue)
+    assert the_issue.title == related_issues[0]["title"]
