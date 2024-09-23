@@ -144,6 +144,10 @@ List the changes of a MR::
 
     changes = mr.changes()
 
+List issues related to this merge request::
+
+    related_issues = mr.related_issues()
+
 List issues that will close on merge::
 
     mr.closes_issues()
