@@ -75,7 +75,7 @@ related_issues = [
             "username": "kenyatta_oconnell",
             "state": "active",
             "avatar_url": "https://www.gravatar.com/avatar/956c92487c6f6f7616b536927e22c9a0?s=80&d=identicon",
-            "web_url": "http://gitlab.example.com//kenyatta_oconnell",
+            "web_url": "http://gitlab.example.com/kenyatta_oconnell",
         },
         "labels": [
             "FakeCategory",
@@ -88,7 +88,7 @@ related_issues = [
                 "username": "kenyatta_oconnell",
                 "state": "active",
                 "avatar_url": "https://www.gravatar.com/avatar/956c92487c6f6f7616b536927e22c9a0?s=80&d=identicon",
-                "web_url": "http://gitlab.example.com//kenyatta_oconnell",
+                "web_url": "http://gitlab.example.com/kenyatta_oconnell",
             }
         ],
         "author": {
@@ -211,9 +211,9 @@ def test_get_merge_request_reviewers(project, resp_get_merge_request_reviewers):
 
 
 def test_list_related_issues(project, resp_list_merge_requests_related_issues):
-    mr = project.mergerequests.get(1)
-    this_mrs_related_issues = mr.related_issues.list()
-    assert isinstance(mr, ProjectMergeRequest)
-    assert isinstance(this_mrs_related_issues, list)
-    assert isinstance(this_mrs_related_issues[0], ProjectIssue)
-    assert this_mr_related_issue[0].title == related_issues[0]["title"]
+    mrs = project.mergerequests.list()
+    this_mr_related_issues = mrs[0].related_issues.list()
+    assert isinstance(mrs[0], ProjectMergeRequest)
+    assert isinstance(this_mr_related_issues, list)
+    assert isinstance(this_mr_related_issues[0], ProjectIssue)
+    assert this_mr_related_issues[0].title == related_issues[0]["title"]
