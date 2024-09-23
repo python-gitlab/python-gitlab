@@ -212,7 +212,7 @@ def test_get_merge_request_reviewers(project, resp_get_merge_request_reviewers):
 
 def test_list_related_issues(project, resp_list_merge_requests_related_issues):
     mr = project.mergerequests.get(1)
-    this_mr_related_issues = mr.related_issues.list()
+    this_mr_related_issues = mr.related_issues()
     assert isinstance(mr, ProjectMergeRequest)
     assert isinstance(this_mr_related_issues, list)
     assert isinstance(this_mr_related_issues[0], ProjectIssue)
