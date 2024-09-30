@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v4.12.1 (2024-09-30)
+
+### Chore
+
+* chore(deps): update all non-major dependencies (#3000)
+
+Co-authored-by: renovate[bot] &lt;29139614+renovate[bot]@users.noreply.github.com&gt; ([`d3da326`](https://github.com/python-gitlab/python-gitlab/commit/d3da326828274ed0c5f76b01a068519d360995c8))
+
+* chore(deps): update gitlab/gitlab-ee docker tag to v17.4.1-ee.0 ([`64eed5d`](https://github.com/python-gitlab/python-gitlab/commit/64eed5d388252135a42a252b9100ffc75d9fb0ea))
+
+### Fix
+
+* fix(ci): do not rely on GitLab.com runner arch variables (#3003) ([`c848d12`](https://github.com/python-gitlab/python-gitlab/commit/c848d12252763c32fc2b1c807e7d9887f391a761))
+
+* fix(files): correctly raise GitlabGetError in get method ([`190ec89`](https://github.com/python-gitlab/python-gitlab/commit/190ec89bea12d7eec719a6ea4d15706cfdacd159))
+
 ## v4.12.0 (2024-09-28)
 
 ### Chore
