@@ -11,8 +11,8 @@ build-images:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   script:
-    - executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE/$CI_RUNNER_EXECUTABLE_ARCH:$CI_COMMIT_TAG-alpine
-    - executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE/$CI_RUNNER_EXECUTABLE_ARCH:$CI_COMMIT_TAG-slim-bullseye --build-arg PYTHON_FLAVOR=slim-bullseye
+    - executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE/$OS_ARCH:$CI_COMMIT_TAG-alpine
+    - executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE/$OS_ARCH:$CI_COMMIT_TAG-slim-bullseye --build-arg PYTHON_FLAVOR=slim-bullseye
   rules:
     - if: $CI_COMMIT_TAG
   tags:
@@ -21,7 +21,9 @@ build-images:
     matrix:
       # See tags in https://docs.gitlab.com/ee/ci/runners/hosted_runners/linux.html
       - RUNNER_TAG: saas-linux-medium-amd64
+        OS_ARCH: linux/amd64
       - RUNNER_TAG: saas-linux-medium-arm64
+        OS_ARCH: linux/arm64
 
 deploy-images:
   stage: deploy
