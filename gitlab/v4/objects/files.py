@@ -112,6 +112,7 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
     @cli.register_custom_action(
         cls_names="ProjectFileManager", required=("file_path", "ref")
     )
+    @exc.on_http_error(exc.GitlabGetError)
     def get(self, file_path: str, ref: str, **kwargs: Any) -> ProjectFile:
         """Retrieve a single file.
 
