@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v4.12.2 (2024-10-01)
+
+### Fix
+
+* fix: raise GitlabHeadError in `project.files.head()` method (#3006)
+
+When an error occurs, raise `GitlabHeadError` in
+`project.files.head()` method.
+
+Closes: #3004 ([`9bf26df`](https://github.com/python-gitlab/python-gitlab/commit/9bf26df9d1535ca2881c43706a337a972b737fa0))
+
 ## v4.12.1 (2024-09-30)
 
 ### Chore
