@@ -137,6 +137,7 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
             assert isinstance(server_data, dict)
         return self._obj_cls(self, server_data)
 
+    @exc.on_http_error(exc.GitlabHeadError)
     def head(
         self, file_path: str, ref: str, **kwargs: Any
     ) -> "requests.structures.CaseInsensitiveDict[Any]":
