@@ -1,7 +1,17 @@
 from typing import Any, cast, Union
 
 from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
+from gitlab.mixins import (
+    CRUDMixin,
+    DeleteMixin,
+    GetWithoutIdMixin,
+    ListMixin,
+    ObjectDeleteMixin,
+    RefreshMixin,
+    SaveMixin,
+    UpdateMethod,
+    UpdateMixin,
+)
 from gitlab.types import RequiredOptional
 
 __all__ = [
@@ -9,6 +19,8 @@ __all__ = [
     "PagesDomainManager",
     "ProjectPagesDomain",
     "ProjectPagesDomainManager",
+    "ProjectPages",
+    "ProjectPagesManager",
 ]
 
 
@@ -38,3 +50,20 @@ class ProjectPagesDomainManager(CRUDMixin, RESTManager):
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any
     ) -> ProjectPagesDomain:
         return cast(ProjectPagesDomain, super().get(id=id, lazy=lazy, **kwargs))
+
+
+class ProjectPages(ObjectDeleteMixin, RefreshMixin, RESTObject):
+    _id_attr = None
+
+
+class ProjectPagesManager(DeleteMixin, UpdateMixin, GetWithoutIdMixin, RESTManager):
+    _path = "/projects/{project_id}/pages"
+    _obj_cls = ProjectPages
+    _from_parent_attrs = {"project_id": "id"}
+    _update_attrs = RequiredOptional(
+        optional=("pages_unique_domain_enabled", "pages_https_only")
+    )
+    _update_method: UpdateMethod = UpdateMethod.PATCH
+
+    def get(self, **kwargs: Any) -> ProjectPages:
+        return cast(ProjectPages, super().get(**kwargs))

@@ -78,7 +78,7 @@ from .notes import ProjectNoteManager  # noqa: F401
 from .notification_settings import ProjectNotificationSettingsManager  # noqa: F401
 from .package_protection_rules import ProjectPackageProtectionRuleManager
 from .packages import GenericPackageManager, ProjectPackageManager  # noqa: F401
-from .pages import ProjectPagesDomainManager  # noqa: F401
+from .pages import ProjectPagesDomainManager, ProjectPagesManager  # noqa: F401
 from .pipelines import (  # noqa: F401
     ProjectPipeline,
     ProjectPipelineManager,
@@ -216,6 +216,7 @@ class Project(
     notificationsettings: ProjectNotificationSettingsManager
     packages: ProjectPackageManager
     package_protection_rules: ProjectPackageProtectionRuleManager
+    pages: ProjectPagesManager
     pagesdomains: ProjectPagesDomainManager
     pipelines: ProjectPipelineManager
     pipelineschedules: ProjectPipelineScheduleManager
