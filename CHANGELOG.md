@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v4.13.0 (2024-10-08)
+
+### Chore
+
+* chore(deps): update dependency pre-commit to v4 (#3008)
+
+Co-authored-by: renovate[bot] &lt;29139614+renovate[bot]@users.noreply.github.com&gt; ([`5c27546`](https://github.com/python-gitlab/python-gitlab/commit/5c27546d35ced76763ea8b0071b4ec4c896893a1))
+
+* chore(deps): update all non-major dependencies ([`c3efb37`](https://github.com/python-gitlab/python-gitlab/commit/c3efb37c050268de3f1ef5e24748ccd9487e346d))
+
+### Feature
+
+* feat(api): add support for project Pages API ([`0ee0e02`](https://github.com/python-gitlab/python-gitlab/commit/0ee0e02f1d1415895f6ab0f6d23b39b50a36446a))
+
 ## v4.12.2 (2024-10-01)
 
 ### Fix
