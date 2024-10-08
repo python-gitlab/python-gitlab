@@ -1,4 +1,6 @@
-from typing import Any, cast, Dict, Optional, Union
+from __future__ import annotations
+
+from typing import Any, cast
 
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
@@ -36,9 +38,7 @@ class GroupClusterManager(CRUDMixin, RESTManager):
     )
 
     @exc.on_http_error(exc.GitlabStopError)
-    def create(
-        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> GroupCluster:
+    def create(self, data: dict[str, Any] | None = None, **kwargs: Any) -> GroupCluster:
         """Create a new object.
 
         Args:
@@ -58,9 +58,7 @@ class GroupClusterManager(CRUDMixin, RESTManager):
         path = f"{self.path}/user"
         return cast(GroupCluster, CreateMixin.create(self, data, path=path, **kwargs))
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupCluster:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> GroupCluster:
         return cast(GroupCluster, super().get(id=id, lazy=lazy, **kwargs))
 
 
@@ -88,7 +86,7 @@ class ProjectClusterManager(CRUDMixin, RESTManager):
 
     @exc.on_http_error(exc.GitlabStopError)
     def create(
-        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+        self, data: dict[str, Any] | None = None, **kwargs: Any
     ) -> ProjectCluster:
         """Create a new object.
 
@@ -109,7 +107,5 @@ class ProjectClusterManager(CRUDMixin, RESTManager):
         path = f"{self.path}/user"
         return cast(ProjectCluster, CreateMixin.create(self, data, path=path, **kwargs))
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectCluster:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> ProjectCluster:
         return cast(ProjectCluster, super().get(id=id, lazy=lazy, **kwargs))

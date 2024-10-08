@@ -1,4 +1,6 @@
-from typing import Any, cast, Dict, Optional, Union
+from __future__ import annotations
+
+from typing import Any, cast
 
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
@@ -24,7 +26,7 @@ __all__ = [
 
 class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
-    manager: "GroupLabelManager"
+    manager: GroupLabelManager
 
     # Update without ID, but we need an ID to get from list.
     @exc.on_http_error(exc.GitlabUpdateError)
@@ -60,7 +62,7 @@ class GroupLabelManager(
         required=("name",), optional=("new_name", "color", "description", "priority")
     )
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> GroupLabel:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> GroupLabel:
         return cast(GroupLabel, super().get(id=id, lazy=lazy, **kwargs))
 
     # Update without ID.
@@ -68,10 +70,10 @@ class GroupLabelManager(
     # type error
     def update(  # type: ignore
         self,
-        name: Optional[str],
-        new_data: Optional[Dict[str, Any]] = None,
+        name: str | None,
+        new_data: dict[str, Any] | None = None,
         **kwargs: Any,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Update a Label on the server.
 
         Args:
@@ -88,7 +90,7 @@ class ProjectLabel(
     PromoteMixin, SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject
 ):
     _id_attr = "name"
-    manager: "ProjectLabelManager"
+    manager: ProjectLabelManager
 
     # Update without ID, but we need an ID to get from list.
     @exc.on_http_error(exc.GitlabUpdateError)
@@ -124,9 +126,7 @@ class ProjectLabelManager(
         required=("name",), optional=("new_name", "color", "description", "priority")
     )
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectLabel:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> ProjectLabel:
         return cast(ProjectLabel, super().get(id=id, lazy=lazy, **kwargs))
 
     # Update without ID.
@@ -134,10 +134,10 @@ class ProjectLabelManager(
     # type error
     def update(  # type: ignore
         self,
-        name: Optional[str],
-        new_data: Optional[Dict[str, Any]] = None,
+        name: str | None,
+        new_data: dict[str, Any] | None = None,
         **kwargs: Any,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Update a Label on the server.
 
         Args:

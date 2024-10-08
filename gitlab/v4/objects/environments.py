@@ -1,4 +1,4 @@
-from typing import Any, cast, Dict, Union
+from typing import Any, cast, Union
 
 import requests
 
@@ -26,7 +26,7 @@ __all__ = [
 class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action(cls_names="ProjectEnvironment")
     @exc.on_http_error(exc.GitlabStopError)
-    def stop(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def stop(self, **kwargs: Any) -> Union[dict[str, Any], requests.Response]:
         """Stop the environment.
 
         Args:

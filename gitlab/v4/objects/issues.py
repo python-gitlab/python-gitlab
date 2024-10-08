@@ -1,4 +1,6 @@
-from typing import Any, cast, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, cast, TYPE_CHECKING
 
 import requests
 
@@ -73,7 +75,7 @@ class IssueManager(RetrieveMixin, RESTManager):
     )
     _types = {"iids": types.ArrayAttribute, "labels": types.CommaSeparatedListAttribute}
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Issue:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> Issue:
         return cast(Issue, super().get(id=id, lazy=lazy, **kwargs))
 
 
@@ -120,7 +122,7 @@ class ProjectIssue(
 
     awardemojis: ProjectIssueAwardEmojiManager
     discussions: ProjectIssueDiscussionManager
-    links: "ProjectIssueLinkManager"
+    links: ProjectIssueLinkManager
     notes: ProjectIssueNoteManager
     resourcelabelevents: ProjectIssueResourceLabelEventManager
     resourcemilestoneevents: ProjectIssueResourceMilestoneEventManager
@@ -154,8 +156,8 @@ class ProjectIssue(
     @exc.on_http_error(exc.GitlabUpdateError)
     def reorder(
         self,
-        move_after_id: Optional[int] = None,
-        move_before_id: Optional[int] = None,
+        move_after_id: int | None = None,
+        move_before_id: int | None = None,
         **kwargs: Any,
     ) -> None:
         """Reorder an issue on a board.
@@ -170,7 +172,7 @@ class ProjectIssue(
             GitlabUpdateError: If the issue could not be reordered
         """
         path = f"{self.manager.path}/{self.encoded_id}/reorder"
-        data: Dict[str, Any] = {}
+        data: dict[str, Any] = {}
 
         if move_after_id is not None:
             data["move_after_id"] = move_after_id
@@ -186,7 +188,7 @@ class ProjectIssue(
     @exc.on_http_error(exc.GitlabGetError)
     def related_merge_requests(
         self, **kwargs: Any
-    ) -> Union[client.GitlabList, List[Dict[str, Any]]]:
+    ) -> client.GitlabList | list[dict[str, Any]]:
         """List merge requests related to the issue.
 
         Args:
@@ -207,9 +209,7 @@ class ProjectIssue(
 
     @cli.register_custom_action(cls_names="ProjectIssue")
     @exc.on_http_error(exc.GitlabGetError)
-    def closed_by(
-        self, **kwargs: Any
-    ) -> Union[client.GitlabList, List[Dict[str, Any]]]:
+    def closed_by(self, **kwargs: Any) -> client.GitlabList | list[dict[str, Any]]:
         """List merge requests that will close the issue when merged.
 
         Args:
@@ -283,9 +283,7 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
     )
     _types = {"iids": types.ArrayAttribute, "labels": types.CommaSeparatedListAttribute}
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectIssue:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> ProjectIssue:
         return cast(ProjectIssue, super().get(id=id, lazy=lazy, **kwargs))
 
 
@@ -303,8 +301,8 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     # NOTE(jlvillal): Signature doesn't match CreateMixin.create() so ignore
     # type error
     def create(  # type: ignore
-        self, data: Dict[str, Any], **kwargs: Any
-    ) -> Tuple[RESTObject, RESTObject]:
+        self, data: dict[str, Any], **kwargs: Any
+    ) -> tuple[RESTObject, RESTObject]:
         """Create a new object.
 
         Args:

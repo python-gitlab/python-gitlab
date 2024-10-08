@@ -8,7 +8,7 @@ Original notes by John L. Villalovos
 import dataclasses
 import functools
 import inspect
-from typing import Optional, Type
+from typing import Optional
 
 import pytest
 
@@ -20,7 +20,7 @@ import gitlab.v4.objects
 @dataclasses.dataclass(frozen=True)
 class ClassInfo:
     name: str
-    type: Type  # type: ignore[type-arg]
+    type: type  # type: ignore[type-arg]
 
     def __lt__(self, other: object) -> bool:
         if not isinstance(other, ClassInfo):
@@ -107,7 +107,7 @@ class TestTypeHints:
     def get_check_helper(
         self,
         *,
-        base_type: Type,  # type: ignore[type-arg]
+        base_type: type,  # type: ignore[type-arg]
         class_info: ClassInfo,
         method_template: str,
         optional_return: bool,

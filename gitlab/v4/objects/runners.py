@@ -1,4 +1,6 @@
-from typing import Any, cast, List, Optional, Union
+from __future__ import annotations
+
+from typing import Any, cast
 
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -76,7 +78,7 @@ class RunnerManager(CRUDMixin, RESTManager):
 
     @cli.register_custom_action(cls_names="RunnerManager", optional=("scope",))
     @exc.on_http_error(exc.GitlabListError)
-    def all(self, scope: Optional[str] = None, **kwargs: Any) -> List[Runner]:
+    def all(self, scope: str | None = None, **kwargs: Any) -> list[Runner]:
         """List all the runners.
 
         Args:
@@ -120,7 +122,7 @@ class RunnerManager(CRUDMixin, RESTManager):
         post_data = {"token": token}
         self.gitlab.http_post(path, post_data=post_data, **kwargs)
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Runner:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> Runner:
         return cast(Runner, super().get(id=id, lazy=lazy, **kwargs))
 
 
