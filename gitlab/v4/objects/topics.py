@@ -1,4 +1,4 @@
-from typing import Any, cast, Dict, TYPE_CHECKING, Union
+from typing import Any, cast, TYPE_CHECKING, Union
 
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -42,7 +42,7 @@ class TopicManager(CRUDMixin, RESTManager):
         source_topic_id: Union[int, str],
         target_topic_id: Union[int, str],
         **kwargs: Any,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Merge two topics, assigning all projects to the target topic.
 
         Args:

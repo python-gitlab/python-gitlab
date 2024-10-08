@@ -1,15 +1,8 @@
+from __future__ import annotations
+
 import base64
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Iterator,
-    List,
-    Optional,
-    Tuple,
-    TYPE_CHECKING,
-    Union,
-)
+from collections.abc import Iterator
+from typing import Any, Callable, TYPE_CHECKING
 
 import requests
 
@@ -38,7 +31,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
     branch: str
     commit_message: str
     file_path: str
-    manager: "ProjectFileManager"
+    manager: ProjectFileManager
     content: str  # since the `decode()` method uses `self.content`
 
     def decode(self) -> bytes:
@@ -99,7 +92,7 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
     _path = "/projects/{project_id}/repository/files"
     _obj_cls = ProjectFile
     _from_parent_attrs = {"project_id": "id"}
-    _optional_get_attrs: Tuple[str, ...] = ()
+    _optional_get_attrs: tuple[str, ...] = ()
     _create_attrs = RequiredOptional(
         required=("file_path", "branch", "content", "commit_message"),
         optional=("encoding", "author_email", "author_name"),
@@ -140,7 +133,7 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
     @exc.on_http_error(exc.GitlabHeadError)
     def head(
         self, file_path: str, ref: str, **kwargs: Any
-    ) -> "requests.structures.CaseInsensitiveDict[Any]":
+    ) -> requests.structures.CaseInsensitiveDict[Any]:
         """Retrieve just metadata for a single file.
 
         Args:
@@ -167,9 +160,7 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
         optional=("encoding", "author_email", "author_name"),
     )
     @exc.on_http_error(exc.GitlabCreateError)
-    def create(
-        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> ProjectFile:
+    def create(self, data: dict[str, Any] | None = None, **kwargs: Any) -> ProjectFile:
         """Create a new object.
 
         Args:
@@ -201,8 +192,8 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
     # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
     # type error
     def update(  # type: ignore
-        self, file_path: str, new_data: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> Dict[str, Any]:
+        self, file_path: str, new_data: dict[str, Any] | None = None, **kwargs: Any
+    ) -> dict[str, Any]:
         """Update an object on the server.
 
         Args:
@@ -263,14 +254,14 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
     def raw(
         self,
         file_path: str,
-        ref: Optional[str] = None,
+        ref: str | None = None,
         streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
+        action: Callable[..., Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Return the content of a file for a commit.
 
         Args:
@@ -312,7 +303,7 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
         cls_names="ProjectFileManager", required=("file_path", "ref")
     )
     @exc.on_http_error(exc.GitlabListError)
-    def blame(self, file_path: str, ref: str, **kwargs: Any) -> List[Dict[str, Any]]:
+    def blame(self, file_path: str, ref: str, **kwargs: Any) -> list[dict[str, Any]]:
         """Return the content of a file for a commit.
 
         Args:

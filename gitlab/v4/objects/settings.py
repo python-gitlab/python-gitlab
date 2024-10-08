@@ -1,4 +1,6 @@
-from typing import Any, cast, Dict, Optional, Union
+from __future__ import annotations
+
+from typing import Any, cast
 
 from gitlab import exceptions as exc
 from gitlab import types
@@ -92,10 +94,10 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     @exc.on_http_error(exc.GitlabUpdateError)
     def update(
         self,
-        id: Optional[Union[str, int]] = None,
-        new_data: Optional[Dict[str, Any]] = None,
+        id: str | int | None = None,
+        new_data: dict[str, Any] | None = None,
         **kwargs: Any,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Update an object on the server.
 
         Args:

@@ -4,7 +4,9 @@ https://docs.gitlab.com/ee/api/merge_requests.html
 https://docs.gitlab.com/ee/api/merge_request_approvals.html
 """
 
-from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, cast, TYPE_CHECKING
 
 import requests
 
@@ -158,7 +160,7 @@ class ProjectMergeRequest(
     approval_state: ProjectMergeRequestApprovalStateManager
     approvals: ProjectMergeRequestApprovalManager
     awardemojis: ProjectMergeRequestAwardEmojiManager
-    diffs: "ProjectMergeRequestDiffManager"
+    diffs: ProjectMergeRequestDiffManager
     discussions: ProjectMergeRequestDiscussionManager
     draft_notes: ProjectMergeRequestDraftNoteManager
     notes: ProjectMergeRequestNoteManager
@@ -170,7 +172,7 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action(cls_names="ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMROnBuildSuccessError)
-    def cancel_merge_when_pipeline_succeeds(self, **kwargs: Any) -> Dict[str, str]:
+    def cancel_merge_when_pipeline_succeeds(self, **kwargs: Any) -> dict[str, str]:
         """Cancel merge when the pipeline succeeds.
 
         Args:
@@ -281,7 +283,7 @@ class ProjectMergeRequest(
         cls_names="ProjectMergeRequest", optional=("access_raw_diffs",)
     )
     @exc.on_http_error(exc.GitlabListError)
-    def changes(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def changes(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """List the merge request changes.
 
         Args:
@@ -299,7 +301,7 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action(cls_names="ProjectMergeRequest", optional=("sha",))
     @exc.on_http_error(exc.GitlabMRApprovalError)
-    def approve(self, sha: Optional[str] = None, **kwargs: Any) -> Dict[str, Any]:
+    def approve(self, sha: str | None = None, **kwargs: Any) -> dict[str, Any]:
         """Approve the merge request.
 
         Args:
@@ -341,7 +343,7 @@ class ProjectMergeRequest(
         https://docs.gitlab.com/ee/api/merge_request_approvals.html#unapprove-merge-request
         """
         path = f"{self.manager.path}/{self.encoded_id}/unapprove"
-        data: Dict[str, Any] = {}
+        data: dict[str, Any] = {}
 
         server_data = self.manager.gitlab.http_post(path, post_data=data, **kwargs)
         if TYPE_CHECKING:
@@ -350,7 +352,7 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action(cls_names="ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMRRebaseError)
-    def rebase(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def rebase(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Attempt to rebase the source branch onto the target branch
 
         Args:
@@ -361,14 +363,12 @@ class ProjectMergeRequest(
             GitlabMRRebaseError: If rebasing failed
         """
         path = f"{self.manager.path}/{self.encoded_id}/rebase"
-        data: Dict[str, Any] = {}
+        data: dict[str, Any] = {}
         return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
 
     @cli.register_custom_action(cls_names="ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMRResetApprovalError)
-    def reset_approvals(
-        self, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    def reset_approvals(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Clear all approvals of the merge request.
 
         Args:
@@ -379,12 +379,12 @@ class ProjectMergeRequest(
             GitlabMRResetApprovalError: If reset approval failed
         """
         path = f"{self.manager.path}/{self.encoded_id}/reset_approvals"
-        data: Dict[str, Any] = {}
+        data: dict[str, Any] = {}
         return self.manager.gitlab.http_put(path, post_data=data, **kwargs)
 
     @cli.register_custom_action(cls_names="ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabGetError)
-    def merge_ref(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def merge_ref(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Attempt to merge changes between source and target branches into
             `refs/merge-requests/:iid/merge`.
 
@@ -408,11 +408,11 @@ class ProjectMergeRequest(
     @exc.on_http_error(exc.GitlabMRClosedError)
     def merge(
         self,
-        merge_commit_message: Optional[str] = None,
-        should_remove_source_branch: Optional[bool] = None,
-        merge_when_pipeline_succeeds: Optional[bool] = None,
+        merge_commit_message: str | None = None,
+        should_remove_source_branch: bool | None = None,
+        merge_when_pipeline_succeeds: bool | None = None,
         **kwargs: Any,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Accept the merge request.
 
         Args:
@@ -428,7 +428,7 @@ class ProjectMergeRequest(
             GitlabMRClosedError: If the merge failed
         """
         path = f"{self.manager.path}/{self.encoded_id}/merge"
-        data: Dict[str, Any] = {}
+        data: dict[str, Any] = {}
         if merge_commit_message:
             data["merge_commit_message"] = merge_commit_message
         if should_remove_source_branch is not None:
@@ -516,7 +516,7 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
     }
 
     def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+        self, id: str | int, lazy: bool = False, **kwargs: Any
     ) -> ProjectMergeRequest:
         return cast(ProjectMergeRequest, super().get(id=id, lazy=lazy, **kwargs))
 
@@ -541,6 +541,6 @@ class ProjectMergeRequestDiffManager(RetrieveMixin, RESTManager):
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
 
     def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+        self, id: str | int, lazy: bool = False, **kwargs: Any
     ) -> ProjectMergeRequestDiff:
         return cast(ProjectMergeRequestDiff, super().get(id=id, lazy=lazy, **kwargs))

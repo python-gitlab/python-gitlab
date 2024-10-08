@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) 2013-2019 Gauvain Pocentek, 2019-2023 python-gitlab team
 #

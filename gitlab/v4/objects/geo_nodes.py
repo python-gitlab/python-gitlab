@@ -1,4 +1,4 @@
-from typing import Any, cast, Dict, List, TYPE_CHECKING, Union
+from typing import Any, cast, TYPE_CHECKING, Union
 
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -39,7 +39,7 @@ class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="GeoNode")
     @exc.on_http_error(exc.GitlabGetError)
-    def status(self, **kwargs: Any) -> Dict[str, Any]:
+    def status(self, **kwargs: Any) -> dict[str, Any]:
         """Get the status of the geo node.
 
         Args:
@@ -71,7 +71,7 @@ class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
 
     @cli.register_custom_action(cls_names="GeoNodeManager")
     @exc.on_http_error(exc.GitlabGetError)
-    def status(self, **kwargs: Any) -> List[Dict[str, Any]]:
+    def status(self, **kwargs: Any) -> list[dict[str, Any]]:
         """Get the status of all the geo nodes.
 
         Args:
@@ -91,7 +91,7 @@ class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
 
     @cli.register_custom_action(cls_names="GeoNodeManager")
     @exc.on_http_error(exc.GitlabGetError)
-    def current_failures(self, **kwargs: Any) -> List[Dict[str, Any]]:
+    def current_failures(self, **kwargs: Any) -> list[dict[str, Any]]:
         """Get the list of failures on the current geo node.
 
         Args:
