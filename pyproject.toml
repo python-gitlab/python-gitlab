@@ -15,7 +15,7 @@ maintainers = [
     {name = "Nejc Habjan", email="nejc.habjan@siemens.com"},
     {name = "Roger Meier", email="r.meier@siemens.com"}
 ]
-requires-python = ">=3.8.0"
+requires-python = ">=3.9.0"
 dependencies = [
     "requests>=2.32.0",
     "requests-toolbelt>=1.0.0",
@@ -30,7 +30,6 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
