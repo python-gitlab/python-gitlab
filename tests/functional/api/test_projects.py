@@ -240,6 +240,18 @@ def test_project_milestone_promotion(gl, group):
     )
 
 
+def test_project_pages(project):
+    pages = project.pages.get()
+    assert pages.is_unique_domain_enabled is True
+
+    project.pages.update(new_data={"pages_unique_domain_enabled": False})
+
+    pages.refresh()
+    assert pages.is_unique_domain_enabled is False
+
+    project.pages.delete()
+
+
 def test_project_pages_domains(gl, project):
     domain = project.pagesdomains.create({"domain": "foo.domain.com"})
     assert domain in project.pagesdomains.list()
