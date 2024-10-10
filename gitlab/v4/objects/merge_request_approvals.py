@@ -54,6 +54,7 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
 
 class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "id"
+    _repr_attr = "name"
 
 
 class ProjectApprovalRuleManager(
