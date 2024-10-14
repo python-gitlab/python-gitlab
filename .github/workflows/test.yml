@@ -46,7 +46,7 @@ jobs:
               version: "3.12"
               toxenv: py312,smoke
     steps:
-      - uses: actions/checkout@v4.2.0
+      - uses: actions/checkout@v4.2.1
       - name: Set up Python ${{ matrix.python.version }}
         uses: actions/setup-python@v5.2.0
         with:
@@ -64,7 +64,7 @@ jobs:
       matrix:
         toxenv: [api_func_v4, cli_func_v4]
     steps:
-      - uses: actions/checkout@v4.2.0
+      - uses: actions/checkout@v4.2.1
       - name: Set up Python
         uses: actions/setup-python@v5.2.0
         with:
@@ -86,7 +86,7 @@ jobs:
   coverage:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.2.0
+      - uses: actions/checkout@v4.2.1
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5.2.0
         with:
@@ -110,7 +110,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Python wheel
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.1
     - uses: actions/setup-python@v5.2.0
       with:
         python-version: "3.12"
@@ -119,7 +119,7 @@ jobs:
         pip install -r requirements-test.txt
     - name: Build package
       run: python -m build -o dist/
-    - uses: actions/upload-artifact@v4.4.0
+    - uses: actions/upload-artifact@v4.4.3
       with:
         name: dist
         path: dist
@@ -128,7 +128,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [dist]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.1
     - name: Set up Python
       uses: actions/setup-python@v5.2.0
       with:
