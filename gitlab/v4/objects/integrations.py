@@ -3,7 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ee/api/integrations.html
 """
 
-from typing import Any, cast, List, Union
+from typing import Any, cast, Union
 
 from gitlab import cli
 from gitlab.base import RESTManager, RESTObject
@@ -273,7 +273,7 @@ class ProjectIntegrationManager(
     @cli.register_custom_action(
         cls_names=("ProjectIntegrationManager", "ProjectServiceManager")
     )
-    def available(self) -> List[str]:
+    def available(self) -> list[str]:
         """List the services known by python-gitlab.
 
         Returns:

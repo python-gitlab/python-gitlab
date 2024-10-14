@@ -8,7 +8,7 @@ Original notes by John L. Villalovos
 import dataclasses
 import functools
 import inspect
-from typing import Optional, Type
+from typing import Optional
 
 import pytest
 
@@ -20,7 +20,7 @@ import gitlab.v4.objects
 @dataclasses.dataclass(frozen=True)
 class ClassInfo:
     name: str
-    type: Type  # type: ignore[type-arg]
+    type: type  # type: ignore[type-arg]
 
     def __lt__(self, other: object) -> bool:
         if not isinstance(other, ClassInfo):
@@ -57,17 +57,18 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
 
             class_info_set.add(ClassInfo(name=class_name, type=class_value))
 
-    metafunc.parametrize("class_info", sorted(class_info_set))
+    classes = sorted(class_info_set, key=lambda cls: cls.name)
+    metafunc.parametrize("class_info", classes, ids=[cls.name for cls in classes])
 
 
 GET_ID_METHOD_TEMPLATE = """
 def get(
-    self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    self, id: str | int, lazy: bool = False, **kwargs: Any
 ) -> {obj_cls.__name__}:
     return cast({obj_cls.__name__}, super().get(id=id, lazy=lazy, **kwargs))
 
 You may also need to add the following imports:
-from typing import Any, cast, Union"
+from typing import Any, cast"
 """
 
 GET_WITHOUT_ID_METHOD_TEMPLATE = """
@@ -79,58 +80,56 @@ from typing import Any, cast"
 """
 
 
-class TestTypeHints:
-    def test_check_get_function_type_hints(self, class_info: ClassInfo) -> None:
-        """Ensure classes derived from GetMixin have defined a 'get()' method with
-        correct type-hints.
-        """
-        self.get_check_helper(
-            base_type=gitlab.mixins.GetMixin,
-            class_info=class_info,
-            method_template=GET_ID_METHOD_TEMPLATE,
-            optional_return=False,
-        )
+def assert_has_correct_return_annotation(
+    *,
+    base_type: type,  # type: ignore[type-arg]
+    class_info: ClassInfo,
+    method_template: str,
+    optional_return: bool,
+) -> None:
+    if not class_info.name.endswith("Manager"):
+        return
+    mro = class_info.type.mro()
+    # The class needs to be derived from GetMixin or we ignore it
+    if base_type not in mro:
+        return
 
-    def test_check_get_without_id_function_type_hints(
-        self, class_info: ClassInfo
-    ) -> None:
-        """Ensure classes derived from GetMixin have defined a 'get()' method with
-        correct type-hints.
-        """
-        self.get_check_helper(
-            base_type=gitlab.mixins.GetWithoutIdMixin,
-            class_info=class_info,
-            method_template=GET_WITHOUT_ID_METHOD_TEMPLATE,
-            optional_return=False,
-        )
+    obj_cls = class_info.type._obj_cls
+    signature = inspect.signature(class_info.type.get)
+    filename = inspect.getfile(class_info.type)
 
-    def get_check_helper(
-        self,
-        *,
-        base_type: Type,  # type: ignore[type-arg]
-        class_info: ClassInfo,
-        method_template: str,
-        optional_return: bool,
-    ) -> None:
-        if not class_info.name.endswith("Manager"):
-            return
-        mro = class_info.type.mro()
-        # The class needs to be derived from GetMixin or we ignore it
-        if base_type not in mro:
-            return
+    fail_message = (
+        f"class definition for {class_info.name!r} in file {filename!r} "
+        f"must have defined a 'get' method with a return annotation of "
+        f"{obj_cls} but found {signature.return_annotation}\n"
+        f"Recommend adding the following method:\n"
+    )
+    fail_message += method_template.format(obj_cls=obj_cls)
+    check_type = obj_cls
+    if optional_return:
+        check_type = Optional[obj_cls]
+    assert check_type == signature.return_annotation, fail_message
 
-        obj_cls = class_info.type._obj_cls
-        signature = inspect.signature(class_info.type.get)
-        filename = inspect.getfile(class_info.type)
 
-        fail_message = (
-            f"class definition for {class_info.name!r} in file {filename!r} "
-            f"must have defined a 'get' method with a return annotation of "
-            f"{obj_cls} but found {signature.return_annotation}\n"
-            f"Recommend adding the following method:\n"
-        )
-        fail_message += method_template.format(obj_cls=obj_cls)
-        check_type = obj_cls
-        if optional_return:
-            check_type = Optional[obj_cls]
-        assert check_type == signature.return_annotation, fail_message
+def test_get_mixin_return_annotation(class_info: ClassInfo) -> None:
+    """Ensure classes derived from GetMixin have defined a 'get()' method with
+    correct type-hints.
+    """
+    assert_has_correct_return_annotation(
+        base_type=gitlab.mixins.GetMixin,
+        class_info=class_info,
+        method_template=GET_ID_METHOD_TEMPLATE,
+        optional_return=False,
+    )
+
+
+def test_get_without_id_mixin_return_annotation(class_info: ClassInfo) -> None:
+    """Ensure classes derived from GetMixin have defined a 'get()' method with
+    correct type-hints.
+    """
+    assert_has_correct_return_annotation(
+        base_type=gitlab.mixins.GetWithoutIdMixin,
+        class_info=class_info,
+        method_template=GET_WITHOUT_ID_METHOD_TEMPLATE,
+        optional_return=False,
+    )

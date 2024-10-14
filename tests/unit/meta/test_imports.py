@@ -5,7 +5,6 @@ Ensure objects defined in gitlab.v4.objects are imported in
 """
 
 import pkgutil
-from typing import Set
 
 import gitlab.exceptions
 import gitlab.v4.objects
@@ -24,8 +23,8 @@ def test_all_exceptions_imports_are_exported() -> None:
 def test_all_v4_objects_are_imported() -> None:
     assert len(gitlab.v4.objects.__path__) == 1
 
-    init_files: Set[str] = set()
-    with open(gitlab.v4.objects.__file__, "r", encoding="utf-8") as in_file:
+    init_files: set[str] = set()
+    with open(gitlab.v4.objects.__file__, encoding="utf-8") as in_file:
         for line in in_file.readlines():
             if line.startswith("from ."):
                 init_files.add(line.rstrip())

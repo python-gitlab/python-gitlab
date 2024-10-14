@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import logging
 import time
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -13,7 +15,7 @@ TIMEOUT = 60  # seconds before timeout will occur
 MAX_ITERATIONS = int(TIMEOUT / SLEEP_INTERVAL)
 
 
-def get_gitlab_plan(gl: gitlab.Gitlab) -> Optional[str]:
+def get_gitlab_plan(gl: gitlab.Gitlab) -> str | None:
     """Determine the license available on the GitLab instance"""
     try:
         license = gl.get_license()
