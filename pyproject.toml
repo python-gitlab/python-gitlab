@@ -34,6 +34,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 keywords = ["api", "client", "gitlab", "python", "python-gitlab", "wrapper"]
 license = {text = "LGPL-3.0-or-later"}

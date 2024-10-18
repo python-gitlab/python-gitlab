@@ -34,17 +34,21 @@ jobs:
             toxenv: py311,smoke
           - version: "3.12"
             toxenv: py312,smoke
-          - version: '3.13.0-alpha - 3.13' # SemVer's version range syntax
+          - version: "3.13"
             toxenv: py313,smoke
+          # NOTE(jlvillal): 2024-10-17: Enable this once we fix
+          # https://github.com/python-gitlab/python-gitlab/issues/3013
+          # - version: "3.14.0-alpha - 3.14" # SemVer's version range syntax
+          #   toxenv: py314,smoke
         include:
           - os: macos-latest
             python:
-              version: "3.12"
-              toxenv: py312,smoke
+              version: "3.13"
+              toxenv: py313,smoke
           - os: windows-latest
             python:
-              version: "3.12"
-              toxenv: py312,smoke
+              version: "3.13"
+              toxenv: py313,smoke
     steps:
       - uses: actions/checkout@v4.2.1
       - name: Set up Python ${{ matrix.python.version }}
