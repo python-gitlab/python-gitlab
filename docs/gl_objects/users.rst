@@ -23,7 +23,7 @@ References
 
 * GitLab API:
 
-  + https://docs.gitlab.com/ce/api/users.html
+  + https://docs.gitlab.com/ee/api/users.html
   + https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
 
 Examples
@@ -170,7 +170,7 @@ References
   + :class:`gitlab.v4.objects.UserImpersonationTokenManager`
   + :attr:`gitlab.v4.objects.User.impersonationtokens`
 
-* GitLab API: https://docs.gitlab.com/ce/api/users.html#get-all-impersonation-tokens-of-a-user
+* GitLab API: https://docs.gitlab.com/ee/api/user_tokens.html#get-all-impersonation-tokens-of-a-user
 
 List impersonation tokens for a user::
 
@@ -204,7 +204,7 @@ References
   + :class:`gitlab.v4.objects.UserProjectManager`
   + :attr:`gitlab.v4.objects.User.projects`
 
-* GitLab API: https://docs.gitlab.com/ee/api/projects.html#list-user-projects
+* GitLab API: https://docs.gitlab.com/ee/api/projects.html#list-a-users-projects
 
 List visible projects in the user's namespace::
 
@@ -229,7 +229,7 @@ References
   + :class:`gitlab.v4.objects.UserMembershipManager`
   + :attr:`gitlab.v4.objects.User.memberships`
 
-* GitLab API: https://docs.gitlab.com/ee/api/users.html#user-memberships
+* GitLab API: https://docs.gitlab.com/ee/api/users.html#list-projects-and-groups-that-a-user-is-a-member-of
 
 List direct memberships for a user::
 
@@ -259,7 +259,7 @@ References
   + :class:`gitlab.v4.objects.CurrentUserManager`
   + :attr:`gitlab.Gitlab.user`
 
-* GitLab API: https://docs.gitlab.com/ce/api/users.html
+* GitLab API: https://docs.gitlab.com/ee/api/users.html
 
 Examples
 --------
@@ -287,7 +287,7 @@ are admin.
   + :class:`gitlab.v4.objects.UserGPGKeyManager`
   + :attr:`gitlab.v4.objects.User.gpgkeys`
 
-* GitLab API: https://docs.gitlab.com/ce/api/users.html#list-all-gpg-keys
+* GitLab API: https://docs.gitlab.com/ee/api/user_keys.html#list-your-gpg-keys
 
 Examples
 --------
@@ -329,7 +329,7 @@ are admin.
   + :class:`gitlab.v4.objects.UserKeyManager`
   + :attr:`gitlab.v4.objects.User.keys`
 
-* GitLab API: https://docs.gitlab.com/ce/api/users.html#list-ssh-keys
+* GitLab API: https://docs.gitlab.com/ee/api/user_keys.html#get-a-single-ssh-key
 
 Examples
 --------
@@ -370,7 +370,7 @@ You can manipulate the status for the current user and you can read the status o
   + :class:`gitlab.v4.objects.UserStatusManager`
   + :attr:`gitlab.v4.objects.User.status`
 
-* GitLab API: https://docs.gitlab.com/ce/api/users.html#user-status
+* GitLab API: https://docs.gitlab.com/ee/api/users.html#get-the-status-of-a-user
 
 Examples
 --------
@@ -408,7 +408,7 @@ are admin.
   + :class:`gitlab.v4.objects.UserEmailManager`
   + :attr:`gitlab.v4.objects.User.emails`
 
-* GitLab API: https://docs.gitlab.com/ce/api/users.html#list-emails
+* GitLab API: https://docs.gitlab.com/ee/api/user_email_addresses.html
 
 Examples
 --------
@@ -445,7 +445,7 @@ References
   + :class:`gitlab.v4.objects.UserActivitiesManager`
   + :attr:`gitlab.Gitlab.user_activities`
 
-* GitLab API: https://docs.gitlab.com/ce/api/users.html#get-user-activities-admin-only
+* GitLab API: https://docs.gitlab.com/ee/api/users.html#list-a-users-activity
 
 Examples
 --------
@@ -471,7 +471,7 @@ References
   + :class:`gitlab.v4.objects.CurrentUserRunnerManager`
   + :attr:`gitlab.Gitlab.user.runners`
 
-* GitLab API : https://docs.gitlab.com/ee/api/users.html#create-a-runner
+* GitLab API : https://docs.gitlab.com/ee/api/users.html#create-a-runner-linked-to-a-user
 
 Examples
 --------
