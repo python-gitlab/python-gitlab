@@ -290,6 +290,12 @@ def test_attributes_has_parent_attrs(fake_object_with_parent):
     assert result == {"attr1": "foo", "alist": [1, 2, 3], "test_id": "42"}
 
 
+def test_to_json(fake_object):
+    assert fake_object.attr1 == "foo"
+    result = fake_object.to_json()
+    assert result == '{"attr1": "foo", "alist": [1, 2, 3]}'
+
+
 def test_asdict(fake_object):
     assert fake_object.attr1 == "foo"
     result = fake_object.asdict()
