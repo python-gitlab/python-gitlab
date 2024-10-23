@@ -201,12 +201,12 @@ class RESTObject:
         # NOTE(jlvillal): We are creating our managers by looking at the class
         # annotations. If an attribute is annotated as being a *Manager type
         # then we create the manager and assign it to the attribute.
-        for attr, annotation in sorted(self.__annotations__.items()):
+        for attr, annotation in sorted(self.__class__.__annotations__.items()):
             # We ignore creating a manager for the 'manager' attribute as that
             # is done in the self.__init__() method
             if attr in ("manager",):
                 continue
-            if not isinstance(annotation, (type, str)):
+            if not isinstance(annotation, (type, str)):  # pragma: no cover
                 continue
             if isinstance(annotation, type):
                 cls_name = annotation.__name__
