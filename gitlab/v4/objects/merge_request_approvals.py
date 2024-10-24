@@ -1,4 +1,6 @@
-from typing import Any, cast, List, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, cast, TYPE_CHECKING
 
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
@@ -87,11 +89,11 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
     def set_approvers(
         self,
         approvals_required: int,
-        approver_ids: Optional[List[int]] = None,
-        approver_group_ids: Optional[List[int]] = None,
+        approver_ids: list[int] | None = None,
+        approver_group_ids: list[int] | None = None,
         approval_rule_name: str = "name",
         *,
-        approver_usernames: Optional[List[str]] = None,
+        approver_usernames: list[str] | None = None,
         **kwargs: Any,
     ) -> RESTObject:
         """Change MR-level allowed approvers and approver groups.
@@ -162,7 +164,7 @@ class ProjectMergeRequestApprovalRuleManager(CRUDMixin, RESTManager):
     )
 
     def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+        self, id: str | int, lazy: bool = False, **kwargs: Any
     ) -> ProjectMergeRequestApprovalRule:
         return cast(
             ProjectMergeRequestApprovalRule, super().get(id=id, lazy=lazy, **kwargs)

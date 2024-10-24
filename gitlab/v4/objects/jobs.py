@@ -1,4 +1,7 @@
-from typing import Any, Callable, cast, Dict, Iterator, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from collections.abc import Iterator
+from typing import Any, Callable, cast, TYPE_CHECKING
 
 import requests
 
@@ -18,7 +21,7 @@ __all__ = [
 class ProjectJob(RefreshMixin, RESTObject):
     @cli.register_custom_action(cls_names="ProjectJob")
     @exc.on_http_error(exc.GitlabJobCancelError)
-    def cancel(self, **kwargs: Any) -> Dict[str, Any]:
+    def cancel(self, **kwargs: Any) -> dict[str, Any]:
         """Cancel the job.
 
         Args:
@@ -36,7 +39,7 @@ class ProjectJob(RefreshMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="ProjectJob")
     @exc.on_http_error(exc.GitlabJobRetryError)
-    def retry(self, **kwargs: Any) -> Dict[str, Any]:
+    def retry(self, **kwargs: Any) -> dict[str, Any]:
         """Retry the job.
 
         Args:
@@ -120,12 +123,12 @@ class ProjectJob(RefreshMixin, RESTObject):
     def artifacts(
         self,
         streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
+        action: Callable[..., Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Get the job artifacts.
 
         Args:
@@ -162,12 +165,12 @@ class ProjectJob(RefreshMixin, RESTObject):
         self,
         path: str,
         streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
+        action: Callable[..., Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Get a single artifact file from within the job's artifacts archive.
 
         Args:
@@ -204,12 +207,12 @@ class ProjectJob(RefreshMixin, RESTObject):
     def trace(
         self,
         streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
+        action: Callable[..., Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Get the job trace.
 
         Args:
@@ -248,5 +251,5 @@ class ProjectJobManager(RetrieveMixin, RESTManager):
     _list_filters = ("scope",)
     _types = {"scope": ArrayAttribute}
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> ProjectJob:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> ProjectJob:
         return cast(ProjectJob, super().get(id=id, lazy=lazy, **kwargs))

@@ -3,7 +3,10 @@ GitLab API:
 https://docs.gitlab.com/ee/api/secure_files.html
 """
 
-from typing import Any, Callable, cast, Iterator, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from collections.abc import Iterator
+from typing import Any, Callable, cast, TYPE_CHECKING
 
 import requests
 
@@ -23,12 +26,12 @@ class ProjectSecureFile(ObjectDeleteMixin, RESTObject):
     def download(
         self,
         streamed: bool = False,
-        action: Optional[Callable[[bytes], None]] = None,
+        action: Callable[[bytes], None] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Download the secure file.
 
         Args:
@@ -67,6 +70,6 @@ class ProjectSecureFileManager(NoUpdateMixin, RESTManager):
     _types = {"file": FileAttribute}
 
     def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+        self, id: str | int, lazy: bool = False, **kwargs: Any
     ) -> ProjectSecureFile:
         return cast(ProjectSecureFile, super().get(id=id, lazy=lazy, **kwargs))
