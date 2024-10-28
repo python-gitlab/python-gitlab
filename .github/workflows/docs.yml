@@ -22,9 +22,9 @@ jobs:
   sphinx:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - name: Set up Python
-        uses: actions/setup-python@v5.2.0
+        uses: actions/setup-python@v5.3.0
         with:
           python-version: "3.12"
       - name: Install dependencies
@@ -42,9 +42,9 @@ jobs:
   twine-check:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - name: Set up Python
-        uses: actions/setup-python@v5.2.0
+        uses: actions/setup-python@v5.3.0
         with:
           python-version: "3.12"
       - name: Install dependencies
