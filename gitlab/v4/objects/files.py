@@ -102,11 +102,24 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
     _optional_get_attrs: Tuple[str, ...] = ()
     _create_attrs = RequiredOptional(
         required=("file_path", "branch", "content", "commit_message"),
-        optional=("encoding", "author_email", "author_name"),
+        optional=(
+            "encoding",
+            "author_email",
+            "author_name",
+            "execute_filemode",
+            "start_branch",
+        ),
     )
     _update_attrs = RequiredOptional(
         required=("file_path", "branch", "content", "commit_message"),
-        optional=("encoding", "author_email", "author_name"),
+        optional=(
+            "encoding",
+            "author_email",
+            "author_name",
+            "execute_filemode",
+            "start_branch",
+            "last_commit_id",
+        ),
     )
 
     @cli.register_custom_action(
@@ -164,7 +177,13 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
     @cli.register_custom_action(
         cls_names="ProjectFileManager",
         required=("file_path", "branch", "content", "commit_message"),
-        optional=("encoding", "author_email", "author_name"),
+        optional=(
+            "encoding",
+            "author_email",
+            "author_name",
+            "execute_filemode",
+            "start_branch",
+        ),
     )
     @exc.on_http_error(exc.GitlabCreateError)
     def create(
