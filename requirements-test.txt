@@ -8,4 +8,4 @@ pytest==8.3.3
 PyYaml==6.0.2
 responses==0.25.3
 respx==0.21.1
-wheel==0.44.0
+wheel==0.45.0
