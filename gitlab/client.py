@@ -32,7 +32,7 @@ try:
     import graphql
     import httpx
 
-    from ._backends.graphql import GitlabTransport
+    from ._backends.graphql import GitlabAsyncTransport, GitlabTransport
 
     _GQL_INSTALLED = True
 except ImportError:  # pragma: no cover
@@ -1278,14 +1278,13 @@ class GitlabList:
         raise StopIteration
 
 
-class GraphQL:
+class _BaseGraphQL:
     def __init__(
         self,
         url: Optional[str] = None,
         *,
         token: Optional[str] = None,
         ssl_verify: Union[bool, str] = True,
-        client: Optional[httpx.Client] = None,
         timeout: Optional[float] = None,
         user_agent: str = gitlab.const.USER_AGENT,
         fetch_schema_from_transport: bool = False,
@@ -1308,21 +1307,8 @@ class GraphQL:
         self._max_retries = max_retries
         self._obey_rate_limit = obey_rate_limit
         self._retry_transient_errors = retry_transient_errors
-
-        opts = self._get_client_opts()
-        self._http_client = client or httpx.Client(**opts)
-        self._transport = GitlabTransport(self._url, client=self._http_client)
-        self._client = gql.Client(
-            transport=self._transport,
-            fetch_schema_from_transport=fetch_schema_from_transport,
-        )
-        self._gql = gql.gql
-
-    def __enter__(self) -> "GraphQL":
-        return self
-
-    def __exit__(self, *args: Any) -> None:
-        self._http_client.close()
+        self._client_opts = self._get_client_opts()
+        self._fetch_schema_from_transport = fetch_schema_from_transport
 
     def _get_client_opts(self) -> Dict[str, Any]:
         headers = {"User-Agent": self._user_agent}
@@ -1335,6 +1321,48 @@ class GraphQL:
             "timeout": self._timeout,
             "verify": self._ssl_verify,
         }
+
+
+class GraphQL(_BaseGraphQL):
+    def __init__(
+        self,
+        url: Optional[str] = None,
+        *,
+        token: Optional[str] = None,
+        ssl_verify: Union[bool, str] = True,
+        client: Optional[httpx.Client] = None,
+        timeout: Optional[float] = None,
+        user_agent: str = gitlab.const.USER_AGENT,
+        fetch_schema_from_transport: bool = False,
+        max_retries: int = 10,
+        obey_rate_limit: bool = True,
+        retry_transient_errors: bool = False,
+    ) -> None:
+        super().__init__(
+            url=url,
+            token=token,
+            ssl_verify=ssl_verify,
+            timeout=timeout,
+            user_agent=user_agent,
+            fetch_schema_from_transport=fetch_schema_from_transport,
+            max_retries=max_retries,
+            obey_rate_limit=obey_rate_limit,
+            retry_transient_errors=retry_transient_errors,
+        )
+
+        self._http_client = client or httpx.Client(**self._client_opts)
+        self._transport = GitlabTransport(self._url, client=self._http_client)
+        self._client = gql.Client(
+            transport=self._transport,
+            fetch_schema_from_transport=fetch_schema_from_transport,
+        )
+        self._gql = gql.gql
+
+    def __enter__(self) -> "GraphQL":
+        return self
+
+    def __exit__(self, *args: Any) -> None:
+        self._http_client.close()
 
     def execute(
         self, request: Union[str, graphql.Source], *args: Any, **kwargs: Any
@@ -1349,6 +1377,82 @@ class GraphQL:
         while True:
             try:
                 result = self._client.execute(parsed_document, *args, **kwargs)
+            except gql.transport.exceptions.TransportServerError as e:
+                if retry.handle_retry_on_status(
+                    status_code=e.code, headers=self._transport.response_headers
+                ):
+                    continue
+
+                if e.code == 401:
+                    raise gitlab.exceptions.GitlabAuthenticationError(
+                        response_code=e.code,
+                        error_message=str(e),
+                    )
+
+                raise gitlab.exceptions.GitlabHttpError(
+                    response_code=e.code,
+                    error_message=str(e),
+                )
+
+            return result
+
+
+class AsyncGraphQL(_BaseGraphQL):
+    def __init__(
+        self,
+        url: Optional[str] = None,
+        *,
+        token: Optional[str] = None,
+        ssl_verify: Union[bool, str] = True,
+        client: Optional[httpx.AsyncClient] = None,
+        timeout: Optional[float] = None,
+        user_agent: str = gitlab.const.USER_AGENT,
+        fetch_schema_from_transport: bool = False,
+        max_retries: int = 10,
+        obey_rate_limit: bool = True,
+        retry_transient_errors: bool = False,
+    ) -> None:
+        super().__init__(
+            url=url,
+            token=token,
+            ssl_verify=ssl_verify,
+            timeout=timeout,
+            user_agent=user_agent,
+            fetch_schema_from_transport=fetch_schema_from_transport,
+            max_retries=max_retries,
+            obey_rate_limit=obey_rate_limit,
+            retry_transient_errors=retry_transient_errors,
+        )
+
+        self._http_client = client or httpx.AsyncClient(**self._client_opts)
+        self._transport = GitlabAsyncTransport(self._url, client=self._http_client)
+        self._client = gql.Client(
+            transport=self._transport,
+            fetch_schema_from_transport=fetch_schema_from_transport,
+        )
+        self._gql = gql.gql
+
+    async def __aenter__(self) -> "AsyncGraphQL":
+        return self
+
+    async def __aexit__(self, *args: Any) -> None:
+        await self._http_client.aclose()
+
+    async def execute(
+        self, request: Union[str, graphql.Source], *args: Any, **kwargs: Any
+    ) -> Any:
+        parsed_document = self._gql(request)
+        retry = utils.Retry(
+            max_retries=self._max_retries,
+            obey_rate_limit=self._obey_rate_limit,
+            retry_transient_errors=self._retry_transient_errors,
+        )
+
+        while True:
+            try:
+                result = await self._client.execute_async(
+                    parsed_document, *args, **kwargs
+                )
             except gql.transport.exceptions.TransportServerError as e:
                 if retry.handle_retry_on_status(
                     status_code=e.code, headers=self._transport.response_headers

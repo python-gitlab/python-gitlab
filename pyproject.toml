@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "python-gitlab"
-description="A python wrapper for the GitLab API"
+description="The python wrapper for the GitLab REST and GraphQL APIs."
 readme = "README.rst"
 authors = [
     {name = "Gauvain Pocentek", email= "gauvain@pocentek.net"}
