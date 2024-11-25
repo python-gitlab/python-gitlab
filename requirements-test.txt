@@ -1,4 +1,5 @@
 -r requirements.txt
+anyio==4.6.2.post1
 build==1.2.2.post1
 coverage==7.6.8
 pytest-console-scripts==1.4.1
@@ -8,4 +9,5 @@ pytest==8.3.4
 PyYaml==6.0.2
 responses==0.25.3
 respx==0.21.1
+trio==0.27.0
 wheel==0.45.1

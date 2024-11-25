@@ -25,9 +25,10 @@ python-gitlab
 .. image:: https://img.shields.io/github/license/python-gitlab/python-gitlab
    :target: https://github.com/python-gitlab/python-gitlab/blob/main/COPYING
 
-``python-gitlab`` is a Python package providing access to the GitLab server API.
+``python-gitlab`` is a Python package providing access to the GitLab APIs.
 
-It supports the v4 API of GitLab, and provides a CLI tool (``gitlab``).
+It includes a client for GitLab's v4 REST API, synchronous and asynchronous GraphQL API
+clients, as well as a CLI tool (``gitlab``) wrapping REST API endpoints.
 
 .. _features:
 
@@ -39,6 +40,7 @@ Features
 * write Pythonic code to manage your GitLab resources.
 * pass arbitrary parameters to the GitLab API. Simply follow GitLab's docs
   on what parameters are available.
+* use a synchronous or asynchronous client when using the GraphQL API.
 * access arbitrary endpoints as soon as they are available on GitLab, by using
   lower-level API methods.
 * use persistent requests sessions for authentication, proxy and certificate handling.
