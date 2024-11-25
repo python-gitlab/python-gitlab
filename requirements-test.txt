@@ -1,6 +1,6 @@
 -r requirements.txt
 build==1.2.2.post1
-coverage==7.6.7
+coverage==7.6.8
 pytest-console-scripts==1.4.1
 pytest-cov==6.0.0
 pytest-github-actions-annotate-failures==0.2.0
@@ -8,4 +8,4 @@ pytest==8.3.3
 PyYaml==6.0.2
 responses==0.25.3
 respx==0.21.1
-wheel==0.45.0
+wheel==0.45.1
