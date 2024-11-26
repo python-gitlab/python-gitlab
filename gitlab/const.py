@@ -12,6 +12,7 @@ class AccessLevel(IntEnum):
     NO_ACCESS: int = 0
     MINIMAL_ACCESS: int = 5
     GUEST: int = 10
+    PLANNER: int = 15
     REPORTER: int = 20
     DEVELOPER: int = 30
     MAINTAINER: int = 40
