@@ -7,8 +7,8 @@ from gitlab.mixins import (
     CRUDMixin,
     DeleteMixin,
     GetWithoutIdMixin,
-    ListMixin,
     ObjectDeleteMixin,
+    RetrieveMixin,
     SaveMixin,
     UpdateMethod,
     UpdateMixin,
@@ -58,7 +58,7 @@ class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectApprovalRuleManager(
-    ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
 ):
     _path = "/projects/{project_id}/approval_rules"
     _obj_cls = ProjectApprovalRule
@@ -67,6 +67,11 @@ class ProjectApprovalRuleManager(
         required=("name", "approvals_required"),
         optional=("user_ids", "group_ids", "protected_branch_ids", "usernames"),
     )
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> ProjectApprovalRule:
+        return cast(ProjectApprovalRule, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectMergeRequestApproval(SaveMixin, RESTObject):
