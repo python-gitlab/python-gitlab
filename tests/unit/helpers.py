@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import datetime
 import io
 import json
-from typing import Optional
 
 import requests
 import responses
@@ -47,7 +48,7 @@ class FakeManagerWithParent(base.RESTManager):
 # https://github.com/patrys/httmock/ which is licensed under the Apache License, Version
 # 2.0. Thus it is allowed to be used in this project.
 # https://www.apache.org/licenses/GPL-compatibility.html
-class Headers(object):
+class Headers:
     def __init__(self, res):
         self.headers = res.headers
 
@@ -64,7 +65,7 @@ def httmock_response(
     headers=None,
     reason=None,
     elapsed=0,
-    request: Optional[requests.models.PreparedRequest] = None,
+    request: requests.models.PreparedRequest | None = None,
     stream: bool = False,
     http_vsn=11,
 ) -> requests.models.Response:

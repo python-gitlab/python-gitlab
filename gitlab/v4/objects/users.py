@@ -4,7 +4,9 @@ https://docs.gitlab.com/ee/api/users.html
 https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
 """
 
-from typing import Any, cast, Dict, List, Optional, Union
+from __future__ import annotations
+
+from typing import Any, cast, Optional
 
 import requests
 
@@ -78,9 +80,7 @@ class CurrentUserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManag
     _obj_cls = CurrentUserEmail
     _create_attrs = RequiredOptional(required=("email",))
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> CurrentUserEmail:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> CurrentUserEmail:
         return cast(CurrentUserEmail, super().get(id=id, lazy=lazy, **kwargs))
 
 
@@ -94,7 +94,7 @@ class CurrentUserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTMana
     _create_attrs = RequiredOptional(required=("key",))
 
     def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+        self, id: str | int, lazy: bool = False, **kwargs: Any
     ) -> CurrentUserGPGKey:
         return cast(CurrentUserGPGKey, super().get(id=id, lazy=lazy, **kwargs))
 
@@ -108,9 +108,7 @@ class CurrentUserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager
     _obj_cls = CurrentUserKey
     _create_attrs = RequiredOptional(required=("title", "key"))
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> CurrentUserKey:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> CurrentUserKey:
         return cast(CurrentUserKey, super().get(id=id, lazy=lazy, **kwargs))
 
 
@@ -176,23 +174,23 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "username"
 
     customattributes: UserCustomAttributeManager
-    emails: "UserEmailManager"
+    emails: UserEmailManager
     events: UserEventManager
-    followers_users: "UserFollowersManager"
-    following_users: "UserFollowingManager"
-    gpgkeys: "UserGPGKeyManager"
-    identityproviders: "UserIdentityProviderManager"
-    impersonationtokens: "UserImpersonationTokenManager"
-    keys: "UserKeyManager"
-    memberships: "UserMembershipManager"
+    followers_users: UserFollowersManager
+    following_users: UserFollowingManager
+    gpgkeys: UserGPGKeyManager
+    identityproviders: UserIdentityProviderManager
+    impersonationtokens: UserImpersonationTokenManager
+    keys: UserKeyManager
+    memberships: UserMembershipManager
     personal_access_tokens: UserPersonalAccessTokenManager
-    projects: "UserProjectManager"
-    starred_projects: "StarredProjectManager"
-    status: "UserStatusManager"
+    projects: UserProjectManager
+    starred_projects: StarredProjectManager
+    status: UserStatusManager
 
     @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabBlockError)
-    def block(self, **kwargs: Any) -> Optional[bool]:
+    def block(self, **kwargs: Any) -> bool | None:
         """Block the user.
 
         Args:
@@ -217,7 +215,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabFollowError)
-    def follow(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def follow(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Follow the user.
 
         Args:
@@ -235,7 +233,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabUnfollowError)
-    def unfollow(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def unfollow(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Unfollow the user.
 
         Args:
@@ -253,7 +251,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabUnblockError)
-    def unblock(self, **kwargs: Any) -> Optional[bool]:
+    def unblock(self, **kwargs: Any) -> bool | None:
         """Unblock the user.
 
         Args:
@@ -278,7 +276,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabDeactivateError)
-    def deactivate(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def deactivate(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Deactivate the user.
 
         Args:
@@ -299,7 +297,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabActivateError)
-    def activate(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def activate(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Activate the user.
 
         Args:
@@ -320,7 +318,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabUserApproveError)
-    def approve(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def approve(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Approve a user creation request.
 
         Args:
@@ -338,7 +336,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabUserRejectError)
-    def reject(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def reject(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Reject a user creation request.
 
         Args:
@@ -356,7 +354,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabBanError)
-    def ban(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def ban(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Ban the user.
 
         Args:
@@ -377,7 +375,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabUnbanError)
-    def unban(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def unban(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Unban the user.
 
         Args:
@@ -468,7 +466,7 @@ class UserManager(CRUDMixin, RESTManager):
     )
     _types = {"confirm": types.LowercaseStringAttribute, "avatar": types.ImageAttribute}
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> User:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> User:
         return cast(User, super().get(id=id, lazy=lazy, **kwargs))
 
 
@@ -494,7 +492,7 @@ class UserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(required=("email",))
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> UserEmail:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> UserEmail:
         return cast(UserEmail, super().get(id=id, lazy=lazy, **kwargs))
 
 
@@ -531,7 +529,7 @@ class UserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(required=("key",))
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> UserGPGKey:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> UserGPGKey:
         return cast(UserGPGKey, super().get(id=id, lazy=lazy, **kwargs))
 
 
@@ -545,7 +543,7 @@ class UserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(required=("title", "key"))
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> UserKey:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> UserKey:
         return cast(UserKey, super().get(id=id, lazy=lazy, **kwargs))
 
 
@@ -575,7 +573,7 @@ class UserImpersonationTokenManager(NoUpdateMixin, RESTManager):
     _types = {"scopes": ArrayAttribute}
 
     def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+        self, id: str | int, lazy: bool = False, **kwargs: Any
     ) -> UserImpersonationToken:
         return cast(UserImpersonationToken, super().get(id=id, lazy=lazy, **kwargs))
 
@@ -590,9 +588,7 @@ class UserMembershipManager(RetrieveMixin, RESTManager):
     _from_parent_attrs = {"user_id": "id"}
     _list_filters = ("type",)
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> UserMembership:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> UserMembership:
         return cast(UserMembership, super().get(id=id, lazy=lazy, **kwargs))
 
 
@@ -646,7 +642,7 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
         "id_before",
     )
 
-    def list(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+    def list(self, **kwargs: Any) -> RESTObjectList | list[RESTObject]:
         """Retrieve a list of objects.
 
         Args:

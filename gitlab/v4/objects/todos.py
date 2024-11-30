@@ -1,4 +1,4 @@
-from typing import Any, Dict, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -14,7 +14,7 @@ __all__ = [
 class Todo(ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action(cls_names="Todo")
     @exc.on_http_error(exc.GitlabTodoError)
-    def mark_as_done(self, **kwargs: Any) -> Dict[str, Any]:
+    def mark_as_done(self, **kwargs: Any) -> dict[str, Any]:
         """Mark the todo as done.
 
         Args:

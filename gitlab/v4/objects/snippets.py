@@ -1,4 +1,7 @@
-from typing import Any, Callable, cast, Iterator, List, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from collections.abc import Iterator
+from typing import Any, Callable, cast, TYPE_CHECKING
 
 import requests
 
@@ -29,12 +32,12 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     def content(
         self,
         streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
+        action: Callable[..., Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Return the content of a snippet.
 
         Args:
@@ -90,7 +93,7 @@ class SnippetManager(CRUDMixin, RESTManager):
     )
 
     @cli.register_custom_action(cls_names="SnippetManager")
-    def list_public(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+    def list_public(self, **kwargs: Any) -> RESTObjectList | list[RESTObject]:
         """List all public snippets.
 
         Args:
@@ -110,7 +113,7 @@ class SnippetManager(CRUDMixin, RESTManager):
         return self.list(path="/snippets/public", **kwargs)
 
     @cli.register_custom_action(cls_names="SnippetManager")
-    def list_all(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+    def list_all(self, **kwargs: Any) -> RESTObjectList | list[RESTObject]:
         """List all snippets.
 
         Args:
@@ -129,7 +132,7 @@ class SnippetManager(CRUDMixin, RESTManager):
         """
         return self.list(path="/snippets/all", **kwargs)
 
-    def public(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+    def public(self, **kwargs: Any) -> RESTObjectList | list[RESTObject]:
         """List all public snippets.
 
         Args:
@@ -155,7 +158,7 @@ class SnippetManager(CRUDMixin, RESTManager):
         )
         return self.list(path="/snippets/public", **kwargs)
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Snippet:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> Snippet:
         return cast(Snippet, super().get(id=id, lazy=lazy, **kwargs))
 
 
@@ -172,12 +175,12 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
     def content(
         self,
         streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
+        action: Callable[..., Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Return the content of a snippet.
 
         Args:
@@ -232,7 +235,5 @@ class ProjectSnippetManager(CRUDMixin, RESTManager):
         ),
     )
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectSnippet:
+    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> ProjectSnippet:
         return cast(ProjectSnippet, super().get(id=id, lazy=lazy, **kwargs))
