@@ -95,6 +95,7 @@ Get a single MR::
     mr = project.mergerequests.get(mr_iid)
 
 Get MR reviewer details::
+
     mr = project.mergerequests.get(mr_iid)
     reviewers = mr.reviewer_details.list()
 
@@ -104,6 +105,13 @@ Create a MR::
                                        'target_branch': 'main',
                                        'title': 'merge cool feature',
                                        'labels': ['label1', 'label2']})
+
+    # Use a project MR description template
+    mr_description_template = project.merge_request_templates.get("Default")
+    mr = project.mergerequests.create({'source_branch': 'cool_feature',
+                                       'target_branch': 'main',
+                                       'title': 'merge cool feature',
+                                       'description': mr_description_template.content})
 
 Update a MR::
 
