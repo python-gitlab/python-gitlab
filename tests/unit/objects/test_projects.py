@@ -52,6 +52,19 @@ project_starrers_content = {
         "name": "name",
     },
 }
+pull_mirror_content = content = {
+    "update_status": "none",
+    "url": "https://gitlab.example.com/root/mirror.git",
+    "last_error": None,
+    "last_update_at": "2024-12-03T08:01:05.466Z",
+    "last_update_started_at": "2024-12-03T08:01:05.342Z",
+    "last_successful_update_at": None,
+    "enabled": True,
+    "mirror_trigger_builds": False,
+    "only_mirror_protected_branches": None,
+    "mirror_overwrites_diverged_branches": None,
+    "mirror_branch_regex": None,
+}
 upload_file_content = {
     "alt": "filename",
     "url": "/uploads/66dbcd21ec5d24ed6ea225176098d52b/filename.png",
@@ -525,6 +538,19 @@ def resp_start_pull_mirroring_project():
 
 
 @pytest.fixture
+def resp_pull_mirror_configuration_project():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.PUT,
+            url="http://localhost/api/v4/projects/1/mirror/pull",
+            json=pull_mirror_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
 def resp_pull_mirror_details_project():
     with responses.RequestsMock() as rsps:
         rsps.add(
@@ -769,6 +795,14 @@ def test_transfer_project(project, resp_transfer_project):
 
 def test_project_pull_mirror(project, resp_start_pull_mirroring_project):
     project.mirror_pull()
+
+
+def test_project_pull_mirror_configuration(
+    project, resp_pull_mirror_configuration_project
+):
+    project.mirror_pull_configuration(
+        {"url": "https://gitlab.example.com/root/mirror.git"}
+    )
 
 
 def test_project_pull_mirror_details(project, resp_pull_mirror_details_project):

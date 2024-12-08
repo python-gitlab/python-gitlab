@@ -310,6 +310,17 @@ def test_project_remote_mirrors(project):
     mirror.delete()
 
 
+def test_project_pull_mirrors(project):
+    mirror_url = "https://gitlab.example.com/root/mirror.git"
+
+    mirror = project.mirror_pull_configuration(url=mirror_url)
+    assert mirror["url"] == mirror_url
+    assert mirror["enabled"] is True
+
+    mirror = project.mirror_pull_configuration(enabled=False, url=mirror_url)
+    assert mirror["enabled"] is False
+
+
 def test_project_services(project):
     # Use 'update' to create a service as we don't have a 'create' method and
     # to add one is somewhat complicated so it hasn't been done yet.
