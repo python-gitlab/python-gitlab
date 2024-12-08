@@ -16,7 +16,7 @@ To connect to GitLab.com or another GitLab instance, create a ``gitlab.Gitlab`` 
    access token.
 
    For the full list of available options and how to obtain these tokens, please see
-   https://docs.gitlab.com/ee/api/index.html#authentication.
+   https://docs.gitlab.com/ee/api/rest/authentication.html.
 
 .. code-block:: python
 
