@@ -100,6 +100,14 @@ from .statistics import (  # noqa: F401
     ProjectIssuesStatisticsManager,
 )
 from .tags import ProjectProtectedTagManager, ProjectTagManager  # noqa: F401
+from .templates import (  # noqa: F401
+    ProjectDockerfileTemplateManager,
+    ProjectGitignoreTemplateManager,
+    ProjectGitlabciymlTemplateManager,
+    ProjectIssueTemplateManager,
+    ProjectLicenseTemplateManager,
+    ProjectMergeRequestTemplateManager,
+)
 from .triggers import ProjectTriggerManager  # noqa: F401
 from .users import ProjectUserManager  # noqa: F401
 from .variables import ProjectVariableManager  # noqa: F401
@@ -189,27 +197,33 @@ class Project(
     customattributes: ProjectCustomAttributeManager
     deployments: ProjectDeploymentManager
     deploytokens: ProjectDeployTokenManager
+    dockerfile_templates: ProjectDockerfileTemplateManager
     environments: ProjectEnvironmentManager
     events: ProjectEventManager
     exports: ProjectExportManager
     files: ProjectFileManager
     forks: "ProjectForkManager"
     generic_packages: GenericPackageManager
+    gitignore_templates: ProjectGitignoreTemplateManager
+    gitlabciyml_templates: ProjectGitlabciymlTemplateManager
     groups: ProjectGroupManager
     hooks: ProjectHookManager
     imports: ProjectImportManager
     integrations: ProjectIntegrationManager
     invitations: ProjectInvitationManager
     issues: ProjectIssueManager
+    issue_templates: ProjectIssueTemplateManager
     issues_statistics: ProjectIssuesStatisticsManager
     iterations: ProjectIterationManager
     jobs: ProjectJobManager
     job_token_scope: ProjectJobTokenScopeManager
     keys: ProjectKeyManager
     labels: ProjectLabelManager
+    license_templates: ProjectLicenseTemplateManager
     members: ProjectMemberManager
     members_all: ProjectMemberAllManager
     mergerequests: ProjectMergeRequestManager
+    merge_request_templates: ProjectMergeRequestTemplateManager
     merge_trains: ProjectMergeTrainManager
     milestones: ProjectMilestoneManager
     notes: ProjectNoteManager
