@@ -1,7 +1,7 @@
 -r requirements.txt
-anyio==4.6.2.post1
+anyio==4.7.0
 build==1.2.2.post1
-coverage==7.6.8
+coverage==7.6.9
 pytest-console-scripts==1.4.1
 pytest-cov==6.0.0
 pytest-github-actions-annotate-failures==0.2.0
