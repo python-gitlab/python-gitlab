@@ -564,6 +564,65 @@ class Project(
         path = f"/projects/{self.encoded_id}/mirror/pull"
         self.manager.gitlab.http_post(path, **kwargs)
 
+    # Deactivation works via the same API Method,
+    # so a URL is required for deactivation even if it is not actually needed
+    @cli.register_custom_action(cls_names="Project", required=("url",))
+    @exc.on_http_error(exc.GitlabCreateError)
+    def mirror_pull_configuration(
+        self,
+        url: str,
+        auth_user: Optional[str] = None,
+        auth_password: Optional[str] = None,
+        mirror_branch_regex: Optional[str] = None,
+        enabled: bool = True,
+        mirror_trigger_builds: bool = False,
+        only_mirror_protected_branches: bool = False,
+        mirror_overwrites_diverged_branches: bool = False,
+        **kwargs: Any,
+    ) -> Dict[str, Any]:
+        """Configure pull mirroring settings.
+
+        Args:
+            enabled: Enables pull mirroring on project
+            url: URL of remote repository being mirrored
+            auth_user: Username used for authentication of a project to pull mirror
+            auth_password: Password used for authentication of a project to pull mirror
+            mirror_trigger_builds: Trigger pipelines for mirror updates
+            only_mirror_protected_branches: Limits mirroring to only protected branches
+            mirror_overwrites_diverged_branches: Overwrite diverged branches
+            mirror_branch_regex: Contains a regular expression.
+                Only branches with names matching the regex are mirrored.
+                Requires only_mirror_protected_branches to be disabled.
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabCreateError: If the server failed to perform the request
+        """
+        data = {
+            "enabled": enabled,
+            "url": url,
+            "mirror_trigger_builds": mirror_trigger_builds,
+            "only_mirror_protected_branches": only_mirror_protected_branches,
+            "mirror_overwrites_diverged_branches": mirror_overwrites_diverged_branches,
+        }
+
+        if auth_user is not None:
+            data["auth_user"] = auth_user
+        if auth_password is not None:
+            data["auth_password"] = auth_password
+        if mirror_branch_regex is not None:
+            data["mirror_branch_regex"] = mirror_branch_regex
+
+        # Disabling doesn't reset the regex settings by default
+        if enabled is False:
+            data["mirror_branch_regex"] = None
+
+        path = f"/projects/{self.encoded_id}/mirror/pull"
+        result = self.manager.gitlab.http_put(path, post_data=data, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(result, dict)
+        return result
+
     @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabGetError)
     def mirror_pull_details(self, **kwargs: Any) -> Dict[str, Any]:
