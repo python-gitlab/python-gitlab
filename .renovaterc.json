@@ -27,6 +27,11 @@
   ],
   "packageRules": [
     {
+      "description": "Pin httpx until https://github.com/lundberg/respx/issues/277 is solved",
+      "matchPackageNames": "httpx",
+      "allowedVersions": "<0.28.0"
+    },
+    {
       "depTypeList": [
         "action"
       ],
