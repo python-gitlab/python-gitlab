@@ -246,6 +246,10 @@ Get a list of users for the repository::
     # search for users
     users = p.users.list(search='pattern')
 
+Configure the pull mirror (EE edition)::
+
+    project.mirror_pull("https://gitlab.example.com/root/mirror.git")
+
 Start the pull mirroring process (EE edition)::
 
     project.mirror_pull()
@@ -253,6 +257,10 @@ Start the pull mirroring process (EE edition)::
 Get a project’s pull mirror details (EE edition)::
 
     mirror_pull_details = project.mirror_pull_details()
+
+Delete the pull mirror (EE edition)::
+
+    project.mirror_pull(enabled=False, url="https://gitlab.example.com/root/mirror.git")
 
 Import / Export
 ===============
