@@ -11,10 +11,10 @@ def protected_registry_feature(gl: Gitlab):
 
 @pytest.mark.skip(reason="Not released yet")
 def test_project_protected_registry(project: Project):
-    rules = project.registry_protection_rules.list()
+    rules = project.registry_repository_protection_rules.list()
     assert isinstance(rules, list)
 
-    protected_registry = project.registry_protection_rules.create(
+    protected_registry = project.registry_repository_protection_rules.create(
         {
             "repository_path_pattern": "test/image",
             "minimum_access_level_for_push": "maintainer",
