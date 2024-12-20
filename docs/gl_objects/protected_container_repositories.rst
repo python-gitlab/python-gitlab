@@ -9,22 +9,22 @@ References
 
 * v4 API:
 
-  + :class:`gitlab.v4.objects.ProjectRegistryProtectionRuleRule`
-  + :class:`gitlab.v4.objects.ProjectRegistryProtectionRuleRuleManager`
-  + :attr:`gitlab.v4.objects.Project.registry_protection_rules`
+  + :class:`gitlab.v4.objects.ProjectRegistryRepositoryProtectionRuleRule`
+  + :class:`gitlab.v4.objects.ProjectRegistryRepositoryProtectionRuleRuleManager`
+  + :attr:`gitlab.v4.objects.Project.registry_repository_protection_rules`
 
-* GitLab API: https://docs.gitlab.com/ee/api/project_container_registry_protection_rules.html
+* GitLab API: https://docs.gitlab.com/ee/api/container_repository_protection_rules.html
 
 Examples
 --------
 
 List the container registry protection rules for a project::
 
-    registry_rules = project.registry_protection_rules.list()
+    registry_rules = project.registry_repository_protection_rules.list()
 
 Create a container registry protection rule::
 
-    registry_rule = project.registry_protection_rules.create(
+    registry_rule = project.registry_repository_protection_rules.create(
         {
             'repository_path_pattern': 'test/image',
             'minimum_access_level_for_push': 'maintainer',
@@ -39,6 +39,6 @@ Update a container registry protection rule::
 
 Delete a container registry protection rule::
 
-    registry_rule = project.registry_protection_rules.delete(registry_rule.id)
+    registry_rule = project.registry_repository_protection_rules.delete(registry_rule.id)
     # or
     registry_rule.delete()

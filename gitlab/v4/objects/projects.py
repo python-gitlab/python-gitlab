@@ -86,8 +86,11 @@ from .pipelines import (  # noqa: F401
 )
 from .project_access_tokens import ProjectAccessTokenManager  # noqa: F401
 from .push_rules import ProjectPushRulesManager  # noqa: F401
-from .registry_protection_rules import (  # noqa: F401
+from .registry_protection_rules import (  # noqa: F401; deprecated
     ProjectRegistryProtectionRuleManager,
+)
+from .registry_repository_protection_rules import (  # noqa: F401
+    ProjectRegistryRepositoryProtectionRuleManager,
 )
 from .releases import ProjectReleaseManager  # noqa: F401
 from .repositories import RepositoryMixin
@@ -239,6 +242,7 @@ class Project(
     protectedtags: ProjectProtectedTagManager
     pushrules: ProjectPushRulesManager
     registry_protection_rules: ProjectRegistryProtectionRuleManager
+    registry_repository_protection_rules: ProjectRegistryRepositoryProtectionRuleManager
     releases: ProjectReleaseManager
     resource_groups: ProjectResourceGroupManager
     remote_mirrors: "ProjectRemoteMirrorManager"
