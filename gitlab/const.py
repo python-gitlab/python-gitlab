@@ -9,83 +9,83 @@ class GitlabEnum(str, Enum):
 
 # https://gitlab.com/gitlab-org/gitlab/-/blob/e97357824bedf007e75f8782259fe07435b64fbb/lib/gitlab/access.rb#L12-18
 class AccessLevel(IntEnum):
-    NO_ACCESS: int = 0
-    MINIMAL_ACCESS: int = 5
-    GUEST: int = 10
-    PLANNER: int = 15
-    REPORTER: int = 20
-    DEVELOPER: int = 30
-    MAINTAINER: int = 40
-    OWNER: int = 50
-    ADMIN: int = 60
+    NO_ACCESS = 0
+    MINIMAL_ACCESS = 5
+    GUEST = 10
+    PLANNER = 15
+    REPORTER = 20
+    DEVELOPER = 30
+    MAINTAINER = 40
+    OWNER = 50
+    ADMIN = 60
 
 
 # https://gitlab.com/gitlab-org/gitlab/-/blob/e97357824bedf007e75f8782259fe07435b64fbb/lib/gitlab/visibility_level.rb#L23-25
 class Visibility(GitlabEnum):
-    PRIVATE: str = "private"
-    INTERNAL: str = "internal"
-    PUBLIC: str = "public"
+    PRIVATE = "private"
+    INTERNAL = "internal"
+    PUBLIC = "public"
 
 
 class NotificationLevel(GitlabEnum):
-    DISABLED: str = "disabled"
-    PARTICIPATING: str = "participating"
-    WATCH: str = "watch"
-    GLOBAL: str = "global"
-    MENTION: str = "mention"
-    CUSTOM: str = "custom"
+    DISABLED = "disabled"
+    PARTICIPATING = "participating"
+    WATCH = "watch"
+    GLOBAL = "global"
+    MENTION = "mention"
+    CUSTOM = "custom"
 
 
 # https://gitlab.com/gitlab-org/gitlab/-/blob/e97357824bedf007e75f8782259fe07435b64fbb/app/views/search/_category.html.haml#L10-37
 class SearchScope(GitlabEnum):
     # all scopes (global, group and  project)
-    PROJECTS: str = "projects"
-    ISSUES: str = "issues"
-    MERGE_REQUESTS: str = "merge_requests"
-    MILESTONES: str = "milestones"
-    WIKI_BLOBS: str = "wiki_blobs"
-    COMMITS: str = "commits"
-    BLOBS: str = "blobs"
-    USERS: str = "users"
+    PROJECTS = "projects"
+    ISSUES = "issues"
+    MERGE_REQUESTS = "merge_requests"
+    MILESTONES = "milestones"
+    WIKI_BLOBS = "wiki_blobs"
+    COMMITS = "commits"
+    BLOBS = "blobs"
+    USERS = "users"
 
     # specific global scope
-    GLOBAL_SNIPPET_TITLES: str = "snippet_titles"
+    GLOBAL_SNIPPET_TITLES = "snippet_titles"
 
     # specific project scope
-    PROJECT_NOTES: str = "notes"
+    PROJECT_NOTES = "notes"
 
 
 # https://docs.gitlab.com/ee/api/merge_requests.html#merge-status
 class DetailedMergeStatus(GitlabEnum):
     # possible values for the detailed_merge_status field of Merge Requests
-    BLOCKED_STATUS: str = "blocked_status"
-    BROKEN_STATUS: str = "broken_status"
-    CHECKING: str = "checking"
-    UNCHECKED: str = "unchecked"
-    CI_MUST_PASS: str = "ci_must_pass"
-    CI_STILL_RUNNING: str = "ci_still_running"
-    DISCUSSIONS_NOT_RESOLVED: str = "discussions_not_resolved"
-    DRAFT_STATUS: str = "draft_status"
-    EXTERNAL_STATUS_CHECKS: str = "external_status_checks"
-    MERGEABLE: str = "mergeable"
-    NOT_APPROVED: str = "not_approved"
-    NOT_OPEN: str = "not_open"
-    POLICIES_DENIED: str = "policies_denied"
+    BLOCKED_STATUS = "blocked_status"
+    BROKEN_STATUS = "broken_status"
+    CHECKING = "checking"
+    UNCHECKED = "unchecked"
+    CI_MUST_PASS = "ci_must_pass"
+    CI_STILL_RUNNING = "ci_still_running"
+    DISCUSSIONS_NOT_RESOLVED = "discussions_not_resolved"
+    DRAFT_STATUS = "draft_status"
+    EXTERNAL_STATUS_CHECKS = "external_status_checks"
+    MERGEABLE = "mergeable"
+    NOT_APPROVED = "not_approved"
+    NOT_OPEN = "not_open"
+    POLICIES_DENIED = "policies_denied"
 
 
 # https://docs.gitlab.com/ee/api/pipelines.html
 class PipelineStatus(GitlabEnum):
-    CREATED: str = "created"
-    WAITING_FOR_RESOURCE: str = "waiting_for_resource"
-    PREPARING: str = "preparing"
-    PENDING: str = "pending"
-    RUNNING: str = "running"
-    SUCCESS: str = "success"
-    FAILED: str = "failed"
-    CANCELED: str = "canceled"
-    SKIPPED: str = "skipped"
-    MANUAL: str = "manual"
-    SCHEDULED: str = "scheduled"
+    CREATED = "created"
+    WAITING_FOR_RESOURCE = "waiting_for_resource"
+    PREPARING = "preparing"
+    PENDING = "pending"
+    RUNNING = "running"
+    SUCCESS = "success"
+    FAILED = "failed"
+    CANCELED = "canceled"
+    SKIPPED = "skipped"
+    MANUAL = "manual"
+    SCHEDULED = "scheduled"
 
 
 DEFAULT_URL: str = "https://gitlab.com"
