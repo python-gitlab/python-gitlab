@@ -303,6 +303,7 @@ class Gitlab:
             order_by=config.order_by,
             user_agent=config.user_agent,
             retry_transient_errors=config.retry_transient_errors,
+            keep_base_url=config.keep_base_url,
             **kwargs,
         )
 
