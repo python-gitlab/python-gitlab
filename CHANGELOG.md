@@ -1,6 +1,25 @@
 # CHANGELOG
 
 
+## v5.3.0 (2024-12-28)
+
+### Chores
+
+- **deps**: Update gitlab/gitlab-ee docker tag to v17.7.0-ee.0
+  ([#3070](https://github.com/python-gitlab/python-gitlab/pull/3070),
+  [`62b7eb7`](https://github.com/python-gitlab/python-gitlab/commit/62b7eb7ca0adcb26912f9c0561de5c513b6ede6d))
+
+Co-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+
+- **renovate**: Update httpx and respx again
+  ([`aa07449`](https://github.com/python-gitlab/python-gitlab/commit/aa074496bdc4390a3629f1b0964d9846fe08ad92))
+
+### Features
+
+- **api**: Support the new registry protection rule endpoint
+  ([`40af1c8`](https://github.com/python-gitlab/python-gitlab/commit/40af1c8a14814cb0034dfeaaa33d8c38504fe34e))
+
+
 ## v5.2.0 (2024-12-17)
 
 ### Chores
