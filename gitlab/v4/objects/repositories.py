@@ -4,7 +4,18 @@ GitLab API: https://docs.gitlab.com/ee/api/repositories.html
 Currently this module only contains repository-related methods for projects.
 """
 
-from typing import Any, Callable, Dict, Iterator, List, Optional, TYPE_CHECKING, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterator,
+    List,
+    Literal,
+    Optional,
+    overload,
+    TYPE_CHECKING,
+    Union,
+)
 
 import requests
 
@@ -106,6 +117,42 @@ class RepositoryMixin(_RestObjectBase):
         path = f"/projects/{self.encoded_id}/repository/blobs/{sha}"
         return self.manager.gitlab.http_get(path, **kwargs)
 
+    @overload
+    def repository_raw_blob(
+        self,
+        sha: str,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def repository_raw_blob(
+        self,
+        sha: str,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def repository_raw_blob(
+        self,
+        sha: str,
+        streamed: Literal[True] = True,
+        action: Optional[Callable[[bytes], None]] = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
+
     @cli.register_custom_action(cls_names="Project", required=("sha",))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_raw_blob(
@@ -196,6 +243,42 @@ class RepositoryMixin(_RestObjectBase):
         """
         path = f"/projects/{self.encoded_id}/repository/contributors"
         return self.manager.gitlab.http_list(path, **kwargs)
+
+    @overload
+    def repository_archive(
+        self,
+        sha: Optional[str] = None,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def repository_archive(
+        self,
+        sha: Optional[str] = None,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def repository_archive(
+        self,
+        sha: Optional[str] = None,
+        streamed: Literal[True] = True,
+        action: Optional[Callable[[bytes], None]] = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
 
     @cli.register_custom_action(cls_names="Project", optional=("sha", "format"))
     @exc.on_http_error(exc.GitlabListError)
