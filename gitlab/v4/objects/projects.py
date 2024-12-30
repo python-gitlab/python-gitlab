@@ -11,7 +11,9 @@ from typing import (
     Dict,
     Iterator,
     List,
+    Literal,
     Optional,
+    overload,
     TYPE_CHECKING,
     Union,
 )
@@ -486,6 +488,42 @@ class Project(
         """
         path = f"/projects/{self.encoded_id}/restore"
         self.manager.gitlab.http_post(path, **kwargs)
+
+    @overload
+    def snapshot(
+        self,
+        wiki: bool = False,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def snapshot(
+        self,
+        wiki: bool = False,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def snapshot(
+        self,
+        wiki: bool = False,
+        streamed: Literal[True] = True,
+        action: Optional[Callable[[bytes], None]] = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
 
     @cli.register_custom_action(cls_names="Project", optional=("wiki",))
     @exc.on_http_error(exc.GitlabGetError)
