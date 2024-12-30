@@ -6,7 +6,9 @@ from typing import (
     Dict,
     Iterator,
     List,
+    Literal,
     Optional,
+    overload,
     Tuple,
     Type,
     TYPE_CHECKING,
@@ -611,6 +613,39 @@ class DownloadMixin(_RestObjectBase):
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
     manager: base.RESTManager
+
+    @overload
+    def download(
+        self,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def download(
+        self,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def download(
+        self,
+        streamed: Literal[True] = True,
+        action: Optional[Callable[[bytes], None]] = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
 
     @cli.register_custom_action(cls_names=("GroupExport", "ProjectExport"))
     @exc.on_http_error(exc.GitlabGetError)

@@ -3,7 +3,17 @@ GitLab API:
 https://docs.gitlab.com/ee/api/secure_files.html
 """
 
-from typing import Any, Callable, cast, Iterator, Optional, TYPE_CHECKING, Union
+from typing import (
+    Any,
+    Callable,
+    cast,
+    Iterator,
+    Literal,
+    Optional,
+    overload,
+    TYPE_CHECKING,
+    Union,
+)
 
 import requests
 
@@ -18,6 +28,39 @@ __all__ = ["ProjectSecureFile", "ProjectSecureFileManager"]
 
 
 class ProjectSecureFile(ObjectDeleteMixin, RESTObject):
+    @overload
+    def download(
+        self,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def download(
+        self,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def download(
+        self,
+        streamed: Literal[True] = True,
+        action: Optional[Callable[[bytes], None]] = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
+
     @cli.register_custom_action(cls_names="ProjectSecureFile")
     @exc.on_http_error(exc.GitlabGetError)
     def download(
