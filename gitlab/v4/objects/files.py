@@ -277,6 +277,7 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
     @cli.register_custom_action(
         cls_names="ProjectFileManager",
         required=("file_path",),
+        optional=("ref",),
     )
     @exc.on_http_error(exc.GitlabGetError)
     def raw(
