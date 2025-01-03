@@ -16,6 +16,8 @@ from gitlab.mixins import (
 from gitlab.types import RequiredOptional
 
 __all__ = [
+    "GroupApprovalRule",
+    "GroupApprovalRuleManager",
     "ProjectApproval",
     "ProjectApprovalManager",
     "ProjectApprovalRule",
@@ -27,6 +29,26 @@ __all__ = [
     "ProjectMergeRequestApprovalState",
     "ProjectMergeRequestApprovalStateManager",
 ]
+
+
+class GroupApprovalRule(SaveMixin, RESTObject):
+    _id_attr = "id"
+    _repr_attr = "name"
+
+
+class GroupApprovalRuleManager(RetrieveMixin, CreateMixin, UpdateMixin, RESTManager):
+    _path = "/groups/{group_id}/approval_rules"
+    _obj_cls = GroupApprovalRule
+    _from_parent_attrs = {"group_id": "id"}
+    _create_attrs = RequiredOptional(
+        required=("name", "approvals_required"),
+        optional=("user_ids", "group_ids", "rule_type"),
+    )
+
+    def get(
+        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
+    ) -> GroupApprovalRule:
+        return cast(GroupApprovalRule, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectApproval(SaveMixin, RESTObject):
