@@ -1,4 +1,15 @@
-from typing import Any, Callable, cast, Dict, Iterator, Optional, TYPE_CHECKING, Union
+from typing import (
+    Any,
+    Callable,
+    cast,
+    Dict,
+    Iterator,
+    Literal,
+    Optional,
+    overload,
+    TYPE_CHECKING,
+    Union,
+)
 
 import requests
 
@@ -115,6 +126,39 @@ class ProjectJob(RefreshMixin, RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/artifacts"
         self.manager.gitlab.http_delete(path, **kwargs)
 
+    @overload
+    def artifacts(
+        self,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def artifacts(
+        self,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def artifacts(
+        self,
+        streamed: Literal[True] = True,
+        action: Optional[Callable[[bytes], None]] = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
+
     @cli.register_custom_action(cls_names="ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
     def artifacts(
@@ -155,6 +199,42 @@ class ProjectJob(RefreshMixin, RESTObject):
         return utils.response_content(
             result, streamed, action, chunk_size, iterator=iterator
         )
+
+    @overload
+    def artifact(
+        self,
+        path: str,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def artifact(
+        self,
+        path: str,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def artifact(
+        self,
+        path: str,
+        streamed: Literal[True] = True,
+        action: Optional[Callable[[bytes], None]] = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
 
     @cli.register_custom_action(cls_names="ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)
@@ -198,6 +278,39 @@ class ProjectJob(RefreshMixin, RESTObject):
         return utils.response_content(
             result, streamed, action, chunk_size, iterator=iterator
         )
+
+    @overload
+    def trace(
+        self,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def trace(
+        self,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def trace(
+        self,
+        streamed: Literal[True] = True,
+        action: Optional[Callable[[bytes], None]] = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
 
     @cli.register_custom_action(cls_names="ProjectJob")
     @exc.on_http_error(exc.GitlabGetError)

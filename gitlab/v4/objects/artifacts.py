@@ -3,7 +3,16 @@ GitLab API:
 https://docs.gitlab.com/ee/api/job_artifacts.html
 """
 
-from typing import Any, Callable, Iterator, Optional, TYPE_CHECKING, Union
+from typing import (
+    Any,
+    Callable,
+    Iterator,
+    Literal,
+    Optional,
+    overload,
+    TYPE_CHECKING,
+    Union,
+)
 
 import requests
 
@@ -42,6 +51,45 @@ class ProjectArtifactManager(RESTManager):
         if TYPE_CHECKING:
             assert path is not None
         self.gitlab.http_delete(path, **kwargs)
+
+    @overload
+    def download(
+        self,
+        ref_name: str,
+        job: str,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def download(
+        self,
+        ref_name: str,
+        job: str,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def download(
+        self,
+        ref_name: str,
+        job: str,
+        streamed: Literal[True] = True,
+        action: Optional[Callable[[bytes], None]] = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
 
     @cli.register_custom_action(
         cls_names="ProjectArtifactManager",
@@ -93,6 +141,48 @@ class ProjectArtifactManager(RESTManager):
         return utils.response_content(
             result, streamed, action, chunk_size, iterator=iterator
         )
+
+    @overload
+    def raw(
+        self,
+        ref_name: str,
+        artifact_path: str,
+        job: str,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def raw(
+        self,
+        ref_name: str,
+        artifact_path: str,
+        job: str,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def raw(
+        self,
+        ref_name: str,
+        artifact_path: str,
+        job: str,
+        streamed: Literal[True] = True,
+        action: Optional[Callable[[bytes], None]] = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
 
     @cli.register_custom_action(
         cls_names="ProjectArtifactManager",
