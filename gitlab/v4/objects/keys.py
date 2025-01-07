@@ -1,4 +1,4 @@
-from typing import Any, cast, Optional, TYPE_CHECKING, Union
+from typing import Any, Optional, TYPE_CHECKING, Union
 
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import GetMixin
@@ -21,7 +21,7 @@ class KeyManager(GetMixin, RESTManager):
         self, id: Optional[Union[int, str]] = None, lazy: bool = False, **kwargs: Any
     ) -> Key:
         if id is not None:
-            return cast(Key, super().get(id, lazy=lazy, **kwargs))
+            return super().get(id, lazy=lazy, **kwargs)
 
         if "fingerprint" not in kwargs:
             raise AttributeError("Missing attribute: id or fingerprint")

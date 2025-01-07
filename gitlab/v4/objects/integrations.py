@@ -3,7 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ee/api/integrations.html
 """
 
-from typing import Any, cast, List, Union
+from typing import List
 
 from gitlab import cli
 from gitlab.base import RESTManager, RESTObject
@@ -265,11 +265,6 @@ class ProjectIntegrationManager(
         "youtrack": (("issues_url", "project_url"), ("description", "push_events")),
     }
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectIntegration:
-        return cast(ProjectIntegration, super().get(id=id, lazy=lazy, **kwargs))
-
     @cli.register_custom_action(
         cls_names=("ProjectIntegrationManager", "ProjectServiceManager")
     )
@@ -288,8 +283,3 @@ class ProjectService(ProjectIntegration):
 
 class ProjectServiceManager(ProjectIntegrationManager):
     _obj_cls = ProjectService
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectService:
-        return cast(ProjectService, super().get(id=id, lazy=lazy, **kwargs))

@@ -1,5 +1,3 @@
-from typing import Any, cast, Union
-
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import ListMixin, RetrieveMixin, SaveMixin, UpdateMixin
 from gitlab.types import RequiredOptional
@@ -28,11 +26,6 @@ class ProjectResourceGroupManager(RetrieveMixin, UpdateMixin, RESTManager):
         "include_html_description",
     )
     _update_attrs = RequiredOptional(optional=("process_mode",))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectResourceGroup:
-        return cast(ProjectResourceGroup, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectResourceGroupUpcomingJob(RESTObject):

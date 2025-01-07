@@ -1,4 +1,4 @@
-from typing import Any, cast, Dict, Union
+from typing import Any, Dict, Union
 
 import requests
 
@@ -61,6 +61,3 @@ class ProjectKeyManager(CRUDMixin, RESTManager):
         """
         path = f"{self.path}/{key_id}/enable"
         return self.gitlab.http_post(path, **kwargs)
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> ProjectKey:
-        return cast(ProjectKey, super().get(id=id, lazy=lazy, **kwargs))

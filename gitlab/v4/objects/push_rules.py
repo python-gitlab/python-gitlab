@@ -1,5 +1,3 @@
-from typing import Any, cast
-
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
@@ -60,9 +58,6 @@ class ProjectPushRulesManager(
         ),
     )
 
-    def get(self, **kwargs: Any) -> ProjectPushRules:
-        return cast(ProjectPushRules, super().get(**kwargs))
-
 
 class GroupPushRules(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = None
@@ -104,6 +99,3 @@ class GroupPushRulesManager(
             "reject_unsigned_commits",
         ),
     )
-
-    def get(self, **kwargs: Any) -> GroupPushRules:
-        return cast(GroupPushRules, super().get(**kwargs))

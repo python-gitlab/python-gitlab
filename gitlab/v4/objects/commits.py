@@ -1,4 +1,4 @@
-from typing import Any, cast, Dict, List, Optional, TYPE_CHECKING, Union
+from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -184,11 +184,6 @@ class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
         "trailers",
     )
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectCommit:
-        return cast(ProjectCommit, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectCommitComment(RESTObject):
     _id_attr = None
@@ -248,6 +243,4 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
             path = self._compute_path(base_path)
         if TYPE_CHECKING:
             assert path is not None
-        return cast(
-            ProjectCommitStatus, CreateMixin.create(self, data, path=path, **kwargs)
-        )
+        return CreateMixin.create(self, data, path=path, **kwargs)

@@ -1,5 +1,3 @@
-from typing import Any, cast, Union
-
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CRUDMixin,
@@ -28,11 +26,6 @@ class ProjectBranchManager(NoUpdateMixin, RESTManager):
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(required=("branch", "ref"))
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectBranch:
-        return cast(ProjectBranch, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectProtectedBranch(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
@@ -56,8 +49,3 @@ class ProjectProtectedBranchManager(CRUDMixin, RESTManager):
         ),
     )
     _update_method = UpdateMethod.PATCH
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectProtectedBranch:
-        return cast(ProjectProtectedBranch, super().get(id=id, lazy=lazy, **kwargs))

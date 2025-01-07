@@ -1,4 +1,4 @@
-from typing import Any, cast, List, Optional, Union
+from typing import Any, List, Optional
 
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -119,9 +119,6 @@ class RunnerManager(CRUDMixin, RESTManager):
         path = "/runners/verify"
         post_data = {"token": token}
         self.gitlab.http_post(path, post_data=post_data, **kwargs)
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Runner:
-        return cast(Runner, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class RunnerAll(RESTObject):

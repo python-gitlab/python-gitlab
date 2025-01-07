@@ -1,4 +1,4 @@
-from typing import Any, BinaryIO, cast, Dict, List, Optional, Type, TYPE_CHECKING, Union
+from typing import Any, BinaryIO, Dict, List, Optional, Type, TYPE_CHECKING, Union
 
 import requests
 
@@ -317,9 +317,6 @@ class GroupManager(CRUDMixin, RESTManager):
     )
     _types = {"avatar": types.ImageAttribute, "skip_groups": types.ArrayAttribute}
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Group:
-        return cast(Group, super().get(id=id, lazy=lazy, **kwargs))
-
     @exc.on_http_error(exc.GitlabImportError)
     def import_group(
         self,
@@ -443,8 +440,3 @@ class GroupSAMLGroupLinkManager(NoUpdateMixin, RESTManager):
     _obj_cls: Type[GroupSAMLGroupLink] = GroupSAMLGroupLink
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(required=("saml_group_name", "access_level"))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupSAMLGroupLink:
-        return cast(GroupSAMLGroupLink, super().get(id=id, lazy=lazy, **kwargs))

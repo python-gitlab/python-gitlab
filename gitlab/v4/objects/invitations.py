@@ -1,4 +1,4 @@
-from typing import Any, cast, Union
+from typing import Any
 
 from gitlab.base import RESTManager, RESTObject
 from gitlab.exceptions import GitlabInvitationError
@@ -51,11 +51,6 @@ class ProjectInvitationManager(InvitationMixin, RESTManager):
         "tasks_to_be_done": ArrayAttribute,
     }
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectInvitation:
-        return cast(ProjectInvitation, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class GroupInvitation(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "email"
@@ -84,8 +79,3 @@ class GroupInvitationManager(InvitationMixin, RESTManager):
         "user_id": CommaSeparatedListAttribute,
         "tasks_to_be_done": ArrayAttribute,
     }
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupInvitation:
-        return cast(GroupInvitation, super().get(id=id, lazy=lazy, **kwargs))

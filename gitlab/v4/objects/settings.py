@@ -1,4 +1,4 @@
-from typing import Any, cast, Dict, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 from gitlab import exceptions as exc
 from gitlab import types
@@ -115,6 +115,3 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         if "domain_whitelist" in data and data["domain_whitelist"] is None:
             data.pop("domain_whitelist")
         return super().update(id, data, **kwargs)
-
-    def get(self, **kwargs: Any) -> ApplicationSettings:
-        return cast(ApplicationSettings, super().get(**kwargs))

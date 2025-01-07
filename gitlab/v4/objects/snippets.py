@@ -1,4 +1,14 @@
-from typing import Any, Callable, cast, Iterator, List, Optional, TYPE_CHECKING, Union
+from typing import (
+    Any,
+    Callable,
+    Iterator,
+    List,
+    Literal,
+    Optional,
+    overload,
+    TYPE_CHECKING,
+    Union,
+)
 
 import requests
 
@@ -89,8 +99,20 @@ class SnippetManager(CRUDMixin, RESTManager):
         ),
     )
 
+    @overload
+    def list_public(
+        self, *, iterator: Literal[False] = False, **kwargs: Any
+    ) -> List[Snippet]: ...
+
+    @overload
+    def list_public(
+        self, *, iterator: Literal[True] = True, **kwargs: Any
+    ) -> RESTObjectList: ...
+
     @cli.register_custom_action(cls_names="SnippetManager")
-    def list_public(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+    def list_public(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> Union[RESTObjectList, List[Any]]:
         """List all public snippets.
 
         Args:
@@ -107,10 +129,22 @@ class SnippetManager(CRUDMixin, RESTManager):
         Returns:
             The list of snippets, or a generator if `iterator` is True
         """
-        return self.list(path="/snippets/public", **kwargs)
+        return self.list(path="/snippets/public", iterator=iterator, **kwargs)
+
+    @overload
+    def list_all(
+        self, *, iterator: Literal[False] = False, **kwargs: Any
+    ) -> List[Snippet]: ...
+
+    @overload
+    def list_all(
+        self, *, iterator: Literal[True] = True, **kwargs: Any
+    ) -> RESTObjectList: ...
 
     @cli.register_custom_action(cls_names="SnippetManager")
-    def list_all(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+    def list_all(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> Union[RESTObjectList, List[Any]]:
         """List all snippets.
 
         Args:
@@ -127,9 +161,21 @@ class SnippetManager(CRUDMixin, RESTManager):
         Returns:
             A generator for the snippets list
         """
-        return self.list(path="/snippets/all", **kwargs)
+        return self.list(path="/snippets/all", iterator=iterator, **kwargs)
 
-    def public(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+    @overload
+    def public(
+        self, *, iterator: Literal[False] = False, **kwargs: Any
+    ) -> List[Snippet]: ...
+
+    @overload
+    def public(
+        self, *, iterator: Literal[True] = True, **kwargs: Any
+    ) -> RESTObjectList: ...
+
+    def public(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> Union[RESTObjectList, List[Any]]:
         """List all public snippets.
 
         Args:
@@ -153,10 +199,7 @@ class SnippetManager(CRUDMixin, RESTManager):
             ),
             category=DeprecationWarning,
         )
-        return self.list(path="/snippets/public", **kwargs)
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Snippet:
-        return cast(Snippet, super().get(id=id, lazy=lazy, **kwargs))
+        return self.list(path="/snippets/public", iterator=iterator, **kwargs)
 
 
 class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -231,8 +274,3 @@ class ProjectSnippetManager(CRUDMixin, RESTManager):
             "description",
         ),
     )
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectSnippet:
-        return cast(ProjectSnippet, super().get(id=id, lazy=lazy, **kwargs))

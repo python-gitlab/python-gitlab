@@ -347,7 +347,6 @@ class RESTManager:
     _create_attrs: g_types.RequiredOptional = g_types.RequiredOptional()
     _update_attrs: g_types.RequiredOptional = g_types.RequiredOptional()
     _path: Optional[str] = None
-    _obj_cls: Optional[Type[RESTObject]] = None
     _from_parent_attrs: Dict[str, Any] = {}
     _types: Dict[str, Type[g_types.GitlabAttribute]] = {}
 

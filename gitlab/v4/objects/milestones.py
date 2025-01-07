@@ -1,4 +1,4 @@
-from typing import Any, cast, TYPE_CHECKING, Union
+from typing import Any, TYPE_CHECKING
 
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -98,11 +98,6 @@ class GroupMilestoneManager(CRUDMixin, RESTManager):
     _list_filters = ("iids", "state", "search")
     _types = {"iids": types.ArrayAttribute}
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupMilestone:
-        return cast(GroupMilestone, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "title"
@@ -177,8 +172,3 @@ class ProjectMilestoneManager(CRUDMixin, RESTManager):
     )
     _list_filters = ("iids", "state", "search")
     _types = {"iids": types.ArrayAttribute}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMilestone:
-        return cast(ProjectMilestone, super().get(id=id, lazy=lazy, **kwargs))

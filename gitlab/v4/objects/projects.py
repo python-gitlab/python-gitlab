@@ -4,17 +4,7 @@ https://docs.gitlab.com/ee/api/projects.html
 """
 
 import io
-from typing import (
-    Any,
-    Callable,
-    cast,
-    Dict,
-    Iterator,
-    List,
-    Optional,
-    TYPE_CHECKING,
-    Union,
-)
+from typing import Any, Callable, Dict, Iterator, List, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -810,9 +800,6 @@ class ProjectManager(CRUDMixin, RESTManager):
         "topics": types.ArrayAttribute,
     }
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Project:
-        return cast(Project, super().get(id=id, lazy=lazy, **kwargs))
-
     @exc.on_http_error(exc.GitlabImportError)
     def import_project(
         self,
@@ -1181,7 +1168,7 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
         if TYPE_CHECKING:
             assert self.path is not None
         path = self.path[:-1]  # drop the 's'
-        return cast(ProjectFork, CreateMixin.create(self, data, path=path, **kwargs))
+        return CreateMixin.create(self, data, path=path, **kwargs)
 
 
 class ProjectRemoteMirror(ObjectDeleteMixin, SaveMixin, RESTObject):
@@ -1208,9 +1195,6 @@ class ProjectStorageManager(GetWithoutIdMixin, RESTManager):
     _path = "/projects/{project_id}/storage"
     _obj_cls = ProjectStorage
     _from_parent_attrs = {"project_id": "id"}
-
-    def get(self, **kwargs: Any) -> ProjectStorage:
-        return cast(ProjectStorage, super().get(**kwargs))
 
 
 class SharedProject(RESTObject):

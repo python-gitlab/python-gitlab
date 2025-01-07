@@ -1,4 +1,4 @@
-from typing import Any, cast, TYPE_CHECKING, Union
+from typing import Any, TYPE_CHECKING
 
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -70,11 +70,6 @@ class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
             assert self.path is not None
         self.gitlab.http_delete(self.path, query_data=data, **kwargs)
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectRegistryTag:
-        return cast(ProjectRegistryTag, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class GroupRegistryRepositoryManager(ListMixin, RESTManager):
     _path = "/groups/{group_id}/registry/repositories"
@@ -89,8 +84,3 @@ class RegistryRepository(RESTObject):
 class RegistryRepositoryManager(GetMixin, RESTManager):
     _path = "/registry/repositories"
     _obj_cls = RegistryRepository
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> RegistryRepository:
-        return cast(RegistryRepository, super().get(id=id, lazy=lazy, **kwargs))

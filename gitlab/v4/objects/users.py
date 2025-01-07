@@ -4,7 +4,9 @@ https://docs.gitlab.com/ee/api/users.html
 https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
 """
 
-from typing import Any, cast, Dict, List, Optional, Union
+from __future__ import annotations
+
+from typing import Any, cast, Dict, List, Literal, Optional, overload, Union
 
 import requests
 
@@ -78,11 +80,6 @@ class CurrentUserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManag
     _obj_cls = CurrentUserEmail
     _create_attrs = RequiredOptional(required=("email",))
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> CurrentUserEmail:
-        return cast(CurrentUserEmail, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class CurrentUserGPGKey(ObjectDeleteMixin, RESTObject):
     pass
@@ -93,11 +90,6 @@ class CurrentUserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTMana
     _obj_cls = CurrentUserGPGKey
     _create_attrs = RequiredOptional(required=("key",))
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> CurrentUserGPGKey:
-        return cast(CurrentUserGPGKey, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class CurrentUserKey(ObjectDeleteMixin, RESTObject):
     _repr_attr = "title"
@@ -107,11 +99,6 @@ class CurrentUserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager
     _path = "/user/keys"
     _obj_cls = CurrentUserKey
     _create_attrs = RequiredOptional(required=("title", "key"))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> CurrentUserKey:
-        return cast(CurrentUserKey, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class CurrentUserRunner(RESTObject):
@@ -149,9 +136,6 @@ class CurrentUserStatusManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _obj_cls = CurrentUserStatus
     _update_attrs = RequiredOptional(optional=("emoji", "message"))
 
-    def get(self, **kwargs: Any) -> CurrentUserStatus:
-        return cast(CurrentUserStatus, super().get(**kwargs))
-
 
 class CurrentUser(RESTObject):
     _id_attr = None
@@ -168,27 +152,24 @@ class CurrentUserManager(GetWithoutIdMixin, RESTManager):
     _path = "/user"
     _obj_cls = CurrentUser
 
-    def get(self, **kwargs: Any) -> CurrentUser:
-        return cast(CurrentUser, super().get(**kwargs))
-
 
 class User(SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "username"
 
     customattributes: UserCustomAttributeManager
-    emails: "UserEmailManager"
+    emails: UserEmailManager
     events: UserEventManager
-    followers_users: "UserFollowersManager"
-    following_users: "UserFollowingManager"
-    gpgkeys: "UserGPGKeyManager"
-    identityproviders: "UserIdentityProviderManager"
-    impersonationtokens: "UserImpersonationTokenManager"
-    keys: "UserKeyManager"
-    memberships: "UserMembershipManager"
+    followers_users: UserFollowersManager
+    following_users: UserFollowingManager
+    gpgkeys: UserGPGKeyManager
+    identityproviders: UserIdentityProviderManager
+    impersonationtokens: UserImpersonationTokenManager
+    keys: UserKeyManager
+    memberships: UserMembershipManager
     personal_access_tokens: UserPersonalAccessTokenManager
-    projects: "UserProjectManager"
-    starred_projects: "StarredProjectManager"
-    status: "UserStatusManager"
+    projects: UserProjectManager
+    starred_projects: StarredProjectManager
+    status: UserStatusManager
 
     @cli.register_custom_action(cls_names="User")
     @exc.on_http_error(exc.GitlabBlockError)
@@ -468,9 +449,6 @@ class UserManager(CRUDMixin, RESTManager):
     )
     _types = {"confirm": types.LowercaseStringAttribute, "avatar": types.ImageAttribute}
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> User:
-        return cast(User, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectUser(RESTObject):
     pass
@@ -494,9 +472,6 @@ class UserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(required=("email",))
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> UserEmail:
-        return cast(UserEmail, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class UserActivities(RESTObject):
     _id_attr = "username"
@@ -511,9 +486,6 @@ class UserStatusManager(GetWithoutIdMixin, RESTManager):
     _path = "/users/{user_id}/status"
     _obj_cls = UserStatus
     _from_parent_attrs = {"user_id": "id"}
-
-    def get(self, **kwargs: Any) -> UserStatus:
-        return cast(UserStatus, super().get(**kwargs))
 
 
 class UserActivitiesManager(ListMixin, RESTManager):
@@ -531,9 +503,6 @@ class UserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(required=("key",))
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> UserGPGKey:
-        return cast(UserGPGKey, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class UserKey(ObjectDeleteMixin, RESTObject):
     pass
@@ -544,9 +513,6 @@ class UserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
     _obj_cls = UserKey
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(required=("title", "key"))
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> UserKey:
-        return cast(UserKey, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class UserIdentityProviderManager(DeleteMixin, RESTManager):
@@ -574,11 +540,6 @@ class UserImpersonationTokenManager(NoUpdateMixin, RESTManager):
     _list_filters = ("state",)
     _types = {"scopes": ArrayAttribute}
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> UserImpersonationToken:
-        return cast(UserImpersonationToken, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class UserMembership(RESTObject):
     _id_attr = "source_id"
@@ -589,11 +550,6 @@ class UserMembershipManager(RetrieveMixin, RESTManager):
     _obj_cls = UserMembership
     _from_parent_attrs = {"user_id": "id"}
     _list_filters = ("type",)
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> UserMembership:
-        return cast(UserMembership, super().get(id=id, lazy=lazy, **kwargs))
 
 
 # Having this outside projects avoids circular imports due to ProjectUser
@@ -646,7 +602,25 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
         "id_before",
     )
 
-    def list(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+    @overload  # type: ignore[override]
+    def list(
+        self,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> List[UserProject]: ...
+
+    @overload
+    def list(
+        self,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> RESTObjectList: ...
+
+    def list(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> Union[RESTObjectList, List[Any]]:
         """Retrieve a list of objects.
 
         Args:
@@ -668,7 +642,8 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
             path = f"/users/{self._parent.id}/projects"
         else:
             path = f"/users/{self._from_parent_attrs['user_id']}/projects"
-        return ListMixin.list(self, path=path, **kwargs)
+
+        return super().list(iterator=iterator, path=path, **kwargs)
 
 
 class StarredProject(RESTObject):

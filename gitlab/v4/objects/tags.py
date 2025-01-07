@@ -1,5 +1,3 @@
-from typing import Any, cast, Union
-
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import NoUpdateMixin, ObjectDeleteMixin
 from gitlab.types import RequiredOptional
@@ -25,9 +23,6 @@ class ProjectTagManager(NoUpdateMixin, RESTManager):
         required=("tag_name", "ref"), optional=("message",)
     )
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> ProjectTag:
-        return cast(ProjectTag, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectProtectedTag(ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
@@ -41,8 +36,3 @@ class ProjectProtectedTagManager(NoUpdateMixin, RESTManager):
     _create_attrs = RequiredOptional(
         required=("name",), optional=("create_access_level",)
     )
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectProtectedTag:
-        return cast(ProjectProtectedTag, super().get(id=id, lazy=lazy, **kwargs))

@@ -1,4 +1,4 @@
-from typing import Any, cast
+from typing import cast
 
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
@@ -32,9 +32,6 @@ class ProjectJobTokenScopeManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _obj_cls = ProjectJobTokenScope
     _from_parent_attrs = {"project_id": "id"}
     _update_method = UpdateMethod.PATCH
-
-    def get(self, **kwargs: Any) -> ProjectJobTokenScope:
-        return cast(ProjectJobTokenScope, super().get(**kwargs))
 
 
 class AllowlistProject(ObjectDeleteMixin, RESTObject):

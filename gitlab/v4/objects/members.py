@@ -1,5 +1,3 @@
-from typing import Any, cast, Union
-
 from gitlab import types
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
@@ -49,11 +47,6 @@ class GroupMemberManager(CRUDMixin, RESTManager):
         "tasks_to_be_done": types.ArrayAttribute,
     }
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupMember:
-        return cast(GroupMember, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class GroupBillableMember(ObjectDeleteMixin, RESTObject):
     _repr_attr = "username"
@@ -87,11 +80,6 @@ class GroupMemberAllManager(RetrieveMixin, RESTManager):
     _obj_cls = GroupMemberAll
     _from_parent_attrs = {"group_id": "id"}
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupMemberAll:
-        return cast(GroupMemberAll, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectMember(SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "username"
@@ -114,11 +102,6 @@ class ProjectMemberManager(CRUDMixin, RESTManager):
         "tasks_to_be_dones": types.ArrayAttribute,
     }
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMember:
-        return cast(ProjectMember, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectMemberAll(RESTObject):
     _repr_attr = "username"
@@ -128,8 +111,3 @@ class ProjectMemberAllManager(RetrieveMixin, RESTManager):
     _path = "/projects/{project_id}/members/all"
     _obj_cls = ProjectMemberAll
     _from_parent_attrs = {"project_id": "id"}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMemberAll:
-        return cast(ProjectMemberAll, super().get(id=id, lazy=lazy, **kwargs))

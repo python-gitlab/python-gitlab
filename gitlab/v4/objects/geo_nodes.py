@@ -1,4 +1,4 @@
-from typing import Any, cast, Dict, List, TYPE_CHECKING, Union
+from typing import Any, Dict, List, TYPE_CHECKING
 
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -65,9 +65,6 @@ class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
     _update_attrs = RequiredOptional(
         optional=("enabled", "url", "files_max_capacity", "repos_max_capacity"),
     )
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> GeoNode:
-        return cast(GeoNode, super().get(id=id, lazy=lazy, **kwargs))
 
     @cli.register_custom_action(cls_names="GeoNodeManager")
     @exc.on_http_error(exc.GitlabGetError)

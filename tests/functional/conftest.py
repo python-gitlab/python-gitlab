@@ -85,12 +85,12 @@ def reset_gitlab(gl: gitlab.Gitlab) -> None:
             settings.save()
 
     for project in gl.projects.list():
-        for deploy_token in project.deploytokens.list():
+        for project_deploy_token in project.deploytokens.list():
             logging.info(
-                f"Deleting deploy token: {deploy_token.username!r} in "
+                f"Deleting deploy token: {project_deploy_token.username!r} in "
                 f"project: {project.path_with_namespace!r}"
             )
-            helpers.safe_delete(deploy_token)
+            helpers.safe_delete(project_deploy_token)
         logging.info(f"Deleting project: {project.path_with_namespace!r}")
         helpers.safe_delete(project)
 
@@ -104,12 +104,12 @@ def reset_gitlab(gl: gitlab.Gitlab) -> None:
             )
             continue
 
-        for deploy_token in group.deploytokens.list():
+        for group_deploy_token in group.deploytokens.list():
             logging.info(
-                f"Deleting deploy token: {deploy_token.username!r} in "
+                f"Deleting deploy token: {group_deploy_token.username!r} in "
                 f"group: {group.path_with_namespace!r}"
             )
-            helpers.safe_delete(deploy_token)
+            helpers.safe_delete(group_deploy_token)
         logging.info(f"Deleting group: {group.full_path!r}")
         helpers.safe_delete(group)
     for topic in gl.topics.list():

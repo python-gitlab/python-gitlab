@@ -1,4 +1,4 @@
-from typing import Any, cast, Union
+from typing import Any
 
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
@@ -30,13 +30,6 @@ class ProjectMergeRequestDraftNoteManager(CRUDMixin, RESTManager):
         ),
     )
     _update_attrs = RequiredOptional(optional=("position",))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMergeRequestDraftNote:
-        return cast(
-            ProjectMergeRequestDraftNote, super().get(id=id, lazy=lazy, **kwargs)
-        )
 
     def bulk_publish(self, **kwargs: Any) -> None:
         path = f"{self.path}/bulk_publish"

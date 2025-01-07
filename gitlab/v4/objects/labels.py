@@ -1,4 +1,4 @@
-from typing import Any, cast, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
@@ -60,9 +60,6 @@ class GroupLabelManager(
         required=("name",), optional=("new_name", "color", "description", "priority")
     )
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> GroupLabel:
-        return cast(GroupLabel, super().get(id=id, lazy=lazy, **kwargs))
-
     # Update without ID.
     # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
     # type error
@@ -123,11 +120,6 @@ class ProjectLabelManager(
     _update_attrs = RequiredOptional(
         required=("name",), optional=("new_name", "color", "description", "priority")
     )
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectLabel:
-        return cast(ProjectLabel, super().get(id=id, lazy=lazy, **kwargs))
 
     # Update without ID.
     # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
