@@ -401,7 +401,7 @@ def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
         if not isinstance(cls, type):
             continue
         if issubclass(cls, gitlab.base.RESTManager):
-            if cls._obj_cls is not None:
+            if hasattr(cls, "_obj_cls"):
                 classes.add(cls._obj_cls)
 
     for cls in sorted(classes, key=operator.attrgetter("__name__")):

@@ -1,4 +1,6 @@
-from typing import Any, cast, List, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, List, Optional, TYPE_CHECKING
 
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
@@ -48,9 +50,6 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     )
     _update_method = UpdateMethod.POST
 
-    def get(self, **kwargs: Any) -> ProjectApproval:
-        return cast(ProjectApproval, super().get(**kwargs))
-
 
 class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "id"
@@ -68,10 +67,31 @@ class ProjectApprovalRuleManager(
         optional=("user_ids", "group_ids", "protected_branch_ids", "usernames"),
     )
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectApprovalRule:
-        return cast(ProjectApprovalRule, super().get(id=id, lazy=lazy, **kwargs))
+
+class ProjectMergeRequestApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _repr_attr = "name"
+
+
+class ProjectMergeRequestApprovalRuleManager(CRUDMixin, RESTManager):
+    _path = "/projects/{project_id}/merge_requests/{merge_request_iid}/approval_rules"
+    _obj_cls = ProjectMergeRequestApprovalRule
+    _from_parent_attrs = {"project_id": "project_id", "merge_request_iid": "iid"}
+    _update_attrs = RequiredOptional(
+        required=(
+            "id",
+            "merge_request_iid",
+            "name",
+            "approvals_required",
+        ),
+        optional=("user_ids", "group_ids", "usernames"),
+    )
+    # Important: When approval_project_rule_id is set, the name, users and
+    # groups of project-level rule will be copied. The approvals_required
+    # specified will be used.
+    _create_attrs = RequiredOptional(
+        required=("name", "approvals_required"),
+        optional=("approval_project_rule_id", "user_ids", "group_ids", "usernames"),
+    )
 
 
 class ProjectMergeRequestApproval(SaveMixin, RESTObject):
@@ -84,9 +104,6 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
     _update_attrs = RequiredOptional(required=("approvals_required",))
     _update_method = UpdateMethod.POST
-
-    def get(self, **kwargs: Any) -> ProjectMergeRequestApproval:
-        return cast(ProjectMergeRequestApproval, super().get(**kwargs))
 
     @exc.on_http_error(exc.GitlabUpdateError)
     def set_approvers(
@@ -141,39 +158,6 @@ class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTMan
         return approval_rules.create(data=data, **kwargs)
 
 
-class ProjectMergeRequestApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
-    _repr_attr = "name"
-
-
-class ProjectMergeRequestApprovalRuleManager(CRUDMixin, RESTManager):
-    _path = "/projects/{project_id}/merge_requests/{merge_request_iid}/approval_rules"
-    _obj_cls = ProjectMergeRequestApprovalRule
-    _from_parent_attrs = {"project_id": "project_id", "merge_request_iid": "iid"}
-    _update_attrs = RequiredOptional(
-        required=(
-            "id",
-            "merge_request_iid",
-            "name",
-            "approvals_required",
-        ),
-        optional=("user_ids", "group_ids", "usernames"),
-    )
-    # Important: When approval_project_rule_id is set, the name, users and
-    # groups of project-level rule will be copied. The approvals_required
-    # specified will be used.
-    _create_attrs = RequiredOptional(
-        required=("name", "approvals_required"),
-        optional=("approval_project_rule_id", "user_ids", "group_ids", "usernames"),
-    )
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMergeRequestApprovalRule:
-        return cast(
-            ProjectMergeRequestApprovalRule, super().get(id=id, lazy=lazy, **kwargs)
-        )
-
-
 class ProjectMergeRequestApprovalState(RESTObject):
     pass
 
@@ -182,6 +166,3 @@ class ProjectMergeRequestApprovalStateManager(GetWithoutIdMixin, RESTManager):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/approval_state"
     _obj_cls = ProjectMergeRequestApprovalState
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
-
-    def get(self, **kwargs: Any) -> ProjectMergeRequestApprovalState:
-        return cast(ProjectMergeRequestApprovalState, super().get(**kwargs))

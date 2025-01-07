@@ -3,7 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ee/api/deployments.html
 """
 
-from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
+from typing import Any, Dict, Optional, TYPE_CHECKING
 
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -82,8 +82,3 @@ class ProjectDeploymentManager(RetrieveMixin, CreateMixin, UpdateMixin, RESTMana
     _create_attrs = RequiredOptional(
         required=("sha", "ref", "tag", "status", "environment")
     )
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectDeployment:
-        return cast(ProjectDeployment, super().get(id=id, lazy=lazy, **kwargs))

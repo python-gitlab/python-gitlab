@@ -397,10 +397,11 @@ class Gitlab:
         The `user` attribute will hold a `gitlab.objects.CurrentUser` object on
         success.
         """
-        self.user = self._objects.CurrentUserManager(self).get()
+        user = self._objects.CurrentUserManager(self).get()
+        self.user = user
 
-        if hasattr(self.user, "web_url") and hasattr(self.user, "username"):
-            self._check_url(self.user.web_url, path=self.user.username)
+        if hasattr(user, "web_url") and hasattr(user, "username"):
+            self._check_url(user.web_url, path=user.username)
 
     def version(self) -> Tuple[str, str]:
         """Returns the version and revision of the gitlab server.

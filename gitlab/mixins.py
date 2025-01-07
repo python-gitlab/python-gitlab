@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import enum
 from types import ModuleType
 from typing import (
@@ -6,10 +8,14 @@ from typing import (
     Dict,
     Iterator,
     List,
+    Literal,
     Optional,
+    overload,
+    Protocol,
     Tuple,
     Type,
     TYPE_CHECKING,
+    TypeVar,
     Union,
 )
 
@@ -52,6 +58,12 @@ else:
     _RestManagerBase = object
     _RestObjectBase = object
 
+TObjCls = TypeVar("TObjCls", bound=base.RESTObject)
+
+
+class ObjClsProtocol(Protocol[TObjCls]):
+    _obj_cls: Type[TObjCls]
+
 
 class HeadMixin(_RestManagerBase):
     @exc.on_http_error(exc.GitlabHeadError)
@@ -84,12 +96,28 @@ class HeadMixin(_RestManagerBase):
 class GetMixin(HeadMixin, _RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
     _optional_get_attrs: Tuple[str, ...] = ()
+    _obj_cls: Type[base.RESTObject]
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
+
+    @overload
+    def get(
+        self: ObjClsProtocol[TObjCls],
+        id: Union[str, int],
+        lazy: bool = False,
+        **kwargs: Any,
+    ) -> TObjCls: ...
+
+    @overload
+    def get(
+        self: Any,
+        id: Union[str, int],
+        lazy: bool = False,
+        **kwargs: Any,
+    ) -> base.RESTObject: ...
 
     @exc.on_http_error(exc.GitlabGetError)
     def get(
@@ -129,12 +157,18 @@ class GetMixin(HeadMixin, _RestManagerBase):
 class GetWithoutIdMixin(HeadMixin, _RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
     _optional_get_attrs: Tuple[str, ...] = ()
+    _obj_cls: Type[base.RESTObject]
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
+
+    @overload
+    def get(self: ObjClsProtocol[TObjCls], **kwargs: Any) -> TObjCls: ...
+
+    @overload
+    def get(self: Any, **kwargs: Any) -> base.RESTObject: ...
 
     @exc.on_http_error(exc.GitlabGetError)
     def get(self, **kwargs: Any) -> base.RESTObject:
@@ -196,14 +230,54 @@ class ListMixin(HeadMixin, _RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
     _list_filters: Tuple[str, ...] = ()
-    _obj_cls: Optional[Type[base.RESTObject]]
+    _obj_cls: Type[base.RESTObject]
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
 
+    @overload
+    def list(
+        self: ObjClsProtocol[TObjCls],
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> List[TObjCls]: ...
+
+    @overload
+    def list(
+        self: ObjClsProtocol[TObjCls],
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> base.RESTObjectList: ...
+
+    @overload
+    def list(
+        self: Any,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> List[base.RESTObject]: ...
+
+    @overload
+    def list(
+        self: Any,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> base.RESTObjectList: ...
+
+    @overload
+    def list(
+        self: Any,
+        **kwargs: Any,
+    ) -> Union[base.RESTObjectList, List[base.RESTObject]]: ...
+
     @exc.on_http_error(exc.GitlabListError)
-    def list(self, **kwargs: Any) -> Union[base.RESTObjectList, List[base.RESTObject]]:
+    def list(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> Union[base.RESTObjectList, List[Any]]:
         """Retrieve a list of objects.
 
         Args:
@@ -221,6 +295,7 @@ class ListMixin(HeadMixin, _RestManagerBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabListError: If the server cannot perform the request
         """
+        kwargs.update(iterator=iterator)
 
         data, _ = utils._transform_types(
             data=kwargs,
@@ -253,7 +328,6 @@ class ListMixin(HeadMixin, _RestManagerBase):
 class RetrieveMixin(ListMixin, GetMixin):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
@@ -263,11 +337,23 @@ class RetrieveMixin(ListMixin, GetMixin):
 class CreateMixin(_RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
+    _obj_cls: Type[base.RESTObject]
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
+
+    @overload
+    def create(
+        self: ObjClsProtocol[TObjCls],
+        data: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
+    ) -> TObjCls: ...
+
+    @overload
+    def create(
+        self: Any, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> base.RESTObject: ...
 
     @exc.on_http_error(exc.GitlabCreateError)
     def create(
@@ -385,11 +471,22 @@ class UpdateMixin(_RestManagerBase):
 class SetMixin(_RestManagerBase):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
+    _obj_cls: Type[base.RESTObject]
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
     gitlab: gitlab.Gitlab
+
+    @overload
+    def set(
+        self: ObjClsProtocol[TObjCls],
+        key: str,
+        value: str,
+        **kwargs: Any,
+    ) -> TObjCls: ...
+
+    @overload
+    def set(self: Any, key: str, value: str, **kwargs: Any) -> base.RESTObject: ...
 
     @exc.on_http_error(exc.GitlabSetError)
     def set(self, key: str, value: str, **kwargs: Any) -> base.RESTObject:
@@ -450,7 +547,7 @@ class DeleteMixin(_RestManagerBase):
 class CRUDMixin(GetMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
+    _obj_cls: Type[base.RESTObject]
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
@@ -460,7 +557,7 @@ class CRUDMixin(GetMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin):
 class NoUpdateMixin(GetMixin, ListMixin, CreateMixin, DeleteMixin):
     _computed_path: Optional[str]
     _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
+    _obj_cls: Type[base.RESTObject]
     _parent: Optional[base.RESTObject]
     _parent_attrs: Dict[str, Any]
     _path: Optional[str]
