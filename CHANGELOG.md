@@ -1,11 +1,27 @@
 # CHANGELOG
 
+
 ## v5.3.1 (2025-01-07)
 
 ### Bug Fixes
 
-- Fix container registry protection rules to use the correct URL for endpoint
-  ([#3079](https://github.com/python-gitlab/python-gitlab/pull/3079))
+- **api**: Allow configuration of keep_base_url from file
+  ([`f4f7d7a`](https://github.com/python-gitlab/python-gitlab/commit/f4f7d7a63716f072eb45db2c7f590db0435350f0))
+
+- **registry-protection**: Fix api url
+  ([`8c1aaa3`](https://github.com/python-gitlab/python-gitlab/commit/8c1aaa3f6a797caf7bd79a7da083eae56c6250ff))
+
+See:
+  https://docs.gitlab.com/ee/api/container_repository_protection_rules.html#list-container-repository-protection-rules
+
+### Chores
+
+- Bump to 5.3.1
+  ([`912e1a0`](https://github.com/python-gitlab/python-gitlab/commit/912e1a0620a96c56081ffec284c2cac871cb7626))
+
+- **deps**: Update dependency jinja2 to v3.1.5 [security]
+  ([`01d4194`](https://github.com/python-gitlab/python-gitlab/commit/01d41946cbb1a4e5f29752eac89239d635c2ec6f))
+
 
 ## v5.3.0 (2024-12-28)
 
