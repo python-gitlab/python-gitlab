@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v5.3.1 (2025-01-07)
+
+### Bug Fixes
+
+- Fix container registry protection rules to use the correct URL for endpoint
+  ([#3079](https://github.com/python-gitlab/python-gitlab/pull/3079))
 
 ## v5.3.0 (2024-12-28)
 
