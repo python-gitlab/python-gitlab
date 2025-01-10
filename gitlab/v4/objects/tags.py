@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import NoUpdateMixin, ObjectDeleteMixin
 from gitlab.types import RequiredOptional
 
@@ -15,7 +15,7 @@ class ProjectTag(ObjectDeleteMixin, RESTObject):
     _repr_attr = "name"
 
 
-class ProjectTagManager(NoUpdateMixin, RESTManager):
+class ProjectTagManager(NoUpdateMixin[ProjectTag]):
     _path = "/projects/{project_id}/repository/tags"
     _obj_cls = ProjectTag
     _from_parent_attrs = {"project_id": "id"}
@@ -29,7 +29,7 @@ class ProjectProtectedTag(ObjectDeleteMixin, RESTObject):
     _repr_attr = "name"
 
 
-class ProjectProtectedTagManager(NoUpdateMixin, RESTManager):
+class ProjectProtectedTagManager(NoUpdateMixin[ProjectProtectedTag]):
     _path = "/projects/{project_id}/protected_tags"
     _obj_cls = ProjectProtectedTag
     _from_parent_attrs = {"project_id": "id"}

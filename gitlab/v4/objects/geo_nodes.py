@@ -2,7 +2,7 @@ from typing import Any, Dict, List, TYPE_CHECKING
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     DeleteMixin,
     ObjectDeleteMixin,
@@ -59,7 +59,9 @@ class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
         return result
 
 
-class GeoNodeManager(RetrieveMixin, UpdateMixin, DeleteMixin, RESTManager):
+class GeoNodeManager(
+    RetrieveMixin[GeoNode], UpdateMixin[GeoNode], DeleteMixin[GeoNode]
+):
     _path = "/geo_nodes"
     _obj_cls = GeoNode
     _update_attrs = RequiredOptional(

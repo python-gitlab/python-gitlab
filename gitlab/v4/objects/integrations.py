@@ -6,7 +6,7 @@ https://docs.gitlab.com/ee/api/integrations.html
 from typing import List
 
 from gitlab import cli
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     DeleteMixin,
     GetMixin,
@@ -29,7 +29,10 @@ class ProjectIntegration(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectIntegrationManager(
-    GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTManager
+    GetMixin[ProjectIntegration],
+    UpdateMixin[ProjectIntegration],
+    DeleteMixin[ProjectIntegration],
+    ListMixin[ProjectIntegration],
 ):
     _path = "/projects/{project_id}/integrations"
     _from_parent_attrs = {"project_id": "id"}

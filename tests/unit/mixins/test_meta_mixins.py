@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -12,9 +14,10 @@ from gitlab.mixins import (
 
 def test_retrieve_mixin():
     class M(RetrieveMixin):
-        pass
+        _obj_cls = object
+        _path = "/test"
 
-    obj = M()
+    obj = M(MagicMock())
     assert hasattr(obj, "list")
     assert hasattr(obj, "get")
     assert not hasattr(obj, "create")
@@ -26,9 +29,10 @@ def test_retrieve_mixin():
 
 def test_crud_mixin():
     class M(CRUDMixin):
-        pass
+        _obj_cls = object
+        _path = "/test"
 
-    obj = M()
+    obj = M(MagicMock())
     assert hasattr(obj, "get")
     assert hasattr(obj, "list")
     assert hasattr(obj, "create")
@@ -43,9 +47,10 @@ def test_crud_mixin():
 
 def test_no_update_mixin():
     class M(NoUpdateMixin):
-        pass
+        _obj_cls = object
+        _path = "/test"
 
-    obj = M()
+    obj = M(MagicMock())
     assert hasattr(obj, "get")
     assert hasattr(obj, "list")
     assert hasattr(obj, "create")

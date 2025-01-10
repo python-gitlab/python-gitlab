@@ -180,7 +180,7 @@ def test_merge_request_reset_approvals(gitlab_url, project):
     # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
     time.sleep(5)
 
-    mr = bot_project.mergerequests.list()[0]
+    mr = bot_project.mergerequests.list()[0]  # type: ignore[index]
 
     assert mr.reset_approvals()
 

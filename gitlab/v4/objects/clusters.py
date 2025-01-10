@@ -1,8 +1,8 @@
-from typing import Any, cast, Dict, Optional
+from typing import Any, Dict, Optional
 
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import CreateMixin, CRUDMixin, ObjectDeleteMixin, SaveMixin
+from gitlab.base import RESTObject
+from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
 __all__ = [
@@ -17,7 +17,7 @@ class GroupCluster(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class GroupClusterManager(CRUDMixin, RESTManager):
+class GroupClusterManager(CRUDMixin[GroupCluster]):
     _path = "/groups/{group_id}/clusters"
     _obj_cls = GroupCluster
     _from_parent_attrs = {"group_id": "id"}
@@ -56,14 +56,14 @@ class GroupClusterManager(CRUDMixin, RESTManager):
                 the data sent by the server
         """
         path = f"{self.path}/user"
-        return cast(GroupCluster, CreateMixin.create(self, data, path=path, **kwargs))
+        return super().create(data, path=path, **kwargs)
 
 
 class ProjectCluster(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectClusterManager(CRUDMixin, RESTManager):
+class ProjectClusterManager(CRUDMixin[ProjectCluster]):
     _path = "/projects/{project_id}/clusters"
     _obj_cls = ProjectCluster
     _from_parent_attrs = {"project_id": "id"}
@@ -102,4 +102,4 @@ class ProjectClusterManager(CRUDMixin, RESTManager):
                 the data sent by the server
         """
         path = f"{self.path}/user"
-        return cast(ProjectCluster, CreateMixin.create(self, data, path=path, **kwargs))
+        return super().create(data, path=path, **kwargs)

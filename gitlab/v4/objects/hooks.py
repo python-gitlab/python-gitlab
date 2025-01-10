@@ -1,5 +1,5 @@
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, NoUpdateMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
@@ -18,7 +18,7 @@ class Hook(ObjectDeleteMixin, RESTObject):
     _repr_attr = "url"
 
 
-class HookManager(NoUpdateMixin, RESTManager):
+class HookManager(NoUpdateMixin[Hook]):
     _path = "/hooks"
     _obj_cls = Hook
     _create_attrs = RequiredOptional(required=("url",))
@@ -42,7 +42,7 @@ class ProjectHook(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.manager.gitlab.http_post(path)
 
 
-class ProjectHookManager(CRUDMixin, RESTManager):
+class ProjectHookManager(CRUDMixin[ProjectHook]):
     _path = "/projects/{project_id}/hooks"
     _obj_cls = ProjectHook
     _from_parent_attrs = {"project_id": "id"}
@@ -98,7 +98,7 @@ class GroupHook(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.manager.gitlab.http_post(path)
 
 
-class GroupHookManager(CRUDMixin, RESTManager):
+class GroupHookManager(CRUDMixin[GroupHook]):
     _path = "/groups/{group_id}/hooks"
     _obj_cls = GroupHook
     _from_parent_attrs = {"group_id": "id"}

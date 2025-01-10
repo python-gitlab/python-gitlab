@@ -4,7 +4,18 @@ import json
 import pprint
 import textwrap
 from types import ModuleType
-from typing import Any, Dict, Iterable, Optional, Type, TYPE_CHECKING, Union
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    Generic,
+    Iterable,
+    Optional,
+    Type,
+    TYPE_CHECKING,
+    TypeVar,
+    Union,
+)
 
 import gitlab
 from gitlab import types as g_types
@@ -48,11 +59,11 @@ class RESTObject:
     _repr_attr: Optional[str] = None
     _updated_attrs: Dict[str, Any]
     _lazy: bool
-    manager: "RESTManager"
+    manager: "RESTManager[Any]"
 
     def __init__(
         self,
-        manager: "RESTManager",
+        manager: "RESTManager[Any]",
         attrs: Dict[str, Any],
         *,
         created_from_list: bool = False,
@@ -269,7 +280,7 @@ class RESTObjectList:
     """
 
     def __init__(
-        self, manager: "RESTManager", obj_cls: Type[RESTObject], _list: GitlabList
+        self, manager: "RESTManager[Any]", obj_cls: Type[RESTObject], _list: GitlabList
     ) -> None:
         """Creates an objects list from a GitlabList.
 
@@ -335,7 +346,10 @@ class RESTObjectList:
         return self._list.total
 
 
-class RESTManager:
+TObjCls = TypeVar("TObjCls", bound=RESTObject)
+
+
+class RESTManager(Generic[TObjCls]):
     """Base class for CRUD operations on objects.
 
     Derived class must define ``_path`` and ``_obj_cls``.
@@ -346,12 +360,12 @@ class RESTManager:
 
     _create_attrs: g_types.RequiredOptional = g_types.RequiredOptional()
     _update_attrs: g_types.RequiredOptional = g_types.RequiredOptional()
-    _path: Optional[str] = None
-    _obj_cls: Optional[Type[RESTObject]] = None
+    _path: ClassVar[str]
+    _obj_cls: type[TObjCls]
     _from_parent_attrs: Dict[str, Any] = {}
     _types: Dict[str, Type[g_types.GitlabAttribute]] = {}
 
-    _computed_path: Optional[str]
+    _computed_path: str
     _parent: Optional[RESTObject]
     _parent_attrs: Dict[str, Any]
     gitlab: Gitlab
@@ -371,12 +385,10 @@ class RESTManager:
     def parent_attrs(self) -> Optional[Dict[str, Any]]:
         return self._parent_attrs
 
-    def _compute_path(self, path: Optional[str] = None) -> Optional[str]:
+    def _compute_path(self, path: Optional[str] = None) -> str:
         self._parent_attrs = {}
         if path is None:
             path = self._path
-        if path is None:
-            return None
         if self._parent is None or not self._from_parent_attrs:
             return path
 
@@ -390,5 +402,5 @@ class RESTManager:
         return path.format(**data)
 
     @property
-    def path(self) -> Optional[str]:
+    def path(self) -> str:
         return self._computed_path

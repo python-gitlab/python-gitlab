@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -21,7 +21,10 @@ class ProjectPackageProtectionRule(ObjectDeleteMixin, SaveMixin, RESTObject):
 
 
 class ProjectPackageProtectionRuleManager(
-    ListMixin, CreateMixin, DeleteMixin, UpdateMixin, RESTManager
+    ListMixin[ProjectPackageProtectionRule],
+    CreateMixin[ProjectPackageProtectionRule],
+    DeleteMixin[ProjectPackageProtectionRule],
+    UpdateMixin[ProjectPackageProtectionRule],
 ):
     _path = "/projects/{project_id}/packages/protection/rules"
     _obj_cls = ProjectPackageProtectionRule

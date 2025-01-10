@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin, UploadMixin
 from gitlab.types import RequiredOptional
 
@@ -16,7 +16,7 @@ class ProjectWiki(SaveMixin, ObjectDeleteMixin, UploadMixin, RESTObject):
     _upload_path = "/projects/{project_id}/wikis/attachments"
 
 
-class ProjectWikiManager(CRUDMixin, RESTManager):
+class ProjectWikiManager(CRUDMixin[ProjectWiki]):
     _path = "/projects/{project_id}/wikis"
     _obj_cls = ProjectWiki
     _from_parent_attrs = {"project_id": "id"}
@@ -33,7 +33,7 @@ class GroupWiki(SaveMixin, ObjectDeleteMixin, UploadMixin, RESTObject):
     _upload_path = "/groups/{group_id}/wikis/attachments"
 
 
-class GroupWikiManager(CRUDMixin, RESTManager):
+class GroupWikiManager(CRUDMixin[GroupWiki]):
     _path = "/groups/{group_id}/wikis"
     _obj_cls = GroupWiki
     _from_parent_attrs = {"group_id": "id"}

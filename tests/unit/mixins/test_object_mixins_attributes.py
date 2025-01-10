@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 from gitlab.mixins import (
     AccessRequestMixin,
     SetMixin,
@@ -47,15 +49,15 @@ def test_time_tracking_mixin():
 
 def test_set_mixin():
     class TestClass(SetMixin):
-        pass
+        _obj_cls = object
+        _path = "/test"
 
-    obj = TestClass()
+    obj = TestClass(MagicMock())
     assert hasattr(obj, "set")
 
 
 def test_user_agent_detail_mixin():
-    class TestClass(UserAgentDetailMixin):
-        pass
+    class TestClass(UserAgentDetailMixin): ...
 
     obj = TestClass()
     assert hasattr(obj, "user_agent_detail")

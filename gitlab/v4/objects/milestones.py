@@ -3,7 +3,7 @@ from typing import Any, TYPE_CHECKING
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject, RESTObjectList
+from gitlab.base import RESTObject, RESTObjectList
 from gitlab.mixins import (
     CRUDMixin,
     ObjectDeleteMixin,
@@ -85,7 +85,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         return RESTObjectList(manager, GroupMergeRequest, data_list)
 
 
-class GroupMilestoneManager(CRUDMixin, RESTManager):
+class GroupMilestoneManager(CRUDMixin[GroupMilestone]):
     _path = "/groups/{group_id}/milestones"
     _obj_cls = GroupMilestone
     _from_parent_attrs = {"group_id": "id"}
@@ -159,7 +159,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         return RESTObjectList(manager, ProjectMergeRequest, data_list)
 
 
-class ProjectMilestoneManager(CRUDMixin, RESTManager):
+class ProjectMilestoneManager(CRUDMixin[ProjectMilestone]):
     _path = "/projects/{project_id}/milestones"
     _obj_cls = ProjectMilestone
     _from_parent_attrs = {"project_id": "id"}

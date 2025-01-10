@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional
 
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -48,7 +48,10 @@ class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class GroupLabelManager(
-    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    RetrieveMixin[GroupLabel],
+    CreateMixin[GroupLabel],
+    UpdateMixin[GroupLabel],
+    DeleteMixin[GroupLabel],
 ):
     _path = "/groups/{group_id}/labels"
     _obj_cls = GroupLabel
@@ -109,7 +112,10 @@ class ProjectLabel(
 
 
 class ProjectLabelManager(
-    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    RetrieveMixin[ProjectLabel],
+    CreateMixin[ProjectLabel],
+    UpdateMixin[ProjectLabel],
+    DeleteMixin[ProjectLabel],
 ):
     _path = "/projects/{project_id}/labels"
     _obj_cls = ProjectLabel

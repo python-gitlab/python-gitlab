@@ -30,7 +30,7 @@ class ProjectArtifact(RESTObject):
     _id_attr = "ref_name"
 
 
-class ProjectArtifactManager(RESTManager):
+class ProjectArtifactManager(RESTManager[ProjectArtifact]):
     _obj_cls = ProjectArtifact
     _path = "/projects/{project_id}/jobs/artifacts"
     _from_parent_attrs = {"project_id": "id"}

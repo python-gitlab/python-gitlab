@@ -2,7 +2,7 @@ from typing import Any, TYPE_CHECKING
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import RetrieveMixin
 from gitlab.utils import EncodedId
 
@@ -16,7 +16,7 @@ class Namespace(RESTObject):
     pass
 
 
-class NamespaceManager(RetrieveMixin, RESTManager):
+class NamespaceManager(RetrieveMixin[Namespace]):
     _path = "/namespaces"
     _obj_cls = Namespace
     _list_filters = ("search",)

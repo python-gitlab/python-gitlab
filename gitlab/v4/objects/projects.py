@@ -7,7 +7,6 @@ import io
 from typing import (
     Any,
     Callable,
-    cast,
     Dict,
     Iterator,
     List,
@@ -23,7 +22,7 @@ import requests
 from gitlab import cli, client
 from gitlab import exceptions as exc
 from gitlab import types, utils
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -141,7 +140,7 @@ class GroupProject(RESTObject):
     pass
 
 
-class GroupProjectManager(ListMixin, RESTManager):
+class GroupProjectManager(ListMixin[GroupProject]):
     _path = "/groups/{group_id}/projects"
     _obj_cls = GroupProject
     _from_parent_attrs = {"group_id": "id"}
@@ -168,7 +167,7 @@ class ProjectGroup(RESTObject):
     pass
 
 
-class ProjectGroupManager(ListMixin, RESTManager):
+class ProjectGroupManager(ListMixin[ProjectGroup]):
     _path = "/projects/{project_id}/groups"
     _obj_cls = ProjectGroup
     _from_parent_attrs = {"project_id": "id"}
@@ -668,7 +667,7 @@ class Project(
         )
 
 
-class ProjectManager(CRUDMixin, RESTManager):
+class ProjectManager(CRUDMixin[Project]):
     _path = "/projects"
     _obj_cls = Project
     # Please keep these _create_attrs in same order as they are at:
@@ -1193,7 +1192,7 @@ class ProjectFork(RESTObject):
     pass
 
 
-class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
+class ProjectForkManager(CreateMixin[ProjectFork], ListMixin[ProjectFork]):
     _path = "/projects/{project_id}/forks"
     _obj_cls = ProjectFork
     _from_parent_attrs = {"project_id": "id"}
@@ -1232,10 +1231,8 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
             A new instance of the managed object class build with
                 the data sent by the server
         """
-        if TYPE_CHECKING:
-            assert self.path is not None
         path = self.path[:-1]  # drop the 's'
-        return cast(ProjectFork, CreateMixin.create(self, data, path=path, **kwargs))
+        return super().create(data, path=path, **kwargs)
 
 
 class ProjectRemoteMirror(ObjectDeleteMixin, SaveMixin, RESTObject):
@@ -1243,7 +1240,10 @@ class ProjectRemoteMirror(ObjectDeleteMixin, SaveMixin, RESTObject):
 
 
 class ProjectRemoteMirrorManager(
-    ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    ListMixin[ProjectRemoteMirror],
+    CreateMixin[ProjectRemoteMirror],
+    UpdateMixin[ProjectRemoteMirror],
+    DeleteMixin[ProjectRemoteMirror],
 ):
     _path = "/projects/{project_id}/remote_mirrors"
     _obj_cls = ProjectRemoteMirror
@@ -1258,7 +1258,9 @@ class ProjectPullMirror(SaveMixin, RESTObject):
     _id_attr = None
 
 
-class ProjectPullMirrorManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class ProjectPullMirrorManager(
+    GetWithoutIdMixin[ProjectPullMirror], UpdateMixin[ProjectPullMirror]
+):
     _path = "/projects/{project_id}/mirror/pull"
     _obj_cls = ProjectPullMirror
     _from_parent_attrs = {"project_id": "id"}
@@ -1285,8 +1287,6 @@ class ProjectPullMirrorManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
             assert data is not None
         self._create_attrs.validate_attrs(data=data)
 
-        if TYPE_CHECKING:
-            assert self.path is not None
         server_data = self.gitlab.http_put(self.path, post_data=data, **kwargs)
 
         if TYPE_CHECKING:
@@ -1305,8 +1305,6 @@ class ProjectPullMirrorManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server failed to perform the request
         """
-        if TYPE_CHECKING:
-            assert self.path is not None
         self.gitlab.http_post(self.path, **kwargs)
 
 
@@ -1314,7 +1312,7 @@ class ProjectStorage(RefreshMixin, RESTObject):
     pass
 
 
-class ProjectStorageManager(GetWithoutIdMixin, RESTManager):
+class ProjectStorageManager(GetWithoutIdMixin[ProjectStorage]):
     _path = "/projects/{project_id}/storage"
     _obj_cls = ProjectStorage
     _from_parent_attrs = {"project_id": "id"}
@@ -1324,7 +1322,7 @@ class SharedProject(RESTObject):
     pass
 
 
-class SharedProjectManager(ListMixin, RESTManager):
+class SharedProjectManager(ListMixin[SharedProject]):
     _path = "/groups/{group_id}/projects/shared"
     _obj_cls = SharedProject
     _from_parent_attrs = {"group_id": "id"}
