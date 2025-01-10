@@ -12,7 +12,7 @@ import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject, RESTObjectList
+from gitlab.base import RESTObject, RESTObjectList
 from gitlab.mixins import (
     CRUDMixin,
     ListMixin,
@@ -64,7 +64,7 @@ class MergeRequest(RESTObject):
     pass
 
 
-class MergeRequestManager(ListMixin, RESTManager):
+class MergeRequestManager(ListMixin[MergeRequest]):
     _path = "/merge_requests"
     _obj_cls = MergeRequest
     _list_filters = (
@@ -111,7 +111,7 @@ class GroupMergeRequest(RESTObject):
     pass
 
 
-class GroupMergeRequestManager(ListMixin, RESTManager):
+class GroupMergeRequestManager(ListMixin[GroupMergeRequest]):
     _path = "/groups/{group_id}/merge_requests"
     _obj_cls = GroupMergeRequest
     _from_parent_attrs = {"group_id": "id"}
@@ -445,7 +445,7 @@ class ProjectMergeRequest(
         return server_data
 
 
-class ProjectMergeRequestManager(CRUDMixin, RESTManager):
+class ProjectMergeRequestManager(CRUDMixin[ProjectMergeRequest]):
     _path = "/projects/{project_id}/merge_requests"
     _obj_cls = ProjectMergeRequest
     _from_parent_attrs = {"project_id": "id"}
@@ -532,7 +532,7 @@ class ProjectMergeRequestDiff(RESTObject):
     pass
 
 
-class ProjectMergeRequestDiffManager(RetrieveMixin, RESTManager):
+class ProjectMergeRequestDiffManager(RetrieveMixin[ProjectMergeRequestDiff]):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/versions"
     _obj_cls = ProjectMergeRequestDiff
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}

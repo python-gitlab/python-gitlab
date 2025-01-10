@@ -3,7 +3,7 @@ from typing import Any, Dict, TYPE_CHECKING, Union
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
@@ -17,7 +17,7 @@ class Topic(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class TopicManager(CRUDMixin, RESTManager):
+class TopicManager(CRUDMixin[Topic]):
     _path = "/topics"
     _obj_cls = Topic
     _create_attrs = RequiredOptional(

@@ -3,7 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ee/api/audit_events.html
 """
 
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import RetrieveMixin
 
 __all__ = [
@@ -22,7 +22,7 @@ class AuditEvent(RESTObject):
     _id_attr = "id"
 
 
-class AuditEventManager(RetrieveMixin, RESTManager):
+class AuditEventManager(RetrieveMixin[AuditEvent]):
     _path = "/audit_events"
     _obj_cls = AuditEvent
     _list_filters = ("created_after", "created_before", "entity_type", "entity_id")
@@ -32,7 +32,7 @@ class GroupAuditEvent(RESTObject):
     _id_attr = "id"
 
 
-class GroupAuditEventManager(RetrieveMixin, RESTManager):
+class GroupAuditEventManager(RetrieveMixin[GroupAuditEvent]):
     _path = "/groups/{group_id}/audit_events"
     _obj_cls = GroupAuditEvent
     _from_parent_attrs = {"group_id": "id"}
@@ -43,7 +43,7 @@ class ProjectAuditEvent(RESTObject):
     _id_attr = "id"
 
 
-class ProjectAuditEventManager(RetrieveMixin, RESTManager):
+class ProjectAuditEventManager(RetrieveMixin[ProjectAuditEvent]):
     _path = "/projects/{project_id}/audit_events"
     _obj_cls = ProjectAuditEvent
     _from_parent_attrs = {"project_id": "id"}

@@ -5,7 +5,7 @@ https://docs.gitlab.com/ee/api/project_level_variables.html
 https://docs.gitlab.com/ee/api/group_level_variables.html
 """
 
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
@@ -23,7 +23,7 @@ class Variable(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "key"
 
 
-class VariableManager(CRUDMixin, RESTManager):
+class VariableManager(CRUDMixin[Variable]):
     _path = "/admin/ci/variables"
     _obj_cls = Variable
     _create_attrs = RequiredOptional(
@@ -38,7 +38,7 @@ class GroupVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "key"
 
 
-class GroupVariableManager(CRUDMixin, RESTManager):
+class GroupVariableManager(CRUDMixin[GroupVariable]):
     _path = "/groups/{group_id}/variables"
     _obj_cls = GroupVariable
     _from_parent_attrs = {"group_id": "id"}
@@ -54,7 +54,7 @@ class ProjectVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "key"
 
 
-class ProjectVariableManager(CRUDMixin, RESTManager):
+class ProjectVariableManager(CRUDMixin[ProjectVariable]):
     _path = "/projects/{project_id}/variables"
     _obj_cls = ProjectVariable
     _from_parent_attrs = {"project_id": "id"}

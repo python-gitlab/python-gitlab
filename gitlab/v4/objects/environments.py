@@ -4,7 +4,7 @@ import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -44,7 +44,10 @@ class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectEnvironmentManager(
-    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    RetrieveMixin[ProjectEnvironment],
+    CreateMixin[ProjectEnvironment],
+    UpdateMixin[ProjectEnvironment],
+    DeleteMixin[ProjectEnvironment],
 ):
     _path = "/projects/{project_id}/environments"
     _obj_cls = ProjectEnvironment
@@ -60,7 +63,9 @@ class ProjectProtectedEnvironment(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectProtectedEnvironmentManager(
-    RetrieveMixin, CreateMixin, DeleteMixin, RESTManager
+    RetrieveMixin[ProjectProtectedEnvironment],
+    CreateMixin[ProjectProtectedEnvironment],
+    DeleteMixin[ProjectProtectedEnvironment],
 ):
     _path = "/projects/{project_id}/protected_environments"
     _obj_cls = ProjectProtectedEnvironment

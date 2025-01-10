@@ -1,7 +1,7 @@
 from typing import Any, List, Optional, TYPE_CHECKING
 
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -36,7 +36,11 @@ class GroupApprovalRule(SaveMixin, RESTObject):
     _repr_attr = "name"
 
 
-class GroupApprovalRuleManager(RetrieveMixin, CreateMixin, UpdateMixin, RESTManager):
+class GroupApprovalRuleManager(
+    RetrieveMixin[GroupApprovalRule],
+    CreateMixin[GroupApprovalRule],
+    UpdateMixin[GroupApprovalRule],
+):
     _path = "/groups/{group_id}/approval_rules"
     _obj_cls = GroupApprovalRule
     _from_parent_attrs = {"group_id": "id"}
@@ -50,7 +54,9 @@ class ProjectApproval(SaveMixin, RESTObject):
     _id_attr = None
 
 
-class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class ProjectApprovalManager(
+    GetWithoutIdMixin[ProjectApproval], UpdateMixin[ProjectApproval]
+):
     _path = "/projects/{project_id}/approvals"
     _obj_cls = ProjectApproval
     _from_parent_attrs = {"project_id": "id"}
@@ -72,7 +78,10 @@ class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectApprovalRuleManager(
-    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    RetrieveMixin[ProjectApprovalRule],
+    CreateMixin[ProjectApprovalRule],
+    UpdateMixin[ProjectApprovalRule],
+    DeleteMixin[ProjectApprovalRule],
 ):
     _path = "/projects/{project_id}/approval_rules"
     _obj_cls = ProjectApprovalRule
@@ -87,7 +96,10 @@ class ProjectMergeRequestApproval(SaveMixin, RESTObject):
     _id_attr = None
 
 
-class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class ProjectMergeRequestApprovalManager(
+    GetWithoutIdMixin[ProjectMergeRequestApproval],
+    UpdateMixin[ProjectMergeRequestApproval],
+):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/approvals"
     _obj_cls = ProjectMergeRequestApproval
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
@@ -151,7 +163,9 @@ class ProjectMergeRequestApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "name"
 
 
-class ProjectMergeRequestApprovalRuleManager(CRUDMixin, RESTManager):
+class ProjectMergeRequestApprovalRuleManager(
+    CRUDMixin[ProjectMergeRequestApprovalRule]
+):
     _path = "/projects/{project_id}/merge_requests/{merge_request_iid}/approval_rules"
     _obj_cls = ProjectMergeRequestApprovalRule
     _from_parent_attrs = {"project_id": "project_id", "merge_request_iid": "iid"}
@@ -177,7 +191,9 @@ class ProjectMergeRequestApprovalState(RESTObject):
     pass
 
 
-class ProjectMergeRequestApprovalStateManager(GetWithoutIdMixin, RESTManager):
+class ProjectMergeRequestApprovalStateManager(
+    GetWithoutIdMixin[ProjectMergeRequestApprovalState]
+):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/approval_state"
     _obj_cls = ProjectMergeRequestApprovalState
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}

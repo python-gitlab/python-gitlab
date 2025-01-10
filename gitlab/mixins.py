@@ -10,7 +10,6 @@ from typing import (
     Optional,
     overload,
     Tuple,
-    Type,
     TYPE_CHECKING,
     Union,
 )
@@ -48,14 +47,12 @@ __all__ = [
 
 if TYPE_CHECKING:
     # When running mypy we use these as the base classes
-    _RestManagerBase = base.RESTManager
     _RestObjectBase = base.RESTObject
 else:
-    _RestManagerBase = object
     _RestObjectBase = object
 
 
-class HeadMixin(_RestManagerBase):
+class HeadMixin(base.RESTManager[base.TObjCls]):
     @exc.on_http_error(exc.GitlabHeadError)
     def head(
         self, id: Optional[Union[str, int]] = None, **kwargs: Any
@@ -73,9 +70,6 @@ class HeadMixin(_RestManagerBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabHeadError: If the server cannot perform the request
         """
-        if TYPE_CHECKING:
-            assert self.path is not None
-
         path = self.path
         if id is not None:
             path = f"{path}/{utils.EncodedId(id)}"
@@ -83,20 +77,13 @@ class HeadMixin(_RestManagerBase):
         return self.gitlab.http_head(path, **kwargs)
 
 
-class GetMixin(HeadMixin, _RestManagerBase):
-    _computed_path: Optional[str]
-    _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
+class GetMixin(HeadMixin[base.TObjCls]):
     _optional_get_attrs: Tuple[str, ...] = ()
-    _parent: Optional[base.RESTObject]
-    _parent_attrs: Dict[str, Any]
-    _path: Optional[str]
-    gitlab: gitlab.Gitlab
 
     @exc.on_http_error(exc.GitlabGetError)
     def get(
         self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> base.RESTObject:
+    ) -> base.TObjCls:
         """Retrieve a single object.
 
         Args:
@@ -116,8 +103,6 @@ class GetMixin(HeadMixin, _RestManagerBase):
         if isinstance(id, str):
             id = utils.EncodedId(id)
         path = f"{self.path}/{id}"
-        if TYPE_CHECKING:
-            assert self._obj_cls is not None
         if lazy is True:
             if TYPE_CHECKING:
                 assert self._obj_cls._id_attr is not None
@@ -128,18 +113,11 @@ class GetMixin(HeadMixin, _RestManagerBase):
         return self._obj_cls(self, server_data, lazy=lazy)
 
 
-class GetWithoutIdMixin(HeadMixin, _RestManagerBase):
-    _computed_path: Optional[str]
-    _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
+class GetWithoutIdMixin(HeadMixin[base.TObjCls]):
     _optional_get_attrs: Tuple[str, ...] = ()
-    _parent: Optional[base.RESTObject]
-    _parent_attrs: Dict[str, Any]
-    _path: Optional[str]
-    gitlab: gitlab.Gitlab
 
     @exc.on_http_error(exc.GitlabGetError)
-    def get(self, **kwargs: Any) -> base.RESTObject:
+    def get(self, **kwargs: Any) -> base.TObjCls:
         """Retrieve a single object.
 
         Args:
@@ -152,12 +130,9 @@ class GetWithoutIdMixin(HeadMixin, _RestManagerBase):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
-        if TYPE_CHECKING:
-            assert self.path is not None
         server_data = self.gitlab.http_get(self.path, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(server_data, requests.Response)
-            assert self._obj_cls is not None
         return self._obj_cls(self, server_data)
 
 
@@ -167,7 +142,7 @@ class RefreshMixin(_RestObjectBase):
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
-    manager: base.RESTManager
+    manager: base.RESTManager[Any]
 
     @exc.on_http_error(exc.GitlabGetError)
     def refresh(self, **kwargs: Any) -> None:
@@ -194,18 +169,11 @@ class RefreshMixin(_RestObjectBase):
         self._update_attrs(server_data)
 
 
-class ListMixin(HeadMixin, _RestManagerBase):
-    _computed_path: Optional[str]
-    _from_parent_attrs: Dict[str, Any]
+class ListMixin(HeadMixin[base.TObjCls]):
     _list_filters: Tuple[str, ...] = ()
-    _obj_cls: Optional[Type[base.RESTObject]]
-    _parent: Optional[base.RESTObject]
-    _parent_attrs: Dict[str, Any]
-    _path: Optional[str]
-    gitlab: gitlab.Gitlab
 
     @exc.on_http_error(exc.GitlabListError)
-    def list(self, **kwargs: Any) -> Union[base.RESTObjectList, List[base.RESTObject]]:
+    def list(self, **kwargs: Any) -> Union[base.RESTObjectList, List[base.TObjCls]]:
         """Retrieve a list of objects.
 
         Args:
@@ -244,37 +212,20 @@ class ListMixin(HeadMixin, _RestManagerBase):
         # Allow to overwrite the path, handy for custom listings
         path = data.pop("path", self.path)
 
-        if TYPE_CHECKING:
-            assert self._obj_cls is not None
         obj = self.gitlab.http_list(path, **data)
         if isinstance(obj, list):
             return [self._obj_cls(self, item, created_from_list=True) for item in obj]
         return base.RESTObjectList(self, self._obj_cls, obj)
 
 
-class RetrieveMixin(ListMixin, GetMixin):
-    _computed_path: Optional[str]
-    _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
-    _parent: Optional[base.RESTObject]
-    _parent_attrs: Dict[str, Any]
-    _path: Optional[str]
-    gitlab: gitlab.Gitlab
+class RetrieveMixin(ListMixin[base.TObjCls], GetMixin[base.TObjCls]): ...
 
 
-class CreateMixin(_RestManagerBase):
-    _computed_path: Optional[str]
-    _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
-    _parent: Optional[base.RESTObject]
-    _parent_attrs: Dict[str, Any]
-    _path: Optional[str]
-    gitlab: gitlab.Gitlab
-
+class CreateMixin(base.RESTManager[base.TObjCls]):
     @exc.on_http_error(exc.GitlabCreateError)
     def create(
         self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> base.RESTObject:
+    ) -> base.TObjCls:
         """Create a new object.
 
         Args:
@@ -303,7 +254,6 @@ class CreateMixin(_RestManagerBase):
         server_data = self.gitlab.http_post(path, post_data=data, files=files, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(server_data, requests.Response)
-            assert self._obj_cls is not None
         return self._obj_cls(self, server_data)
 
 
@@ -314,19 +264,13 @@ class UpdateMethod(enum.IntEnum):
     PATCH = 3
 
 
-class UpdateMixin(_RestManagerBase):
-    _computed_path: Optional[str]
-    _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
-    _parent: Optional[base.RESTObject]
-    _parent_attrs: Dict[str, Any]
-    _path: Optional[str]
+class UpdateMixin(base.RESTManager[base.TObjCls]):
+    # Update mixins attrs for easier implementation
     _update_method: UpdateMethod = UpdateMethod.PUT
-    gitlab: gitlab.Gitlab
 
     def _get_update_method(
         self,
-    ) -> Callable[..., Union[Dict[str, Any], requests.Response]]:
+    ) -> Callable[..., Union[Dict[str, Any], "requests.Response"]]:
         """Return the HTTP method to use.
 
         Returns:
@@ -384,17 +328,9 @@ class UpdateMixin(_RestManagerBase):
         return result
 
 
-class SetMixin(_RestManagerBase):
-    _computed_path: Optional[str]
-    _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
-    _parent: Optional[base.RESTObject]
-    _parent_attrs: Dict[str, Any]
-    _path: Optional[str]
-    gitlab: gitlab.Gitlab
-
+class SetMixin(base.RESTManager[base.TObjCls]):
     @exc.on_http_error(exc.GitlabSetError)
-    def set(self, key: str, value: str, **kwargs: Any) -> base.RESTObject:
+    def set(self, key: str, value: str, **kwargs: Any) -> base.TObjCls:
         """Create or update the object.
 
         Args:
@@ -414,19 +350,10 @@ class SetMixin(_RestManagerBase):
         server_data = self.gitlab.http_put(path, post_data=data, **kwargs)
         if TYPE_CHECKING:
             assert not isinstance(server_data, requests.Response)
-            assert self._obj_cls is not None
         return self._obj_cls(self, server_data)
 
 
-class DeleteMixin(_RestManagerBase):
-    _computed_path: Optional[str]
-    _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
-    _parent: Optional[base.RESTObject]
-    _parent_attrs: Dict[str, Any]
-    _path: Optional[str]
-    gitlab: gitlab.Gitlab
-
+class DeleteMixin(base.RESTManager[base.TObjCls]):
     @exc.on_http_error(exc.GitlabDeleteError)
     def delete(self, id: Optional[Union[str, int]] = None, **kwargs: Any) -> None:
         """Delete an object on the server.
@@ -444,29 +371,24 @@ class DeleteMixin(_RestManagerBase):
         else:
             path = f"{self.path}/{utils.EncodedId(id)}"
 
-        if TYPE_CHECKING:
-            assert path is not None
         self.gitlab.http_delete(path, **kwargs)
 
 
-class CRUDMixin(GetMixin, ListMixin, CreateMixin, UpdateMixin, DeleteMixin):
-    _computed_path: Optional[str]
-    _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
-    _parent: Optional[base.RESTObject]
-    _parent_attrs: Dict[str, Any]
-    _path: Optional[str]
-    gitlab: gitlab.Gitlab
+class CRUDMixin(
+    GetMixin[base.TObjCls],
+    ListMixin[base.TObjCls],
+    CreateMixin[base.TObjCls],
+    UpdateMixin[base.TObjCls],
+    DeleteMixin[base.TObjCls],
+): ...
 
 
-class NoUpdateMixin(GetMixin, ListMixin, CreateMixin, DeleteMixin):
-    _computed_path: Optional[str]
-    _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
-    _parent: Optional[base.RESTObject]
-    _parent_attrs: Dict[str, Any]
-    _path: Optional[str]
-    gitlab: gitlab.Gitlab
+class NoUpdateMixin(
+    GetMixin[base.TObjCls],
+    ListMixin[base.TObjCls],
+    CreateMixin[base.TObjCls],
+    DeleteMixin[base.TObjCls],
+): ...
 
 
 class SaveMixin(_RestObjectBase):
@@ -477,7 +399,7 @@ class SaveMixin(_RestObjectBase):
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
-    manager: base.RESTManager
+    manager: base.RESTManager[Any]
 
     def _get_updated_data(self) -> Dict[str, Any]:
         updated_data = {}
@@ -526,7 +448,7 @@ class ObjectDeleteMixin(_RestObjectBase):
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
-    manager: base.RESTManager
+    manager: base.RESTManager[Any]
 
     def delete(self, **kwargs: Any) -> None:
         """Delete the object from the server.
@@ -550,7 +472,7 @@ class UserAgentDetailMixin(_RestObjectBase):
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
-    manager: base.RESTManager
+    manager: base.RESTManager[Any]
 
     @cli.register_custom_action(cls_names=("Snippet", "ProjectSnippet", "ProjectIssue"))
     @exc.on_http_error(exc.GitlabGetError)
@@ -577,7 +499,7 @@ class AccessRequestMixin(_RestObjectBase):
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
-    manager: base.RESTManager
+    manager: base.RESTManager[Any]
 
     @cli.register_custom_action(
         cls_names=("ProjectAccessRequest", "GroupAccessRequest"),
@@ -612,7 +534,7 @@ class DownloadMixin(_RestObjectBase):
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
-    manager: base.RESTManager
+    manager: base.RESTManager[Any]
 
     @overload
     def download(
@@ -689,15 +611,7 @@ class DownloadMixin(_RestObjectBase):
         )
 
 
-class RotateMixin(_RestManagerBase):
-    _computed_path: Optional[str]
-    _from_parent_attrs: Dict[str, Any]
-    _obj_cls: Optional[Type[base.RESTObject]]
-    _parent: Optional[base.RESTObject]
-    _parent_attrs: Dict[str, Any]
-    _path: Optional[str]
-    gitlab: gitlab.Gitlab
-
+class RotateMixin(base.RESTManager[base.TObjCls]):
     @cli.register_custom_action(
         cls_names=(
             "PersonalAccessTokenManager",
@@ -708,7 +622,10 @@ class RotateMixin(_RestManagerBase):
     )
     @exc.on_http_error(exc.GitlabRotateError)
     def rotate(
-        self, id: Union[str, int], expires_at: Optional[str] = None, **kwargs: Any
+        self,
+        id: Union[str, int],
+        expires_at: Optional[str] = None,
+        **kwargs: Any,
     ) -> Dict[str, Any]:
         """Rotate an access token.
 
@@ -737,7 +654,7 @@ class ObjectRotateMixin(_RestObjectBase):
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
-    manager: base.RESTManager
+    manager: base.RESTManager[Any]
 
     @cli.register_custom_action(
         cls_names=("PersonalAccessToken", "GroupAccessToken", "ProjectAccessToken"),
@@ -768,7 +685,7 @@ class SubscribableMixin(_RestObjectBase):
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
-    manager: base.RESTManager
+    manager: base.RESTManager[Any]
 
     @cli.register_custom_action(
         cls_names=("ProjectIssue", "ProjectMergeRequest", "ProjectLabel", "GroupLabel")
@@ -817,7 +734,7 @@ class TodoMixin(_RestObjectBase):
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
-    manager: base.RESTManager
+    manager: base.RESTManager[Any]
 
     @cli.register_custom_action(cls_names=("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTodoError)
@@ -841,7 +758,7 @@ class TimeTrackingMixin(_RestObjectBase):
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
-    manager: base.RESTManager
+    manager: base.RESTManager[Any]
 
     @cli.register_custom_action(cls_names=("ProjectIssue", "ProjectMergeRequest"))
     @exc.on_http_error(exc.GitlabTimeTrackingError)
@@ -956,7 +873,7 @@ class ParticipantsMixin(_RestObjectBase):
     _module: ModuleType
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
-    manager: base.RESTManager
+    manager: base.RESTManager[Any]
 
     @cli.register_custom_action(cls_names=("ProjectMergeRequest", "ProjectIssue"))
     @exc.on_http_error(exc.GitlabListError)
@@ -986,7 +903,7 @@ class ParticipantsMixin(_RestObjectBase):
         return result
 
 
-class BadgeRenderMixin(_RestManagerBase):
+class BadgeRenderMixin(base.RESTManager[base.TObjCls]):
     @cli.register_custom_action(
         cls_names=("GroupBadgeManager", "ProjectBadgeManager"),
         required=("link_url", "image_url"),
@@ -1022,7 +939,7 @@ class PromoteMixin(_RestObjectBase):
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
     _update_method: UpdateMethod = UpdateMethod.PUT
-    manager: base.RESTManager
+    manager: base.RESTManager[Any]
 
     def _get_update_method(
         self,
@@ -1069,7 +986,7 @@ class UploadMixin(_RestObjectBase):
     _parent_attrs: Dict[str, Any]
     _updated_attrs: Dict[str, Any]
     _upload_path: str
-    manager: base.RESTManager
+    manager: base.RESTManager[Any]
 
     def _get_upload_path(self) -> str:
         """Formats _upload_path with object attributes.

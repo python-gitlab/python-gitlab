@@ -7,7 +7,7 @@ from typing import Any, Dict, Optional, TYPE_CHECKING
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CreateMixin, RetrieveMixin, SaveMixin, UpdateMixin
 from gitlab.types import RequiredOptional
 
@@ -67,7 +67,11 @@ class ProjectDeployment(SaveMixin, RESTObject):
         return server_data
 
 
-class ProjectDeploymentManager(RetrieveMixin, CreateMixin, UpdateMixin, RESTManager):
+class ProjectDeploymentManager(
+    RetrieveMixin[ProjectDeployment],
+    CreateMixin[ProjectDeployment],
+    UpdateMixin[ProjectDeployment],
+):
     _path = "/projects/{project_id}/deployments"
     _obj_cls = ProjectDeployment
     _from_parent_attrs = {"project_id": "id"}

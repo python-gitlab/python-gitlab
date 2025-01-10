@@ -44,6 +44,7 @@ check was added.
 """
 
 import inspect
+from typing import Generic
 
 import pytest
 
@@ -107,8 +108,13 @@ def test_mros() -> None:
             if has_base:
                 filename = inspect.getfile(class_value)
                 # NOTE(jlvillal): The very last item 'mro[-1]' is always going
-                # to be 'object'. That is why we are checking 'mro[-2]'.
-                if mro[-2].__module__ != "gitlab.base":
+                # to be 'object'. The second to last might be typing.Generic.
+                # That is why we are checking either 'mro[-3]' or 'mro[-2]'.
+                index_to_check = -2
+                if mro[index_to_check] == Generic:
+                    index_to_check -= 1
+
+                if mro[index_to_check].__module__ != "gitlab.base":
                     failed_messages.append(
                         (
                             f"class definition for {class_name!r} in file {filename!r} "

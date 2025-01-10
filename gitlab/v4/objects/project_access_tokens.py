@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -20,7 +20,10 @@ class ProjectAccessToken(ObjectDeleteMixin, ObjectRotateMixin, RESTObject):
 
 
 class ProjectAccessTokenManager(
-    CreateMixin, DeleteMixin, RetrieveMixin, RotateMixin, RESTManager
+    CreateMixin[ProjectAccessToken],
+    DeleteMixin[ProjectAccessToken],
+    RetrieveMixin[ProjectAccessToken],
+    RotateMixin[ProjectAccessToken],
 ):
     _path = "/projects/{project_id}/access_tokens"
     _obj_cls = ProjectAccessToken

@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -20,7 +20,10 @@ class GroupAccessToken(ObjectDeleteMixin, ObjectRotateMixin, RESTObject):
 
 
 class GroupAccessTokenManager(
-    CreateMixin, DeleteMixin, RetrieveMixin, RotateMixin, RESTManager
+    CreateMixin[GroupAccessToken],
+    DeleteMixin[GroupAccessToken],
+    RetrieveMixin[GroupAccessToken],
+    RotateMixin[GroupAccessToken],
 ):
     _path = "/groups/{group_id}/access_tokens"
     _obj_cls = GroupAccessToken

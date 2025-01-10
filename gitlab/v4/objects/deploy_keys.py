@@ -4,7 +4,7 @@ import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
@@ -20,7 +20,7 @@ class DeployKey(RESTObject):
     pass
 
 
-class DeployKeyManager(ListMixin, RESTManager):
+class DeployKeyManager(ListMixin[DeployKey]):
     _path = "/deploy_keys"
     _obj_cls = DeployKey
 
@@ -29,7 +29,7 @@ class ProjectKey(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectKeyManager(CRUDMixin, RESTManager):
+class ProjectKeyManager(CRUDMixin[ProjectKey]):
     _path = "/projects/{project_id}/deploy_keys"
     _obj_cls = ProjectKey
     _from_parent_attrs = {"project_id": "id"}

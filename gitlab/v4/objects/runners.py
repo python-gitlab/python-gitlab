@@ -3,7 +3,7 @@ from typing import Any, List, Optional
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -32,7 +32,7 @@ class RunnerJob(RESTObject):
     pass
 
 
-class RunnerJobManager(ListMixin, RESTManager):
+class RunnerJobManager(ListMixin[RunnerJob]):
     _path = "/runners/{runner_id}/jobs"
     _obj_cls = RunnerJob
     _from_parent_attrs = {"runner_id": "id"}
@@ -44,7 +44,7 @@ class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "description"
 
 
-class RunnerManager(CRUDMixin, RESTManager):
+class RunnerManager(CRUDMixin[Runner]):
     _path = "/runners"
     _obj_cls = Runner
     _create_attrs = RequiredOptional(
@@ -125,7 +125,7 @@ class RunnerAll(RESTObject):
     _repr_attr = "description"
 
 
-class RunnerAllManager(ListMixin, RESTManager):
+class RunnerAllManager(ListMixin[RunnerAll]):
     _path = "/runners/all"
     _obj_cls = RunnerAll
     _list_filters = ("scope", "type", "status", "paused", "tag_list")
@@ -136,7 +136,7 @@ class GroupRunner(RESTObject):
     pass
 
 
-class GroupRunnerManager(ListMixin, RESTManager):
+class GroupRunnerManager(ListMixin[GroupRunner]):
     _path = "/groups/{group_id}/runners"
     _obj_cls = GroupRunner
     _from_parent_attrs = {"group_id": "id"}
@@ -149,7 +149,9 @@ class ProjectRunner(ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectRunnerManager(CreateMixin, DeleteMixin, ListMixin, RESTManager):
+class ProjectRunnerManager(
+    CreateMixin[ProjectRunner], DeleteMixin[ProjectRunner], ListMixin[ProjectRunner]
+):
     _path = "/projects/{project_id}/runners"
     _obj_cls = ProjectRunner
     _from_parent_attrs = {"project_id": "id"}

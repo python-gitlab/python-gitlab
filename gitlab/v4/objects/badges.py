@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import BadgeRenderMixin, CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
@@ -14,7 +14,7 @@ class GroupBadge(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class GroupBadgeManager(BadgeRenderMixin, CRUDMixin, RESTManager):
+class GroupBadgeManager(BadgeRenderMixin[GroupBadge], CRUDMixin[GroupBadge]):
     _path = "/groups/{group_id}/badges"
     _obj_cls = GroupBadge
     _from_parent_attrs = {"group_id": "id"}
@@ -26,7 +26,7 @@ class ProjectBadge(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectBadgeManager(BadgeRenderMixin, CRUDMixin, RESTManager):
+class ProjectBadgeManager(BadgeRenderMixin[ProjectBadge], CRUDMixin[ProjectBadge]):
     _path = "/projects/{project_id}/badges"
     _obj_cls = ProjectBadge
     _from_parent_attrs = {"project_id": "id"}

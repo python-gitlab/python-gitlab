@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CRUDMixin,
     NoUpdateMixin,
@@ -20,7 +20,7 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
 
 
-class ProjectBranchManager(NoUpdateMixin, RESTManager):
+class ProjectBranchManager(NoUpdateMixin[ProjectBranch]):
     _path = "/projects/{project_id}/repository/branches"
     _obj_cls = ProjectBranch
     _from_parent_attrs = {"project_id": "id"}
@@ -31,7 +31,7 @@ class ProjectProtectedBranch(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
 
 
-class ProjectProtectedBranchManager(CRUDMixin, RESTManager):
+class ProjectProtectedBranchManager(CRUDMixin[ProjectProtectedBranch]):
     _path = "/projects/{project_id}/protected_branches"
     _obj_cls = ProjectProtectedBranch
     _from_parent_attrs = {"project_id": "id"}

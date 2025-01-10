@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CreateMixin, RetrieveMixin, SaveMixin, UpdateMixin
 from gitlab.types import RequiredOptional
 
@@ -25,7 +25,9 @@ class ProjectCommitDiscussion(RESTObject):
     notes: ProjectCommitDiscussionNoteManager
 
 
-class ProjectCommitDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
+class ProjectCommitDiscussionManager(
+    RetrieveMixin[ProjectCommitDiscussion], CreateMixin[ProjectCommitDiscussion]
+):
     _path = "/projects/{project_id}/repository/commits/{commit_id}/discussions"
     _obj_cls = ProjectCommitDiscussion
     _from_parent_attrs = {"project_id": "project_id", "commit_id": "id"}
@@ -36,7 +38,9 @@ class ProjectIssueDiscussion(RESTObject):
     notes: ProjectIssueDiscussionNoteManager
 
 
-class ProjectIssueDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
+class ProjectIssueDiscussionManager(
+    RetrieveMixin[ProjectIssueDiscussion], CreateMixin[ProjectIssueDiscussion]
+):
     _path = "/projects/{project_id}/issues/{issue_iid}/discussions"
     _obj_cls = ProjectIssueDiscussion
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
@@ -48,7 +52,9 @@ class ProjectMergeRequestDiscussion(SaveMixin, RESTObject):
 
 
 class ProjectMergeRequestDiscussionManager(
-    RetrieveMixin, CreateMixin, UpdateMixin, RESTManager
+    RetrieveMixin[ProjectMergeRequestDiscussion],
+    CreateMixin[ProjectMergeRequestDiscussion],
+    UpdateMixin[ProjectMergeRequestDiscussion],
 ):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/discussions"
     _obj_cls = ProjectMergeRequestDiscussion
@@ -63,7 +69,9 @@ class ProjectSnippetDiscussion(RESTObject):
     notes: ProjectSnippetDiscussionNoteManager
 
 
-class ProjectSnippetDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
+class ProjectSnippetDiscussionManager(
+    RetrieveMixin[ProjectSnippetDiscussion], CreateMixin[ProjectSnippetDiscussion]
+):
     _path = "/projects/{project_id}/snippets/{snippet_id}/discussions"
     _obj_cls = ProjectSnippetDiscussion
     _from_parent_attrs = {"project_id": "project_id", "snippet_id": "id"}

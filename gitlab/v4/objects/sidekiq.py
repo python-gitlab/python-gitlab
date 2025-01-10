@@ -4,19 +4,22 @@ import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager
+from gitlab.base import RESTManager, RESTObject
 
 __all__ = [
     "SidekiqManager",
 ]
 
 
-class SidekiqManager(RESTManager):
+class SidekiqManager(RESTManager[RESTObject]):
     """Manager for the Sidekiq methods.
 
     This manager doesn't actually manage objects but provides helper function
     for the sidekiq metrics API.
     """
+
+    _path = "/sidekiq"
+    _obj_cls = RESTObject
 
     @cli.register_custom_action(cls_names="SidekiqManager")
     @exc.on_http_error(exc.GitlabGetError)
@@ -33,7 +36,7 @@ class SidekiqManager(RESTManager):
         Returns:
             Information about the Sidekiq queues
         """
-        return self.gitlab.http_get("/sidekiq/queue_metrics", **kwargs)
+        return self.gitlab.http_get(f"{self.path}/queue_metrics", **kwargs)
 
     @cli.register_custom_action(cls_names="SidekiqManager")
     @exc.on_http_error(exc.GitlabGetError)
@@ -52,7 +55,7 @@ class SidekiqManager(RESTManager):
         Returns:
             Information about the register Sidekiq worker
         """
-        return self.gitlab.http_get("/sidekiq/process_metrics", **kwargs)
+        return self.gitlab.http_get(f"{self.path}/process_metrics", **kwargs)
 
     @cli.register_custom_action(cls_names="SidekiqManager")
     @exc.on_http_error(exc.GitlabGetError)
@@ -69,7 +72,7 @@ class SidekiqManager(RESTManager):
         Returns:
             Statistics about the Sidekiq jobs performed
         """
-        return self.gitlab.http_get("/sidekiq/job_stats", **kwargs)
+        return self.gitlab.http_get(f"{self.path}/job_stats", **kwargs)
 
     @cli.register_custom_action(cls_names="SidekiqManager")
     @exc.on_http_error(exc.GitlabGetError)
@@ -88,4 +91,4 @@ class SidekiqManager(RESTManager):
         Returns:
             All available Sidekiq metrics and statistics
         """
-        return self.gitlab.http_get("/sidekiq/compound_metrics", **kwargs)
+        return self.gitlab.http_get(f"{self.path}/compound_metrics", **kwargs)

@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
@@ -18,7 +18,7 @@ class GroupBoardList(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class GroupBoardListManager(CRUDMixin, RESTManager):
+class GroupBoardListManager(CRUDMixin[GroupBoardList]):
     _path = "/groups/{group_id}/boards/{board_id}/lists"
     _obj_cls = GroupBoardList
     _from_parent_attrs = {"group_id": "group_id", "board_id": "id"}
@@ -32,7 +32,7 @@ class GroupBoard(SaveMixin, ObjectDeleteMixin, RESTObject):
     lists: GroupBoardListManager
 
 
-class GroupBoardManager(CRUDMixin, RESTManager):
+class GroupBoardManager(CRUDMixin[GroupBoard]):
     _path = "/groups/{group_id}/boards"
     _obj_cls = GroupBoard
     _from_parent_attrs = {"group_id": "id"}
@@ -43,7 +43,7 @@ class ProjectBoardList(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectBoardListManager(CRUDMixin, RESTManager):
+class ProjectBoardListManager(CRUDMixin[ProjectBoardList]):
     _path = "/projects/{project_id}/boards/{board_id}/lists"
     _obj_cls = ProjectBoardList
     _from_parent_attrs = {"project_id": "project_id", "board_id": "id"}
@@ -57,7 +57,7 @@ class ProjectBoard(SaveMixin, ObjectDeleteMixin, RESTObject):
     lists: ProjectBoardListManager
 
 
-class ProjectBoardManager(CRUDMixin, RESTManager):
+class ProjectBoardManager(CRUDMixin[ProjectBoard]):
     _path = "/projects/{project_id}/boards"
     _obj_cls = ProjectBoard
     _from_parent_attrs = {"project_id": "id"}

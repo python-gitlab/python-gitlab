@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import ArrayAttribute, RequiredOptional
 
@@ -16,7 +16,7 @@ class ProjectRelease(SaveMixin, RESTObject):
     links: "ProjectReleaseLinkManager"
 
 
-class ProjectReleaseManager(CRUDMixin, RESTManager):
+class ProjectReleaseManager(CRUDMixin[ProjectRelease]):
     _path = "/projects/{project_id}/releases"
     _obj_cls = ProjectRelease
     _from_parent_attrs = {"project_id": "id"}
@@ -38,7 +38,7 @@ class ProjectReleaseLink(ObjectDeleteMixin, SaveMixin, RESTObject):
     pass
 
 
-class ProjectReleaseLinkManager(CRUDMixin, RESTManager):
+class ProjectReleaseLinkManager(CRUDMixin[ProjectReleaseLink]):
     _path = "/projects/{project_id}/releases/{tag_name}/assets/links"
     _obj_cls = ProjectReleaseLink
     _from_parent_attrs = {"project_id": "project_id", "tag_name": "tag_name"}

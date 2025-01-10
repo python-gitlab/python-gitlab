@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -23,7 +23,10 @@ class ProjectExternalStatusCheck(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectExternalStatusCheckManager(
-    ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    ListMixin[ProjectExternalStatusCheck],
+    CreateMixin[ProjectExternalStatusCheck],
+    UpdateMixin[ProjectExternalStatusCheck],
+    DeleteMixin[ProjectExternalStatusCheck],
 ):
     _path = "/projects/{project_id}/external_status_checks"
     _obj_cls = ProjectExternalStatusCheck
@@ -42,7 +45,7 @@ class ProjectMergeRequestStatusCheck(SaveMixin, RESTObject):
     pass
 
 
-class ProjectMergeRequestStatusCheckManager(ListMixin, RESTManager):
+class ProjectMergeRequestStatusCheckManager(ListMixin[ProjectMergeRequestStatusCheck]):
     _path = "/projects/{project_id}/merge_requests/{merge_request_iid}/status_checks"
     _obj_cls = ProjectMergeRequestStatusCheck
     _from_parent_attrs = {"project_id": "project_id", "merge_request_iid": "iid"}

@@ -11,7 +11,7 @@ import requests
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject, RESTObjectList
+from gitlab.base import RESTObject, RESTObjectList
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -73,7 +73,11 @@ class CurrentUserEmail(ObjectDeleteMixin, RESTObject):
     _repr_attr = "email"
 
 
-class CurrentUserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+class CurrentUserEmailManager(
+    RetrieveMixin[CurrentUserEmail],
+    CreateMixin[CurrentUserEmail],
+    DeleteMixin[CurrentUserEmail],
+):
     _path = "/user/emails"
     _obj_cls = CurrentUserEmail
     _create_attrs = RequiredOptional(required=("email",))
@@ -83,7 +87,11 @@ class CurrentUserGPGKey(ObjectDeleteMixin, RESTObject):
     pass
 
 
-class CurrentUserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+class CurrentUserGPGKeyManager(
+    RetrieveMixin[CurrentUserGPGKey],
+    CreateMixin[CurrentUserGPGKey],
+    DeleteMixin[CurrentUserGPGKey],
+):
     _path = "/user/gpg_keys"
     _obj_cls = CurrentUserGPGKey
     _create_attrs = RequiredOptional(required=("key",))
@@ -93,7 +101,11 @@ class CurrentUserKey(ObjectDeleteMixin, RESTObject):
     _repr_attr = "title"
 
 
-class CurrentUserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+class CurrentUserKeyManager(
+    RetrieveMixin[CurrentUserKey],
+    CreateMixin[CurrentUserKey],
+    DeleteMixin[CurrentUserKey],
+):
     _path = "/user/keys"
     _obj_cls = CurrentUserKey
     _create_attrs = RequiredOptional(required=("title", "key"))
@@ -103,7 +115,7 @@ class CurrentUserRunner(RESTObject):
     pass
 
 
-class CurrentUserRunnerManager(CreateMixin, RESTManager):
+class CurrentUserRunnerManager(CreateMixin[CurrentUserRunner]):
     _path = "/user/runners"
     _obj_cls = CurrentUserRunner
     _types = {"tag_list": types.CommaSeparatedListAttribute}
@@ -129,7 +141,9 @@ class CurrentUserStatus(SaveMixin, RESTObject):
     _repr_attr = "message"
 
 
-class CurrentUserStatusManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class CurrentUserStatusManager(
+    GetWithoutIdMixin[CurrentUserStatus], UpdateMixin[CurrentUserStatus]
+):
     _path = "/user/status"
     _obj_cls = CurrentUserStatus
     _update_attrs = RequiredOptional(optional=("emoji", "message"))
@@ -146,7 +160,7 @@ class CurrentUser(RESTObject):
     status: CurrentUserStatusManager
 
 
-class CurrentUserManager(GetWithoutIdMixin, RESTManager):
+class CurrentUserManager(GetWithoutIdMixin[CurrentUser]):
     _path = "/user"
     _obj_cls = CurrentUser
 
@@ -376,7 +390,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
         return server_data
 
 
-class UserManager(CRUDMixin, RESTManager):
+class UserManager(CRUDMixin[User]):
     _path = "/users"
     _obj_cls = User
 
@@ -452,7 +466,7 @@ class ProjectUser(RESTObject):
     pass
 
 
-class ProjectUserManager(ListMixin, RESTManager):
+class ProjectUserManager(ListMixin[ProjectUser]):
     _path = "/projects/{project_id}/users"
     _obj_cls = ProjectUser
     _from_parent_attrs = {"project_id": "id"}
@@ -464,7 +478,9 @@ class UserEmail(ObjectDeleteMixin, RESTObject):
     _repr_attr = "email"
 
 
-class UserEmailManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+class UserEmailManager(
+    RetrieveMixin[UserEmail], CreateMixin[UserEmail], DeleteMixin[UserEmail]
+):
     _path = "/users/{user_id}/emails"
     _obj_cls = UserEmail
     _from_parent_attrs = {"user_id": "id"}
@@ -480,13 +496,13 @@ class UserStatus(RESTObject):
     _repr_attr = "message"
 
 
-class UserStatusManager(GetWithoutIdMixin, RESTManager):
+class UserStatusManager(GetWithoutIdMixin[UserStatus]):
     _path = "/users/{user_id}/status"
     _obj_cls = UserStatus
     _from_parent_attrs = {"user_id": "id"}
 
 
-class UserActivitiesManager(ListMixin, RESTManager):
+class UserActivitiesManager(ListMixin[UserActivities]):
     _path = "/user/activities"
     _obj_cls = UserActivities
 
@@ -495,7 +511,9 @@ class UserGPGKey(ObjectDeleteMixin, RESTObject):
     pass
 
 
-class UserGPGKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+class UserGPGKeyManager(
+    RetrieveMixin[UserGPGKey], CreateMixin[UserGPGKey], DeleteMixin[UserGPGKey]
+):
     _path = "/users/{user_id}/gpg_keys"
     _obj_cls = UserGPGKey
     _from_parent_attrs = {"user_id": "id"}
@@ -506,14 +524,16 @@ class UserKey(ObjectDeleteMixin, RESTObject):
     pass
 
 
-class UserKeyManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+class UserKeyManager(
+    RetrieveMixin[UserKey], CreateMixin[UserKey], DeleteMixin[UserKey]
+):
     _path = "/users/{user_id}/keys"
     _obj_cls = UserKey
     _from_parent_attrs = {"user_id": "id"}
     _create_attrs = RequiredOptional(required=("title", "key"))
 
 
-class UserIdentityProviderManager(DeleteMixin, RESTManager):
+class UserIdentityProviderManager(DeleteMixin[User]):
     """Manager for user identities.
 
     This manager does not actually manage objects but enables
@@ -521,6 +541,7 @@ class UserIdentityProviderManager(DeleteMixin, RESTManager):
     """
 
     _path = "/users/{user_id}/identities"
+    _obj_cls = User
     _from_parent_attrs = {"user_id": "id"}
 
 
@@ -528,7 +549,7 @@ class UserImpersonationToken(ObjectDeleteMixin, RESTObject):
     pass
 
 
-class UserImpersonationTokenManager(NoUpdateMixin, RESTManager):
+class UserImpersonationTokenManager(NoUpdateMixin[UserImpersonationToken]):
     _path = "/users/{user_id}/impersonation_tokens"
     _obj_cls = UserImpersonationToken
     _from_parent_attrs = {"user_id": "id"}
@@ -543,7 +564,7 @@ class UserMembership(RESTObject):
     _id_attr = "source_id"
 
 
-class UserMembershipManager(RetrieveMixin, RESTManager):
+class UserMembershipManager(RetrieveMixin[UserMembership]):
     _path = "/users/{user_id}/memberships"
     _obj_cls = UserMembership
     _from_parent_attrs = {"user_id": "id"}
@@ -555,7 +576,7 @@ class UserProject(RESTObject):
     pass
 
 
-class UserProjectManager(ListMixin, CreateMixin, RESTManager):
+class UserProjectManager(ListMixin[UserProject], CreateMixin[UserProject]):
     _path = "/projects/user/{user_id}"
     _obj_cls = UserProject
     _from_parent_attrs = {"user_id": "id"}
@@ -600,7 +621,7 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
         "id_before",
     )
 
-    def list(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+    def list(self, **kwargs: Any) -> Union[RESTObjectList, List[UserProject]]:
         """Retrieve a list of objects.
 
         Args:
@@ -622,14 +643,14 @@ class UserProjectManager(ListMixin, CreateMixin, RESTManager):
             path = f"/users/{self._parent.id}/projects"
         else:
             path = f"/users/{self._from_parent_attrs['user_id']}/projects"
-        return ListMixin.list(self, path=path, **kwargs)
+        return super().list(path=path, **kwargs)
 
 
 class StarredProject(RESTObject):
     pass
 
 
-class StarredProjectManager(ListMixin, RESTManager):
+class StarredProjectManager(ListMixin[StarredProject]):
     _path = "/users/{user_id}/starred_projects"
     _obj_cls = StarredProject
     _from_parent_attrs = {"user_id": "id"}
@@ -651,13 +672,13 @@ class StarredProjectManager(ListMixin, RESTManager):
     )
 
 
-class UserFollowersManager(ListMixin, RESTManager):
+class UserFollowersManager(ListMixin[User]):
     _path = "/users/{user_id}/followers"
     _obj_cls = User
     _from_parent_attrs = {"user_id": "id"}
 
 
-class UserFollowingManager(ListMixin, RESTManager):
+class UserFollowingManager(ListMixin[User]):
     _path = "/users/{user_id}/following"
     _obj_cls = User
     _from_parent_attrs = {"user_id": "id"}
