@@ -66,7 +66,7 @@ class GroupLabelManager(
     # Update without ID.
     # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
     # type error
-    def update(  # type: ignore
+    def update(  # type: ignore[override]
         self,
         name: Optional[str],
         new_data: Optional[Dict[str, Any]] = None,
@@ -132,7 +132,7 @@ class ProjectLabelManager(
     # Update without ID.
     # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
     # type error
-    def update(  # type: ignore
+    def update(  # type: ignore[override]
         self,
         name: Optional[str],
         new_data: Optional[Dict[str, Any]] = None,

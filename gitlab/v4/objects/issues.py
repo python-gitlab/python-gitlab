@@ -302,7 +302,7 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     @exc.on_http_error(exc.GitlabCreateError)
     # NOTE(jlvillal): Signature doesn't match CreateMixin.create() so ignore
     # type error
-    def create(  # type: ignore
+    def create(  # type: ignore[override]
         self, data: Dict[str, Any], **kwargs: Any
     ) -> Tuple[RESTObject, RESTObject]:
         """Create a new object.
