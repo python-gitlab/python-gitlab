@@ -51,7 +51,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     # NOTE(jlvillal): Signature doesn't match SaveMixin.save() so ignore
     # type error
-    def save(  # type: ignore
+    def save(  # type: ignore[override]
         self, branch: str, commit_message: str, **kwargs: Any
     ) -> None:
         """Save the changes made to the file to the server.
@@ -75,7 +75,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
     @exc.on_http_error(exc.GitlabDeleteError)
     # NOTE(jlvillal): Signature doesn't match DeleteMixin.delete() so ignore
     # type error
-    def delete(  # type: ignore
+    def delete(  # type: ignore[override]
         self, branch: str, commit_message: str, **kwargs: Any
     ) -> None:
         """Delete the file from the server.
@@ -219,7 +219,7 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
     @exc.on_http_error(exc.GitlabUpdateError)
     # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
     # type error
-    def update(  # type: ignore
+    def update(  # type: ignore[override]
         self, file_path: str, new_data: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> Dict[str, Any]:
         """Update an object on the server.
@@ -254,7 +254,7 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
     @exc.on_http_error(exc.GitlabDeleteError)
     # NOTE(jlvillal): Signature doesn't match DeleteMixin.delete() so ignore
     # type error
-    def delete(  # type: ignore
+    def delete(  # type: ignore[override]
         self, file_path: str, branch: str, commit_message: str, **kwargs: Any
     ) -> None:
         """Delete a file on the server.
