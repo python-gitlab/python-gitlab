@@ -118,6 +118,29 @@ def test_http_request_with_retry_on_method_for_transient_failures(gl):
 
 
 @responses.activate
+def test_http_request_extra_headers(gl):
+    path = "/projects/123/jobs/123456"
+    url = "http://localhost/api/v4" + path
+
+    range_headers = {"Range": "bytes=0-99"}
+
+    responses.add(
+        method=responses.GET,
+        url=url,
+        body=b"a" * 100,
+        status=206,
+        content_type="application/octet-stream",
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS
+        + [responses.matchers.header_matcher(range_headers)],
+    )
+
+    http_r = gl.http_request("get", path, extra_headers=range_headers)
+
+    assert http_r.status_code == 206
+    assert len(http_r.content) == 100
+
+
+@responses.activate
 @pytest.mark.parametrize(
     "exception",
     [
