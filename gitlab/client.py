@@ -654,6 +654,7 @@ class Gitlab:
         obey_rate_limit: bool = True,
         retry_transient_errors: Optional[bool] = None,
         max_retries: int = 10,
+        extra_headers: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> requests.Response:
         """Make an HTTP request to the Gitlab server.
@@ -675,6 +676,7 @@ class Gitlab:
                 or 52x responses. Defaults to False.
             max_retries: Max retries after 429 or transient errors,
                                set to -1 to retry forever. Defaults to 10.
+            extra_headers: Add and override HTTP headers for the request.
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
@@ -720,6 +722,9 @@ class Gitlab:
         # We need to deal with json vs. data when uploading files
         send_data = self._backend.prepare_send_data(files, post_data, raw)
         opts["headers"]["Content-type"] = send_data.content_type
+
+        if extra_headers is not None:
+            opts["headers"].update(extra_headers)
 
         retry = utils.Retry(
             max_retries=max_retries,
