@@ -39,6 +39,7 @@ from .members import (  # noqa: F401
     GroupMemberAllManager,
     GroupMemberManager,
 )
+from .merge_request_approvals import GroupApprovalRuleManager
 from .merge_requests import GroupMergeRequestManager  # noqa: F401
 from .milestones import GroupMilestoneManager  # noqa: F401
 from .notification_settings import GroupNotificationSettingsManager  # noqa: F401
@@ -70,6 +71,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     access_tokens: GroupAccessTokenManager
     accessrequests: GroupAccessRequestManager
+    approval_rules: GroupApprovalRuleManager
     audit_events: GroupAuditEventManager
     badges: GroupBadgeManager
     billable_members: GroupBillableMemberManager
