@@ -211,3 +211,20 @@ on your own, such as for nested API responses and ``Union`` return types. For ex
 
    if TYPE_CHECKING:
       assert isinstance(license["plan"], str)
+
+Per request HTTP headers override
+---------------------------------
+
+The ``extra_headers`` keyword argument can be used to add and override
+the HTTP headers for a specific request. For example, it can be used do add ``Range``
+header to download a part of artifacts archive:
+
+.. code-block:: python
+
+   import gitlab
+
+   gl = gitlab.Gitlab(url, token)
+   project = gl.projects.get(1)
+   job = project.jobs.get(123)
+
+   artifacts = job.artifacts(extra_headers={"Range": "bytes=0-9"})
