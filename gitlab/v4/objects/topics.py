@@ -1,9 +1,9 @@
-from typing import Any, cast, Dict, TYPE_CHECKING, Union
+from typing import Any, Dict, TYPE_CHECKING, Union
 
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
@@ -17,7 +17,7 @@ class Topic(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class TopicManager(CRUDMixin, RESTManager):
+class TopicManager(CRUDMixin[Topic]):
     _path = "/topics"
     _obj_cls = Topic
     _create_attrs = RequiredOptional(
@@ -28,9 +28,6 @@ class TopicManager(CRUDMixin, RESTManager):
     )
     _update_attrs = RequiredOptional(optional=("avatar", "description", "name"))
     _types = {"avatar": types.ImageAttribute}
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Topic:
-        return cast(Topic, super().get(id=id, lazy=lazy, **kwargs))
 
     @cli.register_custom_action(
         cls_names="TopicManager",

@@ -1,8 +1,8 @@
-from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
+from typing import Any, Dict, Optional, TYPE_CHECKING
 
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -33,7 +33,7 @@ class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
     notes: GroupEpicNoteManager
 
 
-class GroupEpicManager(CRUDMixin, RESTManager):
+class GroupEpicManager(CRUDMixin[GroupEpic]):
     _path = "/groups/{group_id}/epics"
     _obj_cls = GroupEpic
     _from_parent_attrs = {"group_id": "id"}
@@ -46,9 +46,6 @@ class GroupEpicManager(CRUDMixin, RESTManager):
         optional=("title", "labels", "description", "start_date", "end_date"),
     )
     _types = {"labels": types.CommaSeparatedListAttribute}
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> GroupEpic:
-        return cast(GroupEpic, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class GroupEpicIssue(ObjectDeleteMixin, SaveMixin, RESTObject):
@@ -80,7 +77,10 @@ class GroupEpicIssue(ObjectDeleteMixin, SaveMixin, RESTObject):
 
 
 class GroupEpicIssueManager(
-    ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    ListMixin[GroupEpicIssue],
+    CreateMixin[GroupEpicIssue],
+    UpdateMixin[GroupEpicIssue],
+    DeleteMixin[GroupEpicIssue],
 ):
     _path = "/groups/{group_id}/epics/{epic_iid}/issues"
     _obj_cls = GroupEpicIssue

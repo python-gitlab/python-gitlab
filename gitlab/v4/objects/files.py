@@ -16,7 +16,7 @@ import requests
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import utils
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -95,7 +95,9 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.manager.delete(file_path, branch, commit_message, **kwargs)
 
 
-class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
+class ProjectFileManager(
+    CreateMixin[ProjectFile], UpdateMixin[ProjectFile], DeleteMixin[ProjectFile]
+):
     _path = "/projects/{project_id}/repository/files"
     _obj_cls = ProjectFile
     _from_parent_attrs = {"project_id": "id"}

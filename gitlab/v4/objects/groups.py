@@ -1,4 +1,4 @@
-from typing import Any, BinaryIO, cast, Dict, List, Optional, Type, TYPE_CHECKING, Union
+from typing import Any, BinaryIO, Dict, List, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -6,7 +6,7 @@ import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject, TObjCls
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -251,7 +251,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.manager.gitlab.http_post(path, **kwargs)
 
 
-class GroupManager(CRUDMixin, RESTManager):
+class GroupManager(CRUDMixin[Group]):
     _path = "/groups"
     _obj_cls = Group
     _list_filters = (
@@ -317,9 +317,6 @@ class GroupManager(CRUDMixin, RESTManager):
     )
     _types = {"avatar": types.ImageAttribute, "skip_groups": types.ArrayAttribute}
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Group:
-        return cast(Group, super().get(id=id, lazy=lazy, **kwargs))
-
     @exc.on_http_error(exc.GitlabImportError)
     def import_group(
         self,
@@ -356,13 +353,8 @@ class GroupManager(CRUDMixin, RESTManager):
         )
 
 
-class GroupSubgroup(RESTObject):
-    pass
-
-
-class GroupSubgroupManager(ListMixin, RESTManager):
-    _path = "/groups/{group_id}/subgroups"
-    _obj_cls: Union[Type["GroupDescendantGroup"], Type[GroupSubgroup]] = GroupSubgroup
+class SubgroupBaseManager(ListMixin[TObjCls]):
+    # pylint: disable=abstract-method
     _from_parent_attrs = {"group_id": "id"}
     _list_filters = (
         "skip_groups",
@@ -378,18 +370,27 @@ class GroupSubgroupManager(ListMixin, RESTManager):
     _types = {"skip_groups": types.ArrayAttribute}
 
 
+class GroupSubgroup(RESTObject):
+    pass
+
+
+class GroupSubgroupManager(SubgroupBaseManager[GroupSubgroup]):
+    _path = "/groups/{group_id}/subgroups"
+    _obj_cls = GroupSubgroup
+
+
 class GroupDescendantGroup(RESTObject):
     pass
 
 
-class GroupDescendantGroupManager(GroupSubgroupManager):
+class GroupDescendantGroupManager(SubgroupBaseManager[GroupDescendantGroup]):
     """
     This manager inherits from GroupSubgroupManager as descendant groups
     share all attributes with subgroups, except the path and object class.
     """
 
     _path = "/groups/{group_id}/descendant_groups"
-    _obj_cls: Type[GroupDescendantGroup] = GroupDescendantGroup
+    _obj_cls = GroupDescendantGroup
 
 
 class GroupLDAPGroupLink(RESTObject):
@@ -424,9 +425,13 @@ class GroupLDAPGroupLink(RESTObject):
         )
 
 
-class GroupLDAPGroupLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
+class GroupLDAPGroupLinkManager(
+    ListMixin[GroupLDAPGroupLink],
+    CreateMixin[GroupLDAPGroupLink],
+    DeleteMixin[GroupLDAPGroupLink],
+):
     _path = "/groups/{group_id}/ldap_group_links"
-    _obj_cls: Type[GroupLDAPGroupLink] = GroupLDAPGroupLink
+    _obj_cls = GroupLDAPGroupLink
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(
         required=("provider", "group_access"), exclusive=("cn", "filter")
@@ -438,13 +443,8 @@ class GroupSAMLGroupLink(ObjectDeleteMixin, RESTObject):
     _repr_attr = "name"
 
 
-class GroupSAMLGroupLinkManager(NoUpdateMixin, RESTManager):
+class GroupSAMLGroupLinkManager(NoUpdateMixin[GroupSAMLGroupLink]):
     _path = "/groups/{group_id}/saml_group_links"
-    _obj_cls: Type[GroupSAMLGroupLink] = GroupSAMLGroupLink
+    _obj_cls = GroupSAMLGroupLink
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(required=("saml_group_name", "access_level"))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupSAMLGroupLink:
-        return cast(GroupSAMLGroupLink, super().get(id=id, lazy=lazy, **kwargs))

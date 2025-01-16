@@ -3,10 +3,10 @@ GitLab API:
 https://docs.gitlab.com/ee/api/integrations.html
 """
 
-from typing import Any, cast, List, Union
+from typing import List
 
 from gitlab import cli
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     DeleteMixin,
     GetMixin,
@@ -29,7 +29,10 @@ class ProjectIntegration(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectIntegrationManager(
-    GetMixin, UpdateMixin, DeleteMixin, ListMixin, RESTManager
+    GetMixin[ProjectIntegration],
+    UpdateMixin[ProjectIntegration],
+    DeleteMixin[ProjectIntegration],
+    ListMixin[ProjectIntegration],
 ):
     _path = "/projects/{project_id}/integrations"
     _from_parent_attrs = {"project_id": "id"}
@@ -265,11 +268,6 @@ class ProjectIntegrationManager(
         "youtrack": (("issues_url", "project_url"), ("description", "push_events")),
     }
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectIntegration:
-        return cast(ProjectIntegration, super().get(id=id, lazy=lazy, **kwargs))
-
     @cli.register_custom_action(
         cls_names=("ProjectIntegrationManager", "ProjectServiceManager")
     )
@@ -288,8 +286,3 @@ class ProjectService(ProjectIntegration):
 
 class ProjectServiceManager(ProjectIntegrationManager):
     _obj_cls = ProjectService
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectService:
-        return cast(ProjectService, super().get(id=id, lazy=lazy, **kwargs))

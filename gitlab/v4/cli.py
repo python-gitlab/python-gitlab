@@ -28,25 +28,18 @@ class GitlabCLI:
         self.gl = gl
         self.args = args
         self.parent_args: Dict[str, Any] = {}
-        self.mgr_cls: Union[
-            Type[gitlab.mixins.CreateMixin],
-            Type[gitlab.mixins.DeleteMixin],
-            Type[gitlab.mixins.GetMixin],
-            Type[gitlab.mixins.GetWithoutIdMixin],
-            Type[gitlab.mixins.ListMixin],
-            Type[gitlab.mixins.UpdateMixin],
-        ] = getattr(gitlab.v4.objects, f"{self.cls.__name__}Manager")
+        self.mgr_cls: Any = getattr(gitlab.v4.objects, f"{self.cls.__name__}Manager")
         # We could do something smart, like splitting the manager name to find
         # parents, build the chain of managers to get to the final object.
         # Instead we do something ugly and efficient: interpolate variables in
         # the class _path attribute, and replace the value with the result.
         if TYPE_CHECKING:
-            assert self.mgr_cls._path is not None
+            assert isinstance(self.mgr_cls._path, str)
 
         self._process_from_parent_attrs()
 
         self.mgr_cls._path = self.mgr_cls._path.format(**self.parent_args)
-        self.mgr = self.mgr_cls(gl)
+        self.mgr: Any = self.mgr_cls(gl)
         self.mgr._from_parent_attrs = self.parent_args
         if self.mgr_cls._types:
             for attr_name, type_cls in self.mgr_cls._types.items():
@@ -82,7 +75,9 @@ class GitlabCLI:
         return self.do_custom()
 
     def do_custom(self) -> Any:
-        class_instance: Union[gitlab.base.RESTManager, gitlab.base.RESTObject]
+        class_instance: Union[
+            gitlab.base.RESTManager[gitlab.base.RESTObject], gitlab.base.RESTObject
+        ]
         in_obj = cli.custom_actions[self.cls_name][self.resource_action].in_object
 
         # Get the object (lazy), then act
@@ -132,6 +127,8 @@ class GitlabCLI:
             assert isinstance(self.mgr, gitlab.mixins.CreateMixin)
         try:
             result = self.mgr.create(self.args)
+            if TYPE_CHECKING:
+                assert isinstance(result, gitlab.base.RESTObject)
         except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to create object", e)
         return result
@@ -159,6 +156,8 @@ class GitlabCLI:
         if isinstance(self.mgr, gitlab.mixins.GetWithoutIdMixin):
             try:
                 result = self.mgr.get(id=None, **self.args)
+                if TYPE_CHECKING:
+                    assert isinstance(result, gitlab.base.RESTObject) or result is None
             except Exception as e:  # pragma: no cover, cli.die is unit-tested
                 cli.die("Impossible to get object", e)
             return result
@@ -170,6 +169,8 @@ class GitlabCLI:
         id = self.args.pop(self.cls._id_attr)
         try:
             result = self.mgr.get(id, lazy=False, **self.args)
+            if TYPE_CHECKING:
+                assert isinstance(result, gitlab.base.RESTObject) or result is None
         except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to get object", e)
         return result

@@ -168,7 +168,7 @@ def test_extend_parser():
     class Fake:
         _id_attr = None
 
-    class FakeManager(gitlab.base.RESTManager, CreateMixin, UpdateMixin):
+    class FakeManager(CreateMixin, UpdateMixin, gitlab.base.RESTManager):
         _obj_cls = Fake
         _create_attrs = RequiredOptional(
             required=("create",),

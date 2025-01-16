@@ -1,10 +1,10 @@
-from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
+from typing import Any, Dict, Optional, TYPE_CHECKING, Union
 
 import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -47,7 +47,9 @@ class ProjectMergeRequestPipeline(RESTObject):
     pass
 
 
-class ProjectMergeRequestPipelineManager(CreateMixin, ListMixin, RESTManager):
+class ProjectMergeRequestPipelineManager(
+    CreateMixin[ProjectMergeRequestPipeline], ListMixin[ProjectMergeRequestPipeline]
+):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/pipelines"
     _obj_cls = ProjectMergeRequestPipeline
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
@@ -91,7 +93,11 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
         return self.manager.gitlab.http_post(path, **kwargs)
 
 
-class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManager):
+class ProjectPipelineManager(
+    RetrieveMixin[ProjectPipeline],
+    CreateMixin[ProjectPipeline],
+    DeleteMixin[ProjectPipeline],
+):
     _path = "/projects/{project_id}/pipelines"
     _obj_cls = ProjectPipeline
     _from_parent_attrs = {"project_id": "id"}
@@ -108,11 +114,6 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManage
         "sort",
     )
     _create_attrs = RequiredOptional(required=("ref",))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectPipeline:
-        return cast(ProjectPipeline, super().get(id=id, lazy=lazy, **kwargs))
 
     def create(
         self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
@@ -132,12 +133,8 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManage
             A new instance of the managed object class build with
                 the data sent by the server
         """
-        if TYPE_CHECKING:
-            assert self.path is not None
         path = self.path[:-1]  # drop the 's'
-        return cast(
-            ProjectPipeline, CreateMixin.create(self, data, path=path, **kwargs)
-        )
+        return super().create(data, path=path, **kwargs)
 
     def latest(self, ref: Optional[str] = None, lazy: bool = False) -> ProjectPipeline:
         """Get the latest pipeline for the most recent commit
@@ -152,9 +149,6 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManage
         data = {}
         if ref:
             data = {"ref": ref}
-        if TYPE_CHECKING:
-            assert self._obj_cls is not None
-            assert self.path is not None
         server_data = self.gitlab.http_get(self.path + "/latest", query_data=data)
         if TYPE_CHECKING:
             assert not isinstance(server_data, requests.Response)
@@ -165,7 +159,7 @@ class ProjectPipelineJob(RESTObject):
     pass
 
 
-class ProjectPipelineJobManager(ListMixin, RESTManager):
+class ProjectPipelineJobManager(ListMixin[ProjectPipelineJob]):
     _path = "/projects/{project_id}/pipelines/{pipeline_id}/jobs"
     _obj_cls = ProjectPipelineJob
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
@@ -177,7 +171,7 @@ class ProjectPipelineBridge(RESTObject):
     pass
 
 
-class ProjectPipelineBridgeManager(ListMixin, RESTManager):
+class ProjectPipelineBridgeManager(ListMixin[ProjectPipelineBridge]):
     _path = "/projects/{project_id}/pipelines/{pipeline_id}/bridges"
     _obj_cls = ProjectPipelineBridge
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
@@ -188,7 +182,7 @@ class ProjectPipelineVariable(RESTObject):
     _id_attr = "key"
 
 
-class ProjectPipelineVariableManager(ListMixin, RESTManager):
+class ProjectPipelineVariableManager(ListMixin[ProjectPipelineVariable]):
     _path = "/projects/{project_id}/pipelines/{pipeline_id}/variables"
     _obj_cls = ProjectPipelineVariable
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
@@ -199,7 +193,9 @@ class ProjectPipelineScheduleVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectPipelineScheduleVariableManager(
-    CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    CreateMixin[ProjectPipelineScheduleVariable],
+    UpdateMixin[ProjectPipelineScheduleVariable],
+    DeleteMixin[ProjectPipelineScheduleVariable],
 ):
     _path = "/projects/{project_id}/pipeline_schedules/{pipeline_schedule_id}/variables"
     _obj_cls = ProjectPipelineScheduleVariable
@@ -212,7 +208,9 @@ class ProjectPipelineSchedulePipeline(RESTObject):
     pass
 
 
-class ProjectPipelineSchedulePipelineManager(ListMixin, RESTManager):
+class ProjectPipelineSchedulePipelineManager(
+    ListMixin[ProjectPipelineSchedulePipeline]
+):
     _path = "/projects/{project_id}/pipeline_schedules/{pipeline_schedule_id}/pipelines"
     _obj_cls = ProjectPipelineSchedulePipeline
     _from_parent_attrs = {"project_id": "project_id", "pipeline_schedule_id": "id"}
@@ -261,7 +259,7 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
         return server_data
 
 
-class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
+class ProjectPipelineScheduleManager(CRUDMixin[ProjectPipelineSchedule]):
     _path = "/projects/{project_id}/pipeline_schedules"
     _obj_cls = ProjectPipelineSchedule
     _from_parent_attrs = {"project_id": "id"}
@@ -272,33 +270,24 @@ class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
         optional=("description", "ref", "cron", "cron_timezone", "active"),
     )
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectPipelineSchedule:
-        return cast(ProjectPipelineSchedule, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectPipelineTestReport(RESTObject):
     _id_attr = None
 
 
-class ProjectPipelineTestReportManager(GetWithoutIdMixin, RESTManager):
+class ProjectPipelineTestReportManager(GetWithoutIdMixin[ProjectPipelineTestReport]):
     _path = "/projects/{project_id}/pipelines/{pipeline_id}/test_report"
     _obj_cls = ProjectPipelineTestReport
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
-
-    def get(self, **kwargs: Any) -> ProjectPipelineTestReport:
-        return cast(ProjectPipelineTestReport, super().get(**kwargs))
 
 
 class ProjectPipelineTestReportSummary(RESTObject):
     _id_attr = None
 
 
-class ProjectPipelineTestReportSummaryManager(GetWithoutIdMixin, RESTManager):
+class ProjectPipelineTestReportSummaryManager(
+    GetWithoutIdMixin[ProjectPipelineTestReportSummary]
+):
     _path = "/projects/{project_id}/pipelines/{pipeline_id}/test_report_summary"
     _obj_cls = ProjectPipelineTestReportSummary
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
-
-    def get(self, **kwargs: Any) -> ProjectPipelineTestReportSummary:
-        return cast(ProjectPipelineTestReportSummary, super().get(**kwargs))

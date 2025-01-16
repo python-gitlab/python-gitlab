@@ -7,7 +7,6 @@ import io
 from typing import (
     Any,
     Callable,
-    cast,
     Dict,
     Iterator,
     List,
@@ -23,7 +22,7 @@ import requests
 from gitlab import cli, client
 from gitlab import exceptions as exc
 from gitlab import types, utils
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -138,7 +137,7 @@ class GroupProject(RESTObject):
     pass
 
 
-class GroupProjectManager(ListMixin, RESTManager):
+class GroupProjectManager(ListMixin[GroupProject]):
     _path = "/groups/{group_id}/projects"
     _obj_cls = GroupProject
     _from_parent_attrs = {"group_id": "id"}
@@ -165,7 +164,7 @@ class ProjectGroup(RESTObject):
     pass
 
 
-class ProjectGroupManager(ListMixin, RESTManager):
+class ProjectGroupManager(ListMixin[ProjectGroup]):
     _path = "/projects/{project_id}/groups"
     _obj_cls = ProjectGroup
     _from_parent_attrs = {"project_id": "id"}
@@ -649,7 +648,7 @@ class Project(
         )
 
 
-class ProjectManager(CRUDMixin, RESTManager):
+class ProjectManager(CRUDMixin[Project]):
     _path = "/projects"
     _obj_cls = Project
     # Please keep these _create_attrs in same order as they are at:
@@ -847,9 +846,6 @@ class ProjectManager(CRUDMixin, RESTManager):
         "topic": types.CommaSeparatedListAttribute,
         "topics": types.ArrayAttribute,
     }
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Project:
-        return cast(Project, super().get(id=id, lazy=lazy, **kwargs))
 
     @exc.on_http_error(exc.GitlabImportError)
     def import_project(
@@ -1177,7 +1173,7 @@ class ProjectFork(RESTObject):
     pass
 
 
-class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
+class ProjectForkManager(CreateMixin[ProjectFork], ListMixin[ProjectFork]):
     _path = "/projects/{project_id}/forks"
     _obj_cls = ProjectFork
     _from_parent_attrs = {"project_id": "id"}
@@ -1219,7 +1215,7 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
         if TYPE_CHECKING:
             assert self.path is not None
         path = self.path[:-1]  # drop the 's'
-        return cast(ProjectFork, CreateMixin.create(self, data, path=path, **kwargs))
+        return super().create(data, path=path, **kwargs)
 
 
 class ProjectRemoteMirror(ObjectDeleteMixin, SaveMixin, RESTObject):
@@ -1227,7 +1223,10 @@ class ProjectRemoteMirror(ObjectDeleteMixin, SaveMixin, RESTObject):
 
 
 class ProjectRemoteMirrorManager(
-    ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    ListMixin[ProjectRemoteMirror],
+    CreateMixin[ProjectRemoteMirror],
+    UpdateMixin[ProjectRemoteMirror],
+    DeleteMixin[ProjectRemoteMirror],
 ):
     _path = "/projects/{project_id}/remote_mirrors"
     _obj_cls = ProjectRemoteMirror
@@ -1242,20 +1241,17 @@ class ProjectStorage(RefreshMixin, RESTObject):
     pass
 
 
-class ProjectStorageManager(GetWithoutIdMixin, RESTManager):
+class ProjectStorageManager(GetWithoutIdMixin[ProjectStorage]):
     _path = "/projects/{project_id}/storage"
     _obj_cls = ProjectStorage
     _from_parent_attrs = {"project_id": "id"}
-
-    def get(self, **kwargs: Any) -> ProjectStorage:
-        return cast(ProjectStorage, super().get(**kwargs))
 
 
 class SharedProject(RESTObject):
     pass
 
 
-class SharedProjectManager(ListMixin, RESTManager):
+class SharedProjectManager(ListMixin[SharedProject]):
     _path = "/groups/{group_id}/projects/shared"
     _obj_cls = SharedProject
     _from_parent_attrs = {"group_id": "id"}

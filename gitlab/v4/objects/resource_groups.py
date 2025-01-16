@@ -1,6 +1,4 @@
-from typing import Any, cast, Union
-
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import ListMixin, RetrieveMixin, SaveMixin, UpdateMixin
 from gitlab.types import RequiredOptional
 
@@ -18,7 +16,9 @@ class ProjectResourceGroup(SaveMixin, RESTObject):
     upcoming_jobs: "ProjectResourceGroupUpcomingJobManager"
 
 
-class ProjectResourceGroupManager(RetrieveMixin, UpdateMixin, RESTManager):
+class ProjectResourceGroupManager(
+    RetrieveMixin[ProjectResourceGroup], UpdateMixin[ProjectResourceGroup]
+):
     _path = "/projects/{project_id}/resource_groups"
     _obj_cls = ProjectResourceGroup
     _from_parent_attrs = {"project_id": "id"}
@@ -29,17 +29,14 @@ class ProjectResourceGroupManager(RetrieveMixin, UpdateMixin, RESTManager):
     )
     _update_attrs = RequiredOptional(optional=("process_mode",))
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectResourceGroup:
-        return cast(ProjectResourceGroup, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectResourceGroupUpcomingJob(RESTObject):
     pass
 
 
-class ProjectResourceGroupUpcomingJobManager(ListMixin, RESTManager):
+class ProjectResourceGroupUpcomingJobManager(
+    ListMixin[ProjectResourceGroupUpcomingJob]
+):
     _path = "/projects/{project_id}/resource_groups/{resource_group_key}/upcoming_jobs"
     _obj_cls = ProjectResourceGroupUpcomingJob
     _from_parent_attrs = {"project_id": "project_id", "resource_group_key": "key"}

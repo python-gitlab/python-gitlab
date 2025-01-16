@@ -1,6 +1,4 @@
-from typing import Any, cast, Union
-
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -22,7 +20,10 @@ class GroupAccessToken(ObjectDeleteMixin, ObjectRotateMixin, RESTObject):
 
 
 class GroupAccessTokenManager(
-    CreateMixin, DeleteMixin, RetrieveMixin, RotateMixin, RESTManager
+    CreateMixin[GroupAccessToken],
+    DeleteMixin[GroupAccessToken],
+    RetrieveMixin[GroupAccessToken],
+    RotateMixin[GroupAccessToken],
 ):
     _path = "/groups/{group_id}/access_tokens"
     _obj_cls = GroupAccessToken
@@ -31,8 +32,3 @@ class GroupAccessTokenManager(
         required=("name", "scopes"), optional=("access_level", "expires_at")
     )
     _types = {"scopes": ArrayAttribute}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupAccessToken:
-        return cast(GroupAccessToken, super().get(id=id, lazy=lazy, **kwargs))

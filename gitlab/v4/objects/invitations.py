@@ -1,6 +1,6 @@
-from typing import Any, cast, Union
+from typing import Any, Dict, Optional
 
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject, TObjCls
 from gitlab.exceptions import GitlabInvitationError
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import ArrayAttribute, CommaSeparatedListAttribute, RequiredOptional
@@ -13,9 +13,14 @@ __all__ = [
 ]
 
 
-class InvitationMixin(CRUDMixin):
-    def create(self, *args: Any, **kwargs: Any) -> RESTObject:
-        invitation = super().create(*args, **kwargs)
+class InvitationMixin(CRUDMixin[TObjCls]):
+    # pylint: disable=abstract-method
+    def create(
+        self,
+        data: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
+    ) -> TObjCls:
+        invitation = super().create(data, **kwargs)
 
         if invitation.status == "error":
             raise GitlabInvitationError(invitation.message)
@@ -27,7 +32,7 @@ class ProjectInvitation(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "email"
 
 
-class ProjectInvitationManager(InvitationMixin, RESTManager):
+class ProjectInvitationManager(InvitationMixin[ProjectInvitation]):
     _path = "/projects/{project_id}/invitations"
     _obj_cls = ProjectInvitation
     _from_parent_attrs = {"project_id": "id"}
@@ -51,17 +56,12 @@ class ProjectInvitationManager(InvitationMixin, RESTManager):
         "tasks_to_be_done": ArrayAttribute,
     }
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectInvitation:
-        return cast(ProjectInvitation, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class GroupInvitation(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "email"
 
 
-class GroupInvitationManager(InvitationMixin, RESTManager):
+class GroupInvitationManager(InvitationMixin[GroupInvitation]):
     _path = "/groups/{group_id}/invitations"
     _obj_cls = GroupInvitation
     _from_parent_attrs = {"group_id": "id"}
@@ -84,8 +84,3 @@ class GroupInvitationManager(InvitationMixin, RESTManager):
         "user_id": CommaSeparatedListAttribute,
         "tasks_to_be_done": ArrayAttribute,
     }
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupInvitation:
-        return cast(GroupInvitation, super().get(id=id, lazy=lazy, **kwargs))

@@ -1,8 +1,8 @@
-from typing import Any, cast, Dict, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
 from gitlab.types import RequiredOptional
 
@@ -16,7 +16,9 @@ class ApplicationSettings(SaveMixin, RESTObject):
     _id_attr = None
 
 
-class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class ApplicationSettingsManager(
+    GetWithoutIdMixin[ApplicationSettings], UpdateMixin[ApplicationSettings]
+):
     _path = "/application/settings"
     _obj_cls = ApplicationSettings
     _update_attrs = RequiredOptional(
@@ -115,6 +117,3 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         if "domain_whitelist" in data and data["domain_whitelist"] is None:
             data.pop("domain_whitelist")
         return super().update(id, data, **kwargs)
-
-    def get(self, **kwargs: Any) -> ApplicationSettings:
-        return cast(ApplicationSettings, super().get(**kwargs))

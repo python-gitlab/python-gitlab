@@ -7,7 +7,7 @@ from typing import Any, Optional, TYPE_CHECKING, Union
 
 from gitlab import exceptions as exc
 from gitlab import utils
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import DeleteMixin, ListMixin, ObjectDeleteMixin
 
 __all__ = [
@@ -20,7 +20,7 @@ class Feature(ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
 
 
-class FeatureManager(ListMixin, DeleteMixin, RESTManager):
+class FeatureManager(ListMixin[Feature], DeleteMixin[Feature]):
     _path = "/features/"
     _obj_cls = Feature
 

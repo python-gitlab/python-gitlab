@@ -1,10 +1,10 @@
-from typing import Any, cast, Dict, Union
+from typing import Any, Dict, Union
 
 import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -44,7 +44,10 @@ class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectEnvironmentManager(
-    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    RetrieveMixin[ProjectEnvironment],
+    CreateMixin[ProjectEnvironment],
+    UpdateMixin[ProjectEnvironment],
+    DeleteMixin[ProjectEnvironment],
 ):
     _path = "/projects/{project_id}/environments"
     _obj_cls = ProjectEnvironment
@@ -53,11 +56,6 @@ class ProjectEnvironmentManager(
     _update_attrs = RequiredOptional(optional=("name", "external_url"))
     _list_filters = ("name", "search", "states")
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectEnvironment:
-        return cast(ProjectEnvironment, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectProtectedEnvironment(ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
@@ -65,7 +63,9 @@ class ProjectProtectedEnvironment(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectProtectedEnvironmentManager(
-    RetrieveMixin, CreateMixin, DeleteMixin, RESTManager
+    RetrieveMixin[ProjectProtectedEnvironment],
+    CreateMixin[ProjectProtectedEnvironment],
+    DeleteMixin[ProjectProtectedEnvironment],
 ):
     _path = "/projects/{project_id}/protected_environments"
     _obj_cls = ProjectProtectedEnvironment
@@ -78,10 +78,3 @@ class ProjectProtectedEnvironmentManager(
         optional=("required_approval_count", "approval_rules"),
     )
     _types = {"deploy_access_levels": ArrayAttribute, "approval_rules": ArrayAttribute}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectProtectedEnvironment:
-        return cast(
-            ProjectProtectedEnvironment, super().get(id=id, lazy=lazy, **kwargs)
-        )

@@ -9,7 +9,6 @@ from typing import (
     Any,
     BinaryIO,
     Callable,
-    cast,
     Iterator,
     Literal,
     Optional,
@@ -44,7 +43,7 @@ class GenericPackage(RESTObject):
     _id_attr = "package_name"
 
 
-class GenericPackageManager(RESTManager):
+class GenericPackageManager(RESTManager[GenericPackage]):
     _path = "/projects/{project_id}/packages/generic"
     _obj_cls = GenericPackage
     _from_parent_attrs = {"project_id": "id"}
@@ -219,7 +218,7 @@ class GroupPackage(RESTObject):
     pass
 
 
-class GroupPackageManager(ListMixin, RESTManager):
+class GroupPackageManager(ListMixin[GroupPackage]):
     _path = "/groups/{group_id}/packages"
     _obj_cls = GroupPackage
     _from_parent_attrs = {"group_id": "id"}
@@ -237,7 +236,9 @@ class ProjectPackage(ObjectDeleteMixin, RESTObject):
     pipelines: "ProjectPackagePipelineManager"
 
 
-class ProjectPackageManager(ListMixin, GetMixin, DeleteMixin, RESTManager):
+class ProjectPackageManager(
+    ListMixin[ProjectPackage], GetMixin[ProjectPackage], DeleteMixin[ProjectPackage]
+):
     _path = "/projects/{project_id}/packages"
     _obj_cls = ProjectPackage
     _from_parent_attrs = {"project_id": "id"}
@@ -248,17 +249,14 @@ class ProjectPackageManager(ListMixin, GetMixin, DeleteMixin, RESTManager):
         "package_name",
     )
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectPackage:
-        return cast(ProjectPackage, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectPackageFile(ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectPackageFileManager(DeleteMixin, ListMixin, RESTManager):
+class ProjectPackageFileManager(
+    DeleteMixin[ProjectPackageFile], ListMixin[ProjectPackageFile]
+):
     _path = "/projects/{project_id}/packages/{package_id}/package_files"
     _obj_cls = ProjectPackageFile
     _from_parent_attrs = {"project_id": "project_id", "package_id": "id"}
@@ -268,7 +266,7 @@ class ProjectPackagePipeline(RESTObject):
     pass
 
 
-class ProjectPackagePipelineManager(ListMixin, RESTManager):
+class ProjectPackagePipelineManager(ListMixin[ProjectPackagePipeline]):
     _path = "/projects/{project_id}/packages/{package_id}/pipelines"
     _obj_cls = ProjectPackagePipeline
     _from_parent_attrs = {"project_id": "project_id", "package_id": "id"}

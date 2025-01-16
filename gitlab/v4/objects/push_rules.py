@@ -1,6 +1,4 @@
-from typing import Any, cast
-
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -24,7 +22,10 @@ class ProjectPushRules(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectPushRulesManager(
-    GetWithoutIdMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    GetWithoutIdMixin[ProjectPushRules],
+    CreateMixin[ProjectPushRules],
+    UpdateMixin[ProjectPushRules],
+    DeleteMixin[ProjectPushRules],
 ):
     _path = "/projects/{project_id}/push_rule"
     _obj_cls = ProjectPushRules
@@ -60,16 +61,16 @@ class ProjectPushRulesManager(
         ),
     )
 
-    def get(self, **kwargs: Any) -> ProjectPushRules:
-        return cast(ProjectPushRules, super().get(**kwargs))
-
 
 class GroupPushRules(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = None
 
 
 class GroupPushRulesManager(
-    GetWithoutIdMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    GetWithoutIdMixin[GroupPushRules],
+    CreateMixin[GroupPushRules],
+    UpdateMixin[GroupPushRules],
+    DeleteMixin[GroupPushRules],
 ):
     _path = "/groups/{group_id}/push_rule"
     _obj_cls = GroupPushRules
@@ -104,6 +105,3 @@ class GroupPushRulesManager(
             "reject_unsigned_commits",
         ),
     )
-
-    def get(self, **kwargs: Any) -> GroupPushRules:
-        return cast(GroupPushRules, super().get(**kwargs))

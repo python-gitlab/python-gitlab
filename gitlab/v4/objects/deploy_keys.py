@@ -1,10 +1,10 @@
-from typing import Any, cast, Dict, Union
+from typing import Any, Dict, Union
 
 import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
@@ -20,7 +20,7 @@ class DeployKey(RESTObject):
     pass
 
 
-class DeployKeyManager(ListMixin, RESTManager):
+class DeployKeyManager(ListMixin[DeployKey]):
     _path = "/deploy_keys"
     _obj_cls = DeployKey
 
@@ -29,7 +29,7 @@ class ProjectKey(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectKeyManager(CRUDMixin, RESTManager):
+class ProjectKeyManager(CRUDMixin[ProjectKey]):
     _path = "/projects/{project_id}/deploy_keys"
     _obj_cls = ProjectKey
     _from_parent_attrs = {"project_id": "id"}
@@ -61,6 +61,3 @@ class ProjectKeyManager(CRUDMixin, RESTManager):
         """
         path = f"{self.path}/{key_id}/enable"
         return self.gitlab.http_post(path, **kwargs)
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> ProjectKey:
-        return cast(ProjectKey, super().get(id=id, lazy=lazy, **kwargs))

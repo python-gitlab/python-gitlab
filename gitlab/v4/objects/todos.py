@@ -2,7 +2,7 @@ from typing import Any, Dict, TYPE_CHECKING
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import DeleteMixin, ListMixin, ObjectDeleteMixin
 
 __all__ = [
@@ -35,7 +35,7 @@ class Todo(ObjectDeleteMixin, RESTObject):
         return server_data
 
 
-class TodoManager(ListMixin, DeleteMixin, RESTManager):
+class TodoManager(ListMixin[Todo], DeleteMixin[Todo]):
     _path = "/todos"
     _obj_cls = Todo
     _list_filters = ("action", "author_id", "project_id", "state", "type")

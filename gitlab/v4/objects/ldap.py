@@ -13,7 +13,7 @@ class LDAPGroup(RESTObject):
     _id_attr = None
 
 
-class LDAPGroupManager(RESTManager):
+class LDAPGroupManager(RESTManager[LDAPGroup]):
     _path = "/ldap/groups"
     _obj_cls = LDAPGroup
     _list_filters = ("search", "provider")

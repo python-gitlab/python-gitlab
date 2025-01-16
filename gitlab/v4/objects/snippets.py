@@ -1,7 +1,6 @@
 from typing import (
     Any,
     Callable,
-    cast,
     Iterator,
     List,
     Literal,
@@ -16,7 +15,7 @@ import requests
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import utils
-from gitlab.base import RESTManager, RESTObject, RESTObjectList
+from gitlab.base import RESTObject, RESTObjectList
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin, UserAgentDetailMixin
 from gitlab.types import RequiredOptional
 
@@ -110,7 +109,7 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         )
 
 
-class SnippetManager(CRUDMixin, RESTManager):
+class SnippetManager(CRUDMixin[Snippet]):
     _path = "/snippets"
     _obj_cls = Snippet
     _create_attrs = RequiredOptional(
@@ -134,7 +133,7 @@ class SnippetManager(CRUDMixin, RESTManager):
     )
 
     @cli.register_custom_action(cls_names="SnippetManager")
-    def list_public(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+    def list_public(self, **kwargs: Any) -> Union[RESTObjectList, List[Snippet]]:
         """List all public snippets.
 
         Args:
@@ -154,7 +153,7 @@ class SnippetManager(CRUDMixin, RESTManager):
         return self.list(path="/snippets/public", **kwargs)
 
     @cli.register_custom_action(cls_names="SnippetManager")
-    def list_all(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+    def list_all(self, **kwargs: Any) -> Union[RESTObjectList, List[Snippet]]:
         """List all snippets.
 
         Args:
@@ -173,7 +172,7 @@ class SnippetManager(CRUDMixin, RESTManager):
         """
         return self.list(path="/snippets/all", **kwargs)
 
-    def public(self, **kwargs: Any) -> Union[RESTObjectList, List[RESTObject]]:
+    def public(self, **kwargs: Any) -> Union[RESTObjectList, List[Snippet]]:
         """List all public snippets.
 
         Args:
@@ -198,9 +197,6 @@ class SnippetManager(CRUDMixin, RESTManager):
             category=DeprecationWarning,
         )
         return self.list(path="/snippets/public", **kwargs)
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Snippet:
-        return cast(Snippet, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -286,7 +282,7 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
         )
 
 
-class ProjectSnippetManager(CRUDMixin, RESTManager):
+class ProjectSnippetManager(CRUDMixin[ProjectSnippet]):
     _path = "/projects/{project_id}/snippets"
     _obj_cls = ProjectSnippet
     _from_parent_attrs = {"project_id": "id"}
@@ -308,8 +304,3 @@ class ProjectSnippetManager(CRUDMixin, RESTManager):
             "description",
         ),
     )
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectSnippet:
-        return cast(ProjectSnippet, super().get(id=id, lazy=lazy, **kwargs))

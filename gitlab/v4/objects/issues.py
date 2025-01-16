@@ -1,11 +1,11 @@
-from typing import Any, cast, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
+from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
 
 import requests
 
 from gitlab import cli, client
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -50,7 +50,7 @@ class Issue(RESTObject):
     _repr_attr = "title"
 
 
-class IssueManager(RetrieveMixin, RESTManager):
+class IssueManager(RetrieveMixin[Issue]):
     _path = "/issues"
     _obj_cls = Issue
     _list_filters = (
@@ -73,15 +73,12 @@ class IssueManager(RetrieveMixin, RESTManager):
     )
     _types = {"iids": types.ArrayAttribute, "labels": types.CommaSeparatedListAttribute}
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Issue:
-        return cast(Issue, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class GroupIssue(RESTObject):
     pass
 
 
-class GroupIssueManager(ListMixin, RESTManager):
+class GroupIssueManager(ListMixin[GroupIssue]):
     _path = "/groups/{group_id}/issues"
     _obj_cls = GroupIssue
     _from_parent_attrs = {"group_id": "id"}
@@ -229,7 +226,7 @@ class ProjectIssue(
         return result
 
 
-class ProjectIssueManager(CRUDMixin, RESTManager):
+class ProjectIssueManager(CRUDMixin[ProjectIssue]):
     _path = "/projects/{project_id}/issues"
     _obj_cls = ProjectIssue
     _from_parent_attrs = {"project_id": "id"}
@@ -283,17 +280,16 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
     )
     _types = {"iids": types.ArrayAttribute, "labels": types.CommaSeparatedListAttribute}
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectIssue:
-        return cast(ProjectIssue, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectIssueLink(ObjectDeleteMixin, RESTObject):
     _id_attr = "issue_link_id"
 
 
-class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
+class ProjectIssueLinkManager(
+    ListMixin[ProjectIssueLink],
+    CreateMixin[ProjectIssueLink],
+    DeleteMixin[ProjectIssueLink],
+):
     _path = "/projects/{project_id}/issues/{issue_iid}/links"
     _obj_cls = ProjectIssueLink
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
@@ -304,7 +300,7 @@ class ProjectIssueLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
     # type error
     def create(  # type: ignore[override]
         self, data: Dict[str, Any], **kwargs: Any
-    ) -> Tuple[RESTObject, RESTObject]:
+    ) -> Tuple[ProjectIssue, ProjectIssue]:
         """Create a new object.
 
         Args:

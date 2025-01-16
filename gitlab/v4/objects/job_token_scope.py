@@ -1,6 +1,6 @@
-from typing import Any, cast
+from typing import cast
 
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -27,14 +27,13 @@ class ProjectJobTokenScope(RefreshMixin, SaveMixin, RESTObject):
     groups_allowlist: "AllowlistGroupManager"
 
 
-class ProjectJobTokenScopeManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class ProjectJobTokenScopeManager(
+    GetWithoutIdMixin[ProjectJobTokenScope], UpdateMixin[ProjectJobTokenScope]
+):
     _path = "/projects/{project_id}/job_token_scope"
     _obj_cls = ProjectJobTokenScope
     _from_parent_attrs = {"project_id": "id"}
     _update_method = UpdateMethod.PATCH
-
-    def get(self, **kwargs: Any) -> ProjectJobTokenScope:
-        return cast(ProjectJobTokenScope, super().get(**kwargs))
 
 
 class AllowlistProject(ObjectDeleteMixin, RESTObject):
@@ -50,7 +49,11 @@ class AllowlistProject(ObjectDeleteMixin, RESTObject):
         return cast(int, self.id)
 
 
-class AllowlistProjectManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
+class AllowlistProjectManager(
+    ListMixin[AllowlistProject],
+    CreateMixin[AllowlistProject],
+    DeleteMixin[AllowlistProject],
+):
     _path = "/projects/{project_id}/job_token_scope/allowlist"
     _obj_cls = AllowlistProject
     _from_parent_attrs = {"project_id": "project_id"}
@@ -70,7 +73,9 @@ class AllowlistGroup(ObjectDeleteMixin, RESTObject):
         return cast(int, self.id)
 
 
-class AllowlistGroupManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
+class AllowlistGroupManager(
+    ListMixin[AllowlistGroup], CreateMixin[AllowlistGroup], DeleteMixin[AllowlistGroup]
+):
     _path = "/projects/{project_id}/job_token_scope/groups_allowlist"
     _obj_cls = AllowlistGroup
     _from_parent_attrs = {"project_id": "project_id"}

@@ -1,11 +1,11 @@
-from typing import Any, cast, Dict, List, Optional, TYPE_CHECKING, Union
+from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
 
 import requests
 
 import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CreateMixin, ListMixin, RefreshMixin, RetrieveMixin
 from gitlab.types import RequiredOptional
 
@@ -164,7 +164,7 @@ class ProjectCommit(RESTObject):
         return self.manager.gitlab.http_get(path, **kwargs)
 
 
-class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
+class ProjectCommitManager(RetrieveMixin[ProjectCommit], CreateMixin[ProjectCommit]):
     _path = "/projects/{project_id}/repository/commits"
     _obj_cls = ProjectCommit
     _from_parent_attrs = {"project_id": "id"}
@@ -184,18 +184,15 @@ class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
         "trailers",
     )
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectCommit:
-        return cast(ProjectCommit, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectCommitComment(RESTObject):
     _id_attr = None
     _repr_attr = "note"
 
 
-class ProjectCommitCommentManager(ListMixin, CreateMixin, RESTManager):
+class ProjectCommitCommentManager(
+    ListMixin[ProjectCommitComment], CreateMixin[ProjectCommitComment]
+):
     _path = "/projects/{project_id}/repository/commits/{commit_id}/comments"
     _obj_cls = ProjectCommitComment
     _from_parent_attrs = {"project_id": "project_id", "commit_id": "id"}
@@ -208,7 +205,9 @@ class ProjectCommitStatus(RefreshMixin, RESTObject):
     pass
 
 
-class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
+class ProjectCommitStatusManager(
+    ListMixin[ProjectCommitStatus], CreateMixin[ProjectCommitStatus]
+):
     _path = "/projects/{project_id}/repository/commits/{commit_id}/statuses"
     _obj_cls = ProjectCommitStatus
     _from_parent_attrs = {"project_id": "project_id", "commit_id": "id"}
@@ -248,6 +247,4 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
             path = self._compute_path(base_path)
         if TYPE_CHECKING:
             assert path is not None
-        return cast(
-            ProjectCommitStatus, CreateMixin.create(self, data, path=path, **kwargs)
-        )
+        return super().create(data, path=path, **kwargs)

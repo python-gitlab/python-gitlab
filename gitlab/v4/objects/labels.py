@@ -1,7 +1,7 @@
-from typing import Any, cast, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -48,7 +48,10 @@ class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class GroupLabelManager(
-    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    RetrieveMixin[GroupLabel],
+    CreateMixin[GroupLabel],
+    UpdateMixin[GroupLabel],
+    DeleteMixin[GroupLabel],
 ):
     _path = "/groups/{group_id}/labels"
     _obj_cls = GroupLabel
@@ -59,9 +62,6 @@ class GroupLabelManager(
     _update_attrs = RequiredOptional(
         required=("name",), optional=("new_name", "color", "description", "priority")
     )
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> GroupLabel:
-        return cast(GroupLabel, super().get(id=id, lazy=lazy, **kwargs))
 
     # Update without ID.
     # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
@@ -112,7 +112,10 @@ class ProjectLabel(
 
 
 class ProjectLabelManager(
-    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    RetrieveMixin[ProjectLabel],
+    CreateMixin[ProjectLabel],
+    UpdateMixin[ProjectLabel],
+    DeleteMixin[ProjectLabel],
 ):
     _path = "/projects/{project_id}/labels"
     _obj_cls = ProjectLabel
@@ -123,11 +126,6 @@ class ProjectLabelManager(
     _update_attrs = RequiredOptional(
         required=("name",), optional=("new_name", "color", "description", "priority")
     )
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectLabel:
-        return cast(ProjectLabel, super().get(id=id, lazy=lazy, **kwargs))
 
     # Update without ID.
     # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore

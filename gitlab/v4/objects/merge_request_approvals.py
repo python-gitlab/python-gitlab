@@ -1,7 +1,7 @@
-from typing import Any, cast, List, Optional, TYPE_CHECKING, Union
+from typing import Any, List, Optional, TYPE_CHECKING
 
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -33,7 +33,9 @@ class ProjectApproval(SaveMixin, RESTObject):
     _id_attr = None
 
 
-class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class ProjectApprovalManager(
+    GetWithoutIdMixin[ProjectApproval], UpdateMixin[ProjectApproval]
+):
     _path = "/projects/{project_id}/approvals"
     _obj_cls = ProjectApproval
     _from_parent_attrs = {"project_id": "id"}
@@ -48,9 +50,6 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     )
     _update_method = UpdateMethod.POST
 
-    def get(self, **kwargs: Any) -> ProjectApproval:
-        return cast(ProjectApproval, super().get(**kwargs))
-
 
 class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "id"
@@ -58,7 +57,10 @@ class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectApprovalRuleManager(
-    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    RetrieveMixin[ProjectApprovalRule],
+    CreateMixin[ProjectApprovalRule],
+    UpdateMixin[ProjectApprovalRule],
+    DeleteMixin[ProjectApprovalRule],
 ):
     _path = "/projects/{project_id}/approval_rules"
     _obj_cls = ProjectApprovalRule
@@ -68,25 +70,20 @@ class ProjectApprovalRuleManager(
         optional=("user_ids", "group_ids", "protected_branch_ids", "usernames"),
     )
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectApprovalRule:
-        return cast(ProjectApprovalRule, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectMergeRequestApproval(SaveMixin, RESTObject):
     _id_attr = None
 
 
-class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class ProjectMergeRequestApprovalManager(
+    GetWithoutIdMixin[ProjectMergeRequestApproval],
+    UpdateMixin[ProjectMergeRequestApproval],
+):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/approvals"
     _obj_cls = ProjectMergeRequestApproval
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
     _update_attrs = RequiredOptional(required=("approvals_required",))
     _update_method = UpdateMethod.POST
-
-    def get(self, **kwargs: Any) -> ProjectMergeRequestApproval:
-        return cast(ProjectMergeRequestApproval, super().get(**kwargs))
 
     @exc.on_http_error(exc.GitlabUpdateError)
     def set_approvers(
@@ -145,7 +142,9 @@ class ProjectMergeRequestApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "name"
 
 
-class ProjectMergeRequestApprovalRuleManager(CRUDMixin, RESTManager):
+class ProjectMergeRequestApprovalRuleManager(
+    CRUDMixin[ProjectMergeRequestApprovalRule]
+):
     _path = "/projects/{project_id}/merge_requests/{merge_request_iid}/approval_rules"
     _obj_cls = ProjectMergeRequestApprovalRule
     _from_parent_attrs = {"project_id": "project_id", "merge_request_iid": "iid"}
@@ -166,22 +165,14 @@ class ProjectMergeRequestApprovalRuleManager(CRUDMixin, RESTManager):
         optional=("approval_project_rule_id", "user_ids", "group_ids", "usernames"),
     )
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMergeRequestApprovalRule:
-        return cast(
-            ProjectMergeRequestApprovalRule, super().get(id=id, lazy=lazy, **kwargs)
-        )
-
 
 class ProjectMergeRequestApprovalState(RESTObject):
     pass
 
 
-class ProjectMergeRequestApprovalStateManager(GetWithoutIdMixin, RESTManager):
+class ProjectMergeRequestApprovalStateManager(
+    GetWithoutIdMixin[ProjectMergeRequestApprovalState]
+):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/approval_state"
     _obj_cls = ProjectMergeRequestApprovalState
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
-
-    def get(self, **kwargs: Any) -> ProjectMergeRequestApprovalState:
-        return cast(ProjectMergeRequestApprovalState, super().get(**kwargs))

@@ -1,6 +1,4 @@
-from typing import Any, cast
-
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import GetWithoutIdMixin, RefreshMixin
 from gitlab.types import ArrayAttribute
 
@@ -22,66 +20,53 @@ class ProjectAdditionalStatistics(RefreshMixin, RESTObject):
     _id_attr = None
 
 
-class ProjectAdditionalStatisticsManager(GetWithoutIdMixin, RESTManager):
+class ProjectAdditionalStatisticsManager(
+    GetWithoutIdMixin[ProjectAdditionalStatistics]
+):
     _path = "/projects/{project_id}/statistics"
     _obj_cls = ProjectAdditionalStatistics
     _from_parent_attrs = {"project_id": "id"}
-
-    def get(self, **kwargs: Any) -> ProjectAdditionalStatistics:
-        return cast(ProjectAdditionalStatistics, super().get(**kwargs))
 
 
 class IssuesStatistics(RefreshMixin, RESTObject):
     _id_attr = None
 
 
-class IssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
+class IssuesStatisticsManager(GetWithoutIdMixin[IssuesStatistics]):
     _path = "/issues_statistics"
     _obj_cls = IssuesStatistics
     _list_filters = ("iids",)
     _types = {"iids": ArrayAttribute}
-
-    def get(self, **kwargs: Any) -> IssuesStatistics:
-        return cast(IssuesStatistics, super().get(**kwargs))
 
 
 class GroupIssuesStatistics(RefreshMixin, RESTObject):
     _id_attr = None
 
 
-class GroupIssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
+class GroupIssuesStatisticsManager(GetWithoutIdMixin[GroupIssuesStatistics]):
     _path = "/groups/{group_id}/issues_statistics"
     _obj_cls = GroupIssuesStatistics
     _from_parent_attrs = {"group_id": "id"}
     _list_filters = ("iids",)
     _types = {"iids": ArrayAttribute}
 
-    def get(self, **kwargs: Any) -> GroupIssuesStatistics:
-        return cast(GroupIssuesStatistics, super().get(**kwargs))
-
 
 class ProjectIssuesStatistics(RefreshMixin, RESTObject):
     _id_attr = None
 
 
-class ProjectIssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
+class ProjectIssuesStatisticsManager(GetWithoutIdMixin[ProjectIssuesStatistics]):
     _path = "/projects/{project_id}/issues_statistics"
     _obj_cls = ProjectIssuesStatistics
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = ("iids",)
     _types = {"iids": ArrayAttribute}
 
-    def get(self, **kwargs: Any) -> ProjectIssuesStatistics:
-        return cast(ProjectIssuesStatistics, super().get(**kwargs))
-
 
 class ApplicationStatistics(RESTObject):
     _id_attr = None
 
 
-class ApplicationStatisticsManager(GetWithoutIdMixin, RESTManager):
+class ApplicationStatisticsManager(GetWithoutIdMixin[ApplicationStatistics]):
     _path = "/application/statistics"
     _obj_cls = ApplicationStatistics
-
-    def get(self, **kwargs: Any) -> ApplicationStatistics:
-        return cast(ApplicationStatistics, super().get(**kwargs))

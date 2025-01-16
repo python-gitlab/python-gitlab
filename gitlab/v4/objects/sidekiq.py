@@ -1,22 +1,27 @@
-from typing import Any, Dict, Union
+from typing import Any, Dict, Optional, Union
 
 import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager
+from gitlab.base import RESTObject
+from gitlab.client import Gitlab
 
 __all__ = [
     "SidekiqManager",
 ]
 
 
-class SidekiqManager(RESTManager):
+class SidekiqManager:
     """Manager for the Sidekiq methods.
 
     This manager doesn't actually manage objects but provides helper function
     for the sidekiq metrics API.
     """
+
+    def __init__(self, gl: Gitlab, parent: Optional[RESTObject] = None) -> None:
+        self.gitlab = gl
+        self._parent = parent
 
     @cli.register_custom_action(cls_names="SidekiqManager")
     @exc.on_http_error(exc.GitlabGetError)
