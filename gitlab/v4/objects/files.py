@@ -5,7 +5,9 @@ from typing import (
     Dict,
     Iterator,
     List,
+    Literal,
     Optional,
+    overload,
     Tuple,
     TYPE_CHECKING,
     Union,
@@ -273,6 +275,45 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
         path = f"{self.path}/{file_path}"
         data = {"branch": branch, "commit_message": commit_message}
         self.gitlab.http_delete(path, query_data=data, **kwargs)
+
+    @overload
+    def raw(
+        self,
+        file_path: str,
+        ref: Optional[str] = None,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def raw(
+        self,
+        file_path: str,
+        ref: Optional[str] = None,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def raw(
+        self,
+        file_path: str,
+        ref: Optional[str] = None,
+        streamed: Literal[True] = True,
+        action: Optional[Callable[[bytes], None]] = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
 
     @cli.register_custom_action(
         cls_names="ProjectFileManager",
