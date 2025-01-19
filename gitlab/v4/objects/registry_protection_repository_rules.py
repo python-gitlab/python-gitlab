@@ -15,7 +15,7 @@ class ProjectRegistryRepositoryProtectionRule(SaveMixin, RESTObject):
 class ProjectRegistryRepositoryProtectionRuleManager(
     ListMixin, CreateMixin, UpdateMixin, RESTManager
 ):
-    _path = "/projects/{project_id}/registry/repository/protection/rules"
+    _path = "/projects/{project_id}/registry/protection/repository/rules"
     _obj_cls = ProjectRegistryRepositoryProtectionRule
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(

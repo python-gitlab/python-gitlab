@@ -11,7 +11,9 @@ from typing import (
     Dict,
     Iterator,
     List,
+    Literal,
     Optional,
+    overload,
     TYPE_CHECKING,
     Union,
 )
@@ -86,11 +88,11 @@ from .pipelines import (  # noqa: F401
 )
 from .project_access_tokens import ProjectAccessTokenManager  # noqa: F401
 from .push_rules import ProjectPushRulesManager  # noqa: F401
+from .registry_protection_repository_rules import (  # noqa: F401
+    ProjectRegistryRepositoryProtectionRuleManager,
+)
 from .registry_protection_rules import (  # noqa: F401; deprecated
     ProjectRegistryProtectionRuleManager,
-)
-from .registry_repository_protection_rules import (  # noqa: F401
-    ProjectRegistryRepositoryProtectionRuleManager,
 )
 from .releases import ProjectReleaseManager  # noqa: F401
 from .repositories import RepositoryMixin
@@ -242,7 +244,7 @@ class Project(
     protectedtags: ProjectProtectedTagManager
     pushrules: ProjectPushRulesManager
     registry_protection_rules: ProjectRegistryProtectionRuleManager
-    registry_repository_protection_rules: ProjectRegistryRepositoryProtectionRuleManager
+    registry_protection_repository_rules: ProjectRegistryRepositoryProtectionRuleManager
     releases: ProjectReleaseManager
     resource_groups: ProjectResourceGroupManager
     remote_mirrors: "ProjectRemoteMirrorManager"
@@ -486,6 +488,42 @@ class Project(
         """
         path = f"/projects/{self.encoded_id}/restore"
         self.manager.gitlab.http_post(path, **kwargs)
+
+    @overload
+    def snapshot(
+        self,
+        wiki: bool = False,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def snapshot(
+        self,
+        wiki: bool = False,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def snapshot(
+        self,
+        wiki: bool = False,
+        streamed: Literal[True] = True,
+        action: Optional[Callable[[bytes], None]] = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
 
     @cli.register_custom_action(cls_names="Project", optional=("wiki",))
     @exc.on_http_error(exc.GitlabGetError)
