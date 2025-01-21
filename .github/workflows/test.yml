@@ -61,6 +61,7 @@ jobs:
         run: tox --skip-missing-interpreters false
 
   functional:
+    timeout-minutes: 30
     runs-on: ubuntu-24.04
     strategy:
       matrix:
