@@ -48,7 +48,9 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action(cls_names="ProjectCommit", required=("branch",))
     @exc.on_http_error(exc.GitlabCherryPickError)
-    def cherry_pick(self, branch: str, **kwargs: Any) -> None:
+    def cherry_pick(
+        self, branch: str, **kwargs: Any
+    ) -> Union[Dict[str, Any], requests.Response]:
         """Cherry-pick a commit into a branch.
 
         Args:
@@ -58,10 +60,13 @@ class ProjectCommit(RESTObject):
         Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabCherryPickError: If the cherry-pick could not be performed
+
+        Returns:
+            The new commit data (*not* a RESTObject)
         """
         path = f"{self.manager.path}/{self.encoded_id}/cherry_pick"
         post_data = {"branch": branch}
-        self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        return self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
     @cli.register_custom_action(cls_names="ProjectCommit", optional=("type",))
     @exc.on_http_error(exc.GitlabGetError)

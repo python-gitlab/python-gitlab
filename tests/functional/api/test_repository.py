@@ -165,6 +165,28 @@ def test_commit_discussion(project):
     note_from_get.delete()
 
 
+def test_cherry_pick_commit(project):
+    commits = project.commits.list()
+    commit = commits[1]
+    parent_commit = commit.parent_ids[0]
+
+    # create a branch to cherry pick onto
+    project.branches.create(
+        {
+            "branch": "test",
+            "ref": parent_commit,
+        }
+    )
+    cherry_pick_commit = commit.cherry_pick(branch="test")
+
+    expected_message = f"{commit.message}\n\n(cherry picked from commit {commit.id})"
+    assert cherry_pick_commit["message"].startswith(expected_message)
+
+    with pytest.raises(gitlab.GitlabCherryPickError):
+        # Two cherry pick attempts should raise GitlabCherryPickError
+        commit.cherry_pick(branch="test")
+
+
 def test_revert_commit(project):
     commit = project.commits.list()[0]
     revert_commit = commit.revert(branch="main")
