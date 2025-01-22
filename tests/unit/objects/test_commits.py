@@ -37,6 +37,12 @@ def resp_commit():
         "short_id": "8b090c1b",
         "title": 'Revert "Initial commit"',
     }
+    cherry_pick_content = {
+        "id": "8b090c1b79a14f2bd9e8a738f717824ff53aebad",
+        "short_id": "8b090c1b",
+        "title": "Initial commit",
+        "message": "Initial commit\n\n\n(cherry picked from commit 6b2257eabcec3db1f59dafbd84935e3caea04235)",
+    }
 
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(
@@ -50,6 +56,13 @@ def resp_commit():
             method=responses.POST,
             url="http://localhost/api/v4/projects/1/repository/commits/6b2257ea/revert",
             json=revert_content,
+            content_type="application/json",
+            status=200,
+        )
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/repository/commits/6b2257ea/cherry_pick",
+            json=cherry_pick_content,
             content_type="application/json",
             status=200,
         )
@@ -116,6 +129,18 @@ def test_create_commit(project, resp_create_commit):
     commit = project.commits.create(data)
     assert commit.short_id == "ed899a2f"
     assert commit.title == data["commit_message"]
+
+
+def test_cherry_pick_commit(project, resp_commit):
+    commit = project.commits.get("6b2257ea", lazy=True)
+    cherry_pick_commit = commit.cherry_pick(branch="main")
+
+    assert cherry_pick_commit["short_id"] == "8b090c1b"
+    assert cherry_pick_commit["title"] == "Initial commit"
+    assert (
+        cherry_pick_commit["message"]
+        == "Initial commit\n\n\n(cherry picked from commit 6b2257eabcec3db1f59dafbd84935e3caea04235)"
+    )
 
 
 def test_revert_commit(project, resp_commit):
