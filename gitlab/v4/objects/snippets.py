@@ -192,7 +192,7 @@ class SnippetManager(CRUDMixin, RESTManager):
         """
         utils.warn(
             message=(
-                "Gitlab.snippets.public() is deprecated and will be removed in a"
+                "Gitlab.snippets.public() is deprecated and will be removed in a "
                 "future major version. Use Gitlab.snippets.list_public() instead."
             ),
             category=DeprecationWarning,
