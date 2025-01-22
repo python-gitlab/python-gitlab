@@ -138,7 +138,7 @@ def test_template_gitlabciyml(gl, get_all_kwargs):
 
 
 def test_template_license(gl):
-    assert gl.licenses.list()
+    assert gl.licenses.list(get_all=False)
     license = gl.licenses.get(
         "bsd-2-clause", project="mytestproject", fullname="mytestfullname"
     )
