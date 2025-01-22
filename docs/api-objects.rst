@@ -63,6 +63,7 @@ API examples
    gl_objects/settings
    gl_objects/snippets
    gl_objects/statistics
+   gl_objects/status_checks
    gl_objects/system_hooks
    gl_objects/templates
    gl_objects/todos
