@@ -78,7 +78,7 @@ jobs:
           TOXENV: ${{ matrix.toxenv }}
         run: tox -- --override-ini='log_cli=True'
       - name: Upload codecov coverage
-        uses: codecov/codecov-action@v5.1.1
+        uses: codecov/codecov-action@v5.2.0
         with:
           files: ./coverage.xml
           flags: ${{ matrix.toxenv }}
@@ -101,7 +101,7 @@ jobs:
           TOXENV: cover
         run: tox
       - name: Upload codecov coverage
-        uses: codecov/codecov-action@v5.1.1
+        uses: codecov/codecov-action@v5.2.0
         with:
           files: ./coverage.xml
           flags: unit
@@ -121,7 +121,7 @@ jobs:
         pip install -r requirements-test.txt
     - name: Build package
       run: python -m build -o dist/
-    - uses: actions/upload-artifact@v4.4.3
+    - uses: actions/upload-artifact@v4.6.0
       with:
         name: dist
         path: dist
