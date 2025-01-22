@@ -399,3 +399,19 @@ def test_project_transfer(gl, project, group):
 
     project = gl.projects.get(project.id)
     assert project.namespace["path"] == gl.user.username
+
+
+@pytest.mark.gitlab_premium
+def test_project_external_status_check_create(gl, project):
+    status_check = project.external_status_checks.create(
+        {"name": "MR blocker", "external_url": "https://example.com/mr-blocker"}
+    )
+    assert status_check.name == "MR blocker"
+    assert status_check.external_url == "https://example.com/mr-blocker"
+
+
+@pytest.mark.gitlab_premium
+def test_project_external_status_check_list(gl, project):
+    status_checks = project.external_status_checks.list()
+
+    assert len(status_checks) == 1

@@ -68,6 +68,7 @@ from .settings import *
 from .sidekiq import *
 from .snippets import *
 from .statistics import *
+from .status_checks import *
 from .tags import *
 from .templates import *
 from .todos import *

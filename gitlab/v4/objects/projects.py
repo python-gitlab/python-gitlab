@@ -104,6 +104,7 @@ from .statistics import (  # noqa: F401
     ProjectAdditionalStatisticsManager,
     ProjectIssuesStatisticsManager,
 )
+from .status_checks import ProjectExternalStatusCheckManager  # noqa: F401
 from .tags import ProjectProtectedTagManager, ProjectTagManager  # noqa: F401
 from .templates import (  # noqa: F401
     ProjectDockerfileTemplateManager,
@@ -253,6 +254,7 @@ class Project(
     secure_files: ProjectSecureFileManager
     services: ProjectServiceManager
     snippets: ProjectSnippetManager
+    external_status_checks: ProjectExternalStatusCheckManager
     storage: "ProjectStorageManager"
     tags: ProjectTagManager
     triggers: ProjectTriggerManager
