@@ -6,7 +6,7 @@ import tempfile
 import time
 import uuid
 from subprocess import check_output
-from typing import Optional
+from typing import Optional, Sequence
 
 import pytest
 import requests
@@ -145,7 +145,9 @@ def set_token(container: str, fixture_dir: pathlib.Path) -> str:
     return output
 
 
-def pytest_report_collectionfinish(config, startdir, items):
+def pytest_report_collectionfinish(
+    config: pytest.Config, start_path: pathlib.Path, items: Sequence[pytest.Item]
+):
     return [
         "",
         "Starting GitLab container.",
