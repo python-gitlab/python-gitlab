@@ -23,6 +23,17 @@
       "depNameTemplate": "gitlab/gitlab-ee",
       "datasourceTemplate": "docker",
       "versioningTemplate": "loose"
+    },
+    {
+      "fileMatch": [
+        "(^|/)tests\\/functional\\/fixtures\\/\\.env$"
+      ],
+      "matchStrings": [
+        "GITLAB_RUNNER_TAG=(?<currentValue>.*?)\n"
+      ],
+      "depNameTemplate": "gitlab/gitlab-runner",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "loose"
     }
   ],
   "packageRules": [

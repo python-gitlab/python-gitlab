@@ -45,7 +45,7 @@ services:
       - gitlab-network
 
   gitlab-runner:
-    image: gitlab/gitlab-runner:latest
+    image: '${GITLAB_RUNNER_IMAGE}:${GITLAB_RUNNER_TAG}'
     container_name: 'gitlab-runner-test'
     depends_on:
       - gitlab
