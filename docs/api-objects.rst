@@ -52,6 +52,7 @@ API examples
    gl_objects/protected_container_repositories
    gl_objects/protected_environments
    gl_objects/protected_packages
+   gl_objects/pull_mirror
    gl_objects/releases
    gl_objects/runners
    gl_objects/remote_mirrors
