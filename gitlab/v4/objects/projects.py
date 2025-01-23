@@ -128,6 +128,8 @@ __all__ = [
     "ProjectForkManager",
     "ProjectRemoteMirror",
     "ProjectRemoteMirrorManager",
+    "ProjectPullMirror",
+    "ProjectPullMirrorManager",
     "ProjectStorage",
     "ProjectStorageManager",
     "SharedProject",
@@ -249,6 +251,7 @@ class Project(
     releases: ProjectReleaseManager
     resource_groups: ProjectResourceGroupManager
     remote_mirrors: "ProjectRemoteMirrorManager"
+    pull_mirror: "ProjectPullMirrorManager"
     repositories: ProjectRegistryRepositoryManager
     runners: ProjectRunnerManager
     secure_files: ProjectSecureFileManager
@@ -1238,6 +1241,65 @@ class ProjectRemoteMirrorManager(
         required=("url",), optional=("enabled", "only_protected_branches")
     )
     _update_attrs = RequiredOptional(optional=("enabled", "only_protected_branches"))
+
+
+class ProjectPullMirror(SaveMixin, RESTObject):
+    _id_attr = None
+
+
+class ProjectPullMirrorManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+    _path = "/projects/{project_id}/mirror/pull"
+    _obj_cls = ProjectPullMirror
+    _from_parent_attrs = {"project_id": "id"}
+    _update_attrs = RequiredOptional(optional=("url",))
+
+    def get(self, **kwargs: Any) -> ProjectPullMirror:
+        return cast(ProjectPullMirror, super().get(**kwargs))
+
+    @exc.on_http_error(exc.GitlabCreateError)
+    def create(self, data: Dict[str, Any], **kwargs: Any) -> ProjectPullMirror:
+        """Create a new object.
+
+        Args:
+            data: parameters to send to the server to create the
+                         resource
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Returns:
+            A new instance of the managed object class built with
+                the data sent by the server
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server cannot perform the request
+        """
+        if TYPE_CHECKING:
+            assert data is not None
+        self._create_attrs.validate_attrs(data=data)
+
+        if TYPE_CHECKING:
+            assert self.path is not None
+        server_data = self.gitlab.http_put(self.path, post_data=data, **kwargs)
+
+        if TYPE_CHECKING:
+            assert not isinstance(server_data, requests.Response)
+        return self._obj_cls(self, server_data)
+
+    @cli.register_custom_action(cls_names="ProjectPullMirrorManager")
+    @exc.on_http_error(exc.GitlabCreateError)
+    def start(self, **kwargs: Any) -> None:
+        """Start the pull mirroring process for the project.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server failed to perform the request
+        """
+        if TYPE_CHECKING:
+            assert self.path is not None
+        self.gitlab.http_post(self.path, **kwargs)
 
 
 class ProjectStorage(RefreshMixin, RESTObject):
