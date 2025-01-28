@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v5.6.0 (2025-01-28)
+
+### Features
+
+- **group**: Add support for group level MR approval rules
+  ([`304bdd0`](https://github.com/python-gitlab/python-gitlab/commit/304bdd09cd5e6526576c5ec58cb3acd7e1a783cb))
+
+
 ## v5.5.0 (2025-01-28)
 
 ### Chores
