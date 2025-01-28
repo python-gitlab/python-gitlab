@@ -1,6 +1,39 @@
 # CHANGELOG
 
 
+## v5.5.0 (2025-01-28)
+
+### Chores
+
+- Add deprecation warning for mirror_pull functions
+  ([`7f6fd5c`](https://github.com/python-gitlab/python-gitlab/commit/7f6fd5c3aac5e2f18adf212adbce0ac04c7150e1))
+
+- Relax typing constraints for response action
+  ([`f430078`](https://github.com/python-gitlab/python-gitlab/commit/f4300782485ee6c38578fa3481061bd621656b0e))
+
+- **tests**: Catch deprecation warnings
+  ([`0c1af08`](https://github.com/python-gitlab/python-gitlab/commit/0c1af08bc73611d288f1f67248cff9c32c685808))
+
+### Documentation
+
+- Add usage of pull mirror
+  ([`9b374b2`](https://github.com/python-gitlab/python-gitlab/commit/9b374b2c051f71b8ef10e22209b8e90730af9d9b))
+
+- Remove old pull mirror implementation
+  ([`9e18672`](https://github.com/python-gitlab/python-gitlab/commit/9e186726c8a5ae70ca49c56b2be09b34dbf5b642))
+
+### Features
+
+- **functional**: Add pull mirror test
+  ([`3b31ade`](https://github.com/python-gitlab/python-gitlab/commit/3b31ade152eb61363a68cf0509867ff8738ccdaf))
+
+- **projects**: Add pull mirror class
+  ([`2411bff`](https://github.com/python-gitlab/python-gitlab/commit/2411bff4fd1dab6a1dd70070441b52e9a2927a63))
+
+- **unit**: Add pull mirror tests
+  ([`5c11203`](https://github.com/python-gitlab/python-gitlab/commit/5c11203a8b281f6ab34f7e85073fadcfc395503c))
+
+
 ## v5.4.0 (2025-01-28)
 
 ### Bug Fixes
