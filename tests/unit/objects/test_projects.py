@@ -768,11 +768,13 @@ def test_transfer_project(project, resp_transfer_project):
 
 
 def test_project_pull_mirror(project, resp_start_pull_mirroring_project):
-    project.mirror_pull()
+    with pytest.warns(DeprecationWarning, match="is deprecated"):
+        project.mirror_pull()
 
 
 def test_project_pull_mirror_details(project, resp_pull_mirror_details_project):
-    details = project.mirror_pull_details()
+    with pytest.warns(DeprecationWarning, match="is deprecated"):
+        details = project.mirror_pull_details()
     assert details["last_error"] is None
     assert details["update_status"] == "finished"
 
