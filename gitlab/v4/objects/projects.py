@@ -608,6 +608,13 @@ class Project(
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server failed to perform the request
         """
+        utils.warn(
+            message=(
+                "project.mirror_pull() is deprecated and will be removed in a "
+                "future major version. Use project.pull_mirror.start() instead."
+            ),
+            category=DeprecationWarning,
+        )
         path = f"/projects/{self.encoded_id}/mirror/pull"
         self.manager.gitlab.http_post(path, **kwargs)
 
@@ -628,6 +635,13 @@ class Project(
         Returns:
             dict of the parsed json returned by the server
         """
+        utils.warn(
+            message=(
+                "project.mirror_pull_details() is deprecated and will be removed in a "
+                "future major version. Use project.pull_mirror.get() instead."
+            ),
+            category=DeprecationWarning,
+        )
         path = f"/projects/{self.encoded_id}/mirror/pull"
         result = self.manager.gitlab.http_get(path, **kwargs)
         if TYPE_CHECKING:
