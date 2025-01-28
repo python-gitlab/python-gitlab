@@ -152,7 +152,7 @@ class ProjectJob(RefreshMixin, RESTObject):
     def artifacts(
         self,
         streamed: Literal[True] = True,
-        action: Optional[Callable[[bytes], None]] = None,
+        action: Optional[Callable[[bytes], Any]] = None,
         chunk_size: int = 1024,
         *,
         iterator: Literal[False] = False,
@@ -229,7 +229,7 @@ class ProjectJob(RefreshMixin, RESTObject):
         self,
         path: str,
         streamed: Literal[True] = True,
-        action: Optional[Callable[[bytes], None]] = None,
+        action: Optional[Callable[[bytes], Any]] = None,
         chunk_size: int = 1024,
         *,
         iterator: Literal[False] = False,
@@ -305,7 +305,7 @@ class ProjectJob(RefreshMixin, RESTObject):
     def trace(
         self,
         streamed: Literal[True] = True,
-        action: Optional[Callable[[bytes], None]] = None,
+        action: Optional[Callable[[bytes], Any]] = None,
         chunk_size: int = 1024,
         *,
         iterator: Literal[False] = False,

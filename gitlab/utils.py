@@ -77,7 +77,7 @@ class MaskingFormatter(logging.Formatter):
 def response_content(
     response: requests.Response,
     streamed: bool,
-    action: Optional[Callable[[bytes], None]],
+    action: Optional[Callable[[bytes], Any]],
     chunk_size: int,
     *,
     iterator: bool,

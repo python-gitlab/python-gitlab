@@ -54,7 +54,7 @@ class ProjectSecureFile(ObjectDeleteMixin, RESTObject):
     def download(
         self,
         streamed: Literal[True] = True,
-        action: Optional[Callable[[bytes], None]] = None,
+        action: Optional[Callable[[bytes], Any]] = None,
         chunk_size: int = 1024,
         *,
         iterator: Literal[False] = False,
@@ -66,7 +66,7 @@ class ProjectSecureFile(ObjectDeleteMixin, RESTObject):
     def download(
         self,
         streamed: bool = False,
-        action: Optional[Callable[[bytes], None]] = None,
+        action: Optional[Callable[[bytes], Any]] = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,

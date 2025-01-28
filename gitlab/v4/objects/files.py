@@ -308,7 +308,7 @@ class ProjectFileManager(CreateMixin, UpdateMixin, DeleteMixin, RESTManager):
         file_path: str,
         ref: Optional[str] = None,
         streamed: Literal[True] = True,
-        action: Optional[Callable[[bytes], None]] = None,
+        action: Optional[Callable[[bytes], Any]] = None,
         chunk_size: int = 1024,
         *,
         iterator: Literal[False] = False,
