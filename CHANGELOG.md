@@ -1,6 +1,149 @@
 # CHANGELOG
 
 
+## v5.4.0 (2025-01-28)
+
+### Bug Fixes
+
+- **api**: Make type ignores more specific where possible
+  ([`e3cb806`](https://github.com/python-gitlab/python-gitlab/commit/e3cb806dc368af0a495087531ee94892d3f240ce))
+
+Instead of using absolute ignore `# type: ignore` use a more specific ignores like `# type:
+  ignore[override]`. This might help in the future where a new bug might be introduced and get
+  ignored by a general ignore comment but not a more specific one.
+
+Signed-off-by: Igor Ponomarev <igor.ponomarev@collabora.com>
+
+- **api**: Return the new commit when calling cherry_pick
+  ([`de29503`](https://github.com/python-gitlab/python-gitlab/commit/de29503262b7626421f3bffeea3ff073e63e3865))
+
+- **files**: Add optional ref parameter for cli project-file raw (python-gitlab#3032)
+  ([`22f03bd`](https://github.com/python-gitlab/python-gitlab/commit/22f03bdc2bac92138225563415f5cf6fa36a5644))
+
+The ef parameter was removed in python-gitlab v4.8.0. This will add ef back as an optional parameter
+  for the project-file raw cli command.
+
+### Chores
+
+- Fix missing space in deprecation message
+  ([`ba75c31`](https://github.com/python-gitlab/python-gitlab/commit/ba75c31e4d13927b6a3ab0ce427800d94e5eefb4))
+
+- Fix pytest deprecation
+  ([`95db680`](https://github.com/python-gitlab/python-gitlab/commit/95db680d012d73e7e505ee85db7128050ff0db6e))
+
+pytest has changed the function argument name to `start_path`
+
+- Fix warning being generated
+  ([`0eb5eb0`](https://github.com/python-gitlab/python-gitlab/commit/0eb5eb0505c5b837a2d767cfa256a25b64ceb48b))
+
+The CI shows a warning. Use `get_all=False` to resolve issue.
+
+- Resolve DeprecationWarning message in CI run
+  ([`accd5aa`](https://github.com/python-gitlab/python-gitlab/commit/accd5aa757ba5215497c278da50d48f10ea5a258))
+
+Catch the DeprecationWarning in our test, as we expect it.
+
+- **ci**: Set a 30 minute timeout for 'functional' tests
+  ([`e8d6953`](https://github.com/python-gitlab/python-gitlab/commit/e8d6953ec06dbbd817852207abbbc74eab8a27cf))
+
+Currently the functional API test takes around 17 minutes to run. And the functional CLI test takes
+  around 12 minutes to run.
+
+Occasionally a job gets stuck and will sit until the default 360 minutes job timeout occurs.
+
+Now have a 30 minute timeout for the 'functional' tests.
+
+- **deps**: Update all non-major dependencies
+  ([`939505b`](https://github.com/python-gitlab/python-gitlab/commit/939505b9c143939ba1e52c5cb920d8aa36596e19))
+
+- **deps**: Update all non-major dependencies
+  ([`cbd4263`](https://github.com/python-gitlab/python-gitlab/commit/cbd4263194fcbad9d6c11926862691f8df0dea6d))
+
+- **deps**: Update gitlab ([#3088](https://github.com/python-gitlab/python-gitlab/pull/3088),
+  [`9214b83`](https://github.com/python-gitlab/python-gitlab/commit/9214b8371652be2371823b6f3d531eeea78364c7))
+
+Co-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+
+- **deps**: Update gitlab/gitlab-ee docker tag to v17.7.1-ee.0
+  ([#3082](https://github.com/python-gitlab/python-gitlab/pull/3082),
+  [`1e95944`](https://github.com/python-gitlab/python-gitlab/commit/1e95944119455875bd239752cdf0fe5cc27707ea))
+
+Co-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+
+- **deps**: Update mypy to 1.14 and resolve issues
+  ([`671e711`](https://github.com/python-gitlab/python-gitlab/commit/671e711c341d28ae0bc61ccb12d2e986353473fd))
+
+mypy 1.14 has a change to Enum Membership Semantics:
+  https://mypy.readthedocs.io/en/latest/changelog.html
+
+Resolve the issues with Enum and typing, and update mypy to 1.14
+
+- **test**: Prevent 'job_with_artifact' fixture running forever
+  ([`e4673d8`](https://github.com/python-gitlab/python-gitlab/commit/e4673d8aeaf97b9ad5d2500e459526b4cf494547))
+
+Previously the 'job_with_artifact' fixture could run forever. Now give it up to 60 seconds to
+  complete before failing.
+
+### Continuous Integration
+
+- Use gitlab-runner:v17.7.1 for the CI
+  ([`2dda9dc`](https://github.com/python-gitlab/python-gitlab/commit/2dda9dc149668a99211daaa1981bb1f422c63880))
+
+The `latest` gitlab-runner image does not have the `gitlab-runner` user and it causes our tests to
+  fail.
+
+Closes: #3091
+
+### Features
+
+- **api**: Add argument that appends extra HTTP headers to a request
+  ([`fb07b5c`](https://github.com/python-gitlab/python-gitlab/commit/fb07b5cfe1d986c3a7cd7879b11ecc43c75542b7))
+
+Currently the only way to manipulate the headers for a request is to use `Gitlab.headers` attribute.
+  However, this makes it very concurrently unsafe because the `Gitlab` object can be shared between
+  multiple requests at the same time.
+
+Instead add a new keyword argument `extra_headers` which will update the headers dictionary with new
+  values just before the request is sent.
+
+For example, this can be used to download a part of a artifacts file using the `Range` header:
+  https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
+
+Signed-off-by: Igor Ponomarev <igor.ponomarev@collabora.com>
+
+- **api**: Add support for external status check
+  ([`175b355`](https://github.com/python-gitlab/python-gitlab/commit/175b355d84d54a71f15fe3601c5275dc35984b9b))
+
+- **api**: Narrow down return type of download methods using typing.overload
+  ([`44fd9dc`](https://github.com/python-gitlab/python-gitlab/commit/44fd9dc1176a2c5529c45cc3186c0e775026175e))
+
+Currently the download methods such as `ProjectJob.artifacts` have return type set to
+  `Optional[Union[bytes, Iterator[Any]]]` which means they return either `None` or `bytes` or
+  `Iterator[Any]`.
+
+However, the actual return type is determined by the passed `streamed` and `iterator` arguments.
+  Using `@typing.overload` decorator it is possible to return a single type based on the passed
+  arguments.
+
+Add overloads in the following order to all download methods:
+
+1. If `streamed=False` and `iterator=False` return `bytes`. This is the default argument values
+  therefore it should be first as it will be used to lookup default arguments. 2. If `iterator=True`
+  return `Iterator[Any]`. This can be combined with both `streamed=True` and `streamed=False`. 3. If
+  `streamed=True` and `iterator=False` return `None`. In this case `action` argument can be set to a
+  callable that accepts `bytes`.
+
+Signed-off-by: Igor Ponomarev <igor.ponomarev@collabora.com>
+
+- **api**: Narrow down return type of ProjectFileManager.raw using typing.overload
+  ([`36d9b24`](https://github.com/python-gitlab/python-gitlab/commit/36d9b24ff27d8df514c1beebd0fff8ad000369b7))
+
+This is equivalent to the changes in 44fd9dc1176a2c5529c45cc3186c0e775026175e but for
+  `ProjectFileManager.raw` method that I must have missed in the original commit.
+
+Signed-off-by: Igor Ponomarev <igor.ponomarev@collabora.com>
+
+
 ## v5.3.1 (2025-01-07)
 
 ### Bug Fixes
