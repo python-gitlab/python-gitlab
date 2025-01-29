@@ -1,5 +1,3 @@
-from typing import Any, cast
-
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import GetWithoutIdMixin, RefreshMixin
 from gitlab.types import ArrayAttribute
@@ -27,9 +25,6 @@ class ProjectAdditionalStatisticsManager(GetWithoutIdMixin, RESTManager):
     _obj_cls = ProjectAdditionalStatistics
     _from_parent_attrs = {"project_id": "id"}
 
-    def get(self, **kwargs: Any) -> ProjectAdditionalStatistics:
-        return cast(ProjectAdditionalStatistics, super().get(**kwargs))
-
 
 class IssuesStatistics(RefreshMixin, RESTObject):
     _id_attr = None
@@ -40,9 +35,6 @@ class IssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
     _obj_cls = IssuesStatistics
     _list_filters = ("iids",)
     _types = {"iids": ArrayAttribute}
-
-    def get(self, **kwargs: Any) -> IssuesStatistics:
-        return cast(IssuesStatistics, super().get(**kwargs))
 
 
 class GroupIssuesStatistics(RefreshMixin, RESTObject):
@@ -56,9 +48,6 @@ class GroupIssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
     _list_filters = ("iids",)
     _types = {"iids": ArrayAttribute}
 
-    def get(self, **kwargs: Any) -> GroupIssuesStatistics:
-        return cast(GroupIssuesStatistics, super().get(**kwargs))
-
 
 class ProjectIssuesStatistics(RefreshMixin, RESTObject):
     _id_attr = None
@@ -71,9 +60,6 @@ class ProjectIssuesStatisticsManager(GetWithoutIdMixin, RESTManager):
     _list_filters = ("iids",)
     _types = {"iids": ArrayAttribute}
 
-    def get(self, **kwargs: Any) -> ProjectIssuesStatistics:
-        return cast(ProjectIssuesStatistics, super().get(**kwargs))
-
 
 class ApplicationStatistics(RESTObject):
     _id_attr = None
@@ -82,6 +68,3 @@ class ApplicationStatistics(RESTObject):
 class ApplicationStatisticsManager(GetWithoutIdMixin, RESTManager):
     _path = "/application/statistics"
     _obj_cls = ApplicationStatistics
-
-    def get(self, **kwargs: Any) -> ApplicationStatistics:
-        return cast(ApplicationStatistics, super().get(**kwargs))

@@ -1,4 +1,4 @@
-from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
+from typing import Any, Dict, Optional, TYPE_CHECKING
 
 from gitlab import exceptions as exc
 from gitlab import types
@@ -46,9 +46,6 @@ class GroupEpicManager(CRUDMixin, RESTManager):
         optional=("title", "labels", "description", "start_date", "end_date"),
     )
     _types = {"labels": types.CommaSeparatedListAttribute}
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> GroupEpic:
-        return cast(GroupEpic, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class GroupEpicIssue(ObjectDeleteMixin, SaveMixin, RESTObject):

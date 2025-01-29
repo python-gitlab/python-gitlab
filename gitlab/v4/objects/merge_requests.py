@@ -4,7 +4,7 @@ https://docs.gitlab.com/ee/api/merge_requests.html
 https://docs.gitlab.com/ee/api/merge_request_approvals.html
 """
 
-from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
+from typing import Any, Dict, Optional, TYPE_CHECKING, Union
 
 import requests
 
@@ -517,11 +517,6 @@ class ProjectMergeRequestManager(CRUDMixin, RESTManager):
         "labels": types.CommaSeparatedListAttribute,
     }
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMergeRequest:
-        return cast(ProjectMergeRequest, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectDeploymentMergeRequest(MergeRequest):
     pass
@@ -541,8 +536,3 @@ class ProjectMergeRequestDiffManager(RetrieveMixin, RESTManager):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/versions"
     _obj_cls = ProjectMergeRequestDiff
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMergeRequestDiff:
-        return cast(ProjectMergeRequestDiff, super().get(id=id, lazy=lazy, **kwargs))

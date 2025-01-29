@@ -5,8 +5,6 @@ https://docs.gitlab.com/ee/api/project_level_variables.html
 https://docs.gitlab.com/ee/api/group_level_variables.html
 """
 
-from typing import Any, cast, Union
-
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
@@ -35,9 +33,6 @@ class VariableManager(CRUDMixin, RESTManager):
         required=("key", "value"), optional=("protected", "variable_type", "masked")
     )
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Variable:
-        return cast(Variable, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class GroupVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "key"
@@ -53,11 +48,6 @@ class GroupVariableManager(CRUDMixin, RESTManager):
     _update_attrs = RequiredOptional(
         required=("key", "value"), optional=("protected", "variable_type", "masked")
     )
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupVariable:
-        return cast(GroupVariable, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectVariable(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -76,8 +66,3 @@ class ProjectVariableManager(CRUDMixin, RESTManager):
         required=("key", "value"),
         optional=("protected", "variable_type", "masked", "environment_scope"),
     )
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectVariable:
-        return cast(ProjectVariable, super().get(id=id, lazy=lazy, **kwargs))

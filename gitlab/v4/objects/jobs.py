@@ -1,7 +1,6 @@
 from typing import (
     Any,
     Callable,
-    cast,
     Dict,
     Iterator,
     Literal,
@@ -360,6 +359,3 @@ class ProjectJobManager(RetrieveMixin, RESTManager):
     _from_parent_attrs = {"project_id": "id"}
     _list_filters = ("scope",)
     _types = {"scope": ArrayAttribute}
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> ProjectJob:
-        return cast(ProjectJob, super().get(id=id, lazy=lazy, **kwargs))

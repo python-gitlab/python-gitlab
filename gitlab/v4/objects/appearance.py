@@ -1,4 +1,4 @@
-from typing import Any, cast, Dict, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
@@ -58,6 +58,3 @@ class ApplicationAppearanceManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         new_data = new_data or {}
         data = new_data.copy()
         return super().update(id, data, **kwargs)
-
-    def get(self, **kwargs: Any) -> ApplicationAppearance:
-        return cast(ApplicationAppearance, super().get(**kwargs))

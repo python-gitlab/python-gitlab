@@ -1,5 +1,3 @@
-from typing import Any, cast, Union
-
 from gitlab import types
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
@@ -51,11 +49,6 @@ class GroupDeployTokenManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManag
     _list_filters = ("scopes",)
     _types = {"scopes": types.ArrayAttribute}
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupDeployToken:
-        return cast(GroupDeployToken, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectDeployToken(ObjectDeleteMixin, RESTObject):
     pass
@@ -77,8 +70,3 @@ class ProjectDeployTokenManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTMan
     )
     _list_filters = ("scopes",)
     _types = {"scopes": types.ArrayAttribute}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectDeployToken:
-        return cast(ProjectDeployToken, super().get(id=id, lazy=lazy, **kwargs))

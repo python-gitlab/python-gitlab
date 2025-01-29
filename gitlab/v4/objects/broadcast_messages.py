@@ -1,5 +1,3 @@
-from typing import Any, cast, Union
-
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import ArrayAttribute, RequiredOptional
@@ -33,8 +31,3 @@ class BroadcastMessageManager(CRUDMixin, RESTManager):
         )
     )
     _types = {"target_access_levels": ArrayAttribute}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> BroadcastMessage:
-        return cast(BroadcastMessage, super().get(id=id, lazy=lazy, **kwargs))
