@@ -9,7 +9,6 @@ from typing import (
     Any,
     BinaryIO,
     Callable,
-    cast,
     Iterator,
     Literal,
     Optional,
@@ -247,11 +246,6 @@ class ProjectPackageManager(ListMixin, GetMixin, DeleteMixin, RESTManager):
         "package_type",
         "package_name",
     )
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectPackage:
-        return cast(ProjectPackage, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectPackageFile(ObjectDeleteMixin, RESTObject):

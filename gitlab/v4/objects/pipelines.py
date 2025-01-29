@@ -109,11 +109,6 @@ class ProjectPipelineManager(RetrieveMixin, CreateMixin, DeleteMixin, RESTManage
     )
     _create_attrs = RequiredOptional(required=("ref",))
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectPipeline:
-        return cast(ProjectPipeline, super().get(id=id, lazy=lazy, **kwargs))
-
     def create(
         self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> ProjectPipeline:
@@ -272,11 +267,6 @@ class ProjectPipelineScheduleManager(CRUDMixin, RESTManager):
         optional=("description", "ref", "cron", "cron_timezone", "active"),
     )
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectPipelineSchedule:
-        return cast(ProjectPipelineSchedule, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectPipelineTestReport(RESTObject):
     _id_attr = None
@@ -287,9 +277,6 @@ class ProjectPipelineTestReportManager(GetWithoutIdMixin, RESTManager):
     _obj_cls = ProjectPipelineTestReport
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
 
-    def get(self, **kwargs: Any) -> ProjectPipelineTestReport:
-        return cast(ProjectPipelineTestReport, super().get(**kwargs))
-
 
 class ProjectPipelineTestReportSummary(RESTObject):
     _id_attr = None
@@ -299,6 +286,3 @@ class ProjectPipelineTestReportSummaryManager(GetWithoutIdMixin, RESTManager):
     _path = "/projects/{project_id}/pipelines/{pipeline_id}/test_report_summary"
     _obj_cls = ProjectPipelineTestReportSummary
     _from_parent_attrs = {"project_id": "project_id", "pipeline_id": "id"}
-
-    def get(self, **kwargs: Any) -> ProjectPipelineTestReportSummary:
-        return cast(ProjectPipelineTestReportSummary, super().get(**kwargs))

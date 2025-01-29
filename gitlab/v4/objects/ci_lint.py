@@ -3,7 +3,7 @@ GitLab API:
 https://docs.gitlab.com/ee/api/lint.html
 """
 
-from typing import Any, cast
+from typing import Any
 
 from gitlab.base import RESTManager, RESTObject
 from gitlab.cli import register_custom_action
@@ -58,9 +58,6 @@ class ProjectCiLintManager(GetWithoutIdMixin, CreateMixin, RESTManager):
     _create_attrs = RequiredOptional(
         required=("content",), optional=("dry_run", "include_jobs", "ref")
     )
-
-    def get(self, **kwargs: Any) -> ProjectCiLint:
-        return cast(ProjectCiLint, super().get(**kwargs))
 
     @register_custom_action(
         cls_names="ProjectCiLintManager",

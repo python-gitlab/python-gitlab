@@ -1,4 +1,4 @@
-from typing import Any, cast, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
+from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING, Union
 
 import requests
 
@@ -72,9 +72,6 @@ class IssueManager(RetrieveMixin, RESTManager):
         "updated_before",
     )
     _types = {"iids": types.ArrayAttribute, "labels": types.CommaSeparatedListAttribute}
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Issue:
-        return cast(Issue, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class GroupIssue(RESTObject):
@@ -282,11 +279,6 @@ class ProjectIssueManager(CRUDMixin, RESTManager):
         ),
     )
     _types = {"iids": types.ArrayAttribute, "labels": types.CommaSeparatedListAttribute}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectIssue:
-        return cast(ProjectIssue, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectIssueLink(ObjectDeleteMixin, RESTObject):

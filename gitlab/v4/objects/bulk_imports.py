@@ -1,5 +1,3 @@
-from typing import Any, cast, Union
-
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, ListMixin, RefreshMixin, RetrieveMixin
 from gitlab.types import RequiredOptional
@@ -24,9 +22,6 @@ class BulkImportManager(CreateMixin, RetrieveMixin, RESTManager):
     _create_attrs = RequiredOptional(required=("configuration", "entities"))
     _list_filters = ("sort", "status")
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> BulkImport:
-        return cast(BulkImport, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class BulkImportEntity(RefreshMixin, RESTObject):
     pass
@@ -37,11 +32,6 @@ class BulkImportEntityManager(RetrieveMixin, RESTManager):
     _obj_cls = BulkImportEntity
     _from_parent_attrs = {"bulk_import_id": "id"}
     _list_filters = ("sort", "status")
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> BulkImportEntity:
-        return cast(BulkImportEntity, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class BulkImportAllEntity(RESTObject):

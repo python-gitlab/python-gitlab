@@ -867,9 +867,6 @@ class ProjectManager(CRUDMixin, RESTManager):
         "topics": types.ArrayAttribute,
     }
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Project:
-        return cast(Project, super().get(id=id, lazy=lazy, **kwargs))
-
     @exc.on_http_error(exc.GitlabImportError)
     def import_project(
         self,
@@ -1267,9 +1264,6 @@ class ProjectPullMirrorManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     _from_parent_attrs = {"project_id": "id"}
     _update_attrs = RequiredOptional(optional=("url",))
 
-    def get(self, **kwargs: Any) -> ProjectPullMirror:
-        return cast(ProjectPullMirror, super().get(**kwargs))
-
     @exc.on_http_error(exc.GitlabCreateError)
     def create(self, data: Dict[str, Any], **kwargs: Any) -> ProjectPullMirror:
         """Create a new object.
@@ -1324,9 +1318,6 @@ class ProjectStorageManager(GetWithoutIdMixin, RESTManager):
     _path = "/projects/{project_id}/storage"
     _obj_cls = ProjectStorage
     _from_parent_attrs = {"project_id": "id"}
-
-    def get(self, **kwargs: Any) -> ProjectStorage:
-        return cast(ProjectStorage, super().get(**kwargs))
 
 
 class SharedProject(RESTObject):

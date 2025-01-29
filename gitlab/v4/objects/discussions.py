@@ -1,5 +1,3 @@
-from typing import Any, cast, Union
-
 from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import CreateMixin, RetrieveMixin, SaveMixin, UpdateMixin
 from gitlab.types import RequiredOptional
@@ -33,11 +31,6 @@ class ProjectCommitDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
     _from_parent_attrs = {"project_id": "project_id", "commit_id": "id"}
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectCommitDiscussion:
-        return cast(ProjectCommitDiscussion, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectIssueDiscussion(RESTObject):
     notes: ProjectIssueDiscussionNoteManager
@@ -48,11 +41,6 @@ class ProjectIssueDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
     _obj_cls = ProjectIssueDiscussion
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectIssueDiscussion:
-        return cast(ProjectIssueDiscussion, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectMergeRequestDiscussion(SaveMixin, RESTObject):
@@ -70,13 +58,6 @@ class ProjectMergeRequestDiscussionManager(
     )
     _update_attrs = RequiredOptional(required=("resolved",))
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMergeRequestDiscussion:
-        return cast(
-            ProjectMergeRequestDiscussion, super().get(id=id, lazy=lazy, **kwargs)
-        )
-
 
 class ProjectSnippetDiscussion(RESTObject):
     notes: ProjectSnippetDiscussionNoteManager
@@ -87,8 +68,3 @@ class ProjectSnippetDiscussionManager(RetrieveMixin, CreateMixin, RESTManager):
     _obj_cls = ProjectSnippetDiscussion
     _from_parent_attrs = {"project_id": "project_id", "snippet_id": "id"}
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectSnippetDiscussion:
-        return cast(ProjectSnippetDiscussion, super().get(id=id, lazy=lazy, **kwargs))

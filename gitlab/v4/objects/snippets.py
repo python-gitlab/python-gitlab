@@ -1,7 +1,6 @@
 from typing import (
     Any,
     Callable,
-    cast,
     Iterator,
     List,
     Literal,
@@ -199,9 +198,6 @@ class SnippetManager(CRUDMixin, RESTManager):
         )
         return self.list(path="/snippets/public", **kwargs)
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Snippet:
-        return cast(Snippet, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _url = "/projects/{project_id}/snippets"
@@ -308,8 +304,3 @@ class ProjectSnippetManager(CRUDMixin, RESTManager):
             "description",
         ),
     )
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectSnippet:
-        return cast(ProjectSnippet, super().get(id=id, lazy=lazy, **kwargs))
