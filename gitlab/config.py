@@ -109,6 +109,8 @@ class GitlabConfigParser:
         self.url: Optional[str] = None
         self.user_agent: str = USER_AGENT
         self.keep_base_url: bool = False
+        self.tls_client_cert: Optional[str] = None
+        self.tls_client_key: Optional[str] = None
 
         self._files = _get_config_files(config_files)
         if self._files:
@@ -242,6 +244,24 @@ class GitlabConfigParser:
             pass
         try:
             self.keep_base_url = _config.getboolean(self.gitlab_id, "keep_base_url")
+        except _CONFIG_PARSER_ERRORS:
+            pass
+
+        try:
+            self.tls_client_cert = _config.get("global", "tls_client_cert")
+        except _CONFIG_PARSER_ERRORS:
+            pass
+        try:
+            self.tls_client_cert = _config.get(self.gitlab_id, "tls_client_cert")
+        except _CONFIG_PARSER_ERRORS:
+            pass
+
+        try:
+            self.tls_client_key = _config.get("global", "tls_client_key")
+        except _CONFIG_PARSER_ERRORS:
+            pass
+        try:
+            self.tls_client_key = _config.get(self.gitlab_id, "tls_client_key")
         except _CONFIG_PARSER_ERRORS:
             pass
 

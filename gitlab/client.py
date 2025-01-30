@@ -75,6 +75,8 @@ class Gitlab:
             or 52x responses. Defaults to False.
         keep_base_url: keep user-provided base URL for pagination if it
             differs from response headers
+        tls_client_cert: provide client TLS certificate
+        tls_client_key: provide client TLS key
 
     Keyword Args:
         requests.Session session: HTTP Requests Session
@@ -98,6 +100,8 @@ class Gitlab:
         user_agent: str = gitlab.const.USER_AGENT,
         retry_transient_errors: bool = False,
         keep_base_url: bool = False,
+        tls_client_cert: Optional[str] = None,
+        tls_client_key: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         self._api_version = str(api_version)
@@ -109,6 +113,7 @@ class Gitlab:
         self.timeout = timeout
         self.retry_transient_errors = retry_transient_errors
         self.keep_base_url = keep_base_url
+
         #: Headers that will be used in request to GitLab
         self.headers = {"User-Agent": user_agent}
 
@@ -128,6 +133,13 @@ class Gitlab:
         )
         self._backend = _backend(**kwargs)
         self.session = self._backend.client
+
+        if tls_client_cert and tls_client_key:
+            self.session.cert = (tls_client_cert, tls_client_key)
+        elif tls_client_cert or tls_client_key:
+            raise ValueError(
+                "tls_client_cert and tls_client_key must be provided together"
+            )
 
         self.per_page = per_page
         self.pagination = pagination
@@ -304,6 +316,8 @@ class Gitlab:
             user_agent=config.user_agent,
             retry_transient_errors=config.retry_transient_errors,
             keep_base_url=config.keep_base_url,
+            tls_client_cert=config.tls_client_cert,
+            tls_client_key=config.tls_client_key,
             **kwargs,
         )
 
@@ -360,6 +374,9 @@ class Gitlab:
             pagination=options.get("pagination") or config.pagination,
             order_by=options.get("order_by") or config.order_by,
             user_agent=options.get("user_agent") or config.user_agent,
+            keep_base_url=config.keep_base_url,
+            tls_client_cert=config.tls_client_cert,
+            tls_client_key=config.tls_client_key,
         )
 
     @staticmethod
