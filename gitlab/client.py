@@ -4,12 +4,7 @@ from __future__ import annotations
 
 import os
 import re
-from typing import (
-    Any,
-    BinaryIO,
-    cast,
-    TYPE_CHECKING,
-)
+from typing import Any, BinaryIO, cast, TYPE_CHECKING
 from urllib import parse
 
 import requests
@@ -952,11 +947,7 @@ class Gitlab:
                 f"`get_all=False` to the `list()` call."
             )
             show_caller = True
-        utils.warn(
-            message=message,
-            category=UserWarning,
-            show_caller=show_caller,
-        )
+        utils.warn(message=message, category=UserWarning, show_caller=show_caller)
         return items
 
     def http_post(
@@ -1097,12 +1088,7 @@ class Gitlab:
         post_data = post_data or {}
 
         result = self.http_request(
-            "patch",
-            path,
-            query_data=query_data,
-            post_data=post_data,
-            raw=raw,
-            **kwargs,
+            "patch", path, query_data=query_data, post_data=post_data, raw=raw, **kwargs
         )
         if result.status_code in gitlab.const.NO_JSON_RESPONSE_CODES:
             return result
@@ -1383,13 +1369,11 @@ class GraphQL(_BaseGraphQL):
 
                 if e.code == 401:
                     raise gitlab.exceptions.GitlabAuthenticationError(
-                        response_code=e.code,
-                        error_message=str(e),
+                        response_code=e.code, error_message=str(e)
                     )
 
                 raise gitlab.exceptions.GitlabHttpError(
-                    response_code=e.code,
-                    error_message=str(e),
+                    response_code=e.code, error_message=str(e)
                 )
 
             return result
@@ -1459,13 +1443,11 @@ class AsyncGraphQL(_BaseGraphQL):
 
                 if e.code == 401:
                     raise gitlab.exceptions.GitlabAuthenticationError(
-                        response_code=e.code,
-                        error_message=str(e),
+                        response_code=e.code, error_message=str(e)
                     )
 
                 raise gitlab.exceptions.GitlabHttpError(
-                    response_code=e.code,
-                    error_message=str(e),
+                    response_code=e.code, error_message=str(e)
                 )
 
             return result

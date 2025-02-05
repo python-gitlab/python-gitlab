@@ -81,11 +81,7 @@ def resp_update_topic():
 @pytest.fixture
 def resp_delete_topic():
     with responses.RequestsMock() as rsps:
-        rsps.add(
-            method=responses.DELETE,
-            url=topic_url,
-            status=204,
-        )
+        rsps.add(method=responses.DELETE, url=topic_url, status=204)
         yield rsps
 
 

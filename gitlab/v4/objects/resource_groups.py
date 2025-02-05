@@ -24,11 +24,7 @@ class ProjectResourceGroupManager(
     _path = "/projects/{project_id}/resource_groups"
     _obj_cls = ProjectResourceGroup
     _from_parent_attrs = {"project_id": "id"}
-    _list_filters = (
-        "order_by",
-        "sort",
-        "include_html_description",
-    )
+    _list_filters = ("order_by", "sort", "include_html_description")
     _update_attrs = RequiredOptional(optional=("process_mode",))
 
 

@@ -1,13 +1,6 @@
 from __future__ import annotations
 
-from typing import (
-    Any,
-    Callable,
-    Iterator,
-    Literal,
-    overload,
-    TYPE_CHECKING,
-)
+from typing import Any, Callable, Iterator, Literal, overload, TYPE_CHECKING
 
 import requests
 
@@ -22,12 +15,7 @@ from .award_emojis import ProjectSnippetAwardEmojiManager  # noqa: F401
 from .discussions import ProjectSnippetDiscussionManager  # noqa: F401
 from .notes import ProjectSnippetNoteManager  # noqa: F401
 
-__all__ = [
-    "Snippet",
-    "SnippetManager",
-    "ProjectSnippet",
-    "ProjectSnippetManager",
-]
+__all__ = ["Snippet", "SnippetManager", "ProjectSnippet", "ProjectSnippetManager"]
 
 
 class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -114,21 +102,10 @@ class SnippetManager(CRUDMixin[Snippet]):
     _create_attrs = RequiredOptional(
         required=("title",),
         exclusive=("files", "file_name"),
-        optional=(
-            "description",
-            "content",
-            "visibility",
-        ),
+        optional=("description", "content", "visibility"),
     )
     _update_attrs = RequiredOptional(
-        optional=(
-            "title",
-            "files",
-            "file_name",
-            "content",
-            "visibility",
-            "description",
-        ),
+        optional=("title", "files", "file_name", "content", "visibility", "description")
     )
 
     @cli.register_custom_action(cls_names="SnippetManager")
@@ -288,18 +265,8 @@ class ProjectSnippetManager(CRUDMixin[ProjectSnippet]):
     _create_attrs = RequiredOptional(
         required=("title", "visibility"),
         exclusive=("files", "file_name"),
-        optional=(
-            "description",
-            "content",
-        ),
+        optional=("description", "content"),
     )
     _update_attrs = RequiredOptional(
-        optional=(
-            "title",
-            "files",
-            "file_name",
-            "content",
-            "visibility",
-            "description",
-        ),
+        optional=("title", "files", "file_name", "content", "visibility", "description")
     )

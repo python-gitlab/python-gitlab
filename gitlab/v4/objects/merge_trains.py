@@ -1,10 +1,7 @@
 from gitlab.base import RESTObject
 from gitlab.mixins import ListMixin
 
-__all__ = [
-    "ProjectMergeTrain",
-    "ProjectMergeTrainManager",
-]
+__all__ = ["ProjectMergeTrain", "ProjectMergeTrainManager"]
 
 
 class ProjectMergeTrain(RESTObject):

@@ -7,10 +7,7 @@ from gitlab.base import RESTObject
 from gitlab.mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "ApplicationAppearance",
-    "ApplicationAppearanceManager",
-]
+__all__ = ["ApplicationAppearance", "ApplicationAppearanceManager"]
 
 
 class ApplicationAppearance(SaveMixin, RESTObject):
@@ -35,7 +32,7 @@ class ApplicationAppearanceManager(
             "message_background_color",
             "message_font_color",
             "email_header_and_footer_enabled",
-        ),
+        )
     )
 
     @exc.on_http_error(exc.GitlabUpdateError)

@@ -9,10 +9,7 @@ from gitlab.mixins import (
 )
 from gitlab.types import ArrayAttribute, RequiredOptional
 
-__all__ = [
-    "GroupAccessToken",
-    "GroupAccessTokenManager",
-]
+__all__ = ["GroupAccessToken", "GroupAccessTokenManager"]
 
 
 class GroupAccessToken(ObjectDeleteMixin, ObjectRotateMixin, RESTObject):

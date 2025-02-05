@@ -2,11 +2,7 @@ from gitlab import types
 from gitlab.base import RESTObject
 from gitlab.mixins import ListMixin
 
-__all__ = [
-    "ProjectIterationManager",
-    "GroupIteration",
-    "GroupIterationManager",
-]
+__all__ = ["ProjectIterationManager", "GroupIteration", "GroupIterationManager"]
 
 
 class GroupIteration(RESTObject):

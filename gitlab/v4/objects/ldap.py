@@ -5,10 +5,7 @@ from typing import Any
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject, RESTObjectList
 
-__all__ = [
-    "LDAPGroup",
-    "LDAPGroupManager",
-]
+__all__ = ["LDAPGroup", "LDAPGroupManager"]
 
 
 class LDAPGroup(RESTObject):

@@ -75,11 +75,7 @@ async def test_async_graphql_retries_on_429_response(
 def test_graphql_raises_when_max_retries_exceeded(
     api_url: str, respx_mock: respx.MockRouter
 ):
-    responses = [
-        httpx.Response(502),
-        httpx.Response(502),
-        httpx.Response(502),
-    ]
+    responses = [httpx.Response(502), httpx.Response(502), httpx.Response(502)]
     respx_mock.post(api_url).mock(side_effect=responses)
 
     gl_gql = gitlab.GraphQL(
@@ -93,11 +89,7 @@ def test_graphql_raises_when_max_retries_exceeded(
 async def test_async_graphql_raises_when_max_retries_exceeded(
     api_url: str, respx_mock: respx.MockRouter
 ):
-    responses = [
-        httpx.Response(502),
-        httpx.Response(502),
-        httpx.Response(502),
-    ]
+    responses = [httpx.Response(502), httpx.Response(502), httpx.Response(502)]
     respx_mock.post(api_url).mock(side_effect=responses)
 
     gl_async_gql = gitlab.AsyncGraphQL(

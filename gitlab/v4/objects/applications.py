@@ -2,10 +2,7 @@ from gitlab.base import RESTObject
 from gitlab.mixins import CreateMixin, DeleteMixin, ListMixin, ObjectDeleteMixin
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "Application",
-    "ApplicationManager",
-]
+__all__ = ["Application", "ApplicationManager"]
 
 
 class Application(ObjectDeleteMixin, RESTObject):

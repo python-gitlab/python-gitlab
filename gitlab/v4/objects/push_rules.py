@@ -43,7 +43,7 @@ class ProjectPushRulesManager(
             "member_check",
             "prevent_secrets",
             "reject_unsigned_commits",
-        ),
+        )
     )
     _update_attrs = RequiredOptional(
         optional=(
@@ -58,7 +58,7 @@ class ProjectPushRulesManager(
             "member_check",
             "prevent_secrets",
             "reject_unsigned_commits",
-        ),
+        )
     )
 
 
@@ -88,7 +88,7 @@ class GroupPushRulesManager(
             "max_file_size",
             "commit_committer_check",
             "reject_unsigned_commits",
-        ),
+        )
     )
     _update_attrs = RequiredOptional(
         optional=(
@@ -103,5 +103,5 @@ class GroupPushRulesManager(
             "max_file_size",
             "commit_committer_check",
             "reject_unsigned_commits",
-        ),
+        )
     )

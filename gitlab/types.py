@@ -11,10 +11,7 @@ class RequiredOptional:
     exclusive: tuple[str, ...] = ()
 
     def validate_attrs(
-        self,
-        *,
-        data: dict[str, Any],
-        excludes: list[str] | None = None,
+        self, *, data: dict[str, Any], excludes: list[str] | None = None
     ) -> None:
         if excludes is None:
             excludes = []

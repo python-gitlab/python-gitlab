@@ -4,10 +4,7 @@ from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "ProjectMergeRequestDraftNote",
-    "ProjectMergeRequestDraftNoteManager",
-]
+__all__ = ["ProjectMergeRequestDraftNote", "ProjectMergeRequestDraftNoteManager"]
 
 
 class ProjectMergeRequestDraftNote(ObjectDeleteMixin, SaveMixin, RESTObject):

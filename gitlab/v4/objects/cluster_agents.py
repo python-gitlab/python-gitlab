@@ -2,10 +2,7 @@ from gitlab.base import RESTObject
 from gitlab.mixins import NoUpdateMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "ProjectClusterAgent",
-    "ProjectClusterAgentManager",
-]
+__all__ = ["ProjectClusterAgent", "ProjectClusterAgentManager"]
 
 
 class ProjectClusterAgent(SaveMixin, ObjectDeleteMixin, RESTObject):

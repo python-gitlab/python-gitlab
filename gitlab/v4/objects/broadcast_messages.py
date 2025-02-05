@@ -2,10 +2,7 @@ from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import ArrayAttribute, RequiredOptional
 
-__all__ = [
-    "BroadcastMessage",
-    "BroadcastMessageManager",
-]
+__all__ = ["BroadcastMessage", "BroadcastMessageManager"]
 
 
 class BroadcastMessage(SaveMixin, ObjectDeleteMixin, RESTObject):

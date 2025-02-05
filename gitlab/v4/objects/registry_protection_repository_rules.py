@@ -22,16 +22,13 @@ class ProjectRegistryRepositoryProtectionRuleManager(
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
         required=("repository_path_pattern",),
-        optional=(
-            "minimum_access_level_for_push",
-            "minimum_access_level_for_delete",
-        ),
+        optional=("minimum_access_level_for_push", "minimum_access_level_for_delete"),
     )
     _update_attrs = RequiredOptional(
         optional=(
             "repository_path_pattern",
             "minimum_access_level_for_push",
             "minimum_access_level_for_delete",
-        ),
+        )
     )
     _update_method = UpdateMethod.PATCH

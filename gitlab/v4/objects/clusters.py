@@ -34,7 +34,7 @@ class GroupClusterManager(CRUDMixin[GroupCluster]):
             "management_project_id",
             "platform_kubernetes_attributes",
             "environment_scope",
-        ),
+        )
     )
 
     @exc.on_http_error(exc.GitlabStopError)
@@ -78,7 +78,7 @@ class ProjectClusterManager(CRUDMixin[ProjectCluster]):
             "management_project_id",
             "platform_kubernetes_attributes",
             "environment_scope",
-        ),
+        )
     )
 
     @exc.on_http_error(exc.GitlabStopError)

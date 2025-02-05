@@ -547,15 +547,7 @@ def test_create_project_with_values_at_prefixed(gitlab_cli, tmpdir):
     description = "@at-prefixed"
     at_prefixed = f"@{description}"
 
-    cmd = [
-        "-v",
-        "project",
-        "create",
-        "--name",
-        name,
-        "--description",
-        at_prefixed,
-    ]
+    cmd = ["-v", "project", "create", "--name", name, "--description", at_prefixed]
     ret = gitlab_cli(cmd)
 
     assert ret.success
@@ -703,24 +695,14 @@ def test_delete_group_deploy_token(gitlab_cli, group_deploy_token):
 
 
 def test_project_member_all(gitlab_cli, project):
-    cmd = [
-        "project-member-all",
-        "list",
-        "--project-id",
-        project.id,
-    ]
+    cmd = ["project-member-all", "list", "--project-id", project.id]
     ret = gitlab_cli(cmd)
 
     assert ret.success
 
 
 def test_group_member_all(gitlab_cli, group):
-    cmd = [
-        "group-member-all",
-        "list",
-        "--group-id",
-        group.id,
-    ]
+    cmd = ["group-member-all", "list", "--group-id", group.id]
     ret = gitlab_cli(cmd)
 
     assert ret.success

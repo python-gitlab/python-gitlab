@@ -41,14 +41,7 @@ class GroupDeployTokenManager(
     _from_parent_attrs = {"group_id": "id"}
     _obj_cls = GroupDeployToken
     _create_attrs = RequiredOptional(
-        required=(
-            "name",
-            "scopes",
-        ),
-        optional=(
-            "expires_at",
-            "username",
-        ),
+        required=("name", "scopes"), optional=("expires_at", "username")
     )
     _list_filters = ("scopes",)
     _types = {"scopes": types.ArrayAttribute}
@@ -67,14 +60,7 @@ class ProjectDeployTokenManager(
     _from_parent_attrs = {"project_id": "id"}
     _obj_cls = ProjectDeployToken
     _create_attrs = RequiredOptional(
-        required=(
-            "name",
-            "scopes",
-        ),
-        optional=(
-            "expires_at",
-            "username",
-        ),
+        required=("name", "scopes"), optional=("expires_at", "username")
     )
     _list_filters = ("scopes",)
     _types = {"scopes": types.ArrayAttribute}

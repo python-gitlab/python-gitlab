@@ -78,10 +78,7 @@ related_issues = [
             "avatar_url": "https://www.gravatar.com/avatar/956c92487c6f6f7616b536927e22c9a0?s=80&d=identicon",
             "web_url": "http://gitlab.example.com/kenyatta_oconnell",
         },
-        "labels": [
-            "FakeCategory",
-            "fake:ml",
-        ],
+        "labels": ["FakeCategory", "fake:ml"],
         "assignees": [
             {
                 "id": 2,

@@ -485,7 +485,7 @@ class ProjectMergeRequestManager(CRUDMixin[ProjectMergeRequest]):
             "allow_maintainer_to_push",
             "squash",
             "reviewer_ids",
-        ),
+        )
     )
     _list_filters = (
         "state",

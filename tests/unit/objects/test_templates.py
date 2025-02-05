@@ -32,12 +32,7 @@ from gitlab.v4.objects import (
         (Gitlabciyml, "gitlabciymls", "gitlab_ci_ymls"),
         (License, "licenses", "licenses"),
     ],
-    ids=[
-        "dockerfile",
-        "gitignore",
-        "gitlabciyml",
-        "license",
-    ],
+    ids=["dockerfile", "gitignore", "gitlabciyml", "license"],
 )
 def test_get_template(gl, tmpl, tmpl_mgr, tmpl_path):
     tmpl_id = "sample"
@@ -73,14 +68,7 @@ def test_get_template(gl, tmpl, tmpl_mgr, tmpl_path):
         (ProjectIssueTemplate, "issue_templates", "issues"),
         (ProjectMergeRequestTemplate, "merge_request_templates", "merge_requests"),
     ],
-    ids=[
-        "dockerfile",
-        "gitignore",
-        "gitlabciyml",
-        "license",
-        "issue",
-        "mergerequest",
-    ],
+    ids=["dockerfile", "gitignore", "gitlabciyml", "license", "issue", "mergerequest"],
 )
 def test_get_project_template(project, tmpl, tmpl_mgr, tmpl_path):
     tmpl_id = "sample"

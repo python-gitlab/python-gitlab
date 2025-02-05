@@ -56,10 +56,7 @@ def test_cls_to_gitlab_resource(class_name, expected_gitlab_resource):
 
 @pytest.mark.parametrize(
     "message,error,expected",
-    [
-        ("foobar", None, "foobar\n"),
-        ("foo", GitlabError("bar"), "foo (bar)\n"),
-    ],
+    [("foobar", None, "foobar\n"), ("foo", GitlabError("bar"), "foo (bar)\n")],
 )
 def test_die(message, error, expected):
     fl = io.StringIO()

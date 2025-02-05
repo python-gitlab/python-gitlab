@@ -276,7 +276,7 @@ class ProjectIssueManager(CRUDMixin[ProjectIssue]):
             "updated_at",
             "due_date",
             "discussion_locked",
-        ),
+        )
     )
     _types = {"iids": types.ArrayAttribute, "labels": types.CommaSeparatedListAttribute}
 

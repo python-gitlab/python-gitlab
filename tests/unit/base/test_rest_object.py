@@ -191,12 +191,7 @@ def test_dunder_str(fake_manager):
     "id_attr,repr_attr, attrs, expected_repr",
     [
         ("id", None, {"id": 1}, "<ReprObject id:1>"),
-        (
-            "id",
-            "name",
-            {"id": 1, "name": "fake"},
-            "<ReprObject id:1 name:fake>",
-        ),
+        ("id", "name", {"id": 1, "name": "fake"}, "<ReprObject id:1 name:fake>"),
         ("name", "name", {"name": "fake"}, "<ReprObject name:fake>"),
         ("id", "name", {"id": 1}, "<ReprObject id:1>"),
         (None, None, {}, "<ReprObject>"),
@@ -327,16 +322,10 @@ def test_asdict_modify_dict_does_not_change_object2(fake_object):
     # Modify attribute and then ensure modifying a list in the returned dict won't
     # modify the list in the object.
     fake_object.attr1 = [9, 7, 8]
-    assert fake_object.asdict() == {
-        "attr1": [9, 7, 8],
-        "alist": [1, 2, 3],
-    }
+    assert fake_object.asdict() == {"attr1": [9, 7, 8], "alist": [1, 2, 3]}
     result = fake_object.asdict()
     result["attr1"].append(1)
-    assert fake_object.asdict() == {
-        "attr1": [9, 7, 8],
-        "alist": [1, 2, 3],
-    }
+    assert fake_object.asdict() == {"attr1": [9, 7, 8], "alist": [1, 2, 3]}
 
 
 def test_asdict_modify_object(fake_object):

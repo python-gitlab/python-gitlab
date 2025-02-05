@@ -177,12 +177,7 @@ def check_is_alive():
     Return a healthcheck function fixture for the GitLab container spinup.
     """
 
-    def _check(
-        *,
-        container: str,
-        start_time: float,
-        gitlab_url: str,
-    ) -> bool:
+    def _check(*, container: str, start_time: float, gitlab_url: str) -> bool:
         setup_time = time.perf_counter() - start_time
         minutes, seconds = int(setup_time / 60), int(setup_time % 60)
         logging.info(
@@ -329,10 +324,7 @@ def gitlab_runner(gl):
 def group(gl):
     """Group fixture for group API resource tests."""
     _id = uuid.uuid4().hex
-    data = {
-        "name": f"test-group-{_id}",
-        "path": f"group-{_id}",
-    }
+    data = {"name": f"test-group-{_id}", "path": f"group-{_id}"}
     group = gl.groups.create(data)
 
     yield group

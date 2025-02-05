@@ -10,10 +10,7 @@ import responses
 from gitlab.v4.objects import ProjectJob
 
 failed_job_content = {
-    "commit": {
-        "author_email": "admin@example.com",
-        "author_name": "Administrator",
-    },
+    "commit": {"author_email": "admin@example.com", "author_name": "Administrator"},
     "coverage": None,
     "allow_failure": False,
     "created_at": "2015-12-24T15:51:21.880Z",
@@ -25,10 +22,7 @@ failed_job_content = {
     "tag_list": ["docker runner", "macos-10.15"],
     "id": 1,
     "name": "rubocop",
-    "pipeline": {
-        "id": 1,
-        "project_id": 1,
-    },
+    "pipeline": {"id": 1, "project_id": 1},
     "ref": "main",
     "artifacts": [],
     "runner": None,
@@ -93,10 +87,7 @@ def resp_list_job():
     ]
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         register_endpoint = partial(
-            rsps.add,
-            method=responses.GET,
-            content_type="application/json",
-            status=200,
+            rsps.add, method=responses.GET, content_type="application/json", status=200
         )
         for url in urls:
             register_endpoint(
@@ -118,10 +109,7 @@ def resp_list_job():
                     )
                 ],
             )
-            register_endpoint(
-                url=url,
-                json=[success_job_content, failed_job_content],
-            )
+            register_endpoint(url=url, json=[success_job_content, failed_job_content])
         yield rsps
 
 

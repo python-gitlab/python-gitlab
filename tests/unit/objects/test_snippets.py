@@ -73,12 +73,7 @@ def test_get_project_snippet(project, resp_snippet):
 
 def test_create_update_project_snippets(project, resp_snippet):
     snippet = project.snippets.create(
-        {
-            "title": title,
-            "file_name": title,
-            "content": title,
-            "visibility": visibility,
-        }
+        {"title": title, "file_name": title, "content": title, "visibility": visibility}
     )
     assert snippet.title == title
     assert snippet.visibility == visibility

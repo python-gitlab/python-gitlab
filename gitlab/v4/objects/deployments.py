@@ -15,10 +15,7 @@ from gitlab.types import RequiredOptional
 
 from .merge_requests import ProjectDeploymentMergeRequestManager  # noqa: F401
 
-__all__ = [
-    "ProjectDeployment",
-    "ProjectDeploymentManager",
-]
+__all__ = ["ProjectDeployment", "ProjectDeploymentManager"]
 
 
 class ProjectDeployment(SaveMixin, RESTObject):

@@ -19,12 +19,7 @@ from gitlab.types import RequiredOptional
 from .events import GroupEpicResourceLabelEventManager  # noqa: F401
 from .notes import GroupEpicNoteManager  # noqa: F401
 
-__all__ = [
-    "GroupEpic",
-    "GroupEpicManager",
-    "GroupEpicIssue",
-    "GroupEpicIssueManager",
-]
+__all__ = ["GroupEpic", "GroupEpicManager", "GroupEpicIssue", "GroupEpicIssueManager"]
 
 
 class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
@@ -45,7 +40,7 @@ class GroupEpicManager(CRUDMixin[GroupEpic]):
         optional=("labels", "description", "start_date", "end_date"),
     )
     _update_attrs = RequiredOptional(
-        optional=("title", "labels", "description", "start_date", "end_date"),
+        optional=("title", "labels", "description", "start_date", "end_date")
     )
     _types = {"labels": types.CommaSeparatedListAttribute}
 

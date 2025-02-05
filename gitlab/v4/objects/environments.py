@@ -73,10 +73,7 @@ class ProjectProtectedEnvironmentManager(
     _obj_cls = ProjectProtectedEnvironment
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
-        required=(
-            "name",
-            "deploy_access_levels",
-        ),
+        required=("name", "deploy_access_levels"),
         optional=("required_approval_count", "approval_rules"),
     )
     _types = {"deploy_access_levels": ArrayAttribute, "approval_rules": ArrayAttribute}

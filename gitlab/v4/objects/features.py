@@ -12,10 +12,7 @@ from gitlab import utils
 from gitlab.base import RESTObject
 from gitlab.mixins import DeleteMixin, ListMixin, ObjectDeleteMixin
 
-__all__ = [
-    "Feature",
-    "FeatureManager",
-]
+__all__ = ["Feature", "FeatureManager"]
 
 
 class Feature(ObjectDeleteMixin, RESTObject):

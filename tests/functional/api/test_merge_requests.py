@@ -46,10 +46,7 @@ def test_merge_requests_list_approver_ids(project):
     # show https://github.com/python-gitlab/python-gitlab/issues/1698 is now
     # fixed
     project.mergerequests.list(
-        all=True,
-        state="opened",
-        author_id=423,
-        approver_ids=[423],
+        all=True, state="opened", author_id=423, approver_ids=[423]
     )
 
 

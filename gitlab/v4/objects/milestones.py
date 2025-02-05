@@ -93,7 +93,7 @@ class GroupMilestoneManager(CRUDMixin[GroupMilestone]):
         required=("title",), optional=("description", "due_date", "start_date")
     )
     _update_attrs = RequiredOptional(
-        optional=("title", "description", "due_date", "start_date", "state_event"),
+        optional=("title", "description", "due_date", "start_date", "state_event")
     )
     _list_filters = ("iids", "state", "search")
     _types = {"iids": types.ArrayAttribute}
@@ -168,7 +168,7 @@ class ProjectMilestoneManager(CRUDMixin[ProjectMilestone]):
         optional=("description", "due_date", "start_date", "state_event"),
     )
     _update_attrs = RequiredOptional(
-        optional=("title", "description", "due_date", "start_date", "state_event"),
+        optional=("title", "description", "due_date", "start_date", "state_event")
     )
     _list_filters = ("iids", "state", "search")
     _types = {"iids": types.ArrayAttribute}

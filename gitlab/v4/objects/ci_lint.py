@@ -11,12 +11,7 @@ from gitlab.exceptions import GitlabCiLintError
 from gitlab.mixins import CreateMixin, GetWithoutIdMixin
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "CiLint",
-    "CiLintManager",
-    "ProjectCiLint",
-    "ProjectCiLintManager",
-]
+__all__ = ["CiLint", "CiLintManager", "ProjectCiLint", "ProjectCiLintManager"]
 
 
 class CiLint(RESTObject):

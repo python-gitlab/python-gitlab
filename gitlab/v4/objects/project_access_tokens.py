@@ -9,10 +9,7 @@ from gitlab.mixins import (
 )
 from gitlab.types import ArrayAttribute, RequiredOptional
 
-__all__ = [
-    "ProjectAccessToken",
-    "ProjectAccessTokenManager",
-]
+__all__ = ["ProjectAccessToken", "ProjectAccessTokenManager"]
 
 
 class ProjectAccessToken(ObjectDeleteMixin, ObjectRotateMixin, RESTObject):

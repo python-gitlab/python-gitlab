@@ -36,7 +36,7 @@ class NotificationSettingsManager(
             "close_merge_request",
             "reassign_merge_request",
             "merge_merge_request",
-        ),
+        )
     )
 
 

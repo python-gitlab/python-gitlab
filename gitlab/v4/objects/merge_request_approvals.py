@@ -69,7 +69,7 @@ class ProjectApprovalManager(
             "disable_overriding_approvers_per_merge_request",
             "merge_requests_author_approval",
             "merge_requests_disable_committers_approval",
-        ),
+        )
     )
     _update_method = UpdateMethod.POST
 
@@ -172,12 +172,7 @@ class ProjectMergeRequestApprovalRuleManager(
     _obj_cls = ProjectMergeRequestApprovalRule
     _from_parent_attrs = {"project_id": "project_id", "merge_request_iid": "iid"}
     _update_attrs = RequiredOptional(
-        required=(
-            "id",
-            "merge_request_iid",
-            "name",
-            "approvals_required",
-        ),
+        required=("id", "merge_request_iid", "name", "approvals_required"),
         optional=("user_ids", "group_ids", "usernames"),
     )
     # Important: When approval_project_rule_id is set, the name, users and

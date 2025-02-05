@@ -5,10 +5,7 @@ from typing import Any, TYPE_CHECKING
 from gitlab.base import RESTObject
 from gitlab.mixins import GetMixin
 
-__all__ = [
-    "Key",
-    "KeyManager",
-]
+__all__ = ["Key", "KeyManager"]
 
 
 class Key(RESTObject):
