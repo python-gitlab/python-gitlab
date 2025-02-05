@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, TYPE_CHECKING
 
 import requests
 
@@ -56,15 +58,15 @@ class ProjectMergeRequestPipelineManager(
 
 
 class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
-    bridges: "ProjectPipelineBridgeManager"
-    jobs: "ProjectPipelineJobManager"
-    test_report: "ProjectPipelineTestReportManager"
-    test_report_summary: "ProjectPipelineTestReportSummaryManager"
-    variables: "ProjectPipelineVariableManager"
+    bridges: ProjectPipelineBridgeManager
+    jobs: ProjectPipelineJobManager
+    test_report: ProjectPipelineTestReportManager
+    test_report_summary: ProjectPipelineTestReportSummaryManager
+    variables: ProjectPipelineVariableManager
 
     @cli.register_custom_action(cls_names="ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineCancelError)
-    def cancel(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def cancel(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Cancel the job.
 
         Args:
@@ -79,7 +81,7 @@ class ProjectPipeline(RefreshMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="ProjectPipeline")
     @exc.on_http_error(exc.GitlabPipelineRetryError)
-    def retry(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def retry(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Retry the job.
 
         Args:
@@ -116,7 +118,7 @@ class ProjectPipelineManager(
     _create_attrs = RequiredOptional(required=("ref",))
 
     def create(
-        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+        self, data: dict[str, Any] | None = None, **kwargs: Any
     ) -> ProjectPipeline:
         """Creates a new object.
 
@@ -136,7 +138,7 @@ class ProjectPipelineManager(
         path = self.path[:-1]  # drop the 's'
         return super().create(data, path=path, **kwargs)
 
-    def latest(self, ref: Optional[str] = None, lazy: bool = False) -> ProjectPipeline:
+    def latest(self, ref: str | None = None, lazy: bool = False) -> ProjectPipeline:
         """Get the latest pipeline for the most recent commit
                             on a specific ref in a project
 
@@ -240,7 +242,7 @@ class ProjectPipelineSchedule(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="ProjectPipelineSchedule")
     @exc.on_http_error(exc.GitlabPipelinePlayError)
-    def play(self, **kwargs: Any) -> Dict[str, Any]:
+    def play(self, **kwargs: Any) -> dict[str, Any]:
         """Trigger a new scheduled pipeline, which runs immediately.
         The next scheduled run of this pipeline is not affected.
 

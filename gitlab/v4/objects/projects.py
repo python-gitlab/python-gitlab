@@ -3,18 +3,16 @@ GitLab API:
 https://docs.gitlab.com/ee/api/projects.html
 """
 
+from __future__ import annotations
+
 import io
 from typing import (
     Any,
     Callable,
-    Dict,
     Iterator,
-    List,
     Literal,
-    Optional,
     overload,
     TYPE_CHECKING,
-    Union,
 )
 
 import requests
@@ -209,7 +207,7 @@ class Project(
     events: ProjectEventManager
     exports: ProjectExportManager
     files: ProjectFileManager
-    forks: "ProjectForkManager"
+    forks: ProjectForkManager
     generic_packages: GenericPackageManager
     gitignore_templates: ProjectGitignoreTemplateManager
     gitlabciyml_templates: ProjectGitlabciymlTemplateManager
@@ -249,15 +247,15 @@ class Project(
     registry_protection_repository_rules: ProjectRegistryRepositoryProtectionRuleManager
     releases: ProjectReleaseManager
     resource_groups: ProjectResourceGroupManager
-    remote_mirrors: "ProjectRemoteMirrorManager"
-    pull_mirror: "ProjectPullMirrorManager"
+    remote_mirrors: ProjectRemoteMirrorManager
+    pull_mirror: ProjectPullMirrorManager
     repositories: ProjectRegistryRepositoryManager
     runners: ProjectRunnerManager
     secure_files: ProjectSecureFileManager
     services: ProjectServiceManager
     snippets: ProjectSnippetManager
     external_status_checks: ProjectExternalStatusCheckManager
-    storage: "ProjectStorageManager"
+    storage: ProjectStorageManager
     tags: ProjectTagManager
     triggers: ProjectTriggerManager
     users: ProjectUserManager
@@ -297,7 +295,7 @@ class Project(
 
     @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabGetError)
-    def languages(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def languages(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Get languages used in the project with percentage value.
 
         Args:
@@ -392,7 +390,7 @@ class Project(
         self,
         group_id: int,
         group_access: int,
-        expires_at: Optional[str] = None,
+        expires_at: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Share the project with a group.
@@ -437,7 +435,7 @@ class Project(
         self,
         ref: str,
         token: str,
-        variables: Optional[Dict[str, Any]] = None,
+        variables: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> ProjectPipeline:
         """Trigger a CI build.
@@ -522,7 +520,7 @@ class Project(
         self,
         wiki: bool = False,
         streamed: Literal[True] = True,
-        action: Optional[Callable[[bytes], Any]] = None,
+        action: Callable[[bytes], Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: Literal[False] = False,
@@ -535,12 +533,12 @@ class Project(
         self,
         wiki: bool = False,
         streamed: bool = False,
-        action: Optional[Callable[[bytes], Any]] = None,
+        action: Callable[[bytes], Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Return a snapshot of the repository.
 
         Args:
@@ -576,7 +574,7 @@ class Project(
     @exc.on_http_error(exc.GitlabSearchError)
     def search(
         self, scope: str, search: str, **kwargs: Any
-    ) -> Union[client.GitlabList, List[Dict[str, Any]]]:
+    ) -> client.GitlabList | list[dict[str, Any]]:
         """Search the project resources matching the provided string.'
 
         Args:
@@ -619,7 +617,7 @@ class Project(
 
     @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabGetError)
-    def mirror_pull_details(self, **kwargs: Any) -> Dict[str, Any]:
+    def mirror_pull_details(self, **kwargs: Any) -> dict[str, Any]:
         """Get a project's pull mirror details.
 
         Introduced in GitLab 15.5.
@@ -649,7 +647,7 @@ class Project(
 
     @cli.register_custom_action(cls_names="Project", required=("to_namespace",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
-    def transfer(self, to_namespace: Union[int, str], **kwargs: Any) -> None:
+    def transfer(self, to_namespace: int | str, **kwargs: Any) -> None:
         """Transfer a project to the given namespace ID
 
         Args:
@@ -871,12 +869,12 @@ class ProjectManager(CRUDMixin[Project]):
         self,
         file: io.BufferedReader,
         path: str,
-        name: Optional[str] = None,
-        namespace: Optional[str] = None,
+        name: str | None = None,
+        namespace: str | None = None,
         overwrite: bool = False,
-        override_params: Optional[Dict[str, Any]] = None,
+        override_params: dict[str, Any] | None = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Import a project from an archive file.
 
         Args:
@@ -916,12 +914,12 @@ class ProjectManager(CRUDMixin[Project]):
         self,
         url: str,
         path: str,
-        name: Optional[str] = None,
-        namespace: Optional[str] = None,
+        name: str | None = None,
+        namespace: str | None = None,
         overwrite: bool = False,
-        override_params: Optional[Dict[str, Any]] = None,
+        override_params: dict[str, Any] | None = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Import a project from an archive file stored on a remote URL.
 
         Args:
@@ -964,12 +962,12 @@ class ProjectManager(CRUDMixin[Project]):
         file_key: str,
         access_key_id: str,
         secret_access_key: str,
-        name: Optional[str] = None,
-        namespace: Optional[str] = None,
+        name: str | None = None,
+        namespace: str | None = None,
         overwrite: bool = False,
-        override_params: Optional[Dict[str, Any]] = None,
+        override_params: dict[str, Any] | None = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Import a project from an archive file stored on AWS S3.
 
         Args:
@@ -1022,10 +1020,10 @@ class ProjectManager(CRUDMixin[Project]):
         personal_access_token: str,
         bitbucket_server_project: str,
         bitbucket_server_repo: str,
-        new_name: Optional[str] = None,
-        target_namespace: Optional[str] = None,
+        new_name: str | None = None,
+        target_namespace: str | None = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Import a project from BitBucket Server to Gitlab (schedule the import)
 
         This method will return when an import operation has been safely queued,
@@ -1112,11 +1110,11 @@ class ProjectManager(CRUDMixin[Project]):
         personal_access_token: str,
         repo_id: int,
         target_namespace: str,
-        new_name: Optional[str] = None,
-        github_hostname: Optional[str] = None,
-        optional_stages: Optional[Dict[str, bool]] = None,
+        new_name: str | None = None,
+        github_hostname: str | None = None,
+        optional_stages: dict[str, bool] | None = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Import a project from Github to Gitlab (schedule the import)
 
         This method will return when an import operation has been safely queued,
@@ -1213,9 +1211,7 @@ class ProjectForkManager(CreateMixin[ProjectFork], ListMixin[ProjectFork]):
     )
     _create_attrs = RequiredOptional(optional=("namespace",))
 
-    def create(
-        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> ProjectFork:
+    def create(self, data: dict[str, Any] | None = None, **kwargs: Any) -> ProjectFork:
         """Creates a new object.
 
         Args:
@@ -1267,7 +1263,7 @@ class ProjectPullMirrorManager(
     _update_attrs = RequiredOptional(optional=("url",))
 
     @exc.on_http_error(exc.GitlabCreateError)
-    def create(self, data: Dict[str, Any], **kwargs: Any) -> ProjectPullMirror:
+    def create(self, data: dict[str, Any], **kwargs: Any) -> ProjectPullMirror:
         """Create a new object.
 
         Args:

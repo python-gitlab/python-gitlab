@@ -8,13 +8,7 @@ from typing import (
     Any,
     BinaryIO,
     cast,
-    Dict,
-    List,
-    Optional,
-    Tuple,
-    Type,
     TYPE_CHECKING,
-    Union,
 )
 from urllib import parse
 
@@ -83,26 +77,26 @@ class Gitlab:
 
     def __init__(
         self,
-        url: Optional[str] = None,
-        private_token: Optional[str] = None,
-        oauth_token: Optional[str] = None,
-        job_token: Optional[str] = None,
-        ssl_verify: Union[bool, str] = True,
-        http_username: Optional[str] = None,
-        http_password: Optional[str] = None,
-        timeout: Optional[float] = None,
+        url: str | None = None,
+        private_token: str | None = None,
+        oauth_token: str | None = None,
+        job_token: str | None = None,
+        ssl_verify: bool | str = True,
+        http_username: str | None = None,
+        http_password: str | None = None,
+        timeout: float | None = None,
         api_version: str = "4",
-        per_page: Optional[int] = None,
-        pagination: Optional[str] = None,
-        order_by: Optional[str] = None,
+        per_page: int | None = None,
+        pagination: str | None = None,
+        order_by: str | None = None,
         user_agent: str = gitlab.const.USER_AGENT,
         retry_transient_errors: bool = False,
         keep_base_url: bool = False,
         **kwargs: Any,
     ) -> None:
         self._api_version = str(api_version)
-        self._server_version: Optional[str] = None
-        self._server_revision: Optional[str] = None
+        self._server_version: str | None = None
+        self._server_revision: str | None = None
         self._base_url = utils.get_base_url(url)
         self._url = f"{self._base_url}/api/v{api_version}"
         #: Timeout to use for requests to gitlab server
@@ -123,7 +117,7 @@ class Gitlab:
         self._set_auth_info()
 
         #: Create a session object for requests
-        _backend: Type[_backends.DefaultBackend] = kwargs.pop(
+        _backend: type[_backends.DefaultBackend] = kwargs.pop(
             "backend", _backends.DefaultBackend
         )
         self._backend = _backend(**kwargs)
@@ -141,7 +135,7 @@ class Gitlab:
         from gitlab.v4 import objects
 
         self._objects = objects
-        self.user: Optional[objects.CurrentUser] = None
+        self.user: objects.CurrentUser | None = None
 
         self.broadcastmessages = objects.BroadcastMessageManager(self)
         """See :class:`~gitlab.v4.objects.BroadcastMessageManager`"""
@@ -224,18 +218,18 @@ class Gitlab:
         self.statistics = objects.ApplicationStatisticsManager(self)
         """See :class:`~gitlab.v4.objects.ApplicationStatisticsManager`"""
 
-    def __enter__(self) -> "Gitlab":
+    def __enter__(self) -> Gitlab:
         return self
 
     def __exit__(self, *args: Any) -> None:
         self.session.close()
 
-    def __getstate__(self) -> Dict[str, Any]:
+    def __getstate__(self) -> dict[str, Any]:
         state = self.__dict__.copy()
         state.pop("_objects")
         return state
 
-    def __setstate__(self, state: Dict[str, Any]) -> None:
+    def __setstate__(self, state: dict[str, Any]) -> None:
         self.__dict__.update(state)
         # We only support v4 API at this time
         if self._api_version not in ("4",):
@@ -266,10 +260,10 @@ class Gitlab:
     @classmethod
     def from_config(
         cls,
-        gitlab_id: Optional[str] = None,
-        config_files: Optional[List[str]] = None,
+        gitlab_id: str | None = None,
+        config_files: list[str] | None = None,
         **kwargs: Any,
-    ) -> "Gitlab":
+    ) -> Gitlab:
         """Create a Gitlab connection from configuration files.
 
         Args:
@@ -310,10 +304,10 @@ class Gitlab:
     @classmethod
     def merge_config(
         cls,
-        options: Dict[str, Any],
-        gitlab_id: Optional[str] = None,
-        config_files: Optional[List[str]] = None,
-    ) -> "Gitlab":
+        options: dict[str, Any],
+        gitlab_id: str | None = None,
+        config_files: list[str] | None = None,
+    ) -> Gitlab:
         """Create a Gitlab connection by merging configuration with
         the following precedence:
 
@@ -364,8 +358,8 @@ class Gitlab:
 
     @staticmethod
     def _merge_auth(
-        options: Dict[str, Any], config: gitlab.config.GitlabConfigParser
-    ) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+        options: dict[str, Any], config: gitlab.config.GitlabConfigParser
+    ) -> tuple[str | None, str | None, str | None]:
         """
         Return a tuple where at most one of 3 token types ever has a value.
         Since multiple types of tokens may be present in the environment,
@@ -402,7 +396,7 @@ class Gitlab:
         if hasattr(self.user, "web_url") and hasattr(self.user, "username"):
             self._check_url(self.user.web_url, path=self.user.username)
 
-    def version(self) -> Tuple[str, str]:
+    def version(self) -> tuple[str, str]:
         """Returns the version and revision of the gitlab server.
 
         Note that self.version and self.revision will be set on the gitlab
@@ -429,7 +423,7 @@ class Gitlab:
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabMarkdownError)
     def markdown(
-        self, text: str, gfm: bool = False, project: Optional[str] = None, **kwargs: Any
+        self, text: str, gfm: bool = False, project: str | None = None, **kwargs: Any
     ) -> str:
         """Render an arbitrary Markdown document.
 
@@ -456,7 +450,7 @@ class Gitlab:
         return data["html"]
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabLicenseError)
-    def get_license(self, **kwargs: Any) -> Dict[str, Union[str, Dict[str, str]]]:
+    def get_license(self, **kwargs: Any) -> dict[str, str | dict[str, str]]:
         """Retrieve information about the current license.
 
         Args:
@@ -475,7 +469,7 @@ class Gitlab:
         return {}
 
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabLicenseError)
-    def set_license(self, license: str, **kwargs: Any) -> Dict[str, Any]:
+    def set_license(self, license: str, **kwargs: Any) -> dict[str, Any]:
         """Add a new license.
 
         Args:
@@ -516,7 +510,7 @@ class Gitlab:
                 "authentication should be defined"
             )
 
-        self._auth: Optional[requests.auth.AuthBase] = None
+        self._auth: requests.auth.AuthBase | None = None
         if self.private_token:
             self._auth = _backends.PrivateTokenAuth(self.private_token)
 
@@ -564,7 +558,7 @@ class Gitlab:
         logger.handlers.clear()
         logger.addHandler(handler)
 
-    def _get_session_opts(self) -> Dict[str, Any]:
+    def _get_session_opts(self) -> dict[str, Any]:
         return {
             "headers": self.headers.copy(),
             "auth": self._auth,
@@ -585,7 +579,7 @@ class Gitlab:
             return path
         return f"{self._url}{path}"
 
-    def _check_url(self, url: Optional[str], *, path: str = "api") -> Optional[str]:
+    def _check_url(self, url: str | None, *, path: str = "api") -> str | None:
         """
         Checks if ``url`` starts with a different base URL from the user-provided base
         URL and warns the user before returning it. If ``keep_base_url`` is set to
@@ -645,16 +639,16 @@ class Gitlab:
         self,
         verb: str,
         path: str,
-        query_data: Optional[Dict[str, Any]] = None,
-        post_data: Optional[Union[Dict[str, Any], bytes, BinaryIO]] = None,
+        query_data: dict[str, Any] | None = None,
+        post_data: dict[str, Any] | bytes | BinaryIO | None = None,
         raw: bool = False,
         streamed: bool = False,
-        files: Optional[Dict[str, Any]] = None,
-        timeout: Optional[float] = None,
+        files: dict[str, Any] | None = None,
+        timeout: float | None = None,
         obey_rate_limit: bool = True,
-        retry_transient_errors: Optional[bool] = None,
+        retry_transient_errors: bool | None = None,
         max_retries: int = 10,
-        extra_headers: Optional[Dict[str, Any]] = None,
+        extra_headers: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> requests.Response:
         """Make an HTTP request to the Gitlab server.
@@ -785,11 +779,11 @@ class Gitlab:
     def http_get(
         self,
         path: str,
-        query_data: Optional[Dict[str, Any]] = None,
+        query_data: dict[str, Any] | None = None,
         streamed: bool = False,
         raw: bool = False,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Make a GET request to the Gitlab server.
 
         Args:
@@ -829,8 +823,8 @@ class Gitlab:
             return result
 
     def http_head(
-        self, path: str, query_data: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> "requests.structures.CaseInsensitiveDict[Any]":
+        self, path: str, query_data: dict[str, Any] | None = None, **kwargs: Any
+    ) -> requests.structures.CaseInsensitiveDict[Any]:
         """Make a HEAD request to the Gitlab server.
 
         Args:
@@ -852,12 +846,12 @@ class Gitlab:
     def http_list(
         self,
         path: str,
-        query_data: Optional[Dict[str, Any]] = None,
+        query_data: dict[str, Any] | None = None,
         *,
-        iterator: Optional[bool] = None,
-        message_details: Optional[utils.WarnMessageData] = None,
+        iterator: bool | None = None,
+        message_details: utils.WarnMessageData | None = None,
         **kwargs: Any,
-    ) -> Union["GitlabList", List[Dict[str, Any]]]:
+    ) -> GitlabList | list[dict[str, Any]]:
         """Make a GET request to the Gitlab server for list-oriented queries.
 
         Args:
@@ -968,12 +962,12 @@ class Gitlab:
     def http_post(
         self,
         path: str,
-        query_data: Optional[Dict[str, Any]] = None,
-        post_data: Optional[Dict[str, Any]] = None,
+        query_data: dict[str, Any] | None = None,
+        post_data: dict[str, Any] | None = None,
         raw: bool = False,
-        files: Optional[Dict[str, Any]] = None,
+        files: dict[str, Any] | None = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Make a POST request to the Gitlab server.
 
         Args:
@@ -1023,12 +1017,12 @@ class Gitlab:
     def http_put(
         self,
         path: str,
-        query_data: Optional[Dict[str, Any]] = None,
-        post_data: Optional[Union[Dict[str, Any], bytes, BinaryIO]] = None,
+        query_data: dict[str, Any] | None = None,
+        post_data: dict[str, Any] | bytes | BinaryIO | None = None,
         raw: bool = False,
-        files: Optional[Dict[str, Any]] = None,
+        files: dict[str, Any] | None = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Make a PUT request to the Gitlab server.
 
         Args:
@@ -1076,11 +1070,11 @@ class Gitlab:
         self,
         path: str,
         *,
-        query_data: Optional[Dict[str, Any]] = None,
-        post_data: Optional[Union[Dict[str, Any], bytes]] = None,
+        query_data: dict[str, Any] | None = None,
+        post_data: dict[str, Any] | bytes | None = None,
         raw: bool = False,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Make a PATCH request to the Gitlab server.
 
         Args:
@@ -1141,7 +1135,7 @@ class Gitlab:
     @gitlab.exceptions.on_http_error(gitlab.exceptions.GitlabSearchError)
     def search(
         self, scope: str, search: str, **kwargs: Any
-    ) -> Union["GitlabList", List[Dict[str, Any]]]:
+    ) -> GitlabList | list[dict[str, Any]]:
         """Search GitLab resources matching the provided string.'
 
         Args:
@@ -1171,7 +1165,7 @@ class GitlabList:
         self,
         gl: Gitlab,
         url: str,
-        query_data: Dict[str, Any],
+        query_data: dict[str, Any],
         get_next: bool = True,
         **kwargs: Any,
     ) -> None:
@@ -1187,7 +1181,7 @@ class GitlabList:
         self._kwargs.pop("query_parameters", None)
 
     def _query(
-        self, url: str, query_data: Optional[Dict[str, Any]] = None, **kwargs: Any
+        self, url: str, query_data: dict[str, Any] | None = None, **kwargs: Any
     ) -> None:
         query_data = query_data or {}
         result = self._gl.http_request("get", url, query_data=query_data, **kwargs)
@@ -1197,15 +1191,15 @@ class GitlabList:
             next_url = None
 
         self._next_url = self._gl._check_url(next_url)
-        self._current_page: Optional[str] = result.headers.get("X-Page")
-        self._prev_page: Optional[str] = result.headers.get("X-Prev-Page")
-        self._next_page: Optional[str] = result.headers.get("X-Next-Page")
-        self._per_page: Optional[str] = result.headers.get("X-Per-Page")
-        self._total_pages: Optional[str] = result.headers.get("X-Total-Pages")
-        self._total: Optional[str] = result.headers.get("X-Total")
+        self._current_page: str | None = result.headers.get("X-Page")
+        self._prev_page: str | None = result.headers.get("X-Prev-Page")
+        self._next_page: str | None = result.headers.get("X-Next-Page")
+        self._per_page: str | None = result.headers.get("X-Per-Page")
+        self._total_pages: str | None = result.headers.get("X-Total-Pages")
+        self._total: str | None = result.headers.get("X-Total")
 
         try:
-            self._data: List[Dict[str, Any]] = result.json()
+            self._data: list[dict[str, Any]] = result.json()
         except Exception as e:
             raise gitlab.exceptions.GitlabParsingError(
                 error_message="Failed to parse the server message"
@@ -1221,7 +1215,7 @@ class GitlabList:
         return int(self._current_page)
 
     @property
-    def prev_page(self) -> Optional[int]:
+    def prev_page(self) -> int | None:
         """The previous page number.
 
         If None, the current page is the first.
@@ -1229,7 +1223,7 @@ class GitlabList:
         return int(self._prev_page) if self._prev_page else None
 
     @property
-    def next_page(self) -> Optional[int]:
+    def next_page(self) -> int | None:
         """The next page number.
 
         If None, the current page is the last.
@@ -1237,7 +1231,7 @@ class GitlabList:
         return int(self._next_page) if self._next_page else None
 
     @property
-    def per_page(self) -> Optional[int]:
+    def per_page(self) -> int | None:
         """The number of items per page."""
         return int(self._per_page) if self._per_page is not None else None
 
@@ -1245,20 +1239,20 @@ class GitlabList:
     # the headers 'x-total-pages' and 'x-total'. In those cases we return None.
     # https://docs.gitlab.com/ee/user/gitlab_com/index.html#pagination-response-headers
     @property
-    def total_pages(self) -> Optional[int]:
+    def total_pages(self) -> int | None:
         """The total number of pages."""
         if self._total_pages is not None:
             return int(self._total_pages)
         return None
 
     @property
-    def total(self) -> Optional[int]:
+    def total(self) -> int | None:
         """The total number of items."""
         if self._total is not None:
             return int(self._total)
         return None
 
-    def __iter__(self) -> "GitlabList":
+    def __iter__(self) -> GitlabList:
         return self
 
     def __len__(self) -> int:
@@ -1266,10 +1260,10 @@ class GitlabList:
             return 0
         return int(self._total)
 
-    def __next__(self) -> Dict[str, Any]:
+    def __next__(self) -> dict[str, Any]:
         return self.next()
 
-    def next(self) -> Dict[str, Any]:
+    def next(self) -> dict[str, Any]:
         try:
             item = self._data[self._current]
             self._current += 1
@@ -1287,11 +1281,11 @@ class GitlabList:
 class _BaseGraphQL:
     def __init__(
         self,
-        url: Optional[str] = None,
+        url: str | None = None,
         *,
-        token: Optional[str] = None,
-        ssl_verify: Union[bool, str] = True,
-        timeout: Optional[float] = None,
+        token: str | None = None,
+        ssl_verify: bool | str = True,
+        timeout: float | None = None,
         user_agent: str = gitlab.const.USER_AGENT,
         fetch_schema_from_transport: bool = False,
         max_retries: int = 10,
@@ -1316,7 +1310,7 @@ class _BaseGraphQL:
         self._client_opts = self._get_client_opts()
         self._fetch_schema_from_transport = fetch_schema_from_transport
 
-    def _get_client_opts(self) -> Dict[str, Any]:
+    def _get_client_opts(self) -> dict[str, Any]:
         headers = {"User-Agent": self._user_agent}
 
         if self._token:
@@ -1332,12 +1326,12 @@ class _BaseGraphQL:
 class GraphQL(_BaseGraphQL):
     def __init__(
         self,
-        url: Optional[str] = None,
+        url: str | None = None,
         *,
-        token: Optional[str] = None,
-        ssl_verify: Union[bool, str] = True,
-        client: Optional[httpx.Client] = None,
-        timeout: Optional[float] = None,
+        token: str | None = None,
+        ssl_verify: bool | str = True,
+        client: httpx.Client | None = None,
+        timeout: float | None = None,
         user_agent: str = gitlab.const.USER_AGENT,
         fetch_schema_from_transport: bool = False,
         max_retries: int = 10,
@@ -1364,15 +1358,13 @@ class GraphQL(_BaseGraphQL):
         )
         self._gql = gql.gql
 
-    def __enter__(self) -> "GraphQL":
+    def __enter__(self) -> GraphQL:
         return self
 
     def __exit__(self, *args: Any) -> None:
         self._http_client.close()
 
-    def execute(
-        self, request: Union[str, graphql.Source], *args: Any, **kwargs: Any
-    ) -> Any:
+    def execute(self, request: str | graphql.Source, *args: Any, **kwargs: Any) -> Any:
         parsed_document = self._gql(request)
         retry = utils.Retry(
             max_retries=self._max_retries,
@@ -1406,12 +1398,12 @@ class GraphQL(_BaseGraphQL):
 class AsyncGraphQL(_BaseGraphQL):
     def __init__(
         self,
-        url: Optional[str] = None,
+        url: str | None = None,
         *,
-        token: Optional[str] = None,
-        ssl_verify: Union[bool, str] = True,
-        client: Optional[httpx.AsyncClient] = None,
-        timeout: Optional[float] = None,
+        token: str | None = None,
+        ssl_verify: bool | str = True,
+        client: httpx.AsyncClient | None = None,
+        timeout: float | None = None,
         user_agent: str = gitlab.const.USER_AGENT,
         fetch_schema_from_transport: bool = False,
         max_retries: int = 10,
@@ -1438,14 +1430,14 @@ class AsyncGraphQL(_BaseGraphQL):
         )
         self._gql = gql.gql
 
-    async def __aenter__(self) -> "AsyncGraphQL":
+    async def __aenter__(self) -> AsyncGraphQL:
         return self
 
     async def __aexit__(self, *args: Any) -> None:
         await self._http_client.aclose()
 
     async def execute(
-        self, request: Union[str, graphql.Source], *args: Any, **kwargs: Any
+        self, request: str | graphql.Source, *args: Any, **kwargs: Any
     ) -> Any:
         parsed_document = self._gql(request)
         retry = utils.Retry(

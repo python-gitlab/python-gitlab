@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from gitlab import cli
@@ -23,7 +25,7 @@ __all__ = [
 
 
 class ProjectRegistryRepository(ObjectDeleteMixin, RESTObject):
-    tags: "ProjectRegistryTagManager"
+    tags: ProjectRegistryTagManager
 
 
 class ProjectRegistryRepositoryManager(

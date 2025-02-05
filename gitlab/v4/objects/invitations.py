@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any
 
 from gitlab.base import RESTObject, TObjCls
 from gitlab.exceptions import GitlabInvitationError
@@ -15,11 +17,7 @@ __all__ = [
 
 class InvitationMixin(CRUDMixin[TObjCls]):
     # pylint: disable=abstract-method
-    def create(
-        self,
-        data: Optional[Dict[str, Any]] = None,
-        **kwargs: Any,
-    ) -> TObjCls:
+    def create(self, data: dict[str, Any] | None = None, **kwargs: Any) -> TObjCls:
         invitation = super().create(data, **kwargs)
 
         if invitation.status == "error":

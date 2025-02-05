@@ -1,13 +1,12 @@
+from __future__ import annotations
+
 from typing import (
     Any,
     Callable,
     Iterator,
-    List,
     Literal,
-    Optional,
     overload,
     TYPE_CHECKING,
-    Union,
 )
 
 import requests
@@ -60,7 +59,7 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     def content(
         self,
         streamed: Literal[True] = True,
-        action: Optional[Callable[[bytes], Any]] = None,
+        action: Callable[[bytes], Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: Literal[False] = False,
@@ -72,12 +71,12 @@ class Snippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     def content(
         self,
         streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
+        action: Callable[..., Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Return the content of a snippet.
 
         Args:
@@ -133,7 +132,7 @@ class SnippetManager(CRUDMixin[Snippet]):
     )
 
     @cli.register_custom_action(cls_names="SnippetManager")
-    def list_public(self, **kwargs: Any) -> Union[RESTObjectList, List[Snippet]]:
+    def list_public(self, **kwargs: Any) -> RESTObjectList | list[Snippet]:
         """List all public snippets.
 
         Args:
@@ -153,7 +152,7 @@ class SnippetManager(CRUDMixin[Snippet]):
         return self.list(path="/snippets/public", **kwargs)
 
     @cli.register_custom_action(cls_names="SnippetManager")
-    def list_all(self, **kwargs: Any) -> Union[RESTObjectList, List[Snippet]]:
+    def list_all(self, **kwargs: Any) -> RESTObjectList | list[Snippet]:
         """List all snippets.
 
         Args:
@@ -172,7 +171,7 @@ class SnippetManager(CRUDMixin[Snippet]):
         """
         return self.list(path="/snippets/all", **kwargs)
 
-    def public(self, **kwargs: Any) -> Union[RESTObjectList, List[Snippet]]:
+    def public(self, **kwargs: Any) -> RESTObjectList | list[Snippet]:
         """List all public snippets.
 
         Args:
@@ -233,7 +232,7 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
     def content(
         self,
         streamed: Literal[True] = True,
-        action: Optional[Callable[[bytes], Any]] = None,
+        action: Callable[[bytes], Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: Literal[False] = False,
@@ -245,12 +244,12 @@ class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObj
     def content(
         self,
         streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
+        action: Callable[..., Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Return the content of a snippet.
 
         Args:

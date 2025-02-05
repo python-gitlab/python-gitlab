@@ -1,4 +1,6 @@
-from typing import Any, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, TYPE_CHECKING
 
 from gitlab.base import RESTObject
 from gitlab.mixins import GetMixin
@@ -18,7 +20,7 @@ class KeyManager(GetMixin[Key]):
     _obj_cls = Key
 
     def get(
-        self, id: Optional[Union[int, str]] = None, lazy: bool = False, **kwargs: Any
+        self, id: int | str | None = None, lazy: bool = False, **kwargs: Any
     ) -> Key:
         if id is not None:
             return super().get(id, lazy=lazy, **kwargs)

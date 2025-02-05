@@ -1,4 +1,6 @@
-from typing import Any, List, Optional, TYPE_CHECKING
+from __future__ import annotations
+
+from typing import Any, TYPE_CHECKING
 
 from gitlab import exceptions as exc
 from gitlab.base import RESTObject
@@ -110,11 +112,11 @@ class ProjectMergeRequestApprovalManager(
     def set_approvers(
         self,
         approvals_required: int,
-        approver_ids: Optional[List[int]] = None,
-        approver_group_ids: Optional[List[int]] = None,
+        approver_ids: list[int] | None = None,
+        approver_group_ids: list[int] | None = None,
         approval_rule_name: str = "name",
         *,
-        approver_usernames: Optional[List[str]] = None,
+        approver_usernames: list[str] | None = None,
         **kwargs: Any,
     ) -> RESTObject:
         """Change MR-level allowed approvers and approver groups.

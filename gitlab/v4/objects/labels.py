@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any
 
 from gitlab import exceptions as exc
 from gitlab.base import RESTObject
@@ -24,7 +26,7 @@ __all__ = [
 
 class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
-    manager: "GroupLabelManager"
+    manager: GroupLabelManager
 
     # Update without ID, but we need an ID to get from list.
     @exc.on_http_error(exc.GitlabUpdateError)
@@ -67,11 +69,8 @@ class GroupLabelManager(
     # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
     # type error
     def update(  # type: ignore[override]
-        self,
-        name: Optional[str],
-        new_data: Optional[Dict[str, Any]] = None,
-        **kwargs: Any,
-    ) -> Dict[str, Any]:
+        self, name: str | None, new_data: dict[str, Any] | None = None, **kwargs: Any
+    ) -> dict[str, Any]:
         """Update a Label on the server.
 
         Args:
@@ -88,7 +87,7 @@ class ProjectLabel(
     PromoteMixin, SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject
 ):
     _id_attr = "name"
-    manager: "ProjectLabelManager"
+    manager: ProjectLabelManager
 
     # Update without ID, but we need an ID to get from list.
     @exc.on_http_error(exc.GitlabUpdateError)
@@ -131,11 +130,8 @@ class ProjectLabelManager(
     # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
     # type error
     def update(  # type: ignore[override]
-        self,
-        name: Optional[str],
-        new_data: Optional[Dict[str, Any]] = None,
-        **kwargs: Any,
-    ) -> Dict[str, Any]:
+        self, name: str | None, new_data: dict[str, Any] | None = None, **kwargs: Any
+    ) -> dict[str, Any]:
         """Update a Label on the server.
 
         Args:

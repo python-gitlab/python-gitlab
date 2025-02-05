@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dataclasses
 import email.message
 import logging
@@ -6,17 +8,11 @@ import time
 import traceback
 import urllib.parse
 import warnings
+from collections.abc import Iterator, MutableMapping
 from typing import (
     Any,
     Callable,
-    Dict,
-    Iterator,
     Literal,
-    MutableMapping,
-    Optional,
-    Tuple,
-    Type,
-    Union,
 )
 
 import requests
@@ -29,7 +25,7 @@ class _StdoutStream:
         print(chunk)
 
 
-def get_base_url(url: Optional[str] = None) -> str:
+def get_base_url(url: str | None = None) -> str:
     """Return the base URL with the trailing slash stripped.
     If the URL is a Falsy value, return the default URL.
     Returns:
@@ -41,7 +37,7 @@ def get_base_url(url: Optional[str] = None) -> str:
     return url.rstrip("/")
 
 
-def get_content_type(content_type: Optional[str]) -> str:
+def get_content_type(content_type: str | None) -> str:
     message = email.message.Message()
     if content_type is not None:
         message["content-type"] = content_type
@@ -54,11 +50,11 @@ class MaskingFormatter(logging.Formatter):
 
     def __init__(
         self,
-        fmt: Optional[str] = logging.BASIC_FORMAT,
-        datefmt: Optional[str] = None,
+        fmt: str | None = logging.BASIC_FORMAT,
+        datefmt: str | None = None,
         style: Literal["%", "{", "$"] = "%",
         validate: bool = True,
-        masked: Optional[str] = None,
+        masked: str | None = None,
     ) -> None:
         super().__init__(fmt, datefmt, style, validate)
         self.masked = masked
@@ -77,11 +73,11 @@ class MaskingFormatter(logging.Formatter):
 def response_content(
     response: requests.Response,
     streamed: bool,
-    action: Optional[Callable[[bytes], Any]],
+    action: Callable[[bytes], Any] | None,
     chunk_size: int,
     *,
     iterator: bool,
-) -> Optional[Union[bytes, Iterator[Any]]]:
+) -> bytes | Iterator[Any] | None:
     if iterator:
         return response.iter_content(chunk_size=chunk_size)
 
@@ -101,17 +97,15 @@ class Retry:
     def __init__(
         self,
         max_retries: int,
-        obey_rate_limit: Optional[bool] = True,
-        retry_transient_errors: Optional[bool] = False,
+        obey_rate_limit: bool | None = True,
+        retry_transient_errors: bool | None = False,
     ) -> None:
         self.cur_retries = 0
         self.max_retries = max_retries
         self.obey_rate_limit = obey_rate_limit
         self.retry_transient_errors = retry_transient_errors
 
-    def _retryable_status_code(
-        self, status_code: Optional[int], reason: str = ""
-    ) -> bool:
+    def _retryable_status_code(self, status_code: int | None, reason: str = "") -> bool:
         if status_code == 429 and self.obey_rate_limit:
             return True
 
@@ -126,8 +120,8 @@ class Retry:
 
     def handle_retry_on_status(
         self,
-        status_code: Optional[int],
-        headers: Optional[MutableMapping[str, str]] = None,
+        status_code: int | None,
+        headers: MutableMapping[str, str] | None = None,
         reason: str = "",
     ) -> bool:
         if not self._retryable_status_code(status_code, reason):
@@ -163,12 +157,12 @@ class Retry:
 
 
 def _transform_types(
-    data: Dict[str, Any],
-    custom_types: Dict[str, Any],
+    data: dict[str, Any],
+    custom_types: dict[str, Any],
     *,
     transform_data: bool,
-    transform_files: Optional[bool] = True,
-) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    transform_files: bool | None = True,
+) -> tuple[dict[str, Any], dict[str, Any]]:
     """Copy the data dict with attributes that have custom types and transform them
     before being sent to the server.
 
@@ -216,8 +210,8 @@ def _transform_types(
 
 def copy_dict(
     *,
-    src: Dict[str, Any],
-    dest: Dict[str, Any],
+    src: dict[str, Any],
+    dest: dict[str, Any],
 ) -> None:
     for k, v in src.items():
         if isinstance(v, dict):
@@ -247,7 +241,7 @@ class EncodedId(str):
         https://docs.gitlab.com/ee/api/index.html#path-parameters
     """
 
-    def __new__(cls, value: Union[str, int, "EncodedId"]) -> "EncodedId":
+    def __new__(cls, value: str | int | EncodedId) -> EncodedId:
         if isinstance(value, EncodedId):
             return value
 
@@ -258,15 +252,15 @@ class EncodedId(str):
         return super().__new__(cls, value)
 
 
-def remove_none_from_dict(data: Dict[str, Any]) -> Dict[str, Any]:
+def remove_none_from_dict(data: dict[str, Any]) -> dict[str, Any]:
     return {k: v for k, v in data.items() if v is not None}
 
 
 def warn(
     message: str,
     *,
-    category: Optional[Type[Warning]] = None,
-    source: Optional[Any] = None,
+    category: type[Warning] | None = None,
+    source: Any | None = None,
     show_caller: bool = True,
 ) -> None:
     """This `warnings.warn` wrapper function attempts to show the location causing the

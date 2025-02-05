@@ -4,6 +4,8 @@ https://docs.gitlab.com/ee/api/packages.html
 https://docs.gitlab.com/ee/user/packages/generic_packages/
 """
 
+from __future__ import annotations
+
 from pathlib import Path
 from typing import (
     Any,
@@ -11,10 +13,8 @@ from typing import (
     Callable,
     Iterator,
     Literal,
-    Optional,
     overload,
     TYPE_CHECKING,
-    Union,
 )
 
 import requests
@@ -58,9 +58,9 @@ class GenericPackageManager(RESTManager[GenericPackage]):
         package_name: str,
         package_version: str,
         file_name: str,
-        path: Optional[Union[str, Path]] = None,
-        select: Optional[str] = None,
-        data: Optional[Union[bytes, BinaryIO]] = None,
+        path: str | Path | None = None,
+        select: str | None = None,
+        data: bytes | BinaryIO | None = None,
         **kwargs: Any,
     ) -> GenericPackage:
         """Upload a file as a generic package.
@@ -92,7 +92,7 @@ class GenericPackageManager(RESTManager[GenericPackage]):
         if path is not None and data is not None:
             raise exc.GitlabUploadError("File contents and file path specified")
 
-        file_data: Optional[Union[bytes, BinaryIO]] = data
+        file_data: bytes | BinaryIO | None = data
 
         if not file_data:
             if TYPE_CHECKING:
@@ -158,7 +158,7 @@ class GenericPackageManager(RESTManager[GenericPackage]):
         package_version: str,
         file_name: str,
         streamed: Literal[True] = True,
-        action: Optional[Callable[[bytes], Any]] = None,
+        action: Callable[[bytes], Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: Literal[False] = False,
@@ -176,12 +176,12 @@ class GenericPackageManager(RESTManager[GenericPackage]):
         package_version: str,
         file_name: str,
         streamed: bool = False,
-        action: Optional[Callable[[bytes], Any]] = None,
+        action: Callable[[bytes], Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Download a generic package.
 
         Args:
@@ -232,8 +232,8 @@ class GroupPackageManager(ListMixin[GroupPackage]):
 
 
 class ProjectPackage(ObjectDeleteMixin, RESTObject):
-    package_files: "ProjectPackageFileManager"
-    pipelines: "ProjectPackagePipelineManager"
+    package_files: ProjectPackageFileManager
+    pipelines: ProjectPackagePipelineManager
 
 
 class ProjectPackageManager(

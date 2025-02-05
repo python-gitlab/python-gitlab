@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gitlab.base import RESTObject
 from gitlab.mixins import CreateMixin, ListMixin, RefreshMixin, RetrieveMixin
 from gitlab.types import RequiredOptional
@@ -13,7 +15,7 @@ __all__ = [
 
 
 class BulkImport(RefreshMixin, RESTObject):
-    entities: "BulkImportEntityManager"
+    entities: BulkImportEntityManager
 
 
 class BulkImportManager(CreateMixin[BulkImport], RetrieveMixin[BulkImport]):
