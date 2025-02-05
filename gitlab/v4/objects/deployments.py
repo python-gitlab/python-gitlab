@@ -3,7 +3,9 @@ GitLab API:
 https://docs.gitlab.com/ee/api/deployments.html
 """
 
-from typing import Any, Dict, Optional, TYPE_CHECKING
+from __future__ import annotations
+
+from typing import Any, TYPE_CHECKING
 
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -31,10 +33,10 @@ class ProjectDeployment(SaveMixin, RESTObject):
     def approval(
         self,
         status: str,
-        comment: Optional[str] = None,
-        represented_as: Optional[str] = None,
+        comment: str | None = None,
+        represented_as: str | None = None,
         **kwargs: Any,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Approve or reject a blocked deployment.
 
         Args:

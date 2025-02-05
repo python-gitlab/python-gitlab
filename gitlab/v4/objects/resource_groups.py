@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gitlab.base import RESTObject
 from gitlab.mixins import ListMixin, RetrieveMixin, SaveMixin, UpdateMixin
 from gitlab.types import RequiredOptional
@@ -13,7 +15,7 @@ __all__ = [
 class ProjectResourceGroup(SaveMixin, RESTObject):
     _id_attr = "key"
 
-    upcoming_jobs: "ProjectResourceGroupUpcomingJobManager"
+    upcoming_jobs: ProjectResourceGroupUpcomingJobManager
 
 
 class ProjectResourceGroupManager(

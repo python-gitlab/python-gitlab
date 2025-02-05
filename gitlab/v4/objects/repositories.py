@@ -4,17 +4,15 @@ GitLab API: https://docs.gitlab.com/ee/api/repositories.html
 Currently this module only contains repository-related methods for projects.
 """
 
+from __future__ import annotations
+
 from typing import (
     Any,
     Callable,
-    Dict,
     Iterator,
-    List,
     Literal,
-    Optional,
     overload,
     TYPE_CHECKING,
-    Union,
 )
 
 import requests
@@ -38,7 +36,7 @@ class RepositoryMixin(_RestObjectBase):
     @exc.on_http_error(exc.GitlabUpdateError)
     def update_submodule(
         self, submodule: str, branch: str, commit_sha: str, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Update a project submodule
 
         Args:
@@ -66,7 +64,7 @@ class RepositoryMixin(_RestObjectBase):
     @exc.on_http_error(exc.GitlabGetError)
     def repository_tree(
         self, path: str = "", ref: str = "", recursive: bool = False, **kwargs: Any
-    ) -> Union[gitlab.client.GitlabList, List[Dict[str, Any]]]:
+    ) -> gitlab.client.GitlabList | list[dict[str, Any]]:
         """Return a list of files in the repository.
 
         Args:
@@ -88,7 +86,7 @@ class RepositoryMixin(_RestObjectBase):
             The representation of the tree
         """
         gl_path = f"/projects/{self.encoded_id}/repository/tree"
-        query_data: Dict[str, Any] = {"recursive": recursive}
+        query_data: dict[str, Any] = {"recursive": recursive}
         if path:
             query_data["path"] = path
         if ref:
@@ -99,7 +97,7 @@ class RepositoryMixin(_RestObjectBase):
     @exc.on_http_error(exc.GitlabGetError)
     def repository_blob(
         self, sha: str, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Return a file by blob SHA.
 
         Args:
@@ -146,7 +144,7 @@ class RepositoryMixin(_RestObjectBase):
         self,
         sha: str,
         streamed: Literal[True] = True,
-        action: Optional[Callable[[bytes], Any]] = None,
+        action: Callable[[bytes], Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: Literal[False] = False,
@@ -159,12 +157,12 @@ class RepositoryMixin(_RestObjectBase):
         self,
         sha: str,
         streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
+        action: Callable[..., Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Return the raw file contents for a blob.
 
         Args:
@@ -200,7 +198,7 @@ class RepositoryMixin(_RestObjectBase):
     @exc.on_http_error(exc.GitlabGetError)
     def repository_compare(
         self, from_: str, to: str, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Return a diff between two branches/commits.
 
         Args:
@@ -223,7 +221,7 @@ class RepositoryMixin(_RestObjectBase):
     @exc.on_http_error(exc.GitlabGetError)
     def repository_contributors(
         self, **kwargs: Any
-    ) -> Union[gitlab.client.GitlabList, List[Dict[str, Any]]]:
+    ) -> gitlab.client.GitlabList | list[dict[str, Any]]:
         """Return a list of contributors for the project.
 
         Args:
@@ -247,7 +245,7 @@ class RepositoryMixin(_RestObjectBase):
     @overload
     def repository_archive(
         self,
-        sha: Optional[str] = None,
+        sha: str | None = None,
         streamed: Literal[False] = False,
         action: None = None,
         chunk_size: int = 1024,
@@ -259,7 +257,7 @@ class RepositoryMixin(_RestObjectBase):
     @overload
     def repository_archive(
         self,
-        sha: Optional[str] = None,
+        sha: str | None = None,
         streamed: bool = False,
         action: None = None,
         chunk_size: int = 1024,
@@ -271,9 +269,9 @@ class RepositoryMixin(_RestObjectBase):
     @overload
     def repository_archive(
         self,
-        sha: Optional[str] = None,
+        sha: str | None = None,
         streamed: Literal[True] = True,
-        action: Optional[Callable[[bytes], Any]] = None,
+        action: Callable[[bytes], Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: Literal[False] = False,
@@ -284,16 +282,16 @@ class RepositoryMixin(_RestObjectBase):
     @exc.on_http_error(exc.GitlabListError)
     def repository_archive(
         self,
-        sha: Optional[str] = None,
+        sha: str | None = None,
         streamed: bool = False,
-        action: Optional[Callable[..., Any]] = None,
+        action: Callable[..., Any] | None = None,
         chunk_size: int = 1024,
-        format: Optional[str] = None,
-        path: Optional[str] = None,
+        format: str | None = None,
+        path: str | None = None,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Return an archive of the repository.
 
         Args:
@@ -337,8 +335,8 @@ class RepositoryMixin(_RestObjectBase):
     @cli.register_custom_action(cls_names="Project", required=("refs",))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_merge_base(
-        self, refs: List[str], **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+        self, refs: list[str], **kwargs: Any
+    ) -> dict[str, Any] | requests.Response:
         """Return a diff between two branches/commits.
 
         Args:

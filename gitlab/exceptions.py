@@ -1,13 +1,15 @@
+from __future__ import annotations
+
 import functools
-from typing import Any, Callable, cast, Optional, Type, TYPE_CHECKING, TypeVar, Union
+from typing import Any, Callable, cast, TYPE_CHECKING, TypeVar
 
 
 class GitlabError(Exception):
     def __init__(
         self,
-        error_message: Union[str, bytes] = "",
-        response_code: Optional[int] = None,
-        response_body: Optional[bytes] = None,
+        error_message: str | bytes = "",
+        response_code: int | None = None,
+        response_body: bytes | None = None,
     ) -> None:
         Exception.__init__(self, error_message)
         # Http status code
@@ -327,7 +329,7 @@ class GitlabHookTestError(GitlabOperationError):
 __F = TypeVar("__F", bound=Callable[..., Any])
 
 
-def on_http_error(error: Type[Exception]) -> Callable[[__F], __F]:
+def on_http_error(error: type[Exception]) -> Callable[[__F], __F]:
     """Manage GitlabHttpError exceptions.
 
     This decorator function can be used to catch GitlabHttpError exceptions

@@ -1,4 +1,6 @@
-from typing import Any, Dict, Union
+from __future__ import annotations
+
+from typing import Any
 
 import requests
 
@@ -43,9 +45,7 @@ class ProjectKeyManager(CRUDMixin[ProjectKey]):
         help="Enable a deploy key for the project",
     )
     @exc.on_http_error(exc.GitlabProjectDeployKeyError)
-    def enable(
-        self, key_id: int, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    def enable(self, key_id: int, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Enable a deploy key for a project.
 
         Args:

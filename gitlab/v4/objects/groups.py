@@ -1,4 +1,6 @@
-from typing import Any, BinaryIO, Dict, List, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, BinaryIO, TYPE_CHECKING
 
 import requests
 
@@ -79,7 +81,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     clusters: GroupClusterManager
     customattributes: GroupCustomAttributeManager
     deploytokens: GroupDeployTokenManager
-    descendant_groups: "GroupDescendantGroupManager"
+    descendant_groups: GroupDescendantGroupManager
     epics: GroupEpicManager
     exports: GroupExportManager
     hooks: GroupHookManager
@@ -89,7 +91,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     issues_statistics: GroupIssuesStatisticsManager
     iterations: GroupIterationManager
     labels: GroupLabelManager
-    ldap_group_links: "GroupLDAPGroupLinkManager"
+    ldap_group_links: GroupLDAPGroupLinkManager
     members: GroupMemberManager
     members_all: GroupMemberAllManager
     mergerequests: GroupMergeRequestManager
@@ -101,11 +103,11 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     pushrules: GroupPushRulesManager
     registry_repositories: GroupRegistryRepositoryManager
     runners: GroupRunnerManager
-    subgroups: "GroupSubgroupManager"
+    subgroups: GroupSubgroupManager
     variables: GroupVariableManager
     wikis: GroupWikiManager
-    saml_group_links: "GroupSAMLGroupLinkManager"
-    service_accounts: "GroupServiceAccountManager"
+    saml_group_links: GroupSAMLGroupLinkManager
+    service_accounts: GroupServiceAccountManager
 
     @cli.register_custom_action(cls_names="Group", required=("project_id",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
@@ -125,7 +127,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="Group", required=(), optional=("group_id",))
     @exc.on_http_error(exc.GitlabGroupTransferError)
-    def transfer(self, group_id: Optional[int] = None, **kwargs: Any) -> None:
+    def transfer(self, group_id: int | None = None, **kwargs: Any) -> None:
         """Transfer the group to a new parent group or make it a top-level group.
 
         Requires GitLab ≥14.6.
@@ -149,7 +151,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     @exc.on_http_error(exc.GitlabSearchError)
     def search(
         self, scope: str, search: str, **kwargs: Any
-    ) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
+    ) -> gitlab.GitlabList | list[dict[str, Any]]:
         """Search the group resources matching the provided string.
 
         Args:
@@ -193,7 +195,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         self,
         group_id: int,
         group_access: int,
-        expires_at: Optional[str] = None,
+        expires_at: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Share the group with a group.
@@ -325,9 +327,9 @@ class GroupManager(CRUDMixin[Group]):
         file: BinaryIO,
         path: str,
         name: str,
-        parent_id: Optional[Union[int, str]] = None,
+        parent_id: int | str | None = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Import a group from an archive file.
 
         Args:
@@ -346,7 +348,7 @@ class GroupManager(CRUDMixin[Group]):
             A representation of the import status.
         """
         files = {"file": ("file.tar.gz", file, "application/octet-stream")}
-        data: Dict[str, Any] = {"path": path, "name": name}
+        data: dict[str, Any] = {"path": path, "name": name}
         if parent_id is not None:
             data["parent_id"] = parent_id
 
@@ -397,7 +399,7 @@ class GroupDescendantGroupManager(SubgroupBaseManager[GroupDescendantGroup]):
 class GroupLDAPGroupLink(RESTObject):
     _repr_attr = "provider"
 
-    def _get_link_attrs(self) -> Dict[str, str]:
+    def _get_link_attrs(self) -> dict[str, str]:
         # https://docs.gitlab.com/ee/api/groups.html#add-ldap-group-link-with-cn-or-filter
         # https://docs.gitlab.com/ee/api/groups.html#delete-ldap-group-link-with-cn-or-filter
         # We can tell what attribute to use based on the data returned

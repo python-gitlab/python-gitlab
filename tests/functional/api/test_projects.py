@@ -401,7 +401,7 @@ def test_project_groups_list(gl, group):
     project = gl.projects.create(data)
 
     groups = project.groups.list()
-    group_ids = set([x.id for x in groups])
+    group_ids = {x.id for x in groups}
     assert {group.id, group2.id} == group_ids
 
 

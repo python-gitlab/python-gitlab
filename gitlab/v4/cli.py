@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import argparse
 import json
 import operator
 import sys
-from typing import Any, Dict, List, Optional, Type, TYPE_CHECKING, Union
+from typing import Any, TYPE_CHECKING
 
 import gitlab
 import gitlab.base
@@ -17,9 +19,9 @@ class GitlabCLI:
         gl: gitlab.Gitlab,
         gitlab_resource: str,
         resource_action: str,
-        args: Dict[str, str],
+        args: dict[str, str],
     ) -> None:
-        self.cls: Type[gitlab.base.RESTObject] = cli.gitlab_resource_to_cls(
+        self.cls: type[gitlab.base.RESTObject] = cli.gitlab_resource_to_cls(
             gitlab_resource, namespace=gitlab.v4.objects
         )
         self.cls_name = self.cls.__name__
@@ -27,7 +29,7 @@ class GitlabCLI:
         self.resource_action = resource_action.lower()
         self.gl = gl
         self.args = args
-        self.parent_args: Dict[str, Any] = {}
+        self.parent_args: dict[str, Any] = {}
         self.mgr_cls: Any = getattr(gitlab.v4.objects, f"{self.cls.__name__}Manager")
         # We could do something smart, like splitting the manager name to find
         # parents, build the chain of managers to get to the final object.
@@ -73,9 +75,9 @@ class GitlabCLI:
         return self.do_custom()
 
     def do_custom(self) -> Any:
-        class_instance: Union[
-            gitlab.base.RESTManager[gitlab.base.RESTObject], gitlab.base.RESTObject
-        ]
+        class_instance: (
+            gitlab.base.RESTManager[gitlab.base.RESTObject] | gitlab.base.RESTObject
+        )
         in_obj = cli.custom_actions[self.cls_name][self.resource_action].in_object
 
         # Get the object (lazy), then act
@@ -133,7 +135,7 @@ class GitlabCLI:
 
     def do_list(
         self,
-    ) -> Union[gitlab.base.RESTObjectList, List[gitlab.base.RESTObject]]:
+    ) -> gitlab.base.RESTObjectList | list[gitlab.base.RESTObject]:
         if TYPE_CHECKING:
             assert isinstance(self.mgr, gitlab.mixins.ListMixin)
         message_details = gitlab.utils.WarnMessageData(
@@ -150,7 +152,7 @@ class GitlabCLI:
             cli.die("Impossible to list objects", e)
         return result
 
-    def do_get(self) -> Optional[gitlab.base.RESTObject]:
+    def do_get(self) -> gitlab.base.RESTObject | None:
         if isinstance(self.mgr, gitlab.mixins.GetWithoutIdMixin):
             try:
                 result = self.mgr.get(id=None, **self.args)
@@ -183,7 +185,7 @@ class GitlabCLI:
         except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to destroy object", e)
 
-    def do_update(self) -> Dict[str, Any]:
+    def do_update(self) -> dict[str, Any]:
         if TYPE_CHECKING:
             assert isinstance(self.mgr, gitlab.mixins.UpdateMixin)
         if issubclass(self.mgr_cls, gitlab.mixins.GetWithoutIdMixin):
@@ -208,13 +210,13 @@ else:
 
 
 def _populate_sub_parser_by_class(
-    cls: Type[gitlab.base.RESTObject],
+    cls: type[gitlab.base.RESTObject],
     sub_parser: _SubparserType,
 ) -> None:
     mgr_cls_name = f"{cls.__name__}Manager"
     mgr_cls = getattr(gitlab.v4.objects, mgr_cls_name)
 
-    action_parsers: Dict[str, argparse.ArgumentParser] = {}
+    action_parsers: dict[str, argparse.ArgumentParser] = {}
     for action_name, help_text in [
         ("list", "List the GitLab resources"),
         ("get", "Get a GitLab resource"),
@@ -429,8 +431,8 @@ def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
 
 
 def get_dict(
-    obj: Union[str, Dict[str, Any], gitlab.base.RESTObject], fields: List[str]
-) -> Union[str, Dict[str, Any]]:
+    obj: str | dict[str, Any] | gitlab.base.RESTObject, fields: list[str]
+) -> str | dict[str, Any]:
     if not isinstance(obj, gitlab.base.RESTObject):
         return obj
 
@@ -441,13 +443,13 @@ def get_dict(
 
 class JSONPrinter:
     @staticmethod
-    def display(d: Union[str, Dict[str, Any]], **_kwargs: Any) -> None:
+    def display(d: str | dict[str, Any], **_kwargs: Any) -> None:
         print(json.dumps(d))
 
     @staticmethod
     def display_list(
-        data: List[Union[str, Dict[str, Any], gitlab.base.RESTObject]],
-        fields: List[str],
+        data: list[str | dict[str, Any] | gitlab.base.RESTObject],
+        fields: list[str],
         **_kwargs: Any,
     ) -> None:
         print(json.dumps([get_dict(obj, fields) for obj in data]))
@@ -455,7 +457,7 @@ class JSONPrinter:
 
 class YAMLPrinter:
     @staticmethod
-    def display(d: Union[str, Dict[str, Any]], **_kwargs: Any) -> None:
+    def display(d: str | dict[str, Any], **_kwargs: Any) -> None:
         try:
             import yaml  # noqa
 
@@ -469,8 +471,8 @@ class YAMLPrinter:
 
     @staticmethod
     def display_list(
-        data: List[Union[str, Dict[str, Any], gitlab.base.RESTObject]],
-        fields: List[str],
+        data: list[str | dict[str, Any] | gitlab.base.RESTObject],
+        fields: list[str],
         **_kwargs: Any,
     ) -> None:
         try:
@@ -490,14 +492,14 @@ class YAMLPrinter:
 
 
 class LegacyPrinter:
-    def display(self, _d: Union[str, Dict[str, Any]], **kwargs: Any) -> None:
+    def display(self, _d: str | dict[str, Any], **kwargs: Any) -> None:
         verbose = kwargs.get("verbose", False)
         padding = kwargs.get("padding", 0)
-        obj: Optional[Union[Dict[str, Any], gitlab.base.RESTObject]] = kwargs.get("obj")
+        obj: dict[str, Any] | gitlab.base.RESTObject | None = kwargs.get("obj")
         if TYPE_CHECKING:
             assert obj is not None
 
-        def display_dict(d: Dict[str, Any], padding: int) -> None:
+        def display_dict(d: dict[str, Any], padding: int) -> None:
             for k in sorted(d.keys()):
                 v = d[k]
                 if isinstance(v, dict):
@@ -551,10 +553,7 @@ class LegacyPrinter:
         )
 
     def display_list(
-        self,
-        data: List[Union[str, gitlab.base.RESTObject]],
-        fields: List[str],
-        **kwargs: Any,
+        self, data: list[str | gitlab.base.RESTObject], fields: list[str], **kwargs: Any
     ) -> None:
         verbose = kwargs.get("verbose", False)
         for obj in data:
@@ -565,9 +564,7 @@ class LegacyPrinter:
             print("")
 
 
-PRINTERS: Dict[
-    str, Union[Type[JSONPrinter], Type[LegacyPrinter], Type[YAMLPrinter]]
-] = {
+PRINTERS: dict[str, type[JSONPrinter] | type[LegacyPrinter] | type[YAMLPrinter]] = {
     "json": JSONPrinter,
     "legacy": LegacyPrinter,
     "yaml": YAMLPrinter,
@@ -578,10 +575,10 @@ def run(
     gl: gitlab.Gitlab,
     gitlab_resource: str,
     resource_action: str,
-    args: Dict[str, Any],
+    args: dict[str, Any],
     verbose: bool,
     output: str,
-    fields: List[str],
+    fields: list[str],
 ) -> None:
     g_cli = GitlabCLI(
         gl=gl,
@@ -591,7 +588,7 @@ def run(
     )
     data = g_cli.run()
 
-    printer: Union[JSONPrinter, LegacyPrinter, YAMLPrinter] = PRINTERS[output]()
+    printer: JSONPrinter | LegacyPrinter | YAMLPrinter = PRINTERS[output]()
 
     if isinstance(data, dict):
         printer.display(data, verbose=True, obj=data)

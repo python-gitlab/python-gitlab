@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, TYPE_CHECKING
 
 import requests
 
@@ -24,13 +26,13 @@ __all__ = [
 class ProjectCommit(RESTObject):
     _repr_attr = "title"
 
-    comments: "ProjectCommitCommentManager"
+    comments: ProjectCommitCommentManager
     discussions: ProjectCommitDiscussionManager
-    statuses: "ProjectCommitStatusManager"
+    statuses: ProjectCommitStatusManager
 
     @cli.register_custom_action(cls_names="ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    def diff(self, **kwargs: Any) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
+    def diff(self, **kwargs: Any) -> gitlab.GitlabList | list[dict[str, Any]]:
         """Generate the commit diff.
 
         Args:
@@ -50,7 +52,7 @@ class ProjectCommit(RESTObject):
     @exc.on_http_error(exc.GitlabCherryPickError)
     def cherry_pick(
         self, branch: str, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Cherry-pick a commit into a branch.
 
         Args:
@@ -72,7 +74,7 @@ class ProjectCommit(RESTObject):
     @exc.on_http_error(exc.GitlabGetError)
     def refs(
         self, type: str = "all", **kwargs: Any
-    ) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
+    ) -> gitlab.GitlabList | list[dict[str, Any]]:
         """List the references the commit is pushed to.
 
         Args:
@@ -92,9 +94,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action(cls_names="ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    def merge_requests(
-        self, **kwargs: Any
-    ) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
+    def merge_requests(self, **kwargs: Any) -> gitlab.GitlabList | list[dict[str, Any]]:
         """List the merge requests related to the commit.
 
         Args:
@@ -112,9 +112,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action(cls_names="ProjectCommit", required=("branch",))
     @exc.on_http_error(exc.GitlabRevertError)
-    def revert(
-        self, branch: str, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    def revert(self, branch: str, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Revert a commit on a given branch.
 
         Args:
@@ -134,7 +132,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action(cls_names="ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    def sequence(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def sequence(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Get the sequence number of the commit.
 
         Args:
@@ -152,7 +150,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action(cls_names="ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    def signature(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def signature(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Get the signature of the commit.
 
         Args:
@@ -223,7 +221,7 @@ class ProjectCommitStatusManager(
 
     @exc.on_http_error(exc.GitlabCreateError)
     def create(
-        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+        self, data: dict[str, Any] | None = None, **kwargs: Any
     ) -> ProjectCommitStatus:
         """Create a new object.
 
@@ -245,7 +243,7 @@ class ProjectCommitStatusManager(
         # they are missing when using only the API
         # See #511
         base_path = "/projects/{project_id}/statuses/{commit_id}"
-        path: Optional[str]
+        path: str | None
         if data is not None and "project_id" in data and "commit_id" in data:
             path = base_path.format(**data)
         else:

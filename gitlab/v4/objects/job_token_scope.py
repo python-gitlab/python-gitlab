@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import cast
 
 from gitlab.base import RESTObject
@@ -23,8 +25,8 @@ __all__ = [
 class ProjectJobTokenScope(RefreshMixin, SaveMixin, RESTObject):
     _id_attr = None
 
-    allowlist: "AllowlistProjectManager"
-    groups_allowlist: "AllowlistGroupManager"
+    allowlist: AllowlistProjectManager
+    groups_allowlist: AllowlistGroupManager
 
 
 class ProjectJobTokenScopeManager(

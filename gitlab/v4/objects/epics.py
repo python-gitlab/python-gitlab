@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional, TYPE_CHECKING
+from __future__ import annotations
+
+from typing import Any, TYPE_CHECKING
 
 from gitlab import exceptions as exc
 from gitlab import types
@@ -28,7 +30,7 @@ __all__ = [
 class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
     _id_attr = "iid"
 
-    issues: "GroupEpicIssueManager"
+    issues: GroupEpicIssueManager
     resourcelabelevents: GroupEpicResourceLabelEventManager
     notes: GroupEpicNoteManager
 
@@ -52,7 +54,7 @@ class GroupEpicIssue(ObjectDeleteMixin, SaveMixin, RESTObject):
     _id_attr = "epic_issue_id"
     # Define type for 'manager' here So mypy won't complain about
     # 'self.manager.update()' call in the 'save' method.
-    manager: "GroupEpicIssueManager"
+    manager: GroupEpicIssueManager
 
     def save(self, **kwargs: Any) -> None:
         """Save the changes made to the object to the server.
@@ -90,7 +92,7 @@ class GroupEpicIssueManager(
 
     @exc.on_http_error(exc.GitlabCreateError)
     def create(
-        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+        self, data: dict[str, Any] | None = None, **kwargs: Any
     ) -> GroupEpicIssue:
         """Create a new object.
 

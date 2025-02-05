@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any
 
 from gitlab import exceptions as exc
 from gitlab.base import RESTObject
@@ -36,9 +38,7 @@ class GroupClusterManager(CRUDMixin[GroupCluster]):
     )
 
     @exc.on_http_error(exc.GitlabStopError)
-    def create(
-        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> GroupCluster:
+    def create(self, data: dict[str, Any] | None = None, **kwargs: Any) -> GroupCluster:
         """Create a new object.
 
         Args:
@@ -83,7 +83,7 @@ class ProjectClusterManager(CRUDMixin[ProjectCluster]):
 
     @exc.on_http_error(exc.GitlabStopError)
     def create(
-        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+        self, data: dict[str, Any] | None = None, **kwargs: Any
     ) -> ProjectCluster:
         """Create a new object.
 

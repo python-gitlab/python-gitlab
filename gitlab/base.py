@@ -1,20 +1,18 @@
+from __future__ import annotations
+
 import copy
 import importlib
 import json
 import pprint
 import textwrap
+from collections.abc import Iterable
 from types import ModuleType
 from typing import (
     Any,
     ClassVar,
-    Dict,
     Generic,
-    Iterable,
-    Optional,
-    Type,
     TYPE_CHECKING,
     TypeVar,
-    Union,
 )
 
 import gitlab
@@ -51,20 +49,20 @@ class RESTObject:
     object's ``__repr__()`` method.
     """
 
-    _id_attr: Optional[str] = "id"
-    _attrs: Dict[str, Any]
+    _id_attr: str | None = "id"
+    _attrs: dict[str, Any]
     _created_from_list: bool  # Indicates if object was created from a list() action
     _module: ModuleType
-    _parent_attrs: Dict[str, Any]
-    _repr_attr: Optional[str] = None
-    _updated_attrs: Dict[str, Any]
+    _parent_attrs: dict[str, Any]
+    _repr_attr: str | None = None
+    _updated_attrs: dict[str, Any]
     _lazy: bool
-    manager: "RESTManager[Any]"
+    manager: RESTManager[Any]
 
     def __init__(
         self,
-        manager: "RESTManager[Any]",
-        attrs: Dict[str, Any],
+        manager: RESTManager[Any],
+        attrs: dict[str, Any],
         *,
         created_from_list: bool = False,
         lazy: bool = False,
@@ -88,13 +86,13 @@ class RESTObject:
         self.__dict__["_parent_attrs"] = self.manager.parent_attrs
         self._create_managers()
 
-    def __getstate__(self) -> Dict[str, Any]:
+    def __getstate__(self) -> dict[str, Any]:
         state = self.__dict__.copy()
         module = state.pop("_module")
         state["_module_name"] = module.__name__
         return state
 
-    def __setstate__(self, state: Dict[str, Any]) -> None:
+    def __setstate__(self, state: dict[str, Any]) -> None:
         module_name = state.pop("_module_name")
         self.__dict__.update(state)
         self.__dict__["_module"] = importlib.import_module(module_name)
@@ -147,7 +145,7 @@ class RESTObject:
     def __setattr__(self, name: str, value: Any) -> None:
         self.__dict__["_updated_attrs"][name] = value
 
-    def asdict(self, *, with_parent_attrs: bool = False) -> Dict[str, Any]:
+    def asdict(self, *, with_parent_attrs: bool = False) -> dict[str, Any]:
         data = {}
         if with_parent_attrs:
             data.update(copy.deepcopy(self._parent_attrs))
@@ -156,7 +154,7 @@ class RESTObject:
         return data
 
     @property
-    def attributes(self) -> Dict[str, Any]:
+    def attributes(self) -> dict[str, Any]:
         return self.asdict(with_parent_attrs=True)
 
     def to_json(self, *, with_parent_attrs: bool = False, **kwargs: Any) -> str:
@@ -231,11 +229,11 @@ class RESTObject:
             # Since we have our own __setattr__ method, we can't use setattr()
             self.__dict__[attr] = manager
 
-    def _update_attrs(self, new_attrs: Dict[str, Any]) -> None:
+    def _update_attrs(self, new_attrs: dict[str, Any]) -> None:
         self.__dict__["_updated_attrs"] = {}
         self.__dict__["_attrs"] = new_attrs
 
-    def get_id(self) -> Optional[Union[int, str]]:
+    def get_id(self) -> int | str | None:
         """Returns the id of the resource."""
         if self._id_attr is None or not hasattr(self, self._id_attr):
             return None
@@ -245,7 +243,7 @@ class RESTObject:
         return id_val
 
     @property
-    def _repr_value(self) -> Optional[str]:
+    def _repr_value(self) -> str | None:
         """Safely returns the human-readable resource name if present."""
         if self._repr_attr is None or not hasattr(self, self._repr_attr):
             return None
@@ -255,7 +253,7 @@ class RESTObject:
         return repr_val
 
     @property
-    def encoded_id(self) -> Optional[Union[int, str]]:
+    def encoded_id(self) -> int | str | None:
         """Ensure that the ID is url-encoded so that it can be safely used in a URL
         path"""
         obj_id = self.get_id()
@@ -280,7 +278,7 @@ class RESTObjectList:
     """
 
     def __init__(
-        self, manager: "RESTManager[Any]", obj_cls: Type[RESTObject], _list: GitlabList
+        self, manager: RESTManager[Any], obj_cls: type[RESTObject], _list: GitlabList
     ) -> None:
         """Creates an objects list from a GitlabList.
 
@@ -296,7 +294,7 @@ class RESTObjectList:
         self._obj_cls = obj_cls
         self._list = _list
 
-    def __iter__(self) -> "RESTObjectList":
+    def __iter__(self) -> RESTObjectList:
         return self
 
     def __len__(self) -> int:
@@ -315,7 +313,7 @@ class RESTObjectList:
         return self._list.current_page
 
     @property
-    def prev_page(self) -> Optional[int]:
+    def prev_page(self) -> int | None:
         """The previous page number.
 
         If None, the current page is the first.
@@ -323,7 +321,7 @@ class RESTObjectList:
         return self._list.prev_page
 
     @property
-    def next_page(self) -> Optional[int]:
+    def next_page(self) -> int | None:
         """The next page number.
 
         If None, the current page is the last.
@@ -331,17 +329,17 @@ class RESTObjectList:
         return self._list.next_page
 
     @property
-    def per_page(self) -> Optional[int]:
+    def per_page(self) -> int | None:
         """The number of items per page."""
         return self._list.per_page
 
     @property
-    def total_pages(self) -> Optional[int]:
+    def total_pages(self) -> int | None:
         """The total number of pages."""
         return self._list.total_pages
 
     @property
-    def total(self) -> Optional[int]:
+    def total(self) -> int | None:
         """The total number of items."""
         return self._list.total
 
@@ -362,15 +360,15 @@ class RESTManager(Generic[TObjCls]):
     _update_attrs: g_types.RequiredOptional = g_types.RequiredOptional()
     _path: ClassVar[str]
     _obj_cls: type[TObjCls]
-    _from_parent_attrs: Dict[str, Any] = {}
-    _types: Dict[str, Type[g_types.GitlabAttribute]] = {}
+    _from_parent_attrs: dict[str, Any] = {}
+    _types: dict[str, type[g_types.GitlabAttribute]] = {}
 
     _computed_path: str
-    _parent: Optional[RESTObject]
-    _parent_attrs: Dict[str, Any]
+    _parent: RESTObject | None
+    _parent_attrs: dict[str, Any]
     gitlab: Gitlab
 
-    def __init__(self, gl: Gitlab, parent: Optional[RESTObject] = None) -> None:
+    def __init__(self, gl: Gitlab, parent: RESTObject | None = None) -> None:
         """REST manager constructor.
 
         Args:
@@ -382,17 +380,17 @@ class RESTManager(Generic[TObjCls]):
         self._computed_path = self._compute_path()
 
     @property
-    def parent_attrs(self) -> Optional[Dict[str, Any]]:
+    def parent_attrs(self) -> dict[str, Any] | None:
         return self._parent_attrs
 
-    def _compute_path(self, path: Optional[str] = None) -> str:
+    def _compute_path(self, path: str | None = None) -> str:
         self._parent_attrs = {}
         if path is None:
             path = self._path
         if self._parent is None or not self._from_parent_attrs:
             return path
 
-        data: Dict[str, Optional[gitlab.utils.EncodedId]] = {}
+        data: dict[str, gitlab.utils.EncodedId | None] = {}
         for self_attr, parent_attr in self._from_parent_attrs.items():
             if not hasattr(self._parent, parent_attr):
                 data[self_attr] = None

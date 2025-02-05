@@ -2,7 +2,6 @@ import argparse
 import contextlib
 import io
 import os
-import sys
 import tempfile
 from unittest import mock
 
@@ -219,7 +218,6 @@ def test_extend_parser():
         )
 
 
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="added in 3.8")
 def test_legacy_display_without_fields_warns(fake_object_no_id):
     printer = v4_cli.LegacyPrinter()
 
@@ -229,7 +227,6 @@ def test_legacy_display_without_fields_warns(fake_object_no_id):
     assert "No default fields to show" in mocked.call_args.args[0]
 
 
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="added in 3.8")
 def test_legacy_display_with_long_repr_truncates(fake_object_long_repr):
     printer = v4_cli.LegacyPrinter()
 

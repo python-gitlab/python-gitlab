@@ -116,11 +116,9 @@ def test_mros() -> None:
 
                 if mro[index_to_check].__module__ != "gitlab.base":
                     failed_messages.append(
-                        (
-                            f"class definition for {class_name!r} in file {filename!r} "
-                            f"must have {base_classname!r} as the last class in the "
-                            f"class definition"
-                        )
+                        f"class definition for {class_name!r} in file {filename!r} "
+                        f"must have {base_classname!r} as the last class in the "
+                        f"class definition"
                     )
     failed_msg = "\n".join(failed_messages)
     assert not failed_messages, failed_msg

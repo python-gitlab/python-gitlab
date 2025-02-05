@@ -1,4 +1,6 @@
-from typing import Any, Dict, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, TYPE_CHECKING
 
 from gitlab import cli
 from gitlab import exceptions as exc
@@ -35,11 +37,8 @@ class TopicManager(CRUDMixin[Topic]):
     )
     @exc.on_http_error(exc.GitlabMRClosedError)
     def merge(
-        self,
-        source_topic_id: Union[int, str],
-        target_topic_id: Union[int, str],
-        **kwargs: Any,
-    ) -> Dict[str, Any]:
+        self, source_topic_id: int | str, target_topic_id: int | str, **kwargs: Any
+    ) -> dict[str, Any]:
         """Merge two topics, assigning all projects to the target topic.
 
         Args:

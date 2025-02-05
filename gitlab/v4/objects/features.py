@@ -3,7 +3,9 @@ GitLab API:
 https://docs.gitlab.com/ee/api/features.html
 """
 
-from typing import Any, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, TYPE_CHECKING
 
 from gitlab import exceptions as exc
 from gitlab import utils
@@ -28,11 +30,11 @@ class FeatureManager(ListMixin[Feature], DeleteMixin[Feature]):
     def set(
         self,
         name: str,
-        value: Union[bool, int],
-        feature_group: Optional[str] = None,
-        user: Optional[str] = None,
-        group: Optional[str] = None,
-        project: Optional[str] = None,
+        value: bool | int,
+        feature_group: str | None = None,
+        user: str | None = None,
+        group: str | None = None,
+        project: str | None = None,
         **kwargs: Any,
     ) -> Feature:
         """Create or update the object.

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dataclasses
 import datetime
 import logging
@@ -6,7 +8,7 @@ import tempfile
 import time
 import uuid
 from subprocess import check_output
-from typing import Optional, Sequence
+from typing import Sequence
 
 import pytest
 import requests
@@ -128,7 +130,7 @@ def set_token(container: str, fixture_dir: pathlib.Path) -> str:
     logging.info("Creating API token.")
     set_token_rb = fixture_dir / "set_token.rb"
 
-    with open(set_token_rb, "r", encoding="utf-8") as f:
+    with open(set_token_rb, encoding="utf-8") as f:
         set_token_command = f.read().strip()
 
     rails_command = [
@@ -271,7 +273,7 @@ def gl(gitlab_url: str, gitlab_token: str) -> gitlab.Gitlab:
 
 
 @pytest.fixture(scope="session")
-def gitlab_plan(gl: gitlab.Gitlab) -> Optional[str]:
+def gitlab_plan(gl: gitlab.Gitlab) -> str | None:
     return helpers.get_gitlab_plan(gl)
 
 

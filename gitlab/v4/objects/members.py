@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gitlab import types
 from gitlab.base import RESTObject
 from gitlab.mixins import (
@@ -51,7 +53,7 @@ class GroupMemberManager(CRUDMixin[GroupMember]):
 class GroupBillableMember(ObjectDeleteMixin, RESTObject):
     _repr_attr = "username"
 
-    memberships: "GroupBillableMemberMembershipManager"
+    memberships: GroupBillableMemberMembershipManager
 
 
 class GroupBillableMemberManager(

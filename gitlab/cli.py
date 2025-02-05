@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import dataclasses
 import functools
@@ -10,14 +12,9 @@ from typing import (
     Any,
     Callable,
     cast,
-    Dict,
     NoReturn,
-    Optional,
-    Tuple,
-    Type,
     TYPE_CHECKING,
     TypeVar,
-    Union,
 )
 
 from requests.structures import CaseInsensitiveDict
@@ -33,11 +30,11 @@ camel_lowerupper_regex = re.compile(r"([a-z\d])([A-Z])")
 
 @dataclasses.dataclass
 class CustomAction:
-    required: Tuple[str, ...]
-    optional: Tuple[str, ...]
+    required: tuple[str, ...]
+    optional: tuple[str, ...]
     in_object: bool
     requires_id: bool  # if the `_id_attr` value should be a required argument
-    help: Optional[str]  # help text for the custom action
+    help: str | None  # help text for the custom action
 
 
 # custom_actions = {
@@ -45,7 +42,7 @@ class CustomAction:
 #        action: CustomAction,
 #    },
 # }
-custom_actions: Dict[str, Dict[str, CustomAction]] = {}
+custom_actions: dict[str, dict[str, CustomAction]] = {}
 
 
 # For an explanation of how these type-hints work see:
@@ -57,12 +54,12 @@ __F = TypeVar("__F", bound=Callable[..., Any])
 
 def register_custom_action(
     *,
-    cls_names: Union[str, Tuple[str, ...]],
-    required: Tuple[str, ...] = (),
-    optional: Tuple[str, ...] = (),
-    custom_action: Optional[str] = None,
+    cls_names: str | tuple[str, ...],
+    required: tuple[str, ...] = (),
+    optional: tuple[str, ...] = (),
+    custom_action: str | None = None,
     requires_id: bool = True,  # if the `_id_attr` value should be a required argument
-    help: Optional[str] = None,  # help text for the action
+    help: str | None = None,  # help text for the action
 ) -> Callable[[__F], __F]:
     def wrap(f: __F) -> __F:
         @functools.wraps(f)
@@ -98,7 +95,7 @@ def register_custom_action(
     return wrap
 
 
-def die(msg: str, e: Optional[Exception] = None) -> NoReturn:
+def die(msg: str, e: Exception | None = None) -> NoReturn:
     if e:
         msg = f"{msg} ({e})"
     sys.stderr.write(f"{msg}\n")
@@ -107,7 +104,7 @@ def die(msg: str, e: Optional[Exception] = None) -> NoReturn:
 
 def gitlab_resource_to_cls(
     gitlab_resource: str, namespace: ModuleType
-) -> Type[RESTObject]:
+) -> type[RESTObject]:
     classes = CaseInsensitiveDict(namespace.__dict__)
     lowercase_class = gitlab_resource.replace("-", "")
     class_type = classes[lowercase_class]

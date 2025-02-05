@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pickle
 
 import pytest
@@ -131,7 +133,7 @@ def test_dir_unique(fake_manager):
 
 def test_create_managers(gl, fake_manager):
     class ObjectWithManager(helpers.FakeObject):
-        fakes: "FakeManager"
+        fakes: FakeManager
 
     obj = ObjectWithManager(fake_manager, {"foo": "bar"})
     obj.id = 42
@@ -144,7 +146,7 @@ def test_equality(fake_manager):
     obj1 = helpers.FakeObject(fake_manager, {"id": "foo"})
     obj2 = helpers.FakeObject(fake_manager, {"id": "foo", "other_attr": "bar"})
     assert obj1 == obj2
-    assert len(set((obj1, obj2))) == 1
+    assert len({obj1, obj2}) == 1
 
 
 def test_equality_custom_id(fake_manager):
@@ -169,7 +171,7 @@ def test_inequality_no_id(fake_manager):
     obj1 = helpers.FakeObject(fake_manager, {"attr1": "foo"})
     obj2 = helpers.FakeObject(fake_manager, {"attr1": "bar"})
     assert obj1 != obj2
-    assert len(set((obj1, obj2))) == 2
+    assert len({obj1, obj2}) == 2
 
 
 def test_equality_with_other_objects(fake_manager):

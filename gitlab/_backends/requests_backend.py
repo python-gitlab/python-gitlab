@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
-from typing import Any, BinaryIO, Dict, Optional, TYPE_CHECKING, Union
+from typing import Any, BinaryIO, TYPE_CHECKING
 
 import requests
 from requests import PreparedRequest
@@ -44,8 +44,8 @@ class JobTokenAuth(TokenAuth, AuthBase):
 @dataclasses.dataclass
 class SendData:
     content_type: str
-    data: Optional[Union[Dict[str, Any], MultipartEncoder]] = None
-    json: Optional[Union[Dict[str, Any], bytes]] = None
+    data: dict[str, Any] | MultipartEncoder | None = None
+    json: dict[str, Any] | bytes | None = None
 
     def __post_init__(self) -> None:
         if self.json is not None and self.data is not None:
@@ -84,7 +84,7 @@ class RequestsResponse(protocol.BackendResponse):
 
 
 class RequestsBackend(protocol.Backend):
-    def __init__(self, session: Optional[requests.Session] = None) -> None:
+    def __init__(self, session: requests.Session | None = None) -> None:
         self._client: requests.Session = session or requests.Session()
 
     @property
@@ -93,8 +93,8 @@ class RequestsBackend(protocol.Backend):
 
     @staticmethod
     def prepare_send_data(
-        files: Optional[Dict[str, Any]] = None,
-        post_data: Optional[Union[Dict[str, Any], bytes, BinaryIO]] = None,
+        files: dict[str, Any] | None = None,
+        post_data: dict[str, Any] | bytes | BinaryIO | None = None,
         raw: bool = False,
     ) -> SendData:
         if files:
@@ -130,12 +130,12 @@ class RequestsBackend(protocol.Backend):
         self,
         method: str,
         url: str,
-        json: Optional[Union[Dict[str, Any], bytes]] = None,
-        data: Optional[Union[Dict[str, Any], MultipartEncoder]] = None,
-        params: Optional[Any] = None,
-        timeout: Optional[float] = None,
-        verify: Optional[Union[bool, str]] = True,
-        stream: Optional[bool] = False,
+        json: dict[str, Any] | bytes | None = None,
+        data: dict[str, Any] | MultipartEncoder | None = None,
+        params: Any | None = None,
+        timeout: float | None = None,
+        verify: bool | str | None = True,
+        stream: bool | None = False,
         **kwargs: Any,
     ) -> RequestsResponse:
         """Make HTTP request

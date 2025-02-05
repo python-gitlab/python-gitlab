@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import ArrayAttribute, RequiredOptional
@@ -13,7 +15,7 @@ __all__ = [
 class ProjectRelease(SaveMixin, RESTObject):
     _id_attr = "tag_name"
 
-    links: "ProjectReleaseLinkManager"
+    links: ProjectReleaseLinkManager
 
 
 class ProjectReleaseManager(CRUDMixin[ProjectRelease]):
