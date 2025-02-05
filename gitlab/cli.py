@@ -8,14 +8,7 @@ import pathlib
 import re
 import sys
 from types import ModuleType
-from typing import (
-    Any,
-    Callable,
-    cast,
-    NoReturn,
-    TYPE_CHECKING,
-    TypeVar,
-)
+from typing import Any, Callable, cast, NoReturn, TYPE_CHECKING, TypeVar
 
 from requests.structures import CaseInsensitiveDict
 

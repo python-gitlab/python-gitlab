@@ -2,12 +2,7 @@ from gitlab.base import RESTObject
 from gitlab.mixins import BadgeRenderMixin, CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "GroupBadge",
-    "GroupBadgeManager",
-    "ProjectBadge",
-    "ProjectBadgeManager",
-]
+__all__ = ["GroupBadge", "GroupBadgeManager", "ProjectBadge", "ProjectBadgeManager"]
 
 
 class GroupBadge(SaveMixin, ObjectDeleteMixin, RESTObject):

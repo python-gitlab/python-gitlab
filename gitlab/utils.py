@@ -9,11 +9,7 @@ import traceback
 import urllib.parse
 import warnings
 from collections.abc import Iterator, MutableMapping
-from typing import (
-    Any,
-    Callable,
-    Literal,
-)
+from typing import Any, Callable, Literal
 
 import requests
 
@@ -208,11 +204,7 @@ def _transform_types(
     return data, files
 
 
-def copy_dict(
-    *,
-    src: dict[str, Any],
-    dest: dict[str, Any],
-) -> None:
+def copy_dict(*, src: dict[str, Any], dest: dict[str, Any]) -> None:
     for k, v in src.items():
         if isinstance(v, dict):
             # NOTE(jlvillal): This provides some support for the `hash` type
@@ -284,10 +276,7 @@ def warn(
     if show_caller:
         message += warning_from
     warnings.warn(
-        message=message,
-        category=category,
-        stacklevel=stacklevel,
-        source=source,
+        message=message, category=category, stacklevel=stacklevel, source=source
     )
 
 

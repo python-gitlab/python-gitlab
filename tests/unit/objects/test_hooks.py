@@ -13,18 +13,8 @@ import gitlab
 from gitlab.v4.objects import GroupHook, Hook, ProjectHook
 
 hooks_content = [
-    {
-        "id": 1,
-        "url": "testurl",
-        "push_events": True,
-        "tag_push_events": True,
-    },
-    {
-        "id": 2,
-        "url": "testurl_second",
-        "push_events": False,
-        "tag_push_events": False,
-    },
+    {"id": 1, "url": "testurl", "push_events": True, "tag_push_events": True},
+    {"id": 2, "url": "testurl_second", "push_events": False, "tag_push_events": False},
 ]
 
 hook_content = hooks_content[0]
@@ -153,11 +143,7 @@ def resp_hook_delete():
             content_type="application/json",
             status=200,
         )
-        rsps.add(
-            method=responses.DELETE,
-            url=pattern,
-            status=204,
-        )
+        rsps.add(method=responses.DELETE, url=pattern, status=204)
         yield rsps
 
 

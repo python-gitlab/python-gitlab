@@ -16,12 +16,7 @@ from gitlab.mixins import (
 )
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "GroupLabel",
-    "GroupLabelManager",
-    "ProjectLabel",
-    "ProjectLabelManager",
-]
+__all__ = ["GroupLabel", "GroupLabelManager", "ProjectLabel", "ProjectLabelManager"]
 
 
 class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):

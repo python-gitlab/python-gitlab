@@ -97,9 +97,7 @@ def test_upload_generic_package_select(tmp_path, project):
 
 def test_download_generic_package(project):
     package = project.generic_packages.download(
-        package_name=package_name,
-        package_version=package_version,
-        file_name=file_name,
+        package_name=package_name, package_version=package_version, file_name=file_name
     )
 
     assert isinstance(package, bytes)

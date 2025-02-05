@@ -152,11 +152,7 @@ class ProjectIntegrationManager(
             ),
         ),
         "jira": (
-            (
-                "url",
-                "username",
-                "password",
-            ),
+            ("url", "username", "password"),
             (
                 "api_url",
                 "active",

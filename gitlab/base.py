@@ -7,13 +7,7 @@ import pprint
 import textwrap
 from collections.abc import Iterable
 from types import ModuleType
-from typing import (
-    Any,
-    ClassVar,
-    Generic,
-    TYPE_CHECKING,
-    TypeVar,
-)
+from typing import Any, ClassVar, Generic, TYPE_CHECKING, TypeVar
 
 import gitlab
 from gitlab import types as g_types
@@ -21,11 +15,7 @@ from gitlab.exceptions import GitlabParsingError
 
 from .client import Gitlab, GitlabList
 
-__all__ = [
-    "RESTObject",
-    "RESTObjectList",
-    "RESTManager",
-]
+__all__ = ["RESTObject", "RESTObjectList", "RESTManager"]
 
 
 _URL_ATTRIBUTE_ERROR = (

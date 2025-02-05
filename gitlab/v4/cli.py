@@ -133,9 +133,7 @@ class GitlabCLI:
             cli.die("Impossible to create object", e)
         return result
 
-    def do_list(
-        self,
-    ) -> gitlab.base.RESTObjectList | list[gitlab.base.RESTObject]:
+    def do_list(self) -> gitlab.base.RESTObjectList | list[gitlab.base.RESTObject]:
         if TYPE_CHECKING:
             assert isinstance(self.mgr, gitlab.mixins.ListMixin)
         message_details = gitlab.utils.WarnMessageData(
@@ -210,8 +208,7 @@ else:
 
 
 def _populate_sub_parser_by_class(
-    cls: type[gitlab.base.RESTObject],
-    sub_parser: _SubparserType,
+    cls: type[gitlab.base.RESTObject], sub_parser: _SubparserType
 ) -> None:
     mgr_cls_name = f"{cls.__name__}Manager"
     mgr_cls = getattr(gitlab.v4.objects, mgr_cls_name)
@@ -228,9 +225,7 @@ def _populate_sub_parser_by_class(
             continue
 
         sub_parser_action = sub_parser.add_parser(
-            action_name,
-            conflict_handler="resolve",
-            help=help_text,
+            action_name, conflict_handler="resolve", help=help_text
         )
         action_parsers[action_name] = sub_parser_action
         sub_parser_action.add_argument("--sudo", required=False)
@@ -415,8 +410,7 @@ def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
         mgr_cls_name = f"{cls.__name__}Manager"
         mgr_cls = getattr(gitlab.v4.objects, mgr_cls_name)
         object_group = subparsers.add_parser(
-            arg_name,
-            help=f"API endpoint: {mgr_cls._path}",
+            arg_name, help=f"API endpoint: {mgr_cls._path}"
         )
 
         object_subparsers = object_group.add_subparsers(

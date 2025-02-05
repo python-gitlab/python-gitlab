@@ -7,15 +7,7 @@ https://docs.gitlab.com/ee/user/packages/generic_packages/
 from __future__ import annotations
 
 from pathlib import Path
-from typing import (
-    Any,
-    BinaryIO,
-    Callable,
-    Iterator,
-    Literal,
-    overload,
-    TYPE_CHECKING,
-)
+from typing import Any, BinaryIO, Callable, Iterator, Literal, overload, TYPE_CHECKING
 
 import requests
 
@@ -242,12 +234,7 @@ class ProjectPackageManager(
     _path = "/projects/{project_id}/packages"
     _obj_cls = ProjectPackage
     _from_parent_attrs = {"project_id": "id"}
-    _list_filters = (
-        "order_by",
-        "sort",
-        "package_type",
-        "package_name",
-    )
+    _list_filters = ("order_by", "sort", "package_type", "package_name")
 
 
 class ProjectPackageFile(ObjectDeleteMixin, RESTObject):

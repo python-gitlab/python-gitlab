@@ -28,10 +28,7 @@ def bulk_import_enabled(gl: gitlab.Gitlab):
 @pytest.mark.xfail(reason="Bulk Imports to be worked on in a follow up")
 def test_bulk_imports(gl, group, bulk_import_enabled):
     destination = f"{group.full_path}-import"
-    configuration = {
-        "url": gl.url,
-        "access_token": gl.private_token,
-    }
+    configuration = {"url": gl.url, "access_token": gl.private_token}
     migration_entity = {
         "source_full_path": group.full_path,
         "source_type": "group_entity",
@@ -39,10 +36,7 @@ def test_bulk_imports(gl, group, bulk_import_enabled):
         "destination_namespace": destination,
     }
     created_migration = gl.bulk_imports.create(
-        {
-            "configuration": configuration,
-            "entities": [migration_entity],
-        }
+        {"configuration": configuration, "entities": [migration_entity]}
     )
 
     assert created_migration.source_type == "gitlab"

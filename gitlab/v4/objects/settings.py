@@ -8,10 +8,7 @@ from gitlab.base import RESTObject
 from gitlab.mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "ApplicationSettings",
-    "ApplicationSettingsManager",
-]
+__all__ = ["ApplicationSettings", "ApplicationSettingsManager"]
 
 
 class ApplicationSettings(SaveMixin, RESTObject):
@@ -82,7 +79,7 @@ class ApplicationSettingsManager(
             "allow_local_requests_from_hooks_and_services",
             "allow_local_requests_from_web_hooks_and_services",
             "allow_local_requests_from_system_hooks",
-        ),
+        )
     )
     _types = {
         "asset_proxy_allowlist": types.ArrayAttribute,

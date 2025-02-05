@@ -167,12 +167,7 @@ def test_cherry_pick_commit(project):
     parent_commit = commit.parent_ids[0]
 
     # create a branch to cherry pick onto
-    project.branches.create(
-        {
-            "branch": "test",
-            "ref": parent_commit,
-        }
-    )
+    project.branches.create({"branch": "test", "ref": parent_commit})
     cherry_pick_commit = commit.cherry_pick(branch="test")
 
     expected_message = f"{commit.message}\n\n(cherry picked from commit {commit.id})"

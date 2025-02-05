@@ -16,10 +16,7 @@ from gitlab.mixins import (
 )
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "ProjectJobTokenScope",
-    "ProjectJobTokenScopeManager",
-]
+__all__ = ["ProjectJobTokenScope", "ProjectJobTokenScopeManager"]
 
 
 class ProjectJobTokenScope(RefreshMixin, SaveMixin, RESTObject):

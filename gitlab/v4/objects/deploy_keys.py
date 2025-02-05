@@ -10,12 +10,7 @@ from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ListMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "DeployKey",
-    "DeployKeyManager",
-    "ProjectKey",
-    "ProjectKeyManager",
-]
+__all__ = ["DeployKey", "DeployKeyManager", "ProjectKey", "ProjectKeyManager"]
 
 
 class DeployKey(RESTObject):

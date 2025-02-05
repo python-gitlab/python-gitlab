@@ -25,10 +25,7 @@ def test_project_deploy_tokens(gl, project):
 
 def test_group_deploy_tokens(gl, group):
     deploy_token = group.deploytokens.create(
-        {
-            "name": "foo",
-            "scopes": ["read_registry"],
-        }
+        {"name": "foo", "scopes": ["read_registry"]}
     )
 
     assert deploy_token in group.deploytokens.list()

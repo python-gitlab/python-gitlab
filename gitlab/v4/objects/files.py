@@ -1,14 +1,7 @@
 from __future__ import annotations
 
 import base64
-from typing import (
-    Any,
-    Callable,
-    Iterator,
-    Literal,
-    overload,
-    TYPE_CHECKING,
-)
+from typing import Any, Callable, Iterator, Literal, overload, TYPE_CHECKING
 
 import requests
 
@@ -25,10 +18,7 @@ from gitlab.mixins import (
 )
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "ProjectFile",
-    "ProjectFileManager",
-]
+__all__ = ["ProjectFile", "ProjectFileManager"]
 
 
 class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -313,9 +303,7 @@ class ProjectFileManager(
     ) -> None: ...
 
     @cli.register_custom_action(
-        cls_names="ProjectFileManager",
-        required=("file_path",),
-        optional=("ref",),
+        cls_names="ProjectFileManager", required=("file_path",), optional=("ref",)
     )
     @exc.on_http_error(exc.GitlabGetError)
     def raw(

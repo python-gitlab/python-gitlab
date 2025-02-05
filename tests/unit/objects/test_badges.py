@@ -20,10 +20,7 @@ rendered_link_url = (
 )
 rendered_image_url = "https://example.io/my/badge"
 
-new_badge = {
-    "link_url": link_url,
-    "image_url": image_url,
-}
+new_badge = {"link_url": link_url, "image_url": image_url}
 
 badge_content = {
     "name": "Coverage",
@@ -172,10 +169,7 @@ def test_create_group_badge(group, resp_create_badge):
 
 
 def test_preview_project_badge(project, resp_preview_badge):
-    output = project.badges.render(
-        link_url=link_url,
-        image_url=image_url,
-    )
+    output = project.badges.render(link_url=link_url, image_url=image_url)
     assert isinstance(output, dict)
     assert "rendered_link_url" in output
     assert "rendered_image_url" in output
@@ -184,10 +178,7 @@ def test_preview_project_badge(project, resp_preview_badge):
 
 
 def test_preview_group_badge(group, resp_preview_badge):
-    output = group.badges.render(
-        link_url=link_url,
-        image_url=image_url,
-    )
+    output = group.badges.render(link_url=link_url, image_url=image_url)
     assert isinstance(output, dict)
     assert "rendered_link_url" in output
     assert "rendered_image_url" in output

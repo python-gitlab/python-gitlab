@@ -2,10 +2,7 @@ from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "ProjectTrigger",
-    "ProjectTriggerManager",
-]
+__all__ = ["ProjectTrigger", "ProjectTriggerManager"]
 
 
 class ProjectTrigger(SaveMixin, ObjectDeleteMixin, RESTObject):

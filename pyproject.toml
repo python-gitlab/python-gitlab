@@ -70,6 +70,9 @@ files = "."
 exclude = "build/.*"
 strict = true
 
+[tool.black]
+skip_magic_trailing_comma = true
+
 # Overrides for currently untyped modules
 [[tool.mypy.overrides]]
 module = [

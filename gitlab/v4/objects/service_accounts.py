@@ -17,6 +17,4 @@ class GroupServiceAccountManager(
     _path = "/groups/{group_id}/service_accounts"
     _obj_cls = GroupServiceAccount
     _from_parent_attrs = {"group_id": "id"}
-    _create_attrs = RequiredOptional(
-        optional=("name", "username"),
-    )
+    _create_attrs = RequiredOptional(optional=("name", "username"))

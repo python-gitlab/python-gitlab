@@ -317,7 +317,7 @@ class GroupManager(CRUDMixin[Group]):
             "extra_shared_runners_minutes_limit",
             "prevent_forking_outside_group",
             "shared_runners_setting",
-        ),
+        )
     )
     _types = {"avatar": types.ImageAttribute, "skip_groups": types.ArrayAttribute}
 

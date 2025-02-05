@@ -6,10 +6,7 @@ from gitlab.base import RESTObject
 from gitlab.mixins import RetrieveMixin
 from gitlab.utils import EncodedId
 
-__all__ = [
-    "Namespace",
-    "NamespaceManager",
-]
+__all__ = ["Namespace", "NamespaceManager"]
 
 
 class Namespace(RESTObject):

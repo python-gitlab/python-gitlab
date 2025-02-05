@@ -10,10 +10,7 @@ from gitlab.mixins import (
 )
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "ProjectPackageProtectionRule",
-    "ProjectPackageProtectionRuleManager",
-]
+__all__ = ["ProjectPackageProtectionRule", "ProjectPackageProtectionRuleManager"]
 
 
 class ProjectPackageProtectionRule(ObjectDeleteMixin, SaveMixin, RESTObject):
@@ -34,13 +31,13 @@ class ProjectPackageProtectionRuleManager(
             "package_name_pattern",
             "package_type",
             "minimum_access_level_for_push",
-        ),
+        )
     )
     _update_attrs = RequiredOptional(
         optional=(
             "package_name_pattern",
             "package_type",
             "minimum_access_level_for_push",
-        ),
+        )
     )
     _update_method = UpdateMethod.PATCH

@@ -26,9 +26,7 @@ def _resolve_file(filepath: Path | str) -> str:
     return str(resolved)
 
 
-def _get_config_files(
-    config_files: list[str] | None = None,
-) -> str | list[str]:
+def _get_config_files(config_files: list[str] | None = None) -> str | list[str]:
     """
     Return resolved path(s) to config files if they exist, with precedence:
     1. Files passed in config_files

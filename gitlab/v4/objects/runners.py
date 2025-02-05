@@ -71,7 +71,7 @@ class RunnerManager(CRUDMixin[Runner]):
             "locked",
             "access_level",
             "maximum_timeout",
-        ),
+        )
     )
     _list_filters = ("scope", "type", "status", "paused", "tag_list")
     _types = {"tag_list": types.CommaSeparatedListAttribute}

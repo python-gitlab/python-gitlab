@@ -8,9 +8,7 @@ from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject
 
-__all__ = [
-    "SidekiqManager",
-]
+__all__ = ["SidekiqManager"]
 
 
 class SidekiqManager(RESTManager[RESTObject]):

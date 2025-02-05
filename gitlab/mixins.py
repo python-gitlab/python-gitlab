@@ -3,13 +3,7 @@ from __future__ import annotations
 import enum
 from collections.abc import Iterator
 from types import ModuleType
-from typing import (
-    Any,
-    Callable,
-    Literal,
-    overload,
-    TYPE_CHECKING,
-)
+from typing import Any, Callable, Literal, overload, TYPE_CHECKING
 
 import requests
 
@@ -261,9 +255,7 @@ class UpdateMixin(base.RESTManager[base.TObjCls]):
     # Update mixins attrs for easier implementation
     _update_method: UpdateMethod = UpdateMethod.PUT
 
-    def _get_update_method(
-        self,
-    ) -> Callable[..., dict[str, Any] | requests.Response]:
+    def _get_update_method(self) -> Callable[..., dict[str, Any] | requests.Response]:
         """Return the HTTP method to use.
 
         Returns:
@@ -931,9 +923,7 @@ class PromoteMixin(_RestObjectBase):
     _update_method: UpdateMethod = UpdateMethod.PUT
     manager: base.RESTManager[Any]
 
-    def _get_update_method(
-        self,
-    ) -> Callable[..., dict[str, Any] | requests.Response]:
+    def _get_update_method(self) -> Callable[..., dict[str, Any] | requests.Response]:
         """Return the HTTP method to use.
 
         Returns:

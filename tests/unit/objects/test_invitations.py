@@ -28,12 +28,9 @@ invitations_content = [
         "expires_at": "2020-11-22T14:13:35Z",
         "user_name": "Raymond Smith",
         "created_by_name": "Administrator",
-    },
+    }
 ]
-invitation_content = {
-    "expires_at": "2012-10-22T14:13:35Z",
-    "access_level": 40,
-}
+invitation_content = {"expires_at": "2012-10-22T14:13:35Z", "access_level": 40}
 
 
 @pytest.fixture
@@ -97,11 +94,7 @@ def resp_invitation_delete():
         pattern = re.compile(
             r"http://localhost/api/v4/(groups|projects)/1/invitations/email%40example.com"
         )
-        rsps.add(
-            method=responses.DELETE,
-            url=pattern,
-            status=204,
-        )
+        rsps.add(method=responses.DELETE, url=pattern, status=204)
         yield rsps
 
 

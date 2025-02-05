@@ -9,10 +9,7 @@ from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "Topic",
-    "TopicManager",
-]
+__all__ = ["Topic", "TopicManager"]
 
 
 class Topic(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -32,8 +29,7 @@ class TopicManager(CRUDMixin[Topic]):
     _types = {"avatar": types.ImageAttribute}
 
     @cli.register_custom_action(
-        cls_names="TopicManager",
-        required=("source_topic_id", "target_topic_id"),
+        cls_names="TopicManager", required=("source_topic_id", "target_topic_id")
     )
     @exc.on_http_error(exc.GitlabMRClosedError)
     def merge(
@@ -54,10 +50,7 @@ class TopicManager(CRUDMixin[Topic]):
             The merged topic data (*not* a RESTObject)
         """
         path = f"{self.path}/merge"
-        data = {
-            "source_topic_id": source_topic_id,
-            "target_topic_id": target_topic_id,
-        }
+        data = {"source_topic_id": source_topic_id, "target_topic_id": target_topic_id}
 
         server_data = self.gitlab.http_post(path, post_data=data, **kwargs)
         if TYPE_CHECKING:

@@ -93,9 +93,7 @@ def resp_get_commit_gpg_signature():
 
 @pytest.fixture
 def resp_get_commit_sequence():
-    content = {
-        "count": 1,
-    }
+    content = {"count": 1}
 
     with responses.RequestsMock() as rsps:
         rsps.add(
@@ -118,13 +116,7 @@ def test_create_commit(project, resp_create_commit):
     data = {
         "branch": "main",
         "commit_message": "Commit message",
-        "actions": [
-            {
-                "action": "create",
-                "file_path": "README",
-                "content": "",
-            }
-        ],
+        "actions": [{"action": "create", "file_path": "README", "content": ""}],
     }
     commit = project.commits.create(data)
     assert commit.short_id == "ed899a2f"

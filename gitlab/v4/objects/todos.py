@@ -5,10 +5,7 @@ from gitlab import exceptions as exc
 from gitlab.base import RESTObject
 from gitlab.mixins import DeleteMixin, ListMixin, ObjectDeleteMixin
 
-__all__ = [
-    "Todo",
-    "TodoManager",
-]
+__all__ = ["Todo", "TodoManager"]
 
 
 class Todo(ObjectDeleteMixin, RESTObject):

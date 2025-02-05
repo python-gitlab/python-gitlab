@@ -6,14 +6,7 @@ Currently this module only contains repository-related methods for projects.
 
 from __future__ import annotations
 
-from typing import (
-    Any,
-    Callable,
-    Iterator,
-    Literal,
-    overload,
-    TYPE_CHECKING,
-)
+from typing import Any, Callable, Iterator, Literal, overload, TYPE_CHECKING
 
 import requests
 

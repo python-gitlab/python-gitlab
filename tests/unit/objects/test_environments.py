@@ -25,10 +25,7 @@ def resp_get_environment():
 
 @pytest.fixture
 def resp_get_protected_environment():
-    content = {
-        "name": "protected_environment_name",
-        "last_deployment": "my birthday",
-    }
+    content = {"name": "protected_environment_name", "last_deployment": "my birthday"}
 
     with responses.RequestsMock() as rsps:
         rsps.add(

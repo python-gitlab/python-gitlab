@@ -12,10 +12,7 @@ from gitlab.mixins import (
 )
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "GeoNode",
-    "GeoNodeManager",
-]
+__all__ = ["GeoNode", "GeoNodeManager"]
 
 
 class GeoNode(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -65,7 +62,7 @@ class GeoNodeManager(
     _path = "/geo_nodes"
     _obj_cls = GeoNode
     _update_attrs = RequiredOptional(
-        optional=("enabled", "url", "files_max_capacity", "repos_max_capacity"),
+        optional=("enabled", "url", "files_max_capacity", "repos_max_capacity")
     )
 
     @cli.register_custom_action(cls_names="GeoNodeManager")

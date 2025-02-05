@@ -6,14 +6,7 @@ https://docs.gitlab.com/ee/api/projects.html
 from __future__ import annotations
 
 import io
-from typing import (
-    Any,
-    Callable,
-    Iterator,
-    Literal,
-    overload,
-    TYPE_CHECKING,
-)
+from typing import Any, Callable, Iterator, Literal, overload, TYPE_CHECKING
 
 import requests
 
@@ -742,7 +735,7 @@ class ProjectManager(CRUDMixin[Project]):
             "visibility",
             "wiki_access_level",
             "wiki_enabled",
-        ),
+        )
     )
     # Please keep these _update_attrs in same order as they are at:
     # https://docs.gitlab.com/ee/api/projects.html#edit-project
@@ -830,7 +823,7 @@ class ProjectManager(CRUDMixin[Project]):
             "visibility",
             "wiki_access_level",
             "wiki_enabled",
-        ),
+        )
     )
     _list_filters = (
         "archived",

@@ -44,9 +44,7 @@ class ProjectInvitationManager(InvitationMixin[ProjectInvitation]):
         ),
         exclusive=("email", "user_id"),
     )
-    _update_attrs = RequiredOptional(
-        optional=("access_level", "expires_at"),
-    )
+    _update_attrs = RequiredOptional(optional=("access_level", "expires_at"))
     _list_filters = ("query",)
     _types = {
         "email": CommaSeparatedListAttribute,
@@ -73,9 +71,7 @@ class GroupInvitationManager(InvitationMixin[GroupInvitation]):
         ),
         exclusive=("email", "user_id"),
     )
-    _update_attrs = RequiredOptional(
-        optional=("access_level", "expires_at"),
-    )
+    _update_attrs = RequiredOptional(optional=("access_level", "expires_at"))
     _list_filters = ("query",)
     _types = {
         "email": CommaSeparatedListAttribute,

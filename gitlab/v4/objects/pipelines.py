@@ -269,7 +269,7 @@ class ProjectPipelineScheduleManager(CRUDMixin[ProjectPipelineSchedule]):
         required=("description", "ref", "cron"), optional=("cron_timezone", "active")
     )
     _update_attrs = RequiredOptional(
-        optional=("description", "ref", "cron", "cron_timezone", "active"),
+        optional=("description", "ref", "cron", "cron_timezone", "active")
     )
 
 

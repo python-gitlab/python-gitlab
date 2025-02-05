@@ -2,12 +2,7 @@ from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin, UploadMixin
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "ProjectWiki",
-    "ProjectWikiManager",
-    "GroupWiki",
-    "GroupWikiManager",
-]
+__all__ = ["ProjectWiki", "ProjectWikiManager", "GroupWiki", "GroupWikiManager"]
 
 
 class ProjectWiki(SaveMixin, ObjectDeleteMixin, UploadMixin, RESTObject):

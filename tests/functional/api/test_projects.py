@@ -188,10 +188,7 @@ def test_project_label_promotion(gl, group):
 
     """
     _id = uuid.uuid4().hex
-    data = {
-        "name": f"test-project-{_id}",
-        "namespace_id": group.id,
-    }
+    data = {"name": f"test-project-{_id}", "namespace_id": group.id}
     project = gl.projects.create(data)
 
     label_name = "promoteme"
@@ -225,10 +222,7 @@ def test_project_milestone_promotion(gl, group):
 
     """
     _id = uuid.uuid4().hex
-    data = {
-        "name": f"test-project-{_id}",
-        "namespace_id": group.id,
-    }
+    data = {"name": f"test-project-{_id}", "namespace_id": group.id}
     project = gl.projects.create(data)
 
     milestone_title = "promoteme"
@@ -271,10 +265,7 @@ def test_project_protected_branches(project, gitlab_version):
     )
 
     p_b = project.protectedbranches.create(
-        {
-            "name": "*-stable",
-            "allow_force_push": False,
-        }
+        {"name": "*-stable", "allow_force_push": False}
     )
     assert p_b.name == "*-stable"
     assert not p_b.allow_force_push
@@ -394,10 +385,7 @@ def test_project_groups_list(gl, group):
     group2 = gl.groups.create(
         {"name": "group2_proj", "path": "group2_proj", "parent_id": group.id}
     )
-    data = {
-        "name": "test-project-tpsg",
-        "namespace_id": group2.id,
-    }
+    data = {"name": "test-project-tpsg", "namespace_id": group2.id}
     project = gl.projects.create(data)
 
     groups = project.groups.list()

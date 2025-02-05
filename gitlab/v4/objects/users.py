@@ -434,7 +434,7 @@ class UserManager(CRUDMixin[User]):
             "private_profile",
             "color_scheme_id",
             "theme_id",
-        ),
+        )
     )
     _update_attrs = RequiredOptional(
         required=("email", "username", "name"),
