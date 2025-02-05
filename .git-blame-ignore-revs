@@ -1,2 +1,4 @@
 # Require keyword arguments for register_custom_action
 d74545a309ed02fdc8d32157f8ccb9f7559cd185
+# chore: reformat code with `skip_magic_trailing_comma = true`
+a54c422f96637dd13b45db9b55aa332af18e0429
