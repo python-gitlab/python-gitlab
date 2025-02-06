@@ -4,6 +4,7 @@ from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
 from gitlab.base import RESTObject, RESTObjectList
+from gitlab.client import GitlabList
 from gitlab.mixins import (
     CRUDMixin,
     ObjectDeleteMixin,
@@ -16,6 +17,7 @@ from gitlab.types import RequiredOptional
 from .issues import GroupIssue, GroupIssueManager, ProjectIssue, ProjectIssueManager
 from .merge_requests import (
     GroupMergeRequest,
+    GroupMergeRequestManager,
     ProjectMergeRequest,
     ProjectMergeRequestManager,
 )
@@ -33,7 +35,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="GroupMilestone")
     @exc.on_http_error(exc.GitlabListError)
-    def issues(self, **kwargs: Any) -> RESTObjectList:
+    def issues(self, **kwargs: Any) -> RESTObjectList[GroupIssue]:
         """List issues related to this milestone.
 
         Args:
@@ -53,14 +55,14 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/issues"
         data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
-            assert isinstance(data_list, RESTObjectList)
+            assert isinstance(data_list, GitlabList)
         manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, GroupIssue, data_list)
 
     @cli.register_custom_action(cls_names="GroupMilestone")
     @exc.on_http_error(exc.GitlabListError)
-    def merge_requests(self, **kwargs: Any) -> RESTObjectList:
+    def merge_requests(self, **kwargs: Any) -> RESTObjectList[GroupMergeRequest]:
         """List the merge requests related to this milestone.
 
         Args:
@@ -79,8 +81,10 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/merge_requests"
         data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
-            assert isinstance(data_list, RESTObjectList)
-        manager = GroupIssueManager(self.manager.gitlab, parent=self.manager._parent)
+            assert isinstance(data_list, GitlabList)
+        manager = GroupMergeRequestManager(
+            self.manager.gitlab, parent=self.manager._parent
+        )
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, GroupMergeRequest, data_list)
 
@@ -105,7 +109,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="ProjectMilestone")
     @exc.on_http_error(exc.GitlabListError)
-    def issues(self, **kwargs: Any) -> RESTObjectList:
+    def issues(self, **kwargs: Any) -> RESTObjectList[ProjectIssue]:
         """List issues related to this milestone.
 
         Args:
@@ -125,14 +129,14 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/issues"
         data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
-            assert isinstance(data_list, RESTObjectList)
+            assert isinstance(data_list, GitlabList)
         manager = ProjectIssueManager(self.manager.gitlab, parent=self.manager._parent)
         # FIXME(gpocentek): the computed manager path is not correct
         return RESTObjectList(manager, ProjectIssue, data_list)
 
     @cli.register_custom_action(cls_names="ProjectMilestone")
     @exc.on_http_error(exc.GitlabListError)
-    def merge_requests(self, **kwargs: Any) -> RESTObjectList:
+    def merge_requests(self, **kwargs: Any) -> RESTObjectList[ProjectMergeRequest]:
         """List the merge requests related to this milestone.
 
         Args:
@@ -151,7 +155,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         path = f"{self.manager.path}/{self.encoded_id}/merge_requests"
         data_list = self.manager.gitlab.http_list(path, iterator=True, **kwargs)
         if TYPE_CHECKING:
-            assert isinstance(data_list, RESTObjectList)
+            assert isinstance(data_list, GitlabList)
         manager = ProjectMergeRequestManager(
             self.manager.gitlab, parent=self.manager._parent
         )

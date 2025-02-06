@@ -162,7 +162,9 @@ class ListMixin(HeadMixin[base.TObjCls]):
     _list_filters: tuple[str, ...] = ()
 
     @exc.on_http_error(exc.GitlabListError)
-    def list(self, **kwargs: Any) -> base.RESTObjectList | list[base.TObjCls]:
+    def list(
+        self, **kwargs: Any
+    ) -> base.RESTObjectList[base.TObjCls] | list[base.TObjCls]:
         """Retrieve a list of objects.
 
         Args:

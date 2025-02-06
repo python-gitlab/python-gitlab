@@ -623,7 +623,7 @@ class UserProjectManager(ListMixin[UserProject], CreateMixin[UserProject]):
         "id_before",
     )
 
-    def list(self, **kwargs: Any) -> RESTObjectList | list[UserProject]:
+    def list(self, **kwargs: Any) -> RESTObjectList[UserProject] | list[UserProject]:
         """Retrieve a list of objects.
 
         Args:
