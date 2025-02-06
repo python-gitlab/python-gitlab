@@ -203,7 +203,7 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action(cls_names="ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
-    def related_issues(self, **kwargs: Any) -> RESTObjectList:
+    def related_issues(self, **kwargs: Any) -> RESTObjectList[ProjectIssue]:
         """List issues related to this merge request."
 
         Args:
@@ -232,7 +232,7 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action(cls_names="ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
-    def closes_issues(self, **kwargs: Any) -> RESTObjectList:
+    def closes_issues(self, **kwargs: Any) -> RESTObjectList[ProjectIssue]:
         """List issues that will close on merge."
 
         Args:
@@ -257,7 +257,7 @@ class ProjectMergeRequest(
 
     @cli.register_custom_action(cls_names="ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabListError)
-    def commits(self, **kwargs: Any) -> RESTObjectList:
+    def commits(self, **kwargs: Any) -> RESTObjectList[ProjectCommit]:
         """List the merge request commits.
 
         Args:

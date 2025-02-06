@@ -109,7 +109,7 @@ class SnippetManager(CRUDMixin[Snippet]):
     )
 
     @cli.register_custom_action(cls_names="SnippetManager")
-    def list_public(self, **kwargs: Any) -> RESTObjectList | list[Snippet]:
+    def list_public(self, **kwargs: Any) -> RESTObjectList[Snippet] | list[Snippet]:
         """List all public snippets.
 
         Args:
@@ -129,7 +129,7 @@ class SnippetManager(CRUDMixin[Snippet]):
         return self.list(path="/snippets/public", **kwargs)
 
     @cli.register_custom_action(cls_names="SnippetManager")
-    def list_all(self, **kwargs: Any) -> RESTObjectList | list[Snippet]:
+    def list_all(self, **kwargs: Any) -> RESTObjectList[Snippet] | list[Snippet]:
         """List all snippets.
 
         Args:
@@ -148,7 +148,7 @@ class SnippetManager(CRUDMixin[Snippet]):
         """
         return self.list(path="/snippets/all", **kwargs)
 
-    def public(self, **kwargs: Any) -> RESTObjectList | list[Snippet]:
+    def public(self, **kwargs: Any) -> RESTObjectList[Snippet] | list[Snippet]:
         """List all public snippets.
 
         Args:

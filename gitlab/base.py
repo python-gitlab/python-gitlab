@@ -252,7 +252,10 @@ class RESTObject:
         return obj_id
 
 
-class RESTObjectList:
+TObjCls = TypeVar("TObjCls", bound=RESTObject)
+
+
+class RESTObjectList(Generic[TObjCls]):
     """Generator object representing a list of RESTObject's.
 
     This generator uses the Gitlab pagination system to fetch new data when
@@ -268,7 +271,7 @@ class RESTObjectList:
     """
 
     def __init__(
-        self, manager: RESTManager[Any], obj_cls: type[RESTObject], _list: GitlabList
+        self, manager: RESTManager[TObjCls], obj_cls: type[TObjCls], _list: GitlabList
     ) -> None:
         """Creates an objects list from a GitlabList.
 
@@ -284,16 +287,16 @@ class RESTObjectList:
         self._obj_cls = obj_cls
         self._list = _list
 
-    def __iter__(self) -> RESTObjectList:
+    def __iter__(self) -> RESTObjectList[TObjCls]:
         return self
 
     def __len__(self) -> int:
         return len(self._list)
 
-    def __next__(self) -> RESTObject:
+    def __next__(self) -> TObjCls:
         return self.next()
 
-    def next(self) -> RESTObject:
+    def next(self) -> TObjCls:
         data = self._list.next()
         return self._obj_cls(self.manager, data, created_from_list=True)
 
@@ -332,9 +335,6 @@ class RESTObjectList:
     def total(self) -> int | None:
         """The total number of items."""
         return self._list.total
-
-
-TObjCls = TypeVar("TObjCls", bound=RESTObject)
 
 
 class RESTManager(Generic[TObjCls]):

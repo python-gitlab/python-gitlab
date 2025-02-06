@@ -18,7 +18,7 @@ class LDAPGroupManager(RESTManager[LDAPGroup]):
     _list_filters = ("search", "provider")
 
     @exc.on_http_error(exc.GitlabListError)
-    def list(self, **kwargs: Any) -> list[LDAPGroup] | RESTObjectList:
+    def list(self, **kwargs: Any) -> list[LDAPGroup] | RESTObjectList[LDAPGroup]:
         """Retrieve a list of objects.
 
         Args:
