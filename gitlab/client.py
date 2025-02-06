@@ -881,18 +881,16 @@ class Gitlab:
 
         page = kwargs.get("page")
 
-        if iterator and page is not None:
-            arg_used_message = f"iterator={iterator}"
-            utils.warn(
-                message=(
-                    f"`{arg_used_message}` and `page={page}` were both specified. "
-                    f"`{arg_used_message}` will be ignored and a `list` will be "
-                    f"returned."
-                ),
-                category=UserWarning,
-            )
+        if iterator:
+            if page is not None:
+                utils.warn(
+                    message=(
+                        f"`{iterator=}` and `{page=}` were both specified. "
+                        f"`{page=}` will be ignored."
+                    ),
+                    category=UserWarning,
+                )
 
-        if iterator and page is None:
             # Generator requested
             return GitlabList(self, url, query_data, **kwargs)
 

@@ -567,8 +567,8 @@ def test_list_request_page_and_iterator(gl):
         UserWarning, match="`iterator=True` and `page=1` were both specified"
     ):
         result = gl.http_list("/projects", iterator=True, page=1)
-    assert isinstance(result, list)
-    assert len(result) == 20
+    assert isinstance(result, GitlabList)
+    assert len(list(result)) == 20
     assert len(responses.calls) == 1
 
 

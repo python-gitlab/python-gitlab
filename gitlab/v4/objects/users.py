@@ -6,7 +6,7 @@ https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
 
 from __future__ import annotations
 
-from typing import Any, cast, Optional
+from typing import Any, cast, Literal, Optional, overload
 
 import requests
 
@@ -623,7 +623,24 @@ class UserProjectManager(ListMixin[UserProject], CreateMixin[UserProject]):
         "id_before",
     )
 
-    def list(self, **kwargs: Any) -> RESTObjectList[UserProject] | list[UserProject]:
+    @overload
+    def list(
+        self, *, iterator: Literal[False] = False, **kwargs: Any
+    ) -> list[UserProject]: ...
+
+    @overload
+    def list(
+        self, *, iterator: Literal[True] = True, **kwargs: Any
+    ) -> RESTObjectList[UserProject]: ...
+
+    @overload
+    def list(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> RESTObjectList[UserProject] | list[UserProject]: ...
+
+    def list(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> RESTObjectList[UserProject] | list[UserProject]:
         """Retrieve a list of objects.
 
         Args:
@@ -645,7 +662,7 @@ class UserProjectManager(ListMixin[UserProject], CreateMixin[UserProject]):
             path = f"/users/{self._parent.id}/projects"
         else:
             path = f"/users/{self._from_parent_attrs['user_id']}/projects"
-        return super().list(path=path, **kwargs)
+        return super().list(path=path, iterator=iterator, **kwargs)
 
 
 class StarredProject(RESTObject):

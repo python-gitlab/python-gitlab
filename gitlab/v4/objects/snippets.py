@@ -108,8 +108,25 @@ class SnippetManager(CRUDMixin[Snippet]):
         optional=("title", "files", "file_name", "content", "visibility", "description")
     )
 
+    @overload
+    def list_public(
+        self, *, iterator: Literal[False] = False, **kwargs: Any
+    ) -> list[Snippet]: ...
+
+    @overload
+    def list_public(
+        self, *, iterator: Literal[True] = True, **kwargs: Any
+    ) -> RESTObjectList[Snippet]: ...
+
+    @overload
+    def list_public(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> RESTObjectList[Snippet] | list[Snippet]: ...
+
     @cli.register_custom_action(cls_names="SnippetManager")
-    def list_public(self, **kwargs: Any) -> RESTObjectList[Snippet] | list[Snippet]:
+    def list_public(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> RESTObjectList[Snippet] | list[Snippet]:
         """List all public snippets.
 
         Args:
@@ -126,10 +143,27 @@ class SnippetManager(CRUDMixin[Snippet]):
         Returns:
             The list of snippets, or a generator if `iterator` is True
         """
-        return self.list(path="/snippets/public", **kwargs)
+        return self.list(path="/snippets/public", iterator=iterator, **kwargs)
+
+    @overload
+    def list_all(
+        self, *, iterator: Literal[False] = False, **kwargs: Any
+    ) -> list[Snippet]: ...
+
+    @overload
+    def list_all(
+        self, *, iterator: Literal[True] = True, **kwargs: Any
+    ) -> RESTObjectList[Snippet]: ...
+
+    @overload
+    def list_all(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> RESTObjectList[Snippet] | list[Snippet]: ...
 
     @cli.register_custom_action(cls_names="SnippetManager")
-    def list_all(self, **kwargs: Any) -> RESTObjectList[Snippet] | list[Snippet]:
+    def list_all(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> RESTObjectList[Snippet] | list[Snippet]:
         """List all snippets.
 
         Args:
@@ -146,9 +180,30 @@ class SnippetManager(CRUDMixin[Snippet]):
         Returns:
             A generator for the snippets list
         """
-        return self.list(path="/snippets/all", **kwargs)
+        return self.list(path="/snippets/all", iterator=iterator, **kwargs)
 
-    def public(self, **kwargs: Any) -> RESTObjectList[Snippet] | list[Snippet]:
+    @overload
+    def public(
+        self,
+        *,
+        iterator: Literal[False] = False,
+        page: int | None = None,
+        **kwargs: Any,
+    ) -> list[Snippet]: ...
+
+    @overload
+    def public(
+        self, *, iterator: Literal[True] = True, **kwargs: Any
+    ) -> RESTObjectList[Snippet]: ...
+
+    @overload
+    def public(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> RESTObjectList[Snippet] | list[Snippet]: ...
+
+    def public(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> RESTObjectList[Snippet] | list[Snippet]:
         """List all public snippets.
 
         Args:
@@ -172,7 +227,7 @@ class SnippetManager(CRUDMixin[Snippet]):
             ),
             category=DeprecationWarning,
         )
-        return self.list(path="/snippets/public", **kwargs)
+        return self.list(path="/snippets/public", iterator=iterator, **kwargs)
 
 
 class ProjectSnippet(UserAgentDetailMixin, SaveMixin, ObjectDeleteMixin, RESTObject):

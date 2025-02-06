@@ -161,9 +161,24 @@ class RefreshMixin(_RestObjectBase):
 class ListMixin(HeadMixin[base.TObjCls]):
     _list_filters: tuple[str, ...] = ()
 
+    @overload
+    def list(
+        self, *, iterator: Literal[False] = False, **kwargs: Any
+    ) -> list[base.TObjCls]: ...
+
+    @overload
+    def list(
+        self, *, iterator: Literal[True] = True, **kwargs: Any
+    ) -> base.RESTObjectList[base.TObjCls]: ...
+
+    @overload
+    def list(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> base.RESTObjectList[base.TObjCls] | list[base.TObjCls]: ...
+
     @exc.on_http_error(exc.GitlabListError)
     def list(
-        self, **kwargs: Any
+        self, *, iterator: bool = False, **kwargs: Any
     ) -> base.RESTObjectList[base.TObjCls] | list[base.TObjCls]:
         """Retrieve a list of objects.
 
@@ -203,7 +218,7 @@ class ListMixin(HeadMixin[base.TObjCls]):
         # Allow to overwrite the path, handy for custom listings
         path = data.pop("path", self.path)
 
-        obj = self.gitlab.http_list(path, **data)
+        obj = self.gitlab.http_list(path, iterator=iterator, **data)
         if isinstance(obj, list):
             return [self._obj_cls(self, item, created_from_list=True) for item in obj]
         return base.RESTObjectList(self, self._obj_cls, obj)

@@ -133,12 +133,7 @@ class GitlabCLI:
             cli.die("Impossible to create object", e)
         return result
 
-    def do_list(
-        self,
-    ) -> (
-        gitlab.base.RESTObjectList[gitlab.base.RESTObject]
-        | list[gitlab.base.RESTObject]
-    ):
+    def do_list(self) -> list[gitlab.base.RESTObject]:
         if TYPE_CHECKING:
             assert isinstance(self.mgr, gitlab.mixins.ListMixin)
         message_details = gitlab.utils.WarnMessageData(
@@ -150,7 +145,9 @@ class GitlabCLI:
         )
 
         try:
-            result = self.mgr.list(**self.args, message_details=message_details)
+            result = self.mgr.list(
+                **self.args, message_details=message_details, iterator=False
+            )
         except Exception as e:  # pragma: no cover, cli.die is unit-tested
             cli.die("Impossible to list objects", e)
         return result
