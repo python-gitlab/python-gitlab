@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, overload
 
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject, RESTObjectList
@@ -17,8 +17,25 @@ class LDAPGroupManager(RESTManager[LDAPGroup]):
     _obj_cls = LDAPGroup
     _list_filters = ("search", "provider")
 
+    @overload
+    def list(
+        self, *, iterator: Literal[False] = False, **kwargs: Any
+    ) -> list[LDAPGroup]: ...
+
+    @overload
+    def list(
+        self, *, iterator: Literal[True] = True, **kwargs: Any
+    ) -> RESTObjectList[LDAPGroup]: ...
+
+    @overload
+    def list(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> list[LDAPGroup] | RESTObjectList[LDAPGroup]: ...
+
     @exc.on_http_error(exc.GitlabListError)
-    def list(self, **kwargs: Any) -> list[LDAPGroup] | RESTObjectList[LDAPGroup]:
+    def list(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> list[LDAPGroup] | RESTObjectList[LDAPGroup]:
         """Retrieve a list of objects.
 
         Args:
@@ -45,7 +62,7 @@ class LDAPGroupManager(RESTManager[LDAPGroup]):
         else:
             path = self._path
 
-        obj = self.gitlab.http_list(path, **data)
+        obj = self.gitlab.http_list(path, iterator=iterator, **data)
         if isinstance(obj, list):
             return [self._obj_cls(self, item) for item in obj]
         return RESTObjectList(self, self._obj_cls, obj)
