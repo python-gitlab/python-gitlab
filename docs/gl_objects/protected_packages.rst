@@ -20,7 +20,7 @@ Examples
 
 List the package protection rules for a project::
 
-    package_rules = project.package_protection_rules.list()
+    package_rules = project.package_protection_rules.list(get_all=True)
 
 Create a package protection rule::
 

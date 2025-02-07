@@ -24,7 +24,7 @@ Examples
 
 List external status checks for a project::
 
-    status_checks = project.external_status_checks.list()
+    status_checks = project.external_status_checks.list(get_all=True)
 
 Create an external status check with shared secret::
 

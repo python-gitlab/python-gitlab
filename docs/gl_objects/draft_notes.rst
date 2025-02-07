@@ -25,7 +25,7 @@ Examples
 
 List all draft notes for a merge request::
 
-    draft_notes = merge_request.draft_notes.list()
+    draft_notes = merge_request.draft_notes.list(get_all=True)
 
 Get a draft note for a merge request by ID::
 

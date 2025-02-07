@@ -18,7 +18,7 @@ Examples
 
 List all OAuth applications::
 
-    applications = gl.applications.list()
+    applications = gl.applications.list(get_all=True)
 
 Create an application::
 

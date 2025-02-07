@@ -13,7 +13,7 @@ It is likely that you used a ``MergeRequest``, ``GroupMergeRequest``,
 can create a new ``ProjectMergeRequest`` or ``ProjectIssue`` object to
 apply changes. For example::
 
-    issue = gl.issues.list()[0]
+    issue = gl.issues.list(get_all=False)[0]
     project = gl.projects.get(issue.project_id, lazy=True)
     editable_issue = project.issues.get(issue.iid, lazy=True)
     # you can now edit the object
@@ -58,7 +58,7 @@ To retrieve an object with all attributes, use a ``get()`` call.
 
 Example with projects::
 
-    for project in gl.projects.list():
+    for project in gl.projects.list(iterator=True):
         # Retrieve project object with all attributes
         project = gl.projects.get(project.id)
 

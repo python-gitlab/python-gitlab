@@ -27,7 +27,7 @@ Examples
 
 List clusters for a project::
 
-    clusters = project.clusters.list()
+    clusters = project.clusters.list(get_all=True)
 
 Create an cluster for a project::
 
@@ -58,7 +58,7 @@ Delete an cluster for a project::
 
 List clusters for a group::
 
-    clusters = group.clusters.list()
+    clusters = group.clusters.list(get_all=True)
 
 Create an cluster for a group::
 

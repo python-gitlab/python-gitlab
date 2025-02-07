@@ -22,7 +22,7 @@ Examples
 
 List project topics on the GitLab instance::
 
-    topics = gl.topics.list()
+    topics = gl.topics.list(get_all=True)
 
 Get a specific topic by its ID::
 

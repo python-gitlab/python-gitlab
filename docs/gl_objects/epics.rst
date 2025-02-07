@@ -21,7 +21,7 @@ Examples
 
 List the epics for a group::
 
-    epics = groups.epics.list()
+    epics = groups.epics.list(get_all=True)
 
 Get a single epic for a group::
 
@@ -60,7 +60,7 @@ Examples
 
 List the issues associated with an issue::
 
-    ei = epic.issues.list()
+    ei = epic.issues.list(get_all=True)
 
 Associate an issue with an epic::
 

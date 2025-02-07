@@ -21,7 +21,7 @@ Examples
 
 List projects::
 
-    projects = gl.projects.list()
+    projects = gl.projects.list(get_all=True)
 
 The API provides several filtering parameters for the listing methods:
 
@@ -42,18 +42,18 @@ Results can also be sorted using the following parameters:
     # List all projects (default 20)
     projects = gl.projects.list(get_all=True)
     # Archived projects
-    projects = gl.projects.list(archived=1)
+    projects = gl.projects.list(archived=1, get_all=True)
     # Limit to projects with a defined visibility
-    projects = gl.projects.list(visibility='public')
+    projects = gl.projects.list(visibility='public', get_all=True)
 
     # List owned projects
-    projects = gl.projects.list(owned=True)
+    projects = gl.projects.list(owned=True, get_all=True)
 
     # List starred projects
-    projects = gl.projects.list(starred=True)
+    projects = gl.projects.list(starred=True, get_all=True)
 
     # Search projects
-    projects = gl.projects.list(search='keyword')
+    projects = gl.projects.list(search='keyword', get_all=True)
 
 .. note::
 
@@ -81,21 +81,21 @@ Create a project::
 
 Create a project for a user (admin only)::
 
-    alice = gl.users.list(username='alice')[0]
+    alice = gl.users.list(username='alice', get_all=False)[0]
     user_project = alice.projects.create({'name': 'project'})
-    user_projects = alice.projects.list()
+    user_projects = alice.projects.list(get_all=True)
 
 Create a project in a group::
 
     # You need to get the id of the group, then use the namespace_id attribute
     # to create the group
-    group_id = gl.groups.list(search='my-group')[0].id
+    group_id = gl.groups.list(search='my-group', get_all=False)[0].id
     project = gl.projects.create({'name': 'myrepo', 'namespace_id': group_id})
 
 List a project's groups::
 
     # Get a list of ancestor/parent groups for a project.
-    groups = project.groups.list()
+    groups = project.groups.list(get_all=True)
 
 Update a project::
 
@@ -128,7 +128,7 @@ Fork a project::
 
 Get a list of forks for the project::
 
-    forks = project.forks.list()
+    forks = project.forks.list(get_all=True)
 
 Create/delete a fork relation between projects (requires admin permissions)::
 
@@ -241,10 +241,10 @@ Get a list of contributors for the repository::
 
 Get a list of users for the repository::
 
-    users = p.users.list()
+    users = p.users.list(get_all=True)
 
     # search for users
-    users = p.users.list(search='pattern')
+    users = p.users.list(search='pattern', get_all=True)
 
 Import / Export
 ===============
@@ -383,7 +383,7 @@ Examples
 
 List custom attributes for a project::
 
-    attrs = project.customattributes.list()
+    attrs = project.customattributes.list(get_all=True)
 
 Get a custom attribute for a project::
 
@@ -402,7 +402,7 @@ Delete a custom attribute for a project::
 Search projects by custom attribute::
 
     project.customattributes.set('type', 'internal')
-    gl.projects.list(custom_attributes={'type': 'internal'})
+    gl.projects.list(custom_attributes={'type': 'internal'}, get_all=True)
 
 Project files
 =============
@@ -497,7 +497,7 @@ Examples
 
 List the project tags::
 
-    tags = project.tags.list()
+    tags = project.tags.list(get_all=True)
 
 Get a tag::
 
@@ -540,7 +540,7 @@ Examples
 
 List the project snippets::
 
-    snippets = project.snippets.list()
+    snippets = project.snippets.list(get_all=True)
 
 Get a snippet::
 
@@ -606,7 +606,7 @@ Examples
 
 List only direct project members::
 
-    members = project.members.list()
+    members = project.members.list(get_all=True)
 
 List the project members recursively (including inherited members through
 ancestor groups)::
@@ -615,7 +615,7 @@ ancestor groups)::
 
 Search project members matching a query string::
 
-    members = project.members.list(query='bar')
+    members = project.members.list(query='bar', get_all=True)
 
 Get only direct project member::
 
@@ -666,7 +666,7 @@ Examples
 
 List the project hooks::
 
-    hooks = project.hooks.list()
+    hooks = project.hooks.list(get_all=True)
 
 Get a project hook::
 
@@ -732,7 +732,7 @@ Get an existing integration::
 
 List active project integrations::
 
-    integration = project.integrations.list()
+    integration = project.integrations.list(get_all=True)
 
 List the code names of available integrations (doesn't return objects)::
 
@@ -836,7 +836,7 @@ Examples
 
 Get a list of protected tags from a project::
 
-    protected_tags = project.protectedtags.list()
+    protected_tags = project.protectedtags.list(get_all=True)
 
 Get a single protected tag or wildcard protected tag::
 

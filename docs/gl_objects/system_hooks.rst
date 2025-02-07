@@ -18,7 +18,7 @@ Examples
 
 List the system hooks::
 
-    hooks = gl.hooks.list()
+    hooks = gl.hooks.list(get_all=True)
 
 Create a system hook::
 

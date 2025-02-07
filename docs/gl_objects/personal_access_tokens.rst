@@ -24,12 +24,12 @@ Examples
 
 List personal access tokens::
 
-    access_tokens = gl.personal_access_tokens.list()
+    access_tokens = gl.personal_access_tokens.list(get_all=True)
     print(access_tokens[0].name)
 
 List personal access tokens from other user_id (admin only)::
 
-    access_tokens = gl.personal_access_tokens.list(user_id=25)
+    access_tokens = gl.personal_access_tokens.list(user_id=25, get_all=True)
 
 Get a personal access token by id::
 

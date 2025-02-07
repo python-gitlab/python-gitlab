@@ -24,11 +24,11 @@ Examples
 
 List the packages in a project::
 
-    packages = project.packages.list()
+    packages = project.packages.list(get_all=True)
 
 Filter the results by ``package_type`` or ``package_name`` ::
 
-    packages = project.packages.list(package_type='pypi')
+    packages = project.packages.list(package_type='pypi', get_all=True)
 
 Get a specific package of a project by id::
 
@@ -60,11 +60,11 @@ Examples
 
 List the packages in a group::
 
-    packages = group.packages.list()
+    packages = group.packages.list(get_all=True)
 
 Filter the results by ``package_type`` or ``package_name`` ::
 
-    packages = group.packages.list(package_type='pypi')
+    packages = group.packages.list(package_type='pypi', get_all=True)
 
 
 Project Package Files
@@ -87,12 +87,12 @@ Examples
 List package files for package in project::
 
     package = project.packages.get(1)
-    package_files = package.package_files.list()
+    package_files = package.package_files.list(get_all=True)
 
 Delete a package file in a project::
 
     package = project.packages.get(1)
-    file = package.package_files.list()[0]
+    file = package.package_files.list(get_all=False)[0]
     file.delete()
 
 Project Package Pipelines
@@ -115,7 +115,7 @@ Examples
 List package pipelines for package in project::
 
     package = project.packages.get(1)
-    package_pipelines = package.pipelines.list()
+    package_pipelines = package.pipelines.list(get_all=True)
 
 Generic Packages
 ================

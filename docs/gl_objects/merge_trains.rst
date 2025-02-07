@@ -18,7 +18,7 @@ Examples
 
 List merge trains for a project::
 
-    merge_trains = project.merge_trains.list()
+    merge_trains = project.merge_trains.list(get_all=True)
 
 List active merge trains for a project::
 

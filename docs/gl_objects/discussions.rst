@@ -44,7 +44,7 @@ Examples
 
 List the discussions for a resource (issue, merge request, snippet or commit)::
 
-    discussions = resource.discussions.list()
+    discussions = resource.discussions.list(get_all=True)
 
 Get a single discussion::
 
