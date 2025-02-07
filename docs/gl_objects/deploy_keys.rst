@@ -19,7 +19,11 @@ Reference
 Examples
 --------
 
-List the deploy keys::
+Add an instance-wide deploy key (requires admin access)::
+
+    keys = gl.deploykeys.create({'title': 'instance key', 'key': INSTANCE_KEY})
+
+List all deploy keys::
 
     keys = gl.deploykeys.list()
 
