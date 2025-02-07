@@ -20,7 +20,7 @@ Examples
 
 List the container registry protection rules for a project::
 
-    registry_rules = project.registry_protection_repository_rules.list()
+    registry_rules = project.registry_protection_repository_rules.list(get_all=True)
 
 Create a container registry protection rule::
 

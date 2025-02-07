@@ -23,11 +23,11 @@ Examples
 
 Get the list of wiki pages for a project. These do not contain the contents of the wiki page. You will need to call get(slug) to retrieve the content by accessing the content attribute::
 
-    pages = project.wikis.list()
+    pages = project.wikis.list(get_all=True)
 
 Get the list of wiki pages for a group. These do not contain the contents of the wiki page. You will need to call get(slug) to retrieve the content by accessing the content attribute::
 
-    pages = group.wikis.list()
+    pages = group.wikis.list(get_all=True)
 
 Get a single wiki page for a project::
 

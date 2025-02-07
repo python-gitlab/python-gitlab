@@ -22,7 +22,7 @@ Examples
 Get a list of releases from a project::
 
     project = gl.projects.get(project_id, lazy=True)
-    release = project.releases.list()
+    release = project.releases.list(get_all=True)
 
 Get a single release::
 

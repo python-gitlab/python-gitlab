@@ -18,7 +18,7 @@ Examples
 
 Get the list of container registry repositories associated with the project::
 
-      repositories = project.repositories.list()
+      repositories = project.repositories.list(get_all=True)
 
 Get the list of all project container registry repositories in a group::
 

@@ -18,11 +18,11 @@ Examples
 
 List namespaces::
 
-    namespaces = gl.namespaces.list()
+    namespaces = gl.namespaces.list(get_all=True)
 
 Search namespaces::
 
-    namespaces = gl.namespaces.list(search='foo')
+    namespaces = gl.namespaces.list(search='foo', get_all=True)
 
 Get a namespace by ID or path::
 

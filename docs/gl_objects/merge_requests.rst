@@ -32,16 +32,16 @@ Examples
 
 List the merge requests created by the user of the token on the GitLab server::
 
-    mrs = gl.mergerequests.list()
+    mrs = gl.mergerequests.list(get_all=True)
 
 List the merge requests available on the GitLab server::
 
-    mrs = gl.mergerequests.list(scope="all")
+    mrs = gl.mergerequests.list(scope="all", get_all=True)
 
 List the merge requests for a group::
 
     group = gl.groups.get('mygroup')
-    mrs = group.mergerequests.list()
+    mrs = group.mergerequests.list(get_all=True)
 
 .. note::
 
@@ -49,7 +49,7 @@ List the merge requests for a group::
    ``GroupMergeRequest`` objects. You need to create a ``ProjectMergeRequest``
    object to apply changes::
 
-       mr = group.mergerequests.list()[0]
+       mr = group.mergerequests.list(get_all=False)[0]
        project = gl.projects.get(mr.project_id, lazy=True)
        editable_mr = project.mergerequests.get(mr.iid, lazy=True)
        editable_mr.title = updated_title
@@ -74,7 +74,7 @@ Examples
 
 List MRs for a project::
 
-    mrs = project.mergerequests.list()
+    mrs = project.mergerequests.list(get_all=True)
 
 You can filter and sort the returned list with the following parameters:
 
@@ -88,7 +88,7 @@ https://docs.gitlab.com/ee/api/merge_requests.html#list-merge-requests
 
 For example::
 
-    mrs = project.mergerequests.list(state='merged', order_by='updated_at')
+    mrs = project.mergerequests.list(state='merged', order_by='updated_at', get_all=True)
 
 Get a single MR::
 
@@ -97,7 +97,7 @@ Get a single MR::
 Get MR reviewer details::
 
     mr = project.mergerequests.get(mr_iid)
-    reviewers = mr.reviewer_details.list()
+    reviewers = mr.reviewer_details.list(get_all=True)
 
 Create a MR::
 
@@ -171,7 +171,7 @@ Mark a MR as todo::
 
 List the diffs for a merge request::
 
-    diffs = mr.diffs.list()
+    diffs = mr.diffs.list(get_all=True)
 
 Get a diff for a merge request::
 
@@ -247,7 +247,7 @@ Examples
 
 List pipelines for a merge request::
 
-    pipelines = mr.pipelines.list()
+    pipelines = mr.pipelines.list(get_all=True)
 
 Create a pipeline for a merge request::
 

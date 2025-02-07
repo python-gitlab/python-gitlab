@@ -20,7 +20,7 @@ Examples
 
 List group access tokens::
 
-    access_tokens = gl.groups.get(1, lazy=True).access_tokens.list()
+    access_tokens = gl.groups.get(1, lazy=True).access_tokens.list(get_all=True)
     print(access_tokens[0].name)
 
 Get a group access token by id::

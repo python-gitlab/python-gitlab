@@ -20,7 +20,7 @@ Examples
 
 Get the list of a project's remote mirrors::
 
-    mirrors = project.remote_mirrors.list()
+    mirrors = project.remote_mirrors.list(get_all=True)
 
 Create (and enable) a remote mirror for a project::
 

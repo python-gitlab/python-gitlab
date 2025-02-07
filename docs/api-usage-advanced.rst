@@ -34,7 +34,7 @@ properly closed when you exit a ``with`` block:
 .. code-block:: python
 
    with gitlab.Gitlab(host, token) as gl:
-       gl.projects.list()
+       gl.statistics.get()
 
 .. warning::
 

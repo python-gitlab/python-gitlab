@@ -18,7 +18,7 @@ Examples
 
 Get the list of branches for a repository::
 
-    branches = project.branches.list()
+    branches = project.branches.list(get_all=True)
 
 Get a single repository branch::
 

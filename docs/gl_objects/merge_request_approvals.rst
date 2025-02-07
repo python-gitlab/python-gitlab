@@ -22,7 +22,7 @@ Examples
 
 List group-level MR approval rules::
 
-    group_approval_rules = group.approval_rules.list()
+    group_approval_rules = group.approval_rules.list(get_all=True)
 
 Change group-level MR approval rule::
 
@@ -62,7 +62,7 @@ Examples
 
 List project-level MR approval rules::
 
-    p_mras = project.approvalrules.list()
+    p_mras = project.approvalrules.list(get_all=True)
 
 Change project-level MR approval rule::
 
@@ -132,7 +132,7 @@ Create a new MR-level approval rule or change an existing MR-level approval rule
 
 List MR-level MR approval rules::
 
-    mr.approval_rules.list()
+    mr.approval_rules.list(get_all=True)
 
 Get a single MR approval rule::
 
@@ -141,7 +141,7 @@ Get a single MR approval rule::
 
 Delete MR-level MR approval rule::
 
-    rules = mr.approval_rules.list()
+    rules = mr.approval_rules.list(get_all=False)
     rules[0].delete()
 
     # or

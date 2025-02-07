@@ -28,7 +28,7 @@ Examples
 
 List known license templates::
 
-    licenses = gl.licenses.list()
+    licenses = gl.licenses.list(get_all=True)
 
 Generate a license content for a project::
 
@@ -54,7 +54,7 @@ Examples
 
 List known gitignore templates::
 
-    gitignores = gl.gitignores.list()
+    gitignores = gl.gitignores.list(get_all=True)
 
 Get a gitignore template::
 
@@ -80,7 +80,7 @@ Examples
 
 List known GitLab CI templates::
 
-    gitlabciymls = gl.gitlabciymls.list()
+    gitlabciymls = gl.gitlabciymls.list(get_all=True)
 
 Get a GitLab CI template::
 
@@ -106,7 +106,7 @@ Examples
 
 List known Dockerfile templates::
 
-    dockerfiles = gl.dockerfiles.list()
+    dockerfiles = gl.dockerfiles.list(get_all=True)
 
 Get a Dockerfile template::
 
@@ -150,12 +150,12 @@ Examples
 
 List known project templates::
 
-    license_templates = project.license_templates.list()
-    gitignore_templates = project.gitignore_templates.list()
-    gitlabciyml_templates = project.gitlabciyml_templates.list()
-    dockerfile_templates = project.dockerfile_templates.list()
-    issue_templates = project.issue_templates.list()
-    merge_request_templates = project.merge_request_templates.list()
+    license_templates = project.license_templates.list(get_all=True)
+    gitignore_templates = project.gitignore_templates.list(get_all=True)
+    gitlabciyml_templates = project.gitlabciyml_templates.list(get_all=True)
+    dockerfile_templates = project.dockerfile_templates.list(get_all=True)
+    issue_templates = project.issue_templates.list(get_all=True)
+    merge_request_templates = project.merge_request_templates.list(get_all=True)
 
 Get project templates::
   

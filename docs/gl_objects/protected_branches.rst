@@ -21,7 +21,7 @@ Examples
 
 Get the list of protected branches for a project::
 
-    p_branches = project.protectedbranches.list()
+    p_branches = project.protectedbranches.list(get_all=True)
 
 Get a single protected branch::
 

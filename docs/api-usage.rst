@@ -158,7 +158,7 @@ with the GitLab server error message:
 
 .. code-block:: python
 
-   >>> gl.projects.list(sort='invalid value')
+   >>> gl.projects.list(get_all=True, sort='invalid value')
    ...
    GitlabListError: 400: sort does not have a valid value
 
@@ -222,7 +222,7 @@ the value on the object is accepted:
 
 .. code-block:: python
 
-   issues = project.issues.list(state='opened')
+   issues = project.issues.list(get_all=True, state='opened')
    for issue in issues:
       issue.my_super_awesome_feature_flag = "random_value"
       issue.save()
@@ -361,7 +361,7 @@ order options. At the time of writing, only ``order_by="id"`` works.
 .. code-block:: python
 
    gl = gitlab.Gitlab(url, token, pagination="keyset", order_by="id", per_page=100)
-   gl.projects.list()
+   gl.projects.list(get_all=True)
 
 Reference:
 https://docs.gitlab.com/ce/api/README.html#keyset-based-pagination

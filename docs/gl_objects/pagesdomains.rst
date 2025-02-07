@@ -50,7 +50,7 @@ Examples
 
 List all the existing domains (admin only)::
 
-    domains = gl.pagesdomains.list()
+    domains = gl.pagesdomains.list(get_all=True)
 
 Project Pages domains
 =====================
@@ -71,7 +71,7 @@ Examples
 
 List domains for a project::
 
-    domains = project.pagesdomains.list()
+    domains = project.pagesdomains.list(get_all=True)
 
 Get a single domain::
 

@@ -28,8 +28,8 @@ Examples
 
 List the milestones for a project or a group::
 
-    p_milestones = project.milestones.list()
-    g_milestones = group.milestones.list()
+    p_milestones = project.milestones.list(get_all=True)
+    g_milestones = group.milestones.list(get_all=True)
 
 You can filter the list using the following parameters:
 
@@ -39,8 +39,8 @@ You can filter the list using the following parameters:
 
 ::
 
-    p_milestones = project.milestones.list(state='closed')
-    g_milestones = group.milestones.list(state='active')
+    p_milestones = project.milestones.list(state='closed', get_all=True)
+    g_milestones = group.milestones.list(state='active', get_all=True)
 
 Get a single milestone::
 
@@ -102,7 +102,7 @@ Examples
 
 Get milestones for a resource (issue, merge request)::
 
-    milestones = resource.resourcemilestoneevents.list()
+    milestones = resource.resourcemilestoneevents.list(get_all=True)
 
 Get a specific milestone for a resource::
 
