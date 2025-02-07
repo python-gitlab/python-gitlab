@@ -26,18 +26,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5.4.0
         with:
-          python-version: "3.12"
+          python-version: "3.13"
       - name: Install dependencies
         run: pip install tox
       - name: Build docs
         env:
           TOXENV: docs
         run: tox
-      - name: Archive generated docs
-        uses: actions/upload-artifact@v4.6.0
-        with:
-          name: html-docs
-          path: build/sphinx/html/
 
   twine-check:
     runs-on: ubuntu-24.04
@@ -46,7 +41,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5.4.0
         with:
-          python-version: "3.12"
+          python-version: "3.13"
       - name: Install dependencies
         run: pip install tox twine wheel
       - name: Check twine readme rendering
