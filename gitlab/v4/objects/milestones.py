@@ -39,7 +39,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         """List issues related to this milestone.
 
         Args:
-            all: If True, return all the items, without pagination
+            get_all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
             **kwargs: Extra options to send to the server (e.g. sudo)
@@ -66,7 +66,7 @@ class GroupMilestone(SaveMixin, ObjectDeleteMixin, RESTObject):
         """List the merge requests related to this milestone.
 
         Args:
-            all: If True, return all the items, without pagination
+            get_all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
             **kwargs: Extra options to send to the server (e.g. sudo)
@@ -113,7 +113,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         """List issues related to this milestone.
 
         Args:
-            all: If True, return all the items, without pagination
+            get_all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
             **kwargs: Extra options to send to the server (e.g. sudo)
@@ -140,7 +140,7 @@ class ProjectMilestone(PromoteMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
         """List the merge requests related to this milestone.
 
         Args:
-            all: If True, return all the items, without pagination
+            get_all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
             **kwargs: Extra options to send to the server (e.g. sudo)

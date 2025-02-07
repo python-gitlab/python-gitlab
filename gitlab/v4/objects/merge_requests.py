@@ -207,7 +207,7 @@ class ProjectMergeRequest(
         """List issues related to this merge request."
 
         Args:
-            all: If True, return all the items, without pagination
+            get_all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
             **kwargs: Extra options to send to the server (e.g. sudo)
@@ -236,7 +236,7 @@ class ProjectMergeRequest(
         """List issues that will close on merge."
 
         Args:
-            all: If True, return all the items, without pagination
+            get_all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
             **kwargs: Extra options to send to the server (e.g. sudo)
@@ -261,7 +261,7 @@ class ProjectMergeRequest(
         """List the merge request commits.
 
         Args:
-            all: If True, return all the items, without pagination
+            get_all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
             **kwargs: Extra options to send to the server (e.g. sudo)

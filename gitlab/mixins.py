@@ -168,7 +168,7 @@ class ListMixin(HeadMixin[base.TObjCls]):
         """Retrieve a list of objects.
 
         Args:
-            all: If True, return all the items, without pagination
+            get_all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
             iterator: If set to True and no pagination option is
@@ -867,7 +867,7 @@ class ParticipantsMixin(_RestObjectBase):
         """List the participants.
 
         Args:
-            all: If True, return all the items, without pagination
+            get_all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
             **kwargs: Extra options to send to the server (e.g. sudo)

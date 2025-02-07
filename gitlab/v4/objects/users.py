@@ -627,7 +627,7 @@ class UserProjectManager(ListMixin[UserProject], CreateMixin[UserProject]):
         """Retrieve a list of objects.
 
         Args:
-            all: If True, return all the items, without pagination
+            get_all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
             iterator: If set to True and no pagination option is

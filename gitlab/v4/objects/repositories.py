@@ -64,7 +64,7 @@ class RepositoryMixin(_RestObjectBase):
             path: Path of the top folder (/ by default)
             ref: Reference to a commit or branch
             recursive: Whether to get the tree recursively
-            all: If True, return all the items, without pagination
+            get_all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
             iterator: If set to True and no pagination option is
@@ -218,7 +218,7 @@ class RepositoryMixin(_RestObjectBase):
         """Return a list of contributors for the project.
 
         Args:
-            all: If True, return all the items, without pagination
+            get_all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
             iterator: If set to True and no pagination option is
