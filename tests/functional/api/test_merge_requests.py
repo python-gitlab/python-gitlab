@@ -300,3 +300,46 @@ def test_merge_request_merge_ref_should_fail(project, merge_request) -> None:
     with pytest.raises(gitlab.exceptions.GitlabGetError):
         response = merge_request.merge_ref()
         assert "commit_id" not in response
+
+
+@pytest.mark.gitlab_premium
+def test_merge_request_external_status_check_set_status(project, merge_request):
+    project.external_status_checks.create(
+        {
+            "name": "external_status_check",
+            "external_url": "https://example.com/mr-blocker",
+        }
+    )
+
+    mr_external_status_checks = merge_request.external_status_checks.list()
+    assert len(mr_external_status_checks) == 1
+
+    expected_external_status_check = None
+
+    for mr_external_status_check in mr_external_status_checks:
+        if mr_external_status_check.name == "external_status_check":
+            expected_external_status_check = mr_external_status_check
+            break
+
+    assert expected_external_status_check is not None
+
+    # set the external status check value to 'passed'
+    merge_request.external_status_check_response.update(
+        {
+            "external_status_check_id": expected_external_status_check.id,
+            "status": "passed",
+            "sha": merge_request.sha,
+        }
+    )
+
+    time.sleep(2)
+
+    # Check the status again to validate the passed status
+    mr_status_checks = merge_request.external_status_checks.list()
+
+    for mr_status_check in mr_status_checks:
+        if mr_status_check.name == "external_status_check":
+            expected_status_check = mr_status_check
+            break
+
+    assert expected_status_check.status == "passed"

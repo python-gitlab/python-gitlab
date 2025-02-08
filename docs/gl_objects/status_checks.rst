@@ -24,11 +24,11 @@ Examples
 
 List external status checks for a project::
 
-    status_checks = project.external_status_checks.list(get_all=True)
+    external_status_checks = project.external_status_checks.list()
 
 Create an external status check with shared secret::
 
-    status_checks = project.external_status_checks.create({
+    external_status_checks = project.external_status_checks.create({
         "name": "mr_blocker",
         "external_url": "https://example.com/mr-status-check",
         "shared_secret": "secret-string"
@@ -38,7 +38,7 @@ Create an external status check with shared secret for protected branches::
 
     protected_branch = project.protectedbranches.get('main')
 
-    status_check = project.external_status_checks.create({
+    external_status_check = project.external_status_checks.create({
         "name": "mr_blocker",
         "external_url": "https://example.com/mr-status-check",
         "shared_secret": "secret-string",
@@ -48,10 +48,25 @@ Create an external status check with shared secret for protected branches::
 
 Update an external status check::
 
-    status_check.external_url = "https://example.com/mr-blocker"
-    status_check.save()
+    external_status_check.external_url = "https://example.com/mr-blocker"
+    external_status_check.save()
 
 Delete an external status check::
 
-    status_check.delete(status_check_id)
+    external_status_check.delete(externa_status_check_id)
 
+List external status check for a project merge request::
+
+    merge_request = project.mergerequests.get(1)
+
+    merge_request.external_status_checks.list()
+
+Set external status check for a project merge request::
+
+    merge_request = project.mergerequests.get(1)
+
+    merge_request.external_status_check_response.update({
+        "external_status_check_id": external_status_check_id,
+        "status": "passed",
+        "sha": merge_request.sha
+    })

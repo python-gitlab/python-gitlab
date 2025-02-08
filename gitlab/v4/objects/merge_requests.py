@@ -46,7 +46,10 @@ from .merge_request_approvals import (  # noqa: F401
 from .notes import ProjectMergeRequestNoteManager  # noqa: F401
 from .pipelines import ProjectMergeRequestPipelineManager  # noqa: F401
 from .reviewers import ProjectMergeRequestReviewerDetailManager
-from .status_checks import ProjectMergeRequestStatusCheckManager
+from .status_checks import (
+    ProjectMergeRequestStatusCheckManager,
+    ProjectMergeRequestStatusCheckResponseManager,
+)
 
 __all__ = [
     "MergeRequest",
@@ -170,7 +173,8 @@ class ProjectMergeRequest(
     resourcemilestoneevents: ProjectMergeRequestResourceMilestoneEventManager
     resourcestateevents: ProjectMergeRequestResourceStateEventManager
     reviewer_details: ProjectMergeRequestReviewerDetailManager
-    status_checks: ProjectMergeRequestStatusCheckManager
+    external_status_checks: ProjectMergeRequestStatusCheckManager
+    external_status_check_response: ProjectMergeRequestStatusCheckResponseManager
 
     @cli.register_custom_action(cls_names="ProjectMergeRequest")
     @exc.on_http_error(exc.GitlabMROnBuildSuccessError)
