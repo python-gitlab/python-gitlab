@@ -84,6 +84,7 @@ push_rules_content = {
 }
 
 service_account_content = {
+    "id": 42,
     "name": "gitlab-service-account",
     "username": "gitlab-service-account",
 }
@@ -343,6 +344,24 @@ def resp_create_group_service_account():
         yield rsps
 
 
+@pytest.fixture
+def resp_delete_group_service_account():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/groups/1/service_accounts",
+            json=service_account_content,
+            content_type="application/json",
+            status=200,
+        )
+        rsps.add(
+            method=responses.DELETE,
+            url="http://localhost/api/v4/groups/1/service_accounts/42",
+            status=204,
+        )
+        yield rsps
+
+
 def test_get_group(gl, resp_groups):
     data = gl.groups.get(1)
     assert isinstance(data, gitlab.v4.objects.Group)
@@ -489,3 +508,10 @@ def test_create_group_service_account(group, resp_create_group_service_account):
     )
     assert service_account.name == "gitlab-service-account"
     assert service_account.username == "gitlab-service-account"
+
+
+def test_delete_group_service_account(group, resp_delete_group_service_account):
+    service_account = group.service_accounts.create(
+        {"name": "gitlab-service-account", "username": "gitlab-service-account"}
+    )
+    service_account.delete()
