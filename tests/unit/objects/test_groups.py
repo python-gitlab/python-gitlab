@@ -89,6 +89,18 @@ service_account_content = {
     "username": "gitlab-service-account",
 }
 
+service_account_access_token_content = {
+    "id": 1,
+    "name": "service_account_access_token",
+    "revoked": False,
+    "scopes": ["api"],
+    "user_id": 42,
+    "last_used": None,
+    "active": True,
+    "expires_at": None,
+    "token": "abcdefg12345",
+}
+
 
 @pytest.fixture
 def resp_groups():
@@ -362,6 +374,26 @@ def resp_delete_group_service_account():
         yield rsps
 
 
+@pytest.fixture
+def resp_create_group_service_account_access_token():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/groups/1/service_accounts",
+            json=service_account_content,
+            content_type="application/json",
+            status=200,
+        )
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/groups/1/service_accounts/42/personal_access_tokens",
+            json=service_account_access_token_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
 def test_get_group(gl, resp_groups):
     data = gl.groups.get(1)
     assert isinstance(data, gitlab.v4.objects.Group)
@@ -515,3 +547,17 @@ def test_delete_group_service_account(group, resp_delete_group_service_account):
         {"name": "gitlab-service-account", "username": "gitlab-service-account"}
     )
     service_account.delete()
+
+
+def test_create_group_service_account_access_token(
+    group, resp_create_group_service_account_access_token
+):
+    service_account = group.service_accounts.create(
+        {"name": "gitlab-service-account", "username": "gitlab-service-account"}
+    )
+    access_token = service_account.access_tokens.create(
+        {"name": "service_account_access_token", "scopes": ["api"]}
+    )
+    assert service_account.id == 42
+    assert access_token.name == "service_account_access_token"
+    assert access_token.scopes == ["api"]
