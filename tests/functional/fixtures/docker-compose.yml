@@ -12,7 +12,6 @@ services:
     privileged: true # Just in case https://gitlab.com/gitlab-org/omnibus-gitlab/-/issues/1350
     environment:
       GITLAB_ROOT_PASSWORD: 5iveL!fe
-      GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN: registration-token
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://127.0.0.1:8080'
         registry['enable'] = false

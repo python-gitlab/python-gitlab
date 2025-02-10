@@ -8,7 +8,7 @@ import tempfile
 import time
 import uuid
 from subprocess import check_output
-from typing import Sequence
+from typing import Sequence, TYPE_CHECKING
 
 import pytest
 import requests
@@ -260,6 +260,7 @@ def gl(gitlab_url: str, gitlab_token: str) -> gitlab.Gitlab:
 
     logging.info("Instantiating python-gitlab gitlab.Gitlab instance")
     instance = gitlab.Gitlab(gitlab_url, private_token=gitlab_token)
+    instance.auth()
 
     logging.info("Reset GitLab")
     reset_gitlab(instance)
@@ -291,21 +292,25 @@ def gitlab_ultimate(gitlab_plan, request) -> None:
 
 
 @pytest.fixture(scope="session")
-def gitlab_runner(gl):
+def gitlab_runner(gl: gitlab.Gitlab):
     container = "gitlab-runner-test"
-    runner_name = "python-gitlab-runner"
-    token = "registration-token"
+    runner_description = "python-gitlab-runner"
+    if TYPE_CHECKING:
+        assert gl.user is not None
+
+    runner = gl.user.runners.create(
+        {"runner_type": "instance_type", "run_untagged": True}
+    )
     url = "http://gitlab"
 
     docker_exec = ["docker", "exec", container, "gitlab-runner"]
     register = [
         "register",
-        "--run-untagged",
         "--non-interactive",
-        "--registration-token",
-        token,
-        "--name",
-        runner_name,
+        "--token",
+        runner.token,
+        "--description",
+        runner_description,
         "--url",
         url,
         "--clone-url",
@@ -313,11 +318,10 @@ def gitlab_runner(gl):
         "--executor",
         "shell",
     ]
-    unregister = ["unregister", "--name", runner_name]
 
     yield check_output(docker_exec + register).decode()
 
-    check_output(docker_exec + unregister).decode()
+    gl.runners.delete(token=runner.token)
 
 
 @pytest.fixture(scope="module")
