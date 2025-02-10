@@ -19,6 +19,23 @@ __all__ = [
 ]
 
 
+class GroupServiceAccountAccessToken(ObjectRotateMixin, RESTObject):
+    pass
+
+
+class GroupServiceAccountAccessTokenManager(
+    CreateMixin[GroupServiceAccountAccessToken],
+    RotateMixin[GroupServiceAccountAccessToken],
+):
+    _path = "/groups/{group_id}/service_accounts/{user_id}/personal_access_tokens"
+    _obj_cls = GroupServiceAccountAccessToken
+    _from_parent_attrs = {"group_id": "group_id", "user_id": "id"}
+    _create_attrs = RequiredOptional(
+        required=("name", "scopes"), optional=("expires_at",)
+    )
+    _types = {"scopes": ArrayAttribute}
+
+
 class ServiceAccount(RESTObject):
     pass
 
@@ -30,7 +47,7 @@ class ServiceAccountManager(CreateMixin[ServiceAccount], ListMixin[ServiceAccoun
 
 
 class GroupServiceAccount(ObjectDeleteMixin, RESTObject):
-    pass
+    access_tokens: GroupServiceAccountAccessTokenManager
 
 
 class GroupServiceAccountManager(
@@ -42,20 +59,3 @@ class GroupServiceAccountManager(
     _obj_cls = GroupServiceAccount
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(optional=("name", "username"))
-
-
-class GroupServiceAccountAccessToken(ObjectRotateMixin, RESTObject):
-    pass
-
-
-class GroupServiceAccountAccessTokenManager(
-    CreateMixin[GroupServiceAccountAccessToken],
-    RotateMixin[GroupServiceAccountAccessToken],
-):
-    _path = "/groups/{group_id}/service_accounts/{user_id}/personal_access_tokens"
-    _obj_cls = GroupServiceAccountAccessToken
-    _from_parent_attrs = {"group_id": "id", "user_id": "user_id"}
-    _create_attrs = RequiredOptional(
-        required=("name", "scopes"), optional=("expires_at",)
-    )
-    _types = {"scopes": ArrayAttribute}
