@@ -36,6 +36,7 @@ from .invitations import GroupInvitationManager  # noqa: F401
 from .issues import GroupIssueManager  # noqa: F401
 from .iterations import GroupIterationManager  # noqa: F401
 from .labels import GroupLabelManager  # noqa: F401
+from .member_roles import GroupMemberRoleManager  # noqa: F401
 from .members import (  # noqa: F401
     GroupBillableMemberManager,
     GroupMemberAllManager,
@@ -92,6 +93,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     iterations: GroupIterationManager
     labels: GroupLabelManager
     ldap_group_links: GroupLDAPGroupLinkManager
+    member_roles: GroupMemberRoleManager
     members: GroupMemberManager
     members_all: GroupMemberAllManager
     mergerequests: GroupMergeRequestManager

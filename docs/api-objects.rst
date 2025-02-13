@@ -36,6 +36,7 @@ API examples
    gl_objects/boards
    gl_objects/labels
    gl_objects/notifications
+   gl_objects/member_roles.rst
    gl_objects/merge_trains
    gl_objects/merge_requests
    gl_objects/merge_request_approvals.rst

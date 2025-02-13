@@ -39,6 +39,7 @@ from .jobs import *
 from .keys import *
 from .labels import *
 from .ldap import *
+from .member_roles import *
 from .members import *
 from .merge_request_approvals import *
 from .merge_requests import *

@@ -166,6 +166,8 @@ class Gitlab:
         """See :class:`~gitlab.v4.objects.LicenseManager`"""
         self.namespaces = objects.NamespaceManager(self)
         """See :class:`~gitlab.v4.objects.NamespaceManager`"""
+        self.member_roles = objects.MemberRoleManager(self)
+        """See :class:`~gitlab.v4.objects.MergeRequestManager`"""
         self.mergerequests = objects.MergeRequestManager(self)
         """See :class:`~gitlab.v4.objects.MergeRequestManager`"""
         self.notificationsettings = objects.NotificationSettingsManager(self)
