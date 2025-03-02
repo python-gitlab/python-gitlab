@@ -11,7 +11,7 @@ from gitlab.v4.objects import ProjectMergeTrain, ProjectMergeTrainMergeRequest
 mr_content = {
     "id": 110,
     "merge_request": {
-        "id": 1,
+        "id": 273,
         "iid": 1,
         "project_id": 3,
         "title": "Test merge train",
@@ -47,7 +47,7 @@ mr_content = {
 }
 
 merge_train_update = mr_content.copy()
-merge_train_update["id"] = 123
+merge_train_update["iid"] = 4
 merge_train_update["pipeline"]["sha"] = "ef33a3zxc3"
 
 
@@ -69,7 +69,7 @@ def resp_merge_trains_merge_request_get():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.GET,
-            url="http://localhost/api/v4/projects/1/merge_trains/merge_requests/110",
+            url="http://localhost/api/v4/projects/1/merge_trains/merge_requests/1",
             json=mr_content,
             content_type="application/json",
             status=200,
@@ -82,7 +82,7 @@ def resp_merge_trains_merge_request_post():
     with responses.RequestsMock() as rsps:
         rsps.add(
             method=responses.POST,
-            url="http://localhost/api/v4/projects/1/merge_trains/merge_requests/123",
+            url="http://localhost/api/v4/projects/1/merge_trains/merge_requests/4",
             json=[merge_train_update],
             content_type="application/json",
             status=200,
@@ -96,24 +96,29 @@ def test_list_project_merge_requests(project, resp_list_merge_trains):
     assert merge_trains[0].id == mr_content["id"]
 
 
-def test_merge_trains_status_merge_request_get_status(
+def test_merge_trains_status_merge_request(
     project, resp_merge_trains_merge_request_get
 ):
     merge_train_mr: ProjectMergeTrainMergeRequest = project.merge_trains.get(
         1, lazy=True
-    ).merge_requests.get(110)
+    ).merge_requests.get(1)
     assert isinstance(merge_train_mr, ProjectMergeTrainMergeRequest)
     assert merge_train_mr.get_id() == 110
+    assert merge_train_mr.merge_request["iid"] == mr_content["merge_request"]["iid"]
     assert merge_train_mr.pipeline.get("status") == mr_content["pipeline"]["status"]
 
 
 def test_merge_train_add_merge_request(project, resp_merge_trains_merge_request_post):
     merge_train: ProjectMergeTrain = project.merge_trains.get(1, lazy=True)
     merge_requests_update = merge_train.merge_requests.update(
-        123, new_data={"sha": "ef33a3zxc3"}
+        4, new_data={"sha": "ef33a3zxc3"}
     )
     assert isinstance(merge_train, ProjectMergeTrain)
     assert (
         merge_requests_update[0]["pipeline"]["sha"]
         == merge_train_update["pipeline"]["sha"]
+    )
+    assert (
+        merge_requests_update[0]["merge_request"]["iid"]
+        == merge_train_update["merge_request"]["iid"]
     )
