@@ -1,4 +1,4 @@
-gql==3.5.0
+gql==3.5.2
 httpx==0.28.1
 requests==2.32.3
 requests-toolbelt==1.0.0
