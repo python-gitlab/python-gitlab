@@ -26,7 +26,11 @@ def test_epic_issues(epic, issue):
 
 
 def test_epic_notes(epic):
-    assert not epic.notes.list()
+    epic_notes_list = epic.notes.list()
+    if epic_notes_list:
+        for note in epic_notes_list:
+            note.pprint()
+    assert not epic_notes_list, f"{epic_notes_list}"
 
     epic.notes.create({"body": "Test note"})
     assert epic.notes.list()
