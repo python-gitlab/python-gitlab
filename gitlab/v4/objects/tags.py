@@ -19,6 +19,7 @@ class ProjectTagManager(NoUpdateMixin[ProjectTag]):
     _path = "/projects/{project_id}/repository/tags"
     _obj_cls = ProjectTag
     _from_parent_attrs = {"project_id": "id"}
+    _list_filters = ("order_by", "sort", "search")
     _create_attrs = RequiredOptional(
         required=("tag_name", "ref"), optional=("message",)
     )
