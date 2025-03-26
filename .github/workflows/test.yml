@@ -25,6 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
+        continue_on_error: [ false ]
         python:
           - version: "3.9"
             toxenv: py39,smoke
@@ -36,9 +37,12 @@ jobs:
             toxenv: py312,smoke
           - version: "3.13"
             toxenv: py313,smoke
-          - version: "3.14.0-alpha - 3.14" # SemVer's version range syntax
-            toxenv: py314,smoke
         include:
+          - os: ubuntu-latest
+            python:
+              version: "3.14.0-alpha - 3.14" # SemVer's version range syntax
+              toxenv: py314,smoke
+            continue_on_error: true
           - os: macos-latest
             python:
               version: "3.13"
@@ -59,6 +63,7 @@ jobs:
         env:
           TOXENV: ${{ matrix.python.toxenv }}
         run: tox --skip-missing-interpreters false
+        continue-on-error: ${{ matrix.continue_on_error }}
 
   functional:
     timeout-minutes: 30
