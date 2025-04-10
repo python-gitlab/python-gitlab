@@ -1,4 +1,6 @@
-from gitlab.base import RESTObject
+from typing import Any, Dict, Optional
+
+from gitlab.base import RESTManager, RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -27,6 +29,7 @@ class ProjectExternalStatusCheckManager(
     CreateMixin[ProjectExternalStatusCheck],
     UpdateMixin[ProjectExternalStatusCheck],
     DeleteMixin[ProjectExternalStatusCheck],
+    RESTManager[ProjectExternalStatusCheck],
 ):
     _path = "/projects/{project_id}/external_status_checks"
     _obj_cls = ProjectExternalStatusCheck
@@ -41,15 +44,41 @@ class ProjectExternalStatusCheckManager(
     _types = {"protected_branch_ids": ArrayAttribute}
 
 
-class ProjectMergeRequestStatusCheck(SaveMixin, RESTObject):
+class ProjectMergeRequestStatusCheckResponse(SaveMixin, RESTObject):
     pass
 
 
-class ProjectMergeRequestStatusCheckManager(ListMixin[ProjectMergeRequestStatusCheck]):
-    _path = "/projects/{project_id}/merge_requests/{merge_request_iid}/status_checks"
-    _obj_cls = ProjectMergeRequestStatusCheck
-    _from_parent_attrs = {"project_id": "project_id", "merge_request_iid": "iid"}
+class ProjectMergeRequestStatusCheckResponseManager(
+    UpdateMixin[ProjectMergeRequestStatusCheckResponse],
+    RESTManager[ProjectMergeRequestStatusCheckResponse],
+):
+    _path = "/projects/{project_id}/merge_requests/{mr_iid}/status_check_responses"
+    _obj_cls = ProjectMergeRequestStatusCheckResponse
+    _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
     _update_attrs = RequiredOptional(
         required=("sha", "external_status_check_id", "status")
     )
     _update_method = UpdateMethod.POST
+
+    def update(  # type: ignore[override]
+        self, new_data: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> Dict[str, Any]:
+        """Update a Label on the server.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+        """
+        return super().update(id=None, new_data=new_data, **kwargs)
+
+
+class ProjectMergeRequestStatusCheck(RESTObject):
+    pass
+
+
+class ProjectMergeRequestStatusCheckManager(
+    ListMixin[ProjectMergeRequestStatusCheck],
+    RESTManager[ProjectMergeRequestStatusCheck],
+):
+    _path = "/projects/{project_id}/merge_requests/{mr_iid}/status_checks"
+    _obj_cls = ProjectMergeRequestStatusCheck
+    _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
