@@ -50,17 +50,12 @@ class ProjectProtectedBranchManager(CRUDMixin[ProjectProtectedBranch]):
     )
     _update_method = UpdateMethod.PATCH
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectProtectedBranch:
-        return cast(ProjectProtectedBranch, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class GroupProtectedBranch(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
 
 
-class GroupProtectedBranchManager(CRUDMixin, RESTManager):
+class GroupProtectedBranchManager(CRUDMixin[GroupProtectedBranch]):
     _path = "/groups/{group_id}/protected_branches"
     _obj_cls = GroupProtectedBranch
     _from_parent_attrs = {"group_id": "id"}
@@ -78,8 +73,3 @@ class GroupProtectedBranchManager(CRUDMixin, RESTManager):
         ),
     )
     _update_method = UpdateMethod.PATCH
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupProtectedBranch:
-        return cast(GroupProtectedBranch, super().get(id=id, lazy=lazy, **kwargs))
