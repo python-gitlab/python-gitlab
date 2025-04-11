@@ -2,8 +2,8 @@
 Protected branches
 ##################
 
-You can define a list of protected branch names on a repository. Names can use
-wildcards (``*``).
+You can define a list of protected branch names on a repository or group.
+Names can use wildcards (``*``).
 
 References
 ----------
@@ -13,19 +13,24 @@ References
   + :class:`gitlab.v4.objects.ProjectProtectedBranch`
   + :class:`gitlab.v4.objects.ProjectProtectedBranchManager`
   + :attr:`gitlab.v4.objects.Project.protectedbranches`
+  + :class:`gitlab.v4.objects.GroupProtectedBranch`
+  + :class:`gitlab.v4.objects.GroupProtectedBranchManager`
+  + :attr:`gitlab.v4.objects.Group.protectedbranches`
 
 * GitLab API: https://docs.gitlab.com/api/protected_branches#protected-branches-api
 
 Examples
 --------
 
-Get the list of protected branches for a project::
+Get the list of protected branches for a project or group::
 
-    p_branches = project.protectedbranches.list(get_all=True)
+    p_branches = project.protectedbranches.list()
+    p_branches = group.protectedbranches.list()
 
 Get a single protected branch::
 
     p_branch = project.protectedbranches.get('main')
+    p_branch = group.protectedbranches.get('main')
 
 Update a protected branch::
 
