@@ -3,25 +3,17 @@ GitLab API:
 https://docs.gitlab.com/ee/api/projects.html
 """
 
+from __future__ import annotations
+
 import io
-from typing import (
-    Any,
-    Callable,
-    cast,
-    Dict,
-    Iterator,
-    List,
-    Optional,
-    TYPE_CHECKING,
-    Union,
-)
+from typing import Any, Callable, Iterator, Literal, overload, TYPE_CHECKING
 
 import requests
 
 from gitlab import cli, client
 from gitlab import exceptions as exc
 from gitlab import types, utils
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -78,7 +70,7 @@ from .notes import ProjectNoteManager  # noqa: F401
 from .notification_settings import ProjectNotificationSettingsManager  # noqa: F401
 from .package_protection_rules import ProjectPackageProtectionRuleManager
 from .packages import GenericPackageManager, ProjectPackageManager  # noqa: F401
-from .pages import ProjectPagesDomainManager  # noqa: F401
+from .pages import ProjectPagesDomainManager, ProjectPagesManager  # noqa: F401
 from .pipelines import (  # noqa: F401
     ProjectPipeline,
     ProjectPipelineManager,
@@ -86,7 +78,10 @@ from .pipelines import (  # noqa: F401
 )
 from .project_access_tokens import ProjectAccessTokenManager  # noqa: F401
 from .push_rules import ProjectPushRulesManager  # noqa: F401
-from .registry_protection_rules import (  # noqa: F401
+from .registry_protection_repository_rules import (  # noqa: F401
+    ProjectRegistryRepositoryProtectionRuleManager,
+)
+from .registry_protection_rules import (  # noqa: F401; deprecated
     ProjectRegistryProtectionRuleManager,
 )
 from .releases import ProjectReleaseManager  # noqa: F401
@@ -99,7 +94,16 @@ from .statistics import (  # noqa: F401
     ProjectAdditionalStatisticsManager,
     ProjectIssuesStatisticsManager,
 )
+from .status_checks import ProjectExternalStatusCheckManager  # noqa: F401
 from .tags import ProjectProtectedTagManager, ProjectTagManager  # noqa: F401
+from .templates import (  # noqa: F401
+    ProjectDockerfileTemplateManager,
+    ProjectGitignoreTemplateManager,
+    ProjectGitlabciymlTemplateManager,
+    ProjectIssueTemplateManager,
+    ProjectLicenseTemplateManager,
+    ProjectMergeRequestTemplateManager,
+)
 from .triggers import ProjectTriggerManager  # noqa: F401
 from .users import ProjectUserManager  # noqa: F401
 from .variables import ProjectVariableManager  # noqa: F401
@@ -114,6 +118,8 @@ __all__ = [
     "ProjectForkManager",
     "ProjectRemoteMirror",
     "ProjectRemoteMirrorManager",
+    "ProjectPullMirror",
+    "ProjectPullMirrorManager",
     "ProjectStorage",
     "ProjectStorageManager",
     "SharedProject",
@@ -125,7 +131,7 @@ class GroupProject(RESTObject):
     pass
 
 
-class GroupProjectManager(ListMixin, RESTManager):
+class GroupProjectManager(ListMixin[GroupProject]):
     _path = "/groups/{group_id}/projects"
     _obj_cls = GroupProject
     _from_parent_attrs = {"group_id": "id"}
@@ -152,7 +158,7 @@ class ProjectGroup(RESTObject):
     pass
 
 
-class ProjectGroupManager(ListMixin, RESTManager):
+class ProjectGroupManager(ListMixin[ProjectGroup]):
     _path = "/projects/{project_id}/groups"
     _obj_cls = ProjectGroup
     _from_parent_attrs = {"project_id": "id"}
@@ -189,33 +195,40 @@ class Project(
     customattributes: ProjectCustomAttributeManager
     deployments: ProjectDeploymentManager
     deploytokens: ProjectDeployTokenManager
+    dockerfile_templates: ProjectDockerfileTemplateManager
     environments: ProjectEnvironmentManager
     events: ProjectEventManager
     exports: ProjectExportManager
     files: ProjectFileManager
-    forks: "ProjectForkManager"
+    forks: ProjectForkManager
     generic_packages: GenericPackageManager
+    gitignore_templates: ProjectGitignoreTemplateManager
+    gitlabciyml_templates: ProjectGitlabciymlTemplateManager
     groups: ProjectGroupManager
     hooks: ProjectHookManager
     imports: ProjectImportManager
     integrations: ProjectIntegrationManager
     invitations: ProjectInvitationManager
     issues: ProjectIssueManager
+    issue_templates: ProjectIssueTemplateManager
     issues_statistics: ProjectIssuesStatisticsManager
     iterations: ProjectIterationManager
     jobs: ProjectJobManager
     job_token_scope: ProjectJobTokenScopeManager
     keys: ProjectKeyManager
     labels: ProjectLabelManager
+    license_templates: ProjectLicenseTemplateManager
     members: ProjectMemberManager
     members_all: ProjectMemberAllManager
     mergerequests: ProjectMergeRequestManager
+    merge_request_templates: ProjectMergeRequestTemplateManager
     merge_trains: ProjectMergeTrainManager
     milestones: ProjectMilestoneManager
     notes: ProjectNoteManager
     notificationsettings: ProjectNotificationSettingsManager
     packages: ProjectPackageManager
     package_protection_rules: ProjectPackageProtectionRuleManager
+    pages: ProjectPagesManager
     pagesdomains: ProjectPagesDomainManager
     pipelines: ProjectPipelineManager
     pipelineschedules: ProjectPipelineScheduleManager
@@ -224,15 +237,18 @@ class Project(
     protectedtags: ProjectProtectedTagManager
     pushrules: ProjectPushRulesManager
     registry_protection_rules: ProjectRegistryProtectionRuleManager
+    registry_protection_repository_rules: ProjectRegistryRepositoryProtectionRuleManager
     releases: ProjectReleaseManager
     resource_groups: ProjectResourceGroupManager
-    remote_mirrors: "ProjectRemoteMirrorManager"
+    remote_mirrors: ProjectRemoteMirrorManager
+    pull_mirror: ProjectPullMirrorManager
     repositories: ProjectRegistryRepositoryManager
     runners: ProjectRunnerManager
     secure_files: ProjectSecureFileManager
     services: ProjectServiceManager
     snippets: ProjectSnippetManager
-    storage: "ProjectStorageManager"
+    external_status_checks: ProjectExternalStatusCheckManager
+    storage: ProjectStorageManager
     tags: ProjectTagManager
     triggers: ProjectTriggerManager
     users: ProjectUserManager
@@ -272,7 +288,7 @@ class Project(
 
     @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabGetError)
-    def languages(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def languages(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Get languages used in the project with percentage value.
 
         Args:
@@ -367,7 +383,7 @@ class Project(
         self,
         group_id: int,
         group_access: int,
-        expires_at: Optional[str] = None,
+        expires_at: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Share the project with a group.
@@ -412,7 +428,7 @@ class Project(
         self,
         ref: str,
         token: str,
-        variables: Optional[Dict[str, Any]] = None,
+        variables: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> ProjectPipeline:
         """Trigger a CI build.
@@ -468,18 +484,54 @@ class Project(
         path = f"/projects/{self.encoded_id}/restore"
         self.manager.gitlab.http_post(path, **kwargs)
 
+    @overload
+    def snapshot(
+        self,
+        wiki: bool = False,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def snapshot(
+        self,
+        wiki: bool = False,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def snapshot(
+        self,
+        wiki: bool = False,
+        streamed: Literal[True] = True,
+        action: Callable[[bytes], Any] | None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
+
     @cli.register_custom_action(cls_names="Project", optional=("wiki",))
     @exc.on_http_error(exc.GitlabGetError)
     def snapshot(
         self,
         wiki: bool = False,
         streamed: bool = False,
-        action: Optional[Callable[[bytes], None]] = None,
+        action: Callable[[bytes], Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Return a snapshot of the repository.
 
         Args:
@@ -515,7 +567,7 @@ class Project(
     @exc.on_http_error(exc.GitlabSearchError)
     def search(
         self, scope: str, search: str, **kwargs: Any
-    ) -> Union[client.GitlabList, List[Dict[str, Any]]]:
+    ) -> client.GitlabList | list[dict[str, Any]]:
         """Search the project resources matching the provided string.'
 
         Args:
@@ -546,12 +598,19 @@ class Project(
             GitlabAuthenticationError: If authentication is not correct
             GitlabCreateError: If the server failed to perform the request
         """
+        utils.warn(
+            message=(
+                "project.mirror_pull() is deprecated and will be removed in a "
+                "future major version. Use project.pull_mirror.start() instead."
+            ),
+            category=DeprecationWarning,
+        )
         path = f"/projects/{self.encoded_id}/mirror/pull"
         self.manager.gitlab.http_post(path, **kwargs)
 
     @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabGetError)
-    def mirror_pull_details(self, **kwargs: Any) -> Dict[str, Any]:
+    def mirror_pull_details(self, **kwargs: Any) -> dict[str, Any]:
         """Get a project's pull mirror details.
 
         Introduced in GitLab 15.5.
@@ -566,6 +625,13 @@ class Project(
         Returns:
             dict of the parsed json returned by the server
         """
+        utils.warn(
+            message=(
+                "project.mirror_pull_details() is deprecated and will be removed in a "
+                "future major version. Use project.pull_mirror.get() instead."
+            ),
+            category=DeprecationWarning,
+        )
         path = f"/projects/{self.encoded_id}/mirror/pull"
         result = self.manager.gitlab.http_get(path, **kwargs)
         if TYPE_CHECKING:
@@ -574,7 +640,7 @@ class Project(
 
     @cli.register_custom_action(cls_names="Project", required=("to_namespace",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
-    def transfer(self, to_namespace: Union[int, str], **kwargs: Any) -> None:
+    def transfer(self, to_namespace: int | str, **kwargs: Any) -> None:
         """Transfer a project to the given namespace ID
 
         Args:
@@ -592,7 +658,7 @@ class Project(
         )
 
 
-class ProjectManager(CRUDMixin, RESTManager):
+class ProjectManager(CRUDMixin[Project]):
     _path = "/projects"
     _obj_cls = Project
     # Please keep these _create_attrs in same order as they are at:
@@ -669,7 +735,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             "visibility",
             "wiki_access_level",
             "wiki_enabled",
-        ),
+        )
     )
     # Please keep these _update_attrs in same order as they are at:
     # https://docs.gitlab.com/ee/api/projects.html#edit-project
@@ -757,7 +823,7 @@ class ProjectManager(CRUDMixin, RESTManager):
             "visibility",
             "wiki_access_level",
             "wiki_enabled",
-        ),
+        )
     )
     _list_filters = (
         "archived",
@@ -791,20 +857,17 @@ class ProjectManager(CRUDMixin, RESTManager):
         "topics": types.ArrayAttribute,
     }
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Project:
-        return cast(Project, super().get(id=id, lazy=lazy, **kwargs))
-
     @exc.on_http_error(exc.GitlabImportError)
     def import_project(
         self,
         file: io.BufferedReader,
         path: str,
-        name: Optional[str] = None,
-        namespace: Optional[str] = None,
+        name: str | None = None,
+        namespace: str | None = None,
         overwrite: bool = False,
-        override_params: Optional[Dict[str, Any]] = None,
+        override_params: dict[str, Any] | None = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Import a project from an archive file.
 
         Args:
@@ -844,12 +907,12 @@ class ProjectManager(CRUDMixin, RESTManager):
         self,
         url: str,
         path: str,
-        name: Optional[str] = None,
-        namespace: Optional[str] = None,
+        name: str | None = None,
+        namespace: str | None = None,
         overwrite: bool = False,
-        override_params: Optional[Dict[str, Any]] = None,
+        override_params: dict[str, Any] | None = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Import a project from an archive file stored on a remote URL.
 
         Args:
@@ -892,12 +955,12 @@ class ProjectManager(CRUDMixin, RESTManager):
         file_key: str,
         access_key_id: str,
         secret_access_key: str,
-        name: Optional[str] = None,
-        namespace: Optional[str] = None,
+        name: str | None = None,
+        namespace: str | None = None,
         overwrite: bool = False,
-        override_params: Optional[Dict[str, Any]] = None,
+        override_params: dict[str, Any] | None = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Import a project from an archive file stored on AWS S3.
 
         Args:
@@ -950,10 +1013,10 @@ class ProjectManager(CRUDMixin, RESTManager):
         personal_access_token: str,
         bitbucket_server_project: str,
         bitbucket_server_repo: str,
-        new_name: Optional[str] = None,
-        target_namespace: Optional[str] = None,
+        new_name: str | None = None,
+        target_namespace: str | None = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Import a project from BitBucket Server to Gitlab (schedule the import)
 
         This method will return when an import operation has been safely queued,
@@ -1040,11 +1103,11 @@ class ProjectManager(CRUDMixin, RESTManager):
         personal_access_token: str,
         repo_id: int,
         target_namespace: str,
-        new_name: Optional[str] = None,
-        github_hostname: Optional[str] = None,
-        optional_stages: Optional[Dict[str, bool]] = None,
+        new_name: str | None = None,
+        github_hostname: str | None = None,
+        optional_stages: dict[str, bool] | None = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Import a project from Github to Gitlab (schedule the import)
 
         This method will return when an import operation has been safely queued,
@@ -1120,7 +1183,7 @@ class ProjectFork(RESTObject):
     pass
 
 
-class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
+class ProjectForkManager(CreateMixin[ProjectFork], ListMixin[ProjectFork]):
     _path = "/projects/{project_id}/forks"
     _obj_cls = ProjectFork
     _from_parent_attrs = {"project_id": "id"}
@@ -1141,9 +1204,7 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
     )
     _create_attrs = RequiredOptional(optional=("namespace",))
 
-    def create(
-        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> ProjectFork:
+    def create(self, data: dict[str, Any] | None = None, **kwargs: Any) -> ProjectFork:
         """Creates a new object.
 
         Args:
@@ -1159,10 +1220,8 @@ class ProjectForkManager(CreateMixin, ListMixin, RESTManager):
             A new instance of the managed object class build with
                 the data sent by the server
         """
-        if TYPE_CHECKING:
-            assert self.path is not None
         path = self.path[:-1]  # drop the 's'
-        return cast(ProjectFork, CreateMixin.create(self, data, path=path, **kwargs))
+        return super().create(data, path=path, **kwargs)
 
 
 class ProjectRemoteMirror(ObjectDeleteMixin, SaveMixin, RESTObject):
@@ -1170,7 +1229,10 @@ class ProjectRemoteMirror(ObjectDeleteMixin, SaveMixin, RESTObject):
 
 
 class ProjectRemoteMirrorManager(
-    ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    ListMixin[ProjectRemoteMirror],
+    CreateMixin[ProjectRemoteMirror],
+    UpdateMixin[ProjectRemoteMirror],
+    DeleteMixin[ProjectRemoteMirror],
 ):
     _path = "/projects/{project_id}/remote_mirrors"
     _obj_cls = ProjectRemoteMirror
@@ -1181,24 +1243,75 @@ class ProjectRemoteMirrorManager(
     _update_attrs = RequiredOptional(optional=("enabled", "only_protected_branches"))
 
 
+class ProjectPullMirror(SaveMixin, RESTObject):
+    _id_attr = None
+
+
+class ProjectPullMirrorManager(
+    GetWithoutIdMixin[ProjectPullMirror], UpdateMixin[ProjectPullMirror]
+):
+    _path = "/projects/{project_id}/mirror/pull"
+    _obj_cls = ProjectPullMirror
+    _from_parent_attrs = {"project_id": "id"}
+    _update_attrs = RequiredOptional(optional=("url",))
+
+    @exc.on_http_error(exc.GitlabCreateError)
+    def create(self, data: dict[str, Any], **kwargs: Any) -> ProjectPullMirror:
+        """Create a new object.
+
+        Args:
+            data: parameters to send to the server to create the
+                         resource
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Returns:
+            A new instance of the managed object class built with
+                the data sent by the server
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server cannot perform the request
+        """
+        if TYPE_CHECKING:
+            assert data is not None
+        self._create_attrs.validate_attrs(data=data)
+
+        server_data = self.gitlab.http_put(self.path, post_data=data, **kwargs)
+
+        if TYPE_CHECKING:
+            assert not isinstance(server_data, requests.Response)
+        return self._obj_cls(self, server_data)
+
+    @cli.register_custom_action(cls_names="ProjectPullMirrorManager")
+    @exc.on_http_error(exc.GitlabCreateError)
+    def start(self, **kwargs: Any) -> None:
+        """Start the pull mirroring process for the project.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server failed to perform the request
+        """
+        self.gitlab.http_post(self.path, **kwargs)
+
+
 class ProjectStorage(RefreshMixin, RESTObject):
     pass
 
 
-class ProjectStorageManager(GetWithoutIdMixin, RESTManager):
+class ProjectStorageManager(GetWithoutIdMixin[ProjectStorage]):
     _path = "/projects/{project_id}/storage"
     _obj_cls = ProjectStorage
     _from_parent_attrs = {"project_id": "id"}
-
-    def get(self, **kwargs: Any) -> ProjectStorage:
-        return cast(ProjectStorage, super().get(**kwargs))
 
 
 class SharedProject(RESTObject):
     pass
 
 
-class SharedProjectManager(ListMixin, RESTManager):
+class SharedProjectManager(ListMixin[SharedProject]):
     _path = "/groups/{group_id}/projects/shared"
     _obj_cls = SharedProject
     _from_parent_attrs = {"group_id": "id"}

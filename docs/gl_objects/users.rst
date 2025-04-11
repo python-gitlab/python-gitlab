@@ -23,7 +23,7 @@ References
 
 * GitLab API:
 
-  + https://docs.gitlab.com/ce/api/users.html
+  + https://docs.gitlab.com/ee/api/users.html
   + https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
 
 Examples
@@ -31,18 +31,18 @@ Examples
 
 Get the list of users::
 
-    users = gl.users.list()
+    users = gl.users.list(get_all=True)
 
 Search users whose username match a given string::
 
-    users = gl.users.list(search='foo')
+    users = gl.users.list(search='foo', get_all=True)
 
 Get a single user::
 
     # by ID
     user = gl.users.get(user_id)
     # by username
-    user = gl.users.list(username='root')[0]
+    user = gl.users.list(username='root', get_all=False)[0]
 
 Create a user::
 
@@ -99,17 +99,17 @@ Delete an external identity by provider name::
 
     user.identityproviders.delete('oauth2_generic')
 
-Get the followers of a user
+Get the followers of a user::
 
-    user.followers_users.list()
+    user.followers_users.list(get_all=True)
 
-Get the followings of a user
+Get the followings of a user::
 
-    user.following_users.list()
+    user.following_users.list(get_all=True)
 
-List a user's starred projects
+List a user's starred projects::
 
-    user.starred_projects.list()
+    user.starred_projects.list(get_all=True)
 
 If the GitLab instance has new user account approval enabled some users may
 have ``user.state == 'blocked_pending_approval'``. Administrators can approve
@@ -137,7 +137,7 @@ Examples
 
 List custom attributes for a user::
 
-    attrs = user.customattributes.list()
+    attrs = user.customattributes.list(get_all=True)
 
 Get a custom attribute for a user::
 
@@ -156,7 +156,7 @@ Delete a custom attribute for a user::
 Search users by custom attribute::
 
     user.customattributes.set('role', 'QA')
-    gl.users.list(custom_attributes={'role': 'QA'})
+    gl.users.list(custom_attributes={'role': 'QA'}, get_all=True)
 
 User impersonation tokens
 =========================
@@ -170,12 +170,12 @@ References
   + :class:`gitlab.v4.objects.UserImpersonationTokenManager`
   + :attr:`gitlab.v4.objects.User.impersonationtokens`
 
-* GitLab API: https://docs.gitlab.com/ce/api/users.html#get-all-impersonation-tokens-of-a-user
+* GitLab API: https://docs.gitlab.com/ee/api/user_tokens.html#get-all-impersonation-tokens-of-a-user
 
 List impersonation tokens for a user::
 
-    i_t = user.impersonationtokens.list(state='active')
-    i_t = user.impersonationtokens.list(state='inactive')
+    i_t = user.impersonationtokens.list(state='active', get_all=True)
+    i_t = user.impersonationtokens.list(state='inactive', get_all=True)
 
 Get an impersonation token for a user::
 
@@ -204,11 +204,11 @@ References
   + :class:`gitlab.v4.objects.UserProjectManager`
   + :attr:`gitlab.v4.objects.User.projects`
 
-* GitLab API: https://docs.gitlab.com/ee/api/projects.html#list-user-projects
+* GitLab API: https://docs.gitlab.com/ee/api/projects.html#list-a-users-projects
 
 List visible projects in the user's namespace::
 
-    projects = user.projects.list()
+    projects = user.projects.list(get_all=True)
 
 .. note::
 
@@ -229,19 +229,19 @@ References
   + :class:`gitlab.v4.objects.UserMembershipManager`
   + :attr:`gitlab.v4.objects.User.memberships`
 
-* GitLab API: https://docs.gitlab.com/ee/api/users.html#user-memberships
+* GitLab API: https://docs.gitlab.com/ee/api/users.html#list-projects-and-groups-that-a-user-is-a-member-of
 
 List direct memberships for a user::
 
-    memberships = user.memberships.list()
+    memberships = user.memberships.list(get_all=True)
 
 List only direct project memberships::
 
-    memberships = user.memberships.list(type='Project')
+    memberships = user.memberships.list(type='Project', get_all=True)
 
 List only direct group memberships::
 
-    memberships = user.memberships.list(type='Namespace')
+    memberships = user.memberships.list(type='Namespace', get_all=True)
 
 .. note::
 
@@ -259,7 +259,7 @@ References
   + :class:`gitlab.v4.objects.CurrentUserManager`
   + :attr:`gitlab.Gitlab.user`
 
-* GitLab API: https://docs.gitlab.com/ce/api/users.html
+* GitLab API: https://docs.gitlab.com/ee/api/users.html
 
 Examples
 --------
@@ -287,14 +287,14 @@ are admin.
   + :class:`gitlab.v4.objects.UserGPGKeyManager`
   + :attr:`gitlab.v4.objects.User.gpgkeys`
 
-* GitLab API: https://docs.gitlab.com/ce/api/users.html#list-all-gpg-keys
+* GitLab API: https://docs.gitlab.com/ee/api/user_keys.html#list-your-gpg-keys
 
 Examples
 --------
 
 List GPG keys for a user::
 
-    gpgkeys = user.gpgkeys.list()
+    gpgkeys = user.gpgkeys.list(get_all=True)
 
 Get a GPG gpgkey for a user::
 
@@ -329,14 +329,14 @@ are admin.
   + :class:`gitlab.v4.objects.UserKeyManager`
   + :attr:`gitlab.v4.objects.User.keys`
 
-* GitLab API: https://docs.gitlab.com/ce/api/users.html#list-ssh-keys
+* GitLab API: https://docs.gitlab.com/ee/api/user_keys.html#get-a-single-ssh-key
 
 Examples
 --------
 
 List SSH keys for a user::
 
-    keys = user.keys.list()
+    keys = user.keys.list(get_all=True)
 
 Create an SSH key for a user::
 
@@ -370,7 +370,7 @@ You can manipulate the status for the current user and you can read the status o
   + :class:`gitlab.v4.objects.UserStatusManager`
   + :attr:`gitlab.v4.objects.User.status`
 
-* GitLab API: https://docs.gitlab.com/ce/api/users.html#user-status
+* GitLab API: https://docs.gitlab.com/ee/api/users.html#get-the-status-of-a-user
 
 Examples
 --------
@@ -408,14 +408,14 @@ are admin.
   + :class:`gitlab.v4.objects.UserEmailManager`
   + :attr:`gitlab.v4.objects.User.emails`
 
-* GitLab API: https://docs.gitlab.com/ce/api/users.html#list-emails
+* GitLab API: https://docs.gitlab.com/ee/api/user_email_addresses.html
 
 Examples
 --------
 
 List emails for a user::
 
-    emails = user.emails.list()
+    emails = user.emails.list(get_all=True)
 
 Get an email for a user::
 
@@ -445,7 +445,7 @@ References
   + :class:`gitlab.v4.objects.UserActivitiesManager`
   + :attr:`gitlab.Gitlab.user_activities`
 
-* GitLab API: https://docs.gitlab.com/ce/api/users.html#get-user-activities-admin-only
+* GitLab API: https://docs.gitlab.com/ee/api/users.html#list-a-users-activity
 
 Examples
 --------
@@ -471,7 +471,7 @@ References
   + :class:`gitlab.v4.objects.CurrentUserRunnerManager`
   + :attr:`gitlab.Gitlab.user.runners`
 
-* GitLab API : https://docs.gitlab.com/ee/api/users.html#create-a-runner
+* GitLab API : https://docs.gitlab.com/ee/api/users.html#create-a-runner-linked-to-a-user
 
 Examples
 --------

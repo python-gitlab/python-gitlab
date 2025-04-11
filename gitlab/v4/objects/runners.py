@@ -1,9 +1,11 @@
-from typing import Any, cast, List, Optional, Union
+from __future__ import annotations
+
+from typing import Any
 
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -32,7 +34,7 @@ class RunnerJob(RESTObject):
     pass
 
 
-class RunnerJobManager(ListMixin, RESTManager):
+class RunnerJobManager(ListMixin[RunnerJob]):
     _path = "/runners/{runner_id}/jobs"
     _obj_cls = RunnerJob
     _from_parent_attrs = {"runner_id": "id"}
@@ -44,7 +46,7 @@ class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "description"
 
 
-class RunnerManager(CRUDMixin, RESTManager):
+class RunnerManager(CRUDMixin[Runner]):
     _path = "/runners"
     _obj_cls = Runner
     _create_attrs = RequiredOptional(
@@ -69,20 +71,20 @@ class RunnerManager(CRUDMixin, RESTManager):
             "locked",
             "access_level",
             "maximum_timeout",
-        ),
+        )
     )
     _list_filters = ("scope", "type", "status", "paused", "tag_list")
     _types = {"tag_list": types.CommaSeparatedListAttribute}
 
     @cli.register_custom_action(cls_names="RunnerManager", optional=("scope",))
     @exc.on_http_error(exc.GitlabListError)
-    def all(self, scope: Optional[str] = None, **kwargs: Any) -> List[Runner]:
+    def all(self, scope: str | None = None, **kwargs: Any) -> list[Runner]:
         """List all the runners.
 
         Args:
             scope: The scope of runners to show, one of: specific,
                 shared, active, paused, online
-            all: If True, return all the items, without pagination
+            get_all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
             iterator: If set to True and no pagination option is
@@ -120,15 +122,12 @@ class RunnerManager(CRUDMixin, RESTManager):
         post_data = {"token": token}
         self.gitlab.http_post(path, post_data=post_data, **kwargs)
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Runner:
-        return cast(Runner, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class RunnerAll(RESTObject):
     _repr_attr = "description"
 
 
-class RunnerAllManager(ListMixin, RESTManager):
+class RunnerAllManager(ListMixin[RunnerAll]):
     _path = "/runners/all"
     _obj_cls = RunnerAll
     _list_filters = ("scope", "type", "status", "paused", "tag_list")
@@ -139,7 +138,7 @@ class GroupRunner(RESTObject):
     pass
 
 
-class GroupRunnerManager(ListMixin, RESTManager):
+class GroupRunnerManager(ListMixin[GroupRunner]):
     _path = "/groups/{group_id}/runners"
     _obj_cls = GroupRunner
     _from_parent_attrs = {"group_id": "id"}
@@ -152,7 +151,9 @@ class ProjectRunner(ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectRunnerManager(CreateMixin, DeleteMixin, ListMixin, RESTManager):
+class ProjectRunnerManager(
+    CreateMixin[ProjectRunner], DeleteMixin[ProjectRunner], ListMixin[ProjectRunner]
+):
     _path = "/projects/{project_id}/runners"
     _obj_cls = ProjectRunner
     _from_parent_attrs = {"project_id": "id"}

@@ -1,11 +1,13 @@
-from typing import Any, cast, Dict, List, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, TYPE_CHECKING
 
 import requests
 
 import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CreateMixin, ListMixin, RefreshMixin, RetrieveMixin
 from gitlab.types import RequiredOptional
 
@@ -24,13 +26,13 @@ __all__ = [
 class ProjectCommit(RESTObject):
     _repr_attr = "title"
 
-    comments: "ProjectCommitCommentManager"
+    comments: ProjectCommitCommentManager
     discussions: ProjectCommitDiscussionManager
-    statuses: "ProjectCommitStatusManager"
+    statuses: ProjectCommitStatusManager
 
     @cli.register_custom_action(cls_names="ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    def diff(self, **kwargs: Any) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
+    def diff(self, **kwargs: Any) -> gitlab.GitlabList | list[dict[str, Any]]:
         """Generate the commit diff.
 
         Args:
@@ -48,7 +50,9 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action(cls_names="ProjectCommit", required=("branch",))
     @exc.on_http_error(exc.GitlabCherryPickError)
-    def cherry_pick(self, branch: str, **kwargs: Any) -> None:
+    def cherry_pick(
+        self, branch: str, **kwargs: Any
+    ) -> dict[str, Any] | requests.Response:
         """Cherry-pick a commit into a branch.
 
         Args:
@@ -58,16 +62,19 @@ class ProjectCommit(RESTObject):
         Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabCherryPickError: If the cherry-pick could not be performed
+
+        Returns:
+            The new commit data (*not* a RESTObject)
         """
         path = f"{self.manager.path}/{self.encoded_id}/cherry_pick"
         post_data = {"branch": branch}
-        self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
+        return self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
 
     @cli.register_custom_action(cls_names="ProjectCommit", optional=("type",))
     @exc.on_http_error(exc.GitlabGetError)
     def refs(
         self, type: str = "all", **kwargs: Any
-    ) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
+    ) -> gitlab.GitlabList | list[dict[str, Any]]:
         """List the references the commit is pushed to.
 
         Args:
@@ -87,9 +94,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action(cls_names="ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    def merge_requests(
-        self, **kwargs: Any
-    ) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
+    def merge_requests(self, **kwargs: Any) -> gitlab.GitlabList | list[dict[str, Any]]:
         """List the merge requests related to the commit.
 
         Args:
@@ -107,9 +112,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action(cls_names="ProjectCommit", required=("branch",))
     @exc.on_http_error(exc.GitlabRevertError)
-    def revert(
-        self, branch: str, **kwargs: Any
-    ) -> Union[Dict[str, Any], requests.Response]:
+    def revert(self, branch: str, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Revert a commit on a given branch.
 
         Args:
@@ -129,7 +132,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action(cls_names="ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    def sequence(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def sequence(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Get the sequence number of the commit.
 
         Args:
@@ -147,7 +150,7 @@ class ProjectCommit(RESTObject):
 
     @cli.register_custom_action(cls_names="ProjectCommit")
     @exc.on_http_error(exc.GitlabGetError)
-    def signature(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def signature(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Get the signature of the commit.
 
         Args:
@@ -164,7 +167,7 @@ class ProjectCommit(RESTObject):
         return self.manager.gitlab.http_get(path, **kwargs)
 
 
-class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
+class ProjectCommitManager(RetrieveMixin[ProjectCommit], CreateMixin[ProjectCommit]):
     _path = "/projects/{project_id}/repository/commits"
     _obj_cls = ProjectCommit
     _from_parent_attrs = {"project_id": "id"}
@@ -184,18 +187,15 @@ class ProjectCommitManager(RetrieveMixin, CreateMixin, RESTManager):
         "trailers",
     )
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectCommit:
-        return cast(ProjectCommit, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectCommitComment(RESTObject):
     _id_attr = None
     _repr_attr = "note"
 
 
-class ProjectCommitCommentManager(ListMixin, CreateMixin, RESTManager):
+class ProjectCommitCommentManager(
+    ListMixin[ProjectCommitComment], CreateMixin[ProjectCommitComment]
+):
     _path = "/projects/{project_id}/repository/commits/{commit_id}/comments"
     _obj_cls = ProjectCommitComment
     _from_parent_attrs = {"project_id": "project_id", "commit_id": "id"}
@@ -208,7 +208,9 @@ class ProjectCommitStatus(RefreshMixin, RESTObject):
     pass
 
 
-class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
+class ProjectCommitStatusManager(
+    ListMixin[ProjectCommitStatus], CreateMixin[ProjectCommitStatus]
+):
     _path = "/projects/{project_id}/repository/commits/{commit_id}/statuses"
     _obj_cls = ProjectCommitStatus
     _from_parent_attrs = {"project_id": "project_id", "commit_id": "id"}
@@ -219,7 +221,7 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
 
     @exc.on_http_error(exc.GitlabCreateError)
     def create(
-        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+        self, data: dict[str, Any] | None = None, **kwargs: Any
     ) -> ProjectCommitStatus:
         """Create a new object.
 
@@ -241,13 +243,11 @@ class ProjectCommitStatusManager(ListMixin, CreateMixin, RESTManager):
         # they are missing when using only the API
         # See #511
         base_path = "/projects/{project_id}/statuses/{commit_id}"
-        path: Optional[str]
+        path: str | None
         if data is not None and "project_id" in data and "commit_id" in data:
             path = base_path.format(**data)
         else:
             path = self._compute_path(base_path)
         if TYPE_CHECKING:
             assert path is not None
-        return cast(
-            ProjectCommitStatus, CreateMixin.create(self, data, path=path, **kwargs)
-        )
+        return super().create(data, path=path, **kwargs)

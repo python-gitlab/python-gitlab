@@ -55,11 +55,11 @@ Start a bulk import/migration of a group and wait for completion::
 
 List all migrations::
 
-    gl.bulk_imports.list()
+    gl.bulk_imports.list(get_all=True)
 
 List the entities of all migrations::
 
-    gl.bulk_import_entities.list()
+    gl.bulk_import_entities.list(get_all=True)
 
 Get a single migration by ID::
 
@@ -67,7 +67,7 @@ Get a single migration by ID::
 
 List the entities of a single migration::
 
-    entities = migration.entities.list()
+    entities = migration.entities.list(get_all=True)
 
 Get a single entity of a migration by ID::
 

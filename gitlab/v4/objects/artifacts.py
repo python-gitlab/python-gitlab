@@ -3,7 +3,9 @@ GitLab API:
 https://docs.gitlab.com/ee/api/job_artifacts.html
 """
 
-from typing import Any, Callable, Iterator, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, Callable, Iterator, Literal, overload, TYPE_CHECKING
 
 import requests
 
@@ -21,7 +23,7 @@ class ProjectArtifact(RESTObject):
     _id_attr = "ref_name"
 
 
-class ProjectArtifactManager(RESTManager):
+class ProjectArtifactManager(RESTManager[ProjectArtifact]):
     _obj_cls = ProjectArtifact
     _path = "/projects/{project_id}/jobs/artifacts"
     _from_parent_attrs = {"project_id": "id"}
@@ -43,6 +45,45 @@ class ProjectArtifactManager(RESTManager):
             assert path is not None
         self.gitlab.http_delete(path, **kwargs)
 
+    @overload
+    def download(
+        self,
+        ref_name: str,
+        job: str,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def download(
+        self,
+        ref_name: str,
+        job: str,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def download(
+        self,
+        ref_name: str,
+        job: str,
+        streamed: Literal[True] = True,
+        action: Callable[[bytes], Any] | None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
+
     @cli.register_custom_action(
         cls_names="ProjectArtifactManager",
         required=("ref_name", "job"),
@@ -54,12 +95,12 @@ class ProjectArtifactManager(RESTManager):
         ref_name: str,
         job: str,
         streamed: bool = False,
-        action: Optional[Callable[[bytes], None]] = None,
+        action: Callable[[bytes], Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Get the job artifacts archive from a specific tag or branch.
 
         Args:
@@ -94,6 +135,48 @@ class ProjectArtifactManager(RESTManager):
             result, streamed, action, chunk_size, iterator=iterator
         )
 
+    @overload
+    def raw(
+        self,
+        ref_name: str,
+        artifact_path: str,
+        job: str,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def raw(
+        self,
+        ref_name: str,
+        artifact_path: str,
+        job: str,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def raw(
+        self,
+        ref_name: str,
+        artifact_path: str,
+        job: str,
+        streamed: Literal[True] = True,
+        action: Callable[[bytes], Any] | None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
+
     @cli.register_custom_action(
         cls_names="ProjectArtifactManager",
         required=("ref_name", "artifact_path", "job"),
@@ -105,12 +188,12 @@ class ProjectArtifactManager(RESTManager):
         artifact_path: str,
         job: str,
         streamed: bool = False,
-        action: Optional[Callable[[bytes], None]] = None,
+        action: Callable[[bytes], Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Download a single artifact file from a specific tag or branch from
         within the job's artifacts archive.
 

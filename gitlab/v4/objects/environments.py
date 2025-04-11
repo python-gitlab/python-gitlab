@@ -1,10 +1,12 @@
-from typing import Any, cast, Dict, Union
+from __future__ import annotations
+
+from typing import Any
 
 import requests
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -26,7 +28,7 @@ __all__ = [
 class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
     @cli.register_custom_action(cls_names="ProjectEnvironment")
     @exc.on_http_error(exc.GitlabStopError)
-    def stop(self, **kwargs: Any) -> Union[Dict[str, Any], requests.Response]:
+    def stop(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
         """Stop the environment.
 
         Args:
@@ -44,7 +46,10 @@ class ProjectEnvironment(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectEnvironmentManager(
-    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    RetrieveMixin[ProjectEnvironment],
+    CreateMixin[ProjectEnvironment],
+    UpdateMixin[ProjectEnvironment],
+    DeleteMixin[ProjectEnvironment],
 ):
     _path = "/projects/{project_id}/environments"
     _obj_cls = ProjectEnvironment
@@ -53,11 +58,6 @@ class ProjectEnvironmentManager(
     _update_attrs = RequiredOptional(optional=("name", "external_url"))
     _list_filters = ("name", "search", "states")
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectEnvironment:
-        return cast(ProjectEnvironment, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectProtectedEnvironment(ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
@@ -65,23 +65,15 @@ class ProjectProtectedEnvironment(ObjectDeleteMixin, RESTObject):
 
 
 class ProjectProtectedEnvironmentManager(
-    RetrieveMixin, CreateMixin, DeleteMixin, RESTManager
+    RetrieveMixin[ProjectProtectedEnvironment],
+    CreateMixin[ProjectProtectedEnvironment],
+    DeleteMixin[ProjectProtectedEnvironment],
 ):
     _path = "/projects/{project_id}/protected_environments"
     _obj_cls = ProjectProtectedEnvironment
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
-        required=(
-            "name",
-            "deploy_access_levels",
-        ),
+        required=("name", "deploy_access_levels"),
         optional=("required_approval_count", "approval_rules"),
     )
     _types = {"deploy_access_levels": ArrayAttribute, "approval_rules": ArrayAttribute}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectProtectedEnvironment:
-        return cast(
-            ProjectProtectedEnvironment, super().get(id=id, lazy=lazy, **kwargs)
-        )

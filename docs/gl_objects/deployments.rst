@@ -18,7 +18,7 @@ Examples
 
 List deployments for a project::
 
-    deployments = project.deployments.list()
+    deployments = project.deployments.list(get_all=True)
 
 Get a single deployment::
 
@@ -72,4 +72,4 @@ Examples
 List the merge requests associated with a deployment::
 
     deployment = project.deployments.get(42, lazy=True)
-    mrs = deployment.mergerequests.list()
+    mrs = deployment.mergerequests.list(get_all=True)

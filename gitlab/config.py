@@ -1,14 +1,15 @@
+from __future__ import annotations
+
 import configparser
 import os
 import shlex
 import subprocess
 from os.path import expanduser, expandvars
 from pathlib import Path
-from typing import List, Optional, Union
 
 from gitlab.const import USER_AGENT
 
-_DEFAULT_FILES: List[str] = [
+_DEFAULT_FILES: list[str] = [
     "/etc/python-gitlab.cfg",
     str(Path.home() / ".python-gitlab.cfg"),
 ]
@@ -20,14 +21,12 @@ HELPER_ATTRIBUTES = ["job_token", "http_password", "private_token", "oauth_token
 _CONFIG_PARSER_ERRORS = (configparser.NoOptionError, configparser.NoSectionError)
 
 
-def _resolve_file(filepath: Union[Path, str]) -> str:
+def _resolve_file(filepath: Path | str) -> str:
     resolved = Path(filepath).resolve(strict=True)
     return str(resolved)
 
 
-def _get_config_files(
-    config_files: Optional[List[str]] = None,
-) -> Union[str, List[str]]:
+def _get_config_files(config_files: list[str] | None = None) -> str | list[str]:
     """
     Return resolved path(s) to config files if they exist, with precedence:
     1. Files passed in config_files
@@ -90,23 +89,23 @@ class GitlabConfigHelperError(ConfigError):
 
 class GitlabConfigParser:
     def __init__(
-        self, gitlab_id: Optional[str] = None, config_files: Optional[List[str]] = None
+        self, gitlab_id: str | None = None, config_files: list[str] | None = None
     ) -> None:
         self.gitlab_id = gitlab_id
-        self.http_username: Optional[str] = None
-        self.http_password: Optional[str] = None
-        self.job_token: Optional[str] = None
-        self.oauth_token: Optional[str] = None
-        self.private_token: Optional[str] = None
+        self.http_username: str | None = None
+        self.http_password: str | None = None
+        self.job_token: str | None = None
+        self.oauth_token: str | None = None
+        self.private_token: str | None = None
 
         self.api_version: str = "4"
-        self.order_by: Optional[str] = None
-        self.pagination: Optional[str] = None
-        self.per_page: Optional[int] = None
+        self.order_by: str | None = None
+        self.pagination: str | None = None
+        self.per_page: int | None = None
         self.retry_transient_errors: bool = False
-        self.ssl_verify: Union[bool, str] = True
+        self.ssl_verify: bool | str = True
         self.timeout: int = 60
-        self.url: Optional[str] = None
+        self.url: str | None = None
         self.user_agent: str = USER_AGENT
         self.keep_base_url: bool = False
 

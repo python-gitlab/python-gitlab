@@ -1,22 +1,23 @@
-from typing import Any, cast, Dict, Optional, Union
+from __future__ import annotations
+
+from typing import Any
 
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "ApplicationSettings",
-    "ApplicationSettingsManager",
-]
+__all__ = ["ApplicationSettings", "ApplicationSettingsManager"]
 
 
 class ApplicationSettings(SaveMixin, RESTObject):
     _id_attr = None
 
 
-class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class ApplicationSettingsManager(
+    GetWithoutIdMixin[ApplicationSettings], UpdateMixin[ApplicationSettings]
+):
     _path = "/application/settings"
     _obj_cls = ApplicationSettings
     _update_attrs = RequiredOptional(
@@ -78,7 +79,7 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
             "allow_local_requests_from_hooks_and_services",
             "allow_local_requests_from_web_hooks_and_services",
             "allow_local_requests_from_system_hooks",
-        ),
+        )
     )
     _types = {
         "asset_proxy_allowlist": types.ArrayAttribute,
@@ -92,10 +93,10 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
     @exc.on_http_error(exc.GitlabUpdateError)
     def update(
         self,
-        id: Optional[Union[str, int]] = None,
-        new_data: Optional[Dict[str, Any]] = None,
+        id: str | int | None = None,
+        new_data: dict[str, Any] | None = None,
         **kwargs: Any,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Update an object on the server.
 
         Args:
@@ -115,6 +116,3 @@ class ApplicationSettingsManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         if "domain_whitelist" in data and data["domain_whitelist"] is None:
             data.pop("domain_whitelist")
         return super().update(id, data, **kwargs)
-
-    def get(self, **kwargs: Any) -> ApplicationSettings:
-        return cast(ApplicationSettings, super().get(**kwargs))

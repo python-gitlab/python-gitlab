@@ -1,6 +1,4 @@
-from typing import Any, cast, Union
-
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -48,17 +46,12 @@ class GroupEpicNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     awardemojis: GroupEpicNoteAwardEmojiManager
 
 
-class GroupEpicNoteManager(CRUDMixin, RESTManager):
+class GroupEpicNoteManager(CRUDMixin[GroupEpicNote]):
     _path = "/groups/{group_id}/epics/{epic_id}/notes"
     _obj_cls = GroupEpicNote
     _from_parent_attrs = {"group_id": "group_id", "epic_id": "id"}
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
     _update_attrs = RequiredOptional(required=("body",))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupEpicNote:
-        return cast(GroupEpicNote, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class GroupEpicDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -66,7 +59,10 @@ class GroupEpicDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class GroupEpicDiscussionNoteManager(
-    GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    GetMixin[GroupEpicDiscussionNote],
+    CreateMixin[GroupEpicDiscussionNote],
+    UpdateMixin[GroupEpicDiscussionNote],
+    DeleteMixin[GroupEpicDiscussionNote],
 ):
     _path = "/groups/{group_id}/epics/{epic_id}/discussions/{discussion_id}/notes"
     _obj_cls = GroupEpicDiscussionNote
@@ -78,26 +74,16 @@ class GroupEpicDiscussionNoteManager(
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
     _update_attrs = RequiredOptional(required=("body",))
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupEpicDiscussionNote:
-        return cast(GroupEpicDiscussionNote, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectNote(RESTObject):
     pass
 
 
-class ProjectNoteManager(RetrieveMixin, RESTManager):
+class ProjectNoteManager(RetrieveMixin[ProjectNote]):
     _path = "/projects/{project_id}/notes"
     _obj_cls = ProjectNote
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(required=("body",))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectNote:
-        return cast(ProjectNote, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectCommitDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -105,7 +91,10 @@ class ProjectCommitDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectCommitDiscussionNoteManager(
-    GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    GetMixin[ProjectCommitDiscussionNote],
+    CreateMixin[ProjectCommitDiscussionNote],
+    UpdateMixin[ProjectCommitDiscussionNote],
+    DeleteMixin[ProjectCommitDiscussionNote],
 ):
     _path = (
         "/projects/{project_id}/repository/commits/{commit_id}/"
@@ -122,29 +111,17 @@ class ProjectCommitDiscussionNoteManager(
     )
     _update_attrs = RequiredOptional(required=("body",))
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectCommitDiscussionNote:
-        return cast(
-            ProjectCommitDiscussionNote, super().get(id=id, lazy=lazy, **kwargs)
-        )
-
 
 class ProjectIssueNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     awardemojis: ProjectIssueNoteAwardEmojiManager
 
 
-class ProjectIssueNoteManager(CRUDMixin, RESTManager):
+class ProjectIssueNoteManager(CRUDMixin[ProjectIssueNote]):
     _path = "/projects/{project_id}/issues/{issue_iid}/notes"
     _obj_cls = ProjectIssueNote
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
     _update_attrs = RequiredOptional(required=("body",))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectIssueNote:
-        return cast(ProjectIssueNote, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectIssueDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -152,7 +129,10 @@ class ProjectIssueDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectIssueDiscussionNoteManager(
-    GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    GetMixin[ProjectIssueDiscussionNote],
+    CreateMixin[ProjectIssueDiscussionNote],
+    UpdateMixin[ProjectIssueDiscussionNote],
+    DeleteMixin[ProjectIssueDiscussionNote],
 ):
     _path = (
         "/projects/{project_id}/issues/{issue_iid}/discussions/{discussion_id}/notes"
@@ -166,27 +146,17 @@ class ProjectIssueDiscussionNoteManager(
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
     _update_attrs = RequiredOptional(required=("body",))
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectIssueDiscussionNote:
-        return cast(ProjectIssueDiscussionNote, super().get(id=id, lazy=lazy, **kwargs))
-
 
 class ProjectMergeRequestNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     awardemojis: ProjectMergeRequestNoteAwardEmojiManager
 
 
-class ProjectMergeRequestNoteManager(CRUDMixin, RESTManager):
+class ProjectMergeRequestNoteManager(CRUDMixin[ProjectMergeRequestNote]):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/notes"
     _obj_cls = ProjectMergeRequestNote
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
     _create_attrs = RequiredOptional(required=("body",))
     _update_attrs = RequiredOptional(required=("body",))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMergeRequestNote:
-        return cast(ProjectMergeRequestNote, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectMergeRequestDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -194,7 +164,10 @@ class ProjectMergeRequestDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject
 
 
 class ProjectMergeRequestDiscussionNoteManager(
-    GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    GetMixin[ProjectMergeRequestDiscussionNote],
+    CreateMixin[ProjectMergeRequestDiscussionNote],
+    UpdateMixin[ProjectMergeRequestDiscussionNote],
+    DeleteMixin[ProjectMergeRequestDiscussionNote],
 ):
     _path = (
         "/projects/{project_id}/merge_requests/{mr_iid}/"
@@ -209,29 +182,17 @@ class ProjectMergeRequestDiscussionNoteManager(
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
     _update_attrs = RequiredOptional(required=("body",))
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMergeRequestDiscussionNote:
-        return cast(
-            ProjectMergeRequestDiscussionNote, super().get(id=id, lazy=lazy, **kwargs)
-        )
-
 
 class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     awardemojis: ProjectSnippetNoteAwardEmojiManager
 
 
-class ProjectSnippetNoteManager(CRUDMixin, RESTManager):
+class ProjectSnippetNoteManager(CRUDMixin[ProjectSnippetNote]):
     _path = "/projects/{project_id}/snippets/{snippet_id}/notes"
     _obj_cls = ProjectSnippetNote
     _from_parent_attrs = {"project_id": "project_id", "snippet_id": "id"}
     _create_attrs = RequiredOptional(required=("body",))
     _update_attrs = RequiredOptional(required=("body",))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectSnippetNote:
-        return cast(ProjectSnippetNote, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class ProjectSnippetDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
@@ -239,7 +200,10 @@ class ProjectSnippetDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class ProjectSnippetDiscussionNoteManager(
-    GetMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    GetMixin[ProjectSnippetDiscussionNote],
+    CreateMixin[ProjectSnippetDiscussionNote],
+    UpdateMixin[ProjectSnippetDiscussionNote],
+    DeleteMixin[ProjectSnippetDiscussionNote],
 ):
     _path = (
         "/projects/{project_id}/snippets/{snippet_id}/"
@@ -253,10 +217,3 @@ class ProjectSnippetDiscussionNoteManager(
     }
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
     _update_attrs = RequiredOptional(required=("body",))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectSnippetDiscussionNote:
-        return cast(
-            ProjectSnippetDiscussionNote, super().get(id=id, lazy=lazy, **kwargs)
-        )

@@ -1,4 +1,6 @@
-from typing import Any, BinaryIO, cast, Dict, List, Optional, Type, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, BinaryIO, TYPE_CHECKING
 
 import requests
 
@@ -6,7 +8,7 @@ import gitlab
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject, TObjCls
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -35,11 +37,13 @@ from .invitations import GroupInvitationManager  # noqa: F401
 from .issues import GroupIssueManager  # noqa: F401
 from .iterations import GroupIterationManager  # noqa: F401
 from .labels import GroupLabelManager  # noqa: F401
+from .member_roles import GroupMemberRoleManager  # noqa: F401
 from .members import (  # noqa: F401
     GroupBillableMemberManager,
     GroupMemberAllManager,
     GroupMemberManager,
 )
+from .merge_request_approvals import GroupApprovalRuleManager
 from .merge_requests import GroupMergeRequestManager  # noqa: F401
 from .milestones import GroupMilestoneManager  # noqa: F401
 from .notification_settings import GroupNotificationSettingsManager  # noqa: F401
@@ -71,6 +75,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     access_tokens: GroupAccessTokenManager
     accessrequests: GroupAccessRequestManager
+    approval_rules: GroupApprovalRuleManager
     audit_events: GroupAuditEventManager
     badges: GroupBadgeManager
     billable_members: GroupBillableMemberManager
@@ -78,7 +83,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     clusters: GroupClusterManager
     customattributes: GroupCustomAttributeManager
     deploytokens: GroupDeployTokenManager
-    descendant_groups: "GroupDescendantGroupManager"
+    descendant_groups: GroupDescendantGroupManager
     epics: GroupEpicManager
     exports: GroupExportManager
     hooks: GroupHookManager
@@ -88,7 +93,8 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     issues_statistics: GroupIssuesStatisticsManager
     iterations: GroupIterationManager
     labels: GroupLabelManager
-    ldap_group_links: "GroupLDAPGroupLinkManager"
+    ldap_group_links: GroupLDAPGroupLinkManager
+    member_roles: GroupMemberRoleManager
     members: GroupMemberManager
     members_all: GroupMemberAllManager
     mergerequests: GroupMergeRequestManager
@@ -101,11 +107,11 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     pushrules: GroupPushRulesManager
     registry_repositories: GroupRegistryRepositoryManager
     runners: GroupRunnerManager
-    subgroups: "GroupSubgroupManager"
+    subgroups: GroupSubgroupManager
     variables: GroupVariableManager
     wikis: GroupWikiManager
-    saml_group_links: "GroupSAMLGroupLinkManager"
-    service_accounts: "GroupServiceAccountManager"
+    saml_group_links: GroupSAMLGroupLinkManager
+    service_accounts: GroupServiceAccountManager
 
     @cli.register_custom_action(cls_names="Group", required=("project_id",))
     @exc.on_http_error(exc.GitlabTransferProjectError)
@@ -125,7 +131,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
 
     @cli.register_custom_action(cls_names="Group", required=(), optional=("group_id",))
     @exc.on_http_error(exc.GitlabGroupTransferError)
-    def transfer(self, group_id: Optional[int] = None, **kwargs: Any) -> None:
+    def transfer(self, group_id: int | None = None, **kwargs: Any) -> None:
         """Transfer the group to a new parent group or make it a top-level group.
 
         Requires GitLab ≥14.6.
@@ -149,7 +155,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     @exc.on_http_error(exc.GitlabSearchError)
     def search(
         self, scope: str, search: str, **kwargs: Any
-    ) -> Union[gitlab.GitlabList, List[Dict[str, Any]]]:
+    ) -> gitlab.GitlabList | list[dict[str, Any]]:
         """Search the group resources matching the provided string.
 
         Args:
@@ -193,7 +199,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         self,
         group_id: int,
         group_access: int,
-        expires_at: Optional[str] = None,
+        expires_at: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Share the group with a group.
@@ -253,7 +259,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
         self.manager.gitlab.http_post(path, **kwargs)
 
 
-class GroupManager(CRUDMixin, RESTManager):
+class GroupManager(CRUDMixin[Group]):
     _path = "/groups"
     _obj_cls = Group
     _list_filters = (
@@ -315,12 +321,9 @@ class GroupManager(CRUDMixin, RESTManager):
             "extra_shared_runners_minutes_limit",
             "prevent_forking_outside_group",
             "shared_runners_setting",
-        ),
+        )
     )
     _types = {"avatar": types.ImageAttribute, "skip_groups": types.ArrayAttribute}
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> Group:
-        return cast(Group, super().get(id=id, lazy=lazy, **kwargs))
 
     @exc.on_http_error(exc.GitlabImportError)
     def import_group(
@@ -328,9 +331,9 @@ class GroupManager(CRUDMixin, RESTManager):
         file: BinaryIO,
         path: str,
         name: str,
-        parent_id: Optional[Union[int, str]] = None,
+        parent_id: int | str | None = None,
         **kwargs: Any,
-    ) -> Union[Dict[str, Any], requests.Response]:
+    ) -> dict[str, Any] | requests.Response:
         """Import a group from an archive file.
 
         Args:
@@ -349,7 +352,7 @@ class GroupManager(CRUDMixin, RESTManager):
             A representation of the import status.
         """
         files = {"file": ("file.tar.gz", file, "application/octet-stream")}
-        data: Dict[str, Any] = {"path": path, "name": name}
+        data: dict[str, Any] = {"path": path, "name": name}
         if parent_id is not None:
             data["parent_id"] = parent_id
 
@@ -358,13 +361,7 @@ class GroupManager(CRUDMixin, RESTManager):
         )
 
 
-class GroupSubgroup(RESTObject):
-    pass
-
-
-class GroupSubgroupManager(ListMixin, RESTManager):
-    _path = "/groups/{group_id}/subgroups"
-    _obj_cls: Union[Type["GroupDescendantGroup"], Type[GroupSubgroup]] = GroupSubgroup
+class SubgroupBaseManager(ListMixin[TObjCls]):
     _from_parent_attrs = {"group_id": "id"}
     _list_filters = (
         "skip_groups",
@@ -380,24 +377,33 @@ class GroupSubgroupManager(ListMixin, RESTManager):
     _types = {"skip_groups": types.ArrayAttribute}
 
 
+class GroupSubgroup(RESTObject):
+    pass
+
+
+class GroupSubgroupManager(SubgroupBaseManager[GroupSubgroup]):
+    _path = "/groups/{group_id}/subgroups"
+    _obj_cls = GroupSubgroup
+
+
 class GroupDescendantGroup(RESTObject):
     pass
 
 
-class GroupDescendantGroupManager(GroupSubgroupManager):
+class GroupDescendantGroupManager(SubgroupBaseManager[GroupDescendantGroup]):
     """
     This manager inherits from GroupSubgroupManager as descendant groups
     share all attributes with subgroups, except the path and object class.
     """
 
     _path = "/groups/{group_id}/descendant_groups"
-    _obj_cls: Type[GroupDescendantGroup] = GroupDescendantGroup
+    _obj_cls = GroupDescendantGroup
 
 
 class GroupLDAPGroupLink(RESTObject):
     _repr_attr = "provider"
 
-    def _get_link_attrs(self) -> Dict[str, str]:
+    def _get_link_attrs(self) -> dict[str, str]:
         # https://docs.gitlab.com/ee/api/groups.html#add-ldap-group-link-with-cn-or-filter
         # https://docs.gitlab.com/ee/api/groups.html#delete-ldap-group-link-with-cn-or-filter
         # We can tell what attribute to use based on the data returned
@@ -426,9 +432,13 @@ class GroupLDAPGroupLink(RESTObject):
         )
 
 
-class GroupLDAPGroupLinkManager(ListMixin, CreateMixin, DeleteMixin, RESTManager):
+class GroupLDAPGroupLinkManager(
+    ListMixin[GroupLDAPGroupLink],
+    CreateMixin[GroupLDAPGroupLink],
+    DeleteMixin[GroupLDAPGroupLink],
+):
     _path = "/groups/{group_id}/ldap_group_links"
-    _obj_cls: Type[GroupLDAPGroupLink] = GroupLDAPGroupLink
+    _obj_cls = GroupLDAPGroupLink
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(
         required=("provider", "group_access"), exclusive=("cn", "filter")
@@ -440,13 +450,8 @@ class GroupSAMLGroupLink(ObjectDeleteMixin, RESTObject):
     _repr_attr = "name"
 
 
-class GroupSAMLGroupLinkManager(NoUpdateMixin, RESTManager):
+class GroupSAMLGroupLinkManager(NoUpdateMixin[GroupSAMLGroupLink]):
     _path = "/groups/{group_id}/saml_group_links"
-    _obj_cls: Type[GroupSAMLGroupLink] = GroupSAMLGroupLink
+    _obj_cls = GroupSAMLGroupLink
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(required=("saml_group_name", "access_level"))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupSAMLGroupLink:
-        return cast(GroupSAMLGroupLink, super().get(id=id, lazy=lazy, **kwargs))

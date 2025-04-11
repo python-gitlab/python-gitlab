@@ -20,7 +20,7 @@ Examples
 
 Get the list of protected environments for a project::
 
-    p_environments = project.protected_environments.list()
+    p_environments = project.protected_environments.list(get_all=True)
 
 Get a single protected environment::
 

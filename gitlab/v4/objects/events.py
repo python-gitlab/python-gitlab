@@ -1,6 +1,4 @@
-from typing import Any, cast, Union
-
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import ListMixin, RetrieveMixin
 
 __all__ = [
@@ -36,7 +34,7 @@ class Event(RESTObject):
     _repr_attr = "target_title"
 
 
-class EventManager(ListMixin, RESTManager):
+class EventManager(ListMixin[Event]):
     _path = "/events"
     _obj_cls = Event
     _list_filters = ("action", "target_type", "before", "after", "sort", "scope")
@@ -46,17 +44,10 @@ class GroupEpicResourceLabelEvent(RESTObject):
     pass
 
 
-class GroupEpicResourceLabelEventManager(RetrieveMixin, RESTManager):
+class GroupEpicResourceLabelEventManager(RetrieveMixin[GroupEpicResourceLabelEvent]):
     _path = "/groups/{group_id}/epics/{epic_id}/resource_label_events"
     _obj_cls = GroupEpicResourceLabelEvent
     _from_parent_attrs = {"group_id": "group_id", "epic_id": "id"}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupEpicResourceLabelEvent:
-        return cast(
-            GroupEpicResourceLabelEvent, super().get(id=id, lazy=lazy, **kwargs)
-        )
 
 
 class ProjectEvent(Event):
@@ -73,139 +64,96 @@ class ProjectIssueResourceLabelEvent(RESTObject):
     pass
 
 
-class ProjectIssueResourceLabelEventManager(RetrieveMixin, RESTManager):
+class ProjectIssueResourceLabelEventManager(
+    RetrieveMixin[ProjectIssueResourceLabelEvent]
+):
     _path = "/projects/{project_id}/issues/{issue_iid}/resource_label_events"
     _obj_cls = ProjectIssueResourceLabelEvent
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectIssueResourceLabelEvent:
-        return cast(
-            ProjectIssueResourceLabelEvent, super().get(id=id, lazy=lazy, **kwargs)
-        )
 
 
 class ProjectIssueResourceMilestoneEvent(RESTObject):
     pass
 
 
-class ProjectIssueResourceMilestoneEventManager(RetrieveMixin, RESTManager):
+class ProjectIssueResourceMilestoneEventManager(
+    RetrieveMixin[ProjectIssueResourceMilestoneEvent]
+):
     _path = "/projects/{project_id}/issues/{issue_iid}/resource_milestone_events"
     _obj_cls = ProjectIssueResourceMilestoneEvent
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectIssueResourceMilestoneEvent:
-        return cast(
-            ProjectIssueResourceMilestoneEvent, super().get(id=id, lazy=lazy, **kwargs)
-        )
 
 
 class ProjectIssueResourceStateEvent(RESTObject):
     pass
 
 
-class ProjectIssueResourceStateEventManager(RetrieveMixin, RESTManager):
+class ProjectIssueResourceStateEventManager(
+    RetrieveMixin[ProjectIssueResourceStateEvent]
+):
     _path = "/projects/{project_id}/issues/{issue_iid}/resource_state_events"
     _obj_cls = ProjectIssueResourceStateEvent
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectIssueResourceStateEvent:
-        return cast(
-            ProjectIssueResourceStateEvent, super().get(id=id, lazy=lazy, **kwargs)
-        )
 
 
 class ProjectIssueResourceIterationEvent(RESTObject):
     pass
 
 
-class ProjectIssueResourceIterationEventManager(RetrieveMixin, RESTManager):
+class ProjectIssueResourceIterationEventManager(
+    RetrieveMixin[ProjectIssueResourceIterationEvent]
+):
     _path = "/projects/{project_id}/issues/{issue_iid}/resource_iteration_events"
     _obj_cls = ProjectIssueResourceIterationEvent
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectIssueResourceIterationEvent:
-        return cast(
-            ProjectIssueResourceIterationEvent, super().get(id=id, lazy=lazy, **kwargs)
-        )
 
 
 class ProjectIssueResourceWeightEvent(RESTObject):
     pass
 
 
-class ProjectIssueResourceWeightEventManager(RetrieveMixin, RESTManager):
+class ProjectIssueResourceWeightEventManager(
+    RetrieveMixin[ProjectIssueResourceWeightEvent]
+):
     _path = "/projects/{project_id}/issues/{issue_iid}/resource_weight_events"
     _obj_cls = ProjectIssueResourceWeightEvent
     _from_parent_attrs = {"project_id": "project_id", "issue_iid": "iid"}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectIssueResourceWeightEvent:
-        return cast(
-            ProjectIssueResourceWeightEvent, super().get(id=id, lazy=lazy, **kwargs)
-        )
 
 
 class ProjectMergeRequestResourceLabelEvent(RESTObject):
     pass
 
 
-class ProjectMergeRequestResourceLabelEventManager(RetrieveMixin, RESTManager):
+class ProjectMergeRequestResourceLabelEventManager(
+    RetrieveMixin[ProjectMergeRequestResourceLabelEvent]
+):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/resource_label_events"
     _obj_cls = ProjectMergeRequestResourceLabelEvent
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMergeRequestResourceLabelEvent:
-        return cast(
-            ProjectMergeRequestResourceLabelEvent,
-            super().get(id=id, lazy=lazy, **kwargs),
-        )
 
 
 class ProjectMergeRequestResourceMilestoneEvent(RESTObject):
     pass
 
 
-class ProjectMergeRequestResourceMilestoneEventManager(RetrieveMixin, RESTManager):
+class ProjectMergeRequestResourceMilestoneEventManager(
+    RetrieveMixin[ProjectMergeRequestResourceMilestoneEvent]
+):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/resource_milestone_events"
     _obj_cls = ProjectMergeRequestResourceMilestoneEvent
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMergeRequestResourceMilestoneEvent:
-        return cast(
-            ProjectMergeRequestResourceMilestoneEvent,
-            super().get(id=id, lazy=lazy, **kwargs),
-        )
 
 
 class ProjectMergeRequestResourceStateEvent(RESTObject):
     pass
 
 
-class ProjectMergeRequestResourceStateEventManager(RetrieveMixin, RESTManager):
+class ProjectMergeRequestResourceStateEventManager(
+    RetrieveMixin[ProjectMergeRequestResourceStateEvent]
+):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/resource_state_events"
     _obj_cls = ProjectMergeRequestResourceStateEvent
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMergeRequestResourceStateEvent:
-        return cast(
-            ProjectMergeRequestResourceStateEvent,
-            super().get(id=id, lazy=lazy, **kwargs),
-        )
 
 
 class UserEvent(Event):

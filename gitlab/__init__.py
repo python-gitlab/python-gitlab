@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright (C) 2013-2019 Gauvain Pocentek, 2019-2023 python-gitlab team
 #
@@ -27,7 +26,7 @@ from gitlab._version import (  # noqa: F401
     __title__,
     __version__,
 )
-from gitlab.client import Gitlab, GitlabList, GraphQL  # noqa: F401
+from gitlab.client import AsyncGraphQL, Gitlab, GitlabList, GraphQL  # noqa: F401
 from gitlab.exceptions import *  # noqa: F401,F403
 
 warnings.filterwarnings("default", category=DeprecationWarning, module="^gitlab")
@@ -42,6 +41,7 @@ __all__ = [
     "__version__",
     "Gitlab",
     "GitlabList",
+    "AsyncGraphQL",
     "GraphQL",
 ]
 __all__.extend(gitlab.exceptions.__all__)

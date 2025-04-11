@@ -97,9 +97,7 @@ def test_upload_generic_package_select(tmp_path, project):
 
 def test_download_generic_package(project):
     package = project.generic_packages.download(
-        package_name=package_name,
-        package_version=package_version,
-        file_name=file_name,
+        package_name=package_name, package_version=package_version, file_name=file_name
     )
 
     assert isinstance(package, bytes)
@@ -116,7 +114,7 @@ def test_stream_generic_package(project):
 
     assert isinstance(bytes_iterator, Iterator)
 
-    package = bytes()
+    package = b""
     for chunk in bytes_iterator:
         package += chunk
 
@@ -136,7 +134,7 @@ def test_download_generic_package_to_file(tmp_path, project):
             action=f.write,
         )
 
-    with open(path, "r") as f:
+    with open(path) as f:
         assert f.read() == file_content
 
 
@@ -154,7 +152,7 @@ def test_stream_generic_package_to_file(tmp_path, project):
         for chunk in bytes_iterator:
             f.write(chunk)
 
-    with open(path, "r") as f:
+    with open(path) as f:
         assert f.read() == file_content
 
 

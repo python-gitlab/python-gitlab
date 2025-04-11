@@ -28,7 +28,7 @@ Examples
 
 List emojis for a resource::
 
-   emojis = obj.awardemojis.list()
+   emojis = obj.awardemojis.list(get_all=True)
 
 Get a single emoji::
 

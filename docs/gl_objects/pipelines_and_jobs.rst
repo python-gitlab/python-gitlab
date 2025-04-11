@@ -23,7 +23,7 @@ Examples
 
 List pipelines for a project::
 
-    pipelines = project.pipelines.list()
+    pipelines = project.pipelines.list(get_all=True)
 
 Get a pipeline for a project::
 
@@ -31,7 +31,7 @@ Get a pipeline for a project::
 
 Get variables of a pipeline::
 
-    variables = pipeline.variables.list()
+    variables = pipeline.variables.list(get_all=True)
 
 Create a pipeline for a particular reference with custom variables::
 
@@ -76,7 +76,7 @@ Examples
 
 List triggers::
 
-    triggers = project.triggers.list()
+    triggers = project.triggers.list(get_all=True)
 
 Get a trigger::
 
@@ -96,7 +96,7 @@ Full example with wait for finish::
 
     def get_or_create_trigger(project):
         trigger_decription = 'my_trigger_id'
-        for t in project.triggers.list():
+        for t in project.triggers.list(iterator=True):
             if t.description == trigger_decription:
                 return t
         return project.triggers.create({'description': trigger_decription})
@@ -145,7 +145,7 @@ Examples
 
 List pipeline schedules::
 
-    scheds = project.pipelineschedules.list()
+    scheds = project.pipelineschedules.list(get_all=True)
 
 Get a single schedule::
 
@@ -198,7 +198,7 @@ Delete a schedule variable::
 
 List all pipelines triggered by a pipeline schedule::
 
-    pipelines = sched.pipelines.list()
+    pipelines = sched.pipelines.list(get_all=True)
 
 Jobs
 ====
@@ -229,7 +229,7 @@ job::
 
 List jobs for the project::
 
-    jobs = project.jobs.list()
+    jobs = project.jobs.list(get_all=True)
 
 Get a single job::
 
@@ -239,7 +239,7 @@ List the jobs of a pipeline::
 
     project = gl.projects.get(project_id)
     pipeline = project.pipelines.get(pipeline_id)
-    jobs = pipeline.jobs.list()
+    jobs = pipeline.jobs.list(get_all=True)
 
 .. note::
 
@@ -247,7 +247,7 @@ List the jobs of a pipeline::
    ``ProjectPipelineJob`` objects. To use these methods create a ``ProjectJob``
    object::
 
-       pipeline_job = pipeline.jobs.list()[0]
+       pipeline_job = pipeline.jobs.list(get_all=False)[0]
        job = project.jobs.get(pipeline_job.id, lazy=True)
        job.retry()
 
@@ -357,7 +357,7 @@ Examples
 
 List bridges for the pipeline::
 
-    bridges = pipeline.bridges.list()
+    bridges = pipeline.bridges.list(get_all=True)
 
 Pipeline test report
 ====================

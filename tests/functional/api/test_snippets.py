@@ -24,7 +24,10 @@ def test_snippets(gl):
     assert content.decode() == "import gitlab"
 
     all_snippets = gl.snippets.list_all(get_all=True)
-    public_snippets = gl.snippets.public(get_all=True)
+    with pytest.warns(
+        DeprecationWarning, match=r"Gitlab.snippets.public\(\) is deprecated"
+    ):
+        public_snippets = gl.snippets.public(get_all=True)
     list_public_snippets = gl.snippets.list_public(get_all=True)
     assert isinstance(all_snippets, list)
     assert isinstance(list_public_snippets, list)

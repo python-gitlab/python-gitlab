@@ -1,14 +1,14 @@
 -r requirements.txt
 argcomplete==2.0.0
-black==24.8.0
-commitizen==3.29.0
-flake8==7.1.1
-isort==5.13.2
-mypy==1.11.2
-pylint==3.2.7
-pytest==8.3.3
-responses==0.25.3
-respx==0.21.1
-types-PyYAML==6.0.12.20240808
-types-requests==2.32.0.20240914
-types-setuptools==74.1.0.20240907
+black==25.1.0
+commitizen==4.5.0
+flake8==7.2.0
+isort==6.0.1
+mypy==1.15.0
+pylint==3.3.6
+pytest==8.3.5
+responses==0.25.7
+respx==0.22.0
+types-PyYAML==6.0.12.20250402
+types-requests==2.32.0.20250328
+types-setuptools==78.1.0.20250329

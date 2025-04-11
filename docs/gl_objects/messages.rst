@@ -22,7 +22,7 @@ Examples
 
 List the messages::
 
-    msgs = gl.broadcastmessages.list()
+    msgs = gl.broadcastmessages.list(get_all=True)
 
 Get a single message::
 

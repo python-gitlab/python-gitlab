@@ -46,10 +46,7 @@ def test_merge_requests_list_approver_ids(project):
     # show https://github.com/python-gitlab/python-gitlab/issues/1698 is now
     # fixed
     project.mergerequests.list(
-        all=True,
-        state="opened",
-        author_id=423,
-        approver_ids=[423],
+        all=True, state="opened", author_id=423, approver_ids=[423]
     )
 
 
@@ -180,7 +177,7 @@ def test_merge_request_reset_approvals(gitlab_url, project):
     # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
     time.sleep(5)
 
-    mr = bot_project.mergerequests.list()[0]  # type: ignore[index]
+    mr = bot_project.mergerequests.list()[0]
 
     assert mr.reset_approvals()
 

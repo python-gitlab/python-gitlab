@@ -29,7 +29,7 @@ Use the ``list()`` method to list all deploy tokens across the GitLab instance.
 ::
 
     # List deploy tokens
-    deploy_tokens = gl.deploytokens.list()
+    deploy_tokens = gl.deploytokens.list(get_all=True)
 
 Project deploy tokens
 =====================
@@ -52,7 +52,7 @@ Examples
 
 List the deploy tokens for a project::
 
-    deploy_tokens = project.deploytokens.list()
+    deploy_tokens = project.deploytokens.list(get_all=True)
 
 Get a deploy token for a project by id::
 
@@ -109,7 +109,7 @@ Examples
 
 List the deploy tokens for a group::
 
-    deploy_tokens = group.deploytokens.list()
+    deploy_tokens = group.deploytokens.list(get_all=True)
 
 Get a deploy token for a group by id::
 

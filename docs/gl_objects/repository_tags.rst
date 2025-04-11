@@ -18,9 +18,9 @@ Examples
 
 Get the list of repository tags in given registry::
 
-      repositories = project.repositories.list()
+      repositories = project.repositories.list(get_all=True)
       repository = repositories.pop()
-      tags = repository.tags.list()
+      tags = repository.tags.list(get_all=True)
 
 Get specific tag::
       

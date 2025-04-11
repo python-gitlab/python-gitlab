@@ -104,11 +104,7 @@ def resp_update_link():
 @pytest.fixture
 def resp_delete_link():
     with responses.RequestsMock() as rsps:
-        rsps.add(
-            method=responses.DELETE,
-            url=link_id_url,
-            status=204,
-        )
+        rsps.add(method=responses.DELETE, url=link_id_url, status=204)
         yield rsps
 
 

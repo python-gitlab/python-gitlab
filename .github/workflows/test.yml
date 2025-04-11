@@ -26,8 +26,6 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python:
-          - version: "3.8"
-            toxenv: py38,smoke
           - version: "3.9"
             toxenv: py39,smoke
           - version: "3.10"
@@ -36,21 +34,23 @@ jobs:
             toxenv: py311,smoke
           - version: "3.12"
             toxenv: py312,smoke
-          - version: '3.13.0-alpha - 3.13' # SemVer's version range syntax
+          - version: "3.13"
             toxenv: py313,smoke
+          - version: "3.14.0-alpha - 3.14" # SemVer's version range syntax
+            toxenv: py314,smoke
         include:
           - os: macos-latest
             python:
-              version: "3.12"
-              toxenv: py312,smoke
+              version: "3.13"
+              toxenv: py313,smoke
           - os: windows-latest
             python:
-              version: "3.12"
-              toxenv: py312,smoke
+              version: "3.13"
+              toxenv: py313,smoke
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
       - name: Set up Python ${{ matrix.python.version }}
-        uses: actions/setup-python@v5.2.0
+        uses: actions/setup-python@v5.5.0
         with:
           python-version: ${{ matrix.python.version }}
       - name: Install dependencies
@@ -61,16 +61,17 @@ jobs:
         run: tox --skip-missing-interpreters false
 
   functional:
-    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         toxenv: [api_func_v4, cli_func_v4]
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
       - name: Set up Python
-        uses: actions/setup-python@v5.2.0
+        uses: actions/setup-python@v5.5.0
         with:
-          python-version: "3.12"
+          python-version: "3.13"
       - name: Install dependencies
         run: pip install tox
       - name: Run tests
@@ -78,7 +79,7 @@ jobs:
           TOXENV: ${{ matrix.toxenv }}
         run: tox -- --override-ini='log_cli=True'
       - name: Upload codecov coverage
-        uses: codecov/codecov-action@v4.5.0
+        uses: codecov/codecov-action@v5.4.0
         with:
           files: ./coverage.xml
           flags: ${{ matrix.toxenv }}
@@ -86,13 +87,13 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   coverage:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5.2.0
+        uses: actions/setup-python@v5.5.0
         with:
-          python-version: "3.12"
+          python-version: "3.13"
       - name: Install dependencies
         run: pip install tox
       - name: Run tests
@@ -101,7 +102,7 @@ jobs:
           TOXENV: cover
         run: tox
       - name: Upload codecov coverage
-        uses: codecov/codecov-action@v4.5.0
+        uses: codecov/codecov-action@v5.4.0
         with:
           files: ./coverage.xml
           flags: unit
@@ -112,16 +113,16 @@ jobs:
     runs-on: ubuntu-latest
     name: Python wheel
     steps:
-    - uses: actions/checkout@v4.1.7
-    - uses: actions/setup-python@v5.2.0
+    - uses: actions/checkout@v4.2.2
+    - uses: actions/setup-python@v5.5.0
       with:
-        python-version: "3.12"
+        python-version: "3.13"
     - name: Install dependencies
       run: |
         pip install -r requirements-test.txt
     - name: Build package
       run: python -m build -o dist/
-    - uses: actions/upload-artifact@v4.4.0
+    - uses: actions/upload-artifact@v4.6.2
       with:
         name: dist
         path: dist
@@ -130,12 +131,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: [dist]
     steps:
-    - uses: actions/checkout@v4.1.7
+    - uses: actions/checkout@v4.2.2
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.5.0
       with:
-        python-version: '3.12'
-    - uses: actions/download-artifact@v4.1.8
+        python-version: '3.13'
+    - uses: actions/download-artifact@v4.2.1
       with:
         name: dist
         path: dist

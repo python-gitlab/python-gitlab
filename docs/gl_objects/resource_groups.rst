@@ -22,7 +22,7 @@ Examples
 List resource groups for a project::
 
     project = gl.projects.get(project_id, lazy=True)
-    resource_group = project.resource_groups.list()
+    resource_group = project.resource_groups.list(get_all=True)
 
 Get a single resource group::
 
@@ -35,4 +35,4 @@ Edit a resource group::
 
 List upcoming jobs for a resource group::
 
-    upcoming_jobs = resource_group.upcoming_jobs.list()
+    upcoming_jobs = resource_group.upcoming_jobs.list(get_all=True)

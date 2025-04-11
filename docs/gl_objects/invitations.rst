@@ -45,7 +45,7 @@ Create an invitation::
 
 List invitations for a group or project::
 
-    invitations = group_or_project.invitations.list()
+    invitations = group_or_project.invitations.list(get_all=True)
 
 .. warning::
 

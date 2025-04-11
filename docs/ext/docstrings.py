@@ -1,9 +1,11 @@
 import inspect
 import os
+from typing import Sequence
 
 import jinja2
 import sphinx
 import sphinx.ext.napoleon as napoleon
+from sphinx.config import _ConfigRebuild
 from sphinx.ext.napoleon.docstring import GoogleDocstring
 
 
@@ -20,9 +22,11 @@ def setup(app):
     app.connect("autodoc-process-docstring", _process_docstring)
     app.connect("autodoc-skip-member", napoleon._skip_member)
 
-    conf = napoleon.Config._config_values
+    conf: Sequence[tuple[str, bool | None, _ConfigRebuild, set[type]]] = (
+        napoleon.Config._config_values
+    )
 
-    for name, (default, rebuild) in conf.items():
+    for name, default, rebuild, _ in conf:
         app.add_config_value(name, default, rebuild)
     return {"version": sphinx.__display_version__, "parallel_read_safe": True}
 

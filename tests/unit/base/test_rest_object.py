@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pickle
 
 import pytest
@@ -131,7 +133,7 @@ def test_dir_unique(fake_manager):
 
 def test_create_managers(gl, fake_manager):
     class ObjectWithManager(helpers.FakeObject):
-        fakes: "FakeManager"
+        fakes: FakeManager
 
     obj = ObjectWithManager(fake_manager, {"foo": "bar"})
     obj.id = 42
@@ -144,7 +146,7 @@ def test_equality(fake_manager):
     obj1 = helpers.FakeObject(fake_manager, {"id": "foo"})
     obj2 = helpers.FakeObject(fake_manager, {"id": "foo", "other_attr": "bar"})
     assert obj1 == obj2
-    assert len(set((obj1, obj2))) == 1
+    assert len({obj1, obj2}) == 1
 
 
 def test_equality_custom_id(fake_manager):
@@ -169,7 +171,7 @@ def test_inequality_no_id(fake_manager):
     obj1 = helpers.FakeObject(fake_manager, {"attr1": "foo"})
     obj2 = helpers.FakeObject(fake_manager, {"attr1": "bar"})
     assert obj1 != obj2
-    assert len(set((obj1, obj2))) == 2
+    assert len({obj1, obj2}) == 2
 
 
 def test_equality_with_other_objects(fake_manager):
@@ -189,12 +191,7 @@ def test_dunder_str(fake_manager):
     "id_attr,repr_attr, attrs, expected_repr",
     [
         ("id", None, {"id": 1}, "<ReprObject id:1>"),
-        (
-            "id",
-            "name",
-            {"id": 1, "name": "fake"},
-            "<ReprObject id:1 name:fake>",
-        ),
+        ("id", "name", {"id": 1, "name": "fake"}, "<ReprObject id:1 name:fake>"),
         ("name", "name", {"name": "fake"}, "<ReprObject name:fake>"),
         ("id", "name", {"id": 1}, "<ReprObject id:1>"),
         (None, None, {}, "<ReprObject>"),
@@ -290,6 +287,12 @@ def test_attributes_has_parent_attrs(fake_object_with_parent):
     assert result == {"attr1": "foo", "alist": [1, 2, 3], "test_id": "42"}
 
 
+def test_to_json(fake_object):
+    assert fake_object.attr1 == "foo"
+    result = fake_object.to_json()
+    assert result == '{"attr1": "foo", "alist": [1, 2, 3]}'
+
+
 def test_asdict(fake_object):
     assert fake_object.attr1 == "foo"
     result = fake_object.asdict()
@@ -319,16 +322,10 @@ def test_asdict_modify_dict_does_not_change_object2(fake_object):
     # Modify attribute and then ensure modifying a list in the returned dict won't
     # modify the list in the object.
     fake_object.attr1 = [9, 7, 8]
-    assert fake_object.asdict() == {
-        "attr1": [9, 7, 8],
-        "alist": [1, 2, 3],
-    }
+    assert fake_object.asdict() == {"attr1": [9, 7, 8], "alist": [1, 2, 3]}
     result = fake_object.asdict()
     result["attr1"].append(1)
-    assert fake_object.asdict() == {
-        "attr1": [9, 7, 8],
-        "alist": [1, 2, 3],
-    }
+    assert fake_object.asdict() == {"attr1": [9, 7, 8], "alist": [1, 2, 3]}
 
 
 def test_asdict_modify_object(fake_object):

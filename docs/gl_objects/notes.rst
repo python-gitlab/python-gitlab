@@ -43,10 +43,10 @@ Examples
 
 List the notes for a resource::
 
-    e_notes = epic.notes.list()
-    i_notes = issue.notes.list()
-    mr_notes = mr.notes.list()
-    s_notes = snippet.notes.list()
+    e_notes = epic.notes.list(get_all=True)
+    i_notes = issue.notes.list(get_all=True)
+    mr_notes = mr.notes.list(get_all=True)
+    s_notes = snippet.notes.list(get_all=True)
 
 Get a note for a resource::
 

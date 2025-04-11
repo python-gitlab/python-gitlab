@@ -35,7 +35,7 @@ Examples
 
 List all instance variables::
 
-    variables = gl.variables.list()
+    variables = gl.variables.list(get_all=True)
 
 Get an instance variable by key::
 
@@ -82,8 +82,8 @@ Examples
 
 List variables::
 
-    p_variables = project.variables.list()
-    g_variables = group.variables.list()
+    p_variables = project.variables.list(get_all=True)
+    g_variables = group.variables.list(get_all=True)
 
 Get a variable::
 

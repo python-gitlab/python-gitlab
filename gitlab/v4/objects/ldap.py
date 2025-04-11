@@ -1,29 +1,45 @@
-from typing import Any, List, Union
+from __future__ import annotations
+
+from typing import Any, Literal, overload
 
 from gitlab import exceptions as exc
 from gitlab.base import RESTManager, RESTObject, RESTObjectList
 
-__all__ = [
-    "LDAPGroup",
-    "LDAPGroupManager",
-]
+__all__ = ["LDAPGroup", "LDAPGroupManager"]
 
 
 class LDAPGroup(RESTObject):
     _id_attr = None
 
 
-class LDAPGroupManager(RESTManager):
+class LDAPGroupManager(RESTManager[LDAPGroup]):
     _path = "/ldap/groups"
     _obj_cls = LDAPGroup
     _list_filters = ("search", "provider")
 
+    @overload
+    def list(
+        self, *, iterator: Literal[False] = False, **kwargs: Any
+    ) -> list[LDAPGroup]: ...
+
+    @overload
+    def list(
+        self, *, iterator: Literal[True] = True, **kwargs: Any
+    ) -> RESTObjectList[LDAPGroup]: ...
+
+    @overload
+    def list(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> list[LDAPGroup] | RESTObjectList[LDAPGroup]: ...
+
     @exc.on_http_error(exc.GitlabListError)
-    def list(self, **kwargs: Any) -> Union[List[LDAPGroup], RESTObjectList]:
+    def list(
+        self, *, iterator: bool = False, **kwargs: Any
+    ) -> list[LDAPGroup] | RESTObjectList[LDAPGroup]:
         """Retrieve a list of objects.
 
         Args:
-            all: If True, return all the items, without pagination
+            get_all: If True, return all the items, without pagination
             per_page: Number of items to retrieve per request
             page: ID of the page to return (starts with page 1)
             iterator: If set to True and no pagination option is
@@ -46,7 +62,7 @@ class LDAPGroupManager(RESTManager):
         else:
             path = self._path
 
-        obj = self.gitlab.http_list(path, **data)
+        obj = self.gitlab.http_list(path, iterator=iterator, **data)
         if isinstance(obj, list):
             return [self._obj_cls(self, item) for item in obj]
         return RESTObjectList(self, self._obj_cls, obj)

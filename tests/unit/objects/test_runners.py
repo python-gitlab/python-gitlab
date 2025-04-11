@@ -166,11 +166,7 @@ def resp_runner_delete():
             content_type="application/json",
             status=200,
         )
-        rsps.add(
-            method=responses.DELETE,
-            url=pattern,
-            status=204,
-        )
+        rsps.add(method=responses.DELETE, url=pattern, status=204)
         yield rsps
 
 
@@ -190,11 +186,7 @@ def resp_runner_delete_by_token():
 def resp_runner_disable():
     with responses.RequestsMock() as rsps:
         pattern = re.compile(r".*?/projects/1/runners/6")
-        rsps.add(
-            method=responses.DELETE,
-            url=pattern,
-            status=204,
-        )
+        rsps.add(method=responses.DELETE, url=pattern, status=204)
         yield rsps
 
 
@@ -202,11 +194,7 @@ def resp_runner_disable():
 def resp_runner_verify():
     with responses.RequestsMock() as rsps:
         pattern = re.compile(r".*?/runners/verify")
-        rsps.add(
-            method=responses.POST,
-            url=pattern,
-            status=200,
-        )
+        rsps.add(method=responses.POST, url=pattern, status=200)
         yield rsps
 
 

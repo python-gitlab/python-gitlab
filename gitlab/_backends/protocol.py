@@ -1,14 +1,10 @@
+from __future__ import annotations
+
 import abc
-import sys
-from typing import Any, Dict, Optional, Union
+from typing import Any, Protocol
 
 import requests
 from requests_toolbelt.multipart.encoder import MultipartEncoder  # type: ignore
-
-if sys.version_info >= (3, 8):
-    from typing import Protocol
-else:
-    from typing_extensions import Protocol
 
 
 class BackendResponse(Protocol):
@@ -22,11 +18,11 @@ class Backend(Protocol):
         self,
         method: str,
         url: str,
-        json: Optional[Union[Dict[str, Any], bytes]],
-        data: Optional[Union[Dict[str, Any], MultipartEncoder]],
-        params: Optional[Any],
-        timeout: Optional[float],
-        verify: Optional[Union[bool, str]],
-        stream: Optional[bool],
+        json: dict[str, Any] | bytes | None,
+        data: dict[str, Any] | MultipartEncoder | None,
+        params: Any | None,
+        timeout: float | None,
+        verify: bool | str | None,
+        stream: bool | None,
         **kwargs: Any,
     ) -> BackendResponse: ...

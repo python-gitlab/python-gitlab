@@ -118,6 +118,29 @@ def test_http_request_with_retry_on_method_for_transient_failures(gl):
 
 
 @responses.activate
+def test_http_request_extra_headers(gl):
+    path = "/projects/123/jobs/123456"
+    url = "http://localhost/api/v4" + path
+
+    range_headers = {"Range": "bytes=0-99"}
+
+    responses.add(
+        method=responses.GET,
+        url=url,
+        body=b"a" * 100,
+        status=206,
+        content_type="application/octet-stream",
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS
+        + [responses.matchers.header_matcher(range_headers)],
+    )
+
+    http_r = gl.http_request("get", path, extra_headers=range_headers)
+
+    assert http_r.status_code == 206
+    assert len(http_r.content) == 100
+
+
+@responses.activate
 @pytest.mark.parametrize(
     "exception",
     [
@@ -301,19 +324,11 @@ def create_redirect_response(
     # Create a "prepped" Request object to be the final redirect. The redirect
     # will be a "GET" method as Requests changes the method to "GET" when there
     # is a 301/302 redirect code.
-    req = requests.Request(
-        method="GET",
-        url=f"http://example.com/api/v4{api_path}",
-    )
+    req = requests.Request(method="GET", url=f"http://example.com/api/v4{api_path}")
     prepped = req.prepare()
 
     resp_obj = helpers.httmock_response(
-        status_code=200,
-        content="",
-        headers={},
-        reason="OK",
-        elapsed=5,
-        request=prepped,
+        status_code=200, content="", headers={}, reason="OK", elapsed=5, request=prepped
     )
     resp_obj.history = history
     return resp_obj
@@ -552,8 +567,8 @@ def test_list_request_page_and_iterator(gl):
         UserWarning, match="`iterator=True` and `page=1` were both specified"
     ):
         result = gl.http_list("/projects", iterator=True, page=1)
-    assert isinstance(result, list)
-    assert len(result) == 20
+    assert isinstance(result, GitlabList)
+    assert len(list(result)) == 20
     assert len(responses.calls) == 1
 
 

@@ -21,7 +21,7 @@ Examples
 
 List labels for a project::
 
-    labels = project.labels.list()
+    labels = project.labels.list(get_all=True)
 
 Create a label for a project::
 
@@ -86,7 +86,7 @@ Examples
 
 Get the events for a resource (issue, merge request or epic)::
 
-    events = resource.resourcelabelevents.list()
+    events = resource.resourcelabelevents.list(get_all=True)
 
 Get a specific event for a resource::
 

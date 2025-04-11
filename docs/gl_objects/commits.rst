@@ -19,17 +19,17 @@ Examples
 
 List the commits for a project::
 
-    commits = project.commits.list()
+    commits = project.commits.list(get_all=True)
 
 You can use the ``ref_name``, ``since`` and ``until`` filters to limit the
 results::
 
-    commits = project.commits.list(ref_name='my_branch')
-    commits = project.commits.list(since='2016-01-01T00:00:00Z')
+    commits = project.commits.list(ref_name='my_branch', get_all=True)
+    commits = project.commits.list(since='2016-01-01T00:00:00Z', get_all=True)
 
 List all commits for a project (see :ref:`pagination`) on all branches:
 
-    commits = project.commits.list(get_all=True, all=True)
+    commits = project.commits.list(get_all=True)
 
 Create a commit::
 
@@ -105,7 +105,7 @@ Examples
 
 Get the comments for a commit::
 
-    comments = commit.comments.list()
+    comments = commit.comments.list(get_all=True)
 
 Add a comment on a commit::
 
@@ -136,7 +136,7 @@ Examples
 
 List the statuses for a commit::
 
-    statuses = commit.statuses.list()
+    statuses = commit.statuses.list(get_all=True)
 
 Change the status of a commit::
 

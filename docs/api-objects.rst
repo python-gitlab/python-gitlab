@@ -36,6 +36,7 @@ API examples
    gl_objects/boards
    gl_objects/labels
    gl_objects/notifications
+   gl_objects/member_roles.rst
    gl_objects/merge_trains
    gl_objects/merge_requests
    gl_objects/merge_request_approvals.rst
@@ -52,6 +53,7 @@ API examples
    gl_objects/protected_container_repositories
    gl_objects/protected_environments
    gl_objects/protected_packages
+   gl_objects/pull_mirror
    gl_objects/releases
    gl_objects/runners
    gl_objects/remote_mirrors
@@ -63,6 +65,7 @@ API examples
    gl_objects/settings
    gl_objects/snippets
    gl_objects/statistics
+   gl_objects/status_checks
    gl_objects/system_hooks
    gl_objects/templates
    gl_objects/todos

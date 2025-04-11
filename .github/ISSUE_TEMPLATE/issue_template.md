@@ -19,5 +19,4 @@ assignees: ''
 ## Specifications
 
   - python-gitlab version:
-  - API version you are using (v3/v4):
   - Gitlab server version (or gitlab.com):

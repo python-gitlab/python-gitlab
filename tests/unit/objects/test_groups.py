@@ -67,7 +67,7 @@ subgroup_descgroup_content = [
         "file_template_project_id": 1,
         "parent_id": 123,
         "created_at": "2020-01-15T12:36:29.590Z",
-    },
+    }
 ]
 push_rules_content = {
     "id": 2,
@@ -435,10 +435,7 @@ def test_create_group_push_rule(group, resp_create_push_rules_group):
     group.pushrules.create({"deny_delete_tag": True})
 
 
-def test_update_group_push_rule(
-    group,
-    resp_update_push_rules_group,
-):
+def test_update_group_push_rule(group, resp_update_push_rules_group):
     pr = group.pushrules.get()
     pr.deny_delete_tag = False
     pr.save()

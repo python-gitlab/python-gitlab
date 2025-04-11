@@ -109,10 +109,7 @@ def resp_get_bulk_import_entity():
 
 
 def test_create_bulk_import(gl, resp_create_bulk_import):
-    configuration = {
-        "url": gl.url,
-        "access_token": "test-token",
-    }
+    configuration = {"url": gl.url, "access_token": "test-token"}
     migration_entity = {
         "source_full_path": "source",
         "source_type": "group_entity",
@@ -120,10 +117,7 @@ def test_create_bulk_import(gl, resp_create_bulk_import):
         "destination_namespace": "destination",
     }
     migration = gl.bulk_imports.create(
-        {
-            "configuration": configuration,
-            "entities": [migration_entity],
-        }
+        {"configuration": configuration, "entities": [migration_entity]}
     )
     assert isinstance(migration, BulkImport)
     assert migration.status == "finished"

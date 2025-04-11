@@ -18,7 +18,7 @@ Examples
 
 List environments for a project::
 
-    environments = project.environments.list()
+    environments = project.environments.list(get_all=True)
 
 Create an environment for a project::
 

@@ -11,10 +11,7 @@ from gitlab.v4.objects.job_token_scope import (
     AllowlistProjectManager,
 )
 
-job_token_scope_content = {
-    "inbound_enabled": True,
-    "outbound_enabled": False,
-}
+job_token_scope_content = {"inbound_enabled": True, "outbound_enabled": False}
 
 project_allowlist_content = [
     {
@@ -47,10 +44,7 @@ project_allowlist_content = [
     }
 ]
 
-project_allowlist_created_content = {
-    "target_project_id": 2,
-    "project_id": 1,
-}
+project_allowlist_created_content = {"target_project_id": 2, "project_id": 1}
 
 groups_allowlist_content = [
     {
@@ -60,10 +54,7 @@ groups_allowlist_content = [
     }
 ]
 
-group_allowlist_created_content = {
-    "target_group_id": 4,
-    "project_id": 1,
-}
+group_allowlist_created_content = {"target_group_id": 4, "project_id": 1}
 
 
 @pytest.fixture

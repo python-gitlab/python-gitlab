@@ -52,7 +52,7 @@ Refresh the current state of job token scope::
 
 Get a project's CI/CD job token inbound allowlist::
 
-    allowlist = scope.allowlist.list()
+    allowlist = scope.allowlist.list(get_all=True)
 
 Add a project to the project's inbound allowlist::
 
@@ -75,13 +75,12 @@ Using ``.get_id()``::
     resp = allowlist.create({"target_project_id": 2})
     allowlist_id = resp.get_id()
 
-    allowlists = project.allowlist.list()
-    for allowlist in allowlists:
+    for allowlist in project.allowlist.list(iterator=True):
       allowlist_id == allowlist.get_id()
 
 Get a project's CI/CD job token inbound groups allowlist::
 
-    allowlist = scope.groups_allowlist.list()
+    allowlist = scope.groups_allowlist.list(get_all=True)
 
 Add a project to the project's inbound groups allowlist::
 

@@ -3,24 +3,23 @@ GitLab API:
 https://docs.gitlab.com/ee/api/features.html
 """
 
-from typing import Any, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, TYPE_CHECKING
 
 from gitlab import exceptions as exc
 from gitlab import utils
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import DeleteMixin, ListMixin, ObjectDeleteMixin
 
-__all__ = [
-    "Feature",
-    "FeatureManager",
-]
+__all__ = ["Feature", "FeatureManager"]
 
 
 class Feature(ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
 
 
-class FeatureManager(ListMixin, DeleteMixin, RESTManager):
+class FeatureManager(ListMixin[Feature], DeleteMixin[Feature]):
     _path = "/features/"
     _obj_cls = Feature
 
@@ -28,11 +27,11 @@ class FeatureManager(ListMixin, DeleteMixin, RESTManager):
     def set(
         self,
         name: str,
-        value: Union[bool, int],
-        feature_group: Optional[str] = None,
-        user: Optional[str] = None,
-        group: Optional[str] = None,
-        project: Optional[str] = None,
+        value: bool | int,
+        feature_group: str | None = None,
+        user: str | None = None,
+        group: str | None = None,
+        project: str | None = None,
         **kwargs: Any,
     ) -> Feature:
         """Create or update the object.

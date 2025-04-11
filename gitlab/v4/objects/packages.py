@@ -4,17 +4,10 @@ https://docs.gitlab.com/ee/api/packages.html
 https://docs.gitlab.com/ee/user/packages/generic_packages/
 """
 
+from __future__ import annotations
+
 from pathlib import Path
-from typing import (
-    Any,
-    BinaryIO,
-    Callable,
-    cast,
-    Iterator,
-    Optional,
-    TYPE_CHECKING,
-    Union,
-)
+from typing import Any, BinaryIO, Callable, Iterator, Literal, overload, TYPE_CHECKING
 
 import requests
 
@@ -42,7 +35,7 @@ class GenericPackage(RESTObject):
     _id_attr = "package_name"
 
 
-class GenericPackageManager(RESTManager):
+class GenericPackageManager(RESTManager[GenericPackage]):
     _path = "/projects/{project_id}/packages/generic"
     _obj_cls = GenericPackage
     _from_parent_attrs = {"project_id": "id"}
@@ -57,9 +50,9 @@ class GenericPackageManager(RESTManager):
         package_name: str,
         package_version: str,
         file_name: str,
-        path: Optional[Union[str, Path]] = None,
-        select: Optional[str] = None,
-        data: Optional[Union[bytes, BinaryIO]] = None,
+        path: str | Path | None = None,
+        select: str | None = None,
+        data: bytes | BinaryIO | None = None,
         **kwargs: Any,
     ) -> GenericPackage:
         """Upload a file as a generic package.
@@ -91,7 +84,7 @@ class GenericPackageManager(RESTManager):
         if path is not None and data is not None:
             raise exc.GitlabUploadError("File contents and file path specified")
 
-        file_data: Optional[Union[bytes, BinaryIO]] = data
+        file_data: bytes | BinaryIO | None = data
 
         if not file_data:
             if TYPE_CHECKING:
@@ -122,6 +115,48 @@ class GenericPackageManager(RESTManager):
         attrs.update(server_data)
         return self._obj_cls(self, attrs=attrs)
 
+    @overload
+    def download(
+        self,
+        package_name: str,
+        package_version: str,
+        file_name: str,
+        streamed: Literal[False] = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> bytes: ...
+
+    @overload
+    def download(
+        self,
+        package_name: str,
+        package_version: str,
+        file_name: str,
+        streamed: bool = False,
+        action: None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[True] = True,
+        **kwargs: Any,
+    ) -> Iterator[Any]: ...
+
+    @overload
+    def download(
+        self,
+        package_name: str,
+        package_version: str,
+        file_name: str,
+        streamed: Literal[True] = True,
+        action: Callable[[bytes], Any] | None = None,
+        chunk_size: int = 1024,
+        *,
+        iterator: Literal[False] = False,
+        **kwargs: Any,
+    ) -> None: ...
+
     @cli.register_custom_action(
         cls_names="GenericPackageManager",
         required=("package_name", "package_version", "file_name"),
@@ -133,12 +168,12 @@ class GenericPackageManager(RESTManager):
         package_version: str,
         file_name: str,
         streamed: bool = False,
-        action: Optional[Callable[[bytes], None]] = None,
+        action: Callable[[bytes], Any] | None = None,
         chunk_size: int = 1024,
         *,
         iterator: bool = False,
         **kwargs: Any,
-    ) -> Optional[Union[bytes, Iterator[Any]]]:
+    ) -> bytes | Iterator[Any] | None:
         """Download a generic package.
 
         Args:
@@ -175,7 +210,7 @@ class GroupPackage(RESTObject):
     pass
 
 
-class GroupPackageManager(ListMixin, RESTManager):
+class GroupPackageManager(ListMixin[GroupPackage]):
     _path = "/groups/{group_id}/packages"
     _obj_cls = GroupPackage
     _from_parent_attrs = {"group_id": "id"}
@@ -189,32 +224,26 @@ class GroupPackageManager(ListMixin, RESTManager):
 
 
 class ProjectPackage(ObjectDeleteMixin, RESTObject):
-    package_files: "ProjectPackageFileManager"
-    pipelines: "ProjectPackagePipelineManager"
+    package_files: ProjectPackageFileManager
+    pipelines: ProjectPackagePipelineManager
 
 
-class ProjectPackageManager(ListMixin, GetMixin, DeleteMixin, RESTManager):
+class ProjectPackageManager(
+    ListMixin[ProjectPackage], GetMixin[ProjectPackage], DeleteMixin[ProjectPackage]
+):
     _path = "/projects/{project_id}/packages"
     _obj_cls = ProjectPackage
     _from_parent_attrs = {"project_id": "id"}
-    _list_filters = (
-        "order_by",
-        "sort",
-        "package_type",
-        "package_name",
-    )
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectPackage:
-        return cast(ProjectPackage, super().get(id=id, lazy=lazy, **kwargs))
+    _list_filters = ("order_by", "sort", "package_type", "package_name")
 
 
 class ProjectPackageFile(ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectPackageFileManager(DeleteMixin, ListMixin, RESTManager):
+class ProjectPackageFileManager(
+    DeleteMixin[ProjectPackageFile], ListMixin[ProjectPackageFile]
+):
     _path = "/projects/{project_id}/packages/{package_id}/package_files"
     _obj_cls = ProjectPackageFile
     _from_parent_attrs = {"project_id": "project_id", "package_id": "id"}
@@ -224,7 +253,7 @@ class ProjectPackagePipeline(RESTObject):
     pass
 
 
-class ProjectPackagePipelineManager(ListMixin, RESTManager):
+class ProjectPackagePipelineManager(ListMixin[ProjectPackagePipeline]):
     _path = "/projects/{project_id}/packages/{package_id}/pipelines"
     _obj_cls = ProjectPackagePipeline
     _from_parent_attrs = {"project_id": "project_id", "package_id": "id"}

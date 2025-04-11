@@ -26,11 +26,11 @@ Examples
 
 List iterations for a project's ancestor groups::
 
-    iterations = project.iterations.list()
+    iterations = project.iterations.list(get_all=True)
 
 List iterations for a group::
 
-    iterations = group.iterations.list()
+    iterations = group.iterations.list(get_all=True)
 
 Unavailable filters or keyword conflicts::
     
@@ -39,5 +39,5 @@ Unavailable filters or keyword conflicts::
     to use the `query_parameters` argument:
 
     ```
-    group.iterations.list(query_parameters={"in": "title"}) 
+    group.iterations.list(query_parameters={"in": "title"}, get_all=True)
     ```

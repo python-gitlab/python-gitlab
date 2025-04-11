@@ -20,22 +20,14 @@ def json_content():
                 "path": "gitlab-ce",
                 "path_with_namespace": "gitlab-org/gitlab-ce",
             },
-            "author": {
-                "name": "Administrator",
-                "username": "root",
-                "id": 1,
-            },
+            "author": {"name": "Administrator", "username": "root", "id": 1},
             "action_name": "marked",
             "target_type": "MergeRequest",
             "target": {
                 "id": 34,
                 "iid": 7,
                 "project_id": 2,
-                "assignee": {
-                    "name": "Administrator",
-                    "username": "root",
-                    "id": 1,
-                },
+                "assignee": {"name": "Administrator", "username": "root", "id": 1},
             },
         }
     ]

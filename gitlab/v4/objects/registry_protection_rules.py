@@ -1,11 +1,8 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CreateMixin, ListMixin, SaveMixin, UpdateMethod, UpdateMixin
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "ProjectRegistryProtectionRule",
-    "ProjectRegistryProtectionRuleManager",
-]
+__all__ = ["ProjectRegistryProtectionRule", "ProjectRegistryProtectionRuleManager"]
 
 
 class ProjectRegistryProtectionRule(SaveMixin, RESTObject):
@@ -13,23 +10,22 @@ class ProjectRegistryProtectionRule(SaveMixin, RESTObject):
 
 
 class ProjectRegistryProtectionRuleManager(
-    ListMixin, CreateMixin, UpdateMixin, RESTManager
+    ListMixin[ProjectRegistryProtectionRule],
+    CreateMixin[ProjectRegistryProtectionRule],
+    UpdateMixin[ProjectRegistryProtectionRule],
 ):
     _path = "/projects/{project_id}/registry/protection/rules"
     _obj_cls = ProjectRegistryProtectionRule
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
         required=("repository_path_pattern",),
-        optional=(
-            "minimum_access_level_for_push",
-            "minimum_access_level_for_delete",
-        ),
+        optional=("minimum_access_level_for_push", "minimum_access_level_for_delete"),
     )
     _update_attrs = RequiredOptional(
         optional=(
             "repository_path_pattern",
             "minimum_access_level_for_push",
             "minimum_access_level_for_delete",
-        ),
+        )
     )
     _update_method = UpdateMethod.PATCH

@@ -1,8 +1,10 @@
-from typing import Any, cast, Dict, Optional, Union
+from __future__ import annotations
+
+from typing import Any
 
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
-from gitlab.mixins import CreateMixin, CRUDMixin, ObjectDeleteMixin, SaveMixin
+from gitlab.base import RESTObject
+from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
 __all__ = [
@@ -17,7 +19,7 @@ class GroupCluster(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class GroupClusterManager(CRUDMixin, RESTManager):
+class GroupClusterManager(CRUDMixin[GroupCluster]):
     _path = "/groups/{group_id}/clusters"
     _obj_cls = GroupCluster
     _from_parent_attrs = {"group_id": "id"}
@@ -32,13 +34,11 @@ class GroupClusterManager(CRUDMixin, RESTManager):
             "management_project_id",
             "platform_kubernetes_attributes",
             "environment_scope",
-        ),
+        )
     )
 
     @exc.on_http_error(exc.GitlabStopError)
-    def create(
-        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> GroupCluster:
+    def create(self, data: dict[str, Any] | None = None, **kwargs: Any) -> GroupCluster:
         """Create a new object.
 
         Args:
@@ -56,19 +56,14 @@ class GroupClusterManager(CRUDMixin, RESTManager):
                 the data sent by the server
         """
         path = f"{self.path}/user"
-        return cast(GroupCluster, CreateMixin.create(self, data, path=path, **kwargs))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> GroupCluster:
-        return cast(GroupCluster, super().get(id=id, lazy=lazy, **kwargs))
+        return super().create(data, path=path, **kwargs)
 
 
 class ProjectCluster(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectClusterManager(CRUDMixin, RESTManager):
+class ProjectClusterManager(CRUDMixin[ProjectCluster]):
     _path = "/projects/{project_id}/clusters"
     _obj_cls = ProjectCluster
     _from_parent_attrs = {"project_id": "id"}
@@ -83,12 +78,12 @@ class ProjectClusterManager(CRUDMixin, RESTManager):
             "management_project_id",
             "platform_kubernetes_attributes",
             "environment_scope",
-        ),
+        )
     )
 
     @exc.on_http_error(exc.GitlabStopError)
     def create(
-        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+        self, data: dict[str, Any] | None = None, **kwargs: Any
     ) -> ProjectCluster:
         """Create a new object.
 
@@ -107,9 +102,4 @@ class ProjectClusterManager(CRUDMixin, RESTManager):
                 the data sent by the server
         """
         path = f"{self.path}/user"
-        return cast(ProjectCluster, CreateMixin.create(self, data, path=path, **kwargs))
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectCluster:
-        return cast(ProjectCluster, super().get(id=id, lazy=lazy, **kwargs))
+        return super().create(data, path=path, **kwargs)

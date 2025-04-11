@@ -24,21 +24,9 @@ project_with_owner_content = {
     "id": 1,
     "owner": {"id": 1, "username": "owner_username", "name": "owner_name"},
 }
-languages_content = {
-    "python": 80.00,
-    "ruby": 99.99,
-    "CoffeeScript": 0.01,
-}
-user_content = {
-    "name": "first",
-    "id": 1,
-    "state": "active",
-}
-forks_content = [
-    {
-        "id": 1,
-    },
-]
+languages_content = {"python": 80.00, "ruby": 99.99, "CoffeeScript": 0.01}
+user_content = {"name": "first", "id": 1, "state": "active"}
+forks_content = [{"id": 1}]
 project_forked_from_content = {
     "name": "name",
     "id": 2,
@@ -47,10 +35,7 @@ project_forked_from_content = {
 }
 project_starrers_content = {
     "starred_since": "2019-01-28T14:47:30.642Z",
-    "user": {
-        "id": 1,
-        "name": "name",
-    },
+    "user": {"id": 1, "name": "name"},
 }
 upload_file_content = {
     "alt": "filename",
@@ -66,14 +51,7 @@ share_project_content = {
     "expires_at": None,
 }
 push_rules_content = {"id": 1, "deny_delete_tag": True}
-search_issues_content = [
-    {
-        "id": 1,
-        "iid": 1,
-        "project_id": 1,
-        "title": "Issue",
-    }
-]
+search_issues_content = [{"id": 1, "iid": 1, "project_id": 1, "title": "Issue"}]
 pipeline_trigger_content = {
     "id": 1,
     "iid": 1,
@@ -749,10 +727,7 @@ def test_create_project_push_rule(project, resp_create_push_rules_project):
     project.pushrules.create({"deny_delete_tag": True})
 
 
-def test_update_project_push_rule(
-    project,
-    resp_update_push_rules_project,
-):
+def test_update_project_push_rule(project, resp_update_push_rules_project):
     pr = project.pushrules.get()
     pr.deny_delete_tag = False
     pr.save()
@@ -768,11 +743,13 @@ def test_transfer_project(project, resp_transfer_project):
 
 
 def test_project_pull_mirror(project, resp_start_pull_mirroring_project):
-    project.mirror_pull()
+    with pytest.warns(DeprecationWarning, match="is deprecated"):
+        project.mirror_pull()
 
 
 def test_project_pull_mirror_details(project, resp_pull_mirror_details_project):
-    details = project.mirror_pull_details()
+    with pytest.warns(DeprecationWarning, match="is deprecated"):
+        details = project.mirror_pull_details()
     assert details["last_error"] is None
     assert details["update_status"] == "finished"
 

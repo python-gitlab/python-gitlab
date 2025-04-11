@@ -93,10 +93,7 @@ def test_job_token_auth():
 
 def test_http_auth():
     gl = Gitlab(
-        "http://localhost",
-        http_username="foo",
-        http_password="bar",
-        api_version="4",
+        "http://localhost", http_username="foo", http_password="bar", api_version="4"
     )
     p = PreparedRequest()
     p.prepare(url=gl.url, auth=gl._auth)
@@ -184,11 +181,7 @@ def test_with_auth_ignores_netrc_file(netrc):
             None,
         ),
         (
-            {
-                "private_token": None,
-                "oauth_token": None,
-                "job_token": None,
-            },
+            {"private_token": None, "oauth_token": None, "job_token": None},
             {
                 "private_token": "config-private-token",
                 "oauth_token": "config-oauth-token",
@@ -199,11 +192,7 @@ def test_with_auth_ignores_netrc_file(netrc):
             None,
         ),
         (
-            {
-                "private_token": None,
-                "oauth_token": None,
-                "job_token": None,
-            },
+            {"private_token": None, "oauth_token": None, "job_token": None},
             {
                 "private_token": None,
                 "oauth_token": "config-oauth-token",
@@ -214,11 +203,7 @@ def test_with_auth_ignores_netrc_file(netrc):
             None,
         ),
         (
-            {
-                "private_token": None,
-                "oauth_token": None,
-                "job_token": None,
-            },
+            {"private_token": None, "oauth_token": None, "job_token": None},
             {
                 "private_token": None,
                 "oauth_token": None,
@@ -231,11 +216,7 @@ def test_with_auth_ignores_netrc_file(netrc):
     ],
 )
 def test_merge_auth(
-    options,
-    config,
-    expected_private_token,
-    expected_oauth_token,
-    expected_job_token,
+    options, config, expected_private_token, expected_oauth_token, expected_job_token
 ):
     cp = GitlabConfigParser()
     cp.private_token = config["private_token"]

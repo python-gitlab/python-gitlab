@@ -18,7 +18,7 @@ Examples
 
 List the geo nodes::
 
-    nodes = gl.geonodes.list()
+    nodes = gl.geonodes.list(get_all=True)
 
 Get the status of all the nodes::
 

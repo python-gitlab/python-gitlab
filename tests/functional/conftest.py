@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dataclasses
 import datetime
 import logging
@@ -6,7 +8,7 @@ import tempfile
 import time
 import uuid
 from subprocess import check_output
-from typing import Optional
+from typing import Sequence, TYPE_CHECKING
 
 import pytest
 import requests
@@ -85,12 +87,12 @@ def reset_gitlab(gl: gitlab.Gitlab) -> None:
             settings.save()
 
     for project in gl.projects.list():
-        for deploy_token in project.deploytokens.list():
+        for project_deploy_token in project.deploytokens.list():
             logging.info(
-                f"Deleting deploy token: {deploy_token.username!r} in "
+                f"Deleting deploy token: {project_deploy_token.username!r} in "
                 f"project: {project.path_with_namespace!r}"
             )
-            helpers.safe_delete(deploy_token)
+            helpers.safe_delete(project_deploy_token)
         logging.info(f"Deleting project: {project.path_with_namespace!r}")
         helpers.safe_delete(project)
 
@@ -104,12 +106,12 @@ def reset_gitlab(gl: gitlab.Gitlab) -> None:
             )
             continue
 
-        for deploy_token in group.deploytokens.list():
+        for group_deploy_token in group.deploytokens.list():
             logging.info(
-                f"Deleting deploy token: {deploy_token.username!r} in "
+                f"Deleting deploy token: {group_deploy_token.username!r} in "
                 f"group: {group.path_with_namespace!r}"
             )
-            helpers.safe_delete(deploy_token)
+            helpers.safe_delete(group_deploy_token)
         logging.info(f"Deleting group: {group.full_path!r}")
         helpers.safe_delete(group)
     for topic in gl.topics.list():
@@ -128,7 +130,7 @@ def set_token(container: str, fixture_dir: pathlib.Path) -> str:
     logging.info("Creating API token.")
     set_token_rb = fixture_dir / "set_token.rb"
 
-    with open(set_token_rb, "r", encoding="utf-8") as f:
+    with open(set_token_rb, encoding="utf-8") as f:
         set_token_command = f.read().strip()
 
     rails_command = [
@@ -145,7 +147,9 @@ def set_token(container: str, fixture_dir: pathlib.Path) -> str:
     return output
 
 
-def pytest_report_collectionfinish(config, startdir, items):
+def pytest_report_collectionfinish(
+    config: pytest.Config, start_path: pathlib.Path, items: Sequence[pytest.Item]
+):
     return [
         "",
         "Starting GitLab container.",
@@ -173,12 +177,7 @@ def check_is_alive():
     Return a healthcheck function fixture for the GitLab container spinup.
     """
 
-    def _check(
-        *,
-        container: str,
-        start_time: float,
-        gitlab_url: str,
-    ) -> bool:
+    def _check(*, container: str, start_time: float, gitlab_url: str) -> bool:
         setup_time = time.perf_counter() - start_time
         minutes, seconds = int(setup_time / 60), int(setup_time % 60)
         logging.info(
@@ -261,6 +260,7 @@ def gl(gitlab_url: str, gitlab_token: str) -> gitlab.Gitlab:
 
     logging.info("Instantiating python-gitlab gitlab.Gitlab instance")
     instance = gitlab.Gitlab(gitlab_url, private_token=gitlab_token)
+    instance.auth()
 
     logging.info("Reset GitLab")
     reset_gitlab(instance)
@@ -269,7 +269,7 @@ def gl(gitlab_url: str, gitlab_token: str) -> gitlab.Gitlab:
 
 
 @pytest.fixture(scope="session")
-def gitlab_plan(gl: gitlab.Gitlab) -> Optional[str]:
+def gitlab_plan(gl: gitlab.Gitlab) -> str | None:
     return helpers.get_gitlab_plan(gl)
 
 
@@ -292,21 +292,25 @@ def gitlab_ultimate(gitlab_plan, request) -> None:
 
 
 @pytest.fixture(scope="session")
-def gitlab_runner(gl):
+def gitlab_runner(gl: gitlab.Gitlab):
     container = "gitlab-runner-test"
-    runner_name = "python-gitlab-runner"
-    token = "registration-token"
+    runner_description = "python-gitlab-runner"
+    if TYPE_CHECKING:
+        assert gl.user is not None
+
+    runner = gl.user.runners.create(
+        {"runner_type": "instance_type", "run_untagged": True}
+    )
     url = "http://gitlab"
 
     docker_exec = ["docker", "exec", container, "gitlab-runner"]
     register = [
         "register",
-        "--run-untagged",
         "--non-interactive",
-        "--registration-token",
-        token,
-        "--name",
-        runner_name,
+        "--token",
+        runner.token,
+        "--description",
+        runner_description,
         "--url",
         url,
         "--clone-url",
@@ -314,21 +318,17 @@ def gitlab_runner(gl):
         "--executor",
         "shell",
     ]
-    unregister = ["unregister", "--name", runner_name]
 
     yield check_output(docker_exec + register).decode()
 
-    check_output(docker_exec + unregister).decode()
+    gl.runners.delete(token=runner.token)
 
 
 @pytest.fixture(scope="module")
 def group(gl):
     """Group fixture for group API resource tests."""
     _id = uuid.uuid4().hex
-    data = {
-        "name": f"test-group-{_id}",
-        "path": f"group-{_id}",
-    }
+    data = {"name": f"test-group-{_id}", "path": f"group-{_id}"}
     group = gl.groups.create(data)
 
     yield group

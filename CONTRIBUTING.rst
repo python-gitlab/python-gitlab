@@ -81,6 +81,9 @@ You need to install ``tox`` (``pip3 install tox``) to run tests and lint checks 
    # build the documentation - the result will be generated in build/sphinx/html/:
    tox -e docs
 
+   # build and serve the documentation site locally for validating changes
+   tox -e docs-serve
+
    # List all available tox environments
    tox list
 

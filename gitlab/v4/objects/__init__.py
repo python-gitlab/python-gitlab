@@ -39,6 +39,7 @@ from .jobs import *
 from .keys import *
 from .labels import *
 from .ldap import *
+from .member_roles import *
 from .members import *
 from .merge_request_approvals import *
 from .merge_requests import *
@@ -55,6 +56,7 @@ from .pipelines import *
 from .project_access_tokens import *
 from .projects import *
 from .push_rules import *
+from .registry_protection_repository_rules import *
 from .registry_protection_rules import *
 from .releases import *
 from .repositories import *
@@ -67,6 +69,7 @@ from .settings import *
 from .sidekiq import *
 from .snippets import *
 from .statistics import *
+from .status_checks import *
 from .tags import *
 from .templates import *
 from .todos import *

@@ -18,7 +18,7 @@ Examples
 
 List features::
 
-    features = gl.features.list()
+    features = gl.features.list(get_all=True)
 
 Create or set a feature::
 

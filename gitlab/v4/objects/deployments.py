@@ -3,20 +3,19 @@ GitLab API:
 https://docs.gitlab.com/ee/api/deployments.html
 """
 
-from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, TYPE_CHECKING
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CreateMixin, RetrieveMixin, SaveMixin, UpdateMixin
 from gitlab.types import RequiredOptional
 
 from .merge_requests import ProjectDeploymentMergeRequestManager  # noqa: F401
 
-__all__ = [
-    "ProjectDeployment",
-    "ProjectDeploymentManager",
-]
+__all__ = ["ProjectDeployment", "ProjectDeploymentManager"]
 
 
 class ProjectDeployment(SaveMixin, RESTObject):
@@ -31,10 +30,10 @@ class ProjectDeployment(SaveMixin, RESTObject):
     def approval(
         self,
         status: str,
-        comment: Optional[str] = None,
-        represented_as: Optional[str] = None,
+        comment: str | None = None,
+        represented_as: str | None = None,
         **kwargs: Any,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Approve or reject a blocked deployment.
 
         Args:
@@ -67,7 +66,11 @@ class ProjectDeployment(SaveMixin, RESTObject):
         return server_data
 
 
-class ProjectDeploymentManager(RetrieveMixin, CreateMixin, UpdateMixin, RESTManager):
+class ProjectDeploymentManager(
+    RetrieveMixin[ProjectDeployment],
+    CreateMixin[ProjectDeployment],
+    UpdateMixin[ProjectDeployment],
+):
     _path = "/projects/{project_id}/deployments"
     _obj_cls = ProjectDeployment
     _from_parent_attrs = {"project_id": "id"}
@@ -82,8 +85,3 @@ class ProjectDeploymentManager(RetrieveMixin, CreateMixin, UpdateMixin, RESTMana
     _create_attrs = RequiredOptional(
         required=("sha", "ref", "tag", "status", "environment")
     )
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectDeployment:
-        return cast(ProjectDeployment, super().get(id=id, lazy=lazy, **kwargs))

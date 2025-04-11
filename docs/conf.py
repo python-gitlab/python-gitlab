@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 # python-gitlab documentation build configuration file, created by
 # sphinx-quickstart on Mon Dec  8 15:17:39 2014.

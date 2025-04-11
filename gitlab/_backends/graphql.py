@@ -1,7 +1,7 @@
 from typing import Any
 
 import httpx
-from gql.transport.httpx import HTTPXTransport
+from gql.transport.httpx import HTTPXAsyncTransport, HTTPXTransport
 
 
 class GitlabTransport(HTTPXTransport):
@@ -21,4 +21,24 @@ class GitlabTransport(HTTPXTransport):
         pass
 
     def close(self) -> None:
+        pass
+
+
+class GitlabAsyncTransport(HTTPXAsyncTransport):
+    """An async gql httpx transport that reuses an existing httpx.AsyncClient.
+    By default, gql's transports do not have a keep-alive session
+    and do not enable providing your own session that's kept open.
+    This transport lets us provide and close our session on our own
+    and provide additional auth.
+    For details, see https://github.com/graphql-python/gql/issues/91.
+    """
+
+    def __init__(self, *args: Any, client: httpx.AsyncClient, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        self.client = client
+
+    async def connect(self) -> None:
+        pass
+
+    async def close(self) -> None:
         pass

@@ -1,4 +1,4 @@
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -10,10 +10,7 @@ from gitlab.mixins import (
 )
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "ProjectPackageProtectionRule",
-    "ProjectPackageProtectionRuleManager",
-]
+__all__ = ["ProjectPackageProtectionRule", "ProjectPackageProtectionRuleManager"]
 
 
 class ProjectPackageProtectionRule(ObjectDeleteMixin, SaveMixin, RESTObject):
@@ -21,7 +18,10 @@ class ProjectPackageProtectionRule(ObjectDeleteMixin, SaveMixin, RESTObject):
 
 
 class ProjectPackageProtectionRuleManager(
-    ListMixin, CreateMixin, DeleteMixin, UpdateMixin, RESTManager
+    ListMixin[ProjectPackageProtectionRule],
+    CreateMixin[ProjectPackageProtectionRule],
+    DeleteMixin[ProjectPackageProtectionRule],
+    UpdateMixin[ProjectPackageProtectionRule],
 ):
     _path = "/projects/{project_id}/packages/protection/rules"
     _obj_cls = ProjectPackageProtectionRule
@@ -31,13 +31,13 @@ class ProjectPackageProtectionRuleManager(
             "package_name_pattern",
             "package_type",
             "minimum_access_level_for_push",
-        ),
+        )
     )
     _update_attrs = RequiredOptional(
         optional=(
             "package_name_pattern",
             "package_type",
             "minimum_access_level_for_push",
-        ),
+        )
     )
     _update_method = UpdateMethod.PATCH

@@ -1,21 +1,22 @@
-from typing import Any, cast, Dict, Optional, Union
+from __future__ import annotations
+
+from typing import Any
 
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import GetWithoutIdMixin, SaveMixin, UpdateMixin
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "ApplicationAppearance",
-    "ApplicationAppearanceManager",
-]
+__all__ = ["ApplicationAppearance", "ApplicationAppearanceManager"]
 
 
 class ApplicationAppearance(SaveMixin, RESTObject):
     _id_attr = None
 
 
-class ApplicationAppearanceManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class ApplicationAppearanceManager(
+    GetWithoutIdMixin[ApplicationAppearance], UpdateMixin[ApplicationAppearance]
+):
     _path = "/application/appearance"
     _obj_cls = ApplicationAppearance
     _update_attrs = RequiredOptional(
@@ -31,16 +32,16 @@ class ApplicationAppearanceManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
             "message_background_color",
             "message_font_color",
             "email_header_and_footer_enabled",
-        ),
+        )
     )
 
     @exc.on_http_error(exc.GitlabUpdateError)
     def update(
         self,
-        id: Optional[Union[str, int]] = None,
-        new_data: Optional[Dict[str, Any]] = None,
+        id: str | int | None = None,
+        new_data: dict[str, Any] | None = None,
         **kwargs: Any,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Update an object on the server.
 
         Args:
@@ -58,6 +59,3 @@ class ApplicationAppearanceManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
         new_data = new_data or {}
         data = new_data.copy()
         return super().update(id, data, **kwargs)
-
-    def get(self, **kwargs: Any) -> ApplicationAppearance:
-        return cast(ApplicationAppearance, super().get(**kwargs))

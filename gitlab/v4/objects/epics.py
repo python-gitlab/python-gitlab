@@ -1,8 +1,10 @@
-from typing import Any, cast, Dict, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, TYPE_CHECKING
 
 from gitlab import exceptions as exc
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
@@ -17,23 +19,18 @@ from gitlab.types import RequiredOptional
 from .events import GroupEpicResourceLabelEventManager  # noqa: F401
 from .notes import GroupEpicNoteManager  # noqa: F401
 
-__all__ = [
-    "GroupEpic",
-    "GroupEpicManager",
-    "GroupEpicIssue",
-    "GroupEpicIssueManager",
-]
+__all__ = ["GroupEpic", "GroupEpicManager", "GroupEpicIssue", "GroupEpicIssueManager"]
 
 
 class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
     _id_attr = "iid"
 
-    issues: "GroupEpicIssueManager"
+    issues: GroupEpicIssueManager
     resourcelabelevents: GroupEpicResourceLabelEventManager
     notes: GroupEpicNoteManager
 
 
-class GroupEpicManager(CRUDMixin, RESTManager):
+class GroupEpicManager(CRUDMixin[GroupEpic]):
     _path = "/groups/{group_id}/epics"
     _obj_cls = GroupEpic
     _from_parent_attrs = {"group_id": "id"}
@@ -43,19 +40,16 @@ class GroupEpicManager(CRUDMixin, RESTManager):
         optional=("labels", "description", "start_date", "end_date"),
     )
     _update_attrs = RequiredOptional(
-        optional=("title", "labels", "description", "start_date", "end_date"),
+        optional=("title", "labels", "description", "start_date", "end_date")
     )
     _types = {"labels": types.CommaSeparatedListAttribute}
-
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> GroupEpic:
-        return cast(GroupEpic, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class GroupEpicIssue(ObjectDeleteMixin, SaveMixin, RESTObject):
     _id_attr = "epic_issue_id"
     # Define type for 'manager' here So mypy won't complain about
     # 'self.manager.update()' call in the 'save' method.
-    manager: "GroupEpicIssueManager"
+    manager: GroupEpicIssueManager
 
     def save(self, **kwargs: Any) -> None:
         """Save the changes made to the object to the server.
@@ -80,7 +74,10 @@ class GroupEpicIssue(ObjectDeleteMixin, SaveMixin, RESTObject):
 
 
 class GroupEpicIssueManager(
-    ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    ListMixin[GroupEpicIssue],
+    CreateMixin[GroupEpicIssue],
+    UpdateMixin[GroupEpicIssue],
+    DeleteMixin[GroupEpicIssue],
 ):
     _path = "/groups/{group_id}/epics/{epic_iid}/issues"
     _obj_cls = GroupEpicIssue
@@ -90,7 +87,7 @@ class GroupEpicIssueManager(
 
     @exc.on_http_error(exc.GitlabCreateError)
     def create(
-        self, data: Optional[Dict[str, Any]] = None, **kwargs: Any
+        self, data: dict[str, Any] | None = None, **kwargs: Any
     ) -> GroupEpicIssue:
         """Create a new object.
 

@@ -24,7 +24,7 @@ Examples
 
 List cluster agents for a project::
 
-    cluster_agents = project.cluster_agents.list()
+    cluster_agents = project.cluster_agents.list(get_all=True)
 
 Register a cluster agent with a project::
 

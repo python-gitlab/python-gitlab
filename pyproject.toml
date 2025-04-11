@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "python-gitlab"
-description="A python wrapper for the GitLab API"
+description="The python wrapper for the GitLab REST and GraphQL APIs."
 readme = "README.rst"
 authors = [
     {name = "Gauvain Pocentek", email= "gauvain@pocentek.net"}
@@ -15,7 +15,7 @@ maintainers = [
     {name = "Nejc Habjan", email="nejc.habjan@siemens.com"},
     {name = "Roger Meier", email="r.meier@siemens.com"}
 ]
-requires-python = ">=3.8.0"
+requires-python = ">=3.9.0"
 dependencies = [
     "requests>=2.32.0",
     "requests-toolbelt>=1.0.0",
@@ -30,11 +30,11 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 keywords = ["api", "client", "gitlab", "python", "python-gitlab", "wrapper"]
 license = {text = "LGPL-3.0-or-later"}
@@ -69,6 +69,9 @@ order_by_type = false
 files = "."
 exclude = "build/.*"
 strict = true
+
+[tool.black]
+skip_magic_trailing_comma = true
 
 # Overrides for currently untyped modules
 [[tool.mypy.overrides]]
@@ -124,6 +127,7 @@ disable = [
     "too-many-instance-attributes",
     "too-many-lines",
     "too-many-locals",
+    "too-many-positional-arguments",
     "too-many-public-methods",
     "too-many-statements",
     "unsubscriptable-object",

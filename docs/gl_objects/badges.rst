@@ -26,7 +26,7 @@ Examples
 
 List badges::
 
-    badges = group_or_project.badges.list()
+    badges = group_or_project.badges.list(get_all=True)
 
 Get a badge::
 

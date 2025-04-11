@@ -1,7 +1,9 @@
-from typing import Any, cast, Dict, Optional, Union
+from __future__ import annotations
+
+from typing import Any
 
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -14,17 +16,12 @@ from gitlab.mixins import (
 )
 from gitlab.types import RequiredOptional
 
-__all__ = [
-    "GroupLabel",
-    "GroupLabelManager",
-    "ProjectLabel",
-    "ProjectLabelManager",
-]
+__all__ = ["GroupLabel", "GroupLabelManager", "ProjectLabel", "ProjectLabelManager"]
 
 
 class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
-    manager: "GroupLabelManager"
+    manager: GroupLabelManager
 
     # Update without ID, but we need an ID to get from list.
     @exc.on_http_error(exc.GitlabUpdateError)
@@ -48,7 +45,10 @@ class GroupLabel(SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject):
 
 
 class GroupLabelManager(
-    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    RetrieveMixin[GroupLabel],
+    CreateMixin[GroupLabel],
+    UpdateMixin[GroupLabel],
+    DeleteMixin[GroupLabel],
 ):
     _path = "/groups/{group_id}/labels"
     _obj_cls = GroupLabel
@@ -60,18 +60,12 @@ class GroupLabelManager(
         required=("name",), optional=("new_name", "color", "description", "priority")
     )
 
-    def get(self, id: Union[str, int], lazy: bool = False, **kwargs: Any) -> GroupLabel:
-        return cast(GroupLabel, super().get(id=id, lazy=lazy, **kwargs))
-
     # Update without ID.
     # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
     # type error
-    def update(  # type: ignore
-        self,
-        name: Optional[str],
-        new_data: Optional[Dict[str, Any]] = None,
-        **kwargs: Any,
-    ) -> Dict[str, Any]:
+    def update(  # type: ignore[override]
+        self, name: str | None, new_data: dict[str, Any] | None = None, **kwargs: Any
+    ) -> dict[str, Any]:
         """Update a Label on the server.
 
         Args:
@@ -88,7 +82,7 @@ class ProjectLabel(
     PromoteMixin, SubscribableMixin, SaveMixin, ObjectDeleteMixin, RESTObject
 ):
     _id_attr = "name"
-    manager: "ProjectLabelManager"
+    manager: ProjectLabelManager
 
     # Update without ID, but we need an ID to get from list.
     @exc.on_http_error(exc.GitlabUpdateError)
@@ -112,7 +106,10 @@ class ProjectLabel(
 
 
 class ProjectLabelManager(
-    RetrieveMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    RetrieveMixin[ProjectLabel],
+    CreateMixin[ProjectLabel],
+    UpdateMixin[ProjectLabel],
+    DeleteMixin[ProjectLabel],
 ):
     _path = "/projects/{project_id}/labels"
     _obj_cls = ProjectLabel
@@ -124,20 +121,12 @@ class ProjectLabelManager(
         required=("name",), optional=("new_name", "color", "description", "priority")
     )
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectLabel:
-        return cast(ProjectLabel, super().get(id=id, lazy=lazy, **kwargs))
-
     # Update without ID.
     # NOTE(jlvillal): Signature doesn't match UpdateMixin.update() so ignore
     # type error
-    def update(  # type: ignore
-        self,
-        name: Optional[str],
-        new_data: Optional[Dict[str, Any]] = None,
-        **kwargs: Any,
-    ) -> Dict[str, Any]:
+    def update(  # type: ignore[override]
+        self, name: str | None, new_data: dict[str, Any] | None = None, **kwargs: Any
+    ) -> dict[str, Any]:
         """Update a Label on the server.
 
         Args:

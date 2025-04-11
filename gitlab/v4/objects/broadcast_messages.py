@@ -1,20 +1,15 @@
-from typing import Any, cast, Union
-
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, SaveMixin
 from gitlab.types import ArrayAttribute, RequiredOptional
 
-__all__ = [
-    "BroadcastMessage",
-    "BroadcastMessageManager",
-]
+__all__ = ["BroadcastMessage", "BroadcastMessageManager"]
 
 
 class BroadcastMessage(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class BroadcastMessageManager(CRUDMixin, RESTManager):
+class BroadcastMessageManager(CRUDMixin[BroadcastMessage]):
     _path = "/broadcast_messages"
     _obj_cls = BroadcastMessage
 
@@ -33,8 +28,3 @@ class BroadcastMessageManager(CRUDMixin, RESTManager):
         )
     )
     _types = {"target_access_levels": ArrayAttribute}
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> BroadcastMessage:
-        return cast(BroadcastMessage, super().get(id=id, lazy=lazy, **kwargs))

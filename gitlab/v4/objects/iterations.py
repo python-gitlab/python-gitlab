@@ -1,19 +1,15 @@
 from gitlab import types
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import ListMixin
 
-__all__ = [
-    "ProjectIterationManager",
-    "GroupIteration",
-    "GroupIterationManager",
-]
+__all__ = ["ProjectIterationManager", "GroupIteration", "GroupIterationManager"]
 
 
 class GroupIteration(RESTObject):
     _repr_attr = "title"
 
 
-class GroupIterationManager(ListMixin, RESTManager):
+class GroupIterationManager(ListMixin[GroupIteration]):
     _path = "/groups/{group_id}/iterations"
     _obj_cls = GroupIteration
     _from_parent_attrs = {"group_id": "id"}
@@ -33,7 +29,7 @@ class GroupIterationManager(ListMixin, RESTManager):
     _types = {"in": types.ArrayAttribute}
 
 
-class ProjectIterationManager(ListMixin, RESTManager):
+class ProjectIterationManager(ListMixin[GroupIteration]):
     _path = "/projects/{project_id}/iterations"
     _obj_cls = GroupIteration
     _from_parent_attrs = {"project_id": "id"}

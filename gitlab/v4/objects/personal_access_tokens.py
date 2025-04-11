@@ -1,6 +1,4 @@
-from typing import Any, cast, Union
-
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     DeleteMixin,
@@ -23,22 +21,21 @@ class PersonalAccessToken(ObjectDeleteMixin, ObjectRotateMixin, RESTObject):
     pass
 
 
-class PersonalAccessTokenManager(DeleteMixin, RetrieveMixin, RotateMixin, RESTManager):
+class PersonalAccessTokenManager(
+    DeleteMixin[PersonalAccessToken],
+    RetrieveMixin[PersonalAccessToken],
+    RotateMixin[PersonalAccessToken],
+):
     _path = "/personal_access_tokens"
     _obj_cls = PersonalAccessToken
     _list_filters = ("user_id",)
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> PersonalAccessToken:
-        return cast(PersonalAccessToken, super().get(id=id, lazy=lazy, **kwargs))
 
 
 class UserPersonalAccessToken(RESTObject):
     pass
 
 
-class UserPersonalAccessTokenManager(CreateMixin, RESTManager):
+class UserPersonalAccessTokenManager(CreateMixin[UserPersonalAccessToken]):
     _path = "/users/{user_id}/personal_access_tokens"
     _obj_cls = UserPersonalAccessToken
     _from_parent_attrs = {"user_id": "id"}

@@ -32,7 +32,7 @@ Examples
 Get the list of existing boards for a project or a group::
 
     # item is a Project or a Group
-    boards = project_or_group.boards.list()
+    boards = project_or_group.boards.list(get_all=True)
 
 Get a single board for a project or a group::
 
@@ -80,7 +80,7 @@ Examples
 
 List the issue lists for a board::
 
-    b_lists = board.lists.list()
+    b_lists = board.lists.list(get_all=True)
 
 Get a single list::
 

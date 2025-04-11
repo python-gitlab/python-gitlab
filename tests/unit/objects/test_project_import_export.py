@@ -124,11 +124,7 @@ def resp_import_github():
 
 @pytest.fixture
 def resp_import_bitbucket_server():
-    content = {
-        "id": 1,
-        "name": "project",
-        "import_status": "scheduled",
-    }
+    content = {"id": 1, "name": "project", "import_status": "scheduled"}
 
     with responses.RequestsMock() as rsps:
         rsps.add(

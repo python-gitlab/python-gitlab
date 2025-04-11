@@ -1,14 +1,16 @@
-from typing import Any, cast, List, Optional, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any, TYPE_CHECKING
 
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     CreateMixin,
     CRUDMixin,
     DeleteMixin,
     GetWithoutIdMixin,
-    ListMixin,
     ObjectDeleteMixin,
+    RetrieveMixin,
     SaveMixin,
     UpdateMethod,
     UpdateMixin,
@@ -16,6 +18,8 @@ from gitlab.mixins import (
 from gitlab.types import RequiredOptional
 
 __all__ = [
+    "GroupApprovalRule",
+    "GroupApprovalRuleManager",
     "ProjectApproval",
     "ProjectApprovalManager",
     "ProjectApprovalRule",
@@ -29,11 +33,32 @@ __all__ = [
 ]
 
 
+class GroupApprovalRule(SaveMixin, RESTObject):
+    _id_attr = "id"
+    _repr_attr = "name"
+
+
+class GroupApprovalRuleManager(
+    RetrieveMixin[GroupApprovalRule],
+    CreateMixin[GroupApprovalRule],
+    UpdateMixin[GroupApprovalRule],
+):
+    _path = "/groups/{group_id}/approval_rules"
+    _obj_cls = GroupApprovalRule
+    _from_parent_attrs = {"group_id": "id"}
+    _create_attrs = RequiredOptional(
+        required=("name", "approvals_required"),
+        optional=("user_ids", "group_ids", "rule_type"),
+    )
+
+
 class ProjectApproval(SaveMixin, RESTObject):
     _id_attr = None
 
 
-class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class ProjectApprovalManager(
+    GetWithoutIdMixin[ProjectApproval], UpdateMixin[ProjectApproval]
+):
     _path = "/projects/{project_id}/approvals"
     _obj_cls = ProjectApproval
     _from_parent_attrs = {"project_id": "id"}
@@ -44,20 +69,21 @@ class ProjectApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
             "disable_overriding_approvers_per_merge_request",
             "merge_requests_author_approval",
             "merge_requests_disable_committers_approval",
-        ),
+        )
     )
     _update_method = UpdateMethod.POST
-
-    def get(self, **kwargs: Any) -> ProjectApproval:
-        return cast(ProjectApproval, super().get(**kwargs))
 
 
 class ProjectApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
     _id_attr = "id"
+    _repr_attr = "name"
 
 
 class ProjectApprovalRuleManager(
-    ListMixin, CreateMixin, UpdateMixin, DeleteMixin, RESTManager
+    RetrieveMixin[ProjectApprovalRule],
+    CreateMixin[ProjectApprovalRule],
+    UpdateMixin[ProjectApprovalRule],
+    DeleteMixin[ProjectApprovalRule],
 ):
     _path = "/projects/{project_id}/approval_rules"
     _obj_cls = ProjectApprovalRule
@@ -72,25 +98,25 @@ class ProjectMergeRequestApproval(SaveMixin, RESTObject):
     _id_attr = None
 
 
-class ProjectMergeRequestApprovalManager(GetWithoutIdMixin, UpdateMixin, RESTManager):
+class ProjectMergeRequestApprovalManager(
+    GetWithoutIdMixin[ProjectMergeRequestApproval],
+    UpdateMixin[ProjectMergeRequestApproval],
+):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/approvals"
     _obj_cls = ProjectMergeRequestApproval
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
     _update_attrs = RequiredOptional(required=("approvals_required",))
     _update_method = UpdateMethod.POST
 
-    def get(self, **kwargs: Any) -> ProjectMergeRequestApproval:
-        return cast(ProjectMergeRequestApproval, super().get(**kwargs))
-
     @exc.on_http_error(exc.GitlabUpdateError)
     def set_approvers(
         self,
         approvals_required: int,
-        approver_ids: Optional[List[int]] = None,
-        approver_group_ids: Optional[List[int]] = None,
+        approver_ids: list[int] | None = None,
+        approver_group_ids: list[int] | None = None,
         approval_rule_name: str = "name",
         *,
-        approver_usernames: Optional[List[str]] = None,
+        approver_usernames: list[str] | None = None,
         **kwargs: Any,
     ) -> RESTObject:
         """Change MR-level allowed approvers and approver groups.
@@ -139,17 +165,14 @@ class ProjectMergeRequestApprovalRule(SaveMixin, ObjectDeleteMixin, RESTObject):
     _repr_attr = "name"
 
 
-class ProjectMergeRequestApprovalRuleManager(CRUDMixin, RESTManager):
+class ProjectMergeRequestApprovalRuleManager(
+    CRUDMixin[ProjectMergeRequestApprovalRule]
+):
     _path = "/projects/{project_id}/merge_requests/{merge_request_iid}/approval_rules"
     _obj_cls = ProjectMergeRequestApprovalRule
     _from_parent_attrs = {"project_id": "project_id", "merge_request_iid": "iid"}
     _update_attrs = RequiredOptional(
-        required=(
-            "id",
-            "merge_request_iid",
-            "name",
-            "approvals_required",
-        ),
+        required=("id", "merge_request_iid", "name", "approvals_required"),
         optional=("user_ids", "group_ids", "usernames"),
     )
     # Important: When approval_project_rule_id is set, the name, users and
@@ -160,22 +183,14 @@ class ProjectMergeRequestApprovalRuleManager(CRUDMixin, RESTManager):
         optional=("approval_project_rule_id", "user_ids", "group_ids", "usernames"),
     )
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectMergeRequestApprovalRule:
-        return cast(
-            ProjectMergeRequestApprovalRule, super().get(id=id, lazy=lazy, **kwargs)
-        )
-
 
 class ProjectMergeRequestApprovalState(RESTObject):
     pass
 
 
-class ProjectMergeRequestApprovalStateManager(GetWithoutIdMixin, RESTManager):
+class ProjectMergeRequestApprovalStateManager(
+    GetWithoutIdMixin[ProjectMergeRequestApprovalState]
+):
     _path = "/projects/{project_id}/merge_requests/{mr_iid}/approval_state"
     _obj_cls = ProjectMergeRequestApprovalState
     _from_parent_attrs = {"project_id": "project_id", "mr_iid": "iid"}
-
-    def get(self, **kwargs: Any) -> ProjectMergeRequestApprovalState:
-        return cast(ProjectMergeRequestApprovalState, super().get(**kwargs))

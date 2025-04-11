@@ -122,10 +122,7 @@ def test_gitlab_get_version(gl, status_code, response_json, expected):
 @responses.activate
 @pytest.mark.parametrize(
     "response_json,expected",
-    [
-        ({"id": "1", "plan": "premium"}, {"id": "1", "plan": "premium"}),
-        (None, {}),
-    ],
+    [({"id": "1", "plan": "premium"}, {"id": "1", "plan": "premium"}), (None, {})],
 )
 def test_gitlab_get_license(gl, response_json, expected):
     responses.add(

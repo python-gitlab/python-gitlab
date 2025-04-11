@@ -1,8 +1,10 @@
-from typing import Any, cast, TYPE_CHECKING, Union
+from __future__ import annotations
+
+from typing import Any
 
 from gitlab import cli
 from gitlab import exceptions as exc
-from gitlab.base import RESTManager, RESTObject
+from gitlab.base import RESTObject
 from gitlab.mixins import (
     DeleteMixin,
     GetMixin,
@@ -23,10 +25,12 @@ __all__ = [
 
 
 class ProjectRegistryRepository(ObjectDeleteMixin, RESTObject):
-    tags: "ProjectRegistryTagManager"
+    tags: ProjectRegistryTagManager
 
 
-class ProjectRegistryRepositoryManager(DeleteMixin, ListMixin, RESTManager):
+class ProjectRegistryRepositoryManager(
+    DeleteMixin[ProjectRegistryRepository], ListMixin[ProjectRegistryRepository]
+):
     _path = "/projects/{project_id}/registry/repositories"
     _obj_cls = ProjectRegistryRepository
     _from_parent_attrs = {"project_id": "id"}
@@ -36,7 +40,9 @@ class ProjectRegistryTag(ObjectDeleteMixin, RESTObject):
     _id_attr = "name"
 
 
-class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
+class ProjectRegistryTagManager(
+    DeleteMixin[ProjectRegistryTag], RetrieveMixin[ProjectRegistryTag]
+):
     _obj_cls = ProjectRegistryTag
     _from_parent_attrs = {"project_id": "project_id", "repository_id": "id"}
     _path = "/projects/{project_id}/registry/repositories/{repository_id}/tags"
@@ -66,17 +72,10 @@ class ProjectRegistryTagManager(DeleteMixin, RetrieveMixin, RESTManager):
         valid_attrs = ["keep_n", "name_regex_keep", "older_than"]
         data = {"name_regex_delete": name_regex_delete}
         data.update({k: v for k, v in kwargs.items() if k in valid_attrs})
-        if TYPE_CHECKING:
-            assert self.path is not None
         self.gitlab.http_delete(self.path, query_data=data, **kwargs)
 
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> ProjectRegistryTag:
-        return cast(ProjectRegistryTag, super().get(id=id, lazy=lazy, **kwargs))
 
-
-class GroupRegistryRepositoryManager(ListMixin, RESTManager):
+class GroupRegistryRepositoryManager(ListMixin[ProjectRegistryRepository]):
     _path = "/groups/{group_id}/registry/repositories"
     _obj_cls = ProjectRegistryRepository
     _from_parent_attrs = {"group_id": "id"}
@@ -86,11 +85,6 @@ class RegistryRepository(RESTObject):
     _repr_attr = "path"
 
 
-class RegistryRepositoryManager(GetMixin, RESTManager):
+class RegistryRepositoryManager(GetMixin[RegistryRepository]):
     _path = "/registry/repositories"
     _obj_cls = RegistryRepository
-
-    def get(
-        self, id: Union[str, int], lazy: bool = False, **kwargs: Any
-    ) -> RegistryRepository:
-        return cast(RegistryRepository, super().get(id=id, lazy=lazy, **kwargs))
