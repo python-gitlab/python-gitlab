@@ -292,10 +292,7 @@ def test_group_protected_branches(group, gitlab_version):
     )
 
     p_b = group.protectedbranches.create(
-        {
-            "name": "*-stable",
-            "allow_force_push": False,
-        }
+        {"name": "*-stable", "allow_force_push": False}
     )
     assert p_b.name == "*-stable"
     assert not p_b.allow_force_push
