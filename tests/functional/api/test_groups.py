@@ -312,6 +312,31 @@ def test_group_hooks(group):
     hook.delete()
 
 
+def test_group_protected_branches(group, gitlab_version):
+    # Updating a protected branch at the group level is possible from Gitlab 15.9
+    # https://docs.gitlab.com/api/group_protected_branches/
+    can_update_prot_branch = gitlab_version.major > 15 or (
+        gitlab_version.major == 15 and gitlab_version.minor >= 9
+    )
+
+    p_b = group.protectedbranches.create(
+        {"name": "*-stable", "allow_force_push": False}
+    )
+    assert p_b.name == "*-stable"
+    assert not p_b.allow_force_push
+    assert p_b in group.protectedbranches.list()
+
+    if can_update_prot_branch:
+        p_b.allow_force_push = True
+        p_b.save()
+
+    p_b = group.protectedbranches.get("*-stable")
+    if can_update_prot_branch:
+        assert p_b.allow_force_push
+
+        p_b.delete()
+
+
 def test_group_transfer(gl, group):
     transfer_group = gl.groups.create(
         {"name": "transfer-test-group", "path": "transfer-test-group"}

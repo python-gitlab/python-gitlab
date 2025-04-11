@@ -24,6 +24,7 @@ from .access_requests import GroupAccessRequestManager  # noqa: F401
 from .audit_events import GroupAuditEventManager  # noqa: F401
 from .badges import GroupBadgeManager  # noqa: F401
 from .boards import GroupBoardManager  # noqa: F401
+from .branches import GroupProtectedBranchManager  # noqa: F401
 from .clusters import GroupClusterManager  # noqa: F401
 from .container_registry import GroupRegistryRepositoryManager  # noqa: F401
 from .custom_attributes import GroupCustomAttributeManager  # noqa: F401
@@ -102,6 +103,7 @@ class Group(SaveMixin, ObjectDeleteMixin, RESTObject):
     packages: GroupPackageManager
     projects: GroupProjectManager
     shared_projects: SharedProjectManager
+    protectedbranches: GroupProtectedBranchManager
     pushrules: GroupPushRulesManager
     registry_repositories: GroupRegistryRepositoryManager
     runners: GroupRunnerManager
