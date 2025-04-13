@@ -188,6 +188,12 @@ def _transform_types(
 
         # if the type is FileAttribute we need to pass the data as file
         if isinstance(gitlab_attribute, types.FileAttribute) and transform_files:
+            # The GitLab API accepts mixed types
+            # (e.g. a file for avatar image or empty string for removing the avatar)
+            # So if string is empty, keep it in data dict
+            if isinstance(data[attr_name], str) and data[attr_name] == "":
+                continue
+
             key = gitlab_attribute.get_file_name(attr_name)
             files[attr_name] = (key, data.pop(attr_name))
             continue
