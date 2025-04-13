@@ -109,6 +109,11 @@ Set the avatar image for a project::
     project.avatar = open('path/to/file.png', 'rb')
     project.save()
 
+Remove the avatar image for a project::
+
+    project.avatar = ""
+    project.save()
+
 Delete a project::
 
     gl.projects.delete(project_id)

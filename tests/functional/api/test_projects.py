@@ -48,6 +48,29 @@ def test_project_members(user, project):
     member.delete()
 
 
+def test_project_avatar_upload(gl, project, fixture_dir):
+    """Test uploading an avatar to a project."""
+    with open(fixture_dir / "avatar.png", "rb") as avatar_file:
+        project.avatar = avatar_file
+        project.save()
+
+    updated_project = gl.projects.get(project.id)
+    assert updated_project.avatar_url is not None
+
+
+def test_project_avatar_remove(gl, project, fixture_dir):
+    """Test removing an avatar from a project."""
+    with open(fixture_dir / "avatar.png", "rb") as avatar_file:
+        project.avatar = avatar_file
+        project.save()
+
+    project.avatar = ""
+    project.save()
+
+    updated_project = gl.projects.get(project.id)
+    assert updated_project.avatar_url is None
+
+
 def test_project_badges(project):
     badge_image = "http://example.com"
     badge_link = "http://example/img.svg"
