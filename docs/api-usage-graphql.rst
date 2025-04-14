@@ -49,12 +49,12 @@ Get the result of a query:
 
 .. code-block:: python
 
-    query = """{
-        query {
-          currentUser {
+    query = """
+    {
+        currentUser {
             name
-          }
         }
+    }
     """
 
     result = gq.execute(query)
@@ -63,12 +63,12 @@ Get the result of a query using the async client:
 
 .. code-block:: python
 
-    query = """{
-        query {
-          currentUser {
+    query = """
+    {
+        currentUser {
             name
-          }
         }
+    }
     """
 
     result = await async_gq.execute(query)
