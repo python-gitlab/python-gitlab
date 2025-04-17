@@ -138,6 +138,34 @@ def test_group_labels(group):
     label.delete()
 
 
+def test_group_avatar_upload(gl, group, fixture_dir):
+    """Test uploading an avatar to a group."""
+    # Upload avatar
+    with open(fixture_dir / "avatar.png", "rb") as avatar_file:
+        group.avatar = avatar_file
+        group.save()
+
+    # Verify the avatar was set
+    updated_group = gl.groups.get(group.id)
+    assert updated_group.avatar_url is not None
+
+
+def test_group_avatar_remove(gl, group, fixture_dir):
+    """Test removing an avatar from a group."""
+    # First set an avatar
+    with open(fixture_dir / "avatar.png", "rb") as avatar_file:
+        group.avatar = avatar_file
+        group.save()
+
+    # Now remove the avatar
+    group.avatar = ""
+    group.save()
+
+    # Verify the avatar was removed
+    updated_group = gl.groups.get(group.id)
+    assert updated_group.avatar_url is None
+
+
 @pytest.mark.gitlab_premium
 @pytest.mark.xfail(reason="/ldap/groups endpoint not documented")
 def test_ldap_groups(gl):

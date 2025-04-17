@@ -82,6 +82,11 @@ Set the avatar image for a group::
     group.avatar = open('path/to/file.png', 'rb')
     group.save()
 
+Remove the avatar image for a group::
+
+    group.avatar = ""
+    group.save()
+
 Remove a group::
 
     gl.groups.delete(group_id)
