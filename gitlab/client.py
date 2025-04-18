@@ -1335,6 +1335,49 @@ class GraphQL(_BaseGraphQL):
         keep_base_url: bool = False,
         **kwargs: Any,
     ) -> None:
+        self._api_version = str(api_version)
+        self._server_version: str | None = None
+        self._server_revision: str | None = None
+        self._base_url = utils.get_base_url(url)
+        self._url = f"{self._base_url}/api/v{api_version}"
+        #: Timeout to use for requests to gitlab server
+        self.timeout = timeout
+        self.retry_transient_errors = retry_transient_errors
+        self.keep_base_url = keep_base_url
+        #: Headers that will be used in request to GitLab
+        self.headers = {"User-Agent": user_agent}
+
+        #: Whether SSL certificates should be validated
+        self.ssl_verify = ssl_verify
+
+        self.private_token = private_token
+        self.http_username = http_username
+        self.http_password = http_password
+        self.oauth_token = oauth_token
+        self.job_token = job_token
+        self._set_auth_info()
+
+        #: Create a session object for requests
+        _backend: type[_backends.DefaultBackend] = kwargs.pop(
+            "backend", _backends.DefaultBackend
+        )
+        self._backend = _backend(**kwargs)
+        self.session = self._backend.client
+
+        self.per_page = per_page
+        self.pagination = pagination
+        self.order_by = order_by
+
+        # We only support v4 API at this time
+        if self._api_version not in ("4",):
+            raise ModuleNotFoundError(f"gitlab.v{self._api_version}.objects")
+        # NOTE: We must delay import of gitlab.v4.objects until now or
+        # otherwise it will cause circular import errors
+        from gitlab.v4 import objects
+
+        self._objects = objects
+        self.user: objects.CurrentUser | None = None
+
         super().__init__(
             url=url,
             token=token,
