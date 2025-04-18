@@ -1432,6 +1432,86 @@ class GraphQL(_BaseGraphQL):
 
             return result
 
+    @classmethod
+    def from_config(
+        cls,
+        gitlab_id: str | None = None,
+        config_files: list[str] | None = None,
+        **kwargs: Any,
+    ) -> Gitlab:
+        """Create a Gitlab connection from configuration files.
+
+        Args:
+            gitlab_id: ID of the configuration section.
+            config_files list[str]: List of paths to configuration files.
+
+        kwargs:
+            session requests.Session: Custom requests Session
+
+        Returns:
+            A Gitlab connection.
+
+        Raises:
+            gitlab.config.GitlabDataError: If the configuration is not correct.
+        """
+        config = gitlab.config.GitlabConfigParser(
+            gitlab_id=gitlab_id, config_files=config_files
+        )
+        return cls(
+            config.url,
+            private_token=config.private_token,
+            oauth_token=config.oauth_token,
+            job_token=config.job_token,
+            ssl_verify=config.ssl_verify,
+            timeout=config.timeout,
+            http_username=config.http_username,
+            http_password=config.http_password,
+            api_version=config.api_version,
+            per_page=config.per_page,
+            pagination=config.pagination,
+            order_by=config.order_by,
+            user_agent=config.user_agent,
+            retry_transient_errors=config.retry_transient_errors,
+            keep_base_url=config.keep_base_url,
+            **kwargs,
+        )
+
+    def _set_auth_info(self) -> None:
+        tokens = [
+            token
+            for token in [self.private_token, self.oauth_token, self.job_token]
+            if token
+        ]
+        if len(tokens) > 1:
+            raise ValueError(
+                "Only one of private_token, oauth_token or job_token should "
+                "be defined"
+            )
+        if (self.http_username and not self.http_password) or (
+            not self.http_username and self.http_password
+        ):
+            raise ValueError("Both http_username and http_password should be defined")
+        if tokens and self.http_username:
+            raise ValueError(
+                "Only one of token authentications or http "
+                "authentication should be defined"
+            )
+
+        self._auth: requests.auth.AuthBase | None = None
+        if self.private_token:
+            self._auth = _backends.PrivateTokenAuth(self.private_token)
+
+        if self.oauth_token:
+            self._auth = _backends.OAuthTokenAuth(self.oauth_token)
+
+        if self.job_token:
+            self._auth = _backends.JobTokenAuth(self.job_token)
+
+        if self.http_username and self.http_password:
+            self._auth = requests.auth.HTTPBasicAuth(
+                self.http_username, self.http_password
+            )
+
 
 class AsyncGraphQL(_BaseGraphQL):
     def __init__(
