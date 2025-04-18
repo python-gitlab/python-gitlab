@@ -1350,7 +1350,7 @@ class GraphQL(_BaseGraphQL):
         order_by: str | None = None,
         user_agent: str = gitlab.const.USER_AGENT,
         fetch_schema_from_transport: bool = False,
-        max_retries: int = 10,
+        max_retries: int = 100,
         obey_rate_limit: bool = True,
         retry_transient_errors: bool = False,
         keep_base_url: bool = False,
