@@ -288,6 +288,15 @@ ancestor groups)::
 
     members = group.members_all.list(get_all=True)
 
+List all groups and all group member with access level::
+
+    groups = gl.groups.list(get_all=True)
+    for group in groups:
+      members = group.members_all.list(get_all=True)
+      for member in members:
+        gh = group.members_all.get(member.id)
+        print(group.id, group.name, gh.name, gh.username,gh.access_level)
+
 Get only direct group member::
 
     members = group.members.get(member_id)
