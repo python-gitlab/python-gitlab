@@ -1269,14 +1269,25 @@ class _BaseGraphQL:
         self,
         url: str | None = None,
         *,
-        token: str | None = None,
+        private_token: str | None = None,
+        oauth_token: str | None = None,
+        job_token: str | None = None,
         ssl_verify: bool | str = True,
+        client: httpx.Client | None = None,
+        http_username: str | None = None,
+        http_password: str | None = None,
         timeout: float | None = None,
+        api_version: str = "4",
+        per_page: int | None = None,
+        pagination: str | None = None,
+        order_by: str | None = None,
         user_agent: str = gitlab.const.USER_AGENT,
         fetch_schema_from_transport: bool = False,
         max_retries: int = 10,
         obey_rate_limit: bool = True,
         retry_transient_errors: bool = False,
+        keep_base_url: bool = False,
+        **kwargs: Any,
     ) -> None:
         if not _GQL_INSTALLED:
             raise ImportError(
@@ -1286,7 +1297,17 @@ class _BaseGraphQL:
             )
         self._base_url = utils.get_base_url(url)
         self._timeout = timeout
-        self._token = token
+        self._private_token = private_token
+        self._oauth_token = oauth_token
+        self._job_token = job_token
+        self._client = client
+        self._http_username = http_username
+        self._http_password = http_password
+        self._api_version = api_version
+        self._per_page = per_page
+        self._pagination = pagination
+        self._order_by = order_by
+        self._keep_base_url = keep_base_url
         self._url = f"{self._base_url}/api/graphql"
         self._user_agent = user_agent
         self._ssl_verify = ssl_verify
@@ -1299,8 +1320,8 @@ class _BaseGraphQL:
     def _get_client_opts(self) -> dict[str, Any]:
         headers = {"User-Agent": self._user_agent}
 
-        if self._token:
-            headers["Authorization"] = f"Bearer {self._token}"
+        if self._private_token:
+            headers["Authorization"] = f"Bearer {self._private_token}"
 
         return {
             "headers": headers,
