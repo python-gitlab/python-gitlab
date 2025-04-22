@@ -1267,8 +1267,8 @@ class GitlabList:
 class _BaseGraphQL:
     def __init__(
         self,
-        url: str | None = None,
         *,
+        url: str | None = None,
         private_token: str | None = None,
         oauth_token: str | None = None,
         job_token: str | None = None,
@@ -1335,7 +1335,6 @@ class GraphQL(_BaseGraphQL):
         self,
         url: str | None = None,
         *,
-        token: str | None = None,
         private_token: str | None = None,
         oauth_token: str | None = None,
         job_token: str | None = None,
@@ -1401,7 +1400,7 @@ class GraphQL(_BaseGraphQL):
 
         super().__init__(
             url=url,
-            token=token,
+            private_token=private_token,
             ssl_verify=ssl_verify,
             timeout=timeout,
             user_agent=user_agent,
