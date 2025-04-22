@@ -1424,7 +1424,12 @@ class GraphQL(_BaseGraphQL):
     def __exit__(self, *args: Any) -> None:
         self._http_client.close()
 
-    def execute(self, request: str | graphql.Source, *args: Any, **kwargs: Any) -> Any:
+    def execute(
+            self, request: str | graphql.Source,
+            variable_values: dict,
+            *args: Any,
+            **kwargs: Any
+        ) -> Any:
         parsed_document = self._gql(request)
         retry = utils.Retry(
             max_retries=self._max_retries,
@@ -1434,7 +1439,10 @@ class GraphQL(_BaseGraphQL):
 
         while True:
             try:
-                result = self._client.execute(parsed_document, *args, **kwargs)
+                result = self._client.execute(
+                    parsed_document,
+                    variable_values=variable_values,
+                    *args, **kwargs)
             except gql.transport.exceptions.TransportServerError as e:
                 if retry.handle_retry_on_status(
                     status_code=e.code, headers=self._transport.response_headers
