@@ -1539,7 +1539,6 @@ class AsyncGraphQL(_BaseGraphQL):
         url: str | None = None,
         *,
         private_token: str | None = None,
-        private_token: str | None = None,
         oauth_token: str | None = None,
         job_token: str | None = None,
         ssl_verify: bool | str = True,
