@@ -1,13 +1,25 @@
 # CHANGELOG
 
+## v5.7.0 (2025-04-22)
 
-## v5.6.1 (2025-01-28)
+### Features
+
+- **group**: Add can use config file.
+  ([`c70cd7a`](https://github.com/python-gitlab/python-gitlab/pull/3177/commits/c70cd7a8a3c1a81dd4e4495843461c066e11d310))
+
+## v5.6.1 (2025-04-18)
+
+### Features
+
+- **group**: Add can use config file.
+  ([`bf7eba5`](https://github.com/python-gitlab/python-gitlab/pull/3177/commits/bf7eba5909669e19757ef1c5b590f613be00d5f4))
+
+## v5.6.0 (2025-01-28)
 
 ### Features
 
 - **group**: Add support for group level MR approval rules
   ([`304bdd0`](https://github.com/python-gitlab/python-gitlab/commit/304bdd09cd5e6526576c5ec58cb3acd7e1a783cb))
-
 
 ## v5.5.0 (2025-01-28)
 
