@@ -7,7 +7,13 @@ https://docs.gitlab.com/ee/api/projects.html#list-projects-starred-by-a-user
 import pytest
 import responses
 
-from gitlab.v4.objects import StarredProject, User, UserMembership, UserStatus
+from gitlab.v4.objects import (
+    StarredProject,
+    User,
+    UserContributedProject,
+    UserMembership,
+    UserStatus,
+)
 
 from .test_projects import project_content
 
@@ -243,6 +249,19 @@ def resp_starred_projects():
 
 
 @pytest.fixture
+def resp_contributed_projects():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.GET,
+            url="http://localhost/api/v4/users/1/contributed_projects",
+            json=[project_content],
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
+@pytest.fixture
 def resp_runner_create():
     with responses.RequestsMock() as rsps:
         rsps.add(
@@ -312,6 +331,12 @@ def test_list_followers(user, resp_followers_following):
     assert followers[0].id == 2
     assert isinstance(followings[0], User)
     assert followings[1].id == 4
+
+
+def test_list_contributed_projects(user, resp_contributed_projects):
+    projects = user.contributed_projects.list()
+    assert isinstance(projects[0], UserContributedProject)
+    assert projects[0].id == project_content["id"]
 
 
 def test_list_starred_projects(user, resp_starred_projects):
