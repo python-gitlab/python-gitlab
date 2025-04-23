@@ -1438,7 +1438,7 @@ class GraphQL(_BaseGraphQL):
     def execute(
         self,
         request: str | graphql.Source,
-        variable_values: dict,
+        variable_values: dict[str, Any],
         *args: Any,
         **kwargs: Any,
     ) -> Any:
@@ -1680,7 +1680,11 @@ class AsyncGraphQL(_BaseGraphQL):
         await self._http_client.aclose()
 
     async def execute(
-        self, request: str | graphql.Source, *args: Any, **kwargs: Any
+        self,
+        request: str | graphql.Source,
+        variable_values: dict[str, Any],
+        *args: Any,
+        **kwargs: Any,
     ) -> Any:
         parsed_document = self._gql(request)
         retry = utils.Retry(
@@ -1692,7 +1696,7 @@ class AsyncGraphQL(_BaseGraphQL):
         while True:
             try:
                 result = await self._client.execute_async(
-                    parsed_document, *args, **kwargs
+                    parsed_document, variable_values=variable_values, *args, **kwargs
                 )
             except gql.transport.exceptions.TransportServerError as e:
                 if retry.handle_retry_on_status(
