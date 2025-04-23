@@ -1317,6 +1317,17 @@ class _BaseGraphQL:
         self._client_opts = self._get_client_opts()
         self._fetch_schema_from_transport = fetch_schema_from_transport
 
+        #: Create a session object for requests
+        _backend: type[_backends.DefaultBackend] = kwargs.pop(
+            "backend", _backends.DefaultBackend
+        )
+        self._backend = _backend(**kwargs)
+        self.session = self._backend.client
+
+        self.per_page = per_page
+        self.pagination = pagination
+        self.order_by = order_by
+
     def _get_client_opts(self) -> dict[str, Any]:
         headers = {"User-Agent": self._user_agent}
 
