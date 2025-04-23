@@ -47,15 +47,74 @@ async def test_async_graphql_as_context_manager_aexits():
 def test_graphql_retries_on_429_response(
     gl_gql: gitlab.GraphQL, respx_mock: respx.MockRouter
 ):
+    """Test graphql_retries_on_429_response.
+
+    query:
+
+    query get_projects($first: Int = 2) {
+        group(fullPath: "treeocean") {
+            projects(first: $first, includeSubgroups: true) {
+                nodes {
+                    id
+                }
+            }
+        }
+    }
+
+    reply:
+
+    {
+        "data": {
+            "group": {
+                "projects": {
+                    "nodes": [
+                        {
+                            "id": "gid://gitlab/Project/491"
+                        },
+                        {
+                            "id": "gid://gitlab/Project/485"
+                        }
+                    ]
+                }
+            }
+        },
+        "correlationId": "01JSJ7ERZ7N5PKA5RCBJQNG9CS"
+    }
+    """
     url = "https://gitlab.example.com/api/graphql"
     responses = [
         httpx.Response(429, headers={"retry-after": "1"}),
         httpx.Response(
-            200, json={"data": {"currentUser": {"id": "gid://gitlab/User/1"}}}
+            200,
+            json={
+                "data": {
+                    "group": {
+                        "projects": {
+                            "nodes": [
+                                {"id": "gid://gitlab/Project/491"},
+                                {"id": "gid://gitlab/Project/485"},
+                            ]
+                        }
+                    }
+                },
+                "correlationId": "01JSJ7ERZ7N5PKA5RCBJQNG9CS",
+            },
         ),
     ]
+    variable_values = {"first": 2}
+    query = """
+    query get_projects($first: Int) {
+        group(fullPath: "python-gitlab") {
+            projects(first: $first, includeSubgroups: true) {
+                nodes {
+                    id
+                }
+            }
+        }
+    }
+    """
     respx_mock.post(url).mock(side_effect=responses)
-    gl_gql.execute("query {currentUser {id}}")
+    gl_gql.execute(query, variable_values=variable_values)
 
 
 @pytest.mark.anyio
@@ -68,8 +127,21 @@ async def test_async_graphql_retries_on_429_response(
             200, json={"data": {"currentUser": {"id": "gid://gitlab/User/1"}}}
         ),
     ]
+    variable_values = {"first": 2}
+    query = """
+    query get_projects($first: Int) {
+        group(fullPath: "python-gitlab") {
+            projects(first: $first, includeSubgroups: true) {
+                nodes {
+                    id
+                }
+            }
+        }
+    }
+    """
+
     respx_mock.post(api_url).mock(side_effect=responses)
-    await gl_async_gql.execute("query {currentUser {id}}")
+    await gl_async_gql.execute(query, variable_values=variable_values)
 
 
 def test_graphql_raises_when_max_retries_exceeded(
@@ -81,8 +153,21 @@ def test_graphql_raises_when_max_retries_exceeded(
     gl_gql = gitlab.GraphQL(
         "https://gitlab.example.com", max_retries=1, retry_transient_errors=True
     )
+    variable_values = {"first": 2}
+    query = """
+    query get_projects($first: Int) {
+        group(fullPath: "python-gitlab") {
+            projects(first: $first, includeSubgroups: true) {
+                nodes {
+                    id
+                }
+            }
+        }
+    }
+    """
+
     with pytest.raises(gitlab.GitlabHttpError):
-        gl_gql.execute("query {currentUser {id}}")
+        gl_gql.execute(query, variable_values=variable_values)
 
 
 @pytest.mark.anyio
@@ -95,16 +180,42 @@ async def test_async_graphql_raises_when_max_retries_exceeded(
     gl_async_gql = gitlab.AsyncGraphQL(
         "https://gitlab.example.com", max_retries=1, retry_transient_errors=True
     )
+    variable_values = {"first": 2}
+    query = """
+    query get_projects($first: Int) {
+        group(fullPath: "python-gitlab") {
+            projects(first: $first, includeSubgroups: true) {
+                nodes {
+                    id
+                }
+            }
+        }
+    }
+    """
+
     with pytest.raises(gitlab.GitlabHttpError):
-        await gl_async_gql.execute("query {currentUser {id}}")
+        await gl_async_gql.execute(query, variable_values=variable_values)
 
 
 def test_graphql_raises_on_401_response(
     api_url: str, gl_gql: gitlab.GraphQL, respx_mock: respx.MockRouter
 ):
     respx_mock.post(api_url).mock(return_value=httpx.Response(401))
+    variable_values = {"first": 2}
+    query = """
+    query get_projects($first: Int) {
+        group(fullPath: "python-gitlab") {
+            projects(first: $first, includeSubgroups: true) {
+                nodes {
+                    id
+                }
+            }
+        }
+    }
+    """
+
     with pytest.raises(gitlab.GitlabAuthenticationError):
-        gl_gql.execute("query {currentUser {id}}")
+        gl_gql.execute(query, variable_values=variable_values)
 
 
 @pytest.mark.anyio
@@ -112,5 +223,19 @@ async def test_async_graphql_raises_on_401_response(
     api_url: str, gl_async_gql: gitlab.AsyncGraphQL, respx_mock: respx.MockRouter
 ):
     respx_mock.post(api_url).mock(return_value=httpx.Response(401))
+
+    variable_values = {"first": 2}
+    query = """
+    query get_projects($first: Int) {
+        group(fullPath: "python-gitlab") {
+            projects(first: $first, includeSubgroups: true) {
+                nodes {
+                    id
+                }
+            }
+        }
+    }
+    """
+
     with pytest.raises(gitlab.GitlabAuthenticationError):
-        await gl_async_gql.execute("query {currentUser {id}}")
+        await gl_async_gql.execute(query, variable_values=variable_values)
