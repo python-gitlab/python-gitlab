@@ -68,6 +68,8 @@ __all__ = [
     "UserMembershipManager",
     "UserProject",
     "UserProjectManager",
+    "UserContributedProject",
+    "UserContributedProjectManager",
 ]
 
 
@@ -182,6 +184,7 @@ class User(SaveMixin, ObjectDeleteMixin, RESTObject):
     memberships: UserMembershipManager
     personal_access_tokens: UserPersonalAccessTokenManager
     projects: UserProjectManager
+    contributed_projects: UserContributedProjectManager
     starred_projects: StarredProjectManager
     status: UserStatusManager
 
@@ -663,6 +666,17 @@ class UserProjectManager(ListMixin[UserProject], CreateMixin[UserProject]):
         else:
             path = f"/users/{self._from_parent_attrs['user_id']}/projects"
         return super().list(path=path, iterator=iterator, **kwargs)
+
+
+class UserContributedProject(RESTObject):
+    _id_attr = "id"
+    _repr_attr = "path_with_namespace"
+
+
+class UserContributedProjectManager(ListMixin[UserContributedProject]):
+    _path = "/users/{user_id}/contributed_projects"
+    _obj_cls = UserContributedProject
+    _from_parent_attrs = {"user_id": "id"}
 
 
 class StarredProject(RESTObject):

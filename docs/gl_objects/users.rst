@@ -107,6 +107,10 @@ Get the followings of a user::
 
     user.following_users.list(get_all=True)
 
+List a user's contributed projects::
+
+    user.contributed_projects.list(get_all=True)
+
 List a user's starred projects::
 
     user.starred_projects.list(get_all=True)
