@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
       - name: Set up Python
-        uses: actions/setup-python@v5.5.0
+        uses: actions/setup-python@v5.6.0
         with:
           python-version: "3.13"
       - name: Install dependencies
@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
       - name: Set up Python
-        uses: actions/setup-python@v5.5.0
+        uses: actions/setup-python@v5.6.0
         with:
           python-version: "3.13"
       - name: Install dependencies
