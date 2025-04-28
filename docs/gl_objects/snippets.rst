@@ -11,7 +11,7 @@ Reference
   + :class:`gitlab.v4.objects.SnipptManager`
   + :attr:`gitlab.Gitlab.snippets`
 
-* GitLab API: https://docs.gitlab.com/ce/api/snippets.html
+* GitLab API: https://docs.gitlab.com/api/snippets
 
 Examples
 ========

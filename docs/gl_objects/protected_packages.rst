@@ -13,7 +13,7 @@ References
   + :class:`gitlab.v4.objects.ProjectPackageProtectionRuleManager`
   + :attr:`gitlab.v4.objects.Project.package_protection_rules`
 
-* GitLab API: https://docs.gitlab.com/ee/api/project_packages_protection_rules.html
+* GitLab API: https://docs.gitlab.com/api/project_packages_protection_rules
 
 Examples
 --------

@@ -11,7 +11,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectDeploymentManager`
   + :attr:`gitlab.v4.objects.Project.deployments`
 
-* GitLab API: https://docs.gitlab.com/ce/api/deployments.html
+* GitLab API: https://docs.gitlab.com/api/deployments
 
 Examples
 --------
@@ -64,7 +64,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectDeploymentMergeRequestManager`
   + :attr:`gitlab.v4.objects.ProjectDeployment.mergerequests`
 
-* GitLab API: https://docs.gitlab.com/ee/api/deployments.html#list-of-merge-requests-associated-with-a-deployment
+* GitLab API: https://docs.gitlab.com/api/deployments#list-of-merge-requests-associated-with-a-deployment
 
 Examples
 --------

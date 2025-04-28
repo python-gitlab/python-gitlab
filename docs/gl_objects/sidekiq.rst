@@ -10,7 +10,7 @@ Reference
   + :class:`gitlab.v4.objects.SidekiqManager`
   + :attr:`gitlab.Gitlab.sidekiq`
 
-* GitLab API: https://docs.gitlab.com/ce/api/sidekiq_metrics.html
+* GitLab API: https://docs.gitlab.com/api/sidekiq_metrics
 
 Examples
 --------

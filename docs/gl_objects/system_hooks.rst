@@ -11,7 +11,7 @@ Reference
   + :class:`gitlab.v4.objects.HookManager`
   + :attr:`gitlab.Gitlab.hooks`
 
-* GitLab API: https://docs.gitlab.com/ce/api/system_hooks.html
+* GitLab API: https://docs.gitlab.com/api/system_hooks
 
 Examples
 --------

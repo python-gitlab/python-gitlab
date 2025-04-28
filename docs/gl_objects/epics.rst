@@ -14,7 +14,7 @@ Reference
   + :class:`gitlab.v4.objects.GroupEpicManager`
   + :attr:`gitlab.Gitlab.Group.epics`
 
-* GitLab API: https://docs.gitlab.com/ee/api/epics.html (EE feature)
+* GitLab API: https://docs.gitlab.com/api/epics (EE feature)
 
 Examples
 --------
@@ -53,7 +53,7 @@ Reference
   + :class:`gitlab.v4.objects.GroupEpicIssueManager`
   + :attr:`gitlab.Gitlab.GroupEpic.issues`
 
-* GitLab API: https://docs.gitlab.com/ee/api/epic_issues.html (EE feature)
+* GitLab API: https://docs.gitlab.com/api/epic_issues (EE feature)
 
 Examples
 --------

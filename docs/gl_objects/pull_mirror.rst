@@ -13,7 +13,7 @@ References
   + :class:`gitlab.v4.objects.ProjectPullMirrorManager`
   + :attr:`gitlab.v4.objects.Project.pull_mirror`
 
-* GitLab API: https://docs.gitlab.com/ce/api/pull_mirror.html
+* GitLab API: https://docs.gitlab.com/api/project_pull_mirroring/
 
 Examples
 --------

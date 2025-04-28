@@ -15,7 +15,7 @@ References
   + :class:`gitlab.v4.objects.GroupApprovalRule`
   + :class:`gitlab.v4.objects.GroupApprovalRuleManager`
 
-* GitLab API: https://docs.gitlab.com/ee/api/merge_request_approvals.html
+* GitLab API: https://docs.gitlab.com/api/merge_request_approvals
 
 Examples
 --------
@@ -55,7 +55,7 @@ References
   + :class:`gitlab.v4.objects.ProjectApprovalRuleManager`
   + :attr:`gitlab.v4.objects.Project.approvals`
 
-* GitLab API: https://docs.gitlab.com/ee/api/merge_request_approvals.html
+* GitLab API: https://docs.gitlab.com/api/merge_request_approvals
 
 Examples
 --------
@@ -101,7 +101,7 @@ References
   + :class:`gitlab.v4.objects.ProjectMergeRequestApprovalStateManager`
   + :attr:`gitlab.v4.objects.ProjectMergeRequest.approval_state`
 
-* GitLab API: https://docs.gitlab.com/ee/api/merge_request_approvals.html
+* GitLab API: https://docs.gitlab.com/api/merge_request_approvals
 
 Examples
 --------

@@ -11,7 +11,7 @@ Reference
   + :class:`gitlab.v4.objects.GeoNodeManager`
   + :attr:`gitlab.Gitlab.geonodes`
 
-* GitLab API: https://docs.gitlab.com/ee/api/geo_nodes.html (EE feature)
+* GitLab API: https://docs.gitlab.com/api/geo_nodes (EE feature)
 
 Examples
 --------

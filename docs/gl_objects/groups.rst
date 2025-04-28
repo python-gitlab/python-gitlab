@@ -14,7 +14,7 @@ Reference
   + :class:`gitlab.v4.objects.GroupManager`
   + :attr:`gitlab.Gitlab.groups`
 
-* GitLab API: https://docs.gitlab.com/ce/api/groups.html
+* GitLab API: https://docs.gitlab.com/api/groups
 
 Examples
 --------
@@ -63,7 +63,7 @@ Create a group::
 .. warning::
 
    On GitLab.com, creating top-level groups is currently
-   `not permitted using the API <https://docs.gitlab.com/ee/api/groups.html#new-group>`_.
+   `not permitted using the API <https://docs.gitlab.com/api/groups#new-group>`_.
    You can only use the API to create subgroups.
 
 Create a subgroup under an existing group::
@@ -121,7 +121,7 @@ Reference
   + :attr:`gitlab.v4.objects.Group.imports`
   + :attr:`gitlab.v4.objects.GroupManager.import_group`
 
-* GitLab API: https://docs.gitlab.com/ce/api/group_import_export.html
+* GitLab API: https://docs.gitlab.com/api/group_import_export
 
 Examples
 --------
@@ -224,7 +224,7 @@ Reference
   + :class:`gitlab.v4.objects.GroupCustomAttributeManager`
   + :attr:`gitlab.v4.objects.Group.customattributes`
 
-* GitLab API: https://docs.gitlab.com/ce/api/custom_attributes.html
+* GitLab API: https://docs.gitlab.com/api/custom_attributes
 
 Examples
 --------
@@ -277,7 +277,7 @@ Reference
   + :attr:`gitlab.v4.objects.Group.members_all`
   + :attr:`gitlab.v4.objects.Group.billable_members`
 
-* GitLab API: https://docs.gitlab.com/ce/api/members.html
+* GitLab API: https://docs.gitlab.com/api/members
 
 Billable group members are only available in GitLab EE.
 
@@ -402,7 +402,7 @@ Reference
   + :class:`gitlab.v4.objects.GroupHookManager`
   + :attr:`gitlab.v4.objects.Group.hooks`
 
-* GitLab API: https://docs.gitlab.com/ce/api/groups.html#hooks
+* GitLab API: https://docs.gitlab.com/api/groups#hooks
 
 Examples
 --------
@@ -446,7 +446,7 @@ Reference
   + :class:`gitlab.v4.objects.GroupPushRulesManager`
   + :attr:`gitlab.v4.objects.Group.pushrules`
 
-* GitLab API: https://docs.gitlab.com/ee/api/groups.html#push-rules
+* GitLab API: https://docs.gitlab.com/api/groups#push-rules
 
 Examples
 ---------
@@ -480,7 +480,7 @@ Reference
   + :class:`gitlab.v4.objects.GroupServiceAccountManager`
   + :attr:`gitlab.v4.objects.Group.serviceaccounts`
 
-* GitLab API: https://docs.gitlab.com/ee/api/groups.html#service-accounts
+* GitLab API: https://docs.gitlab.com/api/groups#service-accounts
 
 Examples
 ---------

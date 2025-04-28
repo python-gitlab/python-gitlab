@@ -14,7 +14,7 @@ Reference
   + :class:`gitlab.v4.objects.KeyManager`
   + :attr:`gitlab.Gitlab.keys`
 
-* GitLab API: https://docs.gitlab.com/ce/api/keys.html
+* GitLab API: https://docs.gitlab.com/api/keys
 
 Examples
 --------

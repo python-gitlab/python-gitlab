@@ -21,7 +21,7 @@ Reference
   + :class:`gitlab.v4.objects.LicenseManager`
   + :attr:`gitlab.Gitlab.licenses`
 
-* GitLab API: https://docs.gitlab.com/ce/api/templates/licenses.html
+* GitLab API: https://docs.gitlab.com/api/templates/licenses
 
 Examples
 --------
@@ -47,7 +47,7 @@ Reference
   + :class:`gitlab.v4.objects.GitignoreManager`
   + :attr:`gitlab.Gitlab.gitignores`
 
-* GitLab API: https://docs.gitlab.com/ce/api/templates/gitignores.html
+* GitLab API: https://docs.gitlab.com/api/templates/gitignores
 
 Examples
 --------
@@ -73,7 +73,7 @@ Reference
   + :class:`gitlab.v4.objects.GitlabciymlManager`
   + :attr:`gitlab.Gitlab.gitlabciymls`
 
-* GitLab API: https://docs.gitlab.com/ce/api/templates/gitlab_ci_ymls.html
+* GitLab API: https://docs.gitlab.com/api/templates/gitlab_ci_ymls
 
 Examples
 --------
@@ -99,7 +99,7 @@ Reference
   + :class:`gitlab.v4.objects.DockerfileManager`
   + :attr:`gitlab.Gitlab.gitlabciymls`
 
-* GitLab API: https://docs.gitlab.com/ce/api/templates/dockerfiles.html
+* GitLab API: https://docs.gitlab.com/api/templates/dockerfiles
 
 Examples
 --------
@@ -143,7 +143,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectMergeRequestTemplateManager`
   + :attr:`gitlab.v4.objects.Project.merge_request_templates`
 
-* GitLab API: https://docs.gitlab.com/ce/api/project_templates.html
+* GitLab API: https://docs.gitlab.com/api/project_templates
 
 Examples
 --------

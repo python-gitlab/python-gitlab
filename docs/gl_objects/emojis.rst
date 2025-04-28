@@ -21,7 +21,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectSnippetNoteAwardEmojiManager`
 
 
-* GitLab API: https://docs.gitlab.com/ce/api/award_emoji.html
+* GitLab API: https://docs.gitlab.com/api/emoji_reactions/
 
 Examples
 --------

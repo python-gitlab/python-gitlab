@@ -14,7 +14,7 @@ References
   + :class:`gitlab.v4.objects.ProjectSecureFileManager`
   + :attr:`gitlab.v4.objects.Project.secure_files`
 
-* GitLab API: https://docs.gitlab.com/ee/api/secure_files.html
+* GitLab API: https://docs.gitlab.com/api/secure_files
 
 Examples
 --------

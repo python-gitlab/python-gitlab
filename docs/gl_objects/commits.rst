@@ -33,7 +33,7 @@ List all commits for a project (see :ref:`pagination`) on all branches:
 
 Create a commit::
 
-    # See https://docs.gitlab.com/ce/api/commits.html#create-a-commit-with-multiple-files-and-actions
+    # See https://docs.gitlab.com/api/commits#create-a-commit-with-multiple-files-and-actions
     # for actions detail
     data = {
         'branch': 'main',
@@ -98,7 +98,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectCommitCommentManager`
   + :attr:`gitlab.v4.objects.ProjectCommit.comments`
 
-* GitLab API: https://docs.gitlab.com/ce/api/commits.html
+* GitLab API: https://docs.gitlab.com/api/commits
 
 Examples
 --------
@@ -129,7 +129,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectCommitStatusManager`
   + :attr:`gitlab.v4.objects.ProjectCommit.statuses`
 
-* GitLab API: https://docs.gitlab.com/ce/api/commits.html
+* GitLab API: https://docs.gitlab.com/api/commits
 
 Examples
 --------

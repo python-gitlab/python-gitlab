@@ -15,8 +15,8 @@ References
   + :class:`gitlab.v4.objects.GroupWikiManager`
   + :attr:`gitlab.v4.objects.Group.wikis`
 
-* GitLab API for Projects: https://docs.gitlab.com/ce/api/wikis.html
-* GitLab API for Groups: https://docs.gitlab.com/ee/api/group_wikis.html
+* GitLab API for Projects: https://docs.gitlab.com/api/wikis
+* GitLab API for Groups: https://docs.gitlab.com/api/group_wikis
 
 Examples
 --------
@@ -68,8 +68,8 @@ Reference
   + :attr:`gitlab.v4.objects.GrouptWiki.upload`
 
 
-* Gitlab API for Projects: https://docs.gitlab.com/ee/api/wikis.html#upload-an-attachment-to-the-wiki-repository
-* Gitlab API for Groups: https://docs.gitlab.com/ee/api/group_wikis.html#upload-an-attachment-to-the-wiki-repository
+* Gitlab API for Projects: https://docs.gitlab.com/api/wikis#upload-an-attachment-to-the-wiki-repository
+* Gitlab API for Groups: https://docs.gitlab.com/api/group_wikis#upload-an-attachment-to-the-wiki-repository
 
 Examples
 --------

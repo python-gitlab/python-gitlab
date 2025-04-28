@@ -11,7 +11,7 @@ References
   + :class:`gitlab.v4.objects.ProjectBranchManager`
   + :attr:`gitlab.v4.objects.Project.branches`
 
-* GitLab API: https://docs.gitlab.com/ce/api/branches.html
+* GitLab API: https://docs.gitlab.com/api/branches
 
 Examples
 --------

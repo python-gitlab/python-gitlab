@@ -11,7 +11,7 @@ Reference
   + :class:`~gitlab.objects.TodoManager`
   + :attr:`gitlab.Gitlab.todos`
 
-* GitLab API: https://docs.gitlab.com/ce/api/todos.html
+* GitLab API: https://docs.gitlab.com/api/todos
 
 Examples
 --------

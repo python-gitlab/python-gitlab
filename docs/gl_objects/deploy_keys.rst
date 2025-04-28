@@ -14,7 +14,7 @@ Reference
   + :class:`gitlab.v4.objects.DeployKeyManager`
   + :attr:`gitlab.Gitlab.deploykeys`
 
-* GitLab API: https://docs.gitlab.com/ce/api/deploy_keys.html
+* GitLab API: https://docs.gitlab.com/api/deploy_keys
 
 Examples
 --------
@@ -41,7 +41,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectKeyManager`
   + :attr:`gitlab.v4.objects.Project.keys`
 
-* GitLab API: https://docs.gitlab.com/ce/api/deploy_keys.html
+* GitLab API: https://docs.gitlab.com/api/deploy_keys
 
 Examples
 --------

@@ -13,7 +13,7 @@ Reference
   + :class:`gitlab.v4.objects.TopicManager`
   + :attr:`gitlab.Gitlab.topics`
 
-* GitLab API: https://docs.gitlab.com/ce/api/topics.html
+* GitLab API: https://docs.gitlab.com/api/topics
 
 This endpoint requires admin access for creating, updating and deleting objects.
 

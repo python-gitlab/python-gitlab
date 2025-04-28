@@ -23,8 +23,8 @@ Reference
 
 * GitLab API:
 
-  + https://docs.gitlab.com/ce/api/boards.html
-  + https://docs.gitlab.com/ce/api/group_boards.html
+  + https://docs.gitlab.com/api/boards
+  + https://docs.gitlab.com/api/group_boards
 
 Examples
 --------
@@ -72,8 +72,8 @@ Reference
 
 * GitLab API:
 
-  + https://docs.gitlab.com/ce/api/boards.html
-  + https://docs.gitlab.com/ce/api/group_boards.html
+  + https://docs.gitlab.com/api/boards
+  + https://docs.gitlab.com/api/group_boards
 
 Examples
 --------

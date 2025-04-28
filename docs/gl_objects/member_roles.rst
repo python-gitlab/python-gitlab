@@ -21,7 +21,7 @@ Reference
 
 * GitLab API
 
-  + https://docs.gitlab.com/ee/api/member_roles.html#manage-instance-member-roles
+  + https://docs.gitlab.com/api/member_roles#manage-instance-member-roles
 
 Examples
 --------
@@ -52,7 +52,7 @@ Reference
 
 * GitLab API
 
-  + https://docs.gitlab.com/ee/api/member_roles.html#manage-group-member-roles
+  + https://docs.gitlab.com/api/member_roles#manage-group-member-roles
 
 Examples
 --------

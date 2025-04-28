@@ -16,7 +16,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectPipelineManager`
   + :attr:`gitlab.v4.objects.Project.pipelines`
 
-* GitLab API: https://docs.gitlab.com/ce/api/pipelines.html
+* GitLab API: https://docs.gitlab.com/api/pipelines
 
 Examples
 --------
@@ -69,7 +69,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectTriggerManager`
   + :attr:`gitlab.v4.objects.Project.triggers`
 
-* GitLab API: https://docs.gitlab.com/ce/api/pipeline_triggers.html
+* GitLab API: https://docs.gitlab.com/api/pipeline_triggers
 
 Examples
 --------
@@ -115,7 +115,7 @@ objects to get the associated project::
     project = gl.projects.get(project_id, lazy=True)  # no API call
     project.trigger_pipeline('main', trigger_token)
 
-Reference: https://docs.gitlab.com/ee/ci/triggers/#trigger-token
+Reference: https://docs.gitlab.com/ci/triggers/#trigger-token
 
 Pipeline schedules
 ==================
@@ -138,7 +138,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectPipelineSchedulePipelineManager`
   + :attr:`gitlab.v4.objects.ProjectPipelineSchedule.pipelines`
 
-* GitLab API: https://docs.gitlab.com/ce/api/pipeline_schedules.html
+* GitLab API: https://docs.gitlab.com/api/pipeline_schedules
 
 Examples
 --------
@@ -216,7 +216,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectJobManager`
   + :attr:`gitlab.v4.objects.Project.jobs`
 
-* GitLab API: https://docs.gitlab.com/ce/api/jobs.html
+* GitLab API: https://docs.gitlab.com/api/jobs
 
 Examples
 --------
@@ -350,7 +350,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectPipelineBridgeManager`
   + :attr:`gitlab.v4.objects.ProjectPipeline.bridges`
 
-* GitLab API: https://docs.gitlab.com/ee/api/jobs.html#list-pipeline-bridges
+* GitLab API: https://docs.gitlab.com/api/jobs#list-pipeline-bridges
 
 Examples
 --------
@@ -373,7 +373,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectPipelineTestReportManager`
   + :attr:`gitlab.v4.objects.ProjectPipeline.test_report`
 
-* GitLab API: https://docs.gitlab.com/ee/api/pipelines.html#get-a-pipelines-test-report
+* GitLab API: https://docs.gitlab.com/api/pipelines#get-a-pipelines-test-report
 
 Examples
 --------
@@ -396,7 +396,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectPipelineTestReportSummaryManager`
   + :attr:`gitlab.v4.objects.ProjectPipeline.test_report_summary`
 
-* GitLab API: https://docs.gitlab.com/ee/api/pipelines.html#get-a-pipelines-test-report-summary
+* GitLab API: https://docs.gitlab.com/api/pipelines#get-a-pipelines-test-report-summary
 
 Examples
 --------

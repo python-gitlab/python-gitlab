@@ -17,7 +17,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectPackageManager`
   + :attr:`gitlab.v4.objects.Project.packages`
 
-* GitLab API: https://docs.gitlab.com/ee/api/packages.html#within-a-project
+* GitLab API: https://docs.gitlab.com/api/packages#within-a-project
 
 Examples
 --------
@@ -53,7 +53,7 @@ Reference
   + :class:`gitlab.v4.objects.GroupPackageManager`
   + :attr:`gitlab.v4.objects.Group.packages`
 
-* GitLab API: https://docs.gitlab.com/ee/api/packages.html#within-a-group
+* GitLab API: https://docs.gitlab.com/api/packages#within-a-group
 
 Examples
 --------
@@ -79,7 +79,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectPackageFileManager`
   + :attr:`gitlab.v4.objects.ProjectPackage.package_files`
 
-* GitLab API: https://docs.gitlab.com/ee/api/packages.html#list-package-files
+* GitLab API: https://docs.gitlab.com/api/packages#list-package-files
 
 Examples
 --------
@@ -107,7 +107,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectPackagePipelineManager`
   + :attr:`gitlab.v4.objects.ProjectPackage.pipelines`
 
-* GitLab API: https://docs.gitlab.com/ee/api/packages.html#list-package-pipelines
+* GitLab API: https://docs.gitlab.com/api/packages#list-package-pipelines
 
 Examples
 --------
@@ -131,7 +131,7 @@ Reference
   + :class:`gitlab.v4.objects.GenericPackageManager`
   + :attr:`gitlab.v4.objects.Project.generic_packages`
 
-* GitLab API: https://docs.gitlab.com/ee/user/packages/generic_packages
+* GitLab API: https://docs.gitlab.com/user/packages/generic_packages
 
 Examples
 --------

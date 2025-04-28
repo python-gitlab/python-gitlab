@@ -25,7 +25,7 @@ References
   + :class:`gitlab.v4.objects.GroupAccessRequestManager`
   + :attr:`gitlab.v4.objects.Group.accessrequests`
 
-* GitLab API: https://docs.gitlab.com/ce/api/access_requests.html
+* GitLab API: https://docs.gitlab.com/api/access_requests
 
 Examples
 --------

@@ -37,7 +37,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectSnippetDiscussionNoteManager`
   + :attr:`gitlab.v4.objects.ProjectSnippet.notes`
 
-* GitLab API: https://docs.gitlab.com/ce/api/discussions.html
+* GitLab API: https://docs.gitlab.com/api/discussions
 
 Examples
 ========

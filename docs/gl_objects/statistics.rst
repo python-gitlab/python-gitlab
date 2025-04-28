@@ -11,7 +11,7 @@ Reference
   + :class:`gitlab.v4.objects.ApplicationStatisticsManager`
   + :attr:`gitlab.Gitlab.statistics`
 
-* GitLab API: https://docs.gitlab.com/ee/api/statistics.html
+* GitLab API: https://docs.gitlab.com/api/statistics
 
 Examples
 --------

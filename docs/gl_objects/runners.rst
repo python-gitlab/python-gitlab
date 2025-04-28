@@ -23,7 +23,7 @@ Reference
   + :class:`gitlab.v4.objects.RunnerAllManager`
   + :attr:`gitlab.Gitlab.runners_all`
 
-* GitLab API: https://docs.gitlab.com/ce/api/runners.html
+* GitLab API: https://docs.gitlab.com/api/runners
 
 Examples
 --------
@@ -119,7 +119,7 @@ Reference
   + :class:`gitlab.v4.objects.GroupRunnerManager`
   + :attr:`gitlab.v4.objects.Group.runners`
 
-* GitLab API: https://docs.gitlab.com/ce/api/runners.html
+* GitLab API: https://docs.gitlab.com/api/runners
 
 Examples
 --------
@@ -148,7 +148,7 @@ Reference
   + :class:`gitlab.v4.objects.RunnerJobManager`
   + :attr:`gitlab.v4.objects.Runner.jobs`
 
-* GitLab API: https://docs.gitlab.com/ce/api/runners.html
+* GitLab API: https://docs.gitlab.com/api/runners
 
 Examples
 --------
