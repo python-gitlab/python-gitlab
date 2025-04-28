@@ -18,7 +18,7 @@ Reference
   + :attr:`gitlab.v4.objects.ProjectMergeRequest.draft_notes`
 
 
-* GitLab API: https://docs.gitlab.com/ee/api/draft_notes.html
+* GitLab API: https://docs.gitlab.com/api/draft_notes
 
 Examples
 --------

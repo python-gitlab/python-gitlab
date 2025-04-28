@@ -17,7 +17,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectExternalStatusCheckManager`
   + :attr:`gitlab.v4.objects.Project.external_status_checks`
 
-* GitLab API: https://docs.gitlab.com/ee/api/status_checks.html
+* GitLab API: https://docs.gitlab.com/api/status_checks
 
 Examples
 ---------

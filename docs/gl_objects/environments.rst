@@ -11,7 +11,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectEnvironmentManager`
   + :attr:`gitlab.v4.objects.Project.environments`
 
-* GitLab API: https://docs.gitlab.com/ce/api/environments.html
+* GitLab API: https://docs.gitlab.com/api/environments
 
 Examples
 --------

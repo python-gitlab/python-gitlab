@@ -11,7 +11,7 @@ Reference
   + :class:`gitlab.v4.objects.NamespaceManager`
   + :attr:`gitlab.Gitlab.namespaces`
 
-* GitLab API: https://docs.gitlab.com/ce/api/namespaces.html
+* GitLab API: https://docs.gitlab.com/api/namespaces
 
 Examples
 --------

@@ -14,7 +14,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectLabelManager`
   + :attr:`gitlab.v4.objects.Project.labels`
 
-* GitLab API: https://docs.gitlab.com/ce/api/labels.html
+* GitLab API: https://docs.gitlab.com/api/labels
 
 Examples
 --------
@@ -79,7 +79,7 @@ Reference
   + :class:`gitlab.v4.objects.GroupEpicResourceLabelEventManager`
   + :attr:`gitlab.v4.objects.GroupEpic.resourcelabelevents`
 
-* GitLab API: https://docs.gitlab.com/ee/api/resource_label_events.html
+* GitLab API: https://docs.gitlab.com/api/resource_label_events
 
 Examples
 --------

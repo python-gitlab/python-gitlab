@@ -165,14 +165,14 @@ We recommend that you use `Credential helpers`_ to securely store your tokens.
    * - ``private_token``
      - Your user token. Login/password is not supported. Refer to `the
        official documentation
-       <https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html>`__
+       <https://docs.gitlab.com/user/profile/personal_access_tokens>`__
        to learn how to obtain a token.
    * - ``oauth_token``
      - An Oauth token for authentication. The Gitlab server must be configured
        to support this authentication method.
    * - ``job_token``
      - Your job token. See `the official documentation
-       <https://docs.gitlab.com/ce/api/jobs.html#get-job-artifacts>`__
+       <https://docs.gitlab.com/api/jobs#get-job-artifacts>`__
        to learn how to obtain a token.
    * - ``api_version``
      - GitLab API version to use. Only ``4`` is available since 1.5.0.

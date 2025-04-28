@@ -11,7 +11,7 @@ Reference
   + :class:`gitlab.v4.objects.FeatureManager`
   + :attr:`gitlab.Gitlab.features`
 
-* GitLab API: https://docs.gitlab.com/ce/api/features.html
+* GitLab API: https://docs.gitlab.com/api/features
 
 Examples
 --------

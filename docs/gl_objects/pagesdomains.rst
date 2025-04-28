@@ -14,7 +14,7 @@ References
   + :class:`gitlab.v4.objects.ProjectPagesManager`
   + :attr:`gitlab.v4.objects.Project.pages`
 
-* GitLab API: https://docs.gitlab.com/ee/api/pages.html
+* GitLab API: https://docs.gitlab.com/api/pages
 
 Examples
 --------
@@ -43,7 +43,7 @@ References
   + :class:`gitlab.v4.objects.PagesDomainManager`
   + :attr:`gitlab.Gitlab.pagesdomains`
 
-* GitLab API: https://docs.gitlab.com/ce/api/pages_domains.html#list-all-pages-domains
+* GitLab API: https://docs.gitlab.com/api/pages_domains#list-all-pages-domains
 
 Examples
 --------
@@ -64,7 +64,7 @@ References
   + :class:`gitlab.v4.objects.ProjectPagesDomainManager`
   + :attr:`gitlab.v4.objects.Project.pagesdomains`
 
-* GitLab API: https://docs.gitlab.com/ce/api/pages_domains.html#list-pages-domains
+* GitLab API: https://docs.gitlab.com/api/pages_domains#list-pages-domains
 
 Examples
 --------

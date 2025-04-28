@@ -16,7 +16,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectInvitationManager`
   + :attr:`gitlab.v4.objects.Project.invitations`
 
-* GitLab API: https://docs.gitlab.com/ce/api/invitations.html
+* GitLab API: https://docs.gitlab.com/api/invitations
 
 Examples
 --------

@@ -13,7 +13,7 @@ References
   + :class:`gitlab.v4.objects.ProjectProtectedEnvironmentManager`
   + :attr:`gitlab.v4.objects.Project.protected_environment`
 
-* GitLab API: https://docs.gitlab.com/ee/api/protected_environments.html
+* GitLab API: https://docs.gitlab.com/api/protected_environments
 
 Examples
 --------

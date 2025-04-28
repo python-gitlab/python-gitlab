@@ -11,7 +11,7 @@ References
   + :class:`gitlab.v4.objects.ProjectRegistryRepositoryManager`
   + :attr:`gitlab.v4.objects.Project.repositories`
 
-* Gitlab API: https://docs.gitlab.com/ce/api/container_registry.html
+* Gitlab API: https://docs.gitlab.com/api/container_registry
 
 Examples
 --------

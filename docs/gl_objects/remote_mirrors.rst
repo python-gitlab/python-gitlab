@@ -13,7 +13,7 @@ References
   + :class:`gitlab.v4.objects.ProjectRemoteMirrorManager`
   + :attr:`gitlab.v4.objects.Project.remote_mirrors`
 
-* GitLab API: https://docs.gitlab.com/ce/api/remote_mirrors.html
+* GitLab API: https://docs.gitlab.com/api/remote_mirrors
 
 Examples
 --------

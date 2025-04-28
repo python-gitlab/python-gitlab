@@ -38,7 +38,7 @@ Reference
   + :attr:`gitlab.v4.objects.Group.search`
   + :attr:`gitlab.v4.objects.Project.search`
 
-* GitLab API: https://docs.gitlab.com/ce/api/search.html
+* GitLab API: https://docs.gitlab.com/api/search
 
 Examples
 --------

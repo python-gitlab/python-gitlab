@@ -17,7 +17,7 @@ References
   + :class:`gitlab.v4.objects.BulkImportEntityManager`
   + :attr:`gitlab.v4.objects.BulkImport.entities`
 
-* GitLab API: https://docs.gitlab.com/ee/api/bulk_imports.html
+* GitLab API: https://docs.gitlab.com/api/bulk_imports
 
 Examples
 --------

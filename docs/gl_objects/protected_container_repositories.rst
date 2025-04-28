@@ -13,7 +13,7 @@ References
   + :class:`gitlab.v4.objects.ProjectRegistryRepositoryProtectionRuleRuleManager`
   + :attr:`gitlab.v4.objects.Project.registry_protection_repository_rules`
 
-* GitLab API: https://docs.gitlab.com/ee/api/container_repository_protection_rules.html
+* GitLab API: https://docs.gitlab.com/api/container_repository_protection_rules
 
 Examples
 --------

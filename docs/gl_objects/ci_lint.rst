@@ -14,7 +14,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectCiLintManager`
   + :attr:`gitlab.v4.objects.Project.ci_lint`
 
-* GitLab API: https://docs.gitlab.com/ee/api/lint.html
+* GitLab API: https://docs.gitlab.com/api/lint
 
 Examples
 ---------

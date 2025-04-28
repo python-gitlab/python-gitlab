@@ -19,7 +19,7 @@ Reference
   + :class:`gitlab.v4.objects.DeployTokenManager`
   + :attr:`gitlab.Gitlab.deploytokens`
 
-* GitLab API: https://docs.gitlab.com/ce/api/deploy_tokens.html
+* GitLab API: https://docs.gitlab.com/api/deploy_tokens
 
 Examples
 --------
@@ -45,7 +45,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectDeployTokenManager`
   + :attr:`gitlab.v4.objects.Project.deploytokens`
 
-* GitLab API: https://docs.gitlab.com/ce/api/deploy_tokens.html#project-deploy-tokens
+* GitLab API: https://docs.gitlab.com/api/deploy_tokens#project-deploy-tokens
 
 Examples
 --------
@@ -102,7 +102,7 @@ Reference
   + :class:`gitlab.v4.objects.GroupDeployTokenManager`
   + :attr:`gitlab.v4.objects.Group.deploytokens`
 
-* GitLab API: https://docs.gitlab.com/ce/api/deploy_tokens.html#group-deploy-tokens
+* GitLab API: https://docs.gitlab.com/api/deploy_tokens#group-deploy-tokens
 
 Examples
 --------

@@ -20,8 +20,8 @@ Reference
 
 * GitLab API:
 
-  + https://docs.gitlab.com/ce/api/milestones.html
-  + https://docs.gitlab.com/ce/api/group_milestones.html
+  + https://docs.gitlab.com/api/milestones
+  + https://docs.gitlab.com/api/group_milestones
 
 Examples
 --------
@@ -95,7 +95,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectMergeRequestResourceMilestoneEventManager`
   + :attr:`gitlab.v4.objects.ProjectMergeRequest.resourcemilestoneevents`
 
-* GitLab API: https://docs.gitlab.com/ee/api/resource_milestone_events.html
+* GitLab API: https://docs.gitlab.com/api/resource_milestone_events
 
 Examples
 --------

@@ -18,8 +18,8 @@ Reference
 
 * GitLab API:
 
-  + https://docs.gitlab.com/ce/api/group_badges.html
-  + https://docs.gitlab.com/ce/api/project_badges.html
+  + https://docs.gitlab.com/api/group_badges
+  + https://docs.gitlab.com/api/project_badges
 
 Examples
 --------

@@ -30,7 +30,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectNotificationSettingsManager`
   + :attr:`gitlab.v4.objects.Project.notificationsettings`
 
-* GitLab API: https://docs.gitlab.com/ce/api/notification_settings.html
+* GitLab API: https://docs.gitlab.com/api/notification_settings
 
 Examples
 --------

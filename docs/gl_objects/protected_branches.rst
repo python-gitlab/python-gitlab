@@ -14,7 +14,7 @@ References
   + :class:`gitlab.v4.objects.ProjectProtectedBranchManager`
   + :attr:`gitlab.v4.objects.Project.protectedbranches`
 
-* GitLab API: https://docs.gitlab.com/ce/api/protected_branches.html#protected-branches-api
+* GitLab API: https://docs.gitlab.com/api/protected_branches#protected-branches-api
 
 Examples
 --------

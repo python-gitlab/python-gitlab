@@ -11,7 +11,7 @@ Reference
   + :class:`gitlab.v4.objects.ApplicationAppearanceManager`
   + :attr:`gitlab.Gitlab.appearance`
 
-* GitLab API: https://docs.gitlab.com/ce/api/appearance.html
+* GitLab API: https://docs.gitlab.com/api/appearance
 
 Examples
 --------

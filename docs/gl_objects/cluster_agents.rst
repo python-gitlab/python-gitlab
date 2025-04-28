@@ -17,7 +17,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectClusterAgentManager`
   + :attr:`gitlab.v4.objects.Project.cluster_agents`
 
-* GitLab API: https://docs.gitlab.com/ee/api/cluster_agents.html
+* GitLab API: https://docs.gitlab.com/api/cluster_agents
 
 Examples
 --------

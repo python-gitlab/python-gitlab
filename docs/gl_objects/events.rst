@@ -20,7 +20,7 @@ Reference
   + :class:`gitlab.v4.objects.UserEventManager`
   + :attr:`gitlab.v4.objects.User.events`
 
-* GitLab API: https://docs.gitlab.com/ce/api/events.html
+* GitLab API: https://docs.gitlab.com/api/events/
 
 Examples
 --------
@@ -29,7 +29,7 @@ You can list events for an entire Gitlab instance (admin), users and projects.
 You can filter you events you want to retrieve using the ``action`` and
 ``target_type`` attributes. The possible values for these attributes are
 available on `the gitlab documentation
-<https://docs.gitlab.com/ce/api/events.html>`_.
+<https://docs.gitlab.com/api/events/>`_.
 
 List all the events (paginated)::
 
@@ -58,7 +58,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectMergeRequestResourceStateEventManager`
   + :attr:`gitlab.v4.objects.ProjectMergeRequest.resourcestateevents`
 
-* GitLab API: https://docs.gitlab.com/ee/api/resource_state_events.html
+* GitLab API: https://docs.gitlab.com/api/resource_state_events
 
 Examples
 --------

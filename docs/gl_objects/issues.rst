@@ -16,7 +16,7 @@ Reference
   + :class:`gitlab.v4.objects.IssueManager`
   + :attr:`gitlab.Gitlab.issues`
 
-* GitLab API: https://docs.gitlab.com/ce/api/issues.html
+* GitLab API: https://docs.gitlab.com/api/issues
 
 Examples
 --------
@@ -55,7 +55,7 @@ Reference
   + :class:`gitlab.v4.objects.GroupIssueManager`
   + :attr:`gitlab.v4.objects.Group.issues`
 
-* GitLab API: https://docs.gitlab.com/ce/api/issues.html
+* GitLab API: https://docs.gitlab.com/api/issues
 
 Examples
 --------
@@ -91,7 +91,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectIssueManager`
   + :attr:`gitlab.v4.objects.Project.issues`
 
-* GitLab API: https://docs.gitlab.com/ce/api/issues.html
+* GitLab API: https://docs.gitlab.com/api/issues
 
 Examples
 --------
@@ -223,7 +223,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectIssueLinkManager`
   + :attr:`gitlab.v4.objects.ProjectIssue.links`
 
-* GitLab API: https://docs.gitlab.com/ee/api/issue_links.html
+* GitLab API: https://docs.gitlab.com/api/issue_links
 
 Examples
 --------
@@ -268,7 +268,7 @@ Reference
   + :attr:`gitlab.v4.objects.Project.issues_statistics`
 
 
-* GitLab API: https://docs.gitlab.com/ce/api/issues_statistics.htm
+* GitLab API: https://docs.gitlab.com/api/issues_statistics/
 
 Examples
 ---------

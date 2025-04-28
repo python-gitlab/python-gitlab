@@ -14,7 +14,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectResourceGroupUpcomingJobManager`
   + :attr:`gitlab.v4.objects.ProjectResourceGroup.upcoming_jobs`
 
-* Gitlab API: https://docs.gitlab.com/ee/api/resource_groups.html
+* Gitlab API: https://docs.gitlab.com/api/resource_groups
 
 Examples
 --------

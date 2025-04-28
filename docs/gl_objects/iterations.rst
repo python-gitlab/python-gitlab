@@ -14,7 +14,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectIterationManager`
   + :attr:`gitlab.v4.objects.Project.iterations`
 
-* GitLab API: https://docs.gitlab.com/ee/api/iterations.html
+* GitLab API: https://docs.gitlab.com/api/iterations
 
 Examples
 --------

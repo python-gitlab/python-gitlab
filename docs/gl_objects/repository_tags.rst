@@ -11,7 +11,7 @@ References
   + :class:`gitlab.v4.objects.ProjectRegistryTagManager`
   + :attr:`gitlab.v4.objects.Repository.tags`
 
-* Gitlab API: https://docs.gitlab.com/ce/api/container_registry.html
+* Gitlab API: https://docs.gitlab.com/api/container_registry
 
 Examples
 --------
@@ -44,4 +44,4 @@ Delete tag in bulk::
 .. note::   
 
       Delete in bulk is asynchronous operation and may take a while. 
-      Refer to: https://docs.gitlab.com/ce/api/container_registry.html#delete-repository-tags-in-bulk 
+      Refer to: https://docs.gitlab.com/api/container_registry#delete-repository-tags-in-bulk 

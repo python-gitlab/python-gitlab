@@ -13,7 +13,7 @@ References
   + :class:`gitlab.v4.objects.GroupAccessTokenManager`
   + :attr:`gitlab.Gitlab.group_access_tokens`
 
-* GitLab API: https://docs.gitlab.com/ee/api/group_access_tokens.html
+* GitLab API: https://docs.gitlab.com/api/group_access_tokens
 
 Examples
 --------

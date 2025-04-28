@@ -14,7 +14,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectManager`
   + :attr:`gitlab.Gitlab.projects`
 
-* GitLab API: https://docs.gitlab.com/ce/api/projects.html
+* GitLab API: https://docs.gitlab.com/api/projects
 
 Examples
 --------
@@ -195,7 +195,7 @@ Get the repository archive::
 .. note::
 
    For the formats available, refer to
-   https://docs.gitlab.com/ce/api/repositories.html#get-file-archive
+   https://docs.gitlab.com/api/repositories#get-file-archive
 
 .. warning::
 
@@ -270,7 +270,7 @@ Reference
   + :attr:`gitlab.v4.objects.Project.imports`
   + :attr:`gitlab.v4.objects.ProjectManager.import_project`
 
-* GitLab API: https://docs.gitlab.com/ce/api/project_import_export.html
+* GitLab API: https://docs.gitlab.com/api/project_import_export
 
 .. _project_import_export:
 
@@ -381,7 +381,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectCustomAttributeManager`
   + :attr:`gitlab.v4.objects.Project.customattributes`
 
-* GitLab API: https://docs.gitlab.com/ce/api/custom_attributes.html
+* GitLab API: https://docs.gitlab.com/api/custom_attributes
 
 Examples
 --------
@@ -421,7 +421,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectFileManager`
   + :attr:`gitlab.v4.objects.Project.files`
 
-* GitLab API: https://docs.gitlab.com/ce/api/repository_files.html
+* GitLab API: https://docs.gitlab.com/api/repository_files
 
 Examples
 --------
@@ -442,7 +442,7 @@ Get file details from headers, without fetching its entire content::
 
     # Get the file size:
     # For a full list of headers returned, see upstream documentation.
-    # https://docs.gitlab.com/ee/api/repository_files.html#get-file-from-repository
+    # https://docs.gitlab.com/api/repository_files#get-file-from-repository
     print(headers["X-Gitlab-Size"])
 
 Get a raw file::
@@ -495,7 +495,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectTagManager`
   + :attr:`gitlab.v4.objects.Project.tags`
 
-* GitLab API: https://docs.gitlab.com/ce/api/tags.html
+* GitLab API: https://docs.gitlab.com/api/tags
 
 Examples
 --------
@@ -538,7 +538,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectSnippetManager`
   + :attr:`gitlab.v4.objects.Project.files`
 
-* GitLab API: https://docs.gitlab.com/ce/api/project_snippets.html
+* GitLab API: https://docs.gitlab.com/api/project_snippets
 
 Examples
 --------
@@ -604,7 +604,7 @@ Reference
   + :attr:`gitlab.v4.objects.Project.members`
   + :attr:`gitlab.v4.objects.Project.members_all`
 
-* GitLab API: https://docs.gitlab.com/ce/api/members.html
+* GitLab API: https://docs.gitlab.com/api/members
 
 Examples
 --------
@@ -664,7 +664,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectHookManager`
   + :attr:`gitlab.v4.objects.Project.hooks`
 
-* GitLab API: https://docs.gitlab.com/ce/api/projects.html#hooks
+* GitLab API: https://docs.gitlab.com/api/projects#hooks
 
 Examples
 --------
@@ -708,7 +708,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectIntegrationManager`
   + :attr:`gitlab.v4.objects.Project.integrations`
 
-* GitLab API: https://docs.gitlab.com/ce/api/integrations.html
+* GitLab API: https://docs.gitlab.com/api/integrations
 
 Examples
 ---------
@@ -757,7 +757,7 @@ Reference
 
   + :attr:`gitlab.v4.objects.Project.upload`
 
-* Gitlab API: https://docs.gitlab.com/ce/api/projects.html#upload-a-file
+* Gitlab API: https://docs.gitlab.com/api/projects#upload-a-file
 
 Examples
 --------
@@ -800,7 +800,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectPushRulesManager`
   + :attr:`gitlab.v4.objects.Project.pushrules`
 
-* GitLab API: https://docs.gitlab.com/ee/api/projects.html#push-rules
+* GitLab API: https://docs.gitlab.com/api/projects#push-rules
 
 Examples
 ---------
@@ -834,7 +834,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectProtectedTagManager`
   + :attr:`gitlab.v4.objects.Project.protectedtags`
 
-* GitLab API: https://docs.gitlab.com/ce/api/protected_tags.html
+* GitLab API: https://docs.gitlab.com/api/protected_tags
 
 Examples
 ---------
@@ -867,7 +867,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectAdditionalStatisticsManager`
   + :attr:`gitlab.v4.objects.Project.additionalstatistics`
 
-* GitLab API: https://docs.gitlab.com/ce/api/project_statistics.html
+* GitLab API: https://docs.gitlab.com/api/project_statistics
 
 Examples
 ---------
@@ -894,7 +894,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectStorageManager`
   + :attr:`gitlab.v4.objects.Project.storage`
 
-* GitLab API: https://docs.gitlab.com/ee/api/projects.html#get-the-path-to-repository-storage
+* GitLab API: https://docs.gitlab.com/api/projects#get-the-path-to-repository-storage
 
 Examples
 ---------

@@ -16,8 +16,8 @@ References
 
 * GitLab API:
 
-  + https://docs.gitlab.com/ee/api/personal_access_tokens.html
-  + https://docs.gitlab.com/ee/api/users.html#create-a-personal-access-token
+  + https://docs.gitlab.com/api/personal_access_tokens
+  + https://docs.gitlab.com/api/users#create-a-personal-access-token
 
 Examples
 --------

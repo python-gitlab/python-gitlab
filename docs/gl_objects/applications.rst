@@ -11,7 +11,7 @@ Reference
   + :class:`gitlab.v4.objects.ApplicationManager`
   + :attr:`gitlab.Gitlab.applications`
 
-* GitLab API: https://docs.gitlab.com/ce/api/applications.html
+* GitLab API: https://docs.gitlab.com/api/applications
 
 Examples
 --------

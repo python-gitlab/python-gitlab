@@ -36,7 +36,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectSnippetNoteManager`
   + :attr:`gitlab.v4.objects.ProjectSnippet.notes`
 
-* GitLab API: https://docs.gitlab.com/ce/api/notes.html
+* GitLab API: https://docs.gitlab.com/api/notes
 
 Examples
 --------

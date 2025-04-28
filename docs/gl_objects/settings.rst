@@ -11,7 +11,7 @@ Reference
   + :class:`gitlab.v4.objects.ApplicationSettingsManager`
   + :attr:`gitlab.Gitlab.settings`
 
-* GitLab API: https://docs.gitlab.com/ce/api/settings.html
+* GitLab API: https://docs.gitlab.com/api/settings
 
 Examples
 --------

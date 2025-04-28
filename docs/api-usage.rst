@@ -16,7 +16,7 @@ To connect to GitLab.com or another GitLab instance, create a ``gitlab.Gitlab`` 
    access token.
 
    For the full list of available options and how to obtain these tokens, please see
-   https://docs.gitlab.com/ee/api/rest/authentication.html.
+   https://docs.gitlab.com/api/rest/authentication/.
 
 .. code-block:: python
 
@@ -39,7 +39,7 @@ To connect to GitLab.com or another GitLab instance, create a ``gitlab.Gitlab`` 
 
    # job token authentication (to be used in CI)
    # bear in mind the limitations of the API endpoints it supports:
-   # https://docs.gitlab.com/ee/ci/jobs/ci_job_token.html
+   # https://docs.gitlab.com/ci/jobs/ci_job_token
    import os
    gl = gitlab.Gitlab('https://gitlab.example.com', job_token=os.environ['CI_JOB_TOKEN'])
 
@@ -83,7 +83,7 @@ Note on password authentication
 -------------------------------
 
 GitLab has long removed password-based basic authentication. You can currently still use the
-`resource owner password credentials <https://docs.gitlab.com/ee/api/oauth2.html#resource-owner-password-credentials-flow>`_
+`resource owner password credentials <https://docs.gitlab.com/api/oauth2#resource-owner-password-credentials-flow>`_
 flow to obtain an OAuth token.
 
 However, we do not recommend this as it will not work with 2FA enabled, and GitLab is removing
@@ -364,7 +364,7 @@ order options. At the time of writing, only ``order_by="id"`` works.
    gl.projects.list(get_all=True)
 
 Reference:
-https://docs.gitlab.com/ce/api/README.html#keyset-based-pagination
+https://docs.gitlab.com/api/rest/#keyset-based-pagination
 
 ``list()`` methods can also return a generator object, by passing the argument
 ``iterator=True``, which will handle the next calls to the API when required. This
@@ -392,7 +392,7 @@ The generator exposes extra listing information as received from the server:
    ``total_pages`` and ``total`` will have a value of ``None``.
 
    For more information see:
-   https://docs.gitlab.com/ee/user/gitlab_com/index.html#pagination-response-headers
+   https://docs.gitlab.com/user/gitlab_com/index#pagination-response-headers
 
 .. note::
    Prior to python-gitlab 3.6.0 the argument ``as_list`` was used instead of

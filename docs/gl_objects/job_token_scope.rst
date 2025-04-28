@@ -11,7 +11,7 @@ Reference
   + :class:`gitlab.v4.objects.ProjectJobTokenScopeManager`
   + :attr:`gitlab.v4.objects.Project.job_token_scope`
 
-* GitLab API: https://docs.gitlab.com/ee/api/project_job_token_scopes.html
+* GitLab API: https://docs.gitlab.com/api/project_job_token_scopes
 
 Examples
 --------
