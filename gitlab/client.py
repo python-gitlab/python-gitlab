@@ -1267,16 +1267,27 @@ class GitlabList:
 class _BaseGraphQL:
     def __init__(
         self,
-        url: str | None = None,
         *,
-        token: str | None = None,
+        url: str | None = None,
+        private_token: str | None = None,
+        oauth_token: str | None = None,
+        job_token: str | None = None,
         ssl_verify: bool | str = True,
+        client: httpx.Client | None = None,
+        http_username: str | None = None,
+        http_password: str | None = None,
         timeout: float | None = None,
+        api_version: str = "4",
+        per_page: int | None = None,
+        pagination: str | None = None,
+        order_by: str | None = None,
         user_agent: str = gitlab.const.USER_AGENT,
         fetch_schema_from_transport: bool = False,
         max_retries: int = 10,
         obey_rate_limit: bool = True,
         retry_transient_errors: bool = False,
+        keep_base_url: bool = False,
+        **kwargs: Any,
     ) -> None:
         if not _GQL_INSTALLED:
             raise ImportError(
@@ -1286,7 +1297,17 @@ class _BaseGraphQL:
             )
         self._base_url = utils.get_base_url(url)
         self._timeout = timeout
-        self._token = token
+        self._private_token = private_token
+        self._oauth_token = oauth_token
+        self._job_token = job_token
+        self._client = client
+        self._http_username = http_username
+        self._http_password = http_password
+        self._api_version = api_version
+        self._per_page = per_page
+        self._pagination = pagination
+        self._order_by = order_by
+        self._keep_base_url = keep_base_url
         self._url = f"{self._base_url}/api/graphql"
         self._user_agent = user_agent
         self._ssl_verify = ssl_verify
@@ -1296,11 +1317,22 @@ class _BaseGraphQL:
         self._client_opts = self._get_client_opts()
         self._fetch_schema_from_transport = fetch_schema_from_transport
 
+        #: Create a session object for requests
+        _backend: type[_backends.DefaultBackend] = kwargs.pop(
+            "backend", _backends.DefaultBackend
+        )
+        self._backend = _backend(**kwargs)
+        self.session = self._backend.client
+
+        self.per_page = per_page
+        self.pagination = pagination
+        self.order_by = order_by
+
     def _get_client_opts(self) -> dict[str, Any]:
         headers = {"User-Agent": self._user_agent}
 
-        if self._token:
-            headers["Authorization"] = f"Bearer {self._token}"
+        if self._private_token:
+            headers["Authorization"] = f"Bearer {self._private_token}"
 
         return {
             "headers": headers,
@@ -1314,19 +1346,72 @@ class GraphQL(_BaseGraphQL):
         self,
         url: str | None = None,
         *,
-        token: str | None = None,
+        private_token: str | None = None,
+        oauth_token: str | None = None,
+        job_token: str | None = None,
         ssl_verify: bool | str = True,
         client: httpx.Client | None = None,
+        http_username: str | None = None,
+        http_password: str | None = None,
         timeout: float | None = None,
+        api_version: str = "4",
+        per_page: int | None = None,
+        pagination: str | None = None,
+        order_by: str | None = None,
         user_agent: str = gitlab.const.USER_AGENT,
         fetch_schema_from_transport: bool = False,
-        max_retries: int = 10,
+        max_retries: int = 100,
         obey_rate_limit: bool = True,
         retry_transient_errors: bool = False,
+        keep_base_url: bool = False,
+        **kwargs: Any,
     ) -> None:
+        self._api_version = str(api_version)
+        self._server_version: str | None = None
+        self._server_revision: str | None = None
+        self._base_url = utils.get_base_url(url)
+        self._url = f"{self._base_url}/api/v{api_version}"
+        #: Timeout to use for requests to gitlab server
+        self.timeout = timeout
+        self.retry_transient_errors = retry_transient_errors
+        self.keep_base_url = keep_base_url
+        #: Headers that will be used in request to GitLab
+        self.headers = {"User-Agent": user_agent}
+
+        #: Whether SSL certificates should be validated
+        self.ssl_verify = ssl_verify
+
+        self.private_token = private_token
+        self.http_username = http_username
+        self.http_password = http_password
+        self.oauth_token = oauth_token
+        self.job_token = job_token
+        self._set_auth_info()
+
+        #: Create a session object for requests
+        _backend: type[_backends.DefaultBackend] = kwargs.pop(
+            "backend", _backends.DefaultBackend
+        )
+        self._backend = _backend(**kwargs)
+        self.session = self._backend.client
+
+        self.per_page = per_page
+        self.pagination = pagination
+        self.order_by = order_by
+
+        # We only support v4 API at this time
+        if self._api_version not in ("4",):
+            raise ModuleNotFoundError(f"gitlab.v{self._api_version}.objects")
+        # NOTE: We must delay import of gitlab.v4.objects until now or
+        # otherwise it will cause circular import errors
+        from gitlab.v4 import objects
+
+        self._objects = objects
+        self.user: objects.CurrentUser | None = None
+
         super().__init__(
             url=url,
-            token=token,
+            private_token=private_token,
             ssl_verify=ssl_verify,
             timeout=timeout,
             user_agent=user_agent,
@@ -1350,7 +1435,13 @@ class GraphQL(_BaseGraphQL):
     def __exit__(self, *args: Any) -> None:
         self._http_client.close()
 
-    def execute(self, request: str | graphql.Source, *args: Any, **kwargs: Any) -> Any:
+    def execute(
+        self,
+        request: str | graphql.Source,
+        variable_values: dict[str, Any],
+        *args: Any,
+        **kwargs: Any,
+    ) -> Any:
         parsed_document = self._gql(request)
         retry = utils.Retry(
             max_retries=self._max_retries,
@@ -1360,7 +1451,9 @@ class GraphQL(_BaseGraphQL):
 
         while True:
             try:
-                result = self._client.execute(parsed_document, *args, **kwargs)
+                result = self._client.execute(
+                    parsed_document, variable_values=variable_values, *args, **kwargs
+                )
             except gql.transport.exceptions.TransportServerError as e:
                 if retry.handle_retry_on_status(
                     status_code=e.code, headers=self._transport.response_headers
@@ -1378,25 +1471,191 @@ class GraphQL(_BaseGraphQL):
 
             return result
 
+    @classmethod
+    def from_config(
+        cls,
+        gitlab_id: str | None = None,
+        config_files: list[str] | None = None,
+        **kwargs: Any,
+    ) -> Gitlab:
+        """Create a Gitlab connection from configuration files.
+
+        Args:
+            gitlab_id: ID of the configuration section.
+            config_files list[str]: List of paths to configuration files.
+
+        kwargs:
+            session requests.Session: Custom requests Session
+
+        Returns:
+            A Gitlab connection.
+
+        Raises:
+            gitlab.config.GitlabDataError: If the configuration is not correct.
+        """
+        config = gitlab.config.GitlabConfigParser(
+            gitlab_id=gitlab_id, config_files=config_files
+        )
+        return cls(
+            config.url,
+            private_token=config.private_token,
+            oauth_token=config.oauth_token,
+            job_token=config.job_token,
+            ssl_verify=config.ssl_verify,
+            timeout=config.timeout,
+            http_username=config.http_username,
+            http_password=config.http_password,
+            api_version=config.api_version,
+            per_page=config.per_page,
+            pagination=config.pagination,
+            order_by=config.order_by,
+            user_agent=config.user_agent,
+            retry_transient_errors=config.retry_transient_errors,
+            keep_base_url=config.keep_base_url,
+            **kwargs,
+        )
+
+    def _set_auth_info(self) -> None:
+        tokens = [
+            token
+            for token in [self.private_token, self.oauth_token, self.job_token]
+            if token
+        ]
+        if len(tokens) > 1:
+            raise ValueError(
+                "Only one of private_token, oauth_token or job_token should "
+                "be defined"
+            )
+        if (self.http_username and not self.http_password) or (
+            not self.http_username and self.http_password
+        ):
+            raise ValueError("Both http_username and http_password should be defined")
+        if tokens and self.http_username:
+            raise ValueError(
+                "Only one of token authentications or http "
+                "authentication should be defined"
+            )
+
+        self._auth: requests.auth.AuthBase | None = None
+        if self.private_token:
+            self._auth = _backends.PrivateTokenAuth(self.private_token)
+
+        if self.oauth_token:
+            self._auth = _backends.OAuthTokenAuth(self.oauth_token)
+
+        if self.job_token:
+            self._auth = _backends.JobTokenAuth(self.job_token)
+
+        if self.http_username and self.http_password:
+            self._auth = requests.auth.HTTPBasicAuth(
+                self.http_username, self.http_password
+            )
+
+    def enable_debug(self, mask_credentials: bool = True) -> None:
+        import logging
+        from http import client
+
+        client.HTTPConnection.debuglevel = 1
+        logging.basicConfig()
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG)
+
+        httpclient_log = logging.getLogger("http.client")
+        httpclient_log.propagate = True
+        httpclient_log.setLevel(logging.DEBUG)
+
+        requests_log = logging.getLogger("requests.packages.urllib3")
+        requests_log.setLevel(logging.DEBUG)
+        requests_log.propagate = True
+
+        # shadow http.client prints to log()
+        # https://stackoverflow.com/a/16337639
+        def print_as_log(*args: Any) -> None:
+            httpclient_log.log(logging.DEBUG, " ".join(args))
+
+        setattr(client, "print", print_as_log)
+
+        if not mask_credentials:
+            return
+
+        token = self.private_token or self.oauth_token or self.job_token
+        handler = logging.StreamHandler()
+        handler.setFormatter(utils.MaskingFormatter(masked=token))
+        logger.handlers.clear()
+        logger.addHandler(handler)
+
 
 class AsyncGraphQL(_BaseGraphQL):
     def __init__(
         self,
         url: str | None = None,
         *,
-        token: str | None = None,
+        private_token: str | None = None,
+        oauth_token: str | None = None,
+        job_token: str | None = None,
         ssl_verify: bool | str = True,
         client: httpx.AsyncClient | None = None,
+        http_username: str | None = None,
+        http_password: str | None = None,
         timeout: float | None = None,
+        api_version: str = "4",
+        per_page: int | None = None,
+        pagination: str | None = None,
+        order_by: str | None = None,
         user_agent: str = gitlab.const.USER_AGENT,
         fetch_schema_from_transport: bool = False,
-        max_retries: int = 10,
+        max_retries: int = 100,
         obey_rate_limit: bool = True,
         retry_transient_errors: bool = False,
+        keep_base_url: bool = False,
+        **kwargs: Any,
     ) -> None:
+        self._api_version = str(api_version)
+        self._server_version: str | None = None
+        self._server_revision: str | None = None
+        self._base_url = utils.get_base_url(url)
+        self._url = f"{self._base_url}/api/v{api_version}"
+        #: Timeout to use for requests to gitlab server
+        self.timeout = timeout
+        self.retry_transient_errors = retry_transient_errors
+        self.keep_base_url = keep_base_url
+        #: Headers that will be used in request to GitLab
+        self.headers = {"User-Agent": user_agent}
+
+        #: Whether SSL certificates should be validated
+        self.ssl_verify = ssl_verify
+
+        self.private_token = private_token
+        self.http_username = http_username
+        self.http_password = http_password
+        self.oauth_token = oauth_token
+        self.job_token = job_token
+        self._set_auth_info()
+
+        #: Create a session object for requests
+        _backend: type[_backends.DefaultBackend] = kwargs.pop(
+            "backend", _backends.DefaultBackend
+        )
+        self._backend = _backend(**kwargs)
+        self.session = self._backend.client
+
+        self.per_page = per_page
+        self.pagination = pagination
+        self.order_by = order_by
+
+        # We only support v4 API at this time
+        if self._api_version not in ("4",):
+            raise ModuleNotFoundError(f"gitlab.v{self._api_version}.objects")
+        # NOTE: We must delay import of gitlab.v4.objects until now or
+        # otherwise it will cause circular import errors
+        from gitlab.v4 import objects
+
+        self._objects = objects
+        self.user: objects.CurrentUser | None = None
+
         super().__init__(
             url=url,
-            token=token,
+            private_token=private_token,
             ssl_verify=ssl_verify,
             timeout=timeout,
             user_agent=user_agent,
@@ -1421,7 +1680,11 @@ class AsyncGraphQL(_BaseGraphQL):
         await self._http_client.aclose()
 
     async def execute(
-        self, request: str | graphql.Source, *args: Any, **kwargs: Any
+        self,
+        request: str | graphql.Source,
+        variable_values: dict[str, Any],
+        *args: Any,
+        **kwargs: Any,
     ) -> Any:
         parsed_document = self._gql(request)
         retry = utils.Retry(
@@ -1433,7 +1696,7 @@ class AsyncGraphQL(_BaseGraphQL):
         while True:
             try:
                 result = await self._client.execute_async(
-                    parsed_document, *args, **kwargs
+                    parsed_document, variable_values=variable_values, *args, **kwargs
                 )
             except gql.transport.exceptions.TransportServerError as e:
                 if retry.handle_retry_on_status(
@@ -1451,3 +1714,116 @@ class AsyncGraphQL(_BaseGraphQL):
                 )
 
             return result
+
+    @classmethod
+    def from_config(
+        cls,
+        gitlab_id: str | None = None,
+        config_files: list[str] | None = None,
+        **kwargs: Any,
+    ) -> Gitlab:
+        """Create a Gitlab connection from configuration files.
+
+        Args:
+            gitlab_id: ID of the configuration section.
+            config_files list[str]: List of paths to configuration files.
+
+        kwargs:
+            session requests.Session: Custom requests Session
+
+        Returns:
+            A Gitlab connection.
+
+        Raises:
+            gitlab.config.GitlabDataError: If the configuration is not correct.
+        """
+        config = gitlab.config.GitlabConfigParser(
+            gitlab_id=gitlab_id, config_files=config_files
+        )
+        return cls(
+            config.url,
+            private_token=config.private_token,
+            oauth_token=config.oauth_token,
+            job_token=config.job_token,
+            ssl_verify=config.ssl_verify,
+            timeout=config.timeout,
+            http_username=config.http_username,
+            http_password=config.http_password,
+            api_version=config.api_version,
+            per_page=config.per_page,
+            pagination=config.pagination,
+            order_by=config.order_by,
+            user_agent=config.user_agent,
+            retry_transient_errors=config.retry_transient_errors,
+            keep_base_url=config.keep_base_url,
+            **kwargs,
+        )
+
+    def _set_auth_info(self) -> None:
+        tokens = [
+            token
+            for token in [self.private_token, self.oauth_token, self.job_token]
+            if token
+        ]
+        if len(tokens) > 1:
+            raise ValueError(
+                "Only one of private_token, oauth_token or job_token should "
+                "be defined"
+            )
+        if (self.http_username and not self.http_password) or (
+            not self.http_username and self.http_password
+        ):
+            raise ValueError("Both http_username and http_password should be defined")
+        if tokens and self.http_username:
+            raise ValueError(
+                "Only one of token authentications or http "
+                "authentication should be defined"
+            )
+
+        self._auth: requests.auth.AuthBase | None = None
+        if self.private_token:
+            self._auth = _backends.PrivateTokenAuth(self.private_token)
+
+        if self.oauth_token:
+            self._auth = _backends.OAuthTokenAuth(self.oauth_token)
+
+        if self.job_token:
+            self._auth = _backends.JobTokenAuth(self.job_token)
+
+        if self.http_username and self.http_password:
+            self._auth = requests.auth.HTTPBasicAuth(
+                self.http_username, self.http_password
+            )
+
+    def enable_debug(self, mask_credentials: bool = True) -> None:
+        import logging
+        from http import client
+
+        client.HTTPConnection.debuglevel = 1
+        logging.basicConfig()
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG)
+
+        httpclient_log = logging.getLogger("http.client")
+        httpclient_log.propagate = True
+        httpclient_log.setLevel(logging.DEBUG)
+
+        requests_log = logging.getLogger("requests.packages.urllib3")
+        requests_log.setLevel(logging.DEBUG)
+        requests_log.propagate = True
+
+        # shadow http.client prints to log()
+        # https://stackoverflow.com/a/16337639
+        def print_as_log(*args: Any) -> None:
+            httpclient_log.log(logging.DEBUG, " ".join(args))
+
+        setattr(client, "print", print_as_log)
+
+        if not mask_credentials:
+            return
+
+        token = self.private_token or self.oauth_token or self.job_token
+        handler = logging.StreamHandler()
+        handler.setFormatter(utils.MaskingFormatter(masked=token))
+        logger.handlers.clear()
+        logger.addHandler(handler)
