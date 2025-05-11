@@ -23,7 +23,7 @@ class GroupBoardListManager(CRUDMixin[GroupBoardList]):
     _obj_cls = GroupBoardList
     _from_parent_attrs = {"group_id": "group_id", "board_id": "id"}
     _create_attrs = RequiredOptional(
-        exclusive=("label_id", "assignee_id", "milestone_id")
+        exclusive=("label_id", "assignee_id", "milestone_id", "iteration_id")
     )
     _update_attrs = RequiredOptional(required=("position",))
 
@@ -48,7 +48,7 @@ class ProjectBoardListManager(CRUDMixin[ProjectBoardList]):
     _obj_cls = ProjectBoardList
     _from_parent_attrs = {"project_id": "project_id", "board_id": "id"}
     _create_attrs = RequiredOptional(
-        exclusive=("label_id", "assignee_id", "milestone_id")
+        exclusive=("label_id", "assignee_id", "milestone_id", "iteration_id")
     )
     _update_attrs = RequiredOptional(required=("position",))
 
