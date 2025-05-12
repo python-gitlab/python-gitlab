@@ -84,7 +84,7 @@ Get a project's CI/CD job token inbound groups allowlist::
 
 Add a project to the project's inbound groups allowlist::
 
-    allowed_project = scope.groups_allowlist.create({"target_project_id": 42})
+    allowed_project = scope.groups_allowlist.create({"target_group_id": 42})
 
 Remove a project from the project's inbound agroups llowlist::
 
