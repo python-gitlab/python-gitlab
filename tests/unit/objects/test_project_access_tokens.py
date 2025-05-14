@@ -91,6 +91,19 @@ def resp_rotate_project_access_token(token_content):
         yield rsps
 
 
+@pytest.fixture
+def resp_self_rotate_project_access_token(token_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/access_tokens/self/rotate",
+            json=token_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
 def test_list_project_access_tokens(gl, resp_list_project_access_token):
     access_tokens = gl.projects.get(1, lazy=True).access_tokens.list()
     assert len(access_tokens) == 1
@@ -127,3 +140,17 @@ def test_rotate_project_access_token(project, resp_rotate_project_access_token):
     access_token.rotate()
     assert isinstance(access_token, ProjectAccessToken)
     assert access_token.token == "s3cr3t"
+
+
+def test_self_rotate_project_access_token(
+    project, resp_self_rotate_project_access_token
+):
+    access_token = project.access_tokens.get(1, lazy=True)
+    access_token.rotate(self_rotate=True)
+    assert isinstance(access_token, ProjectAccessToken)
+    assert access_token.token == "s3cr3t"
+
+    # Verify that the url contains "self"
+    rotation_calls = resp_self_rotate_project_access_token.calls
+    assert len(rotation_calls) == 1
+    assert "self/rotate" in rotation_calls[0].request.url

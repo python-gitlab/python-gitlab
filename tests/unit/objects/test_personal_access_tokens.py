@@ -102,6 +102,19 @@ def resp_rotate_personal_access_token(token_content):
         yield rsps
 
 
+@pytest.fixture
+def resp_self_rotate_personal_access_token(token_content):
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/personal_access_tokens/self/rotate",
+            json=token_content,
+            content_type="application/json",
+            status=200,
+        )
+        yield rsps
+
+
 def test_create_personal_access_token(gl, resp_create_user_personal_access_token):
     user = gl.users.get(1, lazy=True)
     access_token = user.personal_access_tokens.create(
@@ -148,8 +161,20 @@ def test_revoke_personal_access_token_by_id(gl, resp_delete_personal_access_toke
     gl.personal_access_tokens.delete(token_id)
 
 
-def test_rotate_project_access_token(gl, resp_rotate_personal_access_token):
+def test_rotate_personal_access_token(gl, resp_rotate_personal_access_token):
     access_token = gl.personal_access_tokens.get(1, lazy=True)
     access_token.rotate()
     assert isinstance(access_token, PersonalAccessToken)
     assert access_token.token == "s3cr3t"
+
+
+def test_self_rotate_personal_access_token(gl, resp_self_rotate_personal_access_token):
+    access_token = gl.personal_access_tokens.get(1, lazy=True)
+    access_token.rotate(self_rotate=True)
+    assert isinstance(access_token, PersonalAccessToken)
+    assert access_token.token == "s3cr3t"
+
+    # Verify that the url contains "self"
+    rotation_calls = resp_self_rotate_personal_access_token.calls
+    assert len(rotation_calls) == 1
+    assert "self/rotate" in rotation_calls[0].request.url

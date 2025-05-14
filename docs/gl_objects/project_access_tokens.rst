@@ -46,3 +46,9 @@ Rotate a project access token and retrieve its new value::
     # or directly using a token ID
     new_token = project.access_tokens.rotate(42)
     print(new_token.token)
+
+Self-Rotate the project access token you are using to authenticate the request and retrieve its new value::
+
+    token = project.access_tokens.get(42, lazy=True)
+    token.rotate(self_rotate=True)
+    print(new_token.token)

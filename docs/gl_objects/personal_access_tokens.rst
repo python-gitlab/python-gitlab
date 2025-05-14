@@ -61,6 +61,12 @@ Rotate a personal access token and retrieve its new value::
     new_token_dict = gl.personal_access_tokens.rotate(42)
     print(new_token_dict)
 
+Self-Rotate the personal access token you are using to authenticate the request and retrieve its new value::
+
+    token = gl.personal_access_tokens.get(42, lazy=True)
+    token.rotate(self_rotate=True)
+    print(token.token)
+
 Create a personal access token for a user (admin only)::
 
     user = gl.users.get(25, lazy=True)

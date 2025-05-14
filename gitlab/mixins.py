@@ -660,10 +660,11 @@ class ObjectRotateMixin(_RestObjectBase):
         optional=("expires_at",),
     )
     @exc.on_http_error(exc.GitlabRotateError)
-    def rotate(self, **kwargs: Any) -> dict[str, Any]:
+    def rotate(self, *, self_rotate: bool = False, **kwargs: Any) -> dict[str, Any]:
         """Rotate the current access token object.
 
         Args:
+            self_rotate: If True, the current access token object will be rotated.
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -673,7 +674,8 @@ class ObjectRotateMixin(_RestObjectBase):
         if TYPE_CHECKING:
             assert isinstance(self.manager, RotateMixin)
             assert self.encoded_id is not None
-        server_data = self.manager.rotate(self.encoded_id, **kwargs)
+        token_id = "self" if self_rotate else self.encoded_id
+        server_data = self.manager.rotate(token_id, **kwargs)
         self._update_attrs(server_data)
         return server_data
 
