@@ -25,6 +25,7 @@ class ApplicationSettingsManager(
             "id",
             "default_projects_limit",
             "signup_enabled",
+            "silent_mode_enabled",
             "password_authentication_enabled_for_web",
             "gravatar_enabled",
             "sign_in_text",
