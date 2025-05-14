@@ -46,3 +46,9 @@ Rotate a group access token and retrieve its new value::
     # or directly using a token ID
     new_token = group.access_tokens.rotate(42)
     print(new_token.token)
+
+Self-Rotate the group access token you are using to authenticate the request and retrieve its new value::
+
+    token = group.access_tokens.get(42, lazy=True)
+    token.rotate(self_rotate=True)
+    print(token.token)
