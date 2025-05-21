@@ -429,6 +429,7 @@ class Project(
         ref: str,
         token: str,
         variables: dict[str, Any] | None = None,
+        inputs: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> ProjectPipeline:
         """Trigger a CI build.
@@ -439,6 +440,7 @@ class Project(
             ref: Commit to build; can be a branch name or a tag
             token: The trigger token
             variables: Variables passed to the build script
+            inputs: Inputs passed to the build script
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -446,8 +448,14 @@ class Project(
             GitlabCreateError: If the server failed to perform the request
         """
         variables = variables or {}
+        inputs = inputs or {}
         path = f"/projects/{self.encoded_id}/trigger/pipeline"
-        post_data = {"ref": ref, "token": token, "variables": variables}
+        post_data = {
+            "ref": ref,
+            "token": token,
+            "variables": variables,
+            "inputs": inputs,
+        }
         attrs = self.manager.gitlab.http_post(path, post_data=post_data, **kwargs)
         if TYPE_CHECKING:
             assert isinstance(attrs, dict)
