@@ -32,7 +32,7 @@ jobs:
       if: steps.release.outputs.released == 'true'
 
     - name: Publish package distributions to GitHub Releases
-      uses: python-semantic-release/upload-to-gh-release@0a92b5d7ebfc15a84f9801ebd1bf706343d43711 # v9.8.9
+      uses: python-semantic-release/publish-action@v10.0.2
       if: steps.release.outputs.released == 'true'
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
