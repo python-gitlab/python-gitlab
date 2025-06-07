@@ -64,7 +64,7 @@ from .merge_request_approvals import (  # noqa: F401
     ProjectApprovalRuleManager,
 )
 from .merge_requests import ProjectMergeRequestManager  # noqa: F401
-from .merge_trains import ProjectMergeTrainManager  # noqa: F401
+from .merge_trains import ProjectMergeTrainManager
 from .milestones import ProjectMilestoneManager  # noqa: F401
 from .notes import ProjectNoteManager  # noqa: F401
 from .notification_settings import ProjectNotificationSettingsManager  # noqa: F401
