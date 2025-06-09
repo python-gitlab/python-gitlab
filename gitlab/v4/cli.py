@@ -394,7 +394,7 @@ def extend_parser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     subparsers.required = True
 
     # populate argparse for all Gitlab Object
-    classes = set()
+    classes: set[type[gitlab.base.RESTObject]] = set()
     for cls in gitlab.v4.objects.__dict__.values():
         if not isinstance(cls, type):
             continue
