@@ -161,7 +161,7 @@ def test_extend_parser():
             "Raise error instead of exiting on invalid arguments, to make testing easier"
             raise ValueError(message)
 
-    class Fake:
+    class Fake(gitlab.base.RESTObject):
         _id_attr = None
 
     class FakeManager(CreateMixin, UpdateMixin, gitlab.base.RESTManager):
