@@ -107,7 +107,7 @@ def gitlab_resource_to_cls(
     return class_type
 
 
-def cls_to_gitlab_resource(cls: RESTObject) -> str:
+def cls_to_gitlab_resource(cls: type[RESTObject]) -> str:
     dasherized_uppercase = camel_upperlower_regex.sub(r"\1-\2", cls.__name__)
     dasherized_lowercase = camel_lowerupper_regex.sub(r"\1-\2", dasherized_uppercase)
     return dasherized_lowercase.lower()
