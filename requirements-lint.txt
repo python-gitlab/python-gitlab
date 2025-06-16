@@ -10,5 +10,5 @@ pytest==8.4.0
 responses==0.25.7
 respx==0.22.0
 types-PyYAML==6.0.12.20250516
-types-requests==2.32.0.20250602
+types-requests==2.32.4.20250611
 types-setuptools==80.9.0.20250529
