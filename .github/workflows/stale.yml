@@ -20,16 +20,56 @@ jobs:
           stale-issue-label: "stale"
           stale-pr-label: "stale"
 
-          any-of-labels: 'need info,Waiting for response,stale'
+          # If an issue/PR has an assignee it won't be marked as stale
+          exempt-all-assignees: true
           stale-issue-message: >
-            This issue was marked stale because it has been open 60 days with no
-            activity. Please remove the stale label or comment on this issue. Otherwise,
-            it will be closed in 15 days.
+            This issue was marked stale because it has been open 60 days with
+            no activity. Please remove the stale label or comment on this
+            issue. Otherwise, it will be closed in 15 days.
+
+            As an open-source project, we rely on community contributions to
+            address many of the reported issues. Without a proposed fix or
+            active work towards a solution it is our policy to close inactive
+            issues. This is documented in CONTRIBUTING.rst
+
+            **How to keep this issue open:**
+            * If you are still experiencing this issue and are willing to
+            investigate a fix, please comment and let us know.
+            * If you (or someone else) can propose a pull request with a
+            solution, that would be fantastic.
+            * Any significant update or active discussion indicating progress
+            will also prevent closure.
+
+            We value your input. If you can help provide a fix, we'd be happy
+            to keep this issue open and support your efforts.
+
           days-before-issue-stale: 60
           days-before-issue-close: 15
           close-issue-message: >
-            This issue was closed because it has been marked stale for 15 days with no
-            activity. If this issue is still valid, please re-open.
+            This issue was closed because it has been marked stale for 15 days
+            with no activity.
+
+            This open-source project relies on community contributions, and
+            while we value all feedback, we have a limited capacity to address
+            every issue without a clear path forward.
+
+            Currently, this issue hasn't received a proposed fix, and there
+            hasn't been recent active discussion indicating someone is planning
+            to work on it. To maintain a manageable backlog and focus our
+            efforts, we will be closing this issue for now.
+
+            **This doesn't mean the issue isn't valid or important.** If you or
+            anyone else in the community is willing to investigate and propose
+            a solution (e.g., by submitting a pull request), please do.
+
+            We believe that those who feel a bug is important enough to fix
+            should ideally be part of the solution. Your contributions are
+            highly welcome.
+
+            Thank you for your understanding and potential future
+            contributions.
+
+            This is documented in CONTRIBUTING.rst
 
           stale-pr-message: >
             This Pull Request (PR) was marked stale because it has been open 90 days
@@ -40,4 +80,3 @@ jobs:
           close-pr-message: >
             This PR was closed because it has been marked stale for 15 days with no
             activity. If this PR is still valid, please re-open.
-
