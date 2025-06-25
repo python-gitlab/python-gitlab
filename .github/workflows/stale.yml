@@ -22,7 +22,7 @@ jobs:
 
           # If an issue/PR has an assignee it won't be marked as stale
           exempt-all-assignees: true
-          stale-issue-message: >
+          stale-issue-message: |
             This issue was marked stale because it has been open 60 days with
             no activity. Please remove the stale label or comment on this
             issue. Otherwise, it will be closed in 15 days.
@@ -43,9 +43,12 @@ jobs:
             We value your input. If you can help provide a fix, we'd be happy
             to keep this issue open and support your efforts.
 
+            This is documented in CONTRIBUTING.rst
+            https://github.com/python-gitlab/python-gitlab/blob/main/CONTRIBUTING.rst
+
           days-before-issue-stale: 60
           days-before-issue-close: 15
-          close-issue-message: >
+          close-issue-message: |
             This issue was closed because it has been marked stale for 15 days
             with no activity.
 
@@ -70,6 +73,7 @@ jobs:
             contributions.
 
             This is documented in CONTRIBUTING.rst
+            https://github.com/python-gitlab/python-gitlab/blob/main/CONTRIBUTING.rst
 
           stale-pr-message: >
             This Pull Request (PR) was marked stale because it has been open 90 days
