@@ -2,11 +2,11 @@
 argcomplete==2.0.0
 black==25.1.0
 commitizen==4.8.3
-flake8==7.2.0
+flake8==7.3.0
 isort==6.0.1
-mypy==1.16.0
+mypy==1.16.1
 pylint==3.3.7
-pytest==8.4.0
+pytest==8.4.1
 responses==0.25.7
 respx==0.22.0
 types-PyYAML==6.0.12.20250516
