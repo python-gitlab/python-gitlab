@@ -36,3 +36,7 @@ Update an existing remote mirror's attributes::
 Delete an existing remote mirror::
 
   mirror.delete()
+
+Force push mirror update::
+
+  mirror.sync()
