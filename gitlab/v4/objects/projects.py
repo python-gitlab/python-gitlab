@@ -1233,7 +1233,20 @@ class ProjectForkManager(CreateMixin[ProjectFork], ListMixin[ProjectFork]):
 
 
 class ProjectRemoteMirror(ObjectDeleteMixin, SaveMixin, RESTObject):
-    pass
+    @cli.register_custom_action(cls_names="ProjectRemoteMirror")
+    @exc.on_http_error(exc.GitlabCreateError)
+    def sync(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
+        """Force push mirror update.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCreateError: If the server cannot perform the request
+        """
+        path = f"{self.manager.path}/{self.encoded_id}/sync"
+        return self.manager.gitlab.http_post(path, **kwargs)
 
 
 class ProjectRemoteMirrorManager(
