@@ -54,6 +54,12 @@ def resp_remote_mirrors():
             url="http://localhost/api/v4/projects/1/remote_mirrors/1",
             status=204,
         )
+
+        rsps.add(
+            method=responses.POST,
+            url="http://localhost/api/v4/projects/1/remote_mirrors/1/sync",
+            status=204,
+        )
         yield rsps
 
 
@@ -81,3 +87,9 @@ def test_update_project_remote_mirror(project, resp_remote_mirrors):
 def test_delete_project_remote_mirror(project, resp_remote_mirrors):
     mirror = project.remote_mirrors.create({"url": "https://example.com"})
     mirror.delete()
+
+
+def test_sync_project_remote_mirror(project, resp_remote_mirrors):
+    mirror = project.remote_mirrors.create({"url": "https://example.com"})
+    response = mirror.sync()
+    assert response.status_code == 204
