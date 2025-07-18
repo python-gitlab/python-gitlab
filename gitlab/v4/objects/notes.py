@@ -164,10 +164,7 @@ class ProjectMergeRequestDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject
 
 
 class ProjectMergeRequestDiscussionNoteManager(
-    GetMixin[ProjectMergeRequestDiscussionNote],
-    CreateMixin[ProjectMergeRequestDiscussionNote],
-    UpdateMixin[ProjectMergeRequestDiscussionNote],
-    DeleteMixin[ProjectMergeRequestDiscussionNote],
+    CRUDMixin[ProjectMergeRequestDiscussionNote]
 ):
     _path = (
         "/projects/{project_id}/merge_requests/{mr_iid}/"
