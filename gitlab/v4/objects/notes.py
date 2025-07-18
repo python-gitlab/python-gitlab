@@ -128,12 +128,7 @@ class ProjectIssueDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectIssueDiscussionNoteManager(
-    GetMixin[ProjectIssueDiscussionNote],
-    CreateMixin[ProjectIssueDiscussionNote],
-    UpdateMixin[ProjectIssueDiscussionNote],
-    DeleteMixin[ProjectIssueDiscussionNote],
-):
+class ProjectIssueDiscussionNoteManager(CRUDMixin[ProjectIssueDiscussionNote]):
     _path = (
         "/projects/{project_id}/issues/{issue_iid}/discussions/{discussion_id}/notes"
     )
