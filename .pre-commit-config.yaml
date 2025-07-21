@@ -32,7 +32,7 @@ repos:
           - requests-toolbelt==1.0.0
         files: 'gitlab/'
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.16.1
+    rev: v1.17.0
     hooks:
       - id: mypy
         args: []
@@ -51,6 +51,6 @@ repos:
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
   - repo: https://github.com/maxbrunet/pre-commit-renovate
-    rev: 41.23.5
+    rev: 41.42.1
     hooks:
       - id: renovate-config-validator
