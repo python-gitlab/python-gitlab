@@ -220,6 +220,9 @@ class GroupPackageManager(ListMixin[GroupPackage]):
         "sort",
         "package_type",
         "package_name",
+        "package_version",
+        "include_versionless",
+        "status",
     )
 
 
@@ -234,7 +237,15 @@ class ProjectPackageManager(
     _path = "/projects/{project_id}/packages"
     _obj_cls = ProjectPackage
     _from_parent_attrs = {"project_id": "id"}
-    _list_filters = ("order_by", "sort", "package_type", "package_name")
+    _list_filters = (
+        "order_by",
+        "sort",
+        "package_type",
+        "package_name",
+        "package_version",
+        "include_versionless",
+        "status",
+    )
 
 
 class ProjectPackageFile(ObjectDeleteMixin, RESTObject):
