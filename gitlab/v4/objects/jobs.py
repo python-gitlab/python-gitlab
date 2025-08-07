@@ -346,5 +346,5 @@ class ProjectJobManager(RetrieveMixin[ProjectJob]):
     _path = "/projects/{project_id}/jobs"
     _obj_cls = ProjectJob
     _from_parent_attrs = {"project_id": "id"}
-    _list_filters = ("scope",)
+    _list_filters = ("scope", "order_by", "sort")
     _types = {"scope": ArrayAttribute}
