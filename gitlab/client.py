@@ -574,6 +574,14 @@ class Gitlab:
         """
         if path.startswith("http://") or path.startswith("https://"):
             return path
+
+        # Fix: Remove /api/v4 prefix if it matches the instance's API version
+        # to avoid double /api/v4 segments in the URL
+        if path.startswith(f"/api/v{self._api_version}/"):
+            # Remove the /api/v4 prefix to avoid duplication
+            path = path[len(f"/api/v{self._api_version}/") :]
+            return f"{self._base_url}/api/v{self._api_version}/{path}"
+
         return f"{self._url}{path}"
 
     def _check_url(self, url: str | None, *, path: str = "api") -> str | None:
