@@ -410,6 +410,7 @@ class UserManager(CRUDMixin[User]):
         "custom_attributes",
         "status",
         "two_factor",
+        "admins",
     )
     _create_attrs = RequiredOptional(
         optional=(
