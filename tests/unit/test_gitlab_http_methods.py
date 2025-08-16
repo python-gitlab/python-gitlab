@@ -19,6 +19,28 @@ def test_build_url(gl):
     assert r == "http://localhost/api/v4/projects"
 
 
+def test_build_url_with_api_v4_prefix_bug():
+    """Test that reproduces the double /api/v4 bug in URL construction."""
+    # Create GitLab instance with a URL that would trigger the bug
+    import gitlab
+
+    gl = gitlab.Gitlab(
+        "https://api.example.com", private_token="fake_token", api_version="4"
+    )
+
+    # Test the problematic case: path starting with /api/v4/
+    problematic_path = "/api/v4/projects/123/security_settings"
+    built_url = gl._build_url(problematic_path)
+
+    # This should NOT have double /api/v4
+    expected_url = "https://api.example.com/api/v4/projects/123/security_settings"
+
+    # The bug: this produces double /api/v4
+    assert (
+        built_url == expected_url
+    ), f"URL construction bug: got {built_url}, expected {expected_url}"
+
+
 @responses.activate
 def test_http_request(gl):
     url = "http://localhost/api/v4/projects"
