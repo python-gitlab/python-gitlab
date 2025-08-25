@@ -18,7 +18,6 @@ from gitlab import _backends, utils
 try:
     import gql
     import gql.transport.exceptions
-    import graphql
     import httpx
 
     from ._backends.graphql import GitlabAsyncTransport, GitlabTransport
@@ -1350,7 +1349,7 @@ class GraphQL(_BaseGraphQL):
     def __exit__(self, *args: Any) -> None:
         self._http_client.close()
 
-    def execute(self, request: str | graphql.Source, *args: Any, **kwargs: Any) -> Any:
+    def execute(self, request: str, *args: Any, **kwargs: Any) -> Any:
         parsed_document = self._gql(request)
         retry = utils.Retry(
             max_retries=self._max_retries,
@@ -1420,9 +1419,7 @@ class AsyncGraphQL(_BaseGraphQL):
     async def __aexit__(self, *args: Any) -> None:
         await self._http_client.aclose()
 
-    async def execute(
-        self, request: str | graphql.Source, *args: Any, **kwargs: Any
-    ) -> Any:
+    async def execute(self, request: str, *args: Any, **kwargs: Any) -> Any:
         parsed_document = self._gql(request)
         retry = utils.Retry(
             max_retries=self._max_retries,
