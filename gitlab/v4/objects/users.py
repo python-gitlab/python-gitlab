@@ -417,7 +417,10 @@ class UserManager(CRUDMixin[User]):
         "extern_uid",
         "provider",
         "two_factor",
+        "without_projects",
         "admins",
+        "auditors",
+        "skip_ldap",
         "custom_attributes",
         "status",
     )
