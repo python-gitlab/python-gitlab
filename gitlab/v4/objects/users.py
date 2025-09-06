@@ -400,17 +400,29 @@ class UserManager(CRUDMixin[User]):
     _obj_cls = User
 
     _list_filters = (
-        "active",
-        "blocked",
         "username",
+        "public_email",
+        "search",
+        "active",
+        "external",
+        "blocked",
+        "humans",
+        "created_after",
+        "created_before",
+        "exclude_active",
+        "exclude_external",
+        "exclude_humans",
+        "exclude_internal",
+        "without_project_bots",
         "extern_uid",
         "provider",
-        "external",
-        "search",
+        "two_factor",
+        "without_projects",
+        "admins",
+        "auditors",
+        "skip_ldap",
         "custom_attributes",
         "status",
-        "two_factor",
-        "admins",
     )
     _create_attrs = RequiredOptional(
         optional=(
