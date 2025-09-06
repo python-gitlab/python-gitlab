@@ -405,6 +405,7 @@ class UserManager(CRUDMixin[User]):
         "active",
         "external",
         "blocked",
+        "humans",
         "extern_uid",
         "provider",
         "two_factor",
