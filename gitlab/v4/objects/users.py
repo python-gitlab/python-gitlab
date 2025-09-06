@@ -401,6 +401,7 @@ class UserManager(CRUDMixin[User]):
 
     _list_filters = (
         "username",
+        "public_email",
         "search",
         "active",
         "external",
