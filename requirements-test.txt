@@ -9,5 +9,5 @@ pytest==8.4.2
 PyYaml==6.0.2
 responses==0.25.8
 respx==0.22.0
-trio==0.30.0
+trio==0.31.0
 wheel==0.45.1
