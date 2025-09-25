@@ -502,7 +502,9 @@ class UserEmailManager(
     _path = "/users/{user_id}/emails"
     _obj_cls = UserEmail
     _from_parent_attrs = {"user_id": "id"}
-    _create_attrs = RequiredOptional(required=("email",))
+    _create_attrs = RequiredOptional(
+        required=("email",), optional=("skip_confirmation",)
+    )
 
 
 class UserActivities(RESTObject):
