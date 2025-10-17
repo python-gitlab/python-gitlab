@@ -2,6 +2,32 @@
 
 All versions below are listed in reverse chronological order.
 
+## v6.5.0 (2025-10-17)
+
+### Bug Fixes
+
+- **semantic-release**: Enable CHANGELOG.md generation
+  ([`fb9693b`](https://github.com/python-gitlab/python-gitlab/commit/fb9693bf1e6798149196e57fed87bf2588ad3b47))
+
+### Continuous Integration
+
+- **stale**: Fix permission for stale action and allow manual run
+  ([`9357a37`](https://github.com/python-gitlab/python-gitlab/commit/9357a374702dcc8049a6d8af636f48c736d3f160))
+
+### Documentation
+
+- **pull_mirror**: Fix incorrect start() method usage example
+  ([`2acac19`](https://github.com/python-gitlab/python-gitlab/commit/2acac19356c8624def90c7e54237b256bceece18))
+
+### Features
+
+- **api**: Add content_ref and dry_run_ref parameters to ProjectCiLintManager
+  ([`e8d2538`](https://github.com/python-gitlab/python-gitlab/commit/e8d2538cdf85a7c57babbc00074efbdab97548cd))
+
+- **users**: Implement 'skip_confirmation' in users 'emails' creation
+  ([`2981730`](https://github.com/python-gitlab/python-gitlab/commit/298173017be387f26aa0828cae1e9a48e3cce328))
+
+
 ## v6.4.0 (2025-09-28)
 
 ### Features
