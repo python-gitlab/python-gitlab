@@ -1,5 +1,167 @@
 # CHANGELOG
 
+All versions below are listed in reverse chronological order.
+
+## v6.4.0 (2025-09-28)
+
+### Features
+
+- **users**: Implement missing arguments in users 'list'
+  ([`99923d4`](https://github.com/python-gitlab/python-gitlab/commit/99923d40dcb4f32f02bcbc5e8ef5ec4b77e3cb02))
+
+- **users**: Sort 'user list' arguments against documentation
+  ([`99923d4`](https://github.com/python-gitlab/python-gitlab/commit/99923d40dcb4f32f02bcbc5e8ef5ec4b77e3cb02))
+
+
+## v6.3.0 (2025-08-28)
+
+### Features
+
+- Add sync method to force remote mirror updates
+  ([`f3c6678`](https://github.com/python-gitlab/python-gitlab/commit/f3c6678482b7ca35b1dd1e3bc49fc0c56cd03639))
+
+- **api**: Add missing ProjectJob list filters
+  ([`5fe0e71`](https://github.com/python-gitlab/python-gitlab/commit/5fe0e715448b00a666f76cdce6db321686f6a271))
+
+- **api**: Add missing ProjectPackageManager list filters
+  ([`b1696be`](https://github.com/python-gitlab/python-gitlab/commit/b1696be5fb223028755e303069e23e42a11cab42))
+
+- **users**: Implement support for 'admins' in administrators 'list'
+  ([`aaed51c`](https://github.com/python-gitlab/python-gitlab/commit/aaed51cdec65c8acabe8b9a39fd18c7e1e48519c))
+
+
+## v6.2.0 (2025-07-28)
+
+### Build System
+
+- **release**: Use correct python-semantic-release/publish-action
+  ([`2f20634`](https://github.com/python-gitlab/python-gitlab/commit/2f20634b9700bc802177278ffdd7bdf83ef1605a))
+
+### Continuous Integration
+
+- **stale**: Improve formatting of stale message
+  ([`0ef20d1`](https://github.com/python-gitlab/python-gitlab/commit/0ef20d1b0ee6cd82c4e34003aca4c0c72935f4d9))
+
+- **stale**: Increase `operations-per-run` to 500
+  ([`326e1a4`](https://github.com/python-gitlab/python-gitlab/commit/326e1a46881467f41dc3de5f060ac654924fbe40))
+
+### Features
+
+- **api**: Add ListMixin to ProjectIssueDiscussionNoteManager
+  ([`f908f0e`](https://github.com/python-gitlab/python-gitlab/commit/f908f0e82840a5df374e8fbfb1298608d23f02bd))
+
+- **api**: Add ListMixin to ProjectMergeRequestDiscussionNoteManager
+  ([`865339a`](https://github.com/python-gitlab/python-gitlab/commit/865339ac037fb125280180b05a2c4e44067dc5e9))
+
+
+## v6.1.0 (2025-06-28)
+
+### Chores
+
+- Update to mypy 1.16.0 and resolve issues found
+  ([`f734c58`](https://github.com/python-gitlab/python-gitlab/commit/f734c586e3fe5a0e866bcf60030107ca142fa763))
+
+### Documentation
+
+- Update CONTRIBUTING.rst with policy on issue management
+  ([`45dda50`](https://github.com/python-gitlab/python-gitlab/commit/45dda50ff4c0e01307480befa86498600563f818))
+
+### Features
+
+- **api**: Add listing user contributed projects
+  ([`98c1307`](https://github.com/python-gitlab/python-gitlab/commit/98c13074127ae46d85545498746d55c8b75aef48))
+
+- **api**: Add support for project tag list filters
+  ([`378a836`](https://github.com/python-gitlab/python-gitlab/commit/378a836bf5744ca6c9409dd60899e5d2f90b55be))
+
+- **api**: Pipeline inputs support
+  ([#3194](https://github.com/python-gitlab/python-gitlab/pull/3194),
+  [`306c4b1`](https://github.com/python-gitlab/python-gitlab/commit/306c4b1931e2b03d7cbcef5773668e876d5644b1))
+
+- **const**: Add PLANNER_ACCESS constant
+  ([`ba6f174`](https://github.com/python-gitlab/python-gitlab/commit/ba6f174896f908ba711e1e3e8ebf4692c86bd3d4))
+
+- **groups**: Add protectedbranches to group class
+  ([#3164](https://github.com/python-gitlab/python-gitlab/pull/3164),
+  [`bfd31a8`](https://github.com/python-gitlab/python-gitlab/commit/bfd31a867547dffb2c2d54127e184fefa058cb30))
+
+
+## v6.0.0 (2025-06-04)
+
+### Chores
+
+- Add reformat code commit to .git-blame-ignore-revs
+  ([`a6ac939`](https://github.com/python-gitlab/python-gitlab/commit/a6ac9392b0e543df32adf9058f9808d199149982))
+
+- Reformat code with skip_magic_trailing_comma = true
+  ([`2100aa4`](https://github.com/python-gitlab/python-gitlab/commit/2100aa458ba4f1c084bc97b00f7ba1693541d68a))
+
+- Remove trivial get methods in preparation for generic Get mixin
+  ([`edd01a5`](https://github.com/python-gitlab/python-gitlab/commit/edd01a57aa8c45e6514e618263003beaa0fb68e8))
+
+- Upgrade to sphinx 8.2.1 and resolve issues
+  ([`d0b5ae3`](https://github.com/python-gitlab/python-gitlab/commit/d0b5ae36bd0bc06f1f338adbd93d76a83a0fa459))
+
+- **ci**: Replace docs artifact with readthedocs previews
+  ([`193c5de`](https://github.com/python-gitlab/python-gitlab/commit/193c5de9b443193da3f87d664a777f056d920146))
+
+### Documentation
+
+- Use get_all keyword arg instead of all in docstrings
+  ([`f62dda7`](https://github.com/python-gitlab/python-gitlab/commit/f62dda7fa44e3bc46f03bd6402eba3f641f365eb))
+
+- Use list(get_all=True) in documentation examples
+  ([`f36614f`](https://github.com/python-gitlab/python-gitlab/commit/f36614f1ce5a873ed1bbb8618ced39fa80f13ee6))
+
+- **api-usage**: Fix GitLab API links to the publicly accessible URLs
+  ([`f55fa15`](https://github.com/python-gitlab/python-gitlab/commit/f55fa152cdccc0dd4815f17df9ff80628115667d))
+
+- **api-usage-graphql**: Fix the example graphql query string
+  ([`8dbdd7e`](https://github.com/python-gitlab/python-gitlab/commit/8dbdd7e75447d01a457ac55f18066ebd355e4dbf))
+
+- **job_token_scope**: Fix typo/inconsistency
+  ([`203bd92`](https://github.com/python-gitlab/python-gitlab/commit/203bd92e524845a3e1287439d78c167133347a69))
+
+### Features
+
+- Adds member role methods
+  ([`055557e`](https://github.com/python-gitlab/python-gitlab/commit/055557efe9de9d4ab7b8237f7de7e033a6b02cd9))
+
+- **api**: Add iteration_id as boards create attribute
+  ([#3191](https://github.com/python-gitlab/python-gitlab/pull/3191),
+  [`938b0d9`](https://github.com/python-gitlab/python-gitlab/commit/938b0d9c188bcffc6759184325bf292131307556))
+
+- **api**: Add support for adding instance deploy keys
+  ([`22be96c`](https://github.com/python-gitlab/python-gitlab/commit/22be96cbe698f5d8b18be388edf9b01d6008d1dd))
+
+- **api**: Add support for avatar removal
+  ([`5edd2e6`](https://github.com/python-gitlab/python-gitlab/commit/5edd2e66cd5d4cd48fcf5f996d4ad4c3d495b3fa))
+
+- **api**: Add support for token self-rotation
+  ([`da40e09`](https://github.com/python-gitlab/python-gitlab/commit/da40e09498277467878b810aa44f86b48813d832))
+
+- **api**: ListMixin.list typing overload
+  ([`6eee494`](https://github.com/python-gitlab/python-gitlab/commit/6eee494749ccc5387a0d3af7ce331cfb1e95308b))
+
+- **api**: Make RESTManager generic on RESTObject class
+  ([`91c4f18`](https://github.com/python-gitlab/python-gitlab/commit/91c4f18dc49a7eed101ce5f004f396436c6ef7eb))
+
+- **api**: Make RESTObjectList typing generic
+  ([`befba35`](https://github.com/python-gitlab/python-gitlab/commit/befba35a16c5543c5f270996a9bf7a4277482915))
+
+- **settings**: Implement support for 'silent_mode_enabled'
+  ([`a9163a9`](https://github.com/python-gitlab/python-gitlab/commit/a9163a9775b3f9a7b729048fab83bb0bca7228b5))
+
+### Refactoring
+
+- Use more python3.9 syntax
+  ([`4e90c11`](https://github.com/python-gitlab/python-gitlab/commit/4e90c113f1af768b8b049f4a64c5978a1bfbf323))
+
+### Testing
+
+- **functional**: Switch to new runner registration API
+  ([`cbc613d`](https://github.com/python-gitlab/python-gitlab/commit/cbc613d0f2ccd8ec021bf789b337104489a3e5f1))
+
 
 ## v5.6.0 (2025-01-28)
 
