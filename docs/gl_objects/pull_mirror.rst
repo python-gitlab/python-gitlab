@@ -33,6 +33,6 @@ Update an existing remote mirror's attributes::
     mirror.only_protected_branches = True
     mirror.save()
 
-Start an sync of the pull mirror::
+Start a sync of the pull mirror::
 
-  mirror.start()
+  project.pull_mirror.start()
