@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, TYPE_CHECKING
 
+import gitlab.utils
 from gitlab import exceptions as exc
 from gitlab import types
 from gitlab.base import RESTObject
@@ -24,10 +25,87 @@ __all__ = ["GroupEpic", "GroupEpicManager", "GroupEpicIssue", "GroupEpicIssueMan
 
 class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
     _id_attr = "iid"
+    manager: GroupEpicManager
 
     issues: GroupEpicIssueManager
     resourcelabelevents: GroupEpicResourceLabelEventManager
     notes: GroupEpicNoteManager
+
+    def _epic_path(self) -> str:
+        """Return the API path for this epic using its real group."""
+        group_id = getattr(self, "group_id", None)
+        if group_id is None:
+            raise AttributeError(
+                "Cannot compute epic path: attribute 'group_id' is missing."
+            )
+        encoded_group_id = gitlab.utils.EncodedId(group_id)
+        return f"/groups/{encoded_group_id}/epics/{self.encoded_id}"
+
+    @exc.on_http_error(exc.GitlabUpdateError)
+    def save(self, **kwargs: Any) -> dict[str, Any] | None:
+        """Save the changes made to the object to the server.
+
+        The object is updated to match what the server returns.
+
+        This method uses the epic's group_id attribute to construct the correct
+        API path. This is important when the epic was retrieved from a parent
+        group but actually belongs to a sub-group.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Returns:
+            The new object data (*not* a RESTObject)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUpdateError: If the server cannot perform the request
+        """
+        updated_data = self._get_updated_data()
+        # Nothing to update. Server fails if sent an empty dict.
+        if not updated_data:
+            return None
+
+        # Use the epic's actual group_id to construct the correct path.
+        path = self._epic_path()
+
+        # Validate and transform the data
+        excludes = [self._id_attr] if self._id_attr else []
+        self.manager._update_attrs.validate_attrs(data=updated_data, excludes=excludes)
+
+        updated_data, files = gitlab.utils._transform_types(
+            data=updated_data, custom_types=self.manager._types, transform_data=False
+        )
+
+        # Make the request
+        http_method = self.manager._get_update_method()
+        server_data = http_method(path, post_data=updated_data, files=files, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(server_data, dict)
+        self._update_attrs(server_data)
+        return server_data
+
+    @exc.on_http_error(exc.GitlabDeleteError)
+    def delete(self, **kwargs: Any) -> None:
+        """Delete the object from the server.
+
+        This method uses the epic's group_id attribute to construct the correct
+        API path. This is important when the epic was retrieved from a parent
+        group but actually belongs to a sub-group.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the server cannot perform the request
+        """
+        if TYPE_CHECKING:
+            assert self.encoded_id is not None
+
+        # Use the epic's actual group_id to construct the correct path.
+        path = self._epic_path()
+        self.manager.gitlab.http_delete(path, **kwargs)
 
 
 class GroupEpicManager(CRUDMixin[GroupEpic]):
