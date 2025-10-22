@@ -314,6 +314,8 @@ class UpdateMixin(base.RESTManager[base.TObjCls]):
             path = self.path
         else:
             path = f"{self.path}/{utils.EncodedId(id)}"
+        if "_pg_custom_path" in kwargs:
+            path = kwargs.pop("_pg_custom_path")
 
         excludes = []
         if self._obj_cls is not None and self._obj_cls._id_attr is not None:
