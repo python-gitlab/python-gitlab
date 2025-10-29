@@ -53,7 +53,7 @@ Features
 Installation
 ------------
 
-As of 5.0.0, ``python-gitlab`` is compatible with Python 3.9+.
+As of 7.0.0, ``python-gitlab`` is compatible with Python 3.10+.
 
 Use ``pip`` to install the latest stable version of ``python-gitlab``:
 
