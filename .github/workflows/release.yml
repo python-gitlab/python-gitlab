@@ -35,4 +35,4 @@ jobs:
       uses: python-semantic-release/publish-action@v10.4.1
       if: steps.release.outputs.released == 'true'
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.RELEASE_GITHUB_TOKEN }}
