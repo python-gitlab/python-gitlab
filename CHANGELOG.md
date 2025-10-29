@@ -2,6 +2,18 @@
 
 All versions below are listed in reverse chronological order.
 
+## v7.0.0 (2025-10-29)
+
+### Features
+
+- Drop Python 3.9 support and add Python 3.14
+  ([`22941ac`](https://github.com/python-gitlab/python-gitlab/commit/22941acc3f331d5b683599c014ec962ece5d4b76))
+
+### Breaking Changes
+
+- As of python-gitlab 7.0.0, Python 3.9 is no longer supported. Python 3.10 or higher is required.
+
+
 ## v6.5.0 (2025-10-17)
 
 ### Bug Fixes
