@@ -5,7 +5,7 @@ coverage==7.11.3
 pytest-console-scripts==1.4.1
 pytest-cov==7.0.0
 pytest-github-actions-annotate-failures==0.3.0
-pytest==8.4.2
+pytest==9.0.1
 PyYaml==6.0.3
 responses==0.25.8
 respx==0.22.0
