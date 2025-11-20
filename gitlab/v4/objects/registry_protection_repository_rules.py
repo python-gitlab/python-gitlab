@@ -1,5 +1,12 @@
 from gitlab.base import RESTObject
-from gitlab.mixins import CreateMixin, ListMixin, SaveMixin, UpdateMethod, UpdateMixin
+from gitlab.mixins import (
+    CreateMixin,
+    DeleteMixin,
+    ListMixin,
+    SaveMixin,
+    UpdateMethod,
+    UpdateMixin,
+)
 from gitlab.types import RequiredOptional
 
 __all__ = [
@@ -16,6 +23,7 @@ class ProjectRegistryRepositoryProtectionRuleManager(
     ListMixin[ProjectRegistryRepositoryProtectionRule],
     CreateMixin[ProjectRegistryRepositoryProtectionRule],
     UpdateMixin[ProjectRegistryRepositoryProtectionRule],
+    DeleteMixin[ProjectRegistryRepositoryProtectionRule],
 ):
     _path = "/projects/{project_id}/registry/protection/repository/rules"
     _obj_cls = ProjectRegistryRepositoryProtectionRule
