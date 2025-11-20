@@ -26,3 +26,8 @@ def test_project_protected_registry(project: Project):
     protected_registry.minimum_access_level_for_push = "owner"
     protected_registry.save()
     assert protected_registry.minimum_access_level_for_push == "owner"
+
+    protected_registry.delete()
+
+    rules = project.registry_protection_repository_rules.list()
+    assert rules == []
