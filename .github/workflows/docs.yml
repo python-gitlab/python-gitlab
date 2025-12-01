@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.0
       - name: Set up Python
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.14"
       - name: Install dependencies
@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.0
       - name: Set up Python
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.14"
       - name: Install dependencies
