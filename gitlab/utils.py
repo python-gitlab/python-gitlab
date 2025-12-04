@@ -133,7 +133,7 @@ class Retry:
             if "Retry-After" in headers:
                 wait_time = int(headers["Retry-After"])
             elif "RateLimit-Reset" in headers:
-                wait_time = int(headers["RateLimit-Reset"]) - time.time()
+                wait_time = max(0, int(headers["RateLimit-Reset"]) - time.time())
             self.cur_retries += 1
             time.sleep(wait_time)
             return True
