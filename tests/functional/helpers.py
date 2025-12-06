@@ -9,6 +9,7 @@ import pytest
 import gitlab
 import gitlab.base
 import gitlab.exceptions
+import gitlab.v4.objects
 
 SLEEP_INTERVAL = 0.5
 TIMEOUT = 60  # seconds before timeout will occur
@@ -37,6 +38,11 @@ def safe_delete(object: gitlab.base.RESTObject) -> None:
             object = manager.get(object.get_id())  # type: ignore[attr-defined]
         except gitlab.exceptions.GitlabGetError:
             return
+        # If object is already marked for deletion we have succeeded
+        if getattr(object, "marked_for_deletion_on", None) is not None:
+            # 'Group' and 'Project' objects have a 'marked_for_deletion_on' attribute
+            logging.info(f"{object!r} is marked for deletion.")
+            return
 
         if index:
             logging.info(f"Attempt {index + 1} to delete {object!r}.")
@@ -52,22 +58,16 @@ def safe_delete(object: gitlab.base.RESTObject) -> None:
                     # we shouldn't cause test to fail if it still exists
                     return
             elif isinstance(object, gitlab.v4.objects.Project):
-                # Immediately delete rather than waiting for at least 1day
-                # https://docs.gitlab.com/ee/api/projects.html#delete-project
-                object.delete(permanently_remove=True)
-                pass
+                # Starting in GitLab 18, projects can't be immediately deleted.
+                # So this will mark it for deletion.
+                object.delete()
             else:
                 # We only attempt to delete parent groups to prevent dangling sub-groups
-                # However parent groups can only be deleted on a delay in Gl 16
+                # However parent groups can only be deleted on a delay in GitLab 16
                 # https://docs.gitlab.com/ee/api/groups.html#remove-group
                 object.delete()
         except gitlab.exceptions.GitlabDeleteError:
-            logging.info(f"{object!r} already deleted or scheduled for deletion.")
-            if isinstance(object, gitlab.v4.objects.Group):
-                # Parent groups can never be immediately deleted in GL 16,
-                # so don't cause test to fail if it still exists
-                return
-            pass
+            logging.exception(f"Error attempting to delete: {object.pformat()}")
 
         time.sleep(SLEEP_INTERVAL)
     pytest.fail(f"{object!r} was not deleted")
