@@ -58,6 +58,17 @@ def resp_update_protected_registry():
         yield rsps
 
 
+@pytest.fixture
+def resp_delete_protected_registry():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            method=responses.DELETE,
+            url="http://localhost/api/v4/projects/1/registry/protection/repository/rules/1",
+            status=204,
+        )
+        yield rsps
+
+
 def test_list_project_protected_registries(project, resp_list_protected_registries):
     protected_registry = project.registry_protection_repository_rules.list()[0]
     assert isinstance(protected_registry, ProjectRegistryRepositoryProtectionRule)
@@ -80,3 +91,7 @@ def test_update_project_protected_registry(project, resp_update_protected_regist
         1, {"repository_path_pattern": "abc*"}
     )
     assert updated["repository_path_pattern"] == "abc*"
+
+
+def test_delete_project_protected_registry(project, resp_delete_protected_registry):
+    project.registry_protection_repository_rules.delete(1)
