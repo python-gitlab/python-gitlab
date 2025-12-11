@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, TYPE_CHECKING
 
+import gitlab.utils
 from gitlab import exceptions as exc
 from gitlab import types
 from gitlab.base import RESTObject
@@ -28,6 +29,63 @@ class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
     issues: GroupEpicIssueManager
     resourcelabelevents: GroupEpicResourceLabelEventManager
     notes: GroupEpicNoteManager
+
+    def _epic_path(self) -> str:
+        """Return the API path for this epic using its real group."""
+        if not hasattr(self, "group_id") or self.group_id is None:
+            raise AttributeError(
+                "Cannot compute epic path: attribute 'group_id' is missing."
+            )
+        encoded_group_id = gitlab.utils.EncodedId(self.group_id)
+        return f"/groups/{encoded_group_id}/epics/{self.encoded_id}"
+
+    @exc.on_http_error(exc.GitlabUpdateError)
+    def save(self, **kwargs: Any) -> dict[str, Any] | None:
+        """Save the changes made to the object to the server.
+
+        The object is updated to match what the server returns.
+
+        This method uses the epic's group_id attribute to construct the correct
+        API path. This is important when the epic was retrieved from a parent
+        group but actually belongs to a sub-group.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Returns:
+            The new object data (*not* a RESTObject)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabUpdateError: If the server cannot perform the request
+        """
+        # Use the epic's actual group_id to construct the correct path.
+        path = self._epic_path()
+
+        # Call SaveMixin.save() method
+        return super().save(_pg_custom_path=path, **kwargs)
+
+    @exc.on_http_error(exc.GitlabDeleteError)
+    def delete(self, **kwargs: Any) -> None:
+        """Delete the object from the server.
+
+        This method uses the epic's group_id attribute to construct the correct
+        API path. This is important when the epic was retrieved from a parent
+        group but actually belongs to a sub-group.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabDeleteError: If the server cannot perform the request
+        """
+        if TYPE_CHECKING:
+            assert self.encoded_id is not None
+
+        # Use the epic's actual group_id to construct the correct path.
+        path = self._epic_path()
+        self.manager.gitlab.http_delete(path, **kwargs)
 
 
 class GroupEpicManager(CRUDMixin[GroupEpic]):
