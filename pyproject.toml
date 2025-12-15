@@ -23,6 +23,7 @@ dependencies = [
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
+    "Framework :: Pytest",
     "Intended Audience :: System Administrators",
     "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
     "Natural Language :: English",
@@ -43,10 +44,14 @@ dynamic = ["version"]
 [project.optional-dependencies]
 autocompletion = ["argcomplete>=1.10.0,<3"]
 yaml = ["PyYaml>=6.0.1"]
-graphql = ["gql[httpx]>=3.5.0,<5"]
+graphql = ["gql[httpx]>=3.5.0,<4"]
+testing = ["attrs", "pytest", "pytest-docker"]
 
 [project.scripts]
 gitlab = "gitlab.cli:main"
+
+[project.entry-points.pytest11]
+gitlab = "gitlab.testing.plugin"
 
 [project.urls]
 Homepage = "https://github.com/python-gitlab/python-gitlab"
@@ -78,6 +83,7 @@ skip_magic_trailing_comma = true
 module = [
     "docs.*",
     "docs.ext.*",
+    "gitlab.testing.*",
     "tests.unit.*",
 ]
 ignore_errors = true
@@ -107,6 +113,9 @@ exclude_commit_patterns = [
 ]
 mode = "update"
 insertion_flag = "All versions below are listed in reverse chronological order."
+
+[tool.pylint.main]
+ignore-paths = ["gitlab/testing"]
 
 [tool.pylint.messages_control]
 max-line-length = 88
