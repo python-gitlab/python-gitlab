@@ -40,8 +40,10 @@ def gitlab_version(gl) -> GitlabVersion:
 
 
 @pytest.fixture(scope="session")
-def fixture_dir(test_dir: pathlib.Path) -> pathlib.Path:
-    return test_dir / "functional" / "fixtures"
+def docker_assets_dir() -> pathlib.Path:
+    import gitlab.testing
+
+    return pathlib.Path(gitlab.testing.__file__).parent / "docker"
 
 
 @pytest.fixture(scope="session")
@@ -128,7 +130,7 @@ def reset_gitlab(gl: gitlab.Gitlab) -> None:
 
 def set_token(container: str, fixture_dir: pathlib.Path) -> str:
     logging.info("Creating API token.")
-    set_token_rb = fixture_dir / "set_token.rb"
+    set_token_rb = docker_assets_dir / "set_token.rb"
 
     with open(set_token_rb, encoding="utf-8") as f:
         set_token_command = f.read().strip()
@@ -213,7 +215,7 @@ def gitlab_token(
     gitlab_container_name: str,
     gitlab_url: str,
     docker_services,
-    fixture_dir: pathlib.Path,
+    docker_assets_dir: pathlib.Path,
 ) -> str:
     start_time = time.perf_counter()
     logging.info("Waiting for GitLab container to become ready.")
@@ -232,7 +234,7 @@ def gitlab_token(
         f"GitLab container is now ready after {minutes} minute(s), {seconds} seconds"
     )
 
-    return set_token(gitlab_container_name, fixture_dir=fixture_dir)
+    return set_token(gitlab_container_name, docker_assets_dir=docker_assets_dir)
 
 
 @pytest.fixture(scope="session")
