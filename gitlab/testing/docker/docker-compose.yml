@@ -6,7 +6,7 @@ networks:
 
 services:
   gitlab:
-    image: '${GITLAB_IMAGE}:${GITLAB_TAG}'
+    image: '${GITLAB_IMAGE:-gitlab/gitlab-ee}:${GITLAB_TAG:-latest}'
     container_name: 'gitlab-test'
     hostname: 'gitlab.test'
     privileged: true # Just in case https://gitlab.com/gitlab-org/omnibus-gitlab/-/issues/1350
@@ -36,7 +36,7 @@ services:
       - -c
       - ruby /create_license.rb && /assets/wrapper
     volumes:
-      - ${PWD}/tests/functional/fixtures/create_license.rb:/create_license.rb
+      - ./create_license.rb:/create_license.rb
     ports:
       - '8080:80'
       - '2222:22'
@@ -44,7 +44,7 @@ services:
       - gitlab-network
 
   gitlab-runner:
-    image: '${GITLAB_RUNNER_IMAGE}:${GITLAB_RUNNER_TAG}'
+    image: '${GITLAB_RUNNER_IMAGE:-gitlab/gitlab-runner}:${GITLAB_RUNNER_TAG:-latest}'
     container_name: 'gitlab-runner-test'
     depends_on:
       - gitlab

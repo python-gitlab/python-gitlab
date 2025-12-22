@@ -153,18 +153,18 @@ To run these tests:
 
 When developing tests it can be a little frustrating to wait for GitLab to spin
 up every run. To prevent the containers from being cleaned up afterwards, pass
-``--keep-containers`` to pytest, i.e.:
+``--keep-containers-running`` to pytest, i.e.:
 
 .. code-block:: bash
 
-   tox -e api_func_v4 -- --keep-containers
+   tox -e api_func_v4 -- --keep-containers-running
 
 If you then wish to test against a clean slate, you may perform a manual clean
 up of the containers by running:
 
 .. code-block:: bash
 
-   docker-compose -f tests/functional/fixtures/docker-compose.yml -p pytest-python-gitlab down -v
+   docker-compose -f gitlab/testing/docker/docker-compose.yml -p pytest-python-gitlab down -v
 
 By default, the tests run against the latest version of the ``gitlab/gitlab-ce``
 image. You can override both the image and tag by providing either the
