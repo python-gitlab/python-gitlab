@@ -1,3 +1,6 @@
+import pytest
+
+
 # https://docs.gitlab.com/ee/ci/jobs/ci_job_token.html#allow-any-project-to-access-your-project
 def test_enable_limit_access_to_this_project(gl, project):
     scope = project.job_token_scope.get()
@@ -10,6 +13,7 @@ def test_enable_limit_access_to_this_project(gl, project):
     assert scope.inbound_enabled
 
 
+@pytest.mark.xfail(reason="https://gitlab.com/gitlab-org/gitlab/-/issues/582271")
 def test_disable_limit_access_to_this_project(gl, project):
     scope = project.job_token_scope.get()
 
