@@ -38,6 +38,14 @@ def test_keys_deploy(gl, project, DEPLOY_KEY):
     key_by_fingerprint = gl.keys.get(fingerprint=fingerprint)
     assert key_by_fingerprint.title == key.title
     assert key_by_fingerprint.key == key.key
-    assert len(key_by_fingerprint.deploy_keys_projects) == 1
+
+    if not any(
+        key_project.get("project_id") == project.id
+        for key_project in key_by_fingerprint.deploy_keys_projects
+    ):
+        raise AssertionError(
+            f"Project {project} not found in 'deploy_keys_projects' "
+            f"{key_by_fingerprint.pformat()}"
+        )
 
     key.delete()

@@ -34,7 +34,7 @@ services:
     entrypoint:
       - /bin/sh
       - -c
-      - ruby /create_license.rb && /assets/wrapper
+      - ruby /create_license.rb && /assets/init-container
     volumes:
       - ${PWD}/tests/functional/fixtures/create_license.rb:/create_license.rb
     ports:
