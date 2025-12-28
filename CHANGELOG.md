@@ -2,6 +2,29 @@
 
 All versions below are listed in reverse chronological order.
 
+## v7.1.0 (2025-12-28)
+
+### Bug Fixes
+
+- **utils**: Prevent negative sleep time in rate limit retry
+  ([`4221195`](https://github.com/python-gitlab/python-gitlab/commit/422119576287de30e1b70411c7ab0bbe39231af7))
+
+### Continuous Integration
+
+- **release**: Use the correct token for publish to GitHub
+  ([`614a74c`](https://github.com/python-gitlab/python-gitlab/commit/614a74c00f027f70b8e48a6b2a2ddcd3f823bffa))
+
+### Features
+
+- **registry-protection**: Add support for registry protection rule deletion
+  ([`9dd62c3`](https://github.com/python-gitlab/python-gitlab/commit/9dd62c3f5bcf3e082c2733bd4edc068f993c22ec))
+
+### Testing
+
+- **functional**: Update to GitLab 18.6 and resolve issues found
+  ([`c7c139b`](https://github.com/python-gitlab/python-gitlab/commit/c7c139b9e7823ec1800a819233aee469355ee8d1))
+
+
 ## v7.0.0 (2025-10-29)
 
 ### Features
