@@ -3,6 +3,8 @@ GitLab API:
 https://docs.gitlab.com/ee/api/merge_trains.html
 """
 
+from copy import deepcopy
+
 import pytest
 import responses
 
@@ -46,7 +48,7 @@ mr_content = {
     "duration": 70,
 }
 
-merge_train_update = mr_content.copy()
+merge_train_update = deepcopy(mr_content)
 merge_train_update["iid"] = 4
 merge_train_update["pipeline"]["sha"] = "ef33a3zxc3"
 

@@ -9,8 +9,8 @@ Reference
 
   + :class:`gitlab.v4.objects.ProjectMergeTrain`
   + :class:`gitlab.v4.objects.ProjectMergeTrainManager`
-  + :class:`gilab.v4.objects.ProjectMergeTrainMergeRequest`
-  + :class:`gilab.v4.objects.ProjectMergeTrainMergeRequestManager`
+  + :class:`gitlab.v4.objects.ProjectMergeTrainMergeRequest`
+  + :class:`gitlab.v4.objects.ProjectMergeTrainMergeRequestManager`
   + :attr:`gitlab.v4.objects.Project.merge_trains`
 
 * GitLab API: https://docs.gitlab.com/api/merge_trains

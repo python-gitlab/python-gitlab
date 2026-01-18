@@ -25,7 +25,7 @@ class ProjectMergeTrainMergeRequestManager(
     _update_method: UpdateMethod = UpdateMethod.POST
 
     _update_attrs = RequiredOptional(
-        optional=("sha", "squash", "when_pipeline_succeeds")
+        optional=("sha", "squash", "when_pipeline_succeeds", "auto_merge")
     )
 
 
