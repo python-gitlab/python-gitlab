@@ -268,28 +268,22 @@ def test_ssl_verify_as_str(m_open, monkeypatch):
 def test_data_from_helper(m_open, monkeypatch, tmp_path):
     helper = tmp_path / "helper.sh"
     helper.write_text(
-        dedent(
-            """\
+        dedent("""\
             #!/bin/sh
             echo "secret"
-            """
-        ),
+            """),
         encoding="utf-8",
     )
     helper.chmod(0o755)
 
-    fd = io.StringIO(
-        dedent(
-            f"""\
+    fd = io.StringIO(dedent(f"""\
             [global]
             default = helper
 
             [helper]
             url = https://helper.url
             oauth_token = helper: {helper}
-            """
-        )
-    )
+            """))
 
     fd.close = mock.Mock(return_value=None)
     m_open.return_value = fd
@@ -306,18 +300,14 @@ def test_data_from_helper(m_open, monkeypatch, tmp_path):
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Not supported on Windows")
 def test_from_helper_subprocess_error_raises_error(m_open, monkeypatch):
     # using false here to force a non-zero return code
-    fd = io.StringIO(
-        dedent(
-            """\
+    fd = io.StringIO(dedent("""\
             [global]
             default = helper
 
             [helper]
             url = https://helper.url
             oauth_token = helper: false
-            """
-        )
-    )
+            """))
 
     fd.close = mock.Mock(return_value=None)
     m_open.return_value = fd
