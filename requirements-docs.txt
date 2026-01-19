@@ -2,6 +2,6 @@
 furo==2025.12.19
 jinja2==3.1.6
 myst-parser==5.0.0
-sphinx==8.2.3
+sphinx==9.1.0
 sphinxcontrib-autoprogram==0.1.9
 sphinx-autobuild==2025.8.25
