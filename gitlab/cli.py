@@ -334,7 +334,7 @@ def main() -> None:
     # This first parsing step is used to find the gitlab config to use, and
     # load the propermodule (v3 or v4) accordingly. At that point we don't have
     # any subparser setup
-    (options, _) = parser.parse_known_args(sys.argv)
+    options, _ = parser.parse_known_args(sys.argv)
     try:
         config = gitlab.config.GitlabConfigParser(options.gitlab, options.config_file)
     except gitlab.config.ConfigError as e:

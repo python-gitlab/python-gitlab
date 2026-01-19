@@ -7,14 +7,12 @@ from zipfile import is_zipfile
 
 import pytest
 
-content = textwrap.dedent(
-    """\
+content = textwrap.dedent("""\
     test-artifact:
       script: echo "test" > artifact.txt
       artifacts:
         untracked: true
-    """
-)
+    """)
 data = {
     "file_path": ".gitlab-ci.yml",
     "branch": "main",
