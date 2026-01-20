@@ -178,6 +178,8 @@ class Project(
     _repr_attr = "path_with_namespace"
     _upload_path = "/projects/{id}/uploads"
 
+    path_with_namespace: str
+
     access_tokens: ProjectAccessTokenManager
     accessrequests: ProjectAccessRequestManager
     additionalstatistics: ProjectAdditionalStatisticsManager
