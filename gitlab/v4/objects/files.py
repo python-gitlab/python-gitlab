@@ -29,6 +29,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
     file_path: str
     manager: ProjectFileManager
     content: str  # since the `decode()` method uses `self.content`
+    start_branch: str | None = None
 
     def decode(self) -> bytes:
         """Returns the decoded content of the file.
@@ -41,7 +42,11 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
     # NOTE(jlvillal): Signature doesn't match SaveMixin.save() so ignore
     # type error
     def save(  # type: ignore[override]
-        self, branch: str, commit_message: str, **kwargs: Any
+        self,
+        branch: str,
+        commit_message: str,
+        start_branch: str | None = None,
+        **kwargs: Any,
     ) -> None:
         """Save the changes made to the file to the server.
 
@@ -50,6 +55,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         Args:
             branch: Branch in which the file will be updated
             commit_message: Message to send with the commit
+            start_branch: Name of the branch to start the new branch from
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
@@ -58,6 +64,7 @@ class ProjectFile(SaveMixin, ObjectDeleteMixin, RESTObject):
         """
         self.branch = branch
         self.commit_message = commit_message
+        self.start_branch = start_branch
         self.file_path = utils.EncodedId(self.file_path)
         super().save(**kwargs)
 
