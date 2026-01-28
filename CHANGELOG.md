@@ -2,6 +2,34 @@
 
 All versions below are listed in reverse chronological order.
 
+## v8.0.0 (2026-01-28)
+
+### Bug Fixes
+
+- Actually define project repr_attr
+  ([`4187a69`](https://github.com/python-gitlab/python-gitlab/commit/4187a69420dd7b2e60c2d833ab246aec745d35cb))
+
+- File save start_branch as a body attribute
+  ([`1001d93`](https://github.com/python-gitlab/python-gitlab/commit/1001d934e8c36cc3b14408b46b41030bf705a294))
+
+### Chores
+
+- **black**: Run black v26 on code
+  ([`4a8d82b`](https://github.com/python-gitlab/python-gitlab/commit/4a8d82bec8f09fa142e8134589a0f40ef4f9c3be))
+
+- **precommit**: Update dependency black to v26
+  ([`ad43b76`](https://github.com/python-gitlab/python-gitlab/commit/ad43b763acdcd8d7db832972921fb071ea0a826f))
+
+### Features
+
+- **graphql**: Update to gql 4.0.0
+  ([`6f0da67`](https://github.com/python-gitlab/python-gitlab/commit/6f0da671b4586b23232ae89d57622254fa8a7945))
+
+### Breaking Changes
+
+- **graphql**: GraphQL.execute() no longer accepts graphql.Source
+
+
 ## v7.1.0 (2025-12-28)
 
 ### Bug Fixes
