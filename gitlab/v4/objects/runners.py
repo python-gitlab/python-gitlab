@@ -38,7 +38,7 @@ class RunnerJobManager(ListMixin[RunnerJob]):
     _path = "/runners/{runner_id}/jobs"
     _obj_cls = RunnerJob
     _from_parent_attrs = {"runner_id": "id"}
-    _list_filters = ("status",)
+    _list_filters = ("status", "sort")
 
 
 class Runner(SaveMixin, ObjectDeleteMixin, RESTObject):
