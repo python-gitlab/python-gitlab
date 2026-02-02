@@ -51,6 +51,6 @@ repos:
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
   - repo: https://github.com/maxbrunet/pre-commit-renovate
-    rev: 42.95.1
+    rev: 43.0.9
     hooks:
       - id: renovate-config-validator
