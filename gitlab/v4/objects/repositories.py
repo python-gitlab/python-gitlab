@@ -17,6 +17,8 @@ from gitlab import types, utils
 
 if TYPE_CHECKING:
     # When running mypy we use these as the base classes
+    import gitlab.base
+
     _RestObjectBase = gitlab.base.RESTObject
 else:
     _RestObjectBase = object
