@@ -409,6 +409,44 @@ Search projects by custom attribute::
     project.customattributes.set('type', 'internal')
     gl.projects.list(custom_attributes={'type': 'internal'}, get_all=True)
 
+Project feature flags
+=====================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectFeatureFlag`
+  + :class:`gitlab.v4.objects.ProjectFeatureFlagManager`
+  + :attr:`gitlab.v4.objects.Project.feature_flags`
+
+* GitLab API: https://docs.gitlab.com/api/feature_flags
+
+Examples
+--------
+
+See :doc:`project_feature_flags`.
+
+Project feature flag user lists
+===============================
+
+Reference
+---------
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.ProjectFeatureFlagUserList`
+  + :class:`gitlab.v4.objects.ProjectFeatureFlagUserListManager`
+  + :attr:`gitlab.v4.objects.Project.feature_flags_user_lists`
+
+* GitLab API: https://docs.gitlab.com/api/feature_flag_user_lists
+
+Examples
+--------
+
+See :doc:`project_feature_flag_user_lists`.
+
 Project files
 =============
 

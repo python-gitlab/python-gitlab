@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import dataclasses
+import json
 from typing import Any, TYPE_CHECKING
+
+from gitlab import exceptions
 
 
 @dataclasses.dataclass(frozen=True)
@@ -36,6 +39,13 @@ class RequiredOptional:
 
 
 class GitlabAttribute:
+    # Used in utils._transform_types() to decide if we should call get_for_api()
+    # on the attribute when transform_data is False (e.g. for POST/PUT/PATCH).
+    #
+    # This allows us to force transformation of data even when sending JSON bodies,
+    # which is useful for types like CommaSeparatedStringAttribute.
+    transform_in_body = False
+
     def __init__(self, value: Any = None) -> None:
         self._value = value
 
@@ -47,6 +57,16 @@ class GitlabAttribute:
 
     def get_for_api(self, *, key: str) -> tuple[str, Any]:
         return (key, self._value)
+
+
+class JsonAttribute(GitlabAttribute):
+    def set_from_cli(self, cli_value: str) -> None:
+        try:
+            self._value = json.loads(cli_value)
+        except (ValueError, TypeError) as e:
+            raise exceptions.GitlabParsingError(
+                f"Could not parse JSON data: {e}"
+            ) from e
 
 
 class _ListArrayAttribute(GitlabAttribute):
@@ -82,9 +102,23 @@ class ArrayAttribute(_ListArrayAttribute):
 
 
 class CommaSeparatedListAttribute(_ListArrayAttribute):
-    """For values which are sent to the server as a Comma Separated Values
-    (CSV) string.  We allow them to be specified as a list and we convert it
-    into a CSV"""
+    """
+    For values which are sent to the server as a Comma Separated Values (CSV) string
+    in query parameters (GET), but as a list/array in JSON bodies (POST/PUT).
+    """
+
+
+class CommaSeparatedStringAttribute(_ListArrayAttribute):
+    """
+    For values which are sent to the server as a Comma Separated Values (CSV) string.
+    Unlike CommaSeparatedListAttribute, this type ensures the value is converted
+    to a string even in JSON bodies (POST/PUT requests).
+    """
+
+    # Used in utils._transform_types() to ensure the value is converted to a string
+    # via get_for_api() even when transform_data is False (e.g. for POST/PUT/PATCH).
+    # This is needed because some APIs require a CSV string instead of a JSON array.
+    transform_in_body = True
 
 
 class LowercaseStringAttribute(GitlabAttribute):
