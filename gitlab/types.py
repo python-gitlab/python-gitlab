@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+import json
 from typing import Any, TYPE_CHECKING
 
 
@@ -47,6 +48,14 @@ class GitlabAttribute:
 
     def get_for_api(self, *, key: str) -> tuple[str, Any]:
         return (key, self._value)
+
+
+class JsonAttribute(GitlabAttribute):
+    def set_from_cli(self, cli_value: str) -> None:
+        if not cli_value.strip():
+            self._value = None
+        else:
+            self._value = json.loads(cli_value)
 
 
 class _ListArrayAttribute(GitlabAttribute):
