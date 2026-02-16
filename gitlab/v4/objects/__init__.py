@@ -24,6 +24,7 @@ from .environments import *
 from .epics import *
 from .events import *
 from .export_import import *
+from .feature_flags import *
 from .features import *
 from .files import *
 from .geo_nodes import *

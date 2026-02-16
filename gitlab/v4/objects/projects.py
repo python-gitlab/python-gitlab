@@ -49,6 +49,7 @@ from .environments import (  # noqa: F401
 )
 from .events import ProjectEventManager  # noqa: F401
 from .export_import import ProjectExportManager, ProjectImportManager  # noqa: F401
+from .feature_flags import ProjectFeatureFlagManager  # noqa: F401
 from .files import ProjectFileManager  # noqa: F401
 from .hooks import ProjectHookManager  # noqa: F401
 from .integrations import ProjectIntegrationManager, ProjectServiceManager  # noqa: F401
@@ -201,6 +202,7 @@ class Project(
     environments: ProjectEnvironmentManager
     events: ProjectEventManager
     exports: ProjectExportManager
+    feature_flags: ProjectFeatureFlagManager
     files: ProjectFileManager
     forks: ProjectForkManager
     generic_packages: GenericPackageManager
