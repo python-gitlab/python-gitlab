@@ -24,7 +24,7 @@ API examples
    gl_objects/environments
    gl_objects/events
    gl_objects/epics
-   gl_objects/features
+   gl_objects/gitlab_features
    gl_objects/geo_nodes
    gl_objects/groups
    gl_objects/group_access_tokens
@@ -49,6 +49,8 @@ API examples
    gl_objects/pipelines_and_jobs
    gl_objects/projects
    gl_objects/project_access_tokens
+   gl_objects/project_feature_flags
+   gl_objects/project_feature_flag_user_lists
    gl_objects/protected_branches
    gl_objects/protected_container_repositories
    gl_objects/protected_environments

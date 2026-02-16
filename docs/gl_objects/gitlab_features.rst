@@ -1,6 +1,11 @@
-##############
-Features flags
-##############
+################################
+GitLab Development Feature Flags
+################################
+
+.. note::
+
+   This API is for managing GitLab's internal development feature flags and requires administrator access.
+   For project-level feature flags, see :doc:`project_feature_flags`.
 
 Reference
 ---------

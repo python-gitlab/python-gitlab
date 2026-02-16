@@ -198,7 +198,15 @@ def _transform_types(
             files[attr_name] = (key, data.pop(attr_name))
             continue
 
-        if not transform_data:
+        # If transform_data is False, it means we are preparing data for a JSON body
+        # (POST/PUT/PATCH). In this case, we normally skip transformation because
+        # most types (like ArrayAttribute) only need transformation for query
+        # parameters (GET).
+        #
+        # However, some types (like CommaSeparatedStringAttribute) need to be
+        # transformed even in JSON bodies (e.g. converting a list to a CSV string).
+        # The 'transform_in_body' flag on the attribute class controls this behavior.
+        if not transform_data and not gitlab_attribute.transform_in_body:
             continue
 
         if isinstance(gitlab_attribute, types.GitlabAttribute):
