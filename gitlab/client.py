@@ -213,6 +213,8 @@ class Gitlab:
         """See :class:`~gitlab.v4.objects.TopicManager`"""
         self.statistics = objects.ApplicationStatisticsManager(self)
         """See :class:`~gitlab.v4.objects.ApplicationStatisticsManager`"""
+        self.service_accounts = objects.ServiceAccountManager(self)
+        """See :class:`~gitlab.v4.objects.ServiceAccountManager`"""
 
     def __enter__(self) -> Gitlab:
         return self
