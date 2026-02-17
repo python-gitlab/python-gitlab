@@ -111,6 +111,9 @@ You need to install ``tox`` (``pip3 install tox``) to run tests and lint checks 
    # run unit tests in one python environment only (useful for quick testing during development):
    tox -e py311
 
+   # run a specific unit test file:
+   tox -e py311 -- tests/unit/objects/test_projects.py
+
    # run unit and smoke tests in one python environment only
    tox -e py312,smoke
 
@@ -148,8 +151,14 @@ To run these tests:
    # run the CLI tests:
    tox -e cli_func_v4
 
+   # run a specific CLI functional test file:
+   tox -e cli_func_v4 -- tests/functional/cli/test_cli_v4.py
+
    # run the python API tests:
    tox -e api_func_v4
+
+   # run a specific API functional test file:
+   tox -e api_func_v4 -- tests/functional/api/test_projects.py
 
 When developing tests it can be a little frustrating to wait for GitLab to spin
 up every run. To prevent the containers from being cleaned up afterwards, pass
