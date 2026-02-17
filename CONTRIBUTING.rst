@@ -194,6 +194,32 @@ To cleanup the environment delete the container:
    docker rm -f gitlab-test
    docker rm -f gitlab-runner-test
 
+Pass options to ``pytest``
+--------------------------
+
+Options to ``pytest`` can be passed by adding them after ``--`` when running ``tox``:
+
+.. code-block:: bash
+
+   tox -e api_func_v4 -- <pytest options>.
+
+For example, you can use this to run a specific test. Running all tests can be time-consuming,
+so this allows you to focus on just the tests relevant to your changes. You can do this by passing
+the ``-k`` flag to ``pytest`` and setting a relevant expression to select the tests to run. For example:
+
+.. code-block:: bash
+
+   # Run all API functional tests from the ``test_projects.py`` file:
+   tox -e api_func_v4 -- --keep-containers -k test_projects.py
+
+   # Run only the ``test_get_project`` test method from the ``test_projects.py`` file:
+   tox -e api_func_v4 -- --keep-containers -k "test_projects.py and test_create_project"
+
+   # The above will select all test methods start with ``test_create_project`` from the ``test_projects.py`` file.
+   # To select only the ``test_create_project`` method, you can exclude other methods by using the ``not`` operator:
+   tox -e api_func_v4 -- --keep-containers -k "test_projects.py and test_create_project and not test_create_project_"
+
+
 Rerunning failed CI workflows
 -----------------------------
 
