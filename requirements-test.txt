@@ -7,7 +7,7 @@ pytest-cov==7.0.0
 pytest-github-actions-annotate-failures==0.3.0
 pytest==9.0.2
 PyYaml==6.0.3
-responses==0.25.8
+responses==0.26.0
 respx==0.22.0
 trio==0.33.0
 wheel==0.46.3
