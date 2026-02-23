@@ -11,4 +11,4 @@ responses==0.26.0
 respx==0.22.0
 types-PyYAML==6.0.12.20250915
 types-requests==2.32.4.20260107
-types-setuptools==80.10.0.20260124
+types-setuptools==82.0.0.20260210
