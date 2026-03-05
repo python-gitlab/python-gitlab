@@ -89,6 +89,7 @@ from .repositories import RepositoryMixin
 from .resource_groups import ProjectResourceGroupManager
 from .runners import ProjectRunnerManager  # noqa: F401
 from .secure_files import ProjectSecureFileManager  # noqa: F401
+from .service_accounts import ProjectServiceAccountManager  # noqa: F401
 from .snippets import ProjectSnippetManager  # noqa: F401
 from .statistics import (  # noqa: F401
     ProjectAdditionalStatisticsManager,
@@ -247,6 +248,7 @@ class Project(
     repositories: ProjectRegistryRepositoryManager
     runners: ProjectRunnerManager
     secure_files: ProjectSecureFileManager
+    service_accounts: ProjectServiceAccountManager
     services: ProjectServiceManager
     snippets: ProjectSnippetManager
     external_status_checks: ProjectExternalStatusCheckManager
