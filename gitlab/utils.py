@@ -198,7 +198,9 @@ def _transform_types(
             files[attr_name] = (key, data.pop(attr_name))
             continue
 
-        if not transform_data:
+        if not transform_data and not getattr(
+            gitlab_attribute, "transform_in_post", False
+        ):
             continue
 
         if isinstance(gitlab_attribute, types.GitlabAttribute):

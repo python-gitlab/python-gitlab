@@ -96,6 +96,16 @@ class CommaSeparatedListAttribute(_ListArrayAttribute):
     into a CSV"""
 
 
+class CommaSeparatedStringAttribute(_ListArrayAttribute):
+    """
+    For values which are sent to the server as a Comma Separated Values (CSV) string.
+    Unlike CommaSeparatedListAttribute, this type ensures the value is converted
+    to a string even in JSON bodies (POST/PUT requests).
+    """
+
+    transform_in_post = True
+
+
 class LowercaseStringAttribute(GitlabAttribute):
     def get_for_api(self, *, key: str) -> tuple[str, str]:
         return (key, str(self._value).lower())
