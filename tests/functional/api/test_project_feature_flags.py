@@ -56,3 +56,52 @@ def test_delete_feature_flag(project, feature_flag):
     feature_flag.delete()
     with pytest.raises(exceptions.GitlabGetError):
         project.feature_flags.get(feature_flag.name)
+
+
+def test_delete_feature_flag_strategy(project, feature_flag):
+    strategies = [
+        {"name": "default", "parameters": {}},
+        {"name": "userWithId", "parameters": {"userIds": "user1"}},
+    ]
+    feature_flag.strategies = strategies
+    feature_flag.save()
+
+    feature_flag = project.feature_flags.get(feature_flag.name)
+    assert len(feature_flag.strategies) == 2
+
+    # Remove strategy using _destroy
+    strategies = feature_flag.strategies
+    for strategy in strategies:
+        if strategy["name"] == "userWithId":
+            strategy["_destroy"] = True
+    feature_flag.save()
+
+    feature_flag = project.feature_flags.get(feature_flag.name)
+    assert len(feature_flag.strategies) == 1
+    assert feature_flag.strategies[0]["name"] == "default"
+
+
+def test_delete_feature_flag_scope(project, feature_flag):
+    strategies = [
+        {
+            "name": "default",
+            "parameters": {},
+            "scopes": [{"environment_scope": "*"}, {"environment_scope": "production"}],
+        }
+    ]
+    feature_flag.strategies = strategies
+    feature_flag.save()
+
+    feature_flag = project.feature_flags.get(feature_flag.name)
+    assert len(feature_flag.strategies[0]["scopes"]) == 2
+
+    # Remove scope using _destroy
+    strategies = feature_flag.strategies
+    for scope in strategies[0]["scopes"]:
+        if scope["environment_scope"] == "production":
+            scope["_destroy"] = True
+    feature_flag.save()
+
+    feature_flag = project.feature_flags.get(feature_flag.name)
+    assert len(feature_flag.strategies[0]["scopes"]) == 1
+    assert feature_flag.strategies[0]["scopes"][0]["environment_scope"] == "*"
