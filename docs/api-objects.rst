@@ -49,6 +49,8 @@ API examples
    gl_objects/pipelines_and_jobs
    gl_objects/projects
    gl_objects/project_access_tokens
+   gl_objects/project_feature_flags
+   gl_objects/project_feature_flag_user_lists
    gl_objects/protected_branches
    gl_objects/protected_container_repositories
    gl_objects/protected_environments
