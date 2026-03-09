@@ -122,3 +122,40 @@ def test_csv_string_attribute_get_for_api_from_int_list():
 def test_lowercase_string_attribute_get_for_api():
     o = types.LowercaseStringAttribute("FOO")
     assert o.get_for_api(key="spam") == ("spam", "foo")
+
+
+# JSONAttribute tests
+def test_json_attribute() -> None:
+    attr = types.JsonAttribute()
+
+    attr.set_from_cli('{"key": "value"}')
+    assert attr.get() == {"key": "value"}
+
+    attr.set_from_cli("  ")
+    assert attr.get() is None
+
+
+# CommaSeparatedStringAttribute tests
+def test_comma_separated_string_attribute() -> None:
+    # Test with list of integers
+    attr = types.CommaSeparatedStringAttribute([1, 2, 3])
+    assert attr.get_for_api(key="ids") == ("ids", "1,2,3")
+
+    # Test with list of strings
+    attr = types.CommaSeparatedStringAttribute(["a", "b"])
+    assert attr.get_for_api(key="names") == ("names", "a,b")
+
+    # Test with string value (should be preserved)
+    attr = types.CommaSeparatedStringAttribute("1,2,3")
+    assert attr.get_for_api(key="ids") == ("ids", "1,2,3")
+
+    # Test CLI setting
+    attr = types.CommaSeparatedStringAttribute()
+    attr.set_from_cli("1, 2, 3")
+    assert attr.get() == ["1", "2", "3"]
+
+    attr.set_from_cli("")
+    assert attr.get() == []
+
+    # Verify transform_in_post is True
+    assert types.CommaSeparatedStringAttribute.transform_in_post is True
