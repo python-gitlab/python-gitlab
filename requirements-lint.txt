@@ -1,6 +1,6 @@
 -r requirements.txt
 argcomplete==2.0.0
-black==26.1.0
+black==26.3.0
 commitizen==4.13.9
 flake8==7.3.0
 isort==8.0.1
