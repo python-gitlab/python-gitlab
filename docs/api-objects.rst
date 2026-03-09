@@ -24,7 +24,7 @@ API examples
    gl_objects/environments
    gl_objects/events
    gl_objects/epics
-   gl_objects/features
+   gl_objects/gitlab_features
    gl_objects/geo_nodes
    gl_objects/groups
    gl_objects/group_access_tokens
