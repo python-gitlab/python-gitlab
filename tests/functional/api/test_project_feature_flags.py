@@ -52,6 +52,26 @@ def test_update_feature_flag(project, feature_flag):
     assert updated_flag.active is False
 
 
+def test_rename_feature_flag(project, feature_flag):
+    # Rename via save()
+    new_name = "renamed_flag"
+    feature_flag.name = new_name
+    feature_flag.save()
+
+    updated_flag = project.feature_flags.get(new_name)
+    assert updated_flag.name == new_name
+
+    # Rename via update()
+    newer_name = "renamed_flag_2"
+    project.feature_flags.update(new_name, {"name": newer_name})
+
+    updated_flag_2 = project.feature_flags.get(newer_name)
+    assert updated_flag_2.name == newer_name
+
+    # Update the fixture object so teardown can delete the correct flag
+    feature_flag.name = newer_name
+
+
 def test_delete_feature_flag(project, feature_flag):
     feature_flag.delete()
     with pytest.raises(exceptions.GitlabGetError):
