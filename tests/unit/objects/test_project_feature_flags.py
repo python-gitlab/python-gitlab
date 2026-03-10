@@ -2,17 +2,9 @@
 Unit tests for Project Feature Flags.
 """
 
-import pytest
 import responses
 
-from gitlab import Gitlab
 from gitlab.v4.objects import ProjectFeatureFlag
-
-
-@pytest.fixture
-def project():
-    gl = Gitlab("http://localhost", private_token="private_token", api_version="4")
-    return gl.projects.get(1, lazy=True)
 
 
 def test_feature_flag_rename(project):

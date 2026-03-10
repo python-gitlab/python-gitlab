@@ -124,7 +124,7 @@ def test_lowercase_string_attribute_get_for_api():
     assert o.get_for_api(key="spam") == ("spam", "foo")
 
 
-# JSONAttribute tests
+# JsonAttribute tests
 def test_json_attribute() -> None:
     attr = types.JsonAttribute()
 

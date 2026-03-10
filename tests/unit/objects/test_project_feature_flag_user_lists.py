@@ -2,16 +2,7 @@
 Unit tests for Project Feature Flag User Lists.
 """
 
-import pytest
 import responses
-
-from gitlab import Gitlab
-
-
-@pytest.fixture
-def project():
-    gl = Gitlab("http://localhost", private_token="private_token", api_version="4")
-    return gl.projects.get(1, lazy=True)
 
 
 def test_create_user_list_with_list_conversion(project):
