@@ -62,6 +62,7 @@ API examples
    gl_objects/resource_groups
    gl_objects/search
    gl_objects/secure_files
+   gl_objects/service_accounts
    gl_objects/settings
    gl_objects/snippets
    gl_objects/statistics
