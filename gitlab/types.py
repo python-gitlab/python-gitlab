@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+import json
 from typing import Any, TYPE_CHECKING
 
 
@@ -49,6 +50,14 @@ class GitlabAttribute:
         return (key, self._value)
 
 
+class JsonAttribute(GitlabAttribute):
+    def set_from_cli(self, cli_value: str) -> None:
+        if not cli_value.strip():
+            self._value = None
+        else:
+            self._value = json.loads(cli_value)
+
+
 class _ListArrayAttribute(GitlabAttribute):
     """Helper class to support `list` / `array` types."""
 
@@ -85,6 +94,16 @@ class CommaSeparatedListAttribute(_ListArrayAttribute):
     """For values which are sent to the server as a Comma Separated Values
     (CSV) string.  We allow them to be specified as a list and we convert it
     into a CSV"""
+
+
+class CommaSeparatedStringAttribute(_ListArrayAttribute):
+    """
+    For values which are sent to the server as a Comma Separated Values (CSV) string.
+    Unlike CommaSeparatedListAttribute, this type ensures the value is converted
+    to a string even in JSON bodies (POST/PUT requests).
+    """
+
+    transform_in_post = True
 
 
 class LowercaseStringAttribute(GitlabAttribute):
