@@ -3,7 +3,7 @@ default_language_version:
 
 repos:
   - repo: https://github.com/psf/black
-    rev: 26.3.0
+    rev: 26.3.1
     hooks:
       - id: black
   - repo: https://github.com/commitizen-tools/commitizen
@@ -51,6 +51,6 @@ repos:
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
   - repo: https://github.com/maxbrunet/pre-commit-renovate
-    rev: 43.60.0
+    rev: 43.76.2
     hooks:
       - id: renovate-config-validator
