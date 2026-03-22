@@ -111,9 +111,6 @@ You need to install ``tox`` (``pip3 install tox``) to run tests and lint checks 
    # run unit tests in one python environment only (useful for quick testing during development):
    tox -e py311
 
-   # run a specific unit test file:
-   tox -e py311 -- tests/unit/objects/test_projects.py
-
    # run unit and smoke tests in one python environment only
    tox -e py312,smoke
 
@@ -151,14 +148,8 @@ To run these tests:
    # run the CLI tests:
    tox -e cli_func_v4
 
-   # run a specific CLI functional test file:
-   tox -e cli_func_v4 -- tests/functional/cli/test_cli_v4.py
-
    # run the python API tests:
    tox -e api_func_v4
-
-   # run a specific API functional test file:
-   tox -e api_func_v4 -- tests/functional/api/test_projects.py
 
 When developing tests it can be a little frustrating to wait for GitLab to spin
 up every run. To prevent the containers from being cleaned up afterwards, pass
@@ -202,6 +193,32 @@ To cleanup the environment delete the container:
 
    docker rm -f gitlab-test
    docker rm -f gitlab-runner-test
+
+Pass options to ``pytest``
+--------------------------
+
+Options to ``pytest`` can be passed by adding them after ``--`` when running ``tox``:
+
+.. code-block:: bash
+
+   tox -e api_func_v4 -- <pytest options>.
+
+For example, you can use this to run a specific test. Running all tests can be time-consuming,
+so this allows you to focus on just the tests relevant to your changes. You can do this by passing
+the ``-k`` flag to ``pytest`` and setting a relevant expression to select the tests to run. For example:
+
+.. code-block:: bash
+
+   # Run all API functional tests from the ``test_projects.py`` file:
+   tox -e api_func_v4 -- --keep-containers -k test_projects.py
+
+   # Run only the ``test_get_project`` test method from the ``test_projects.py`` file:
+   tox -e api_func_v4 -- --keep-containers -k "test_projects.py and test_create_project"
+
+   # The above will select all test methods start with ``test_create_project`` from the ``test_projects.py`` file.
+   # To select only the ``test_create_project`` method, you can exclude other methods by using the ``not`` operator:
+   tox -e api_func_v4 -- --keep-containers -k "test_projects.py and test_create_project and not test_create_project_"
+
 
 Rerunning failed CI workflows
 -----------------------------
