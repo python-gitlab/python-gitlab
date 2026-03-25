@@ -27,10 +27,11 @@ class VariableManager(CRUDMixin[Variable]):
     _path = "/admin/ci/variables"
     _obj_cls = Variable
     _create_attrs = RequiredOptional(
-        required=("key", "value"), optional=("protected", "variable_type", "masked")
+        required=("key", "value"),
+        optional=("protected", "variable_type", "masked", "masked_and_hidden"),
     )
     _update_attrs = RequiredOptional(
-        required=("key", "value"), optional=("protected", "variable_type", "masked")
+        required=("key",), optional=("value", "protected", "variable_type", "masked")
     )
 
 
@@ -43,10 +44,11 @@ class GroupVariableManager(CRUDMixin[GroupVariable]):
     _obj_cls = GroupVariable
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(
-        required=("key", "value"), optional=("protected", "variable_type", "masked")
+        required=("key", "value"),
+        optional=("protected", "variable_type", "masked", "masked_and_hidden"),
     )
     _update_attrs = RequiredOptional(
-        required=("key", "value"), optional=("protected", "variable_type", "masked")
+        required=("key",), optional=("value", "protected", "variable_type", "masked")
     )
 
 
@@ -60,9 +62,15 @@ class ProjectVariableManager(CRUDMixin[ProjectVariable]):
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
         required=("key", "value"),
-        optional=("protected", "variable_type", "masked", "environment_scope"),
+        optional=(
+            "protected",
+            "variable_type",
+            "masked",
+            "environment_scope",
+            "masked_and_hidden",
+        ),
     )
     _update_attrs = RequiredOptional(
-        required=("key", "value"),
-        optional=("protected", "variable_type", "masked", "environment_scope"),
+        required=("key",),
+        optional=("value", "protected", "variable_type", "masked", "environment_scope"),
     )
