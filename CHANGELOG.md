@@ -2,6 +2,22 @@
 
 All versions below are listed in reverse chronological order.
 
+## v8.2.0 (2026-03-28)
+
+### Documentation
+
+- **testing**: Document passing pytest options during local development
+  ([`e6669f9`](https://github.com/python-gitlab/python-gitlab/commit/e6669f96d662d310109afa4a61fe8dabbd780a4e))
+
+### Features
+
+- **api**: Add support for project feature flags and feature flag user lists
+  ([`be68285`](https://github.com/python-gitlab/python-gitlab/commit/be68285793f35afc10a72b59da3fb24429631f54))
+
+- **projects**: Add optional parameter to set approval rule on all protected branches.
+  ([`8d76028`](https://github.com/python-gitlab/python-gitlab/commit/8d76028a1ae3554527291dc98e6be041ff089ec5))
+
+
 ## v8.1.0 (2026-02-28)
 
 ### Bug Fixes
