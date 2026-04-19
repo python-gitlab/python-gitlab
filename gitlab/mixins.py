@@ -619,6 +619,8 @@ class RotateMixin(base.RESTManager[base.TObjCls]):
             "PersonalAccessTokenManager",
             "GroupAccessTokenManager",
             "ProjectAccessTokenManager",
+            "GroupServiceAccountAccessTokenManager",
+            "ProjectServiceAccountAccessTokenManager",
         ),
         optional=("expires_at",),
     )
@@ -656,7 +658,13 @@ class ObjectRotateMixin(_RestObjectBase):
     manager: base.RESTManager[Any]
 
     @cli.register_custom_action(
-        cls_names=("PersonalAccessToken", "GroupAccessToken", "ProjectAccessToken"),
+        cls_names=(
+            "PersonalAccessToken",
+            "GroupAccessToken",
+            "ProjectAccessToken",
+            "GroupServiceAccountAccessToken",
+            "ProjectServiceAccountAccessToken",
+        ),
         optional=("expires_at",),
     )
     @exc.on_http_error(exc.GitlabRotateError)
