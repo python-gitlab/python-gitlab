@@ -27,8 +27,7 @@ class VariableManager(CRUDMixin[Variable]):
     _path = "/admin/ci/variables"
     _obj_cls = Variable
     _create_attrs = RequiredOptional(
-        required=("key", "value"),
-        optional=("protected", "variable_type", "masked", "masked_and_hidden"),
+        required=("key", "value"), optional=("protected", "variable_type", "masked")
     )
     _update_attrs = RequiredOptional(
         required=("key",), optional=("value", "protected", "variable_type", "masked")
