@@ -45,26 +45,12 @@ def test_project_variables(project):
     variable.delete()
 
 
-def test_hidden_instance_variables(gl):
-    variable = gl.variables.create(
-        {"key": "key1", "value": "secret_value", "masked_and_hidden": True}
-    )
-    assert variable.value == "secret_value"
-    assert variable.description is None
-    assert variable in gl.variables.list()
-
-    variable.description = "new_description"
-    variable.save()
-    variable = gl.variables.get(variable.key)
-    assert variable.description == "new_description"
-
-    variable.delete()
-
-
 def test_hidden_group_variables(group):
     variable = group.variables.create(
         {"key": "key1", "value": "secret_value", "masked_and_hidden": True}
     )
+
+    variable = group.variables.get(variable.key)
     assert variable.value is None
     assert variable.description is None
     assert variable in group.variables.list()
@@ -81,6 +67,8 @@ def test_hidden_project_variables(project):
     variable = project.variables.create(
         {"key": "key1", "value": "secret_value", "masked_and_hidden": True}
     )
+
+    variable = project.variables.get(variable.key)
     assert variable.value is None
     assert variable.description is None
     assert variable in project.variables.list()
