@@ -27,10 +27,19 @@ class VariableManager(CRUDMixin[Variable]):
     _path = "/admin/ci/variables"
     _obj_cls = Variable
     _create_attrs = RequiredOptional(
-        required=("key", "value"), optional=("protected", "variable_type", "masked")
+        required=("key", "value"),
+        optional=("description", "masked", "protected", "raw", "variable_type"),
     )
     _update_attrs = RequiredOptional(
-        required=("key", "value"), optional=("protected", "variable_type", "masked")
+        required=("key",),
+        optional=(
+            "description",
+            "masked",
+            "protected",
+            "raw",
+            "value",
+            "variable_type",
+        ),
     )
 
 
@@ -43,10 +52,28 @@ class GroupVariableManager(CRUDMixin[GroupVariable]):
     _obj_cls = GroupVariable
     _from_parent_attrs = {"group_id": "id"}
     _create_attrs = RequiredOptional(
-        required=("key", "value"), optional=("protected", "variable_type", "masked")
+        required=("key", "value"),
+        optional=(
+            "description",
+            "environment_scope",
+            "masked",
+            "masked_and_hidden",
+            "protected",
+            "raw",
+            "variable_type",
+        ),
     )
     _update_attrs = RequiredOptional(
-        required=("key", "value"), optional=("protected", "variable_type", "masked")
+        required=("key",),
+        optional=(
+            "description",
+            "environment_scope",
+            "masked",
+            "protected",
+            "raw",
+            "value",
+            "variable_type",
+        ),
     )
 
 
@@ -60,9 +87,25 @@ class ProjectVariableManager(CRUDMixin[ProjectVariable]):
     _from_parent_attrs = {"project_id": "id"}
     _create_attrs = RequiredOptional(
         required=("key", "value"),
-        optional=("protected", "variable_type", "masked", "environment_scope"),
+        optional=(
+            "description",
+            "environment_scope",
+            "masked",
+            "masked_and_hidden",
+            "protected",
+            "raw",
+            "variable_type",
+        ),
     )
     _update_attrs = RequiredOptional(
-        required=("key", "value"),
-        optional=("protected", "variable_type", "masked", "environment_scope"),
+        required=("key",),
+        optional=(
+            "description",
+            "environment_scope",
+            "masked",
+            "protected",
+            "raw",
+            "value",
+            "variable_type",
+        ),
     )

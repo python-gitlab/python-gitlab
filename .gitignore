@@ -13,6 +13,7 @@ docs/_build
 .tox
 .venv/
 venv/
+.mypy_cache/
 
 # Include tracked hidden files and directories in search and diff tools
 !.dockerignore
