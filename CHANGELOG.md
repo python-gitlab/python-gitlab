@@ -2,6 +2,22 @@
 
 All versions below are listed in reverse chronological order.
 
+## v8.3.0 (2026-04-28)
+
+### Bug Fixes
+
+- **api**: Update CI/CD variable create and update attributes
+  ([`849301b`](https://github.com/python-gitlab/python-gitlab/commit/849301b830b0d4f76ab85ffa3f39b22a6e628df9))
+
+- **mixins**: Register service account token classes in RotateMixin CLI actions
+  ([`2cf430b`](https://github.com/python-gitlab/python-gitlab/commit/2cf430b9c55c88f1d43fd31122a022dda0a88700))
+
+### Features
+
+- **api**: Add full service account support at instance, group, and project level
+  ([`feb6ced`](https://github.com/python-gitlab/python-gitlab/commit/feb6cedeffa75ef386ef13a3226bc07bcb396f61))
+
+
 ## v8.2.0 (2026-03-28)
 
 ### Documentation
