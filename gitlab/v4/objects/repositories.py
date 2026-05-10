@@ -330,7 +330,7 @@ class RepositoryMixin(_RestObjectBase):
     @cli.register_custom_action(cls_names="Project", required=("refs",))
     @exc.on_http_error(exc.GitlabGetError)
     def repository_merge_base(self, refs: list[str], **kwargs: Any) -> dict[str, Any]:
-        """Return a diff between two branches/commits.
+        """Return the common ancestor commit for the given refs.
 
         Args:
             refs: The refs to find the common ancestor of. Multiple refs can be passed.
