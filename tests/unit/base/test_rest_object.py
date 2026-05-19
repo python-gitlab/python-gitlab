@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pickle
+import sys
 
 import pytest
 
@@ -222,11 +223,21 @@ def test_pformat(fake_manager):
     fake_object = helpers.FakeObject(
         fake_manager, {"attr1": "foo" * 10, "ham": "eggs" * 15}
     )
-    assert fake_object.pformat() == (
-        "<class 'tests.unit.helpers.FakeObject'> => "
-        "\n{'attr1': 'foofoofoofoofoofoofoofoofoofoo',\n"
-        " 'ham': 'eggseggseggseggseggseggseggseggseggseggseggseggseggseggseggs'}"
-    )
+    if sys.version_info >= (3, 15):
+        expected = (
+            "<class 'tests.unit.helpers.FakeObject'> => "
+            "\n{\n"
+            "    'attr1': 'foofoofoofoofoofoofoofoofoofoo',\n"
+            "    'ham': 'eggseggseggseggseggseggseggseggseggseggseggseggseggseggseggs',\n"
+            "}"
+        )
+    else:
+        expected = (
+            "<class 'tests.unit.helpers.FakeObject'> => "
+            "\n{'attr1': 'foofoofoofoofoofoofoofoofoofoo',\n"
+            " 'ham': 'eggseggseggseggseggseggseggseggseggseggseggseggseggseggseggs'}"
+        )
+    assert fake_object.pformat() == expected
 
 
 def test_pprint(capfd, fake_manager):
@@ -236,11 +247,21 @@ def test_pprint(capfd, fake_manager):
     result = fake_object.pprint()
     assert result is None
     stdout, stderr = capfd.readouterr()
-    assert stdout == (
-        "<class 'tests.unit.helpers.FakeObject'> => "
-        "\n{'attr1': 'foofoofoofoofoofoofoofoofoofoo',\n"
-        " 'ham': 'eggseggseggseggseggseggseggseggseggseggseggseggseggseggseggs'}\n"
-    )
+    if sys.version_info >= (3, 15):
+        expected = (
+            "<class 'tests.unit.helpers.FakeObject'> => "
+            "\n{\n"
+            "    'attr1': 'foofoofoofoofoofoofoofoofoofoo',\n"
+            "    'ham': 'eggseggseggseggseggseggseggseggseggseggseggseggseggseggseggs',\n"
+            "}\n"
+        )
+    else:
+        expected = (
+            "<class 'tests.unit.helpers.FakeObject'> => "
+            "\n{'attr1': 'foofoofoofoofoofoofoofoofoofoo',\n"
+            " 'ham': 'eggseggseggseggseggseggseggseggseggseggseggseggseggseggseggs'}\n"
+        )
+    assert stdout == expected
     assert stderr == ""
 
 
