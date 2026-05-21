@@ -347,6 +347,27 @@ def test_gitlab_plain_const_does_not_warn(recwarn):
     assert no_access == 0
 
 
+@pytest.mark.parametrize(
+    "access_level,plain_const_name,expected_value",
+    [
+        (gitlab.const.AccessLevel.NO_ACCESS, "NO_ACCESS", 0),
+        (gitlab.const.AccessLevel.MINIMAL_ACCESS, "MINIMAL_ACCESS", 5),
+        (gitlab.const.AccessLevel.GUEST, "GUEST_ACCESS", 10),
+        (gitlab.const.AccessLevel.PLANNER, "PLANNER_ACCESS", 15),
+        (gitlab.const.AccessLevel.REPORTER, "REPORTER_ACCESS", 20),
+        (gitlab.const.AccessLevel.SECURITY_MANAGER, "SECURITY_MANAGER_ACCESS", 25),
+        (gitlab.const.AccessLevel.DEVELOPER, "DEVELOPER_ACCESS", 30),
+        (gitlab.const.AccessLevel.MAINTAINER, "MAINTAINER_ACCESS", 40),
+        (gitlab.const.AccessLevel.OWNER, "OWNER_ACCESS", 50),
+        (gitlab.const.AccessLevel.ADMIN, "ADMIN_ACCESS", 60),
+    ],
+)
+def test_gitlab_access_level_constants(access_level, plain_const_name, expected_value):
+    assert access_level == expected_value
+    assert getattr(gitlab.const, plain_const_name) == expected_value
+    assert plain_const_name in gitlab.const.__all__
+
+
 @responses.activate
 @pytest.mark.parametrize(
     "kwargs,link_header,expected_next_url,show_warning",
