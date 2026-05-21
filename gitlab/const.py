@@ -7,13 +7,14 @@ class GitlabEnum(str, Enum):
     """An enum mixed in with str to make it JSON-serializable."""
 
 
-# https://gitlab.com/gitlab-org/gitlab/-/blob/e97357824bedf007e75f8782259fe07435b64fbb/lib/gitlab/access.rb#L12-18
+# https://gitlab.com/gitlab-org/gitlab/-/blob/1fb8053d00f4085a8a99c3ab53dba46d2e765893/lib/gitlab/access.rb#L12-21
 class AccessLevel(IntEnum):
     NO_ACCESS = 0
     MINIMAL_ACCESS = 5
     GUEST = 10
     PLANNER = 15
     REPORTER = 20
+    SECURITY_MANAGER = 25
     DEVELOPER = 30
     MAINTAINER = 40
     OWNER = 50
@@ -95,6 +96,7 @@ MINIMAL_ACCESS = AccessLevel.MINIMAL_ACCESS.value
 GUEST_ACCESS = AccessLevel.GUEST.value
 PLANNER_ACCESS = AccessLevel.PLANNER.value
 REPORTER_ACCESS = AccessLevel.REPORTER.value
+SECURITY_MANAGER_ACCESS = AccessLevel.SECURITY_MANAGER.value
 DEVELOPER_ACCESS = AccessLevel.DEVELOPER.value
 MAINTAINER_ACCESS = AccessLevel.MAINTAINER.value
 OWNER_ACCESS = AccessLevel.OWNER.value
@@ -164,6 +166,7 @@ __all__ = [
     "SEARCH_SCOPE_PROJECTS",
     "SEARCH_SCOPE_USERS",
     "SEARCH_SCOPE_WIKI_BLOBS",
+    "SECURITY_MANAGER_ACCESS",
     "USER_AGENT",
     "VISIBILITY_INTERNAL",
     "VISIBILITY_PRIVATE",
