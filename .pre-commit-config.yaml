@@ -3,11 +3,11 @@ default_language_version:
 
 repos:
   - repo: https://github.com/psf/black
-    rev: 26.3.1
+    rev: 26.5.1
     hooks:
       - id: black
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.15.0
+    rev: v4.16.2
     hooks:
       - id: commitizen
         stages: [commit-msg]
@@ -51,6 +51,6 @@ repos:
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
   - repo: https://github.com/maxbrunet/pre-commit-renovate
-    rev: 43.141.2
+    rev: 43.150.0
     hooks:
       - id: renovate-config-validator
