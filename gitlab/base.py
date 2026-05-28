@@ -7,7 +7,7 @@ import pprint
 import textwrap
 from collections.abc import Iterable
 from types import ModuleType
-from typing import Any, ClassVar, Generic, TYPE_CHECKING, TypeVar
+from typing import Any, cast, ClassVar, Generic, TYPE_CHECKING, TypeVar
 
 import gitlab
 from gitlab import types as g_types
@@ -351,6 +351,7 @@ class RESTManager(Generic[TObjCls]):
     _path: ClassVar[str]
     _obj_cls: type[TObjCls]
     _from_parent_attrs: dict[str, Any] = {}
+    _parent_ref_attr: ClassVar[str | None] = None
     _types: dict[str, type[g_types.GitlabAttribute]] = {}
 
     _computed_path: str
@@ -388,6 +389,18 @@ class RESTManager(Generic[TObjCls]):
             data[self_attr] = gitlab.utils.EncodedId(getattr(self._parent, parent_attr))
         self._parent_attrs = data
         return path.format(**data)
+
+    def _get_parent_ref_id(self) -> int | str | None:
+        if self._parent is None or not self._parent_ref_attr:
+            return None
+        if not hasattr(self._parent, self._parent_ref_attr):
+            return None
+        parent_ref = getattr(self._parent, self._parent_ref_attr)
+        if parent_ref is None:
+            return None
+        if hasattr(parent_ref, "iid"):
+            return cast(int, parent_ref.iid)
+        return None
 
     @property
     def path(self) -> str:
