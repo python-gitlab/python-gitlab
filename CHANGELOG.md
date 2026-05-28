@@ -2,6 +2,19 @@
 
 All versions below are listed in reverse chronological order.
 
+## v8.4.0 (2026-05-28)
+
+### Features
+
+- **const**: Add new Security Manager role
+  ([`3738bb2`](https://github.com/python-gitlab/python-gitlab/commit/3738bb2eaa1be118021337fc02aba02d4abf8acf))
+
+### Testing
+
+- **const**: Add tests for AccessLevel
+  ([`2ab6d9f`](https://github.com/python-gitlab/python-gitlab/commit/2ab6d9f1c667d809f4d118ad8d8a2c111cc21b0e))
+
+
 ## v8.3.0 (2026-04-28)
 
 ### Bug Fixes
