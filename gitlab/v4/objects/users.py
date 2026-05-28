@@ -453,8 +453,10 @@ class UserManager(CRUDMixin[User]):
         )
     )
     _update_attrs = RequiredOptional(
-        required=("email", "username", "name"),
         optional=(
+            "email",
+            "username",
+            "name",
             "password",
             "skype",
             "linkedin",
