@@ -292,6 +292,8 @@ class UpdateMixin(base.RESTManager[base.TObjCls]):
         self,
         id: str | int | None = None,
         new_data: dict[str, Any] | None = None,
+        *,
+        _custom_path: str | None = None,
         **kwargs: Any,
     ) -> dict[str, Any]:
         """Update an object on the server.
@@ -299,6 +301,7 @@ class UpdateMixin(base.RESTManager[base.TObjCls]):
         Args:
             id: ID of the object to update (can be None if not required)
             new_data: the update data for the object
+            _custom_path: Optional custom path for special API endpoints
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
@@ -310,7 +313,9 @@ class UpdateMixin(base.RESTManager[base.TObjCls]):
         """
         new_data = new_data or {}
 
-        if id is None:
+        if _custom_path is not None:
+            path = _custom_path
+        elif id is None:
             path = self.path
         else:
             path = f"{self.path}/{utils.EncodedId(id)}"
@@ -357,18 +362,27 @@ class SetMixin(base.RESTManager[base.TObjCls]):
 
 class DeleteMixin(base.RESTManager[base.TObjCls]):
     @exc.on_http_error(exc.GitlabDeleteError)
-    def delete(self, id: str | int | None = None, **kwargs: Any) -> None:
+    def delete(
+        self,
+        id: str | int | None = None,
+        *,
+        _custom_path: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         """Delete an object on the server.
 
         Args:
             id: ID of the object to delete
+            _custom_path: Optional custom path for special API endpoints
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Raises:
             GitlabAuthenticationError: If authentication is not correct
             GitlabDeleteError: If the server cannot perform the request
         """
-        if id is None:
+        if _custom_path is not None:
+            path = _custom_path
+        elif id is None:
             path = self.path
         else:
             path = f"{self.path}/{utils.EncodedId(id)}"
@@ -402,6 +416,12 @@ class SaveMixin(_RestObjectBase):
     _parent_attrs: dict[str, Any]
     _updated_attrs: dict[str, Any]
     manager: base.RESTManager[Any]
+
+    def _get_custom_path(self) -> str | None:
+        # NOTE(jlvillal): pylint will complain for the callers with an
+        # 'assignment-from-none' error, if we don't do this.
+        custom_path: str | None = None
+        return custom_path
 
     def _get_updated_data(self) -> dict[str, Any]:
         updated_data = {}
@@ -437,7 +457,13 @@ class SaveMixin(_RestObjectBase):
         obj_id = self.encoded_id
         if TYPE_CHECKING:
             assert isinstance(self.manager, UpdateMixin)
-        server_data = self.manager.update(obj_id, updated_data, **kwargs)
+        custom_path = self._get_custom_path()
+        if custom_path is None:
+            server_data = self.manager.update(obj_id, updated_data, **kwargs)
+        else:
+            server_data = self.manager.update(
+                obj_id, updated_data, _custom_path=custom_path, **kwargs
+            )
         self._update_attrs(server_data)
         return server_data
 
@@ -452,6 +478,12 @@ class ObjectDeleteMixin(_RestObjectBase):
     _updated_attrs: dict[str, Any]
     manager: base.RESTManager[Any]
 
+    def _get_custom_path(self) -> str | None:
+        # NOTE(jlvillal): pylint will complain for the callers with an
+        # 'assignment-from-none' error, if we don't do this.
+        custom_path: str | None = None
+        return custom_path
+
     def delete(self, **kwargs: Any) -> None:
         """Delete the object from the server.
 
@@ -465,7 +497,11 @@ class ObjectDeleteMixin(_RestObjectBase):
         if TYPE_CHECKING:
             assert isinstance(self.manager, DeleteMixin)
             assert self.encoded_id is not None
-        self.manager.delete(self.encoded_id, **kwargs)
+        custom_path = self._get_custom_path()
+        if custom_path is None:
+            self.manager.delete(self.encoded_id, **kwargs)
+        else:
+            self.manager.delete(self.encoded_id, _custom_path=custom_path, **kwargs)
 
 
 class UserAgentDetailMixin(_RestObjectBase):
