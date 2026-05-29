@@ -146,6 +146,7 @@ def test_http_request_extra_headers(gl):
     [
         requests.ConnectionError("Connection aborted."),
         requests.exceptions.ChunkedEncodingError("Connection broken."),
+        requests.exceptions.Timeout("Request timed out."),
     ],
 )
 def test_http_request_with_retry_on_method_for_transient_network_failures(

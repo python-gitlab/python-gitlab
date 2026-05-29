@@ -147,7 +147,8 @@ python-gitlab can automatically retry in such case, when
 ``retry_transient_errors`` argument is set to ``True``.  When enabled,
 HTTP error codes 500 (Internal Server Error), 502 (502 Bad Gateway),
 503 (Service Unavailable), 504 (Gateway Timeout), and Cloudflare
-errors (520-530) are retried.
+errors (520-530) are retried. `requests.exceptions.Timeout` are also
+handled.
 
 Additionally, HTTP error code 409 (Conflict) is retried if the reason
 is a
