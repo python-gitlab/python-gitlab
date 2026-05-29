@@ -60,7 +60,7 @@ class Gitlab:
         order_by: Set order_by globally
         user_agent: A custom user agent to use for making HTTP requests.
         retry_transient_errors: Whether to retry after 500, 502, 503, 504
-            or 52x responses. Defaults to False.
+            or 52x responses, or after a request timeout. Defaults to False.
         keep_base_url: keep user-provided base URL for pagination if it
             differs from response headers
 
@@ -665,7 +665,7 @@ class Gitlab:
             obey_rate_limit: Whether to obey 429 Too Many Request
                                     responses. Defaults to True.
             retry_transient_errors: Whether to retry after 500, 502, 503, 504
-                or 52x responses. Defaults to False.
+                or 52x responses, or after a request timeout. Defaults to False.
             max_retries: Max retries after 429 or transient errors,
                                set to -1 to retry forever. Defaults to 10.
             extra_headers: Add and override HTTP headers for the request.
@@ -737,7 +737,11 @@ class Gitlab:
                     stream=streamed,
                     **opts,
                 )
-            except (requests.ConnectionError, requests.exceptions.ChunkedEncodingError):
+            except (
+                requests.ConnectionError,
+                requests.exceptions.ChunkedEncodingError,
+                requests.exceptions.Timeout,
+            ):
                 if retry.handle_retry():
                     continue
                 raise
