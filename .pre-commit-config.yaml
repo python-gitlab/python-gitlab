@@ -7,7 +7,7 @@ repos:
     hooks:
       - id: black
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.16.2
+    rev: v4.16.3
     hooks:
       - id: commitizen
         stages: [commit-msg]
@@ -51,6 +51,6 @@ repos:
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
   - repo: https://github.com/maxbrunet/pre-commit-renovate
-    rev: 43.150.0
+    rev: 43.205.2
     hooks:
       - id: renovate-config-validator
