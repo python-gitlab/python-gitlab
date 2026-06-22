@@ -22,7 +22,7 @@ jobs:
   sphinx:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.0
       - name: Set up Python
         uses: actions/setup-python@v6.2.0
         with:
@@ -37,7 +37,7 @@ jobs:
   twine-check:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.0
       - name: Set up Python
         uses: actions/setup-python@v6.2.0
         with:
