@@ -69,6 +69,13 @@ def test_merge_request_discussion(project):
     discussion = mr.discussions.get(discussion.id)
     assert discussion.attributes["notes"][-1]["body"] == "updated body"
 
+    note_from_get = discussion.notes.get(note.id)
+    note_from_get.resolved = True
+    note_from_get.save()
+
+    discussion = mr.discussions.get(discussion.id)
+    assert discussion.attributes["notes"][-1]["resolved"] is True
+
     note_from_get.delete()
 
 
