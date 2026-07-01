@@ -793,7 +793,7 @@ class Gitlab:
             **kwargs: Extra options to send to the server (e.g. sudo)
 
         Returns:
-            A requests result object is streamed is True or the content type is
+            A requests result object if streamed is True or the content type is
             not json.
             The parsed json data otherwise.
 
