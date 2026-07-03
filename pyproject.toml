@@ -41,7 +41,7 @@ license = {text = "LGPL-3.0-or-later"}
 dynamic = ["version"]
 
 [project.optional-dependencies]
-autocompletion = ["argcomplete>=1.10.0,<3"]
+autocompletion = ["argcomplete>=1.10.0,<4"]
 yaml = ["PyYaml>=6.0.1"]
 graphql = ["gql[httpx]>=3.5.0,<5"]
 
