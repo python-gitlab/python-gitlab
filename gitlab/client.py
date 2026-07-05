@@ -404,7 +404,7 @@ class Gitlab:
             The server version and server revision.
                 ('unknown', 'unknown') if the server doesn't perform as expected.
         """
-        if self._server_version is None:
+        if self._server_version in (None, "unknown"):
             try:
                 data = self.http_get("/version")
                 if isinstance(data, dict):
