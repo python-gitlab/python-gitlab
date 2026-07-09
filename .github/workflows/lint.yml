@@ -41,3 +41,5 @@ jobs:
         run: tox -e isort -- --check
       - name: Run pylint Python code static checker (https://github.com/PyCQA/pylint)
         run: tox -e pylint
+      - name: Run pre-commit rst checks (https://pre-commit.com/)
+        run: tox -e pre-commit-rst
