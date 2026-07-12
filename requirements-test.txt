@@ -1,13 +1,13 @@
 -r requirements.txt
 anyio==4.14.1
-build==1.5.0
-coverage==7.14.3
+build==1.5.1
+coverage==7.15.0
 pytest-console-scripts==1.4.1
 pytest-cov==7.1.0
 pytest-github-actions-annotate-failures==0.4.2
 pytest==9.1.1
 PyYaml==6.0.3
-responses==0.26.1
+responses==0.26.2
 respx==0.23.1
 trio==0.33.0
 wheel==0.47.0
