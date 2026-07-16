@@ -75,6 +75,12 @@ You can get and update a single note using the ``*DiscussionNote`` resources::
     last_note.body = 'Updated comment'
     last_note.save()
 
+Resolve / unresolve a note::
+
+    last_note = discussion.notes.get(note_id)
+    last_note.resolved = True  # True to resolve, False to unresolve
+    last_note.save()
+
 Create a new discussion::
 
     discussion = resource.discussions.create({'body': 'First comment of discussion'})

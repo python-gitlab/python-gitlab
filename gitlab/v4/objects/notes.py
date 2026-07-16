@@ -172,7 +172,7 @@ class ProjectMergeRequestDiscussionNoteManager(
         "discussion_id": "id",
     }
     _create_attrs = RequiredOptional(required=("body",), optional=("created_at",))
-    _update_attrs = RequiredOptional(required=("body",))
+    _update_attrs = RequiredOptional(exclusive=("body", "resolved"))
 
 
 class ProjectSnippetNote(SaveMixin, ObjectDeleteMixin, RESTObject):
