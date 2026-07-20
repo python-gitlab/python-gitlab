@@ -1,14 +1,5 @@
 from gitlab.base import RESTObject
-from gitlab.mixins import (
-    CreateMixin,
-    CRUDMixin,
-    DeleteMixin,
-    GetMixin,
-    ObjectDeleteMixin,
-    RetrieveMixin,
-    SaveMixin,
-    UpdateMixin,
-)
+from gitlab.mixins import CRUDMixin, ObjectDeleteMixin, RetrieveMixin, SaveMixin
 from gitlab.types import RequiredOptional
 
 from .award_emojis import (  # noqa: F401
@@ -58,12 +49,7 @@ class GroupEpicDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class GroupEpicDiscussionNoteManager(
-    GetMixin[GroupEpicDiscussionNote],
-    CreateMixin[GroupEpicDiscussionNote],
-    UpdateMixin[GroupEpicDiscussionNote],
-    DeleteMixin[GroupEpicDiscussionNote],
-):
+class GroupEpicDiscussionNoteManager(CRUDMixin[GroupEpicDiscussionNote]):
     _path = "/groups/{group_id}/epics/{epic_id}/discussions/{discussion_id}/notes"
     _obj_cls = GroupEpicDiscussionNote
     _from_parent_attrs = {
@@ -90,12 +76,7 @@ class ProjectCommitDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectCommitDiscussionNoteManager(
-    GetMixin[ProjectCommitDiscussionNote],
-    CreateMixin[ProjectCommitDiscussionNote],
-    UpdateMixin[ProjectCommitDiscussionNote],
-    DeleteMixin[ProjectCommitDiscussionNote],
-):
+class ProjectCommitDiscussionNoteManager(CRUDMixin[ProjectCommitDiscussionNote]):
     _path = (
         "/projects/{project_id}/repository/commits/{commit_id}/"
         "discussions/{discussion_id}/notes"
@@ -191,12 +172,7 @@ class ProjectSnippetDiscussionNote(SaveMixin, ObjectDeleteMixin, RESTObject):
     pass
 
 
-class ProjectSnippetDiscussionNoteManager(
-    GetMixin[ProjectSnippetDiscussionNote],
-    CreateMixin[ProjectSnippetDiscussionNote],
-    UpdateMixin[ProjectSnippetDiscussionNote],
-    DeleteMixin[ProjectSnippetDiscussionNote],
-):
+class ProjectSnippetDiscussionNoteManager(CRUDMixin[ProjectSnippetDiscussionNote]):
     _path = (
         "/projects/{project_id}/snippets/{snippet_id}/"
         "discussions/{discussion_id}/notes"
