@@ -60,6 +60,7 @@ class ProjectHookManager(CRUDMixin[ProjectHook]):
             "wiki_page_events",
             "enable_ssl_verification",
             "token",
+            "custom_webhook_template",
         ),
     )
     _update_attrs = RequiredOptional(
@@ -76,6 +77,7 @@ class ProjectHookManager(CRUDMixin[ProjectHook]):
             "wiki_events",
             "enable_ssl_verification",
             "token",
+            "custom_webhook_template",
         ),
     )
 
