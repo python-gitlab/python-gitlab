@@ -16,4 +16,8 @@ RUN pip install --no-cache-dir $(find dist -name *.whl) && \
     rm -rf dist/
 
 ENTRYPOINT ["gitlab"]
+
+# Run as a non-root user for container security
+RUN (addgroup -S app 2>/dev/null || groupadd --system app) && (adduser -S -u 1001 -G app app 2>/dev/null || useradd --system --uid 1001 --gid app --create-home app)
+USER 1001
 CMD ["--version"]
