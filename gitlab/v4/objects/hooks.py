@@ -61,6 +61,19 @@ class ProjectHookManager(CRUDMixin[ProjectHook]):
             "enable_ssl_verification",
             "token",
             "custom_webhook_template",
+            "branch_filter_strategy",
+            "confidential_note_events",
+            "custom_headers",
+            "deployment_events",
+            "description",
+            "feature_flag_events",
+            "milestone_events",
+            "name",
+            "push_events_branch_filter",
+            "releases_events",
+            "resource_access_token_events"
+            "signing_token",
+            "resource_deploy_token_events",
         ),
     )
     _update_attrs = RequiredOptional(
@@ -78,6 +91,19 @@ class ProjectHookManager(CRUDMixin[ProjectHook]):
             "enable_ssl_verification",
             "token",
             "custom_webhook_template",
+            "branch_filter_strategy",
+            "confidential_note_events",
+            "custom_headers",
+            "deployment_events",
+            "description",
+            "feature_flag_events",
+            "milestone_events",
+            "name",
+            "push_events_branch_filter",
+            "releases_events",
+            "resource_access_token_events"
+            "signing_token",
+            "resource_deploy_token_events",
         ),
     )
 
