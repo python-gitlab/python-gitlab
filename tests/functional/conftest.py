@@ -342,7 +342,7 @@ def project(gl):
     _id = uuid.uuid4().hex
     name = f"test-project-{_id}"
 
-    project = gl.projects.create(name=name)
+    project = gl.projects.create(name=name, remove_source_branch_after_merge=False)
 
     yield project
 
