@@ -2,6 +2,52 @@
 
 All versions below are listed in reverse chronological order.
 
+## v8.5.0 (2026-07-28)
+
+### Bug Fixes
+
+- Typo
+  ([`72134f5`](https://github.com/python-gitlab/python-gitlab/commit/72134f5369cd4568a2374f25543071245375d26e))
+
+- **api**: Allow ProjectMergeRequestDiscussionNote.resolved to be updated
+  ([`b411e5a`](https://github.com/python-gitlab/python-gitlab/commit/b411e5a20a4370a7c1b6968c85251b57785a9d03))
+
+- **client**: Retry fetching server version after an unknown result
+  ([`046fbac`](https://github.com/python-gitlab/python-gitlab/commit/046fbac664e033a0a5a65417bfd229e91a1fd09f))
+
+### Continuous Integration
+
+- Run the pre-commit rst checks in the CI
+  ([`a9c5d17`](https://github.com/python-gitlab/python-gitlab/commit/a9c5d17d3ab57d448be6dd5eac3b7ec9eb680261))
+
+### Documentation
+
+- Correct error with backticks
+  ([`e57559e`](https://github.com/python-gitlab/python-gitlab/commit/e57559e8c1bea1ba580074e83d21072d9b80d582))
+
+- **discussions**: Add example of resolving a single project merge request discussion note
+  ([`2ef6452`](https://github.com/python-gitlab/python-gitlab/commit/2ef6452b9471c1a421ac8addc06eb3b5052289e0))
+
+### Features
+
+- **api**: Add ListMixin to remaining *DiscussionNoteManagers
+  ([`0e2347c`](https://github.com/python-gitlab/python-gitlab/commit/0e2347cc181214bd3d825eac3cc94239e6cd2ef5))
+
+- **client**: Additionally handle retries for request timeouts
+  ([`4e32439`](https://github.com/python-gitlab/python-gitlab/commit/4e32439deaa9516a48becf9a7fc9cdb7723207c6))
+
+- **hooks**: Support custom webhook template on project hooks
+  ([`39dc990`](https://github.com/python-gitlab/python-gitlab/commit/39dc9902af1383ea5f4b5efb8c2e42ab71f2910f))
+
+- **users**: Allow updating only a user's email, username or name
+  ([`0d2afb8`](https://github.com/python-gitlab/python-gitlab/commit/0d2afb878ea28038b229c7a14ddfdbe393f22e18))
+
+### Testing
+
+- **api**: Ensure ProjectMergeRequestDiscussionNote.resolved can be updated successfully
+  ([`57fd60c`](https://github.com/python-gitlab/python-gitlab/commit/57fd60c1c606b98b43ca3dcde48b1fa841635e76))
+
+
 ## v8.4.0 (2026-05-28)
 
 ### Features
