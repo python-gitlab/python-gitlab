@@ -9,6 +9,7 @@
     "**/.venv/**",
     "**/node_modules/**"
   ],
+  "minimumReleaseAge": "7 days",
   "pip_requirements": {
     "fileMatch": ["^requirements(-[\\w]*)?\\.txt$"]
   },
