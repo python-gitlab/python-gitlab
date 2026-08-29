@@ -1,6 +1,9 @@
 import datetime
+import logging
 import os
-import time
+
+import gitlab.const
+import tests.functional.helpers
 
 branch = "BRANCH-cli-v4"
 
@@ -240,8 +243,30 @@ def test_accept_request_merge(gitlab_cli, project):
         "commit_message": "chore: test-cli-v4 change",
     }
     project.files.create(file_data)
-    # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
-    time.sleep(30)
+
+    def _mergeable() -> bool:
+        nonlocal mr
+        mr = project.mergerequests.get(mr.iid)
+        mr_status = mr.detailed_merge_status
+        assert isinstance(mr_status, str)
+        if mr_status != gitlab.const.DetailedMergeStatus.MERGEABLE:
+            logging.info(
+                f"merge request {mr.iid} not yet mergeable: "
+                f"detailed_merge_status={mr_status!r}"
+            )
+            return False
+        return True
+
+    # Wait until GitLab reports the MR as actually mergeable instead of a
+    # blind sleep. Other non-"checking"/"unchecked" statuses (e.g.
+    # "broken_status") can appear transiently before GitLab finishes
+    # re-evaluating mergeability after the commit above, so we wait for the
+    # positive result rather than merely "not still checking".
+    tests.functional.helpers.poll_until(
+        condition=_mergeable,
+        description=f"merge request {mr.iid} to become mergeable",
+        interval=1,
+    )
 
     approve_cmd = [
         "project-merge-request",
@@ -253,7 +278,34 @@ def test_accept_request_merge(gitlab_cli, project):
     ]
     ret = gitlab_cli(approve_cmd)
 
-    assert ret.success
+    def _merge_succeeds() -> bool:
+        nonlocal ret
+        if not ret.success:
+            mr_after_failure = project.mergerequests.get(mr.iid)
+            logging.info(
+                f"merge request {mr.iid} merge attempt failed (will retry): "
+                f"stderr={ret.stderr!r}; state={mr_after_failure.state!r} "
+                f"merged_at={mr_after_failure.merged_at!r} "
+                f"detailed_merge_status={mr_after_failure.detailed_merge_status!r}"
+            )
+            ret = gitlab_cli(approve_cmd)
+        return bool(ret.success)
+
+    # Even once GitLab reports the MR as mergeable, the merge endpoint has
+    # returned 405 immediately afterward in CI. Retry a few times, logging
+    # the MR's actual state on each failure, so we can tell a transient
+    # rejection (still "opened") apart from something already merged/closed.
+    tests.functional.helpers.poll_until(
+        condition=_merge_succeeds,
+        description=f"merge request {mr.iid} merge command to succeed",
+        timeout=30,
+        interval=2,
+    )
+
+    assert ret.success, (
+        f"merge request {mr.iid} failed to merge after retries: "
+        f"stdout={ret.stdout!r} stderr={ret.stderr!r}"
+    )
 
 
 def test_create_project_label(gitlab_cli, project):
