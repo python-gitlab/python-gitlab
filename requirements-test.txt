@@ -1,5 +1,5 @@
 -r requirements.txt
-anyio==4.14.2
+anyio==4.15.1
 build==1.6.0
 coverage==7.16.0
 pytest-console-scripts==1.4.1

@@ -9,6 +9,6 @@ pylint==4.0.8
 pytest==9.1.1
 responses==0.26.3
 respx==0.23.1
-types-PyYAML==6.0.12.20260815
-types-requests==2.33.0.20260712
+types-PyYAML==6.0.12.20260906
+types-requests==2.33.0.20260906
 types-setuptools==84.0.0.20260812
