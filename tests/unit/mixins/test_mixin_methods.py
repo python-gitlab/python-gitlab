@@ -12,6 +12,7 @@ from gitlab.mixins import (
     GetMixin,
     GetWithoutIdMixin,
     ListMixin,
+    ObjectDeleteMixin,
     RefreshMixin,
     SaveMixin,
     SetMixin,
@@ -422,6 +423,27 @@ def test_update_mixin_no_id(gl):
 
 
 @responses.activate
+def test_update_mixin_custom_path(gl):
+    class M(UpdateMixin, FakeManager):
+        pass
+
+    url = "http://localhost/api/v4/others/42"
+    responses.add(
+        method=responses.PUT,
+        url=url,
+        json={"id": 42, "foo": "baz"},
+        status=200,
+        match=[responses.matchers.query_param_matcher({})],
+    )
+
+    mgr = M(gl)
+    server_data = mgr.update(42, {"foo": "baz"}, _custom_path="/others/42")
+    assert isinstance(server_data, dict)
+    assert server_data["foo"] == "baz"
+    assert responses.assert_call_count(url, 1) is True
+
+
+@responses.activate
 def test_delete_mixin(gl):
     class M(DeleteMixin, FakeManager):
         pass
@@ -437,6 +459,25 @@ def test_delete_mixin(gl):
 
     mgr = M(gl)
     mgr.delete(42)
+    assert responses.assert_call_count(url, 1) is True
+
+
+@responses.activate
+def test_delete_mixin_custom_path(gl):
+    class M(DeleteMixin, FakeManager):
+        pass
+
+    url = "http://localhost/api/v4/others/42"
+    responses.add(
+        method=responses.DELETE,
+        url=url,
+        json="",
+        status=200,
+        match=[responses.matchers.query_param_matcher({})],
+    )
+
+    mgr = M(gl)
+    mgr.delete(42, _custom_path="/others/42")
     assert responses.assert_call_count(url, 1) is True
 
 
@@ -467,6 +508,32 @@ def test_save_mixin(gl):
 
 
 @responses.activate
+def test_save_mixin_custom_path(gl):
+    class M(UpdateMixin, FakeManager):
+        pass
+
+    class TestClass(SaveMixin, base.RESTObject):
+        def _get_custom_path(self):
+            return "/others/42"
+
+    url = "http://localhost/api/v4/others/42"
+    responses.add(
+        method=responses.PUT,
+        url=url,
+        json={"id": 42, "foo": "baz"},
+        status=200,
+        match=[responses.matchers.query_param_matcher({})],
+    )
+
+    mgr = M(gl)
+    obj = TestClass(mgr, {"id": 42, "foo": "bar"})
+    obj.foo = "baz"
+    obj.save()
+    assert obj._attrs["foo"] == "baz"
+    assert responses.assert_call_count(url, 1) is True
+
+
+@responses.activate
 def test_save_mixin_without_new_data(gl):
     class M(UpdateMixin, FakeManager):
         pass
@@ -483,6 +550,30 @@ def test_save_mixin_without_new_data(gl):
 
     assert obj._attrs["foo"] == "bar"
     assert responses.assert_call_count(url, 0) is True
+
+
+@responses.activate
+def test_object_delete_mixin_custom_path(gl):
+    class M(DeleteMixin, FakeManager):
+        pass
+
+    class TestClass(ObjectDeleteMixin, base.RESTObject):
+        def _get_custom_path(self):
+            return "/others/42"
+
+    url = "http://localhost/api/v4/others/42"
+    responses.add(
+        method=responses.DELETE,
+        url=url,
+        json="",
+        status=200,
+        match=[responses.matchers.query_param_matcher({})],
+    )
+
+    mgr = M(gl)
+    obj = TestClass(mgr, {"id": 42})
+    obj.delete()
+    assert responses.assert_call_count(url, 1) is True
 
 
 @responses.activate
