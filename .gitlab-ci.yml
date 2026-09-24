@@ -1,9 +1,24 @@
 image: python:3.14
 
 stages:
+  - prepare
   - build
   - deploy
   - promote
+
+lint:
+  stage: prepare
+  script:
+    # Configurations
+    - set +x
+    # Run lint workflows
+    - |
+      grep 'run: ' ./.github/workflows/lint.yml | sed 's/.* run: //g' | while read -r command; do
+        echo ' '
+        echo "- ${command}"
+        echo ' '
+        sh -c "${command}" || exit 1
+      done
 
 build-images:
   stage: build
@@ -27,7 +42,7 @@ build-images:
 
 deploy-images:
   stage: deploy
-  image: 
+  image:
     name: mplatform/manifest-tool:alpine-v2.0.4@sha256:38b399ff66f9df247af59facceb7b60e2cd01c2d649aae318da7587efb4bbf87
     entrypoint: [""]
   script:
