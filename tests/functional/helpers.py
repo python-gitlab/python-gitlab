@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import TYPE_CHECKING
+from typing import Callable, TYPE_CHECKING
 
 import pytest
 
@@ -27,6 +27,29 @@ def get_gitlab_plan(gl: gitlab.Gitlab) -> str | None:
     if TYPE_CHECKING:
         assert isinstance(license["plan"], str)
     return license["plan"]
+
+
+def poll_until(
+    *,
+    condition: Callable[[], bool],
+    description: str,
+    timeout: float = TIMEOUT,
+    interval: float = SLEEP_INTERVAL,
+) -> None:
+    """Repeatedly call `condition` until it returns truthy, sleeping `interval`
+    seconds between attempts. Fails the test via `pytest.fail` if `timeout`
+    seconds elapse first, so callers can replace a blind `time.sleep()` "let
+    GitLab catch up" pause with a check that fails fast when something is
+    actually wrong instead of always waiting the full duration.
+    """
+    # Use a monotonic deadline rather than counting iterations so the timeout
+    # is accurate even if `condition()` itself is slow (e.g. a slow API call).
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if condition():
+            return
+        time.sleep(interval)
+    pytest.fail(f"Timed out after {timeout}s waiting for: {description}")
 
 
 def safe_delete(object: gitlab.base.RESTObject) -> None:
