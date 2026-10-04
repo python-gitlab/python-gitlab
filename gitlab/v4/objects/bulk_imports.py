@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+from typing import Any
+
+import requests
+
+from gitlab import cli
+from gitlab import exceptions as exc
 from gitlab.base import RESTObject
 from gitlab.mixins import CreateMixin, ListMixin, RefreshMixin, RetrieveMixin
 from gitlab.types import RequiredOptional
@@ -16,6 +22,21 @@ __all__ = [
 
 class BulkImport(RefreshMixin, RESTObject):
     entities: BulkImportEntityManager
+
+    @cli.register_custom_action(cls_names="BulkImport")
+    @exc.on_http_error(exc.GitlabCancelError)
+    def cancel(self, **kwargs: Any) -> dict[str, Any] | requests.Response:
+        """Cancel a bulk import.
+
+        Args:
+            **kwargs: Extra options to send to the server (e.g. sudo)
+
+        Raises:
+            GitlabAuthenticationError: If authentication is not correct
+            GitlabCancelError: If the request failed
+        """
+        path = f"{self.manager.path}/{self.encoded_id}/cancel"
+        return self.manager.gitlab.http_post(path, **kwargs)
 
 
 class BulkImportManager(CreateMixin[BulkImport], RetrieveMixin[BulkImport]):
