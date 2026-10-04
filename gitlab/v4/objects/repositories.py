@@ -329,10 +329,8 @@ class RepositoryMixin(_RestObjectBase):
 
     @cli.register_custom_action(cls_names="Project", required=("refs",))
     @exc.on_http_error(exc.GitlabGetError)
-    def repository_merge_base(
-        self, refs: list[str], **kwargs: Any
-    ) -> dict[str, Any] | requests.Response:
-        """Return a diff between two branches/commits.
+    def repository_merge_base(self, refs: list[str], **kwargs: Any) -> dict[str, Any]:
+        """Return the common ancestor commit for the given refs.
 
         Args:
             refs: The refs to find the common ancestor of. Multiple refs can be passed.
@@ -351,7 +349,10 @@ class RepositoryMixin(_RestObjectBase):
             custom_types={"refs": types.ArrayAttribute},
             transform_data=True,
         )
-        return self.manager.gitlab.http_get(path, query_data=query_data, **kwargs)
+        result = self.manager.gitlab.http_get(path, query_data=query_data, **kwargs)
+        if TYPE_CHECKING:
+            assert isinstance(result, dict)
+        return result
 
     @cli.register_custom_action(cls_names="Project")
     @exc.on_http_error(exc.GitlabDeleteError)
