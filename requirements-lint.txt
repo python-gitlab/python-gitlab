@@ -1,11 +1,11 @@
 -r requirements.txt
 argcomplete==2.0.0
 black==26.5.1
-commitizen==4.18.1
-flake8==7.3.0
-isort==9.0.1
-mypy==2.3.1
-pylint==4.0.8
+commitizen==4.19.1
+flake8==7.4.1
+isort==9.0.2
+mypy==2.4.0
+pylint==4.1.2
 pytest==9.1.1
 responses==0.26.3
 respx==0.23.1
