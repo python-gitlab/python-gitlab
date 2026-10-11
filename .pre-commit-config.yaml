@@ -7,20 +7,20 @@ repos:
     hooks:
       - id: black
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.18.1
+    rev: v4.19.1
     hooks:
       - id: commitizen
         stages: [commit-msg]
   - repo: https://github.com/pycqa/flake8
-    rev: 7.3.0
+    rev: 7.4.1
     hooks:
       - id: flake8
   - repo: https://github.com/pycqa/isort
-    rev: 9.0.1
+    rev: 9.0.2
     hooks:
       - id: isort
   - repo: https://github.com/pycqa/pylint
-    rev: v4.0.8
+    rev: v4.1.2
     hooks:
       - id: pylint
         additional_dependencies:
@@ -32,7 +32,7 @@ repos:
           - requests-toolbelt==1.0.0
         files: 'gitlab/'
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v2.3.1
+    rev: v2.4.0
     hooks:
       - id: mypy
         args: []
@@ -51,6 +51,6 @@ repos:
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
   - repo: https://github.com/maxbrunet/pre-commit-renovate
-    rev: 44.90.3
+    rev: 44.132.5
     hooks:
       - id: renovate-config-validator
