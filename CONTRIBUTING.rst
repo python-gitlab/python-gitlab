@@ -1,5 +1,6 @@
+############
 Contributing
-============
+############
 
 You can contribute to the project in multiple ways:
 
@@ -75,6 +76,9 @@ This creates a clearer project history, and automates our `Releases`_ and change
 * Bad:   ``Update documentation for projects``
 * Good:  ``docs(projects): update example for saving project attributes``
 
+Also see the `AI attribution section <ai_attribution_section_>`_ for
+information on attributing contributions from AI.
+
 Coding Style
 ------------
 
@@ -89,6 +93,30 @@ To format your code according to our guidelines before committing, run:
 
   cd python-gitlab/
   tox -e black,isort
+
+.. _ai_attribution_section:
+
+AI Attribution
+--------------
+
+When an AI coding assistant contributed meaningfully to a commit (writing or
+significantly modifying code, suggesting the fix, generating tests, etc.),
+add an ``Assisted-by`` trailer to the commit footer::
+
+   Assisted-by: <AgentName>:<ModelVersion>
+
+Place it alongside any ``Closes:`` or ``BREAKING CHANGE:`` lines. Omit it when
+the AI contribution was trivial (e.g. a one-word suggestion or only
+autocomplete) or purely mechanical (running linters, reformatting).
+
+Example::
+
+   fix(cli): correct the --spam flag
+
+   The --spam flag now says spam three times.
+
+   Closes: #1234
+   Assisted-by: Claude:claude-sonnet-4-6
 
 Running unit tests
 ------------------

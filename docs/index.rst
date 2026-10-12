@@ -16,6 +16,7 @@
    changelog
    release-notes
    faq
+   contributing
 
 
 Indices and tables
