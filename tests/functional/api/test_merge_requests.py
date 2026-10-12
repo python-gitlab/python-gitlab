@@ -5,6 +5,7 @@ import pytest
 
 import gitlab
 import gitlab.v4.objects
+import tests.functional.helpers
 
 
 def test_merge_requests(project):
@@ -229,11 +230,16 @@ def test_merge_request_should_remove_source_branch(project, merge_request) -> No
     # Wait until it is merged
     mr = None
     mr_iid = merge_request.iid
-    for _ in range(60):
+
+    def _merge_completed() -> bool:
+        nonlocal mr
         mr = project.mergerequests.get(mr_iid)
-        if mr.merged_at is not None:
-            break
-        time.sleep(0.5)
+        return mr.merged_at is not None
+
+    tests.functional.helpers.poll_until(
+        condition=_merge_completed,
+        description=f"merge request {mr_iid} merged_at to be set",
+    )
 
     assert mr is not None
     assert mr.merged_at is not None
@@ -271,11 +277,16 @@ def test_merge_request_large_commit_message(project, merge_request) -> None:
     # Wait until it is merged
     mr = None
     mr_iid = merge_request.iid
-    for _ in range(60):
+
+    def _merge_completed() -> bool:
+        nonlocal mr
         mr = project.mergerequests.get(mr_iid)
-        if mr.merged_at is not None:
-            break
-        time.sleep(0.5)
+        return mr.merged_at is not None
+
+    tests.functional.helpers.poll_until(
+        condition=_merge_completed,
+        description=f"merge request {mr_iid} merged_at to be set",
+    )
 
     assert mr is not None
     assert mr.merged_at is not None

@@ -413,22 +413,34 @@ test:
             }
         )
 
-        # Pause to let GL catch up (happens on hosted too, sometimes takes a while for server to be ready to merge)
-        time.sleep(5)
-
         mr_iid = mr.iid
-        for _ in range(60):
-            mr = project.mergerequests.get(mr_iid)
-            if (
-                mr.detailed_merge_status == "checking"
-                or mr.detailed_merge_status == "unchecked"
-            ):
-                time.sleep(0.5)
-            else:
-                break
 
-        assert mr.detailed_merge_status != "checking"
-        assert mr.detailed_merge_status != "unchecked"
+        def _merge_status_settled() -> bool:
+            nonlocal mr
+            mr = project.mergerequests.get(mr_iid)
+            mr_status = mr.detailed_merge_status
+            assert isinstance(mr_status, str)
+            if create_pipeline:
+                # The pipeline's `sleep 24h` never finishes, so this MR is
+                # never expected to become truly mergeable. Just wait until
+                # GitLab is done with its initial check.
+                settled = mr_status not in ("checking", "unchecked")
+            else:
+                # Wait for the positive result rather than merely "not still
+                # checking": other statuses (e.g. "broken_status") can appear
+                # transiently before GitLab finishes evaluating mergeability.
+                settled = mr_status == gitlab.const.DetailedMergeStatus.MERGEABLE
+            if not settled:
+                logging.info(
+                    f"merge request {mr_iid} detailed_merge_status not yet "
+                    f"settled: {mr_status!r}"
+                )
+            return settled
+
+        helpers.poll_until(
+            condition=_merge_status_settled,
+            description=f"merge request {mr_iid} detailed_merge_status to settle",
+        )
 
         to_delete.extend([mr, mr_branch])
         return mr
