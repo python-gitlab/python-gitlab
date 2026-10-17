@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v7.0.0
         with:
-          python-version: "3.14"
+          python-version: "3.15"
       - run: pip install --upgrade tox
       - name: Run commitizen (https://commitizen-tools.github.io/commitizen/)
         run: tox -e cz
