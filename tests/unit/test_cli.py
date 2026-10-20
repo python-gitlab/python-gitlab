@@ -6,6 +6,7 @@ import tempfile
 from unittest import mock
 
 import pytest
+import responses
 
 import gitlab.base
 from gitlab import cli
@@ -231,3 +232,32 @@ def test_legacy_display_with_long_repr_truncates(fake_object_long_repr):
         printer.display(fake_object_long_repr, obj=fake_object_long_repr)
 
     assert len(mocked.call_args.args[0]) < 80
+
+
+@pytest.mark.parametrize(
+    "project_id,encoded_project_id",
+    [("42", "42"), ("group/sub project", "group%2Fsub%20project")],
+)
+def test_cli_create_commit_status(gl, monkeypatch, project_id, encoded_project_id):
+    manager = gitlab.v4.objects.ProjectCommitStatusManager
+    # CLI initialization interpolates the class path; restore it after this test.
+    monkeypatch.setattr(manager, "_path", manager._path)
+    data = {"state": "pending", "context": "sample"}
+    url = f"http://localhost/api/v4/projects/{encoded_project_id}/statuses/abcdef"
+    with responses.RequestsMock() as rsps:
+        rsps.post(
+            url,
+            json={"id": 1, "status": "pending", "name": "sample"},
+            status=201,
+            match=[responses.matchers.json_params_matcher(data)],
+        )
+        command = v4_cli.GitlabCLI(
+            gl,
+            "project-commit-status",
+            "create",
+            {"project_id": project_id, "commit_id": "abcdef", **data},
+        )
+        result = command.run()
+
+    assert result.status == "pending"
+    assert result.name == "sample"

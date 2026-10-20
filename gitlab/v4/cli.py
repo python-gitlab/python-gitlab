@@ -97,6 +97,13 @@ class GitlabCLI:
         method_name = self.resource_action.replace("-", "_")
         return getattr(class_instance, method_name)(**self.args)
 
+    def do_project_commit_status_create(self) -> gitlab.base.RESTObject:
+        # Status creation has a different URL from the interpolated list path.
+        project = self.gl.projects.get(self.parent_args["project_id"], lazy=True)
+        commit = project.commits.get(self.parent_args["commit_id"], lazy=True)
+        self.mgr = commit.statuses
+        return self.do_create()
+
     def do_project_export_download(self) -> None:
         try:
             project = self.gl.projects.get(self.parent_args["project_id"], lazy=True)
