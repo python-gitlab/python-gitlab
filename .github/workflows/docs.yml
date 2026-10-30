@@ -20,7 +20,7 @@ env:
 
 jobs:
   sphinx:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Set up Python
@@ -35,7 +35,7 @@ jobs:
         run: tox
 
   twine-check:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Set up Python
