@@ -6,6 +6,7 @@ import tempfile
 from unittest import mock
 
 import pytest
+import responses
 
 import gitlab.base
 from gitlab import cli
@@ -13,6 +14,7 @@ from gitlab.exceptions import GitlabError
 from gitlab.mixins import CreateMixin, UpdateMixin
 from gitlab.types import RequiredOptional
 from gitlab.v4 import cli as v4_cli
+from gitlab.v4.objects import ProjectJobManager
 
 
 @pytest.mark.parametrize(
@@ -117,6 +119,40 @@ def test_v4_parse_args():
     args = parser.parse_args(["project", "list"])
     assert args.gitlab_resource == "project"
     assert args.resource_action == "list"
+
+
+@pytest.mark.parametrize(
+    "path", ["result.bin", "reports/result.bin", "reports/a file.bin"]
+)
+@responses.activate
+def test_project_job_artifact_cli_passes_required_path(
+    gl: gitlab.Gitlab, path: str
+) -> None:
+    args = cli._get_parser().parse_args(
+        ["project-job", "artifact", "--project-id", "1", "--id", "2", "--path", path]
+    )
+    payload = b"artifact\x00\xff"
+    url = f"http://localhost/api/v4/projects/1/jobs/2/artifacts/{path}"
+    responses.add(responses.GET, url, body=payload)
+
+    with mock.patch.object(ProjectJobManager, "_path", ProjectJobManager._path):
+        result = v4_cli.GitlabCLI(
+            gl,
+            args.gitlab_resource,
+            args.resource_action,
+            {"project_id": args.project_id, "id": args.id, "path": args.path},
+        ).run()
+
+    assert result == payload
+    assert len(responses.calls) == 1
+
+
+def test_project_job_artifact_cli_requires_path() -> None:
+    with pytest.raises(SystemExit) as error:
+        cli._get_parser().parse_args(
+            ["project-job", "artifact", "--project-id", "1", "--id", "2"]
+        )
+    assert error.value.code == 2
 
 
 def test_v4_parser():
