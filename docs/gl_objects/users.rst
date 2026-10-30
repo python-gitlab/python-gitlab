@@ -435,6 +435,53 @@ Delete an email for a user::
     # or
     email.delete()
 
+Current user applications
+=========================
+
+References
+----------
+
+You can manage OAuth applications owned by the current user (GitLab 19.0 and
+later). To manage instance-wide applications, see :doc:`applications`.
+
+* v4 API:
+
+  + :class:`gitlab.v4.objects.CurrentUserApplication`
+  + :class:`gitlab.v4.objects.CurrentUserApplicationManager`
+  + :attr:`gitlab.v4.objects.CurrentUser.applications`
+
+* GitLab API: https://docs.gitlab.com/api/user_applications
+
+Examples
+--------
+
+List the current user's applications::
+
+    applications = gl.user.applications.list(get_all=True)
+
+Get an application::
+
+    application = gl.user.applications.get(app_id)
+
+Create an application::
+
+    application = gl.user.applications.create({
+        'name': 'your_app',
+        'redirect_uri': 'http://application.url',
+        'scopes': 'read_user openid profile email',
+    })
+
+Update an application::
+
+    application.name = 'new_name'
+    application.save()
+
+Delete an application::
+
+    gl.user.applications.delete(app_id)
+    # or
+    application.delete()
+
 Users activities
 ================
 
