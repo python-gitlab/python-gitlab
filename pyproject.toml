@@ -110,7 +110,9 @@ insertion_flag = "All versions below are listed in reverse chronological order."
 
 [tool.pylint.messages_control]
 max-line-length = 88
-jobs = 0  # Use auto-detected number of multiple processes to speed up Pylint.
+# TODO: Restore `jobs = 0` once a dill release newer than 0.4.1 is available. Parallel
+# mode crashes on Python 3.15: https://github.com/pylint-dev/pylint/issues/11528
+jobs = 1
 # TODO(jlvilla): Work on removing these disables over time.
 disable = [
     "arguments-differ",
