@@ -33,6 +33,8 @@ from .events import UserEventManager  # noqa: F401
 from .personal_access_tokens import UserPersonalAccessTokenManager  # noqa: F401
 
 __all__ = [
+    "CurrentUserApplication",
+    "CurrentUserApplicationManager",
     "CurrentUserEmail",
     "CurrentUserEmailManager",
     "CurrentUserGPGKey",
@@ -71,6 +73,19 @@ __all__ = [
     "UserContributedProject",
     "UserContributedProjectManager",
 ]
+
+
+class CurrentUserApplication(SaveMixin, ObjectDeleteMixin, RESTObject):
+    _repr_attr = "application_name"
+
+
+class CurrentUserApplicationManager(CRUDMixin[CurrentUserApplication]):
+    _path = "/user/applications"
+    _obj_cls = CurrentUserApplication
+    _create_attrs = RequiredOptional(
+        required=("name", "redirect_uri", "scopes"), optional=("confidential",)
+    )
+    _update_attrs = RequiredOptional(optional=("name", "scopes"))
 
 
 class CurrentUserEmail(ObjectDeleteMixin, RESTObject):
@@ -157,6 +172,7 @@ class CurrentUser(RESTObject):
     _id_attr = None
     _repr_attr = "username"
 
+    applications: CurrentUserApplicationManager
     emails: CurrentUserEmailManager
     gpgkeys: CurrentUserGPGKeyManager
     keys: CurrentUserKeyManager
