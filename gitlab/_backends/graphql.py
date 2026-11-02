@@ -24,7 +24,7 @@ class GitlabTransport(HTTPXTransport):
         pass
 
 
-class GitlabAsyncTransport(HTTPXAsyncTransport):
+class GitlabAsyncTransport(HTTPXAsyncTransport):  # pylint: disable=abstract-method
     """An async gql httpx transport that reuses an existing httpx.AsyncClient.
     By default, gql's transports do not have a keep-alive session
     and do not enable providing your own session that's kept open.
