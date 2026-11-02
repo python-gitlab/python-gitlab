@@ -352,6 +352,8 @@ class Gitlab:
             pagination=options.get("pagination") or config.pagination,
             order_by=options.get("order_by") or config.order_by,
             user_agent=options.get("user_agent") or config.user_agent,
+            retry_transient_errors=options.get("retry_transient_errors")
+            or config.retry_transient_errors,
         )
 
     @staticmethod
