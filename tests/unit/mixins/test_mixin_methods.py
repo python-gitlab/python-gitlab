@@ -584,7 +584,6 @@ def test_upload_mixin_with_filepath(gl):
         url=url,
         json={"id": 42, "file_name": "test.txt", "file_content": "testing contents"},
         status=200,
-        match=[responses.matchers.query_param_matcher({})],
     )
 
     mgr = FakeManager(gl)
@@ -595,4 +594,102 @@ def test_upload_mixin_with_filepath(gl):
     assert isinstance(res_only_path, dict)
     assert res_only_path["file_name"] == "test.txt"
     assert res_only_path["file_content"] == "testing contents"
+    assert responses.assert_call_count(url, 1) is True
+
+
+class MockParentRefWithIID:
+    def __init__(self, iid):
+        self.iid = iid
+
+
+class MockParentWithRef:
+    def __init__(self, parent_ref):
+        self.parent_ref = parent_ref
+
+
+class MockManagerWithRefAttr(base.RESTManager):
+    _path = "/tests/{test_id}/refs"
+    _obj_cls = FakeObject
+    _from_parent_attrs = {"test_id": "id"}
+    _parent_ref_attr = "parent_ref"
+
+
+def test_get_parent_ref_id_no_parent(gl):
+    class M(MockManagerWithRefAttr):
+        pass
+
+    mgr = M(gl)
+    assert mgr._get_parent_ref_id() is None
+
+
+def test_get_parent_ref_id_no_parent_ref_attr(gl):
+    class M(FakeManager):
+        pass
+
+    mgr = M(gl)
+    assert mgr._get_parent_ref_id() is None
+
+
+def test_get_parent_ref_id_parent_has_no_ref_attr(gl):
+    class M(FakeManager):
+        _parent_ref_attr = "nonexistent"
+
+    parent = MockParentWithRef(None)
+    mgr = M(gl, parent=parent)
+    assert mgr._get_parent_ref_id() is None
+
+
+def test_get_parent_ref_id_parent_ref_is_none(gl):
+    class M(MockManagerWithRefAttr):
+        pass
+
+    parent = MockParentWithRef(None)
+    mgr = M(gl, parent=parent)
+    assert mgr._get_parent_ref_id() is None
+
+
+def test_get_parent_ref_id_success(gl):
+    class M(MockManagerWithRefAttr):
+        pass
+
+    parent_ref = MockParentRefWithIID(42)
+    parent = MockParentWithRef(parent_ref)
+    mgr = M(gl, parent=parent)
+    assert mgr._get_parent_ref_id() == 42
+
+
+def test_get_parent_ref_id_no_iid_attribute(gl):
+    class MockParentRefNoIID:
+        pass
+
+    class M(MockManagerWithRefAttr):
+        pass
+
+    parent_ref = MockParentRefNoIID()
+    parent = MockParentWithRef(parent_ref)
+    mgr = M(gl, parent=parent)
+    assert mgr._get_parent_ref_id() is None
+
+
+def test_get_mixin_without_id_raises_error_when_no_parent_ref(gl):
+    class M(GetMixin, MockManagerWithRefAttr):
+        pass
+
+    mgr = M(gl)
+    with pytest.raises(ValueError, match="id is required"):
+        mgr.get()
+
+
+@responses.activate
+def test_update_mixin_without_id_no_parent_ref(gl):
+    class M(UpdateMixin, FakeManager):
+        _update_method = UpdateMethod.POST
+        _obj_cls = FakeObject
+
+    url = "http://localhost/api/v4/tests"
+    responses.add(method=responses.POST, url=url, json={}, status=200)
+
+    mgr = M(gl)
+    result = mgr.update(new_data={"foo": "bar"})
+    assert isinstance(result, dict)
     assert responses.assert_call_count(url, 1) is True
