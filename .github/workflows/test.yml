@@ -60,7 +60,7 @@ jobs:
 
   functional:
     timeout-minutes: 30
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     strategy:
       matrix:
         toxenv: [api_func_v4, cli_func_v4]
@@ -85,7 +85,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   coverage:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Set up Python ${{ matrix.python-version }}
