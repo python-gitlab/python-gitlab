@@ -28,6 +28,11 @@ To connect to GitLab.com or another GitLab instance, create a ``gitlab.Gitlab`` 
    # anonymous read-only access for public resources (self-hosted GitLab instance)
    gl = gitlab.Gitlab('https://gitlab.example.com')
 
+   # anonymous read-only access to a third-party hosted copy of the GitLab REST API
+   # with sample projects (gl.sandboxapis.dev), e.g. to try python-gitlab without
+   # a GitLab account or token
+   gl = gitlab.Gitlab('https://gl.sandboxapis.dev')
+
    # private token or personal token authentication (GitLab.com)
    gl = gitlab.Gitlab(private_token='JVNSESs8EwWRx5yDxM5q')
 
