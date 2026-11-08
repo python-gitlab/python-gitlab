@@ -531,6 +531,46 @@ def test_head_request(gl):
 
 
 @responses.activate
+def test_head_request_error_without_body_uses_reason(gl):
+    url = "http://localhost/api/v4/not_there"
+    responses.add(
+        method=responses.HEAD,
+        url=url,
+        status=404,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+    )
+
+    with pytest.raises(GitlabHttpError) as exc_info:
+        gl.http_head("/not_there")
+
+    error = exc_info.value
+    assert error.response_code == 404
+    assert error.response_body == b""
+    assert error.error_message == "Not Found"
+    assert str(error) == "404: Not Found"
+
+
+@responses.activate
+def test_http_request_error_message_takes_precedence_over_reason(gl):
+    url = "http://localhost/api/v4/not_there"
+    responses.add(
+        method=responses.GET,
+        url=url,
+        json={"message": "File Not Found"},
+        status=404,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+    )
+
+    with pytest.raises(GitlabHttpError) as exc_info:
+        gl.http_get("/not_there")
+
+    error = exc_info.value
+    assert error.response_body == b'{"message": "File Not Found"}'
+    assert error.error_message == "File Not Found"
+    assert str(error) == "404: File Not Found"
+
+
+@responses.activate
 def test_list_request(gl):
     url = "http://localhost/api/v4/projects"
     responses.add(
