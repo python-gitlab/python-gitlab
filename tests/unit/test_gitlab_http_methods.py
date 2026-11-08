@@ -551,6 +551,25 @@ def test_head_request_error_without_body_uses_reason(gl):
 
 
 @responses.activate
+def test_head_request_error_with_unknown_status_preserves_error(gl):
+    url = "http://localhost/api/v4/not_there"
+    responses.add(
+        method=responses.HEAD,
+        url=url,
+        status=599,
+        match=helpers.MATCH_EMPTY_QUERY_PARAMS,
+    )
+
+    with pytest.raises(GitlabHttpError) as exc_info:
+        gl.http_head("/not_there")
+
+    error = exc_info.value
+    assert error.response_code == 599
+    assert error.response_body == b""
+    assert str(error).startswith("599:")
+
+
+@responses.activate
 def test_http_request_error_message_takes_precedence_over_reason(gl):
     url = "http://localhost/api/v4/not_there"
     responses.add(
