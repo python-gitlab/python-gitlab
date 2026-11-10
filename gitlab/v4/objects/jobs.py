@@ -224,7 +224,7 @@ class ProjectJob(RefreshMixin, RESTObject):
         **kwargs: Any,
     ) -> None: ...
 
-    @cli.register_custom_action(cls_names="ProjectJob")
+    @cli.register_custom_action(cls_names="ProjectJob", required=("path",))
     @exc.on_http_error(exc.GitlabGetError)
     def artifact(
         self,
