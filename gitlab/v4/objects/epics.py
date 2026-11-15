@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, TYPE_CHECKING
 
+import gitlab.utils
 from gitlab import exceptions as exc
 from gitlab import types
 from gitlab.base import RESTObject
@@ -28,6 +29,28 @@ class GroupEpic(ObjectDeleteMixin, SaveMixin, RESTObject):
     issues: GroupEpicIssueManager
     resourcelabelevents: GroupEpicResourceLabelEventManager
     notes: GroupEpicNoteManager
+
+    def _epic_path(self) -> str:
+        """Return the API path for this epic using its real group."""
+        if self._lazy:
+            raise AttributeError(
+                "Cannot compute epic path for a lazy epic: attribute 'group_id' "
+                "is missing. Fetch the epic without lazy=True before saving or "
+                "deleting it."
+            )
+
+        try:
+            group_id = self._attrs["group_id"]
+        except KeyError as error:
+            raise AttributeError(
+                "Cannot compute epic path: attribute 'group_id' is missing."
+            ) from error
+
+        encoded_group_id = gitlab.utils.EncodedId(group_id)
+        return f"/groups/{encoded_group_id}/epics/{self.encoded_id}"
+
+    def _get_custom_path(self) -> str | None:
+        return self._epic_path()
 
 
 class GroupEpicManager(CRUDMixin[GroupEpic]):
