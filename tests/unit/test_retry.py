@@ -23,6 +23,27 @@ def test_handle_retry_on_status_accepts_retry_after_header(
     assert isinstance(mock_sleep.call_args[0][0], int)
 
 
+@pytest.mark.parametrize(
+    ("retry_after", "delay"),
+    [
+        ("Wed, 21 Oct 2015 07:28:00 GMT", 60),
+        ("Wednesday, 21-Oct-15 07:28:00 GMT", 60),
+        ("Wed Oct 21 07:28:00 2015", 60),
+        ("Wed, 21 Oct 2015 07:26:00 GMT", 0),
+    ],
+)
+def test_handle_retry_on_status_accepts_retry_after_date(
+    monkeypatch: pytest.MonkeyPatch, retry_after: str, delay: int
+):
+    mock_sleep = mock.Mock()
+    monkeypatch.setattr(time, "sleep", mock_sleep)
+    monkeypatch.setattr(time, "time", lambda: 1445412420)
+    retry = utils.Retry(max_retries=1)
+
+    assert retry.handle_retry_on_status(429, {"Retry-After": retry_after}) is True
+    mock_sleep.assert_called_once_with(delay)
+
+
 def test_handle_retry_on_status_accepts_ratelimit_reset_header(
     monkeypatch: pytest.MonkeyPatch,
 ):
