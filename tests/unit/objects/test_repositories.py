@@ -10,6 +10,7 @@ import pytest
 import responses
 from requests.structures import CaseInsensitiveDict
 
+from gitlab.exceptions import GitlabHeadError
 from gitlab.v4.objects import ProjectFile
 
 file_path = "app/models/key.rb"
@@ -60,6 +61,26 @@ def test_head_repository_file(project, resp_head_repository_file):
     headers = project.files.head(file_path, ref=ref)
     assert isinstance(headers, CaseInsensitiveDict)
     assert headers["X-Gitlab-File-Path"] == file_path
+
+
+@responses.activate
+def test_head_repository_file_error_without_body(project):
+    missing_file_path = "nonexistent.yaml"
+    encoded_path = quote(missing_file_path, safe="")
+    responses.add(
+        method=responses.HEAD,
+        url=f"http://localhost/api/v4/projects/1/repository/files/{encoded_path}",
+        status=404,
+    )
+
+    with pytest.raises(GitlabHeadError) as exc_info:
+        project.files.head(missing_file_path, ref=ref)
+
+    error = exc_info.value
+    assert error.response_code == 404
+    assert error.response_body == b""
+    assert error.error_message == "Not Found"
+    assert str(error) == "404: Not Found"
 
 
 @pytest.fixture

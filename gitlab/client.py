@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import re
+from http import HTTPStatus
 from typing import Any, BinaryIO, cast, TYPE_CHECKING
 from urllib import parse
 
@@ -756,7 +757,7 @@ class Gitlab:
             ):
                 continue
 
-            error_message = result.content
+            error_message: str | bytes = result.content
             try:
                 error_json = result.json()
                 for k in ("message", "error"):
@@ -764,6 +765,15 @@ class Gitlab:
                         error_message = error_json[k]
             except (KeyError, ValueError, TypeError):
                 pass
+
+            if not error_message:
+                # Bodyless responses, such as HEAD errors, do not carry a
+                # GitLab error message. Use the HTTP reason phrase instead.
+                try:
+                    default_reason = HTTPStatus(result.status_code).phrase
+                except ValueError:
+                    default_reason = ""
+                error_message = result.reason or default_reason
 
             if result.status_code == 401:
                 raise gitlab.exceptions.GitlabAuthenticationError(
