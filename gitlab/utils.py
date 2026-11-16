@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import dataclasses
+import datetime
 import email.message
+import email.utils
 import logging
 import pathlib
 import time
@@ -131,7 +133,14 @@ class Retry:
         if self.max_retries == -1 or self.cur_retries < self.max_retries:
             wait_time = 2**self.cur_retries * 0.1
             if "Retry-After" in headers:
-                wait_time = int(headers["Retry-After"])
+                retry_after = headers["Retry-After"]
+                try:
+                    wait_time = int(retry_after)
+                except ValueError:
+                    retry_at = email.utils.parsedate_to_datetime(retry_after)
+                    if retry_at.tzinfo is None:
+                        retry_at = retry_at.replace(tzinfo=datetime.UTC)
+                    wait_time = max(0, retry_at.timestamp() - time.time())
             elif "RateLimit-Reset" in headers:
                 wait_time = max(0, int(headers["RateLimit-Reset"]) - time.time())
             self.cur_retries += 1
