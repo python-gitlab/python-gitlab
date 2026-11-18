@@ -10,7 +10,14 @@ from typing import Any, TYPE_CHECKING
 from gitlab import cli
 from gitlab import exceptions as exc
 from gitlab.base import RESTObject
-from gitlab.mixins import CreateMixin, RetrieveMixin, SaveMixin, UpdateMixin
+from gitlab.mixins import (
+    CreateMixin,
+    DeleteMixin,
+    ObjectDeleteMixin,
+    RetrieveMixin,
+    SaveMixin,
+    UpdateMixin,
+)
 from gitlab.types import RequiredOptional
 
 from .merge_requests import ProjectDeploymentMergeRequestManager  # noqa: F401
@@ -18,7 +25,7 @@ from .merge_requests import ProjectDeploymentMergeRequestManager  # noqa: F401
 __all__ = ["ProjectDeployment", "ProjectDeploymentManager"]
 
 
-class ProjectDeployment(SaveMixin, RESTObject):
+class ProjectDeployment(SaveMixin, ObjectDeleteMixin, RESTObject):
     mergerequests: ProjectDeploymentMergeRequestManager
 
     @cli.register_custom_action(
@@ -70,6 +77,7 @@ class ProjectDeploymentManager(
     RetrieveMixin[ProjectDeployment],
     CreateMixin[ProjectDeployment],
     UpdateMixin[ProjectDeployment],
+    DeleteMixin[ProjectDeployment],
 ):
     _path = "/projects/{project_id}/deployments"
     _obj_cls = ProjectDeployment
