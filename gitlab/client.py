@@ -1439,7 +1439,7 @@ class AsyncGraphQL(_BaseGraphQL):
                     parsed_document, *args, **kwargs
                 )
             except gql.transport.exceptions.TransportServerError as e:
-                if retry.handle_retry_on_status(
+                if await retry.async_handle_retry_on_status(
                     status_code=e.code, headers=self._transport.response_headers
                 ):
                     continue

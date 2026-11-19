@@ -114,14 +114,15 @@ class Retry:
 
         return False
 
-    def handle_retry_on_status(
+    def _get_wait_time_on_status(
         self,
         status_code: int | None,
         headers: MutableMapping[str, str] | None = None,
         reason: str = "",
-    ) -> bool:
+    ) -> float | None:
+        """Return how long to wait before retrying, or None to not retry."""
         if not self._retryable_status_code(status_code, reason):
-            return False
+            return None
 
         if headers is None:
             headers = {}
@@ -129,16 +130,46 @@ class Retry:
         # Response headers documentation:
         # https://docs.gitlab.com/ee/user/admin_area/settings/user_and_ip_rate_limits.html#response-headers
         if self.max_retries == -1 or self.cur_retries < self.max_retries:
-            wait_time = 2**self.cur_retries * 0.1
+            wait_time: float = 2**self.cur_retries * 0.1
             if "Retry-After" in headers:
                 wait_time = int(headers["Retry-After"])
             elif "RateLimit-Reset" in headers:
                 wait_time = max(0, int(headers["RateLimit-Reset"]) - time.time())
             self.cur_retries += 1
-            time.sleep(wait_time)
-            return True
+            return wait_time
 
-        return False
+        return None
+
+    def handle_retry_on_status(
+        self,
+        status_code: int | None,
+        headers: MutableMapping[str, str] | None = None,
+        reason: str = "",
+    ) -> bool:
+        wait_time = self._get_wait_time_on_status(status_code, headers, reason)
+        if wait_time is None:
+            return False
+
+        time.sleep(wait_time)
+        return True
+
+    async def async_handle_retry_on_status(
+        self,
+        status_code: int | None,
+        headers: MutableMapping[str, str] | None = None,
+        reason: str = "",
+    ) -> bool:
+        """Like handle_retry_on_status, without blocking the event loop."""
+        # anyio ships with httpx (the graphql extra) and supports both asyncio
+        # and trio; imported here as the synchronous clients do not need it.
+        import anyio
+
+        wait_time = self._get_wait_time_on_status(status_code, headers, reason)
+        if wait_time is None:
+            return False
+
+        await anyio.sleep(wait_time)
+        return True
 
     def handle_retry(self) -> bool:
         if self.retry_transient_errors and (
