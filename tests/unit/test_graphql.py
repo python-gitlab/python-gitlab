@@ -1,3 +1,6 @@
+import time
+from unittest import mock
+
 import httpx
 import pytest
 import respx
@@ -97,6 +100,28 @@ async def test_async_graphql_raises_when_max_retries_exceeded(
     )
     with pytest.raises(gitlab.GitlabHttpError):
         await gl_async_gql.execute("query {currentUser {id}}")
+
+
+@pytest.mark.anyio
+async def test_async_graphql_retries_without_blocking_event_loop(
+    api_url: str, respx_mock: respx.MockRouter, monkeypatch: pytest.MonkeyPatch
+):
+    mock_sleep = mock.Mock()
+    monkeypatch.setattr(time, "sleep", mock_sleep)
+    responses = [
+        httpx.Response(502),
+        httpx.Response(
+            200, json={"data": {"currentUser": {"id": "gid://gitlab/User/1"}}}
+        ),
+    ]
+    respx_mock.post(api_url).mock(side_effect=responses)
+
+    gl_async_gql = gitlab.AsyncGraphQL(
+        "https://gitlab.example.com", max_retries=1, retry_transient_errors=True
+    )
+    await gl_async_gql.execute("query {currentUser {id}}")
+
+    mock_sleep.assert_not_called()
 
 
 def test_graphql_raises_on_401_response(
