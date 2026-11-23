@@ -2,6 +2,27 @@
 
 All versions below are listed in reverse chronological order.
 
+## v8.6.0 (2026-09-28)
+
+### Bug Fixes
+
+- **COPYING**: Use the combined LGPGL and GPL license text.
+  ([`b6e65dd`](https://github.com/python-gitlab/python-gitlab/commit/b6e65dd304fb4f6b7f8f8e98770996734f516ed5))
+
+- **renovate**: Add a 7-day cooldown for updates
+  ([`6bb4216`](https://github.com/python-gitlab/python-gitlab/commit/6bb4216c48bdd58f28e875dd2c5da59871b83d34))
+
+### Features
+
+- **hooks**: Add all available project hook attributes
+  ([`f57c33b`](https://github.com/python-gitlab/python-gitlab/commit/f57c33b8463d857c1494a0a7ebe4dada4af8a328))
+
+### Testing
+
+- Don't delete source branch by default for projects
+  ([`aff7954`](https://github.com/python-gitlab/python-gitlab/commit/aff7954f6440c9b2c82c9c2321bd5451770edfb6))
+
+
 ## v8.5.0 (2026-07-28)
 
 ### Bug Fixes
