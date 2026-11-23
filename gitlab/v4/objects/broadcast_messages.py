@@ -15,7 +15,14 @@ class BroadcastMessageManager(CRUDMixin[BroadcastMessage]):
 
     _create_attrs = RequiredOptional(
         required=("message",),
-        optional=("starts_at", "ends_at", "color", "font", "target_access_levels"),
+        optional=(
+            "starts_at",
+            "ends_at",
+            "color",
+            "font",
+            "theme",
+            "target_access_levels",
+        ),
     )
     _update_attrs = RequiredOptional(
         optional=(
@@ -24,6 +31,7 @@ class BroadcastMessageManager(CRUDMixin[BroadcastMessage]):
             "ends_at",
             "color",
             "font",
+            "theme",
             "target_access_levels",
         )
     )
