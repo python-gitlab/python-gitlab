@@ -120,7 +120,12 @@ class GitlabConfigParser:
 
     def _parse_config(self) -> None:
         _config = configparser.ConfigParser()
-        _config.read(self._files, encoding="utf-8")
+        try:
+            _config.read(self._files, encoding="utf-8")
+        except configparser.Error as e:
+            raise GitlabConfigMissingError(
+                f"Cannot read config from file: {e}"
+            ) from e
 
         if self.gitlab_id and not _config.has_section(self.gitlab_id):
             raise GitlabDataError(

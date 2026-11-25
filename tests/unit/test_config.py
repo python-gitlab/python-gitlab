@@ -124,6 +124,14 @@ def test_env_config_missing_file_raises(monkeypatch):
         config._get_config_files()
 
 
+def test_broken_config_file_raises(tmp_path):
+    config_file = tmp_path / "config"
+    config_file.write_text("this is not an ini file\n")
+
+    with pytest.raises(config.GitlabConfigMissingError, match="Cannot read config from file"):
+        config.GitlabConfigParser(config_files=[str(config_file)])
+
+
 def test_env_config_not_defined_does_not_raise(monkeypatch):
     with monkeypatch.context() as m:
         m.setattr(config, "_DEFAULT_FILES", [])
