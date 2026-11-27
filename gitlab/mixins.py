@@ -72,11 +72,14 @@ class GetMixin(HeadMixin[base.TObjCls]):
     _optional_get_attrs: tuple[str, ...] = ()
 
     @exc.on_http_error(exc.GitlabGetError)
-    def get(self, id: str | int, lazy: bool = False, **kwargs: Any) -> base.TObjCls:
+    def get(
+        self, id: str | int | None = None, lazy: bool = False, **kwargs: Any
+    ) -> base.TObjCls:
         """Retrieve a single object.
 
         Args:
-            id: ID of the object to retrieve
+            id: ID of the object to retrieve. If not provided, falls back to
+                _parent_ref_id from the parent object (if available).
             lazy: If True, don't request the server, but create a
                          shallow object giving access to the managers. This is
                          useful if you want to avoid useless calls to the API.
@@ -89,6 +92,13 @@ class GetMixin(HeadMixin[base.TObjCls]):
             GitlabAuthenticationError: If authentication is not correct
             GitlabGetError: If the server cannot perform the request
         """
+        if id is None:
+            id = self._get_parent_ref_id()
+        if id is None:
+            raise ValueError(
+                "id is required. Either provide it explicitly or set "
+                "_parent_ref_attr on the manager to use the parent's reference."
+            )
         if isinstance(id, str):
             id = utils.EncodedId(id)
         path = f"{self.path}/{id}"
@@ -310,6 +320,8 @@ class UpdateMixin(base.RESTManager[base.TObjCls]):
         """
         new_data = new_data or {}
 
+        if id is None:
+            id = self._get_parent_ref_id()
         if id is None:
             path = self.path
         else:
