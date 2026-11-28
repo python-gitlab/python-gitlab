@@ -322,6 +322,12 @@ Download the artifacts zip archive of a job:
 
    $ gitlab project-job artifacts --id 10 --project-id 1 > artifacts.zip
 
+Download one file from a job's artifacts using its path within the archive:
+
+.. code-block:: console
+
+   $ gitlab project-job artifact --id 10 --project-id 1 --path reports/result.xml > result.xml
+
 Runners
 -------
 
