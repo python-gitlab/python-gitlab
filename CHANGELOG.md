@@ -2,6 +2,18 @@
 
 All versions below are listed in reverse chronological order.
 
+## v9.0.0 (2026-11-28)
+
+### Features
+
+- Drop Python 3.10 support and add Python 3.15
+  ([`47a4117`](https://github.com/python-gitlab/python-gitlab/commit/47a411700f339475f1f7976db4743e2da8b73cc5))
+
+### Breaking Changes
+
+- As of python-gitlab 9.0.0, Python 3.10 is no longer supported. Python 3.11 or higher is required.
+
+
 ## v8.6.0 (2026-09-28)
 
 ### Bug Fixes
